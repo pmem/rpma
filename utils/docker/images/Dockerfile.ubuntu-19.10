@@ -1,0 +1,69 @@
+#
+# Copyright 2016-2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of ubuntu-based
+#              environment prepared for running rpma tests.
+#
+
+# Pull base image
+FROM ubuntu:19.10
+MAINTAINER firstname.secondname@intel.com
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Update the Apt cache and install basic tools
+RUN apt-get update \
+ && apt-get install -y software-properties-common \
+	asciidoc \
+	autoconf \
+	clang \
+	clang-format \
+	cmake \
+	curl \
+	debhelper \
+	devscripts \
+	doxygen \
+	gcc \
+	gdb \
+	git \
+	graphviz \
+	libdaxctl-dev \
+	libibverbs-dev \
+	libkmod-dev \
+	libncurses5-dev \
+	libndctl-dev \
+	librdmacm-dev \
+	libtext-diff-perl \
+	libudev-dev \
+	libunwind-dev \
+	llvm \
+	pandoc \
+	pkg-config \
+	sudo \
+	tzdata \
+	uuid-dev \
+	wget \
+	whois \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install valgrind
+COPY install-valgrind.sh install-valgrind.sh
+RUN ./install-valgrind.sh
+
+# Install pmdk
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh dpkg
+
+# Add user
+ENV USER user
+ENV USERPASS pass
+RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
+USER $USER
+
+# Set required environment variables
+ENV OS ubuntu
+ENV OS_VER 19.10
+ENV PACKAGE_MANAGER deb
+ENV NOTTY 1

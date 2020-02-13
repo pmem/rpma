@@ -1,0 +1,7 @@
+Persistent Memory Development Kit
+
+This is examples/librpma/README.
+
+This directory contains examples for librpma, the library containing
+low-level support for remote access to persistent memory. A detailed
+explanation of these examples can be found here: http://pmem.io/pmdk/librpma

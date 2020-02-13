@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: librpma
+Description: librpma - template for a new libpmem library
+Version: @VERSION@
+URL: https://github.com/pmem/rpma
+Requires: libpmem >= @LIBPMEM_REQUIRED_VERSION@
+Cflags: -I${includedir}

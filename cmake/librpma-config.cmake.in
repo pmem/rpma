@@ -1,0 +1,14 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2018, Intel Corporation
+#
+
+@PACKAGE_INIT@
+
+find_path(LIBPMEM_INCLUDE_DIR libpmem.h)
+find_library(LIBPMEM_LIBRARY NAMES pmem libpmem)
+
+set_and_check(LIBPMEM_INCLUDE "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+
+set(LIBPMEM_LIBRARIES ${LIBPMEM_LIBRARY})
+set(LIBPMEM_INCLUDE_DIRS ${LIBPMEM_INCLUDE_DIR})
