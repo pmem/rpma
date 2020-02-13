@@ -1,0 +1,11 @@
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.2
+
+  ignore:
+    - utils/
+    - tests/
+    - doc/
+    - examples/
