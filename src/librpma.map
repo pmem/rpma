@@ -1,0 +1,13 @@
+#
+# Copyright 2019-2020, Intel Corporation
+#
+#
+#
+# src/librpma.link -- linker link file for librpma
+#
+LIBRPMA_1.0 {
+	global:
+		rpma_errormsg;
+	local:
+		*;
+};
