@@ -1,0 +1,73 @@
+#
+# Copyright 2016-2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of fedora-based
+#              environment prepared for running rpma tests.
+#
+
+# Pull base image
+FROM fedora:31
+MAINTAINER firstname.secondname@intel.com
+
+# Install basic tools
+RUN dnf update -y \
+ && dnf install -y \
+	asciidoc \
+	autoconf \
+	automake \
+	bash-completion \
+	clang \
+	cmake \
+	daxctl-devel \
+	doxygen \
+	gcc \
+	gdb \
+	git \
+	hub \
+	kmod-devel \
+	libtool \
+	libudev-devel \
+	libunwind-devel \
+	libuuid-devel \
+	make \
+	man \
+	ncurses-devel \
+	ndctl-devel \
+	open-sans-fonts \
+	pandoc \
+	perl-Text-Diff \
+	rdma-core-devel \
+	rpm-build \
+	rpm-build-libs \
+	rpmdevtools \
+	sudo \
+	tar \
+	wget \
+	which \
+	xmlto \
+ && dnf clean all
+
+# Install valgrind
+COPY install-valgrind.sh install-valgrind.sh
+RUN ./install-valgrind.sh
+
+# Install pmdk
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh rpm
+
+# Add user
+ENV USER user
+ENV USERPASS pass
+RUN useradd -m $USER
+RUN echo "$USER:$USERPASS" | chpasswd
+RUN gpasswd wheel -a $USER
+USER $USER
+
+# Set required environment variables
+ENV OS fedora
+ENV OS_VER 31
+ENV PACKAGE_MANAGER rpm
+ENV NOTTY 1
+
