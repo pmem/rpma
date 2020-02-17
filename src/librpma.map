@@ -1,0 +1,14 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2019-2020, Intel Corporation
+#
+
+#
+# src/librpma.map -- linker link file for librpma
+#
+LIBRPMA_1.0 {
+	global:
+		rpma_errormsg;
+	local:
+		*;
+};

@@ -1,0 +1,21 @@
+ignore:
+  - cmake/
+  - doc/
+  - examples/
+  - src/valgrind/
+  - src/sys/
+  - tests/
+  - utils/
+
+comment:
+  layout: "diff"
+  behavior: default
+  require_changes: yes
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: false
+      loop: false
+      method: false
+      macro: false
