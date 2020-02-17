@@ -1,0 +1,14 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2020, Intel Corporation
+#
+
+@PACKAGE_INIT@
+
+find_path(LIBRPMA_INCLUDE_DIR librpma.h)
+find_library(LIBRPMA_LIBRARY NAMES rpma librpma)
+
+set_and_check(LIBRPMA_INCLUDE "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+
+set(LIBRPMA_LIBRARIES ${LIBRPMA_LIBRARY})
+set(LIBRPMA_INCLUDE_DIRS ${LIBRPMA_INCLUDE_DIR})
