@@ -52,6 +52,7 @@ option(USE_UBSAN "enable UndefinedBehaviorSanitizer (debugging)" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
 option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" ON)
 option(TESTS_LONG "enable long running tests" OFF)
+option(TESTS_USE_FAULT_INJECTION "run test with fault injection" ON)
 
 # Do not treat include directories from the interfaces
 # of consumed Imported Targets as SYSTEM by default.
