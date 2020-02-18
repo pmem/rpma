@@ -5,17 +5,33 @@
 
 add_cstyle(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+	${CMAKE_CURRENT_SOURCE_DIR}/core/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 add_check_whitespace(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+	${CMAKE_CURRENT_SOURCE_DIR}/core/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
-set(SOURCES librpma.c)
+set(SOURCES
+	core/alloc.c
+	core/os_posix.c
+	core/os_thread_posix.c
+	core/out.c
+	core/ravl.c
+	core/util.c
+	core/util_posix.c
+	librpma.c
+	config.c
+	rpma_utils.c)
 
 add_library(rpma SHARED ${SOURCES})
 
-target_include_directories(rpma PRIVATE . include)
+target_include_directories(rpma PRIVATE . include core)
+
+if(TESTS_USE_FAULT_INJECTION)
+	target_compile_definitions(rpma PUBLIC FAULT_INJECTION=1)
+endif()
 
 target_link_libraries(rpma PRIVATE
 	${LIBIBVERBS_LIBRARIES}
@@ -24,7 +40,10 @@ target_link_libraries(rpma PRIVATE
 
 set_target_properties(rpma PROPERTIES
 	SOVERSION 0
-	PUBLIC_HEADER include/librpma.h)
+	PUBLIC_HEADER include/librpma.h
+	PUBLIC_HEADER include/base.h
+	PUBLIC_HEADER include/msg.h
+	PUBLIC_HEADER include/rma.h)
 
 target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
 
