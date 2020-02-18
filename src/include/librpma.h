@@ -15,6 +15,7 @@
 #ifndef LIBRPMA_H
 #define LIBRPMA_H 1
 
-const char *rpma_errormsg(void);
+#include <msg.h>
+#include <rma.h>
 
 #endif /* librpma.h */
