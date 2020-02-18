@@ -8,6 +8,15 @@
 #
 LIBRPMA_1.0 {
 	global:
+		rpma_config_new;
+		rpma_config_set_addr;
+		rpma_config_set_service;
+		rpma_config_set_msg_size;
+		rpma_config_set_send_queue_length;
+		rpma_config_set_recv_queue_length;
+		rpma_config_set_queue_alloc_funcs;
+		rpma_config_set_flags;
+		rpma_config_delete;
 		rpma_errormsg;
 	local:
 		*;
