@@ -5,7 +5,7 @@ The **Remote Persistent Memory Access (RPMA)** is a C library to simplify access
 ## Contact Us
 
 For more information on this library, contact
-Tomasz Gromaszki (tomasz.gromadzki@intel.com),
+Tomasz Gromadzki (tomasz.gromadzki@intel.com),
 Jan Michalski (jan.m.michalski@intel.com),
 Marcin Slusarz (marcin.slusarz@intel.com),
 Chet Douglas (chet.r.douglas@intel.com), or post to our
