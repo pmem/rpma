@@ -5,17 +5,27 @@
 
 add_cstyle(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+	${CMAKE_CURRENT_SOURCE_DIR}/common/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 add_check_whitespace(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+	${CMAKE_CURRENT_SOURCE_DIR}/common/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
-set(SOURCES librpma.c)
+set(SOURCES
+	common/alloc.c
+	common/os_posix.c
+	common/os_thread_posix.c
+	common/out.c
+	common/ravl.c
+	common/util.c
+	common/util_posix.c
+	librpma.c)
 
 add_library(rpma SHARED ${SOURCES})
 
-target_include_directories(rpma PRIVATE . include)
+target_include_directories(rpma PRIVATE . include common)
 
 target_link_libraries(rpma PRIVATE
 	${LIBIBVERBS_LIBRARIES}
