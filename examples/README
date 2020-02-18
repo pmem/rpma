@@ -1,0 +1,7 @@
+This directory contains examples for librpma,
+the library to simplify accessing persistent memory devices
+on remote hosts over Remote Direct Memory Access (RDMA).
+
+If you're looking for documentation to get you started using RPMA,
+start here: https://pmem.io/librpma and follow the links
+to examples and man pages.
