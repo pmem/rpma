@@ -1,0 +1,78 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2016-2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of ubuntu-based
+#              environment prepared for running rpma tests.
+#
+
+# Pull base image
+FROM ubuntu:19.10
+MAINTAINER tomasz.gromadzki@intel.com
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Additional parameters to build docker without building components
+ARG SKIP_VALGRIND_BUILD
+ARG SKIP_PMDK_BUILD
+
+# Update the Apt cache and install basic tools
+RUN apt-get update && apt-get dist-upgrade -y
+
+# base deps
+ENV BASE_DEPS "\
+	apt-utils \
+	build-essential \
+	git \
+	pkg-config \
+	sudo \
+	whois"
+
+# Valgrind deps
+ENV VALGRIND_DEPS "\
+	autoconf \
+	automake"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	debhelper \
+	devscripts \
+	libdaxctl-dev \
+	libndctl-dev \
+	pandoc"
+
+# RPMA deps
+ENV RPMA_DEPS "\
+	cmake \
+	libibverbs-dev \
+	librdmacm-dev"
+
+# Install all required packages
+RUN apt-get install -y --no-install-recommends \
+	$BASE_DEPS \
+	$PMDK_DEPS \
+	$RPMA_DEPS \
+	$VALGRIND_DEPS \
+&& rm -rf /var/lib/apt/lists/*
+
+# Install valgrind
+COPY install-valgrind.sh install-valgrind.sh
+RUN ./install-valgrind.sh
+
+# Install pmdk
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh dpkg
+
+# Add user
+ENV USER user
+ENV USERPASS pass
+RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
+USER $USER
+
+# Set required environment variables
+ENV OS ubuntu
+ENV OS_VER 19.10
+ENV PACKAGE_MANAGER deb
+ENV NOTTY 1
