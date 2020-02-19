@@ -1,0 +1,80 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2016-2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of fedora-based
+#              environment prepared for running rpma tests.
+#
+
+# Pull base image
+FROM fedora:31
+MAINTAINER tomasz.gromadzki@intel.com
+
+# Additional parameters to build docker without building components
+ARG SKIP_VALGRIND_BUILD
+ARG SKIP_PMDK_BUILD
+
+# Update all packages
+RUN dnf update -y
+
+# base deps
+ENV BASE_DEPS "\
+	gcc \
+	git \
+	make \
+	pkg-config \
+	which"
+
+# Valgrind deps
+ENV VALGRIND_DEPS "\
+	autoconf \
+	automake"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	daxctl-devel \
+	gdb \
+	man \
+	ndctl-devel \
+	pandoc \
+	rpm-build \
+	rpm-build-libs \
+	rpmdevtools"
+
+# RPMA deps
+ENV RPMA_DEPS "\
+	cmake \
+	rdma-core-devel"
+
+# Install all required packages
+RUN dnf install -y \
+	$BASE_DEPS \
+	$PMDK_DEPS \
+	$RPMA_DEPS \
+	$VALGRIND_DEPS \
+&& dnf clean all
+
+# Install valgrind
+COPY install-valgrind.sh install-valgrind.sh
+RUN ./install-valgrind.sh
+
+# Install pmdk
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh rpm
+
+# Add user
+ENV USER user
+ENV USERPASS pass
+RUN useradd -m $USER
+RUN echo "$USER:$USERPASS" | chpasswd
+RUN gpasswd wheel -a $USER
+USER $USER
+
+# Set required environment variables
+ENV OS fedora
+ENV OS_VER 31
+ENV PACKAGE_MANAGER rpm
+ENV NOTTY 1
+
