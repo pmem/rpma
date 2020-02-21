@@ -15,6 +15,8 @@
 
 set -e
 
+source $(dirname $0)/../set-ci-vars.sh
+
 function usage {
 	echo "Usage:"
 	echo "    push-image.sh <OS-VER>"
