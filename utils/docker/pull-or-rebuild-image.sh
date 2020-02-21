@@ -23,6 +23,7 @@
 
 set -e
 
+source $(dirname $0)/set-ci-vars.sh
 source $(dirname $0)/set-vars.sh
 
 function get_commit_range_from_last_merge {
@@ -45,14 +46,14 @@ function get_commit_range_from_last_merge {
 	echo $COMMIT_RANGE
 }
 
-if [[ "$TRAVIS_EVENT_TYPE" != "cron" && "$TRAVIS_BRANCH" != "coverity_scan" \
+if [[ "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" \
 	&& "$TYPE" == "coverity" ]]; then
 	echo "INFO: Skip Coverity scan job if build is triggered neither by " \
 		"'cron' nor by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
-if [[ ( "$TRAVIS_EVENT_TYPE" == "cron" || "$TRAVIS_BRANCH" == "coverity_scan" )\
+if [[ ( "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" )\
 	&& "$TYPE" != "coverity" ]]; then
 	echo "INFO: Skip regular jobs if build is triggered either by 'cron'" \
 		" or by a push to 'coverity_scan' branch"
@@ -71,19 +72,19 @@ if [[ -z "$HOST_WORKDIR" ]]; then
 	exit 1
 fi
 
-# TRAVIS_COMMIT_RANGE is usually invalid for force pushes - fix it when used
+# CI_COMMIT_RANGE is usually invalid for force pushes - fix it when used
 # with non-upstream repository
-if [ -n "$TRAVIS_COMMIT_RANGE" -a "$TRAVIS_REPO_SLUG" != "$GITHUB_REPO" ]; then
-	if ! git rev-list $TRAVIS_COMMIT_RANGE; then
-		TRAVIS_COMMIT_RANGE=$(get_commit_range_from_last_merge)
+if [ -n "$CI_COMMIT_RANGE" -a "$CI_REPO_SLUG" != "$GITHUB_REPO" ]; then
+	if ! git rev-list $CI_COMMIT_RANGE; then
+		CI_COMMIT_RANGE=$(get_commit_range_from_last_merge)
 	fi
 fi
 
 # Fix Travis commit range
-if [ -n "$TRAVIS_COMMIT_RANGE" ]; then
-	# $TRAVIS_COMMIT_RANGE contains "..." instead of ".."
+if [ -n "$CI_COMMIT_RANGE" ]; then
+	# $CI_COMMIT_RANGE contains "..." instead of ".."
 	# https://github.com/travis-ci/travis-ci/issues/4596
-	PR_COMMIT_RANGE="${TRAVIS_COMMIT_RANGE/.../..}"
+	PR_COMMIT_RANGE="${CI_COMMIT_RANGE/.../..}"
 fi
 
 # Set the commit range in case of GitHub Actions
@@ -95,7 +96,7 @@ fi
 if [ -n "$PR_COMMIT_RANGE" ]; then
 	commits=$(git rev-list $PR_COMMIT_RANGE || git rev-list $(get_commit_range_from_last_merge))
 elif [ -n "$TRAVIS" ]; then
-	commits=$TRAVIS_COMMIT
+	commits=$CI_COMMIT
 elif [ -n "$GITHUB_ACTIONS" ]; then
 	commits=$GITHUB_SHA
 else
@@ -132,9 +133,9 @@ for file in $files; do
 		# repository's master branch, and the Travis build is not
 		# of the "pull_request" type). In that case, create the empty
 		# file.
-		if [[ "${TRAVIS_REPO_SLUG}" == "${GITHUB_REPO}" \
-			&& ($TRAVIS_BRANCH == stable-* || $TRAVIS_BRANCH == master) \
-			&& $TRAVIS_EVENT_TYPE != "pull_request"
+		if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
+			&& ($CI_BRANCH == stable-* || $CI_BRANCH == master) \
+			&& $CI_EVENT_TYPE != "pull_request"
 			&& $PUSH_IMAGE == "1" ]]
 		then
 			echo "The image will be pushed to Docker Hub"
