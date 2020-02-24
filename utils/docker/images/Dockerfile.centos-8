@@ -1,36 +1,36 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2020, Intel Corporation
 #
 
 #
 # Dockerfile - a 'recipe' for Docker to build an image of fedora-based
-#              environment prepared for running rpma tests.
+#              environment prepared for running libpmemobj-cpp tests.
 #
 
 # Pull base image
-FROM fedora:31
+FROM centos:8
 MAINTAINER tomasz.gromadzki@intel.com
 
-# Additional parameters to build docker without building components
-ARG SKIP_VALGRIND_BUILD
-
-# Update all packages
 RUN dnf update -y
+RUN dnf install -y epel-release
+RUN dnf install -y 'dnf-command(config-manager)'
+RUN dnf config-manager --set-enabled PowerTools
 
 # base deps
 ENV BASE_DEPS "\
 	gcc \
 	git \
 	make \
-	patch \
+	passwd \
 	pkg-config \
 	which"
 
 # Valgrind deps
 ENV VALGRIND_DEPS "\
 	autoconf \
-	automake"
+	automake \
+	sudo"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -41,7 +41,6 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libunwind-devel \
 	rdma-core-devel"
-#	txt2man is installed from git repo now
 
 # Install all required packages
 RUN dnf install -y \
@@ -66,13 +65,12 @@ RUN ./install-txt2man.sh
 ENV USER user
 ENV USERPASS p1a2s3s4
 RUN useradd -m $USER
-RUN echo "$USER:$USERPASS" | chpasswd
+RUN echo $USERPASS | passwd $USER --stdin
 RUN gpasswd wheel -a $USER
 USER $USER
 
 # Set required environment variables
-ENV OS fedora
-ENV OS_VER 31
+ENV OS centos
+ENV OS_VER 8
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
-
