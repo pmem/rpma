@@ -68,7 +68,7 @@ RUN ./install-txt2man.sh
 
 # Add user
 ENV USER user
-ENV USERPASS pass
+ENV USERPASS p1a2s3s4
 RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
 USER $USER
 

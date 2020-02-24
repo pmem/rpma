@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM fedora:31
+FROM fedora:rawhide
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Additional parameters to build docker without building components
@@ -72,7 +72,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 31
+ENV OS_VER rawhide
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
