@@ -1,0 +1,86 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of environment
+#              prepared for running libpmemobj-cpp tests.
+#
+
+# Pull base image
+FROM opensuse/leap:latest
+MAINTAINER tomasz.gromadzki@intel.com
+
+# Update the OS
+RUN zypper dup -y
+
+# Update all packages
+RUN zypper update -y
+
+# base deps
+ENV BASE_DEPS "\
+	gcc \
+	git \
+	make \
+	pkg-config \
+	which"
+
+# Valgrind deps
+ENV VALGRIND_DEPS "\
+	autoconf \
+	automake \
+	sudo"
+
+# RPMA deps
+ENV RPMA_DEPS "\
+	cmake \
+	file \
+	gawk \
+	groff \
+	graphviz \
+	libunwind-devel \
+	rdma-core-devel"
+#	txt2man is installed from git repo now
+
+# Install all required packages
+RUN zypper install -y \
+	$BASE_DEPS \
+	$RPMA_DEPS \
+	$VALGRIND_DEPS
+
+# Install valgrind
+COPY install-valgrind.sh install-valgrind.sh
+RUN ./install-valgrind.sh opensuse
+
+# Install cmocka
+COPY install-cmocka.sh install-cmocka.sh
+RUN ./install-cmocka.sh
+
+# Install txt2man
+COPY install-txt2man.sh install-txt2man.sh
+RUN ./install-txt2man.sh
+
+# Clean the package cache
+RUN zypper clean all
+
+# Add user
+ENV USER user
+ENV USERPASS p1a2s3s4
+ENV PFILE ./password
+RUN useradd -m $USER
+RUN echo $USERPASS > $PFILE
+RUN echo $USERPASS >> $PFILE
+RUN passwd $USER < $PFILE
+RUN rm -f $PFILE
+RUN sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers
+RUN groupadd wheel
+RUN gpasswd wheel -a $USER
+USER $USER
+
+# Set required environment variables
+ENV OS opensuse/leap
+ENV OS_VER latest
+ENV PACKAGE_MANAGER rpm
+ENV NOTTY 1
+
