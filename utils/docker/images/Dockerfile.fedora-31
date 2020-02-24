@@ -46,6 +46,9 @@ ENV PMDK_DEPS "\
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
+	doxygen \
+	graphviz \
+	libunwind-devel \
 	rdma-core-devel"
 
 # Install all required packages

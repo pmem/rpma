@@ -46,8 +46,11 @@ ENV PMDK_DEPS "\
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
+	doxygen \
+	graphviz \
 	libibverbs-dev \
-	librdmacm-dev"
+	librdmacm-dev \
+	libunwind-dev"
 
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
