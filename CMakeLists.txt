@@ -27,7 +27,7 @@ endif()
 
 set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
 set(LIBRDMACM_REQUIRED_VERSION 1.0)  # XXX set the required value
-set(LIBPMEM_REQUIRED_VERSION 1.8) # required only for tests and examples
+set(LIBPMEM2_REQUIRED_VERSION 0.0) # required only for tests and examples
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
@@ -99,7 +99,7 @@ pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION}
 pkg_check_modules(LIBRDMACM REQUIRED librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
 
 if(BUILD_TESTS OR BUILD_EXAMPLES)
-	pkg_check_modules(LIBPMEM REQUIRED libpmem>=${LIBPMEM_REQUIRED_VERSION})
+	pkg_check_modules(LIBPMEM2 REQUIRED) # libpmem2>=${LIBPMEM2_REQUIRED_VERSION})
 endif()
 
 add_custom_target(checkers ALL)

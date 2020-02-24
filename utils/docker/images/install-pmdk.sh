@@ -28,12 +28,12 @@ git checkout $PMDK_VERSION
 if [ "$PACKAGE_TYPE" = "" ]; then
 	make -j$(nproc) install prefix=$PREFIX
 else
-	make -j$(nproc) BUILD_PACKAGE_CHECK=n $PACKAGE_TYPE
+	make -j$(nproc) PMEM2_INSTALL=y BUILD_PACKAGE_CHECK=n $PACKAGE_TYPE
 	if [ "$PACKAGE_TYPE" = "dpkg" ]; then
-		sudo dpkg -i dpkg/libpmem_*.deb dpkg/libpmem-dev_*.deb
+		sudo dpkg -i dpkg/libpmem2_*.deb dpkg/libpmem2-dev_*.deb
 	elif [ "$PACKAGE_TYPE" = "rpm" ]; then
 		sudo rpm -i rpm/*/pmdk-debuginfo-*.rpm
-		sudo rpm -i rpm/*/libpmem-*.rpm
+		sudo rpm -i rpm/*/libpmem2-*.rpm
 	fi
 fi
 
