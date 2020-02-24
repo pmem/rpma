@@ -6,15 +6,8 @@
 #ifndef TEST_BACKTRACE_H
 #define TEST_BACKTRACE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void test_dump_backtrace(void);
 void test_sighandler(int sig);
 void test_register_sighandlers(void);
 
-#ifdef __cplusplus
-}
-#endif
 #endif
