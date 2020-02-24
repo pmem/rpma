@@ -26,7 +26,7 @@ cd pmdk
 git checkout $PMDK_VERSION
 
 if [ "$PACKAGE_TYPE" = "" ]; then
-	make -j$(nproc) install prefix=$PREFIX
+	make -j$(nproc) PMEM2_INSTALL=y install prefix=$PREFIX
 else
 	make -j$(nproc) PMEM2_INSTALL=y BUILD_PACKAGE_CHECK=n $PACKAGE_TYPE
 	if [ "$PACKAGE_TYPE" = "dpkg" ]; then
