@@ -18,6 +18,8 @@
 #
 
 set -e
+
+source $(dirname $0)/set-ci-vars.sh
 source $(dirname $0)/valid-branches.sh
 
 if [[ -z "$OS" || -z "$OS_VER" ]]; then
@@ -30,7 +32,7 @@ if [[ -z "$HOST_WORKDIR" ]]; then
 	HOST_WORKDIR=$(readlink -f ../..)
 fi
 
-if [[ "$TRAVIS_EVENT_TYPE" == "cron" || "$TRAVIS_BRANCH" == "coverity_scan" ]]; then
+if [[ "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" ]]; then
 	if [[ "$TYPE" != "coverity" ]]; then
 		echo "Skipping non-Coverity job for cron/Coverity build"
 		exit 0
@@ -64,7 +66,7 @@ fi
 if [ -n "$DNS_SERVER" ]; then DNS_SETTING=" --dns=$DNS_SERVER "; fi
 
 # Only run doc update on $GITHUB_REPO master or stable branch
-if [[ -z "${TRAVIS_BRANCH}" || -z "${TARGET_BRANCHES[${TRAVIS_BRANCH}]}" || "$TRAVIS_PULL_REQUEST" != "false" || "$TRAVIS_REPO_SLUG" != "${GITHUB_REPO}" ]]; then
+if [[ -z "${CI_BRANCH}" || -z "${TARGET_BRANCHES[${CI_BRANCH}]}" || "$CI_EVENT_TYPE" == "pull_request" || "$CI_REPO_SLUG" != "${GITHUB_REPO}" ]]; then
 	AUTO_DOC_UPDATE=0
 fi
 
@@ -94,9 +96,9 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env WORKDIR=$WORKDIR \
 	--env SCRIPTSDIR=$SCRIPTSDIR \
 	--env COVERAGE=$COVERAGE \
-	--env TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG \
-	--env TRAVIS_BRANCH=$TRAVIS_BRANCH \
-	--env TRAVIS_EVENT_TYPE=$TRAVIS_EVENT_TYPE \
+	--env CI_REPO_SLUG=$CI_REPO_SLUG \
+	--env CI_BRANCH=$CI_BRANCH \
+	--env CI_EVENT_TYPE=$CI_EVENT_TYPE \
 	--env COVERITY_SCAN_TOKEN=$COVERITY_SCAN_TOKEN \
 	--env COVERITY_SCAN_NOTIFICATION_EMAIL=$COVERITY_SCAN_NOTIFICATION_EMAIL \
 	--env TEST_BUILD=$TEST_BUILD \
