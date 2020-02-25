@@ -30,9 +30,15 @@ target_link_libraries(rpma PRIVATE
 	${LIBRDMACM_LIBRARIES}
 	-Wl,--version-script=${CMAKE_SOURCE_DIR}/src/librpma.map)
 
+set(RPMA_PUBLIC_HEADERS
+	include/librpma.h
+	include/librpma/base.h
+	include/librpma/msg.h
+	include/librpma/rma.h)
+
 set_target_properties(rpma PROPERTIES
 	SOVERSION 0
-	PUBLIC_HEADER include/librpma.h)
+	PUBLIC_HEADER "${RPMA_PUBLIC_HEADERS}")
 
 target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
 
