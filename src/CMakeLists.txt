@@ -28,7 +28,10 @@ target_link_libraries(rpma PRIVATE
 
 set_target_properties(rpma PROPERTIES
 	SOVERSION 0
-	PUBLIC_HEADER include/librpma.h)
+	PUBLIC_HEADER include/base.h
+	PUBLIC_HEADER include/librpma.h
+	PUBLIC_HEADER include/msg.h
+	PUBLIC_HEADER include/rma.h)
 
 target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
 
