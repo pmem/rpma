@@ -92,20 +92,25 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env http_proxy=$http_proxy \
 	--env https_proxy=$https_proxy \
 	--env AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE \
+	--env GITHUB_REPO=$GITHUB_REPO \
 	--env GITHUB_TOKEN=$GITHUB_TOKEN \
 	--env WORKDIR=$WORKDIR \
 	--env SCRIPTSDIR=$SCRIPTSDIR \
 	--env COVERAGE=$COVERAGE \
+	--env CI_COMMIT=$CI_COMMIT \
+	--env CI_COMMIT_RANGE=$CI_COMMIT_RANGE \
 	--env CI_REPO_SLUG=$CI_REPO_SLUG \
 	--env CI_BRANCH=$CI_BRANCH \
 	--env CI_EVENT_TYPE=$CI_EVENT_TYPE \
+	--env CI_RUN=$CI_RUN \
+	--env TRAVIS=$TRAVIS \
 	--env COVERITY_SCAN_TOKEN=$COVERITY_SCAN_TOKEN \
 	--env COVERITY_SCAN_NOTIFICATION_EMAIL=$COVERITY_SCAN_NOTIFICATION_EMAIL \
 	--env TEST_BUILD=$TEST_BUILD \
 	--env DEFAULT_TEST_DIR=/dev/shm \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
 	--env CHECK_CSTYLE=${CHECK_CSTYLE:-ON} \
-	--env CI_RUN=$CI_RUN \
+	--env FAULT_INJECTION=$FAULT_INJECTION \
 	--shm-size=4G \
 	-v $HOST_WORKDIR:$WORKDIR \
 	-v /etc/localtime:/etc/localtime \
