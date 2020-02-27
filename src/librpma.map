@@ -8,7 +8,36 @@
 #
 LIBRPMA_1.0 {
 	global:
+		rpma_accept;
+		rpma_commit;
+		rpma_complete;
+		rpma_connect;
+		rpma_conn_cfg_delete;
+		rpma_conn_cfg_new;
+		rpma_conn_cfg_set_op_timeout;
+		rpma_conn_cfg_set_setup_timeout;
+		rpma_conn_get_app_context;
+		rpma_conn_set_app_context;
+		rpma_device_by_dst_address;
+		rpma_device_by_src_address;
+		rpma_device_delete;
+		rpma_disconnect;
 		rpma_errormsg;
+		rpma_memory_delete;
+		rpma_memory_get_id;
+		rpma_memory_get_ptr;
+		rpma_memory_get_size;
+		rpma_memory_new;
+		rpma_memory_remote_delete;
+		rpma_memory_remote_get_size;
+		rpma_memory_remote_new;
+		rpma_peer_cfg_delete;
+		rpma_peer_cfg_new;
+		rpma_peer_cfg_set_msg_buffer_alloc_funcs;
+		rpma_peer_delete;
+		rpma_peer_new;
+		rpma_read;
+		rpma_write;
 	local:
 		*;
 };
