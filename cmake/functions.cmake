@@ -64,7 +64,7 @@ function(add_cstyle name)
 			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.c
 				${CMAKE_CURRENT_SOURCE_DIR}/*.h
 			COMMAND ${PERL_EXECUTABLE}
-				${CMAKE_SOURCE_DIR}/utils/cstyle -pP
+				${CMAKE_SOURCE_DIR}/utils/cstyle -pP -o src2man
 				${CMAKE_CURRENT_SOURCE_DIR}/*.c
 				${CMAKE_CURRENT_SOURCE_DIR}/*.h
 			COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/cstyle-${name}-status
@@ -73,7 +73,7 @@ function(add_cstyle name)
 		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cstyle-${name}-status
 			DEPENDS ${ARGN}
 			COMMAND ${PERL_EXECUTABLE}
-				${CMAKE_SOURCE_DIR}/utils/cstyle -pP
+				${CMAKE_SOURCE_DIR}/utils/cstyle -pP -o src2man
 				${ARGN}
 			COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/cstyle-${name}-status
 			)
