@@ -23,7 +23,7 @@
 # Copyright 2008 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 #
-# Portions copyright 2017, Intel Corporation.
+# Portions copyright 2017-2020, Intel Corporation.
 #
 # @(#)cstyle 1.58 98/09/09 (from shannon)
 #ident	"%Z%%M%	%I%	%E% SMI"
@@ -69,6 +69,7 @@ my $usage =
 	-o constructs
 		allow a comma-separated list of optional constructs:
 		    doxygen	allow doxygen-style block comments (/** /*!)
+		    src2man	allow src2man-style block comments (/** n)
 		    splint	allow splint-style lint comments (/*@ ... @*/)
 ";
 
@@ -88,6 +89,7 @@ my $check_posix_types = $opts{'P'};
 
 my $doxygen_comments = 0;
 my $splint_comments = 0;
+my $src2man_comments = 0;
 
 if (defined($opts{'o'})) {
 	for my $x (split /,/, $opts{'o'}) {
@@ -95,6 +97,8 @@ if (defined($opts{'o'})) {
 			$doxygen_comments = 1;
 		} elsif ($x eq "splint") {
 			$splint_comments = 1;
+		} elsif ($x eq "src2man") {
+			$src2man_comments = 1;
 		} else {
 			print "cstyle: unrecognized construct \"$x\"\n";
 			print $usage;
@@ -117,6 +121,10 @@ if ($verbose) {
 if ($doxygen_comments) {
 	# doxygen comments look like "/*!" or "/**"; allow them.
 	$hdr_comment_start = qr/^\s*\/\*[\!\*]?$/;
+} elsif ($src2man_comments) {
+	# src2man comments look like "/** n",
+	# where 'n' stands for a manual's section number; allow them.
+	$hdr_comment_start = qr/^\s*\/\*$|^\s*\/\*\* [0-9]{1}$/;
 } else {
 	$hdr_comment_start = qr/^\s*\/\*$/;
 }
