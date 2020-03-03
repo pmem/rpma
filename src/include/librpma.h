@@ -176,6 +176,31 @@ int rpma_err_get_provider_error(void);
 
 /** 3
  * rpma_err_get_msg - return the last error message
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	const char *rpma_err_get_msg(void);
+ *
+ * DESCRIPTION
+ * If an error is detected during the call to a librpma(7) function, the
+ * application may retrieve an error message describing the reason of the
+ * failure from rpma_err_get_msg(). The error message buffer is thread-local;
+ * errors encountered in one thread do not affect its value in
+ * other threads. The buffer is never cleared by any library function; its
+ * content is significant only when the return value of the immediately
+ * preceding call to a librpma(7) function indicated an error.
+ * The application must not modify or free the error message string.
+ * Subsequent calls to other library functions may modify the previous message.
+ *
+ * RETURN VALUE
+ * The rpma_err_get_msg() function returns a pointer to a static buffer
+ * containing the last error message logged for the current thread.
+ *
+ * SEE ALSO
+ * librpma(7) and
+ * .B <https://pmem.io>
  */
 const char *rpma_err_get_msg(void);
 
