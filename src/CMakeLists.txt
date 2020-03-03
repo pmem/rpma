@@ -17,7 +17,8 @@ set(SOURCES
 	common/alloc.c
 	device.c
 	info.c
-	librpma.c)
+	librpma.c
+	peer.c)
 
 add_library(rpma SHARED ${SOURCES})
 
