@@ -25,6 +25,10 @@ if (VERSION_PRERELEASE)
 	set(VERSION ${VERSION}-${VERSION_PRERELEASE})
 endif()
 
+set(LIBRPMA_LIBRARIES    ${CMAKE_BINARY_DIR}/src/librpma.so)
+set(LIBRPMA_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/src/)
+set(LIBRPMA_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/src/include/)
+
 set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
 set(LIBRDMACM_REQUIRED_VERSION 1.0)  # XXX set the required value
 # required only for tests and examples
