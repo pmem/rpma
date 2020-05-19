@@ -5,8 +5,8 @@
  * out.h -- definitions for "out" module
  */
 
-#ifndef PMDK_OUT_H
-#define PMDK_OUT_H 1
+#ifndef RPMA_OUT_H
+#define RPMA_OUT_H 1
 
 #include <stdarg.h>
 #include <stddef.h>

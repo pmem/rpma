@@ -36,8 +36,8 @@
  * util.h -- internal definitions for util module
  */
 
-#ifndef PMDK_UTIL_H
-#define PMDK_UTIL_H 1
+#ifndef RPMA_UTIL_H
+#define RPMA_UTIL_H 1
 
 #include <string.h>
 #include <stddef.h>
