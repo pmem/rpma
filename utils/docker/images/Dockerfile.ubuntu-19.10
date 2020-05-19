@@ -46,6 +46,7 @@ ENV PMDK_DEPS "\
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
+	curl \
 	doxygen \
 	graphviz \
 	libibverbs-dev \
