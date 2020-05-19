@@ -7,7 +7,7 @@
  * librpma.h -- definitions of librpma entry points (EXPERIMENTAL)
  *
  * This library provides low-level support for remote access to persistent
- * memory utilizing RDMA-capable RNICs.
+ * memory utilizing RDMA-capable NICs.
  *
  * See librpma(7) for details.
  */
@@ -18,150 +18,97 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <infiniband/verbs.h>
 
-/* XXX rework in pmem2-style */
+#define RPMA_WAIT_FOR_COMPLETION	(      1)
+
 #define RPMA_E_UNKNOWN			(-100000)
 #define RPMA_E_NOSUPP			(-100001)
-#define RPMA_E_NEGATIVE_TIMEOUT		(-100002)
-#define RPMA_E_NOT_LISTENING		(-100003)
-#define RPMA_E_EC_READ			(-100004)
-#define RPMA_E_EC_EVENT			(-100005)
-#define RPMA_E_EC_EVENT_DATA		(-100006)
-#define RPMA_E_UNHANDLED_EVENT		(-100007)
-#define RPMA_E_UNKNOWN_CONNECTION	(-100008)
-#define RPMA_E_TIMEOUT			(-100009)
-
 
 /* picking up an RDMA-capable device */
-struct rpma_device;
 
-int rpma_device_by_src_address(const char *addr, struct rpma_device **rdev);
-
-int rpma_device_by_dst_address(const char *addr, struct rpma_device **rdev);
-
-int rpma_device_delete(struct rpma_device **rdev);
-
-
-/* peer config */
-struct rpma_peer_cfg;
-
-int rpma_peer_cfg_new(struct rpma_peer_cfg **zcfg);
-
-typedef void *(*rpma_malloc_func)(size_t size);
-
-typedef void (*rpma_free_func)(void *ptr);
-
-int rpma_peer_cfg_set_msg_buffer_alloc_funcs(struct rpma_peer_cfg *zcfg,
-		rpma_malloc_func malloc_func, rpma_free_func free_func);
-
-int rpma_peer_cfg_delete(struct rpma_peer_cfg **zcfg);
-
+int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
 
 /* peer */
+
+struct rpma_peer_cfg;
 struct rpma_peer;
 
-int rpma_peer_new(struct rpma_peer_cfg *zcfg, struct rpma_device *rdev,
+int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
 		struct rpma_peer **peer);
 
 int rpma_peer_delete(struct rpma_peer **peer);
 
+/* memory description structures */
 
-/* connection config */
-struct rpma_conn_cfg;
-
-int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg);
-
-int rpma_conn_cfg_set_setup_timeout(struct rpma_conn_cfg *cfg, int timeout);
-
-int rpma_conn_cfg_set_op_timeout(struct rpma_conn_cfg *cfg, int timeout);
-
-int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg);
-
-
-/* connection */
-struct rpma_conn;
-
-int rpma_connect(struct rpma_peer *peer, struct rpma_conn_cfg *ccfg,
-		const char *addr, const char *service, struct rpma_conn **conn);
-
-int rpma_accept(struct rpma_peer *peer, struct rpma_conn_cfg *ccfg,
-		const char *addr, const char *service, struct rpma_conn **conn);
-
-int rpma_conn_set_app_context(struct rpma_conn *conn, void *data);
-
-int rpma_conn_get_app_context(struct rpma_conn *conn, void **data);
-
-#define RPMA_DISCONNECT_NOW		(0)
-#define RPMA_DISCONNECT_WHEN_DONE	(1 << 0)
-
-int rpma_disconnect(struct rpma_conn **conn, int flags);
-
-
-/* completion handling */
-#define RPMA_OP_READ	(1 << 0)
-#define RPMA_OP_WRITE	(1 << 1)
-#define RPMA_OP_COMMIT	(1 << 2)
-#define RPMA_OP_RECV	(1 << 3)
-
-int rpma_complete(struct rpma_conn *conn, int op_flags,
-		void **op_context);
-
-
-/* local memory region */
-struct rpma_memory;
+struct rpma_memory_local_handle;
+struct rpma_memory_remote_handle;
 
 #define RPMA_MR_READ_SRC	(1 << 0)
 #define RPMA_MR_READ_DST	(1 << 1)
-#define RPMA_MR_WRITE_SRC	(1 << 2)
-#define RPMA_MR_WRITE_DST	(1 << 3)
 
 int rpma_memory_new(struct rpma_peer *peer, void *ptr, size_t size,
-		int usage, struct rpma_memory **mem);
+		int usage, int plt, struct rpma_memory_local_handle **mem);
 
-int rpma_memory_get_ptr(struct rpma_memory *mem, void **ptr);
+int rpma_memory_delete(struct rpma_memory_local_handle **mem);
 
-int rpma_memory_get_size(struct rpma_memory *mem, size_t *size);
+/* connection */
 
-struct rpma_memory_id {
-	uint64_t data[4];
-};
+struct rpma_conn_cfg;
+struct rpma_conn;
 
-int rpma_memory_get_id(struct rpma_memory *mem,
-		struct rpma_memory_id *id);
+#define RPMA_CONNECTION_CLOSED	1
+#define RPMA_CONNECTION_LOST	2
 
-int rpma_memory_delete(struct rpma_memory **mem);
+int rpma_conn_get_status(struct rpma_conn *conn, int *conn_status);
 
+int rpma_conn_get_mem(struct rpma_conn *conn,
+	struct rpma_memory_remote_handle **mem);
 
-/* remote memory region */
-struct rpma_memory_remote;
+int rpma_disconnect(struct rpma_conn **conn);
 
-int rpma_memory_remote_new(struct rpma_peer *peer, struct rpma_memory_id *id,
-		struct rpma_memory_remote **rmem);
+/* server-side setup */
 
-int rpma_memory_remote_get_size(struct rpma_memory_remote *rmem, size_t *size);
+struct rpma_socket;
 
-int rpma_memory_remote_delete(struct rpma_memory_remote **rmem);
+int rpma_listen(struct rpma_peer *peer, const char *addr, const char *service,
+	struct rpma_socket **socket);
 
+#define RPMA_CONNECTION_REQUESTED	1
+#define RPMA_CONNECTION_ESTABLISHED	2
 
-/* remote memory access commands */
-#define RPMA_NO_COMPLETION	(0)
-#define RPMA_WITH_COMPLETION	(1 << 0)
+int rpma_socket_read(struct rpma_socket *socket, struct rpma_conn **conn,
+	int *conn_status);
 
-int rpma_read(struct rpma_conn *conn,
-		struct rpma_memory *dst, size_t dst_off,
-		struct rpma_memory_remote *src, size_t src_off, size_t length,
-		void *op_context, int op_flags);
+int rpma_accept(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
+	struct rpma_memory_local_handle *mem);
 
-int rpma_write(struct rpma_conn *conn,
-		struct rpma_memory_remote *dst, size_t dst_off,
-		struct rpma_memory *src, size_t src_off, size_t length,
-		void *op_context, int op_flags);
+int rpma_socket_delete(struct rpma_socket **socket);
 
-int rpma_commit(struct rpma_conn *conn,
-		void *op_context, int op_flags);
+/* client-side setup */
 
+int rpma_conn_setup(struct rpma_peer *peer, const char *addr,
+	const char *service, struct rpma_conn **conn);
+
+int rpma_connect(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
+	struct rpma_memory_local_handle *mem);
+
+/* remote memory access functions */
+
+int rpma_read(struct rpma_conn *conn, void *op_context,
+	struct rpma_memory_local_handle *dst, size_t dst_offset,
+	struct rpma_memory_remote_handle *src,  size_t src_offset,
+	size_t len, int flags);
+
+/* completion handling */
+
+#define RPMA_OP_READ	(1 << 3)
+
+int rpma_next_completion(struct rpma_conn *conn, void **op_context, int *op,
+	int *status);
 
 /* error handling */
+
 const char *rpma_errormsg(void);
 
 #endif /* LIBRPMA_H */
