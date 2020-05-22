@@ -49,6 +49,8 @@ function(add_example name)
 	target_link_libraries(example-${name} ${LIBRPMA_LIBRARIES})
 endfunction()
 
-add_example(template-example template-example/template-example.c)
+add_example(template template-example/template-example.c)
+add_example(connection-server connection/connection-server.c)
+add_example(connection-client connection/connection-client.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
