@@ -1,0 +1,7 @@
+- tag: master
+  libs:
+    librpma
+
+  func:
+    librpma:
+        XXX.3
