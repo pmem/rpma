@@ -93,6 +93,35 @@ rpma_conn_delete(struct rpma_conn **conn)
 }
 
 /*
+ * rpma_conn_req_new -- XXX
+ */
+int
+rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
+		struct rpma_conn_req **req)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_conn_req_delete -- XXX
+ */
+int
+rpma_conn_req_delete(struct rpma_conn_req **req)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_conn_req_connect -- XXX
+ */
+int
+rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
+	struct rpma_mr_local *mr, struct rpma_conn **conn)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
  * rpma_ep_listen -- XXX
  */
 int
@@ -112,40 +141,10 @@ rpma_ep_shutdown(struct rpma_ep **ep)
 }
 
 /*
- * rpma_ep_next_event -- XXX
+ * rpma_ep_next_conn_req -- XXX
  */
 int
-rpma_ep_next_event(struct rpma_ep *ep, struct rpma_ep_event *event)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_accept -- XXX
- */
-int
-rpma_conn_accept(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
-		struct rpma_mr_local *mr)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_new -- XXX
- */
-int
-rpma_conn_new(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_conn **conn)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_connect -- XXX
- */
-int
-rpma_conn_connect(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
-	struct rpma_mr_local *mr)
+rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 {
 	return RPMA_E_NOSUPP;
 }
