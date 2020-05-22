@@ -69,6 +69,7 @@ struct rpma_conn_cfg;
 struct rpma_conn;
 
 enum rpma_conn_event {
+	RPMA_CONN_ESTABLISHED,
 	RPMA_CONN_CLOSED,
 	RPMA_CONN_LOST
 };
@@ -115,7 +116,7 @@ enum rpma_inconn_status {
 
 struct rpma_ep_event {
 	struct rpma_conn *conn;
-	enum rpma_inconn_status *status;
+	enum rpma_inconn_status status;
 };
 
 /** 3
