@@ -1,0 +1,7 @@
+.*
+!.gitignore
+!.gitattributes
+
+*.swp
+_site
+Gemfile.lock
