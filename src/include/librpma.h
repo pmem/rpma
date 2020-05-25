@@ -65,10 +65,10 @@ int rpma_mr_dereg(struct rpma_mr_local **mr);
 
 /* connection */
 
-struct rpma_conn_cfg;
 struct rpma_conn;
 
 enum rpma_conn_event {
+	RPMA_CONN_ESTABLISHED,
 	RPMA_CONN_CLOSED,
 	RPMA_CONN_LOST
 };
@@ -94,6 +94,30 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  */
 int rpma_conn_delete(struct rpma_conn **conn);
 
+/* incoming / outgoing connection request */
+
+struct rpma_conn_cfg;
+struct rpma_conn_req;
+
+/** 3
+ * rpma_conn_req_new - create a new outgoing connection request object
+ */
+int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
+	const char *service, struct rpma_conn_req **req);
+
+/** 3
+ * rpma_conn_req_delete - delete the connection request both incoming and
+ * outgoing
+ */
+int rpma_conn_req_delete(struct rpma_conn_req **req);
+
+/** 3
+ * rpma_conn_req_connect - connect the connection request both incoming and
+ * outgoing
+ */
+int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
+	struct rpma_mr_local *mr, struct rpma_conn **conn);
+
 /* server-side setup */
 
 struct rpma_ep;
@@ -108,40 +132,10 @@ int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 
 int rpma_ep_shutdown(struct rpma_ep **ep);
 
-enum rpma_inconn_status {
-	RPMA_INCONN_REQUESTED,
-	RPMA_INCONN_ESTABLISHED
-};
-
-struct rpma_ep_event {
-	struct rpma_conn *conn;
-	enum rpma_inconn_status *status;
-};
-
 /** 3
- * rpma_ep_next_event - obtain a status change of the incoming connection
+ * rpma_ep_next_conn_req - obtain an incoming connection request
  */
-int rpma_ep_next_event(struct rpma_ep *ep, struct rpma_ep_event *event);
-
-/** 3
- * rpma_conn_accept - accept a connection request
- */
-int rpma_conn_accept(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
-	struct rpma_mr_local *mr);
-
-/* client-side setup */
-
-/** 3
- * rpma_conn_new - create a new connection object
- */
-int rpma_conn_new(struct rpma_peer *peer, const char *addr,
-	const char *service, struct rpma_conn **conn);
-
-/** 3
- * rpma_conn_connect - initialize establishing a new connection
- */
-int rpma_conn_connect(struct rpma_conn *conn, struct rpma_conn_cfg *ccfg,
-	struct rpma_mr_local *mr);
+int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
 /* remote memory access functions */
 
