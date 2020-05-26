@@ -13,7 +13,7 @@ set -e
 
 ./prepare-for-build.sh
 
-EXAMPLE_TEST_DIR="/tmp/build_example"
+EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 PREFIX=/usr
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
@@ -48,7 +48,7 @@ function compile_example_standalone() {
 	mkdir $EXAMPLE_TEST_DIR
 	cd $EXAMPLE_TEST_DIR
 
-	cmake $WORKDIR/examples/$1
+	cmake $1
 
 	# exit on error
 	if [[ $? != 0 ]]; then
@@ -57,22 +57,6 @@ function compile_example_standalone() {
 	fi
 
 	make -j$(nproc)
-	cd -
-}
-
-function run_example_standalone() {
-	cd $EXAMPLE_TEST_DIR
-
-	./$1 $2
-
-	# exit on error
-	if [[ $? != 0 ]]; then
-		cd -
-		return 1
-	fi
-
-	rm -f $2
-
 	cd -
 }
 
@@ -99,6 +83,19 @@ sudo_password -S make -j$(nproc) install
 if [ "$COVERAGE" == "1" ]; then
 	upload_codecov tests
 fi
+
+# Test standalone compilation of all examples
+EXAMPLES=$(ls -1 $WORKDIR/examples/)
+for e in $EXAMPLES; do
+	DIR=$WORKDIR/examples/$e
+	[ ! -d $DIR ] && continue
+	[ ! -f $DIR/CMakeLists.txt ] && continue
+	echo
+	echo "###########################################################"
+	echo "### Testing standalone compilation of example: $e"
+	echo "###########################################################"
+	compile_example_standalone $DIR
+done
 
 # Uninstall libraries
 cd $WORKDIR/build
