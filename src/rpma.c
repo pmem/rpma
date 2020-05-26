@@ -19,25 +19,6 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 }
 
 /*
- * rpma_mr_reg -- XXX
- */
-int
-rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage, int plt,
-		struct rpma_mr_local **mr)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_mr_dereg -- XXX
- */
-int
-rpma_mr_dereg(struct rpma_mr_local **mr)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
  * rpma_conn_next_event -- XXX
  */
 int
