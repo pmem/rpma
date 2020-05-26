@@ -27,6 +27,8 @@
 #define RPMA_E_UNKNOWN			(-100000)
 #define RPMA_E_NOSUPP			(-100001)
 #define RPMA_E_PROVIDER			(-100002)
+#define RPMA_E_NOMEM			(-100003)
+#define RPMA_E_INVAL			(-100004)
 
 /* picking up an RDMA-capable device */
 
