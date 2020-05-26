@@ -28,12 +28,3 @@ __attribute__((destructor)) static void
 librpma_fini(void)
 {
 }
-
-/*
- * rpma_errormsg -- return last error message
- */
-const char *
-rpma_errormsg(void)
-{
-	return "";
-}
