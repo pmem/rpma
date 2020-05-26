@@ -20,5 +20,5 @@ link_directories(${LIBRPMA_LIBRARY_DIRS})
 
 add_executable(template-example template-example.c)
 target_include_directories(template-example PUBLIC ${LIBRPMA_INCLUDE_DIRS} .)
-target_link_libraries(template-example ${LIBRPMA_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(template-example rpma ${CMAKE_THREAD_LIBS_INIT})
 
