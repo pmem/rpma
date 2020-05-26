@@ -20,7 +20,7 @@ function(add_example name)
 	set(srcs ${ARGN})
 	add_executable(example-${name} ${srcs})
 	target_include_directories(example-${name} PUBLIC ${LIBRPMA_INCLUDE_DIRS})
-	target_link_libraries(example-${name} ${LIBRPMA_LIBRARIES})
+	target_link_libraries(example-${name} rpma)
 endfunction()
 
 add_example(connection-server connection-server.c)
