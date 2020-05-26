@@ -26,6 +26,7 @@
 
 #define RPMA_E_UNKNOWN			(-100000)
 #define RPMA_E_NOSUPP			(-100001)
+#define RPMA_E_PROVIDER			(-100002)
 
 /* picking up an RDMA-capable device */
 
@@ -169,8 +170,13 @@ int rpma_conn_next_completion(struct rpma_conn *conn,
 /* error handling */
 
 /** 3
- * rpma_errormsg - return the last error message
+ * rpma_err_get_provider_error - return the last provider error
  */
-const char *rpma_errormsg(void);
+int rpma_err_get_provider_error(void);
+
+/** 3
+ * rpma_err_get_msg - return the last error message
+ */
+const char *rpma_err_get_msg(void);
 
 #endif /* LIBRPMA_H */
