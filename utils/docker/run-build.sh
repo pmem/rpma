@@ -11,6 +11,11 @@
 
 set -e
 
+if [ "$WORKDIR" == "" ]; then
+	echo "Error: WORKDIR is not set"
+	exit 1
+fi
+
 ./prepare-for-build.sh
 
 EXAMPLE_TEST_DIR="/tmp/build_example"
@@ -81,7 +86,7 @@ echo "##############################################################"
 echo "### Verify build and install (in dir: ${PREFIX})"
 echo "##############################################################"
 
-mkdir $WORKDIR/build
+mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
