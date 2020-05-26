@@ -1,7 +1,7 @@
 .*
 !.gitignore
 !.gitattributes
-
+build/
 *.swp
 _site
 Gemfile.lock
