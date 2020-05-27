@@ -7,8 +7,23 @@
  * template-test.c -- a template test
  */
 
+#include "cmocka_headers.h"
+
+/*
+ * template_test - test case that does nothing and succeeds
+ */
+static void
+template_test(void **state)
+{
+	(void) state; /* unused */
+}
+
 int
 main(int argc, char *argv[])
 {
-	return 0;
+	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(template_test)
+	};
+
+	return cmocka_run_group_tests(tests, NULL, NULL);
 }
