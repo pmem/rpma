@@ -16,7 +16,6 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Additional parameters to build docker without building components
 ARG SKIP_VALGRIND_BUILD
-ARG SKIP_PMDK_BUILD
 
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
@@ -32,16 +31,17 @@ ENV BASE_DEPS "\
 
 # Valgrind deps
 ENV VALGRIND_DEPS "\
+	devscripts \
 	autoconf \
 	automake"
 
 # PMDK deps
 ENV PMDK_DEPS "\
 	debhelper \
-	devscripts \
-	libdaxctl-dev \
+ 	devscripts \
+ 	libdaxctl-dev \
 	libndctl-dev \
-	pandoc"
+ 	pandoc"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -57,7 +57,6 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
-	$PMDK_DEPS \
 	$RPMA_DEPS \
 	$VALGRIND_DEPS \
 && rm -rf /var/lib/apt/lists/*
@@ -65,10 +64,6 @@ RUN apt-get install -y --no-install-recommends \
 # Install valgrind
 COPY install-valgrind.sh install-valgrind.sh
 RUN ./install-valgrind.sh
-
-# Install pmdk
-COPY install-pmdk.sh install-pmdk.sh
-RUN ./install-pmdk.sh dpkg
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh

@@ -14,7 +14,6 @@ MAINTAINER tomasz.gromadzki@intel.com
 
 # Additional parameters to build docker without building components
 ARG SKIP_VALGRIND_BUILD
-ARG SKIP_PMDK_BUILD
 
 # Update all packages
 RUN dnf update -y
@@ -29,6 +28,7 @@ ENV BASE_DEPS "\
 
 # Valgrind deps
 ENV VALGRIND_DEPS "\
+	rpmdevtools \
 	autoconf \
 	automake"
 
@@ -55,7 +55,6 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
-	$PMDK_DEPS \
 	$RPMA_DEPS \
 	$VALGRIND_DEPS \
 && dnf clean all
@@ -63,10 +62,6 @@ RUN dnf install -y \
 # Install valgrind
 COPY install-valgrind.sh install-valgrind.sh
 RUN ./install-valgrind.sh
-
-# Install pmdk
-COPY install-pmdk.sh install-pmdk.sh
-RUN ./install-pmdk.sh rpm
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh

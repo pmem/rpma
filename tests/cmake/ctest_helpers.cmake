@@ -20,8 +20,8 @@ if(TRACE_TESTS)
 	set(GLOBAL_TEST_ARGS ${GLOBAL_TEST_ARGS} --trace-expand)
 endif()
 
-set(INCLUDE_DIRS ${LIBPMEM2_INCLUDE_DIRS} .. .)
-set(LIBS_DIRS ${LIBPMEM2_LIBRARY_DIRS})
+set(INCLUDE_DIRS .. .)
+
 
 include_directories(${INCLUDE_DIRS})
 link_directories(${LIBS_DIRS})
