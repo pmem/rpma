@@ -46,3 +46,6 @@ endif()
 
 build_test(template-test template-test/template-test.c)
 add_test_generic(NAME template-test CASE 0 TRACERS none)
+
+build_test(peer peer/peer-test.c)
+add_test_generic(NAME peer-test CASE 0 TRACERS none)
