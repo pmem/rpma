@@ -43,7 +43,7 @@ function(find_packages)
 	pkg_check_modules(LIBUNWIND QUIET libunwind)
 
 	if(NOT LIBUNWIND_FOUND)
-		message(WARNING "libunwind not found. Stack traces from tests will not be reliable")
+		message(WARNING "libunwind-dev/devel not found. Stack traces from tests will not be reliable")
 	endif()
 
 	if(TESTS_USE_VALGRIND AND NOT VALGRIND_FOUND)
