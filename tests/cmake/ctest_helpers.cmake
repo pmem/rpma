@@ -75,7 +75,11 @@ function(build_test name)
 	add_check_whitespace(tests-${name} ${srcs})
 
 	add_executable(${name} ${srcs})
-	target_link_libraries(${name} rpma cmocka test_backtrace)
+	target_include_directories(${name} PRIVATE
+		${LIBRPMA_LIBRARY_DIRS}
+		${LIBRPMA_INCLUDE_DIRS}
+		)
+	target_link_libraries(${name} cmocka test_backtrace)
 	if(LIBUNWIND_FOUND)
 		target_link_libraries(${name} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
 	endif()
