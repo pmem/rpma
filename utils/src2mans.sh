@@ -25,7 +25,7 @@ do
 
 	src2man -r RPMA -v "RPMA Programmer's Manual" ${man} > $output 2>&1
 	# gawk 5.0.1 does not recognize expressions \;|\,|\o  as regex operator
-	sed -i -r "/[warning: ]regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $output
+	sed -i -r "/warning: regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $output
 	# remove empty lines
 	sed -i '/^$/d' $output
 
