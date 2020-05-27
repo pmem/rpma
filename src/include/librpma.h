@@ -32,6 +32,13 @@
 
 /** 3
  * rpma_utils_get_ibv_context - obtain an RDMA device context by IP address
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_utils_get_ibv_context(const char *addr,
+ *	struct ibv_context **dev);
  */
 int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
 
@@ -41,11 +48,27 @@ struct rpma_peer_cfg;
 struct rpma_peer;
 
 /** 3
- * rpma_peer_new, rpma_peer_delete - create and delete a peer object
+ * rpma_peer_new - create a peer object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
+ *	struct rpma_peer **peer);
  */
 int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
 		struct rpma_peer **peer);
 
+/** 3
+ * rpma_peer_delete - delete a peer object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_delete(struct rpma_peer **peer);
+ */
 int rpma_peer_delete(struct rpma_peer **peer);
 
 /* memory description structures */
@@ -57,11 +80,27 @@ struct rpma_mr_remote;
 #define RPMA_MR_USAGE_READ_DST	(1 << 1)
 
 /** 3
- * rpma_mr_reg, rpma_mr_dereg - create and delete a local memory handle object
+ * rpma_mr_reg - create a local memory handle object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
+ *	int usage, int plt, struct rpma_mr_local **mr);
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
 		int usage, int plt, struct rpma_mr_local **mr);
 
+/** 3
+ * rpma_mr_dereg - delete a local memory handle object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_dereg(struct rpma_mr_local **mr);
+ */
 int rpma_mr_dereg(struct rpma_mr_local **mr);
 
 /* connection */
@@ -76,22 +115,51 @@ enum rpma_conn_event {
 
 /** 3
  * rpma_conn_next_event - obtain a connection status
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_next_event(struct rpma_conn *conn,
+ *	enum rpma_conn_event *event);
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
 /** 3
- * rpma_conn_get_mr - obtain a remote handle to the memory given by the other
- * side of the connection
+ * rpma_conn_get_mr - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_get_mr(struct rpma_conn *conn,
+ *	struct rpma_mr_remote **mr);
+ *
+ * DESCRIPTION
+ * Obtain a remote handle to the memory given by the other
+ * side of the connection.
  */
 int rpma_conn_get_mr(struct rpma_conn *conn, struct rpma_mr_remote **mr);
 
 /** 3
  * rpma_conn_disconnect - initialize disconnection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_disconnect(struct rpma_conn *conn);
  */
 int rpma_conn_disconnect(struct rpma_conn *conn);
 
 /** 3
  * rpma_conn_delete - delete already closed connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_delete(struct rpma_conn **conn);
  */
 int rpma_conn_delete(struct rpma_conn **conn);
 
@@ -102,19 +170,46 @@ struct rpma_conn_req;
 
 /** 3
  * rpma_conn_req_new - create a new outgoing connection request object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
+ *	const char *service, struct rpma_conn_req **req);
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 	const char *service, struct rpma_conn_req **req);
 
 /** 3
- * rpma_conn_req_delete - delete the connection request both incoming and
- * outgoing
+ * rpma_conn_req_delete - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_req_delete(struct rpma_conn_req **req);
+ *
+ * DESCRIPTION
+ * Delete the connection request both incoming and
+ * outgoing.
  */
 int rpma_conn_req_delete(struct rpma_conn_req **req);
 
 /** 3
- * rpma_conn_req_connect - connect the connection request both incoming and
- * outgoing
+ * rpma_conn_req_connect - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_req_connect(struct rpma_conn_req *req,
+ *	struct rpma_conn_cfg *ccfg, struct rpma_mr_local *mr,
+ *	struct rpma_conn **conn);
+ *
+ * DESCRIPTION
+ * Connect the connection request both incoming and
+ * outgoing.
  */
 int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
 	struct rpma_mr_local *mr, struct rpma_conn **conn);
@@ -124,25 +219,62 @@ int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
 struct rpma_ep;
 
 /** 3
- * rpma_ep_listen, rpma_ep_shutdown - create an endpoint and initialize
- * listening for the incoming connections / stop listening and delete an
- * endpoint
+ * rpma_ep_listen - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
+ *	const char *service, struct rpma_ep **ep);
+ *
+ * DESCRIPTION
+ * Create an endpoint and initialize listening
+ * for the incoming connections.
  */
 int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 	const char *service, struct rpma_ep **ep);
 
+/** 3
+ * rpma_ep_shutdown - stop listening and delete an endpoint
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_ep_shutdown(struct rpma_ep **ep);
+ */
 int rpma_ep_shutdown(struct rpma_ep **ep);
 
 /** 3
  * rpma_ep_next_conn_req - obtain an incoming connection request
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_ep_next_conn_req(struct rpma_ep *ep,
+ *	struct rpma_conn_req **req);
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
 /* remote memory access functions */
 
 /** 3
- * rpma_read - initialize a read operation (transferring data from
- * the remote memory to the local memory)
+ * rpma_read - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_read(struct rpma_conn *conn, void *op_context,
+ *	struct rpma_mr_local *dst, size_t dst_offset,
+ *	struct rpma_mr_remote *src,  size_t src_offset,
+ *	size_t len, int flags);
+ *
+ * DESCRIPTION
+ * Initialize a read operation (transferring data from
+ * the remote memory to the local memory).
  */
 int rpma_read(struct rpma_conn *conn, void *op_context,
 	struct rpma_mr_local *dst, size_t dst_offset,
@@ -163,6 +295,13 @@ struct rpma_completion {
 
 /** 3
  * rpma_conn_next_completion - obtain an operation completion
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_next_completion(struct rpma_conn *conn,
+ *	struct rpma_completion *cmpl);
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
 	struct rpma_completion *cmpl);
@@ -171,6 +310,12 @@ int rpma_conn_next_completion(struct rpma_conn *conn,
 
 /** 3
  * rpma_err_get_provider_error - return the last provider error
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_err_get_provider_error(void);
  */
 int rpma_err_get_provider_error(void);
 
