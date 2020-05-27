@@ -74,6 +74,10 @@ RUN ./install-pmdk.sh dpkg
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
 
+# Patch src2man
+COPY patch-src2man.sh patch-src2man.sh
+RUN ./patch-src2man.sh
+
 # Add user
 ENV USER user
 ENV USERPASS pass
