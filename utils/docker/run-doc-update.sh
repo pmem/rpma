@@ -40,7 +40,7 @@ cd build
 
 cmake -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF ..
 make -j$(nproc) doc
-cp -R doc/c_html ../..
+cp -R doc/html ../..
 
 cd ..
 
@@ -53,7 +53,7 @@ git clean -dfx
 rm -r ./$VERSION
 mkdir ./$VERSION
 
-cp -r ../c_html/* ./$VERSION/doxygen/
+cp -r ../html/* ./$VERSION/
 
 # Add and push changes.
 # git commit command may fail if there is nothing to commit.
