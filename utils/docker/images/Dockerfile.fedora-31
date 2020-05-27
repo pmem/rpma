@@ -67,6 +67,10 @@ RUN ./install-valgrind.sh
 COPY install-pmdk.sh install-pmdk.sh
 RUN ./install-pmdk.sh rpm
 
+# Install cmocka
+COPY install-cmocka.sh install-cmocka.sh
+RUN ./install-cmocka.sh
+
 # Add user
 ENV USER user
 ENV USERPASS pass
