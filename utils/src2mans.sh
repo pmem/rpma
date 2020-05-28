@@ -17,39 +17,29 @@ fi
 
 mkdir -p html
 
-find $DIR -name '*.h' -print0 | while read -d $'\0' man
+find $DIR -name '*.h' -print0 | while read -d $'\0' MAN
 do
-	errors="$(mktemp)"
-	output="$(mktemp)"
-	files="$(mktemp)"
+	MANUALS="$(mktemp)"
+	ERRORS="$(mktemp)"
 
-	src2man -r RPMA -v "RPMA Programmer's Manual" ${man} > $output 2>&1
+	src2man -r RPMA -v "RPMA Programmer's Manual" $MAN > $MANUALS 2> $ERRORS
 	# gawk 5.0.1 does not recognize expressions \;|\,|\o  as regex operator
-	sed -i -r "/warning: regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $output
+	sed -i -r "/warning: regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $ERRORS
 	# remove empty lines
-	sed -i '/^$/d' $output
+	sed -i '/^$/d' $ERRORS
 
-	cat $output | while read line
-	do
-		if [[ -f "${line}" ]]; then
-			echo ${line} >> $files
-		else
-			echo ${line} >> $errors
-		fi
-	done
-
-	if [[ -s "$errors" ]]; then
-		echo "src2man: errors found in the \"$man\" file:"
-		cat $errors
+	if [[ -s "$ERRORS" ]]; then
+		echo "src2man: errors found in the \"$MAN\" file:"
+		cat $ERRORS
 		exit 1
 	fi
 
-	for f in $(cat $files | xargs); do
+	for f in $(cat $MANUALS | xargs); do
 		# get rid of a FILE section (last two lines of the file)
 		mv $f $f.tmp
 		head -n -2 $f.tmp > $f
 		rm $f.tmp
 		cat $f | groff -mandoc -Thtml > html/$f.html
 	done
-	rm $errors $output $files
+	rm $MANUALS $ERRORS
 done
