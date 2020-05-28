@@ -23,20 +23,11 @@ do
 	output="$(mktemp)"
 	files="$(mktemp)"
 
-	src2man -r RPMA -v "RPMA Programmer's Manual" ${man} > $output 2>&1
+	src2man -r RPMA -v "RPMA Programmer's Manual" ${man} > $output 2> $errors
 	# gawk 5.0.1 does not recognize expressions \;|\,|\o  as regex operator
-	sed -i -r "/warning: regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $output
+	sed -i -r "/warning: regexp escape sequence \`[\][;,o]' is not a known regexp operator/d" $errors
 	# remove empty lines
-	sed -i '/^$/d' $output
-
-	cat $output | while read line
-	do
-		if [[ -f "${line}" ]]; then
-			echo ${line} >> $files
-		else
-			echo ${line} >> $errors
-		fi
-	done
+	sed -i '/^$/d' $errors
 
 	if [[ -s "$errors" ]]; then
 		echo "src2man: errors found in the \"$man\" file:"
@@ -44,7 +35,7 @@ do
 		exit 1
 	fi
 
-	for f in $(cat $files | xargs); do
+	for f in $(cat $output | xargs); do
 		# get rid of a FILE section (last two lines of the file)
 		mv $f $f.tmp
 		head -n -2 $f.tmp > $f
