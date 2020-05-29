@@ -41,6 +41,24 @@
  *
  *	int rpma_utils_get_ibv_context(const char *addr,
  *		struct ibv_context **dev);
+ *
+ * DESCRIPTION
+ * rpma_utils_get_ibv_context() obtains an RDMA device context
+ * by the given IP address using the TCP RDMA port space (RDMA_PS_TCP)
+ * - reliable, connection-oriented and message based QP communication.
+ *
+ * RETURN VALUE
+ * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
+ * error code on failure. rpma_utils_get_ibv_context() does not set *dev value
+ * on failure.
+ *
+ * ERRORS
+ * rpma_utils_get_ibv_context() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - addr or dev is NULL
+ * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id()
+ *       or rdma_bind_addr() failed, errno can be checked using
+ *       rpma_err_get_provider_error()
  */
 int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
 
