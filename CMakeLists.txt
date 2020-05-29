@@ -129,7 +129,19 @@ add_dependencies(check-whitespace check-whitespace-main)
 
 add_custom_target(tests)
 
+add_flag(-Wpointer-arith)
+add_flag(-Wunused-macros)
+add_flag(-Wsign-conversion)
+add_flag(-Wsign-compare)
+add_flag(-Wunreachable-code-return)
+add_flag(-Wmissing-variable-declarations)
+add_flag(-fno-common)
+add_flag(-ggdb DEBUG)
+# add_flag(-DDEBUG DEBUG) # XXX uncomment it when out.c is added
+add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
+
 if(DEVELOPER_MODE)
+	add_flag(-Wall)
 	add_flag(-Werror)
 
 	if(CHECK_CSTYLE)

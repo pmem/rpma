@@ -13,18 +13,6 @@ add_check_whitespace(tests-cmake
 	${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 add_flag(-Wall)
-add_flag(-Wpointer-arith)
-add_flag(-Wunused-macros)
-add_flag(-Wsign-conversion)
-add_flag(-Wsign-compare)
-add_flag(-Wunreachable-code-return)
-add_flag(-Wmissing-variable-declarations)
-add_flag(-fno-common)
-
-add_flag(-ggdb DEBUG)
-add_flag(-DDEBUG DEBUG)
-
-add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
 if(USE_ASAN)
        add_sanitizer_flag(address)
