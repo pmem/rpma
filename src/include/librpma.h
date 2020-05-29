@@ -27,6 +27,8 @@
 #define RPMA_E_UNKNOWN			(-100000)
 #define RPMA_E_NOSUPP			(-100001)
 #define RPMA_E_PROVIDER			(-100002)
+#define RPMA_E_NOMEM			(-100003)
+#define RPMA_E_INVAL			(-100004)
 
 /* picking up an RDMA-capable device */
 
@@ -44,7 +46,6 @@ int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
 
 /* peer */
 
-struct rpma_peer_cfg;
 struct rpma_peer;
 
 /** 3
@@ -56,9 +57,22 @@ struct rpma_peer;
  *
  *	int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
  *		struct rpma_peer **peer);
+ *
+ * RETURN VALUE
+ * The rpma_peer_new() function returns 0 on success or a negative error code
+ * on failure. rpma_peer_new() does set *peer to NULL on failure.
+ *
+ * ERRORS
+ * rpma_peer_new() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - ibv_ctx is NULL
+ * - RPMA_E_INVAL - **peer is NULL
+ * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
+ * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error other than ENOMEM.
+ * - RPMA_E_UNKNOWN - creating a verbs protection domain failed without error value.
+ * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
-		struct rpma_peer **peer);
+int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
 
 /** 3
  * rpma_peer_delete - delete a peer object
@@ -68,6 +82,15 @@ int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
  *	#include <librpma.h>
  *
  *	int rpma_peer_delete(struct rpma_peer **peer);
+ *
+ * RETURN VALUE
+ * The rpma_peer_delete() function returns 0 on success or a negative error code
+ * on failure. rpma_peer_delete() does not set *peer to NULL on failure.
+ *
+ * ERRORS
+ * rpma_peer_delete() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
  */
 int rpma_peer_delete(struct rpma_peer **peer);
 
