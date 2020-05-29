@@ -19,25 +19,6 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 }
 
 /*
- * rpma_peer_new -- XXX
- */
-int
-rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
-		struct rpma_peer **peer)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_peer_delete -- XXX
- */
-int
-rpma_peer_delete(struct rpma_peer **peer)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
  * rpma_mr_reg -- XXX
  */
 int
