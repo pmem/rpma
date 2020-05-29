@@ -39,3 +39,17 @@ add_check_whitespace(tests-all
 
 build_test_lib(template-test template-test/template-test.c)
 add_test_generic(NAME template-test CASE 0 TRACERS none)
+
+build_test_src(peer-test
+       peer-test/peer-test.c
+       ${LIBRPMA_SOURCE_DIR}/peer.c
+       ${LIBRPMA_SOURCE_DIR}rpma_err.c
+       ${LIBRPMA_SOURCE_DIR}/common/alloc.c
+       ${LIBRPMA_SOURCE_DIR}/common/out.c
+       ${LIBRPMA_SOURCE_DIR}/common/util.c)
+target_compile_definitions(peer-test
+       PRIVATE SRCVERSION="0.0")
+set_target_properties(peer-test
+       PROPERTIES
+       LINK_FLAGS "-Wl,--wrap=malloc")
+add_test_generic(NAME peer-test CASE 0 TRACERS none)
