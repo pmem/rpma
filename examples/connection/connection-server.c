@@ -38,7 +38,7 @@ main(int argc, char *argv[])
 	ret = rpma_utils_get_ibv_context(addr, &dev);
 	assert(ret == 0);
 
-	ret = rpma_peer_new(NULL, dev, &peer);
+	ret = rpma_peer_new(dev, &peer);
 	assert(ret == 0);
 
 	ret = rpma_ep_listen(peer, addr, service, &ep);
