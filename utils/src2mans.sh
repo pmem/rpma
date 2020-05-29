@@ -31,7 +31,6 @@ do
 	if [[ -s "$ERRORS" ]]; then
 		echo "src2man: errors found in the \"$MAN\" file:"
 		cat $ERRORS
-		exit 1
 	fi
 
 	for f in $(cat $MANUALS | xargs); do
