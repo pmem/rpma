@@ -131,7 +131,7 @@ add_flag(-Wunreachable-code-return)
 add_flag(-Wmissing-variable-declarations)
 add_flag(-fno-common)
 add_flag(-ggdb DEBUG)
-# add_flag(-DDEBUG DEBUG) # XXX uncomment it when out.c is added
+add_flag(-DDEBUG DEBUG)
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
 if(DEVELOPER_MODE)
