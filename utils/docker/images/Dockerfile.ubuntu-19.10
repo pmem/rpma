@@ -65,6 +65,11 @@ RUN ./install-cmocka.sh
 COPY patch-src2man.sh patch-src2man.sh
 RUN ./patch-src2man.sh
 
+# Patch txt2man
+COPY patch-txt2man.sh patch-txt2man.sh
+COPY txt2man.patch txt2man.patch
+RUN ./patch-txt2man.sh
+
 # Add user
 ENV USER user
 ENV USERPASS pass
