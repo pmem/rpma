@@ -10,7 +10,7 @@
 #
 
 if [ -z "$1" ]; then
-	# on Travis run this check only for pull requests
+	# on CI run this check only for pull requests
 	if [ -n "$CI_REPO_SLUG" ]; then
 		if [[ "$CI_REPO_SLUG" != "$GITHUB_REPO" \
 			|| $CI_EVENT_TYPE != "pull_request" ]];
@@ -19,17 +19,25 @@ if [ -z "$1" ]; then
 			exit 0
 		fi
 	fi
-
-	last_merge=$(git log --pretty="%cN:%H" | grep GitHub | head -n1 | cut -d: -f2)
-	range=${last_merge}..HEAD
+	# CI_COMMIT_RANGE can be invalid for force pushes - use another
+	# method to determine the list of commits
+	if [[ $(git rev-list $CI_COMMIT_RANGE 2>/dev/null) || -n "$CI_COMMIT_RANGE" ]]; then
+		MERGE_BASE=$(echo $CI_COMMIT_RANGE | cut -d. -f1)
+		[ -z $MERGE_BASE ] && \
+			MERGE_BASE=$(git log --pretty="%cN:%H" | grep GitHub | head -n1 | cut -d: -f2)
+		RANGE=$MERGE_BASE..$CI_COMMIT
+	else
+		MERGE_BASE=$(git log --pretty="%cN:%H" | grep GitHub | head -n1 | cut -d: -f2)
+		RANGE=$MERGE_BASE..HEAD
+	fi
 else
-	range="$1"
+	RANGE="$1"
 fi
 
-commits=$(git log --pretty=%H $range)
+COMMITS=$(git log --pretty=%H $RANGE)
 
 set -e
 
-for commit in $commits; do
+for commit in $COMMITS; do
 	`dirname $0`/check-commit.sh $commit
 done
