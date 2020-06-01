@@ -103,34 +103,6 @@ rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
 }
 
 /*
- * rpma_ep_listen -- XXX
- */
-int
-rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_ep **ep)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_ep_shutdown -- XXX
- */
-int
-rpma_ep_shutdown(struct rpma_ep **ep)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_ep_next_conn_req -- XXX
- */
-int
-rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
  * rpma_read -- XXX
  */
 int
