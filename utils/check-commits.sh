@@ -9,6 +9,8 @@
 # usage: ./check-commits.sh [range]
 #
 
+set -x
+
 if [ -z "$1" ]; then
 	# on Travis run this check only for pull requests
 	if [ -n "$CI_REPO_SLUG" ]; then
