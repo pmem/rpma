@@ -32,5 +32,10 @@ if(LIBUNWIND_FOUND)
 	target_compile_definitions(test_backtrace PUBLIC USE_LIBUNWIND=1)
 endif()
 
-build_test(template-test template-test/template-test.c)
+add_cstyle(tests-all
+       ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
+add_check_whitespace(tests-all
+       ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
+
+build_test_lib(template-test template-test/template-test.c)
 add_test_generic(NAME template-test CASE 0 TRACERS none)
