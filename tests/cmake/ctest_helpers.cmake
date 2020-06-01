@@ -57,24 +57,37 @@ endfunction()
 
 # Function to build test with custom build options (e.g. passing defines)
 # Example: build_test_ext(NAME ... SRC_FILES ....c BUILD_OPTIONS -D...)
-function(build_test_ext)
+function(build_test_lib_ext)
 	set(oneValueArgs NAME)
 	set(multiValueArgs SRC_FILES BUILD_OPTIONS)
 	cmake_parse_arguments(TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	build_test(${TEST_NAME} ${TEST_SRC_FILES})
+	build_test_lib(${TEST_NAME} ${TEST_SRC_FILES})
 	target_compile_definitions(${TEST_NAME} PRIVATE ${TEST_BUILD_OPTIONS})
 endfunction()
 
-function(build_test name)
+function(build_test_lib name)
 	set(srcs ${ARGN})
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 
-	add_cstyle(tests-${name} ${srcs})
-	add_check_whitespace(tests-${name} ${srcs})
-
 	add_executable(${name} ${srcs})
 	target_link_libraries(${name} rpma cmocka test_backtrace)
+	if(LIBUNWIND_FOUND)
+		target_link_libraries(${name} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
+	endif()
+
+	add_dependencies(tests ${name})
+endfunction()
+
+function(build_test_src name)
+	set(srcs ${ARGN})
+
+	add_executable(${name} ${srcs})
+	target_include_directories(${name} PRIVATE
+		${LIBRPMA_INCLUDE_DIRS}
+		${LIBRPMA_SOURCE_DIR})
+	# do not link with the library
+	target_link_libraries(${name} cmocka test_backtrace)
 	if(LIBUNWIND_FOUND)
 		target_link_libraries(${name} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
 	endif()
