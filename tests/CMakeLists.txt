@@ -32,6 +32,17 @@ if(LIBUNWIND_FOUND)
 	target_compile_definitions(test_backtrace PUBLIC USE_LIBUNWIND=1)
 endif()
 
+add_library(test_rpma_utils OBJECT
+       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
+       ${LIBRPMA_SOURCE_DIR}/common/out.c
+       ${LIBRPMA_SOURCE_DIR}/common/util.c)
+target_include_directories(test_rpma_utils PRIVATE
+       ${LIBRPMA_INCLUDE_DIRS}
+       ${LIBRPMA_SOURCE_DIR})
+target_compile_definitions(test_rpma_utils
+       PUBLIC TEST_MOCK_ALLOC
+       PRIVATE SRCVERSION="0.0")
+
 add_cstyle(tests-all
        ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
 add_check_whitespace(tests-all
@@ -40,15 +51,19 @@ add_check_whitespace(tests-all
 build_test_lib(template-test template-test/template-test.c)
 add_test_generic(NAME template-test CASE 0 TRACERS none)
 
+build_test_src(info-test
+       info-test/info-test.c
+       ${LIBRPMA_SOURCE_DIR}/info.c)
+target_link_libraries(info-test test_rpma_utils)
+set_target_properties(info-test
+       PROPERTIES
+       LINK_FLAGS "-Wl,--wrap=_test_malloc")
+add_test_generic(NAME info-test CASE 0 TRACERS none)
+
 build_test_src(peer-test
        peer-test/peer-test.c
-       ${LIBRPMA_SOURCE_DIR}/peer.c
-       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
-       ${LIBRPMA_SOURCE_DIR}/common/out.c
-       ${LIBRPMA_SOURCE_DIR}/common/util.c)
-target_compile_definitions(peer-test
-       PRIVATE TEST_MOCK_ALLOC
-       PRIVATE SRCVERSION="0.0")
+       ${LIBRPMA_SOURCE_DIR}/peer.c)
+target_link_libraries(peer-test test_rpma_utils)
 set_target_properties(peer-test
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
