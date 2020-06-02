@@ -13,6 +13,8 @@
 #include "rpma_err.h"
 #include "out.h"
 
+/* public librpma API */
+
 /*
  * rpma_utils_get_ibv_context -- obtain an RDMA device context by IP address
  */
@@ -81,71 +83,6 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage, int plt,
  */
 int
 rpma_mr_dereg(struct rpma_mr_local **mr)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_next_event -- XXX
- */
-int
-rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_get_mr -- XXX
- */
-int
-rpma_conn_get_mr(struct rpma_conn *conn, struct rpma_mr_remote **mr)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_disconnect -- XXX
- */
-int
-rpma_conn_disconnect(struct rpma_conn *conn)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_delete -- XXX
- */
-int
-rpma_conn_delete(struct rpma_conn **conn)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_req_new -- XXX
- */
-int
-rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_conn_req **req)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_req_delete -- XXX
- */
-int
-rpma_conn_req_delete(struct rpma_conn_req **req)
-{
-	return RPMA_E_NOSUPP;
-}
-
-/*
- * rpma_conn_req_connect -- XXX
- */
-int
-rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
-	struct rpma_mr_local *mr, struct rpma_conn **conn)
 {
 	return RPMA_E_NOSUPP;
 }
