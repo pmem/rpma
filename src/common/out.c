@@ -114,7 +114,7 @@ out_init(const char *log_prefix, const char *log_level_var,
 	}
 #endif	/* DEBUG */
 
-	char *log_alignment = getenv("PMDK_LOG_ALIGN");
+	char *log_alignment = getenv("RPMA_LOG_ALIGN");
 	if (log_alignment) {
 		int align = atoi(log_alignment);
 		if (align > 0)
