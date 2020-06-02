@@ -13,6 +13,8 @@
 
 int Rpma_provider_error = 0;
 
+/* public librpma API */
+
 /*
  * rpma_err_get_provider_error -- return the last provider error
  */
