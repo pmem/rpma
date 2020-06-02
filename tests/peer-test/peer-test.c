@@ -13,13 +13,13 @@
 
 #include <infiniband/verbs.h>
 
-#define MOCK_IBV_CTX	(struct ibv_context *)0x00C0
+#define MOCK_IBV_CTX		(struct ibv_context *)0x00C0
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
 
-#define NO_ERROR			0
+#define NO_ERROR		0
 
 struct ibv_alloc_pd_mock_args {
 	int validate_params;
