@@ -7,8 +7,9 @@
  * peer.c -- librpma peer-related implementations
  */
 
+#include <errno.h>
+
 #include "cmocka_alloc.h"
-#include "error.h"
 #include "rpma_err.h"
 #include "out.h"
 
