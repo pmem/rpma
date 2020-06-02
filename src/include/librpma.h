@@ -66,7 +66,7 @@ struct rpma_peer;
  * rpma_peer_new() can fail with the following errors:
  *
  * - RPMA_E_INVAL - ibv_ctx is NULL
- * - RPMA_E_INVAL - **peer is NULL
+ * - RPMA_E_INVAL - peer is NULL
  * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
  * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error
  *   other than ENOMEM.
