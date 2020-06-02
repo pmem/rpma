@@ -12,6 +12,11 @@
 
 #include <rdma/rdma_cma.h>
 
+#define RPMA_DEFAULT_TIMEOUT 1000 /* ms */
+
+struct rpma_conn_req;
+struct rpma_peer;
+
 int rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *event, struct rpma_conn_req **req);
 
