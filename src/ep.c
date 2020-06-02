@@ -16,7 +16,8 @@ struct rpma_ep {
 };
 
 /*
- * rpma_ep_listen -- XXX
+ * rpma_ep_listen -- XXX uses rdma_create_id, rpma_info_bind_addr,
+ * rdma_create_event_channel, rdma_migrate_id and rdma_listen
  */
 int
 rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
@@ -35,7 +36,8 @@ rpma_ep_shutdown(struct rpma_ep **ep)
 }
 
 /*
- * rpma_ep_next_conn_req -- XXX
+ * rpma_ep_next_conn_req -- XXX uses rdma_get_cm_event and
+ * rpma_conn_req_from_cm_event
  */
 int
 rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)

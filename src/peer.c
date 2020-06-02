@@ -13,6 +13,7 @@
 #include "out.h"
 
 #include "librpma.h"
+#include "peer.h"
 
 struct rpma_peer {
 	struct ibv_pd *pd;
@@ -91,4 +92,14 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	*peer_ptr = NULL;
 
 	return 0;
+}
+
+/*
+ * rpma_peer_create_qp -- XXX use pd from peer to create a qp for provided id
+ * using rdma_create_qp
+ */
+int
+rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id)
+{
+	return RPMA_E_NOSUPP;
 }
