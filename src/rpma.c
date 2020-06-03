@@ -7,15 +7,63 @@
  * rpma.c -- entry points for librpma
  */
 
+#include <rdma/rdma_cma.h>
+
 #include "librpma.h"
+#include "rpma_err.h"
+#include "out.h"
 
 /*
- * rpma_utils_get_ibv_context -- XXX
+ * rpma_utils_get_ibv_context -- obtain an RDMA device context by IP address
  */
 int
 rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 {
-	return RPMA_E_NOSUPP;
+	struct rdma_addrinfo *rai;
+	struct rdma_addrinfo hints;
+
+	if (addr == NULL || dev == NULL)
+		return RPMA_E_INVAL;
+
+	/* prepare hints for rdma_getaddrinfo() */
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags |= RAI_PASSIVE; /* XXX passive for now */
+	hints.ai_qp_type = IBV_QPT_RC;
+	hints.ai_port_space = RDMA_PS_TCP;
+
+	int ret = rdma_getaddrinfo(addr, NULL, &hints, &rai);
+	if (ret) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	struct rdma_cm_id *temp_id;
+	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
+	if (ret) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_create_id;
+	}
+
+	ASSERTeq(rai->ai_flags & RAI_PASSIVE, RAI_PASSIVE);
+
+	/* bind the address */
+	ret = rdma_bind_addr(temp_id, rai->ai_src_addr);
+	if (ret) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_bind_addr;
+	}
+
+	/* obtain the device */
+	*dev = temp_id->verbs;
+
+err_bind_addr:
+	(void) rdma_destroy_id(temp_id);
+
+err_create_id:
+	rdma_freeaddrinfo(rai);
+	return ret;
 }
 
 /*
