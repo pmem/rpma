@@ -17,6 +17,7 @@ set(SOURCES
 	ep.c
 	info.c
 	librpma.c
+	log.c
 	mr.c
 	peer.c
 	private_data.c
