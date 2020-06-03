@@ -12,6 +12,7 @@ add_check_whitespace(src
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 set(SOURCES
+	log.c
 	conn.c
 	conn_req.c
 	ep.c

@@ -34,6 +34,13 @@ LIBRPMA_1.0 {
 		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
 		rpma_write;
+		rpma_log_init;
+		rpma_log_fini;
+		rpma_log;
+		rpma_log_syslog_set_threshold;
+		rpma_log_stderr_set_threshold;
+		rpma_log_syslog_get_threshold;
+		rpma_log_stderr_get_threshold;
 	local:
 		*;
 };
