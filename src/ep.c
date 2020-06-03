@@ -7,9 +7,16 @@
  * ep.c -- librpma endpoint-related implementations
  */
 
+#include <errno.h>
+
+#include "cmocka_alloc.h"
+#include "info.h"
 #include "librpma.h"
+#include "rpma_err.h"
 
 struct rpma_ep {
+	/* parent peer object */
+	struct rpma_peer *peer;
 	/* CM ID dedicated to listening for incoming connections */
 	struct rdma_cm_id *id;
 	/* event channel of the CM ID */
@@ -19,23 +26,101 @@ struct rpma_ep {
 /* public librpma API */
 
 /*
- * rpma_ep_listen -- XXX uses rdma_create_id, rpma_info_bind_addr,
- * rdma_create_event_channel, rdma_migrate_id and rdma_listen
+ * rpma_ep_listen -- create a new event channel and a new CM ID attached to
+ * the event channel. Bind the CM ID to the provided addr:service pair.
+ * If everything succeeds a new endpoint is created encapsulating the event
+ * channel and the CM ID.
  */
 int
 rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_ep **ep)
+		struct rpma_ep **ep_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (peer == NULL || addr == NULL || service == NULL || ep_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rdma_event_channel *evch = NULL;
+	struct rdma_cm_id *id = NULL;
+	struct rpma_info *info = NULL;
+	struct rpma_ep *ep = NULL;
+	int ret = 0;
+
+	evch = rdma_create_event_channel();
+	if (evch == NULL) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_destroy_event_channel;
+	}
+
+	ret = rpma_info_new(addr, service, RPMA_INFO_PASSIVE, &info);
+	if (ret)
+		goto err_destroy_id;
+
+	ret = rpma_info_bind_addr(info, id);
+	if (ret)
+		goto err_info_delete;
+
+	if (rdma_listen(id, 0 /* backlog */)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_info_delete;
+	}
+
+	ep = Malloc(sizeof(*ep));
+	if (ep == NULL) {
+		/* according to malloc(3) it can fail only with ENOMEM */
+		ret = RPMA_E_NOMEM;
+		goto err_info_delete;
+	}
+
+	ep->peer = peer;
+	ep->evch = evch;
+	ep->id = id;
+	*ep_ptr = ep;
+
+	/* an error at this step should not affect the final result */
+	(void) rpma_info_delete(&info);
+
+	return ret;
+
+err_info_delete:
+	(void) rpma_info_delete(&info);
+err_destroy_id:
+	(void) rdma_destroy_id(id);
+err_destroy_event_channel:
+	rdma_destroy_event_channel(evch);
+	return ret;
 }
 
 /*
- * rpma_ep_shutdown -- XXX
+ * rpma_ep_shutdown -- destroy the encapsulated CM ID and event channel.
+ * When done delete the endpoint.
  */
 int
-rpma_ep_shutdown(struct rpma_ep **ep)
+rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (ep_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rpma_ep *ep = *ep_ptr;
+	if (ep == NULL)
+		return 0;
+
+	if (rdma_destroy_id(ep->id)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	rdma_destroy_event_channel(ep->evch);
+
+	Free(ep);
+	*ep_ptr = NULL;
+
+	return 0;
 }
 
 /*
