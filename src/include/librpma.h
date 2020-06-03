@@ -56,9 +56,9 @@
  * rpma_utils_get_ibv_context() can fail with the following errors:
  *
  * - RPMA_E_INVAL - addr or dev is NULL
- * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id()
- *       or rdma_bind_addr() failed, errno can be checked using
- *       rpma_err_get_provider_error()
+ * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(),
+ *       rdma_bind_addr() or rdma_resolve_addr() failed, errno can be checked
+ *       using rpma_err_get_provider_error()
  */
 int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
 

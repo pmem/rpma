@@ -13,6 +13,12 @@
 #include "rpma_err.h"
 #include "out.h"
 
+/*
+ * Time (in ms) to wait for address resolution to complete.
+ * It is used in rdma_resolve_addr().
+ */
+#define RPMA_DEFAULT_TIMEOUT 1000 /* 1000 ms == 1 second */
+
 /* public librpma API */
 
 /*
@@ -29,14 +35,18 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 
 	/* prepare hints for rdma_getaddrinfo() */
 	memset(&hints, 0, sizeof(hints));
-	hints.ai_flags |= RAI_PASSIVE; /* XXX passive for now */
+	hints.ai_flags |= RAI_PASSIVE; /* first try passive */
 	hints.ai_qp_type = IBV_QPT_RC;
 	hints.ai_port_space = RDMA_PS_TCP;
 
 	int ret = rdma_getaddrinfo(addr, NULL, &hints, &rai);
 	if (ret) {
-		Rpma_provider_error = errno;
-		return RPMA_E_PROVIDER;
+		hints.ai_flags = 0; /* next try active */
+		ret = rdma_getaddrinfo(addr, NULL, &hints, &rai);
+		if (ret) {
+			Rpma_provider_error = errno;
+			return RPMA_E_PROVIDER;
+		}
 	}
 
 	struct rdma_cm_id *temp_id;
@@ -47,20 +57,30 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 		goto err_create_id;
 	}
 
-	ASSERTeq(rai->ai_flags & RAI_PASSIVE, RAI_PASSIVE);
-
-	/* bind the address */
-	ret = rdma_bind_addr(temp_id, rai->ai_src_addr);
-	if (ret) {
-		Rpma_provider_error = errno;
-		ret = RPMA_E_PROVIDER;
-		goto err_bind_addr;
+	/* either bind or resolve the address */
+	if (rai->ai_flags & RAI_PASSIVE) {
+		/* bind the address */
+		ret = rdma_bind_addr(temp_id, rai->ai_src_addr);
+		if (ret) {
+			Rpma_provider_error = errno;
+			ret = RPMA_E_PROVIDER;
+			goto err_bind_addr;
+		}
+	} else {
+		ret = rdma_resolve_addr(temp_id, rai->ai_src_addr,
+				rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
+		if (ret) {
+			Rpma_provider_error = errno;
+			ret = RPMA_E_PROVIDER;
+			goto err_resolve_addr;
+		}
 	}
 
 	/* obtain the device */
 	*dev = temp_id->verbs;
 
 err_bind_addr:
+err_resolve_addr:
 	(void) rdma_destroy_id(temp_id);
 
 err_create_id:
