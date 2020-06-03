@@ -263,30 +263,46 @@ int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
 struct rpma_ep;
 
 /** 3
- * rpma_ep_listen - XXX
+ * rpma_ep_listen - create a listening endpoint
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
- *		const char *service, struct rpma_ep **ep);
+ *	int rpma_ep_listen(const char *addr, const char *service,
+ *	    struct rpma_ep **ep);
  *
  * DESCRIPTION
- * Create an endpoint and initialize listening
- * for the incoming connections.
+ * Create an endpoint and initialize listening for incoming connections.
+ *
+ * ERRORS
+ * rpma_ep_listen() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - peer, addr, service or ep is NULL
+ * - RPMA_E_PROVIDER - rdma_create_event_channel(3), rdma_create_id(3),
+ *   rdma_getaddrinfo(3), rdma_listen(3) failed
+ * - RPMA_E_NOMEM - out of memory
  */
 int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 	const char *service, struct rpma_ep **ep);
 
 /** 3
- * rpma_ep_shutdown - stop listening and delete an endpoint
+ * rpma_ep_shutdown - stop listening and delete the endpoint
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
  *	int rpma_ep_shutdown(struct rpma_ep **ep);
+ *
+ * DESCRIPTION
+ * Stop listening for incoming connections and delete the endpoint.
+ *
+ * ERRORS
+ * rpma_ep_shutdown() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - ep is NULL
+ * - RPMA_E_PROVIDER - rdma_destroy_id(3) failed
  */
 int rpma_ep_shutdown(struct rpma_ep **ep);
 
@@ -298,7 +314,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *	#include <librpma.h>
  *
  *	int rpma_ep_next_conn_req(struct rpma_ep *ep,
- *		struct rpma_conn_req **req);
+ *	    struct rpma_conn_req **req);
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
