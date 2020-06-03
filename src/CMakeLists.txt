@@ -17,6 +17,7 @@ set(SOURCES
 	common/alloc.c
 	common/out.c
 	common/util.c
+	common/log.c
 	conn.c
 	conn_req.c
 	ep.c
