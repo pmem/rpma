@@ -53,3 +53,6 @@ set_target_properties(peer-test
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
 add_test_generic(NAME peer-test CASE 0 TRACERS none)
+
+build_test_lib(utils-test utils-test/utils-test.c)
+add_test_generic(NAME utils-test CASE 0 TRACERS none)
