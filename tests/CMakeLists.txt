@@ -33,9 +33,10 @@ if(LIBUNWIND_FOUND)
 endif()
 
 add_library(test-rpma-utils STATIC
-       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
-       ${LIBRPMA_SOURCE_DIR}/common/out.c
-       ${LIBRPMA_SOURCE_DIR}/common/util.c)
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/common/out.c
+	${LIBRPMA_SOURCE_DIR}/common/util.c
+	${LIBRPMA_SOURCE_DIR}/common/log.c)
 target_include_directories(test-rpma-utils PRIVATE
        ${LIBRPMA_INCLUDE_DIRS}
        ${LIBRPMA_SOURCE_DIR})
@@ -53,6 +54,7 @@ add_subdirectory(conn_req-test)
 add_subdirectory(ep-test)
 add_subdirectory(error-test)
 add_subdirectory(info-test)
+add_subdirectory(log-test)
 add_subdirectory(mr-test)
 add_subdirectory(peer-test)
 add_subdirectory(private_data-test)
