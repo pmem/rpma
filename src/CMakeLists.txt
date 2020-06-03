@@ -17,7 +17,10 @@ set(SOURCES
 	common/alloc.c
 	common/out.c
 	common/util.c
+	conn.c
+	conn_req.c
 	ep.c
+	info.c
 	librpma.c
 	peer.c
 	rpma_err.c
