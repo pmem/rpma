@@ -3,14 +3,16 @@
 # Copyright 2020, Intel Corporation
 #
 
-# XXX to be implemented soon
+include(../../cmake/ctest_helpers.cmake)
 
-#include(../../cmake/ctest_helpers.cmake)
+build_test_src(log-test
+	log-test.c
+	log-test-common.c
+	log-test-to-stderr.c
+	log-test-to-syslog.c
+	log-test-custom.c
+	${LIBRPMA_SOURCE_DIR}/common/log.c)
 
-#build_test_src(log-test
-#	log-test.c
-#	${LIBRPMA_SOURCE_DIR}/common/log.c)
+set_target_properties(log-test PROPERTIES LINK_FLAGS "-Wl,--wrap=fprintf")
 
-#set_target_properties(log-test PROPERTIES LINK_FLAGS "-Wl,--wrap=fprintf")
-
-#add_test_generic(NAME log-test TRACERS none)
+add_test_generic(NAME log-test TRACERS none)
