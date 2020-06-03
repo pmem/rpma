@@ -144,7 +144,9 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 				rpma_log_level_names[level]) < 0)
 			strcpy(prefix, "[error prefix]: ");
 	} else {
-		prefix[0] = '\0';
+		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
+				rpma_log_level_names[level]) < 0)
+			strcpy(prefix, "[error prefix]: ");
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
@@ -154,8 +156,8 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 
 	if (level <= Rpma_log_syslog_threshold) {
 		if (level != RPMA_LOG_DISABLED) {
-			int severity = rpma_log_level2syslog_severity(level);
-			syslog(severity, "%s%s", prefix, message);
+			syslog(rpma_log_level2syslog_severity(level),
+				"%s%s", prefix, message);
 		}
 	}
 }

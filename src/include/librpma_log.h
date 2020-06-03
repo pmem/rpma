@@ -202,7 +202,7 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
 
 /** 3
  * rpma_log_stderr_set_threshold - set the threshold level for logging to
- * stderr
+ * stderr(3)
  *
  * SYNOPSIS
  *
