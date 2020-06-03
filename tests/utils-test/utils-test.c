@@ -17,12 +17,14 @@
 #define IP_ADDRESS	"127.0.0.1"
 #define MOCK_VERBS	((struct ibv_context *)0xABC0) /* any not-NULL value */
 #define MOCK_SRC_ADDR	((struct sockaddr *)0xABC1) /* any not-NULL value */
+#define MOCK_DST_ADDR	((struct sockaddr *)0xABC2) /* any not-NULL value */
 
 /* mock errno values */
 #define MOCK_ERRNO_0	0xFE00
 #define MOCK_ERRNO_1	0xFE01
 #define MOCK_ERRNO_2	0xFE02
 #define MOCK_ERRNO_3	0xFE03
+#define MOCK_ERRNO_4	0xFE04
 
 /*
  * rdma_getaddrinfo -- mock of rdma_getaddrinfo
@@ -104,6 +106,20 @@ rdma_bind_addr(struct rdma_cm_id *id, struct sockaddr *addr)
 	return ret;
 }
 
+int
+rdma_resolve_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
+			struct sockaddr *dst_addr, int timeout_ms)
+{
+	check_expected(id);
+	check_expected(src_addr);
+	check_expected(dst_addr);
+
+	int ret = mock_type(int);
+	if (ret)
+		errno = mock_type(int);
+	return ret;
+}
+
 /*
  * rdma_destroy_id -- mock of rdma_destroy_id
  */
@@ -176,6 +192,8 @@ test_getaddrinfo_failed(void **unused)
 	/* configure mocks */
 	will_return(rdma_getaddrinfo, NULL);
 	will_return(rdma_getaddrinfo, ENOMEM);
+	will_return(rdma_getaddrinfo, NULL);
+	will_return(rdma_getaddrinfo, ENOMEM);
 
 	/* run test */
 	struct ibv_context *dev = NULL;
@@ -188,15 +206,42 @@ test_getaddrinfo_failed(void **unused)
 }
 
 /*
- * test_create_id_failed - memory allocation in rdma_create_id fails
+ * test_create_id_failed_passive - memory allocation in rdma_create_id fails
  */
 static void
-test_create_id_failed(void **unused)
+test_create_id_failed_passive(void **unused)
 {
 	/* configure mocks */
 	struct rdma_addrinfo rai;
 	will_return(rdma_getaddrinfo, &rai);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
+	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
+	will_return(rdma_create_id, NULL);
+	will_return(rdma_create_id, ENOMEM);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
+	assert_null(dev);
+}
+
+/*
+ * test_create_id_failed_active - rdma_getaddrinfo fails for passive
+ *                           and succeeds for active
+ */
+static void
+test_create_id_failed_active(void **unused)
+{
+	/* configure mocks */
+	struct rdma_addrinfo rai;
+	will_return(rdma_getaddrinfo, NULL);
+	will_return(rdma_getaddrinfo, MOCK_ERRNO_4);
+	will_return(rdma_getaddrinfo, &rai);
+	expect_value(rdma_getaddrinfo, hints->ai_flags, 0); /* active */
 	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
 	will_return(rdma_create_id, NULL);
 	will_return(rdma_create_id, ENOMEM);
@@ -244,6 +289,42 @@ test_bind_addr_failed(void **unused)
 }
 
 /*
+ * test_resolve_addr_failed - rdma_resolve_addr fails
+ */
+static void
+test_resolve_addr_failed(void **unused)
+{
+	/* configure mocks */
+	struct rdma_addrinfo rai;
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	rai.ai_src_addr = MOCK_SRC_ADDR;
+	rai.ai_dst_addr = MOCK_DST_ADDR;
+	will_return(rdma_getaddrinfo, NULL);
+	will_return(rdma_getaddrinfo, MOCK_ERRNO_4);
+	will_return(rdma_getaddrinfo, &rai);
+	expect_value(rdma_getaddrinfo, hints->ai_flags, 0); /* active */
+	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
+	will_return(rdma_create_id, &id);
+	expect_value(rdma_resolve_addr, id, &id);
+	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
+	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
+	will_return(rdma_resolve_addr, -1);
+	will_return(rdma_resolve_addr, MOCK_ERRNO_2);
+	expect_value(rdma_destroy_id, id, &id);
+	will_return(rdma_destroy_id, 0);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO_2);
+	assert_null(dev);
+}
+
+/*
  * test_success_destroy_id_failed - test if rpma_utils_get_ibv_context()
  *                                  succeeds if rdma_destroy_id() fails
  */
@@ -276,10 +357,10 @@ test_success_destroy_id_failed(void **unused)
 }
 
 /*
- * test_success - test the 'all is OK' situation
+ * test_success_passive - test the 'all is OK' situation
  */
 static void
-test_success(void **unused)
+test_success_passive(void **unused)
 {
 	/* configure mocks */
 	struct rdma_addrinfo rai;
@@ -305,6 +386,40 @@ test_success(void **unused)
 	assert_ptr_equal(dev, MOCK_VERBS);
 }
 
+/*
+ * test_success_active - test the 'all is OK' situation
+ */
+static void
+test_success_active(void **unused)
+{
+	/* configure mocks */
+	struct rdma_addrinfo rai;
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	rai.ai_src_addr = MOCK_SRC_ADDR;
+	rai.ai_dst_addr = MOCK_DST_ADDR;
+	will_return(rdma_getaddrinfo, NULL);
+	will_return(rdma_getaddrinfo, MOCK_ERRNO_4);
+	will_return(rdma_getaddrinfo, &rai);
+	expect_value(rdma_getaddrinfo, hints->ai_flags, 0); /* active */
+	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
+	will_return(rdma_create_id, &id);
+	expect_value(rdma_resolve_addr, id, &id);
+	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
+	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
+	will_return(rdma_resolve_addr, 0);
+	expect_value(rdma_destroy_id, id, &id);
+	will_return(rdma_destroy_id, 0);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, 0);
+	assert_ptr_equal(dev, MOCK_VERBS);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -313,10 +428,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test(test_dev_NULL),
 		cmocka_unit_test(test_addr_NULL_dev_NULL),
 		cmocka_unit_test(test_getaddrinfo_failed),
-		cmocka_unit_test(test_create_id_failed),
+		cmocka_unit_test(test_create_id_failed_passive),
+		cmocka_unit_test(test_create_id_failed_active),
 		cmocka_unit_test(test_bind_addr_failed),
+		cmocka_unit_test(test_resolve_addr_failed),
 		cmocka_unit_test(test_success_destroy_id_failed),
-		cmocka_unit_test(test_success),
+		cmocka_unit_test(test_success_passive),
+		cmocka_unit_test(test_success_active),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
