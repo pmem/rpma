@@ -27,6 +27,12 @@ LIBRPMA_1.0 {
 		rpma_peer_new;
 		rpma_read;
 		rpma_utils_get_ibv_context;
+		rpma_log_open;
+		rpma_log_close;
+		rpma_log;
+		rpma_log_set_level;
+		rpma_log_set_print_level;
+		
 	local:
 		*;
 };

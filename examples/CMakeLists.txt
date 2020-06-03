@@ -41,10 +41,16 @@ add_cstyle(example-connection
 add_check_whitespace(example-connection
 	${CMAKE_CURRENT_SOURCE_DIR}/connection/*.[ch])
 
+add_cstyle(example-log
+	${CMAKE_CURRENT_SOURCE_DIR}/log/*.[ch])
+add_check_whitespace(example-log
+	${CMAKE_CURRENT_SOURCE_DIR}/log/*.[ch])
+
 add_cstyle(examples-doc_snippets
 	${CMAKE_CURRENT_SOURCE_DIR}/doc_snippets/*.[ch])
 add_check_whitespace(examples-doc_snippets
 	${CMAKE_CURRENT_SOURCE_DIR}/doc_snippets/*.[ch])
+
 
 function(add_example name)
 	set(srcs ${ARGN})
@@ -57,5 +63,6 @@ endfunction()
 add_example(template template-example/template-example.c)
 add_example(connection-server connection/connection-server.c)
 add_example(connection-client connection/connection-client.c)
+add_example(log log/log-example.c log/log-worker.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
