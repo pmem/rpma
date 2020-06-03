@@ -33,6 +33,12 @@ LIBRPMA_1.0 {
 		rpma_read;
 		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
+		rpma_log_init;
+		rpma_log_fini;
+		rpma_log;
+		rpma_log_set_level;
+		rpma_log_stderr_set_level;
+		
 	local:
 		*;
 };
