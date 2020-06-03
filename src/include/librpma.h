@@ -73,8 +73,10 @@ struct rpma_peer;
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_new(struct rpma_peer_cfg *pcfg, struct ibv_context *dev,
- *		struct rpma_peer **peer);
+ *	int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
+ *
+ * DESCRIPTION
+ * rpma_peer_new() creates a new peer object.
  *
  * RETURN VALUE
  * The rpma_peer_new() function returns 0 on success or a negative error code
@@ -83,8 +85,7 @@ struct rpma_peer;
  * ERRORS
  * rpma_peer_new() can fail with the following errors:
  *
- * - RPMA_E_INVAL - ibv_ctx is NULL
- * - RPMA_E_INVAL - peer is NULL
+ * - RPMA_E_INVAL - ibv_ctx or peer is NULL
  * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
  * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error
  *   other than ENOMEM.
