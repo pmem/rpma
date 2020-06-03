@@ -106,7 +106,7 @@ function(add_testcase name tracer testcase cmake_script)
 			${GLOBAL_TEST_ARGS}
 			-DTEST_NAME=${executable}_${testcase}_${tracer}
 			-DTESTCASE=${testcase}
-			-DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+			-DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
 			-DBIN_DIR=${CMAKE_CURRENT_BINARY_DIR}/${executable}_${testcase}_${tracer}
 			-DTEST_EXECUTABLE=$<TARGET_FILE:${executable}>
 			-DTRACER=${tracer}
@@ -187,7 +187,7 @@ function(add_test_generic)
 			set(TEST_CASE "0")
 			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/cmake/run_default.cmake)
 		else()
-			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}/${TEST_NAME}_${TEST_CASE}.cmake)
+			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}_${TEST_CASE}.cmake)
 		endif()
 	else()
 		if("${TEST_CASE}" STREQUAL "")
