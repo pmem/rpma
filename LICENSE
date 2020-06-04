@@ -33,7 +33,3 @@ Everything in this source tree is covered by the previous license
 with the following exceptions:
 
 * utils/cstyle (used only during development) licensed under CDDL.
-* utils/docker/images/txt2man.patch (the patch:
-  https://github.com/mvertes/txt2man/pull/18
-  used only to patch the system tool /usr/bin/txt2man) licensed
-  under GPL-2.0.
