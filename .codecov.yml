@@ -2,8 +2,9 @@ ignore:
   - cmake/
   - doc/
   - examples/
-  - src/valgrind/
+  - src/common/
   - src/sys/
+  - src/valgrind/
   - tests/
   - utils/
 
