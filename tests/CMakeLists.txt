@@ -40,3 +40,4 @@ add_check_whitespace(tests-all
 add_subdirectory(template-test)
 add_subdirectory(peer-test)
 add_subdirectory(utils-test)
+add_subdirectory(error-test)
