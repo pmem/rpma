@@ -6,4 +6,4 @@
 include(../cmake/ctest_helpers.cmake)
 
 build_test_lib(utils-test utils-test.c)
-add_test_generic(NAME utils-test CASE 0 TRACERS none)
+add_test_generic(NAME utils-test TRACERS none)

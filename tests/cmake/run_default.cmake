@@ -7,6 +7,6 @@ include(${SRC_DIR}/../cmake/helpers.cmake)
 
 setup()
 
-execute(${TEST_EXECUTABLE} ${DIR}/testfile)
+execute(${TEST_EXECUTABLE})
 
 finish()
