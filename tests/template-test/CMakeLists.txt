@@ -6,4 +6,4 @@
 include(../cmake/ctest_helpers.cmake)
 
 build_test_lib(template-test template-test.c)
-add_test_generic(NAME template-test CASE 0 TRACERS none)
+add_test_generic(NAME template-test TRACERS none)

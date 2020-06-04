@@ -20,4 +20,4 @@ set_target_properties(peer-test
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-add_test_generic(NAME peer-test CASE 0 TRACERS none)
+add_test_generic(NAME peer-test TRACERS none)
