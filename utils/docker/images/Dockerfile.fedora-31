@@ -36,11 +36,11 @@ ENV VALGRIND_DEPS "\
 ENV RPMA_DEPS "\
 	cmake \
 	file \
-	txt2man \
 	groff \
 	graphviz \
 	libunwind-devel \
 	rdma-core-devel"
+#	txt2man is installed from git repo now
 
 # Install all required packages
 RUN dnf install -y \
@@ -57,14 +57,9 @@ RUN ./install-valgrind.sh
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
 
-# Patch src2man
-COPY patch-src2man.sh patch-src2man.sh
-RUN ./patch-src2man.sh
-
-# Patch txt2man
-COPY patch-txt2man.sh patch-txt2man.sh
-COPY txt2man.patch txt2man.patch
-RUN ./patch-txt2man.sh
+# Install txt2man
+COPY install-txt2man.sh install-txt2man.sh
+RUN ./install-txt2man.sh
 
 # Add user
 ENV USER user
