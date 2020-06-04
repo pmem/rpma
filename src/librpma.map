@@ -10,7 +10,7 @@ LIBRPMA_1.0 {
 	global:
 		rpma_conn_delete;
 		rpma_conn_disconnect;
-		rpma_conn_get_mr;
+		rpma_conn_get_private_data;
 		rpma_conn_next_completion;
 		rpma_conn_next_event;
 		rpma_conn_req_connect;
