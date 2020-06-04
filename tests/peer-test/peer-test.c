@@ -7,11 +7,10 @@
  * peer-test.c -- a peer unit test
  */
 
-#include "cmocka_headers.h"
-
-#include "librpma.h"
-
 #include <infiniband/verbs.h>
+
+#include "cmocka_headers.h"
+#include "peer.h"
 
 #define MOCK_IBV_CTX		(struct ibv_context *)0x00C0
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
@@ -403,6 +402,15 @@ peer_delete_test_dealloc_pd_fail(void **peer_ptr)
 	assert_int_equal(rpma_err_get_provider_error(), EBUSY);
 }
 
+/*
+ * peer_create_qp_test -- rpma_peer_create_qp is not supported yet
+ */
+static void
+peer_create_qp_test(void **unused)
+{
+	assert_int_equal(rpma_peer_create_qp(NULL, NULL), RPMA_E_NOSUPP);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -423,6 +431,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				peer_delete_test_dealloc_pd_fail,
 				peer_setup, peer_teardown),
+
+		/* rpma_peer_create_qp() unit tests */
+		cmocka_unit_test(peer_create_qp_test),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
