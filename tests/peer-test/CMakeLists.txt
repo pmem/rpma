@@ -7,14 +7,9 @@ include(../cmake/ctest_helpers.cmake)
 
 build_test_src(peer-test
        peer-test.c
-       ${LIBRPMA_SOURCE_DIR}/peer.c
-       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
-       ${LIBRPMA_SOURCE_DIR}/common/out.c
-       ${LIBRPMA_SOURCE_DIR}/common/util.c)
+       ${LIBRPMA_SOURCE_DIR}/peer.c)
 
-target_compile_definitions(peer-test
-       PRIVATE TEST_MOCK_ALLOC
-       PRIVATE SRCVERSION="0.0")
+target_link_libraries(peer-test test-rpma-utils)
 
 set_target_properties(peer-test
        PROPERTIES
