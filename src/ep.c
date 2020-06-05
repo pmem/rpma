@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #include "cmocka_alloc.h"
+#include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
 #include "rpma_err.h"
@@ -124,11 +125,27 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 }
 
 /*
- * rpma_ep_next_conn_req -- XXX uses rdma_get_cm_event and
- * rpma_conn_req_from_cm_event
+ * rpma_ep_next_conn_req -- get an event and
+ * add it to conn_req
  */
 int
 rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 {
-	return RPMA_E_NOSUPP;
+	if (ep == NULL || req == NULL)
+		return RPMA_E_INVAL;
+
+	struct rdma_cm_event *event = NULL;
+
+	/* get an event */
+	int ret = rdma_get_cm_event(ep->evch, &event);
+	if (ret) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	ret = rpma_conn_req_from_cm_event(ep->peer, event, req);
+	if (ret)
+		return ret;
+
+	return 0;
 }

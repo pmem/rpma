@@ -21,6 +21,7 @@
 #define MOCK_SERVICE	"1234"
 #define MOCK_PEER	(struct rpma_peer *)0xFEEF
 #define MOCK_INFO	(struct rpma_info *)0x14F0
+#define MOCK_CONN_REQ	(struct rpma_conn_req **)0xCFEF
 
 #define NO_ERROR	0
 #define MOCK_ERRNO	0xE440
@@ -265,6 +266,49 @@ __wrap__test_malloc(size_t size)
 
 	return __real__test_malloc(size);
 }
+
+/*
+ * rdma_get_cm_event -- rdma_get_cm_event() mock
+ */
+int
+rdma_get_cm_event(struct rdma_event_channel *channel,
+		struct rdma_cm_event **event_ptr)
+{
+	check_expected_ptr(channel);
+	assert_non_null(event_ptr);
+
+	struct rdma_cm_event *event = mock_type(struct rdma_cm_event *);
+
+	if (event == NULL) {
+		errno = mock_type(int);
+		return -1;
+	}
+
+	*event_ptr = event;
+	return 0;
+}
+
+/*
+ * rpma_conn_req_from_cm_event -- rpma_conn_req_from_cm_event() mock
+ */
+int
+rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
+		struct rpma_conn_req **req_ptr)
+{
+	check_expected_ptr(peer);
+	check_expected_ptr(edata);
+	assert_non_null(req_ptr);
+
+	struct rpma_conn_req *req = mock_type(struct rpma_conn_req *);
+
+	if (req == NULL) {
+		return mock_type(int);
+	}
+
+	*req_ptr = req;
+	return 0;
+}
+
 
 /* tests */
 
@@ -683,6 +727,65 @@ ep_shutdown_test_destroy_id_EAGAIN(void **estate_ptr)
 		sizeof(estate->evch)), 0);
 }
 
+/*
+ * ep_next_conn_req_test_ep_NULL - NULL ep is invalid
+ */
+static void
+ep_next_conn_req_test_peer_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_ep *ep = NULL;
+	int ret = rpma_ep_next_conn_req(ep, MOCK_CONN_REQ);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(ep);
+}
+
+/*
+ * ep_next_conn_req_test_get_cm_event_EAGAIN -
+ * rdma_get_cm_event() fails with EAGAIN
+ */
+static void
+ep_next_conn_req_test_get_cm_event_EAGAIN(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, EAGAIN);
+
+	/* run test */
+	int ret = rpma_ep_next_conn_req(estate->ep, MOCK_CONN_REQ);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+}
+
+/*
+ * ep_next_conn_req_test_conn_req_from_cm_event_ENOMEM -
+ * rpma_conn_req_from_cm_event() fails with ENOMEM
+ */
+static void
+ep_next_conn_req_test_conn_req_from_cm_event_ENOMEM(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	will_return(rpma_conn_req_from_cm_event, NULL);
+	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
+
+	/* run test */
+	int ret = rpma_ep_next_conn_req(estate->ep, MOCK_CONN_REQ);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -711,6 +814,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test(ep_shutdown_test_ep_NULL),
 		cmocka_unit_test_setup_teardown(
 			ep_shutdown_test_destroy_id_EAGAIN,
+			ep_setup, ep_teardown),
+		cmocka_unit_test(ep_next_conn_req_test_peer_NULL),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req_test_get_cm_event_EAGAIN,
+			ep_setup, ep_teardown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req_test_conn_req_from_cm_event_ENOMEM,
 			ep_setup, ep_teardown),
 	};
 
