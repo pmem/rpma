@@ -33,7 +33,7 @@ int
 rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		struct rpma_info **info_ptr)
 {
-	if (addr == NULL || service == NULL || info_ptr == NULL)
+	if (addr == NULL || info_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	/* prepare hints */

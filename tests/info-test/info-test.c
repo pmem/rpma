@@ -146,26 +146,6 @@ info_new_test_addr_NULL(void **unused)
 }
 
 /*
- * info_new_test_service_NULL -- NULL service is not valid
- */
-static void
-info_new_test_service_NULL(void **unused)
-{
-	/*
-	 * NOTE: it is not allowed for info to allocate any resource before
-	 * validating arguments.
-	 */
-
-	/* run test */
-	struct rpma_info *info = NULL;
-	int ret = rpma_info_new("", NULL, RPMA_INFO_PASSIVE, &info);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_null(info);
-}
-
-/*
  * info_new_test_info_ptr_NULL -- NULL info_ptr is not valid
  */
 static void
@@ -613,7 +593,6 @@ main(int argc, char *argv[])
 	const struct CMUnitTest tests[] = {
 		/* rpma_info_new() unit tests */
 		cmocka_unit_test(info_new_test_addr_NULL),
-		cmocka_unit_test(info_new_test_service_NULL),
 		cmocka_unit_test(info_new_test_info_ptr_NULL),
 		cmocka_unit_test(
 			info_new_test_addr_service_info_ptr_NULL),

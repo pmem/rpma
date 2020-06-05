@@ -24,7 +24,7 @@ struct rpma_info;
  * ERRORS
  * rpma_info_new() can fail with the following errors:
  *
- * - RPMA_E_INVAL - addr, service or info_ptr is NULL
+ * - RPMA_E_INVAL - addr or info_ptr is NULL
  * - RPMA_E_PROVIDER - address translation failed with error
  * - RPMA_E_NOMEM - out of memory
  */
