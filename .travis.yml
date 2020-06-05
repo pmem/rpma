@@ -13,7 +13,7 @@ env:
     - DOCKERHUB_REPO=pmem/rpma
   matrix:
     - OS=ubuntu OS_VER=19.10 TYPE=normal
-    - OS=fedora OS_VER=31    TYPE=normal AUTO_DOC_UPDATE=1
+    - OS=fedora OS_VER=31    TYPE=normal
     - OS=ubuntu OS_VER=19.10 TYPE=normal COVERAGE=1
     - OS=ubuntu OS_VER=19.10 TYPE=coverity
 

@@ -12,7 +12,7 @@ BOT_NAME="pmem-bot"
 USER_NAME="pmem"
 REPO_NAME="rpma"
 
-ORIGIN="https://${GITHUB_TOKEN}@github.com/${BOT_NAME}/${REPO_NAME}"
+ORIGIN="https://${DOC_UPDATE_GITHUB_TOKEN}@github.com/${BOT_NAME}/${REPO_NAME}"
 UPSTREAM="https://github.com/pmem/${REPO_NAME}"
 # master or stable-* branch
 TARGET_BRANCH=${CI_BRANCH}
@@ -65,6 +65,9 @@ git push -f ${ORIGIN} $GH_PAGES_NAME
 
 # Makes pull request.
 # When there is already an open PR or there are no changes an error is thrown, which we ignore.
-hub pull-request -f -b ${USER_NAME}:gh-pages -h ${BOT_NAME}:${GH_PAGES_NAME} -m "doc: automatic gh-pages docs update" && true
+GITHUB_TOKEN=${DOC_UPDATE_GITHUB_TOKEN} hub pull-request -f \
+	-b ${USER_NAME}:gh-pages \
+	-h ${BOT_NAME}:${GH_PAGES_NAME} \
+	-m "doc: automatic gh-pages docs update" && true
 
 exit 0
