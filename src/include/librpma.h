@@ -318,6 +318,16 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  *	int rpma_ep_next_conn_req(struct rpma_ep *ep,
  *	    struct rpma_conn_req **req);
+ *
+ * DESCRIPTION
+ * Obtains the next connection request from the endpoint
+ * and adds it to the call request object.
+ *
+ * ERRORS
+ * rpma_ep_next_conn_req() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - ep or req is NULL
+ * - RPMA_E_PROVIDER - rdma_get_cm_event(3) failed
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 

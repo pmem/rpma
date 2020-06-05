@@ -10,8 +10,10 @@
 #include <errno.h>
 
 #include "cmocka_alloc.h"
+#include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
+#include "out.h"
 #include "rpma_err.h"
 
 struct rpma_ep {
@@ -124,11 +126,30 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 }
 
 /*
- * rpma_ep_next_conn_req -- XXX uses rdma_get_cm_event and
- * rpma_conn_req_from_cm_event
+ * rpma_ep_next_conn_req -- get the next event in the hope it will be
+ * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation
+ * of a connection request object base on obtained request.
+ * If succeeds it returns the newly created object.
  */
 int
 rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 {
-	return RPMA_E_NOSUPP;
+	if (ep == NULL || req == NULL)
+		return RPMA_E_INVAL;
+
+	struct rdma_cm_event *event = NULL;
+
+	/* get an event */
+	if (rdma_get_cm_event(ep->evch, &event)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	/* we expect only one type of event here */
+	if (event->event != RDMA_CM_EVENT_CONNECT_REQUEST) {
+		(void) rdma_ack_cm_event(event);
+		return RPMA_E_INVAL;
+	}
+
+	return rpma_conn_req_from_cm_event(ep->peer, event, req);
 }
