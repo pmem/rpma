@@ -32,7 +32,7 @@ if(LIBUNWIND_FOUND)
 	target_compile_definitions(test_backtrace PUBLIC USE_LIBUNWIND=1)
 endif()
 
-add_library(test-rpma-utils OBJECT
+add_library(test-rpma-utils STATIC
        ${LIBRPMA_SOURCE_DIR}/rpma_err.c
        ${LIBRPMA_SOURCE_DIR}/common/out.c
        ${LIBRPMA_SOURCE_DIR}/common/util.c)
