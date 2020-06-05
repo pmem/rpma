@@ -170,20 +170,21 @@ enum rpma_conn_event {
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
 /** 3
- * rpma_conn_get_mr - XXX
+ * rpma_conn_get_private_data - XXX
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_get_mr(struct rpma_conn *conn,
- *		struct rpma_mr_remote **mr);
+ *	int rpma_conn_get_private_data(struct rpma_conn *conn,
+ *	    void **private_data, uint8_t *private_data_len);
  *
  * DESCRIPTION
- * Obtain a remote handle to the memory given by the other
- * side of the connection.
+ * Obtain a pointer to the private data given by the other side of the
+ * connection.
  */
-int rpma_conn_get_mr(struct rpma_conn *conn, struct rpma_mr_remote **mr);
+int rpma_conn_get_private_data(struct rpma_conn *conn, void **private_data,
+		uint8_t *private_data_len);
 
 /** 3
  * rpma_conn_disconnect - initialize disconnection
@@ -248,15 +249,16 @@ int rpma_conn_req_delete(struct rpma_conn_req **req);
  *	#include <librpma.h>
  *
  *	int rpma_conn_req_connect(struct rpma_conn_req *req,
- *		struct rpma_conn_cfg *ccfg, struct rpma_mr_local *mr,
- *		struct rpma_conn **conn);
+ *		struct rpma_conn_cfg *ccfg, const void *private_data,
+ *		uint8_t private_data_len, struct rpma_conn **conn);
  *
  * DESCRIPTION
  * Connect the connection request both incoming and
  * outgoing.
  */
 int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
-	struct rpma_mr_local *mr, struct rpma_conn **conn);
+	const void *private_data, uint8_t private_data_len,
+	struct rpma_conn **conn);
 
 /* server-side setup */
 
