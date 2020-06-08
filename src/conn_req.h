@@ -16,6 +16,12 @@
 
 #define RPMA_DEFAULT_TIMEOUT 1000 /* ms */
 
+/* for the simplicity sake, it is assumed all CQ/SQ/RQ sizes are equal */
+#define RPMA_DEFAULT_Q_SIZE 10
+
+#define RPMA_MAX_SGE 1
+#define RPMA_MAX_INLINE_DATA 0
+
 int rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *event, struct rpma_conn_req **req);
 
