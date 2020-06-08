@@ -114,14 +114,83 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
 }
 
 /*
- * rpma_conn_req_connect -- XXX uses either rdma_accept + rdma_ack_cm_event
- * or rdma_accept to transform rpma_conn_req into rpma_conn
+ * rpma_conn_req_connect -- request re-packing the connection request to
+ * a connection object. If succeeds call either rdma_accept() or rdma_connect().
+ * If all succeeds release the connection request object.
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr, const void *private_data,
-		uint8_t private_data_len, struct rpma_conn **conn)
+		uint8_t private_data_len, struct rpma_conn **conn_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (req_ptr == NULL || conn_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rpma_conn_req *req = *req_ptr;
+	if (req == NULL)
+		return RPMA_E_INVAL;
+
+	if (private_data == NULL && private_data_len != 0)
+		return RPMA_E_INVAL;
+
+	int ret = 0;
+
+	struct rdma_conn_param conn_param;
+	memset(&conn_param, 0, sizeof(conn_param));
+	conn_param.private_data = private_data;
+	conn_param.private_data_len = private_data_len;
+	conn_param.responder_resources = RDMA_MAX_RESP_RES;
+	conn_param.initiator_depth = RDMA_MAX_INIT_DEPTH;
+	conn_param.flow_control = 1;
+	conn_param.retry_count = 7; /* max 3-bit value */
+	conn_param.rnr_retry_count = 7; /* max 3-bit value */
+
+	if (req->edata) {
+		/* passive side of the connection */
+		if (rdma_accept(req->id, &conn_param)) {
+			Rpma_provider_error = errno;
+			ret = RPMA_E_PROVIDER;
+			(void) rdma_ack_cm_event(req->edata);
+			goto err_conn_req_delete;
+		}
+
+		/* ACK the connection request event */
+		if (rdma_ack_cm_event(req->edata)) {
+			Rpma_provider_error = errno;
+			ret = RPMA_E_PROVIDER;
+			goto err_conn_disconnect;
+		}
+
+		req->edata = NULL;
+	} else {
+		/*
+		 * XXX to be implemented when rpma_conn_req_new() will be
+		 * ready
+		 */
+		ASSERT(0);
+	}
+
+	struct rpma_conn *conn = NULL;
+	ret = rpma_conn_new(req->id, req->cq, &conn);
+	if (ret)
+		goto err_conn_disconnect;
+
+	Free(req);
+	*req_ptr = NULL;
+	*conn_ptr = conn;
+
+	return 0;
+
+err_conn_disconnect:
+	(void) rdma_disconnect(req->id);
+
+err_conn_req_delete:
+	rdma_destroy_qp(req->id);
+	(void) ibv_destroy_cq(req->cq);
+
+	Free(req);
+	*req_ptr = NULL;
+
+	return ret;
 }
 
 /*
