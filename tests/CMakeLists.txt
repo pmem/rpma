@@ -48,6 +48,7 @@ add_cstyle(tests-all
 add_check_whitespace(tests-all
        ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
 
+add_subdirectory(ep-test)
 add_subdirectory(error-test)
 add_subdirectory(info-test)
 add_subdirectory(peer-test)
