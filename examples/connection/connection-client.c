@@ -44,7 +44,7 @@ main(int argc, char *argv[])
 
 	ret = rpma_conn_req_new(peer, addr, service, &req);
 	assert(ret == 0);
-	ret = rpma_conn_req_connect(req, NULL, NULL, 0, &conn);
+	ret = rpma_conn_req_connect(&req, NULL, 0, &conn);
 	assert(ret == 0);
 
 	/* wait for the connection to establish */
