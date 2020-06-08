@@ -221,7 +221,6 @@ int rpma_conn_delete(struct rpma_conn **conn_ptr);
 
 /* incoming / outgoing connection request */
 
-struct rpma_conn_cfg;
 struct rpma_conn_req;
 
 /** 3
@@ -238,19 +237,28 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 	const char *service, struct rpma_conn_req **req);
 
 /** 3
- * rpma_conn_req_delete - XXX
+ * rpma_conn_req_delete - delete the connection request
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_req_delete(struct rpma_conn_req **req);
+ *	int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
- * Delete the connection request both incoming and
- * outgoing.
+ * Delete the connection request both incoming and outgoing.
+ *
+ * ERRORS
+ * rpma_conn_req_delete() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - req_ptr is NULL
+ * - RPMA_E_PROVIDER - destroying the completion queue failed
+ * - RPMA_E_PROVIDER - rdma_destroy_qp(3) or ibv_destroy_cq(3) failed
+ * - RPMA_E_PROVIDER - rdma_reject(3) or rdma_ack_cm_event(3) failed
+ *                     (passive side only)
+ * - XXX to be implemented when rpma_conn_req_new() will be ready
  */
-int rpma_conn_req_delete(struct rpma_conn_req **req);
+int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
 /** 3
  * rpma_conn_req_connect - XXX
@@ -260,16 +268,16 @@ int rpma_conn_req_delete(struct rpma_conn_req **req);
  *	#include <librpma.h>
  *
  *	int rpma_conn_req_connect(struct rpma_conn_req *req,
- *		struct rpma_conn_cfg *ccfg, const void *private_data,
- *		uint8_t private_data_len, struct rpma_conn **conn);
+ *		const void *private_data, uint8_t private_data_len,
+ *		struct rpma_conn **conn);
  *
  * DESCRIPTION
  * Connect the connection request both incoming and
  * outgoing.
  */
-int rpma_conn_req_connect(struct rpma_conn_req *req, struct rpma_conn_cfg *ccfg,
+int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	const void *private_data, uint8_t private_data_len,
-	struct rpma_conn **conn);
+	struct rpma_conn **conn_ptr);
 
 /* server-side setup */
 
