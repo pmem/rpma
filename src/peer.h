@@ -14,6 +14,14 @@
 
 #include <rdma/rdma_cma.h>
 
-int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id);
+/*
+ * ERRORS
+ * rpma_peer_create_qp() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - peer, id or cq is NULL
+ * - RPMA_E_PROVIDER - allocating a QP failed
+ */
+int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+		struct ibv_cq *cq);
 
 #endif /* LIBRPMA_PEER_H */

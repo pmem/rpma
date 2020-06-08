@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #include "cmocka_alloc.h"
+#include "conn_req.h"
 #include "peer.h"
 #include "rpma_err.h"
 #include "out.h"
@@ -21,13 +22,45 @@ struct rpma_peer {
 /* internal librpma API */
 
 /*
- * rpma_peer_create_qp -- XXX use pd from peer to create a qp for provided id
- * using rdma_create_qp
+ * rpma_peer_create_qp -- allocate a QP associated with the CM ID
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id)
+rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+		struct ibv_cq *cq)
 {
-	return RPMA_E_NOSUPP;
+	if (peer == NULL || id == NULL || cq == NULL)
+		return RPMA_E_INVAL;
+
+	struct ibv_qp_init_attr qp_init_attr;
+	qp_init_attr.qp_context = NULL;
+	qp_init_attr.send_cq = cq;
+	qp_init_attr.recv_cq = cq;
+	qp_init_attr.srq = NULL;
+	qp_init_attr.cap.max_send_wr = RPMA_DEFAULT_Q_SIZE;
+	qp_init_attr.cap.max_recv_wr = RPMA_DEFAULT_Q_SIZE;
+	qp_init_attr.cap.max_send_sge = RPMA_MAX_SGE;
+	qp_init_attr.cap.max_recv_sge = RPMA_MAX_SGE;
+	qp_init_attr.cap.max_inline_data = RPMA_MAX_INLINE_DATA;
+	/*
+	 * Reliable Connection - since we are using e.g. IBV_WR_RDMA_READ.
+	 * For details please see ibv_post_send(3).
+	 */
+	qp_init_attr.qp_type = IBV_QPT_RC;
+	/*
+	 * Every Work Request has to decide whether to generate CQ entry for its
+	 * successful completion. Please see IBV_SEND_SIGNALED in
+	 * ibv_post_send(3).
+	 */
+	qp_init_attr.sq_sig_all = 0;
+
+	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	/* XXX should we have to validate qp_init_attr output values? */
+
+	return 0;
 }
 
 /* public librpma API */
