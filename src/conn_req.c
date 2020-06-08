@@ -7,7 +7,11 @@
  * conn_req.c -- librpma connection-request-related implementations
  */
 
+#include "cmocka_alloc.h"
 #include "conn_req.h"
+#include "out.h"
+#include "peer.h"
+#include "rpma_err.h"
 
 struct rpma_conn_req {
 	/* RDMA_CM_EVENT_CONNECT_REQUEST event (if applicable) */
@@ -17,14 +21,45 @@ struct rpma_conn_req {
 };
 
 /*
- * rpma_conn_req_from_id -- XXX uses ibv_create_cq, rpma_peer_create_qp and
- * allocate the conn_req object
+ * rpma_conn_req_from_id -- allocate a new conn_req object from CM ID
  */
 static int
 rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_conn_req **req)
 {
-	return RPMA_E_NOSUPP;
+	/* create a CQ */
+	struct ibv_cq *cq = ibv_create_cq(id->verbs, RPMA_DEFAULT_Q_SIZE,
+				NULL /* cq_context */,
+				NULL /* channel */,
+				0 /* comp_vector */);
+	if (cq == NULL) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	/* create a QP */
+	int ret = rpma_peer_create_qp(peer, id, cq);
+	if (ret)
+		goto err_destroy_cq;
+
+	*req = (struct rpma_conn_req *)Malloc(sizeof(struct rpma_conn_req));
+	if (*req == NULL) {
+		ASSERTeq(errno, ENOMEM);
+		ret = RPMA_E_NOMEM;
+		goto err_destroy_qp;
+	}
+
+	(*req)->id = id;
+
+	return 0;
+
+err_destroy_qp:
+	rdma_destroy_qp(id);
+
+err_destroy_cq:
+	(void) ibv_destroy_cq(cq);
+
+	return ret;
 }
 
 /* internal librpma API */
