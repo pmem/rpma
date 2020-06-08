@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 	assert(ret == 0);
 	ret = rpma_ep_next_conn_req(ep, &req);
 	assert(ret == 0);
-	ret = rpma_conn_req_connect(req, NULL, NULL, 0, &conn);
+	ret = rpma_conn_req_connect(&req, NULL, 0, &conn);
 	assert(ret == 0);
 
 	/* wait for the connection to establish */
