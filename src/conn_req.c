@@ -75,6 +75,153 @@ err_destroy_cq:
 	return ret;
 }
 
+/*
+ * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
+ * request re-packing the connection request to a connection object.
+ */
+static int
+rpma_conn_req_accept(struct rpma_conn_req *req,
+	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
+{
+	ASSERTne(req, NULL);
+	ASSERTne(conn_param, NULL);
+	ASSERTne(conn_ptr, NULL);
+
+	int ret = 0;
+
+	if (rdma_accept(req->id, conn_param)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		(void) rdma_ack_cm_event(req->edata);
+		goto err_conn_req_delete;
+	}
+
+	/* ACK the connection request event */
+	if (rdma_ack_cm_event(req->edata)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_conn_disconnect;
+	}
+
+	struct rpma_conn *conn = NULL;
+	ret = rpma_conn_new(req->id, req->cq, &conn);
+	if (ret)
+		goto err_conn_disconnect;
+
+	*conn_ptr = conn;
+	return 0;
+
+err_conn_disconnect:
+	(void) rdma_disconnect(req->id);
+
+err_conn_req_delete:
+	rdma_destroy_qp(req->id);
+	(void) ibv_destroy_cq(req->cq);
+
+	return ret;
+}
+
+/*
+ * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
+ * re-packing the connection request to a connection object.
+ */
+static int
+rpma_conn_req_connect_active(struct rpma_conn_req *req,
+	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
+{
+	ASSERTne(req, NULL);
+	ASSERTne(conn_param, NULL);
+	ASSERTne(conn_ptr, NULL);
+
+	int ret = 0;
+
+	if (rdma_connect(req->id, conn_param)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_conn_req_delete;
+	}
+
+	struct rpma_conn *conn = NULL;
+	ret = rpma_conn_new(req->id, req->cq, &conn);
+	if (ret)
+		goto err_conn_disconnect;
+
+	*conn_ptr = conn;
+	return 0;
+
+err_conn_disconnect:
+	(void) rdma_disconnect(req->id);
+
+err_conn_req_delete:
+	rdma_destroy_qp(req->id);
+	(void) ibv_destroy_cq(req->cq);
+	(void) rdma_destroy_id(req->id);
+
+	return ret;
+}
+
+/*
+ * rpma_conn_req_reject -- destroy CQ of the CM ID and reject the connection.
+ */
+static int
+rpma_conn_req_reject(struct rpma_conn_req *req)
+{
+	ASSERTne(req, NULL);
+
+	int ret = 0;
+
+	Rpma_provider_error = ibv_destroy_cq(req->cq);
+	if (Rpma_provider_error) {
+		ret = RPMA_E_PROVIDER;
+		goto err_reject;
+	}
+
+	if (rdma_reject(req->id,
+			NULL /* private data */,
+			0 /* private data len */)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_ack;
+	}
+
+	if (rdma_ack_cm_event(req->edata)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+	}
+
+	return ret;
+
+err_reject:
+	(void) rdma_reject(req->id, NULL, 0);
+
+err_ack:
+	(void) rdma_ack_cm_event(req->edata);
+
+	return ret;
+}
+
+/*
+ * rpma_conn_req_destroy -- destroy CQ of the CM ID and destroy the CM ID.
+ */
+static int
+rpma_conn_req_destroy(struct rpma_conn_req *req)
+{
+	ASSERTne(req, NULL);
+
+	Rpma_provider_error = ibv_destroy_cq(req->cq);
+	if (Rpma_provider_error) {
+		(void) rdma_destroy_id(req->id);
+		return RPMA_E_PROVIDER;
+	}
+
+	if (rdma_destroy_id(req->id)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
 /* internal librpma API */
 
 /*
@@ -160,20 +307,52 @@ err_info_delete:
 }
 
 /*
- * rpma_conn_req_connect -- XXX uses either rdma_accept + rdma_ack_cm_event
- * or rdma_accept to transform rpma_conn_req into rpma_conn
+ * rpma_conn_req_connect -- prepare connection parameters and request
+ * connecting a connection request (either active or passive). When done
+ * release the connection request object.
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-		struct rpma_conn_private_data *pdata, struct rpma_conn **conn)
+	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (req_ptr == NULL || conn_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rpma_conn_req *req = *req_ptr;
+	if (req == NULL)
+		return RPMA_E_INVAL;
+
+	if (pdata != NULL) {
+		if (pdata->ptr == NULL || pdata->len == 0)
+			return RPMA_E_INVAL;
+	}
+
+	struct rdma_conn_param conn_param = {0};
+	conn_param.private_data = pdata ? pdata->ptr : NULL;
+	conn_param.private_data_len = pdata ? pdata->len : 0;
+	conn_param.responder_resources = RDMA_MAX_RESP_RES;
+	conn_param.initiator_depth = RDMA_MAX_INIT_DEPTH;
+	conn_param.flow_control = 1;
+	conn_param.retry_count = 7; /* max 3-bit value */
+	conn_param.rnr_retry_count = 7; /* max 3-bit value */
+
+	int ret = 0;
+
+	if (req->edata)
+		ret = rpma_conn_req_accept(req, &conn_param, conn_ptr);
+	else
+		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
+
+	Free(req);
+	*req_ptr = NULL;
+
+	return ret;
 }
 
 /*
- * rpma_conn_req_delete -- destroy QP and CQ of the CM ID and reject the
- * connection or simply destroy the CM ID. Finally, free the connection request
- * object.
+ * rpma_conn_req_delete -- destroy QP and either reject (for incoming connection
+ * requests) or destroy the connection request (for the outgoing one). At last
+ * release the connection request object.
  */
 int
 rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
@@ -185,56 +364,15 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 	if (req == NULL)
 		return 0;
 
-	int ret = 0;
-
 	rdma_destroy_qp(req->id);
 
-	Rpma_provider_error = ibv_destroy_cq(req->cq);
-	if (Rpma_provider_error) {
-		ret = RPMA_E_PROVIDER;
-		goto err_reject_or_destroy_id;
-	}
+	int ret = 0;
 
-	if (req->edata) {
-		if (rdma_reject(req->id,
-				NULL /* private data */,
-				0 /* private data len */)) {
-			Rpma_provider_error = errno;
-			ret = RPMA_E_PROVIDER;
-			goto err_ack;
-		}
+	if (req->edata)
+		ret = rpma_conn_req_reject(req);
+	else
+		ret = rpma_conn_req_destroy(req);
 
-		if (rdma_ack_cm_event(req->edata)) {
-			Rpma_provider_error = errno;
-			ret = RPMA_E_PROVIDER;
-			goto err_free;
-		}
-	} else {
-		if (rdma_destroy_id(req->id)) {
-			Rpma_provider_error = errno;
-			ret = RPMA_E_PROVIDER;
-			goto err_free;
-		}
-	}
-
-	Free(req);
-	*req_ptr = NULL;
-
-	return 0;
-
-err_reject_or_destroy_id:
-	if (req->edata == NULL) {
-		(void) rdma_destroy_id(req->id);
-		goto err_free;
-	}
-
-	/* error path when req->edata != NULL */
-	(void) rdma_reject(req->id, NULL, 0);
-
-err_ack:
-	(void) rdma_ack_cm_event(req->edata);
-
-err_free:
 	Free(req);
 	*req_ptr = NULL;
 

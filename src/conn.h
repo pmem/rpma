@@ -19,6 +19,8 @@
  * rpma_conn_new() can fail with the following errors:
  *
  * - RPMA_E_INVAL - id, cq or conn_ptr is NULL
+ * - RPMA_E_PROVIDER - if rdma_create_event_channel(3) or rdma_migrate_id(3)
+ *                     fail
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,

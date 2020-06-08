@@ -279,18 +279,36 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
 /** 3
- * rpma_conn_req_connect - XXX
+ * rpma_conn_req_connect - connect the connection request
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_req_connect(struct rpma_conn_req *req,
- *		struct rpma_conn_private_data *pdata, struct rpma_conn **conn);
+ *	int rpma_conn_req_connect(struct rpma_conn_req *req_ptr,
+ *		struct rpma_conn_private_data *pdata,
+ *		struct rpma_conn **conn_ptr);
  *
  * DESCRIPTION
- * Connect the connection request both incoming and
- * outgoing.
+ * Connect the connection requests both incoming and outgoing.
+ *
+ * RETURN VALUE
+ * The rpma_conn_req_connect() function returns 0 on success or a negative
+ * error code on failure. The newly created connection object is stored in
+ * *conn_ptr whereas *req_ptr is consumed and set to NULL.
+ * rpma_conn_req_connect() does not set *conn_ptr neither *req_ptr values on
+ * failure.
+ *
+ * ERRORS
+ * rpma_conn_req_connect() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - req_ptr, *req_ptr or conn_ptr is NULL
+ * - RPMA_E_INVAL - pdata is not NULL whereas pdata->len == 0
+ * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_PROVIDER - initiating a connection request failed (active side only)
+ * - RPMA_E_PROVIDER - accepting the connection request failed
+ *                     (passive side only)
+ * - RPMA_E_PROVIDER - freeing a communication event failed (passive side only)
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr);
