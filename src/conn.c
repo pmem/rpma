@@ -7,7 +7,10 @@
  * conn.c -- librpma connection-related implementations
  */
 
+#include "cmocka_alloc.h"
 #include "conn.h"
+#include "rpma_err.h"
+#include "out.h"
 
 struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
@@ -18,13 +21,28 @@ struct rpma_conn {
 /* internal librpma API */
 
 /*
- * rpma_conn_new -- XXX wrap entities into a new rpma_conn object
+ * rpma_conn_new -- wrap provided entities into a newly created connection
+ * object
  */
 int
 rpma_conn_new(struct rdma_cm_id *id, struct rdma_event_channel *evch,
-		struct ibv_cq *cq, struct rpma_conn **conn)
+		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (id == NULL || evch == NULL || cq == NULL || conn_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rpma_conn *conn = Malloc(sizeof(*conn));
+	if (!conn) {
+		ASSERTeq(errno, ENOMEM);
+		return RPMA_E_NOMEM;
+	}
+
+	conn->id = id;
+	conn->evch = evch;
+	conn->cq = cq;
+	*conn_ptr = conn;
+
+	return 0;
 }
 
 /* public librpma API */
@@ -58,11 +76,48 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 }
 
 /*
- * rpma_conn_delete -- XXX deleted rpma_conn object; make sure the connection
- * is after RPMA_CONN_CLOSED event
+ * rpma_conn_delete -- delete the connection object
  */
 int
-rpma_conn_delete(struct rpma_conn **conn)
+rpma_conn_delete(struct rpma_conn **conn_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (conn_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	struct rpma_conn *conn = *conn_ptr;
+	if (conn == NULL)
+		return 0;
+
+	int ret = 0;
+
+	rdma_destroy_qp(conn->id);
+
+	Rpma_provider_error = ibv_destroy_cq(conn->cq);
+	if (Rpma_provider_error) {
+		ret = RPMA_E_PROVIDER;
+		goto err_destroy_id;
+	}
+
+	if (rdma_destroy_id(conn->id)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_destroy_event_channel;
+	}
+
+	rdma_destroy_event_channel(conn->evch);
+
+	Free(conn);
+	*conn_ptr = NULL;
+
+	return 0;
+
+err_destroy_id:
+	(void) rdma_destroy_id(conn->id);
+err_destroy_event_channel:
+	rdma_destroy_event_channel(conn->evch);
+
+	Free(conn);
+	*conn_ptr = NULL;
+
+	return ret;
 }
