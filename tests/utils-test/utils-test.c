@@ -13,57 +13,39 @@
 
 #include "cmocka_headers.h"
 #include "librpma.h"
+#include "info.h"
+#include "rpma_err.h"
 
 #define IP_ADDRESS	"127.0.0.1"
-#define MOCK_VERBS	((struct ibv_context *)0xABC0) /* any not-NULL value */
-#define MOCK_SRC_ADDR	((struct sockaddr *)0xABC1) /* any not-NULL value */
 
-/* mock errno values */
-#define MOCK_ERRNO_0	0xFE00
-#define MOCK_ERRNO_1	0xFE01
-#define MOCK_ERRNO_2	0xFE02
-#define MOCK_ERRNO_3	0xFE03
+/* any not-NULL values */
+#define MOCK_INFO	((struct rpma_info *)0xABC0)
+#define MOCK_VERBS	((struct ibv_context *)0xABC1)
+
+/* mock error values */
+#define ANY_RPMA_ERROR	0xFE00
+#define ANY_ERRNO	0xFE01
 
 /*
- * rdma_getaddrinfo -- mock of rdma_getaddrinfo
+ * rpma_info_new -- mock of rpma_info_new
  */
 int
-rdma_getaddrinfo(const char *node, const char *service,
-			const struct rdma_addrinfo *hints,
-			struct rdma_addrinfo **res)
+rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
+		struct rpma_info **info_ptr)
 {
-	assert_non_null(res);
+	assert_string_equal(addr, IP_ADDRESS);
+	assert_null(service);
+	assert_int_equal(side, RPMA_INFO_PASSIVE);
 
-	/* Either node, service, or hints must be provided. */
-	if (!(node || service || hints)) {
-		errno = MOCK_ERRNO_0;
-		return -1;
+	int ret = mock_type(int);
+	if (ret) {
+		Rpma_provider_error = mock_type(int);
+		return ret;
 	}
 
-	/*
-	 * If node is not given, rdma_getaddrinfo will attempt to resolve
-	 * the RDMA addressing information based on the hints.ai_src_addr,
-	 * hints.ai_dst_addr, or hints.ai_route.
-	 */
-	if ((!node) && hints) {
-		if (!(hints->ai_src_addr || hints->ai_dst_addr ||
-		    hints->ai_route)) {
-			errno = MOCK_ERRNO_1;
-			return -1;
-		}
-	}
+	*info_ptr = mock_type(struct rpma_info *);
 
-	/* allocate (struct rdma_addrinfo *) */
-	*res = mock_type(struct rdma_addrinfo *);
-	if (*res == NULL) {
-		errno = mock_type(int);
-		return -1;
-	}
-
-	if (hints) {
-		check_expected(hints->ai_flags);
-		(*res)->ai_flags = hints->ai_flags;
-	}
+	expect_value(rpma_info_delete, *info_ptr, *info_ptr);
 
 	return 0;
 }
@@ -77,7 +59,8 @@ rdma_create_id(struct rdma_event_channel *channel,
 		enum rdma_port_space ps)
 {
 	assert_non_null(id);
-	check_expected(ps);
+	assert_null(context);
+	assert_int_equal(ps, RDMA_PS_TCP);
 
 	/* allocate (struct rdma_cm_id *) */
 	*id = mock_type(struct rdma_cm_id *);
@@ -86,21 +69,23 @@ rdma_create_id(struct rdma_event_channel *channel,
 		return -1;
 	}
 
+	expect_value(rdma_destroy_id, id, *id);
+
 	return 0;
 }
 
 /*
- * rdma_bind_addr -- mock of rdma_bind_addr
+ * rpma_info_bind_addr -- mock of rpma_info_bind_addr
  */
 int
-rdma_bind_addr(struct rdma_cm_id *id, struct sockaddr *addr)
+rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
+	check_expected(info);
 	check_expected(id);
-	check_expected(addr);
 
 	int ret = mock_type(int);
 	if (ret)
-		errno = mock_type(int);
+		Rpma_provider_error = mock_type(int);
 	return ret;
 }
 
@@ -112,18 +97,24 @@ rdma_destroy_id(struct rdma_cm_id *id)
 {
 	check_expected(id);
 
-	int ret = mock_type(int);
-	if (ret)
-		errno = mock_type(int);
-	return ret;
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+	return 0;
 }
 
 /*
- * rdma_freeaddrinfo -- mock of rdma_freeaddrinfo
+ * rpma_info_delete -- mock of rpma_info_delete
  */
-void
-rdma_freeaddrinfo(struct rdma_addrinfo *res)
+int
+rpma_info_delete(struct rpma_info **info_ptr)
 {
+	if (info_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	check_expected(*info_ptr);
+
+	return 0;
 }
 
 /*
@@ -155,7 +146,7 @@ test_dev_NULL(void **unused)
 }
 
 /*
- * test_addr_NULL - test NULL addr and dev parameter
+ * test_addr_NULL_dev_NULL - test NULL addr and dev parameter
  */
 static void
 test_addr_NULL_dev_NULL(void **unused)
@@ -168,22 +159,27 @@ test_addr_NULL_dev_NULL(void **unused)
 }
 
 /*
- * test_getaddrinfo_failed - memory allocation in rdma_getaddrinfo fails
+ * test_info_new_failed - rpma_info_new fails
  */
 static void
-test_getaddrinfo_failed(void **unused)
+test_info_new_failed(void **unused)
 {
 	/* configure mocks */
-	will_return(rdma_getaddrinfo, NULL);
-	will_return(rdma_getaddrinfo, ENOMEM);
+	will_return(rpma_info_new, ANY_RPMA_ERROR);
+	will_return(rpma_info_new, ANY_ERRNO);
+
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	will_return_maybe(rdma_create_id, &id);
+	will_return_maybe(rdma_destroy_id, 0);
 
 	/* run test */
 	struct ibv_context *dev = NULL;
 	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
+	assert_int_equal(ret, ANY_RPMA_ERROR);
+	assert_int_equal(rpma_err_get_provider_error(), ANY_ERRNO);
 	assert_null(dev);
 }
 
@@ -194,12 +190,9 @@ static void
 test_create_id_failed(void **unused)
 {
 	/* configure mocks */
-	struct rdma_addrinfo rai;
-	will_return(rdma_getaddrinfo, &rai);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
+	will_return_maybe(rpma_info_new, 0);
 	will_return(rdma_create_id, NULL);
-	will_return(rdma_create_id, ENOMEM);
+	will_return(rdma_create_id, ANY_ERRNO);
 
 	/* run test */
 	struct ibv_context *dev = NULL;
@@ -207,30 +200,29 @@ test_create_id_failed(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
+	assert_int_equal(rpma_err_get_provider_error(), ANY_ERRNO);
 	assert_null(dev);
 }
 
 /*
- * test_bind_addr_failed - rdma_bind_addr fails
+ * test_bind_addr_failed - rpma_info_bind_addr fails
  */
 static void
 test_bind_addr_failed(void **unused)
 {
 	/* configure mocks */
-	struct rdma_addrinfo rai;
+	will_return(rpma_info_new, 0);
+	will_return(rpma_info_new, MOCK_INFO);
+
 	struct rdma_cm_id id;
 	id.verbs = MOCK_VERBS;
-	rai.ai_src_addr = MOCK_SRC_ADDR;
-	will_return(rdma_getaddrinfo, &rai);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
 	will_return(rdma_create_id, &id);
-	expect_value(rdma_bind_addr, id, &id);
-	expect_value(rdma_bind_addr, addr, MOCK_SRC_ADDR);
-	will_return(rdma_bind_addr, -1);
-	will_return(rdma_bind_addr, MOCK_ERRNO_2);
-	expect_value(rdma_destroy_id, id, &id);
+
+	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
+	expect_value(rpma_info_bind_addr, id, &id);
+	will_return(rpma_info_bind_addr, ANY_RPMA_ERROR);
+	will_return(rpma_info_bind_addr, ANY_ERRNO);
+
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
@@ -238,8 +230,8 @@ test_bind_addr_failed(void **unused)
 	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO_2);
+	assert_int_equal(ret, ANY_RPMA_ERROR);
+	assert_int_equal(rpma_err_get_provider_error(), ANY_ERRNO);
 	assert_null(dev);
 }
 
@@ -251,20 +243,18 @@ static void
 test_success_destroy_id_failed(void **unused)
 {
 	/* configure mocks */
-	struct rdma_addrinfo rai;
+	will_return(rpma_info_new, 0);
+	will_return(rpma_info_new, MOCK_INFO);
+
 	struct rdma_cm_id id;
 	id.verbs = MOCK_VERBS;
-	rai.ai_src_addr = MOCK_SRC_ADDR;
-	will_return(rdma_getaddrinfo, &rai);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
 	will_return(rdma_create_id, &id);
-	expect_value(rdma_bind_addr, id, &id);
-	expect_value(rdma_bind_addr, addr, MOCK_SRC_ADDR);
-	will_return(rdma_bind_addr, 0);
-	expect_value(rdma_destroy_id, id, &id);
-	will_return(rdma_destroy_id, -1);
-	will_return(rdma_destroy_id, MOCK_ERRNO_3);
+
+	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
+	expect_value(rpma_info_bind_addr, id, &id);
+	will_return(rpma_info_bind_addr, 0);
+
+	will_return(rdma_destroy_id, ANY_ERRNO);
 
 	/* run test */
 	struct ibv_context *dev = NULL;
@@ -282,18 +272,17 @@ static void
 test_success(void **unused)
 {
 	/* configure mocks */
-	struct rdma_addrinfo rai;
+	will_return(rpma_info_new, 0);
+	will_return(rpma_info_new, MOCK_INFO);
+
 	struct rdma_cm_id id;
 	id.verbs = MOCK_VERBS;
-	rai.ai_src_addr = MOCK_SRC_ADDR;
-	will_return(rdma_getaddrinfo, &rai);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	expect_value(rdma_create_id, ps, RDMA_PS_TCP);
 	will_return(rdma_create_id, &id);
-	expect_value(rdma_bind_addr, id, &id);
-	expect_value(rdma_bind_addr, addr, MOCK_SRC_ADDR);
-	will_return(rdma_bind_addr, 0);
-	expect_value(rdma_destroy_id, id, &id);
+
+	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
+	expect_value(rpma_info_bind_addr, id, &id);
+	will_return(rpma_info_bind_addr, 0);
+
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
@@ -312,7 +301,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(test_addr_NULL),
 		cmocka_unit_test(test_dev_NULL),
 		cmocka_unit_test(test_addr_NULL_dev_NULL),
-		cmocka_unit_test(test_getaddrinfo_failed),
+		cmocka_unit_test(test_info_new_failed),
 		cmocka_unit_test(test_create_id_failed),
 		cmocka_unit_test(test_bind_addr_failed),
 		cmocka_unit_test(test_success_destroy_id_failed),
