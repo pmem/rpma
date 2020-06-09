@@ -27,19 +27,18 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 	if (addr == NULL || dev == NULL)
 		return RPMA_E_INVAL;
 
-	/* XXX only passive for now */
-	int ret = rpma_info_new(addr, NULL /* service */,
-			RPMA_INFO_PASSIVE, &info);
-	if (ret)
-		return ret;
-
 	struct rdma_cm_id *temp_id;
-	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
+	int ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
 		Rpma_provider_error = errno;
-		ret = RPMA_E_PROVIDER;
-		goto err_create_id;
+		return RPMA_E_PROVIDER;
 	}
+
+	/* XXX only passive for now */
+	ret = rpma_info_new(addr, NULL /* service */,
+			RPMA_INFO_PASSIVE, &info);
+	if (ret)
+		goto err_info_new;
 
 	/* bind the address */
 	ret = rpma_info_bind_addr(info, temp_id);
@@ -50,10 +49,10 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 	*dev = temp_id->verbs;
 
 err_bind_addr:
-	(void) rdma_destroy_id(temp_id);
-
-err_create_id:
 	(void) rpma_info_delete(&info);
+
+err_info_new:
+	(void) rdma_destroy_id(temp_id);
 	return ret;
 }
 
