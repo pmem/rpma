@@ -205,8 +205,18 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  *	#include <librpma.h>
  *
  *	int rpma_conn_delete(struct rpma_conn **conn);
+ *
+ * RETURN VALUE
+ * The rpma_conn_delete() function returns 0 on success or a negative error code
+ * if any occurs. rpma_conn_delete() sets *conn_ptr value to NULL on success and
+ * on failure. On failure, an error code is returned.
+ *
+ * ERRORS
+ * rpma_conn_delete() can fail with the following errors:
+ * - RPMA_E_INVAL - conn_ptr is NULL
+ * - RPMA_E_PROVIDER - ibv_destroy_cq() or rdma_destroy_id() failed
  */
-int rpma_conn_delete(struct rpma_conn **conn);
+int rpma_conn_delete(struct rpma_conn **conn_ptr);
 
 /* incoming / outgoing connection request */
 
