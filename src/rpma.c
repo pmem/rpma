@@ -27,11 +27,19 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 	if (addr == NULL || dev == NULL)
 		return RPMA_E_INVAL;
 
-	/* XXX only passive for now */
-	int ret = rpma_info_new(addr, NULL /* service */,
-			RPMA_INFO_PASSIVE, &info);
-	if (ret)
-		return ret;
+	/* at first, assume the address is local */
+	enum rpma_info_side side = RPMA_INFO_PASSIVE;
+	int ret = rpma_info_new(addr, NULL /* service */, side, &info);
+	if (ret) {
+		if (ret != RPMA_E_PROVIDER)
+			return ret;
+
+		/* if failed, check if it is a remote address */
+		side = RPMA_INFO_ACTIVE;
+		ret = rpma_info_new(addr, NULL /* service */, side, &info);
+		if (ret)
+			return ret;
+	}
 
 	struct rdma_cm_id *temp_id;
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
@@ -41,10 +49,16 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 		goto err_info_delete;
 	}
 
-	/* bind the address */
-	ret = rpma_info_bind_addr(info, temp_id);
-	if (ret)
-		goto err_destroy_id;
+	/* either bind or resolve the address */
+	if (side == RPMA_INFO_PASSIVE) {
+		ret = rpma_info_bind_addr(info, temp_id);
+		if (ret)
+			goto err_destroy_id;
+	} else {
+		ret = rpma_info_resolve_addr(info, temp_id);
+		if (ret)
+			goto err_destroy_id;
+	}
 
 	/* obtain the device */
 	*dev = temp_id->verbs;
