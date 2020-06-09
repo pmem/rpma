@@ -33,7 +33,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 {
 	assert_string_equal(addr, IP_ADDRESS);
 	assert_null(service);
-	assert_int_equal(side, RPMA_INFO_PASSIVE);
+	assert_true(side == RPMA_INFO_PASSIVE || side == RPMA_INFO_ACTIVE);
 
 	*info_ptr = mock_type(struct rpma_info *);
 	if (*info_ptr == NULL) {
@@ -76,6 +76,25 @@ rdma_create_id(struct rdma_event_channel *channel,
 int
 rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
+	check_expected(info);
+	check_expected(id);
+
+	int ret = mock_type(int);
+	if (ret)
+		Rpma_provider_error = mock_type(int);
+
+	return ret;
+}
+
+/*
+ * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
+ */
+int
+rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+{
+	if (id == NULL || info == NULL)
+		return RPMA_E_INVAL;
+
 	check_expected(info);
 	check_expected(id);
 
@@ -163,6 +182,11 @@ static void
 test_info_new_failed_E_PROVIDER(void **unused)
 {
 	/* configure mocks */
+	will_return(rpma_info_new, NULL /* info_ptr */);
+	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
+	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
+	will_return(rpma_info_new, RPMA_E_PROVIDER);
+
 	will_return(rpma_info_new, NULL /* info_ptr */);
 	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
 	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
@@ -262,11 +286,50 @@ test_bind_addr_failed_E_PROVIDER(void **unused)
 }
 
 /*
- * test_success_destroy_id_failed - test if rpma_utils_get_ibv_context()
- *                                  succeeds if rdma_destroy_id() fails
+ * test_resolve_addr_failed_E_PROVIDER - rpma_info_resolve_addr fails
+ *                                       with RPMA_E_PROVIDER
  */
 static void
-test_success_destroy_id_failed(void **unused)
+test_resolve_addr_failed_E_PROVIDER(void **unused)
+{
+	/* configure mocks */
+
+	/* passive fails */
+	will_return(rpma_info_new, NULL /* info_ptr */);
+	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
+	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
+	will_return(rpma_info_new, RPMA_E_PROVIDER);
+
+	/* active succeeds */
+	will_return(rpma_info_new, MOCK_INFO);
+
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	will_return(rdma_create_id, &id);
+
+	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
+	expect_value(rpma_info_resolve_addr, id, &id);
+	will_return(rpma_info_resolve_addr, RPMA_E_PROVIDER);
+	will_return(rpma_info_resolve_addr, ANY_ERRNO);
+
+	will_return(rdma_destroy_id, 0);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), ANY_ERRNO);
+	assert_null(dev);
+}
+
+/*
+ * test_success_destroy_id_failed_passive - test if rpma_utils_get_ibv_context()
+ *                                          succeeds if rdma_destroy_id() fails
+ */
+static void
+test_success_destroy_id_failed_passive(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
@@ -291,10 +354,46 @@ test_success_destroy_id_failed(void **unused)
 }
 
 /*
- * test_success - test the 'all is OK' situation
+ * test_success_destroy_id_failed_active - test if rpma_utils_get_ibv_context()
+ *                                         succeeds if rdma_destroy_id() fails
  */
 static void
-test_success(void **unused)
+test_success_destroy_id_failed_active(void **unused)
+{
+	/* configure mocks */
+	/* passive fails */
+	will_return(rpma_info_new, NULL /* info_ptr */);
+	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
+	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
+	will_return(rpma_info_new, RPMA_E_PROVIDER);
+
+	/* active succeeds */
+	will_return(rpma_info_new, MOCK_INFO);
+
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	will_return(rdma_create_id, &id);
+
+	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
+	expect_value(rpma_info_resolve_addr, id, &id);
+	will_return(rpma_info_resolve_addr, 0);
+
+	will_return(rdma_destroy_id, ANY_ERRNO);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, 0);
+	assert_ptr_equal(dev, MOCK_VERBS);
+}
+
+/*
+ * test_success_passive - test the 'all is OK' situation
+ */
+static void
+test_success_passive(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
@@ -318,6 +417,41 @@ test_success(void **unused)
 	assert_ptr_equal(dev, MOCK_VERBS);
 }
 
+/*
+ * test_success_active - test the 'all is OK' situation
+ */
+static void
+test_success_active(void **unused)
+{
+	/* configure mocks */
+	/* passive fails */
+	will_return(rpma_info_new, NULL /* info_ptr */);
+	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
+	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
+	will_return(rpma_info_new, RPMA_E_PROVIDER);
+
+	/* active succeeds */
+	will_return(rpma_info_new, MOCK_INFO);
+
+	struct rdma_cm_id id;
+	id.verbs = MOCK_VERBS;
+	will_return(rdma_create_id, &id);
+
+	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
+	expect_value(rpma_info_resolve_addr, id, &id);
+	will_return(rpma_info_resolve_addr, 0);
+
+	will_return(rdma_destroy_id, 0);
+
+	/* run test */
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, 0);
+	assert_ptr_equal(dev, MOCK_VERBS);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -329,8 +463,11 @@ main(int argc, char *argv[])
 		cmocka_unit_test(test_info_new_failed_E_NOMEM),
 		cmocka_unit_test(test_create_id_failed),
 		cmocka_unit_test(test_bind_addr_failed_E_PROVIDER),
-		cmocka_unit_test(test_success_destroy_id_failed),
-		cmocka_unit_test(test_success),
+		cmocka_unit_test(test_resolve_addr_failed_E_PROVIDER),
+		cmocka_unit_test(test_success_destroy_id_failed_passive),
+		cmocka_unit_test(test_success_destroy_id_failed_active),
+		cmocka_unit_test(test_success_passive),
+		cmocka_unit_test(test_success_active),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
