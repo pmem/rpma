@@ -683,6 +683,19 @@ ep_shutdown_test_destroy_id_EAGAIN(void **estate_ptr)
 		sizeof(estate->evch)), 0);
 }
 
+/*
+ * ep_next_conn_req_test_NULL - sanity test for rpma_ep_next_conn_req()
+ */
+static void
+ep_next_conn_req_test_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_ep_next_conn_req(NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOSUPP);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -712,6 +725,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 			ep_shutdown_test_destroy_id_EAGAIN,
 			ep_setup, ep_teardown),
+		cmocka_unit_test(ep_next_conn_req_test_NULL),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
