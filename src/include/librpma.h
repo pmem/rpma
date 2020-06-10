@@ -56,6 +56,7 @@
  * rpma_utils_get_ibv_context() can fail with the following errors:
  *
  * - RPMA_E_INVAL - addr or dev is NULL
+ * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id()
  *       or rdma_bind_addr() failed, errno can be checked using
  *       rpma_err_get_provider_error()
