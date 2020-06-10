@@ -5,5 +5,10 @@
 
 include(../cmake/ctest_helpers.cmake)
 
-build_test_lib(utils-test utils-test.c)
+build_test_src(utils-test
+	utils-test.c
+	${LIBRPMA_SOURCE_DIR}/rpma.c)
+
+target_link_libraries(utils-test test-rpma-utils)
+
 add_test_generic(NAME utils-test TRACERS none)
