@@ -52,12 +52,67 @@ rdma_destroy_id(struct rdma_cm_id *id)
 }
 
 /*
+ * rdma_create_event_channel -- rdma_create_event_channel() mock
+ */
+struct rdma_event_channel *
+rdma_create_event_channel(void)
+{
+	struct rdma_event_channel *evch =
+		mock_type(struct rdma_event_channel *);
+	if (!evch) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return evch;
+}
+
+/*
  * rdma_destroy_event_channel -- rdma_destroy_event_channel() mock
  */
 void
 rdma_destroy_event_channel(struct rdma_event_channel *channel)
 {
-	check_expected_ptr(channel);
+	assert_ptr_equal(channel, MOCK_EVCH);
+}
+
+/*
+ * Rdma_migrate_id_counter -- counter of calls to rdma_migrate_id() which allows
+ * controlling its mock behaviour from call-to-call.
+ */
+static int Rdma_migrate_id_counter = 0;
+
+#define RDMA_MIGRATE_TO_EVCH 0
+#define RDMA_MIGRATE_FROM_EVCH 1
+#define RDMA_MIGRATE_COUNTER_INIT (RDMA_MIGRATE_TO_EVCH)
+
+/*
+ * rdma_migrate_id -- rdma_migrate_id() mock
+ */
+int
+rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
+{
+	assert_ptr_equal(id, MOCK_CM_ID);
+
+	/*
+	 * This mock assumes the first call to rdma_migrate_id() always migrate
+	 * a CM ID to an event channel. Whereas the second call migrate the
+	 * CM ID from the event channel (channel == NULL).
+	 */
+	if (Rdma_migrate_id_counter == RDMA_MIGRATE_TO_EVCH)
+		assert_ptr_equal(channel, MOCK_EVCH);
+	else if (Rdma_migrate_id_counter == RDMA_MIGRATE_FROM_EVCH)
+		assert_ptr_equal(channel, NULL);
+	else
+		assert_true(0);
+
+	++Rdma_migrate_id_counter;
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
 }
 
 void *__real__test_malloc(size_t size);
@@ -84,22 +139,7 @@ new_test_id_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(NULL, MOCK_EVCH, MOCK_CQ, &conn);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_null(conn);
-}
-
-/*
- * new_test_evch_NULL - NULL evch is invalid
- */
-static void
-new_test_evch_NULL(void **unused)
-{
-	/* run test */
-	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, NULL, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(NULL, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -114,7 +154,7 @@ new_test_cq_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_EVCH, NULL, &conn);
+	int ret = rpma_conn_new(MOCK_CM_ID, NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -128,24 +168,67 @@ static void
 new_test_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_EVCH, MOCK_CQ, NULL);
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * new_test_id_evch_cq_conn_ptr_NULL - NULL id, evch, cq and conn_ptr are
+ * new_test_id_cq_conn_ptr_NULL - NULL id, cq and conn_ptr are
  * invalid
  */
 static void
-new_test_id_evch_cq_conn_ptr_NULL(void **unused)
+new_test_id_cq_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(NULL, NULL, NULL, NULL);
+	int ret = rpma_conn_new(NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * new_test_create_evch_EAGAIN - rdma_create_event_channel() fails with EAGAIN
+ */
+static void
+new_test_create_evch_EAGAIN(void **unused)
+{
+	/* configure mock */
+	will_return(rdma_create_event_channel, NULL);
+	will_return(rdma_create_event_channel, EAGAIN);
+	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(conn);
+}
+
+/*
+ * new_test_migrate_id_EAGAIN - rdma_migrate_id() fails with EAGAIN
+ */
+static void
+new_test_migrate_id_EAGAIN(void **unused)
+{
+	/* configure mock */
+	will_return(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return(rdma_migrate_id, EAGAIN);
+	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(conn);
 }
 
 /*
@@ -156,10 +239,13 @@ new_test_malloc_ENOMEM(void **unused)
 {
 	/* configure mock */
 	will_return(__wrap__test_malloc, ENOMEM);
+	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return_maybe(rdma_migrate_id, NO_ERROR);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_EVCH, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -173,11 +259,14 @@ static int
 conn_setup(void **conn_ptr)
 {
 	/* configure mock: */
-	will_return(__wrap__test_malloc, 0);
+	will_return(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return(rdma_migrate_id, NO_ERROR);
+	will_return(__wrap__test_malloc, NO_ERROR);
 
 	/* prepare an object */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_EVCH, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, NO_ERROR);
@@ -202,7 +291,6 @@ conn_teardown(void **conn_ptr)
 	will_return(ibv_destroy_cq, NO_ERROR);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, NO_ERROR);
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* delete the object */
 	int ret = rpma_conn_delete(&conn);
@@ -274,7 +362,6 @@ delete_test_destroy_cq_EAGAIN(void **conn_ptr)
 	will_return(ibv_destroy_cq, EAGAIN);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, NO_ERROR);
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* run test */
 	ret = rpma_conn_delete(&conn);
@@ -308,7 +395,6 @@ delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN(void **conn_ptr)
 	will_return(ibv_destroy_cq, EAGAIN); /* first error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EIO); /* second error */
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* run test */
 	ret = rpma_conn_delete(&conn);
@@ -346,7 +432,6 @@ delete_test_destroy_id_EAGAIN(void **conn_ptr)
 	will_return(ibv_destroy_cq, NO_ERROR);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EAGAIN);
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* run test */
 	ret = rpma_conn_delete(&conn);
@@ -363,10 +448,11 @@ main(int argc, char *argv[])
 	const struct CMUnitTest tests[] = {
 		/* rpma_conn_new() unit tests */
 		cmocka_unit_test(new_test_id_NULL),
-		cmocka_unit_test(new_test_evch_NULL),
 		cmocka_unit_test(new_test_cq_NULL),
 		cmocka_unit_test(new_test_conn_ptr_NULL),
-		cmocka_unit_test(new_test_id_evch_cq_conn_ptr_NULL),
+		cmocka_unit_test(new_test_id_cq_conn_ptr_NULL),
+		cmocka_unit_test(new_test_create_evch_EAGAIN),
+		cmocka_unit_test(new_test_migrate_id_EAGAIN),
 		cmocka_unit_test(new_test_malloc_ENOMEM),
 
 		/* rpma_conn_new()/_delete() lifecycle */
