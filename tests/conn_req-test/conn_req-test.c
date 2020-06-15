@@ -11,7 +11,11 @@
 
 #include "cmocka_headers.h"
 #include "conn_req.h"
+#include "info.h"
 #include "rpma_err.h"
+
+#define MOCK_IP_ADDRESS	"127.0.0.1"
+#define MOCK_SERVICE	"1234" /* a random port number */
 
 /* random values */
 #define MOCK_VERBS	(struct ibv_context *)0x4E4B
@@ -153,6 +157,116 @@ int
 rdma_ack_cm_event(struct rdma_cm_event *event)
 {
 	check_expected_ptr(event);
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
+}
+
+/*
+ * rpma_info_new -- mock of rpma_info_new
+ */
+int
+rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
+		struct rpma_info **info_ptr)
+{
+	assert_string_equal(addr, MOCK_IP_ADDRESS);
+	assert_null(service);
+	assert_int_equal(side, RPMA_INFO_PASSIVE);
+
+	*info_ptr = mock_type(struct rpma_info *);
+	if (*info_ptr == NULL) {
+		Rpma_provider_error = mock_type(int);
+		return mock_type(int);
+	}
+
+	expect_value(rpma_info_delete, *info_ptr, *info_ptr);
+
+	return 0;
+}
+
+/*
+ * rpma_info_delete -- mock of rpma_info_delete
+ */
+int
+rpma_info_delete(struct rpma_info **info_ptr)
+{
+	if (info_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	check_expected(*info_ptr);
+
+	return 0;
+}
+
+/*
+ * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
+ */
+int
+rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+{
+	if (id == NULL || info == NULL)
+		return RPMA_E_INVAL;
+
+	check_expected(info);
+	check_expected(id);
+
+	int ret = mock_type(int);
+	if (ret)
+		Rpma_provider_error = mock_type(int);
+
+	return ret;
+}
+
+/*
+ * rdma_create_id -- mock of rdma_create_id
+ */
+int
+rdma_create_id(struct rdma_event_channel *channel,
+		struct rdma_cm_id **id, void *context,
+		enum rdma_port_space ps)
+{
+	assert_non_null(id);
+	assert_null(context);
+	assert_int_equal(ps, RDMA_PS_TCP);
+
+	/* allocate (struct rdma_cm_id *) */
+	*id = mock_type(struct rdma_cm_id *);
+	if (*id == NULL) {
+		errno = mock_type(int);
+		return -1;
+	}
+
+	expect_value(rdma_destroy_id, id, *id);
+
+	return 0;
+}
+
+/*
+ * rdma_destroy_id -- mock of rdma_destroy_id
+ */
+int
+rdma_destroy_id(struct rdma_cm_id *id)
+{
+	check_expected(id);
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
+}
+
+/*
+ * rdma_destroy_id -- mock of rdma_destroy_id
+ */
+int
+rdma_resolve_route(struct rdma_cm_id *id, int timeout_ms)
+{
+	check_expected(id);
+	check_expected(timeout_ms);
 
 	errno = mock_type(int);
 	if (errno)
@@ -469,6 +583,78 @@ conn_req_test_lifecycle(void **unused)
 }
 
 /*
+ * new_test_peer_NULL -- NULL peer is invalid
+ */
+static void
+new_test_peer_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_conn_req *req;
+	int ret = rpma_conn_req_new(NULL, MOCK_IP_ADDRESS, MOCK_SERVICE,
+					&req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * new_test_addr_NULL -- NULL addr is invalid
+ */
+static void
+new_test_addr_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_conn_req *req;
+	int ret = rpma_conn_req_new(MOCK_PEER, NULL, MOCK_SERVICE,
+					&req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * new_test_service_NULL -- NULL service is invalid
+ */
+static void
+new_test_service_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_conn_req *req;
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, NULL,
+					&req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * new_test_req_ptr_NULL -- NULL req_ptr is invalid
+ */
+static void
+new_test_req_ptr_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+					NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * new_test_all_NULL -- all NULL arguments are invalid
+ */
+static void
+new_test_all_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_conn_req_new(NULL, NULL, NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * delete_test_req_ptr_NULL -- NULL req_ptr is invalid
  */
 static void
@@ -662,6 +848,13 @@ main(int argc, char *argv[])
 		/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 		cmocka_unit_test_setup_teardown(conn_req_test_lifecycle,
 			conn_req_setup, conn_req_teardown),
+
+		/* rpma_conn_req_new() unit tests */
+		cmocka_unit_test(new_test_peer_NULL),
+		cmocka_unit_test(new_test_addr_NULL),
+		cmocka_unit_test(new_test_service_NULL),
+		cmocka_unit_test(new_test_req_ptr_NULL),
+		cmocka_unit_test(new_test_all_NULL),
 
 		/* rpma_conn_req_delete() unit tests */
 		cmocka_unit_test(delete_test_req_ptr_NULL),
