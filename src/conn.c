@@ -86,8 +86,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
  * rpma_conn_get_private_data -- XXX
  */
 int
-rpma_conn_get_private_data(struct rpma_conn *conn, void **private_data,
-		uint8_t *private_data_len)
+rpma_conn_get_private_data(struct rpma_conn *conn,
+		struct rpma_conn_private_data *pdata)
 {
 	return RPMA_E_NOSUPP;
 }
