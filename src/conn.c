@@ -21,20 +21,38 @@ struct rpma_conn {
 /* internal librpma API */
 
 /*
- * rpma_conn_new -- wrap provided entities into a newly created connection
- * object
+ * rpma_conn_new -- migrate an obtained CM ID into newly created event channel.
+ * If succeeded wrap provided entities into a newly created connection object.
+ *
+ * Note: rdma_migrate_id(3) will block if the previous event channel of the CM
+ * ID has any outstanding (unacknowledged) events.
  */
 int
-rpma_conn_new(struct rdma_cm_id *id, struct rdma_event_channel *evch,
-		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
+rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
+		struct rpma_conn **conn_ptr)
 {
-	if (id == NULL || evch == NULL || cq == NULL || conn_ptr == NULL)
+	if (id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
+
+	int ret = 0;
+
+	struct rdma_event_channel *evch = rdma_create_event_channel();
+	if (!evch) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	if (rdma_migrate_id(id, evch)) {
+		Rpma_provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_destroy_evch;
+	}
 
 	struct rpma_conn *conn = Malloc(sizeof(*conn));
 	if (!conn) {
 		ASSERTeq(errno, ENOMEM);
-		return RPMA_E_NOMEM;
+		ret = RPMA_E_NOMEM;
+		goto err_migrate_id_NULL;
 	}
 
 	conn->id = id;
@@ -43,6 +61,14 @@ rpma_conn_new(struct rdma_cm_id *id, struct rdma_event_channel *evch,
 	*conn_ptr = conn;
 
 	return 0;
+
+err_migrate_id_NULL:
+	(void) rdma_migrate_id(id, NULL);
+
+err_destroy_evch:
+	rdma_destroy_event_channel(evch);
+
+	return ret;
 }
 
 /* public librpma API */
