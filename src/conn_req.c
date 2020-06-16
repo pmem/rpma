@@ -173,7 +173,8 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr, const void *private_data,
 
 /*
  * rpma_conn_req_delete -- destroy QP and CQ of the CM ID and reject the
- * connection or XXX. Finally, free the connection request object.
+ * connection or simply destroy the CM ID. Finally, free the connection request
+ * object.
  */
 int
 rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
