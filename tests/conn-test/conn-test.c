@@ -13,6 +13,7 @@
 #define MOCK_EVCH	(struct rdma_event_channel *)0xE4C4
 #define MOCK_CQ		(struct ibv_cq *)0x00C0
 #define MOCK_CM_ID	(struct rdma_cm_id *)0xC41D
+#define MOCK_EVENT_UNDEF	(enum rpma_conn_event)(-1)
 
 #define NO_ERROR	0
 
@@ -129,6 +130,40 @@ __wrap__test_malloc(size_t size)
 		return NULL;
 
 	return __real__test_malloc(size);
+}
+
+/*
+ * rdma_get_cm_event -- rdma_get_cm_event() mock
+ */
+int
+rdma_get_cm_event(struct rdma_event_channel *channel,
+		struct rdma_cm_event **event_ptr)
+{
+	check_expected_ptr(channel);
+	assert_non_null(event_ptr);
+
+	struct rdma_cm_event *event = mock_type(struct rdma_cm_event *);
+	if (!event) {
+		errno = mock_type(int);
+		return -1;
+	}
+
+	*event_ptr = event;
+	return 0;
+}
+
+/*
+ * rdma_ack_cm_event -- rdma_ack_cm_event() mock
+ */
+int
+rdma_ack_cm_event(struct rdma_cm_event *event)
+{
+	check_expected_ptr(event);
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
 }
 
 /*
@@ -442,6 +477,200 @@ delete_test_destroy_id_EAGAIN(void **conn_ptr)
 	assert_null(conn);
 }
 
+/*
+ * next_event_test_conn_NULL - NULL conn is invalid
+ */
+static void
+next_event_test_conn_NULL(void **unused)
+{
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(NULL, &c_event);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_int_equal(c_event, MOCK_EVENT_UNDEF);
+}
+
+/*
+ * next_event_test_event_NULL - NULL event is invalid
+ */
+static void
+next_event_test_event_NULL(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	/* run test */
+	int ret = rpma_conn_next_event(conn, NULL);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * next_event_test_conn_NULL_event_NULL - NULL conn and NULL event are invalid
+ */
+static void
+next_event_test_conn_NULL_event_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_conn_next_event(NULL, NULL);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * next_event_test_get_cm_event_EAGAIN -
+ * rdma_get_cm_event() fails with EAGAIN
+ */
+static void
+next_event_test_get_cm_event_EAGAIN(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, EAGAIN);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_int_equal(c_event, MOCK_EVENT_UNDEF);
+}
+
+/*
+ * next_event_test_event_REJECTED -
+ * RDMA_CM_EVENT_REJECTED is unexpected
+ */
+static void
+next_event_test_event_REJECTED(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_REJECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_UNKNOWN);
+	assert_int_equal(c_event, MOCK_EVENT_UNDEF);
+}
+
+/*
+ * next_event_test_event_REJECTED_ack_EINVAL -
+ * rdma_ack_cm_event() fails with EINVAL after obtaining
+ * an RDMA_CM_EVENT_REJECTED event
+ */
+static void
+next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_REJECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, EINVAL);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_UNKNOWN);
+	assert_int_equal(c_event, MOCK_EVENT_UNDEF);
+}
+
+/*
+ * next_event_test_success_ESTABLISHED - happy day scenario
+ */
+static void
+next_event_test_success_ESTABLISHED(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_null(ret);
+	assert_int_equal(c_event, RPMA_CONN_ESTABLISHED);
+}
+
+/*
+ * next_event_test_success_LOST - happy day scenario
+ */
+static void
+next_event_test_success_LOST(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_CONNECT_ERROR;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_null(ret);
+	assert_int_equal(c_event, RPMA_CONN_LOST);
+}
+
+/*
+ * next_event_test_success_CLOSED - happy day scenario
+ */
+static void
+next_event_test_success_CLOSED(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_DISCONNECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_null(ret);
+	assert_int_equal(c_event, RPMA_CONN_CLOSED);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -466,6 +695,31 @@ main(int argc, char *argv[])
 		cmocka_unit_test(
 			delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN),
 		cmocka_unit_test(delete_test_destroy_id_EAGAIN),
+
+		/* rpma_conn_next_event() unit tests */
+		cmocka_unit_test(next_event_test_conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_event_NULL,
+			conn_setup, conn_teardown),
+		cmocka_unit_test(next_event_test_conn_NULL_event_NULL),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_get_cm_event_EAGAIN,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_event_REJECTED,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_event_REJECTED_ack_EINVAL,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_ESTABLISHED,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_LOST,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_CLOSED,
+			conn_setup, conn_teardown),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

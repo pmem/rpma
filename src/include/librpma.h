@@ -170,6 +170,16 @@ enum rpma_conn_event {
  *
  *	int rpma_conn_next_event(struct rpma_conn *conn,
  *		enum rpma_conn_event *event);
+ *
+ * DESCRIPTION
+ * Obtain the next event from the connection
+ *
+ * ERRORS
+ * rpma_conn_next_event() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or event is NULL
+ * - RPMA_E_UNKNOWN - unexpected event
+ * - RPMA_E_PROVIDER - rdma_get_cm_event() failed
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
