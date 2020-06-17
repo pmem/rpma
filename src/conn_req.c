@@ -119,8 +119,8 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
  * or rdma_accept to transform rpma_conn_req into rpma_conn
  */
 int
-rpma_conn_req_connect(struct rpma_conn_req **req_ptr, const void *private_data,
-		uint8_t private_data_len, struct rpma_conn **conn)
+rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
+		struct rpma_conn_private_data *pdata, struct rpma_conn **conn)
 {
 	return RPMA_E_NOSUPP;
 }
