@@ -74,12 +74,39 @@ err_destroy_evch:
 /* public librpma API */
 
 /*
- * rpma_conn_next_event -- XXX uses rdma_get_cm_event
+ * rpma_conn_next_event -- obtain the next event from the connection
  */
 int
 rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || event == NULL)
+		return RPMA_E_INVAL;
+
+	int ret = 0;
+	struct rdma_cm_event *edata = NULL;
+	if (rdma_get_cm_event(conn->evch, &edata)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	switch (edata->event) {
+		case RDMA_CM_EVENT_ESTABLISHED:
+			*event = RPMA_CONN_ESTABLISHED;
+			break;
+		case RDMA_CM_EVENT_DISCONNECTED:
+			*event = RPMA_CONN_CLOSED;
+			break;
+		case RDMA_CM_EVENT_CONNECT_ERROR:
+			*event = RPMA_CONN_LOST;
+			break;
+		default:
+			ret = RPMA_E_UNKNOWN;
+			break;
+	}
+
+	(void) rdma_ack_cm_event(edata);
+
+	return ret;
 }
 
 /*
