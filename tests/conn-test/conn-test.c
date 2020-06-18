@@ -165,6 +165,19 @@ rdma_ack_cm_event(struct rdma_cm_event *event)
 
 	return 0;
 }
+/*
+ * rdma_disconnect -- rdma_disconnect() mock
+ */
+int
+rdma_disconnect(struct rdma_cm_id *id)
+{
+	check_expected_ptr(id);
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
+}
 
 /*
  * new_test_id_NULL - NULL id is invalid
@@ -671,6 +684,57 @@ next_event_test_success_CLOSED(void **conn_ptr)
 	assert_int_equal(c_event, RPMA_CONN_CLOSED);
 }
 
+/*
+ * disconnect_test_conn_NULL - NULL conn is invalid
+ */
+static void
+disconnect_test_conn_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_conn_disconnect(NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * disconnect_test_rdma_disconnect_EINVAL -
+ * rdma_disconnect() fails with EINVAL
+ */
+static void
+disconnect_test_rdma_disconnect_EINVAL(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_disconnect, id, MOCK_CM_ID);
+	will_return(rdma_disconnect, EINVAL);
+
+	/* run test */
+	int ret = rpma_conn_disconnect(conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(errno, EINVAL);
+}
+
+/*
+ * disconnect_test_success - happy day scenario
+ */
+static void
+disconnect_test_success(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_disconnect, id, MOCK_CM_ID);
+	will_return(rdma_disconnect, NO_ERROR);
+
+	/* run test */
+	int ret = rpma_conn_disconnect(conn);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -719,6 +783,15 @@ main(int argc, char *argv[])
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
 			next_event_test_success_CLOSED,
+			conn_setup, conn_teardown),
+
+		/* rpma_conn_disconnect() unit tests */
+		cmocka_unit_test(disconnect_test_conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			disconnect_test_rdma_disconnect_EINVAL,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			disconnect_test_success,
 			conn_setup, conn_teardown),
 	};
 
