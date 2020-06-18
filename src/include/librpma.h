@@ -203,6 +203,15 @@ int rpma_conn_get_private_data(struct rpma_conn *conn,
  *	#include <librpma.h>
  *
  *	int rpma_conn_disconnect(struct rpma_conn *conn);
+ *
+ * DESCRIPTION
+ * Initialize RPMA connection disconnecting process.
+ *
+ * ERRORS
+ * rpma_conn_disconnect() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn is NULL
+ * - RPMA_E_PROVIDER - rdma_disconnect() failed
  */
 int rpma_conn_disconnect(struct rpma_conn *conn);
 
