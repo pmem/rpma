@@ -606,7 +606,8 @@ next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
 	int ret = rpma_conn_next_event(conn, &c_event);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_UNKNOWN);
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
 	assert_int_equal(c_event, MOCK_EVENT_UNDEF);
 }
 
@@ -636,10 +637,10 @@ next_event_test_success_ESTABLISHED(void **conn_ptr)
 }
 
 /*
- * next_event_test_success_LOST - happy day scenario
+ * next_event_test_success_CONNECT_ERROR - happy day scenario
  */
 static void
-next_event_test_success_LOST(void **conn_ptr)
+next_event_test_success_CONNECT_ERROR(void **conn_ptr)
 {
 	struct rpma_conn *conn = *conn_ptr;
 
@@ -661,16 +662,66 @@ next_event_test_success_LOST(void **conn_ptr)
 }
 
 /*
- * next_event_test_success_CLOSED - happy day scenario
+ * next_event_test_success_DEVICE_REMOVAL - happy day scenario
  */
 static void
-next_event_test_success_CLOSED(void **conn_ptr)
+next_event_test_success_DEVICE_REMOVAL(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_DEVICE_REMOVAL;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(c_event, RPMA_CONN_LOST);
+}
+
+/*
+ * next_event_test_success_DISCONNECTED - happy day scenario
+ */
+static void
+next_event_test_success_DISCONNECTED(void **conn_ptr)
 {
 	struct rpma_conn *conn = *conn_ptr;
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	struct rdma_cm_event event;
 	event.event = RDMA_CM_EVENT_DISCONNECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = MOCK_EVENT_UNDEF;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(c_event, RPMA_CONN_CLOSED);
+}
+
+/*
+ * next_event_test_success_TIMEWAIT_EXIT - happy day scenario
+ */
+static void
+next_event_test_success_TIMEWAIT_EXIT(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_TIMEWAIT_EXIT;
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
@@ -780,10 +831,16 @@ main(int argc, char *argv[])
 			next_event_test_success_ESTABLISHED,
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
-			next_event_test_success_LOST,
+			next_event_test_success_CONNECT_ERROR,
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
-			next_event_test_success_CLOSED,
+			next_event_test_success_DEVICE_REMOVAL,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_DISCONNECTED,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_TIMEWAIT_EXIT,
 			conn_setup, conn_teardown),
 
 		/* rpma_conn_disconnect() unit tests */
