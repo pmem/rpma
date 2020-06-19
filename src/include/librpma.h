@@ -156,6 +156,7 @@ int rpma_mr_dereg(struct rpma_mr_local **mr);
 struct rpma_conn;
 
 enum rpma_conn_event {
+	RPMA_CONN_UNDEFINED = -1,
 	RPMA_CONN_ESTABLISHED,
 	RPMA_CONN_CLOSED,
 	RPMA_CONN_LOST
@@ -179,7 +180,7 @@ enum rpma_conn_event {
  *
  * - RPMA_E_INVAL - conn or event is NULL
  * - RPMA_E_UNKNOWN - unexpected event
- * - RPMA_E_PROVIDER - rdma_get_cm_event() failed
+ * - RPMA_E_PROVIDER - rdma_get_cm_event() or rdma_ack_cm_event() failed
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
