@@ -82,31 +82,35 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	if (conn == NULL || event == NULL)
 		return RPMA_E_INVAL;
 
-	int ret = 0;
 	struct rdma_cm_event *edata = NULL;
 	if (rdma_get_cm_event(conn->evch, &edata)) {
 		Rpma_provider_error = errno;
 		return RPMA_E_PROVIDER;
 	}
 
-	switch (edata->event) {
+	enum rdma_cm_event_type cm_event = edata->event;
+	if (rdma_ack_cm_event(edata)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	switch (cm_event) {
 		case RDMA_CM_EVENT_ESTABLISHED:
 			*event = RPMA_CONN_ESTABLISHED;
 			break;
-		case RDMA_CM_EVENT_DISCONNECTED:
-			*event = RPMA_CONN_CLOSED;
-			break;
 		case RDMA_CM_EVENT_CONNECT_ERROR:
+		case RDMA_CM_EVENT_DEVICE_REMOVAL:
 			*event = RPMA_CONN_LOST;
 			break;
-		default:
-			ret = RPMA_E_UNKNOWN;
+		case RDMA_CM_EVENT_DISCONNECTED:
+		case RDMA_CM_EVENT_TIMEWAIT_EXIT:
+			*event = RPMA_CONN_CLOSED;
 			break;
+		default:
+			return RPMA_E_UNKNOWN;
 	}
 
-	(void) rdma_ack_cm_event(edata);
-
-	return ret;
+	return 0;
 }
 
 /*
