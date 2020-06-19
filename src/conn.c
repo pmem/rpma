@@ -120,12 +120,20 @@ rpma_conn_get_private_data(struct rpma_conn *conn,
 }
 
 /*
- * rpma_conn_disconnect -- XXX uses rdma_disconnect
+ * rpma_conn_disconnect -- disconnect the connection
  */
 int
 rpma_conn_disconnect(struct rpma_conn *conn)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL)
+		return RPMA_E_INVAL;
+
+	if (rdma_disconnect(conn->id)) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /*
