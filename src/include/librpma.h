@@ -32,6 +32,12 @@
 
 /* picking up an RDMA-capable device */
 
+/* pick a type of an ibv_context to lookup for */
+enum rpma_util_ibv_context_type {
+	RPMA_UTIL_IBV_CONTEXT_LOCAL, /* lookup for a local device */
+	RPMA_UTIL_IBV_CONTEXT_REMOTE /* lookup for a remote device */
+};
+
 /** 3
  * rpma_utils_get_ibv_context - obtain an RDMA device context by IP address
  *
@@ -40,15 +46,13 @@
  *	#include <librpma.h>
  *
  *	int rpma_utils_get_ibv_context(const char *addr,
- *		struct ibv_context **dev);
+ *	        enum rpma_util_ibv_context_type type, struct ibv_context **dev);
  *
  * DESCRIPTION
  * rpma_utils_get_ibv_context() obtains an RDMA device context
- * by the given IPv4/IPv6 address (local or remote) using
+ * by the given IPv4/IPv6 address (either local or remote) using
  * the TCP RDMA port space (RDMA_PS_TCP) - reliable, connection-oriented
  * and message based QP communication.
- * This function looks first for a local device and if it fails,
- * then for a remote device.
  *
  * RETURN VALUE
  * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
@@ -58,13 +62,14 @@
  * ERRORS
  * rpma_utils_get_ibv_context() can fail with the following errors:
  *
- * - RPMA_E_INVAL - addr or dev is NULL
+ * - RPMA_E_INVAL - addr or dev is NULL or type is unknown
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(), rdma_bind_addr()
  *   or rdma_resolve_addr() failed, errno can be checked using
  *   rpma_err_get_provider_error()
  */
-int rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev);
+int rpma_utils_get_ibv_context(const char *addr,
+		enum rpma_util_ibv_context_type type, struct ibv_context **dev);
 
 /* peer */
 
