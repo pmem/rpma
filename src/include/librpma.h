@@ -24,11 +24,11 @@
 
 #define RPMA_W_WAIT_FOR_COMPLETION	(1)
 
-#define RPMA_E_UNKNOWN			(-100000)
-#define RPMA_E_NOSUPP			(-100001)
-#define RPMA_E_PROVIDER			(-100002)
-#define RPMA_E_NOMEM			(-100003)
-#define RPMA_E_INVAL			(-100004)
+#define RPMA_E_UNKNOWN			(-100000) /* Unknown error */
+#define RPMA_E_NOSUPP			(-100001) /* Not supported */
+#define RPMA_E_PROVIDER			(-100002) /* Provider error occurred */
+#define RPMA_E_NOMEM			(-100003) /* Out of memory */
+#define RPMA_E_INVAL			(-100004) /* Invalid argument */
 
 /* picking up an RDMA-capable device */
 
@@ -156,10 +156,10 @@ int rpma_mr_dereg(struct rpma_mr_local **mr);
 struct rpma_conn;
 
 enum rpma_conn_event {
-	RPMA_CONN_UNDEFINED = -1,
-	RPMA_CONN_ESTABLISHED,
-	RPMA_CONN_CLOSED,
-	RPMA_CONN_LOST
+	RPMA_CONN_UNDEFINED = -1,	/* Undefined event */
+	RPMA_CONN_ESTABLISHED,		/* Connection established */
+	RPMA_CONN_CLOSED,			/* Connection closed */
+	RPMA_CONN_LOST				/* Connection lost */
 };
 
 /** 3
@@ -183,6 +183,23 @@ enum rpma_conn_event {
  * - RPMA_E_PROVIDER - rdma_get_cm_event() or rdma_ack_cm_event() failed
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
+
+/** 3
+ * rpma_utils_conn_event_2str - convert RPMA_CONN_* enum to a string
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
+ *
+ * DESCRIPTION
+ * Return const string representation of RPMA_CONN_* enums.
+ *
+ * ERRORS
+ * rpma_utils_conn_event_2str() can not fail.
+ */
+const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
 
 struct rpma_conn_private_data {
 	void *ptr;
@@ -493,5 +510,22 @@ int rpma_err_get_provider_error(void);
  * .B <https://pmem.io>
  */
 const char *rpma_err_get_msg(void);
+
+/** 3
+ * rpma_err_2str - convert RPMA error code to a string
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	const char *rpma_err_2str(int ret);
+ *
+ * DESCRIPTION
+ * Return const string representation of RPMA error codes.
+ *
+ * ERRORS
+ * rpma_err_2str() can not fail.
+ */
+const char *rpma_err_2str(int ret);
 
 #endif /* LIBRPMA_H */
