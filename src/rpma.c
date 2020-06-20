@@ -20,26 +20,29 @@
  * rpma_utils_get_ibv_context -- obtain an RDMA device context by IP address
  */
 int
-rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
+rpma_utils_get_ibv_context(const char *addr,
+		enum rpma_util_ibv_context_type type, struct ibv_context **dev)
 {
-	struct rpma_info *info;
-
 	if (addr == NULL || dev == NULL)
 		return RPMA_E_INVAL;
 
-	/* at first, assume the address is local */
-	enum rpma_info_side side = RPMA_INFO_PASSIVE;
-	int ret = rpma_info_new(addr, NULL /* service */, side, &info);
-	if (ret) {
-		if (ret != RPMA_E_PROVIDER)
-			return ret;
-
-		/* if failed, check if it is a remote address */
+	enum rpma_info_side side;
+	switch (type) {
+	case RPMA_UTIL_IBV_CONTEXT_LOCAL:
+		side = RPMA_INFO_PASSIVE;
+		break;
+	case RPMA_UTIL_IBV_CONTEXT_REMOTE:
 		side = RPMA_INFO_ACTIVE;
-		ret = rpma_info_new(addr, NULL /* service */, side, &info);
-		if (ret)
-			return ret;
+		break;
+	default:
+		return RPMA_E_INVAL;
 	}
+
+	struct rpma_info *info;
+	int ret = rpma_info_new(addr, NULL /* service */, side,
+			&info);
+	if (ret)
+		return ret;
 
 	struct rdma_cm_id *temp_id;
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
@@ -49,7 +52,6 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 		goto err_info_delete;
 	}
 
-	/* either bind or resolve the address */
 	if (side == RPMA_INFO_PASSIVE) {
 		ret = rpma_info_bind_addr(info, temp_id);
 		if (ret)

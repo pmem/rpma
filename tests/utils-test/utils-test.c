@@ -22,6 +22,8 @@
 #define MOCK_INFO	((struct rpma_info *)0xABC0)
 #define MOCK_VERBS	((struct ibv_context *)0xABC1)
 
+#define TYPE_UNKNOWN (enum rpma_util_ibv_context_type)(-1)
+
 #define ANY_ERRNO	0xFE00 /* mock errno value */
 
 /*
@@ -33,12 +35,16 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 {
 	assert_string_equal(addr, IP_ADDRESS);
 	assert_null(service);
-	assert_true(side == RPMA_INFO_PASSIVE || side == RPMA_INFO_ACTIVE);
+	assert_true(side == RPMA_UTIL_IBV_CONTEXT_LOCAL
+			|| side == RPMA_UTIL_IBV_CONTEXT_REMOTE);
 
 	*info_ptr = mock_type(struct rpma_info *);
 	if (*info_ptr == NULL) {
-		Rpma_provider_error = mock_type(int);
-		return mock_type(int);
+		int result = mock_type(int);
+		if (result == RPMA_E_PROVIDER)
+			Rpma_provider_error = mock_type(int);
+
+		return result;
 	}
 
 	expect_value(rpma_info_delete, *info_ptr, *info_ptr);
@@ -132,6 +138,18 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
+ * sanity_test_type_unknown - TYPE_UNKNOWN != RPMA_UTIL_IBV_CONTEXT_LOCAL &&
+ * TYPE_UNKNOWN != RPMA_UTIL_IBV_CONTEXT_REMOTE
+ */
+static void
+sanity_test_type_unknown(void **unused)
+{
+	/* run test */
+	assert_int_not_equal(TYPE_UNKNOWN, RPMA_UTIL_IBV_CONTEXT_LOCAL);
+	assert_int_not_equal(TYPE_UNKNOWN, RPMA_UTIL_IBV_CONTEXT_REMOTE);
+}
+
+/*
  * test_addr_NULL - test NULL addr parameter
  */
 static void
@@ -139,7 +157,8 @@ test_addr_NULL(void **unused)
 {
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(NULL, &dev);
+	int ret = rpma_utils_get_ibv_context(NULL, RPMA_UTIL_IBV_CONTEXT_REMOTE,
+			&dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -153,20 +172,36 @@ static void
 test_dev_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, NULL);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * test_addr_NULL_dev_NULL - test NULL addr and dev parameter
+ * test_type_unknown - type == TYPE_UNKNOWN
  */
 static void
-test_addr_NULL_dev_NULL(void **unused)
+test_type_unknown(void **unused)
 {
 	/* run test */
-	int ret = rpma_utils_get_ibv_context(NULL, NULL);
+	struct ibv_context *dev = NULL;
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, TYPE_UNKNOWN, &dev);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_addr_NULL_dev_NULL_type_unknown - test NULL addr and dev parameter and
+ * type == TYPE_UNKNOWN
+ */
+static void
+test_addr_NULL_dev_NULL_type_unknown(void **unused)
+{
+	/* run test */
+	int ret = rpma_utils_get_ibv_context(NULL, TYPE_UNKNOWN, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -180,14 +215,8 @@ test_info_new_failed_E_PROVIDER(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
 	will_return(rpma_info_new, RPMA_E_PROVIDER);
-
-	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
-	will_return(rpma_info_new, RPMA_E_PROVIDER);
+	will_return(rpma_info_new, ANY_ERRNO);
 
 	struct rdma_cm_id id;
 	id.verbs = MOCK_VERBS;
@@ -196,7 +225,8 @@ test_info_new_failed_E_PROVIDER(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -212,8 +242,6 @@ test_info_new_failed_E_NOMEM(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, 0);
 	will_return(rpma_info_new, RPMA_E_NOMEM);
 
 	struct rdma_cm_id id;
@@ -223,7 +251,8 @@ test_info_new_failed_E_NOMEM(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -250,7 +279,8 @@ test_create_id_failed(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -265,10 +295,7 @@ test_create_id_failed(void **unused)
 static void
 test_bind_addr_failed_E_PROVIDER(void **unused)
 {
-	/*
-	 * Configure mocks.
-	 * Passive side succeeds.
-	 */
+	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 
 	struct rdma_cm_id id;
@@ -285,7 +312,8 @@ test_bind_addr_failed_E_PROVIDER(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -300,16 +328,7 @@ test_bind_addr_failed_E_PROVIDER(void **unused)
 static void
 test_resolve_addr_failed_E_PROVIDER(void **unused)
 {
-	/*
-	 * Configure mocks.
-	 * Passive side fails.
-	 */
-	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
-	will_return(rpma_info_new, RPMA_E_PROVIDER);
-
-	/* active side succeeds */
+	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 
 	struct rdma_cm_id id;
@@ -326,7 +345,8 @@ test_resolve_addr_failed_E_PROVIDER(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -341,10 +361,7 @@ test_resolve_addr_failed_E_PROVIDER(void **unused)
 static void
 test_success_destroy_id_failed_passive(void **unused)
 {
-	/*
-	 * Configure mocks.
-	 * Passive side succeeds.
-	 */
+	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 
 	struct rdma_cm_id id;
@@ -360,7 +377,8 @@ test_success_destroy_id_failed_passive(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -374,16 +392,7 @@ test_success_destroy_id_failed_passive(void **unused)
 static void
 test_success_destroy_id_failed_active(void **unused)
 {
-	/*
-	 * Configure mocks.
-	 * Passive side fails.
-	 */
-	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
-	will_return(rpma_info_new, RPMA_E_PROVIDER);
-
-	/* active side succeeds */
+	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 
 	struct rdma_cm_id id;
@@ -399,7 +408,8 @@ test_success_destroy_id_failed_active(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -427,7 +437,8 @@ test_success_passive(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -441,13 +452,6 @@ static void
 test_success_active(void **unused)
 {
 	/* configure mocks */
-	/* passive fails */
-	will_return(rpma_info_new, NULL /* info_ptr */);
-	/* Rpma_provider_error is valid only for RPMA_E_PROVIDER */
-	will_return(rpma_info_new, ANY_ERRNO /* Rpma_provider_error */);
-	will_return(rpma_info_new, RPMA_E_PROVIDER);
-
-	/* active succeeds */
 	will_return(rpma_info_new, MOCK_INFO);
 
 	struct rdma_cm_id id;
@@ -462,7 +466,8 @@ test_success_active(void **unused)
 
 	/* run test */
 	struct ibv_context *dev = NULL;
-	int ret = rpma_utils_get_ibv_context(IP_ADDRESS, &dev);
+	int ret = rpma_utils_get_ibv_context(IP_ADDRESS,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -473,9 +478,13 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
+		/* sanity */
+		cmocka_unit_test(sanity_test_type_unknown),
+
 		cmocka_unit_test(test_addr_NULL),
 		cmocka_unit_test(test_dev_NULL),
-		cmocka_unit_test(test_addr_NULL_dev_NULL),
+		cmocka_unit_test(test_type_unknown),
+		cmocka_unit_test(test_addr_NULL_dev_NULL_type_unknown),
 		cmocka_unit_test(test_info_new_failed_E_PROVIDER),
 		cmocka_unit_test(test_info_new_failed_E_NOMEM),
 		cmocka_unit_test(test_create_id_failed),

@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* request for a connection and wait for its establishment */
-	ret = rpma_utils_get_ibv_context(addr_local, &dev);
+	ret = rpma_utils_get_ibv_context(addr_local, RPMA_INFO_ACTIVE, &dev);
 	assert(ret == 0);
 
 	ret = rpma_peer_new(dev, &peer);
