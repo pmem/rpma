@@ -32,3 +32,25 @@ rpma_err_get_msg(void)
 {
 	return "";
 }
+
+/*
+ * rpma_e2str -- return const string representation of a RPMA error
+ */
+const char *
+rpma_err_2str(int ret)
+{
+	switch (ret) {
+	case RPMA_E_UNKNOWN:
+		return "RPMA_E_UNKNOWN";
+	case RPMA_E_NOSUPP:
+		return "RPMA_E_NOSUPP";
+	case RPMA_E_PROVIDER:
+		return "RPMA_E_PROVIDER";
+	case RPMA_E_NOMEM:
+		return "RPMA_E_NOMEM";
+	case RPMA_E_INVAL:
+		return "RPMA_E_INVAL";
+	default:
+		return "unknown";
+	}
+}

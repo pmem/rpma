@@ -72,6 +72,27 @@ err_info_delete:
 }
 
 /*
+ * rpma_utils_conn_event_2str -- return const string representation of
+ * RPMA_CONN_* enums
+ */
+const char *
+rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)
+{
+	switch (conn_event) {
+	case RPMA_CONN_UNDEFINED:
+		return "RPMA_CONN_UNDEFINED";
+	case RPMA_CONN_ESTABLISHED:
+		return "RPMA_CONN_ESTABLISHED";
+	case RPMA_CONN_CLOSED:
+		return "RPMA_CONN_CLOSED";
+	case RPMA_CONN_LOST:
+		return "RPMA_CONN_LOST";
+	default:
+		return "unknown";
+	}
+}
+
+/*
  * rpma_mr_reg -- XXX
  */
 int
