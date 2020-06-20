@@ -604,7 +604,7 @@ struct conn_req_test_state {
 static int
 conn_req_from_cm_event_setup(void **cstate_ptr)
 {
-	static struct conn_req_test_state cstate = {0};
+	static struct conn_req_test_state cstate = {{0}};
 	memset(&cstate, 0, sizeof(cstate));
 	cstate.event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	cstate.event.id = &cstate.id;
@@ -996,7 +996,7 @@ struct conn_req_new_test_state {
 static int
 conn_req_new_setup(void **cstate_ptr)
 {
-	static struct conn_req_new_test_state cstate = {0};
+	static struct conn_req_new_test_state cstate = {{0}};
 	memset(&cstate, 0, sizeof(cstate));
 	cstate.id.verbs = MOCK_VERBS;
 
