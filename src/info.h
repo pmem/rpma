@@ -12,12 +12,6 @@
 
 #include <rdma/rdma_cma.h>
 
-/* active or passive side of the connection */
-enum rpma_info_side {
-	RPMA_INFO_PASSIVE, /* a passive side of the connection */
-	RPMA_INFO_ACTIVE /* an active side of the connection */
-};
-
 struct rpma_info;
 
 /*
