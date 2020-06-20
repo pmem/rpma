@@ -134,23 +134,25 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	ASSERTne(conn_ptr, NULL);
 
 	int ret = 0;
-
-	if (rdma_connect(req->id, conn_param)) {
-		Rpma_provider_error = errno;
-		ret = RPMA_E_PROVIDER;
-		goto err_conn_req_delete;
-	}
+	int provider_error = 0;
 
 	struct rpma_conn *conn = NULL;
 	ret = rpma_conn_new(req->id, req->cq, &conn);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_conn_req_delete;
+
+	if (rdma_connect(req->id, conn_param)) {
+		provider_error = errno;
+		ret = RPMA_E_PROVIDER;
+		goto err_conn_delete;
+	}
 
 	*conn_ptr = conn;
 	return 0;
 
-err_conn_disconnect:
-	(void) rdma_disconnect(req->id);
+err_conn_delete:
+	(void) rpma_conn_delete(&conn);
+	Rpma_provider_error = provider_error;
 
 err_conn_req_delete:
 	rdma_destroy_qp(req->id);
