@@ -643,7 +643,7 @@ ep_setup(void **estate_ptr)
 {
 	/* configure mocks: */
 	Mock_ctrl_defer_destruction = MOCK_CTRL_DEFER;
-	static struct ep_test_state estate = {0};
+	static struct ep_test_state estate = {{0}};
 	will_return(rdma_create_event_channel, &estate.evch);
 	will_return(rdma_create_id, &estate.cmid);
 	will_return(rpma_info_new, MOCK_INFO);
