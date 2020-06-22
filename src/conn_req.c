@@ -77,7 +77,9 @@ err_destroy_cq:
 
 /*
  * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
- * request re-packing the connection request to a connection object.
+ * request re-packing the connection request to a connection object. Otherwise,
+ * rdma_disconnect()+rdma_destroy_qp()+ibv_destroy_cq() to destroy the
+ * unsuccessful connection request.
  */
 static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
@@ -123,7 +125,9 @@ err_conn_req_delete:
 
 /*
  * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
- * re-packing the connection request to a connection object.
+ * re-packing the connection request to a connection object. Otherwise,
+ * rdma_destroy_qp()+ibv_destroy_cq()+rdma_destroy_id() to destroy the
+ * unsuccessful connection request.
  */
 static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
@@ -305,7 +309,7 @@ err_info_delete:
 /*
  * rpma_conn_req_connect -- prepare connection parameters and request
  * connecting a connection request (either active or passive). When done
- * release the connection request object.
+ * release the connection request object (regardless of the result).
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,

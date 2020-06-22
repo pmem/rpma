@@ -313,11 +313,11 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * Connect the connection requests both incoming and outgoing.
  *
  * RETURN VALUE
- * The rpma_conn_req_connect() function returns 0 on success or a negative
- * error code on failure. The newly created connection object is stored in
- * *conn_ptr whereas *req_ptr is consumed and set to NULL.
- * rpma_conn_req_connect() does not set *conn_ptr neither *req_ptr values on
- * failure.
+ * The rpma_conn_req_connect() function returns 0 on success or a negative error
+ * code on failure. On success, the newly created connection object is stored in
+ * *conn_ptr whereas *req_ptr is consumed and set to NULL. On failure,
+ * rpma_conn_req_connect() does not set *conn_ptr whereas *req_ptr is consumed
+ * and set to NULL.
  *
  * ERRORS
  * rpma_conn_req_connect() can fail with the following errors:
