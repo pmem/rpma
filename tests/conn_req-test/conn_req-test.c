@@ -1094,10 +1094,10 @@ delete_test_req_NULL(void **unused)
 }
 
 /*
- * delete_test_destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
+ * delete_via_reject_test_destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
  */
 static void
-delete_test_destroy_cq_EAGAIN(void **unused)
+delete_via_reject_test_destroy_cq_EAGAIN(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -1226,6 +1226,59 @@ delete_test_ack_EAGAIN(void **unused)
 	will_return(rdma_reject, NO_ERROR);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EAGAIN);
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
+ * delete_via_reject_test_destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
+ */
+static void
+delete_via_destroy_test_destroy_cq_EAGAIN(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, EAGAIN);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, NO_ERROR);
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
+ * delete_test_destroy_cq_EAGAIN_destroy_id_EIO - rdma_destroy_id()
+ * fails with EIO after ibv_destroy_cq() failed with EAGAIN
+ */
+static void
+delete_test_destroy_cq_EAGAIN_destroy_id_EIO(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, EAGAIN);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, EIO);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -1558,7 +1611,7 @@ connect_test_connect_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * connect_test_conn_new_E_PROVIDER_EAGAIN -- rpma_conn_new() fails with
+ * conn_via_accept_test_conn_new_EAGAIN -- rpma_conn_new() fails with
  * RPMA_E_PROVIDER + EAGAIN
  *
  * Note: It should not affect the test result if the failing API call is fed
@@ -1567,7 +1620,7 @@ connect_test_connect_EAGAIN_subsequent_EIO(void **unused)
  * connection request). This implementation makes use of an incoming one.
  */
 static void
-connect_test_conn_new_E_PROVIDER_EAGAIN(void **unused)
+conn_via_accept_test_conn_new_EAGAIN(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -1600,9 +1653,9 @@ connect_test_conn_new_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * connect_test_conn_new_E_PROVIDER_EAGAIN_subsequent_EIO -- rpma_conn_new()
- * fails with RPMA_E_PROVIDER + EAGAIN whereas subsequent (rdma_disconnect(),
- * ibv_destroy_cq()) fail with EIO
+ * conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO --
+ * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN
+ * whereas subsequent (rdma_disconnect(), ibv_destroy_cq()) fail with EIO
  *
  * Note: It should not affect the test result if the failing API call is fed
  * with a connection request created from via rpma_conn_req_from_cm_event()
@@ -1610,7 +1663,7 @@ connect_test_conn_new_E_PROVIDER_EAGAIN(void **unused)
  * connection request). This implementation makes use of an incoming one.
  */
 static void
-connect_test_conn_new_E_PROVIDER_EAGAIN_subsequent_EIO(void **unused)
+conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -1630,6 +1683,91 @@ connect_test_conn_new_E_PROVIDER_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rdma_disconnect, EIO);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(ibv_destroy_cq, EIO);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_req_connect(&cstate->req, NULL, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+	assert_null(conn);
+}
+
+/*
+ * conn_via_active_test_conn_new_EAGAIN -- rpma_conn_new() fails with
+ * RPMA_E_PROVIDER + EAGAIN
+ *
+ * Note: It should not affect the test result if the failing API call is fed
+ * with a connection request created from via rpma_conn_req_from_cm_event()
+ * (an incoming connection request) or via rpma_conn_req_new() (an outgoing
+ * connection request). This implementation makes use of an incoming one.
+ */
+static void
+conn_via_active_test_conn_new_EAGAIN(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_connect, id, &cstate->id);
+	will_return(rdma_connect, NO_ERROR);
+	expect_value(rpma_conn_new, id, &cstate->id);
+	will_return(rpma_conn_new, NULL);
+	will_return(rpma_conn_new, RPMA_E_PROVIDER);
+	will_return(rpma_conn_new, EAGAIN);
+	expect_value(rdma_disconnect, id, &cstate->id);
+	will_return(rdma_disconnect, NO_ERROR);
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, NO_ERROR);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, NO_ERROR);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_req_connect(&cstate->req, NULL, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+	assert_null(conn);
+}
+
+/*
+ * conn_via_active_test_conn_new_EAGAIN_subsequent_EIO --
+ * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN whereas subsequent
+ * (rdma_disconnect(), ibv_destroy_cq(), rdma_destroy_id()) fail with EIO
+ *
+ * Note: It should not affect the test result if the failing API call is fed
+ * with a connection request created from via rpma_conn_req_from_cm_event()
+ * (an incoming connection request) or via rpma_conn_req_new() (an outgoing
+ * connection request). This implementation makes use of an incoming one.
+ */
+static void
+conn_via_active_test_conn_new_EAGAIN_subsequent_EIO(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+/* configure mocks */
+	expect_value(rdma_connect, id, &cstate->id);
+	will_return(rdma_connect, NO_ERROR);
+	expect_value(rpma_conn_new, id, &cstate->id);
+	will_return(rpma_conn_new, NULL);
+	will_return(rpma_conn_new, RPMA_E_PROVIDER);
+	will_return(rpma_conn_new, EAGAIN);
+	expect_value(rdma_disconnect, id, &cstate->id);
+	will_return(rdma_disconnect, EIO);
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, EIO);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, EIO);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1746,12 +1884,15 @@ main(int argc, char *argv[])
 		/* rpma_conn_req_delete() unit tests */
 		cmocka_unit_test(delete_test_req_ptr_NULL),
 		cmocka_unit_test(delete_test_req_NULL),
-		cmocka_unit_test(delete_test_destroy_cq_EAGAIN),
+		cmocka_unit_test(delete_via_reject_test_destroy_cq_EAGAIN),
 		cmocka_unit_test(
 			delete_test_destroy_cq_EAGAIN_reject_EIO_ack_EINTR),
 		cmocka_unit_test(delete_test_reject_EAGAIN),
 		cmocka_unit_test(delete_test_reject_EAGAIN_ack_EIO),
 		cmocka_unit_test(delete_test_ack_EAGAIN),
+		cmocka_unit_test(delete_via_destroy_test_destroy_cq_EAGAIN),
+		cmocka_unit_test(
+			delete_test_destroy_cq_EAGAIN_destroy_id_EIO),
 		cmocka_unit_test(delete_test_destroy_id_EAGAIN),
 
 		/* rpma_conn_req_connect() unit tests */
@@ -1778,9 +1919,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test(connect_test_ack_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(connect_test_connect_EAGAIN),
 		cmocka_unit_test(connect_test_connect_EAGAIN_subsequent_EIO),
-		cmocka_unit_test(connect_test_conn_new_E_PROVIDER_EAGAIN),
 		cmocka_unit_test(
-			connect_test_conn_new_E_PROVIDER_EAGAIN_subsequent_EIO),
+			conn_via_accept_test_conn_new_EAGAIN),
+		cmocka_unit_test(
+			conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO),
+		cmocka_unit_test(conn_via_active_test_conn_new_EAGAIN),
+		cmocka_unit_test(
+			conn_via_active_test_conn_new_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(connect_test_success_incoming),
 		cmocka_unit_test(connect_test_success_outgoing),
 	};
