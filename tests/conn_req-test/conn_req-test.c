@@ -84,8 +84,12 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	check_expected_ptr(conn);
 
 	int result = mock_type(int);
-	if (result)
+	if (result) {
+		if (result == RPMA_E_PROVIDER)
+			Rpma_provider_error = mock_type(int);
+
 		return result;
+	}
 
 	*conn_ptr = NULL;
 	return 0;
@@ -1508,8 +1512,12 @@ connect_test_connect_EAGAIN(void **unused)
 	assert_non_null(cstate);
 
 	/* configure mocks */
+	expect_value(rpma_conn_new, id, &cstate->id);
+	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
 	will_return(rdma_connect, EAGAIN);
+	expect_value(rpma_conn_delete, conn, MOCK_CONN);
+	will_return(rpma_conn_delete, NO_ERROR);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(ibv_destroy_cq, NO_ERROR);
 	expect_value(rdma_destroy_id, id, &cstate->id);
@@ -1539,8 +1547,13 @@ connect_test_connect_EAGAIN_subsequent_EIO(void **unused)
 	assert_non_null(cstate);
 
 	/* configure mocks */
+	expect_value(rpma_conn_new, id, &cstate->id);
+	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
 	will_return(rdma_connect, EAGAIN);
+	expect_value(rpma_conn_delete, conn, MOCK_CONN);
+	will_return(rpma_conn_delete, RPMA_E_PROVIDER);
+	will_return(rpma_conn_delete, EIO);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(ibv_destroy_cq, EIO);
 	expect_value(rdma_destroy_id, id, &cstate->id);
