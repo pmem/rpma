@@ -184,15 +184,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/librpma-config.cmake ${CMAKE_CURRENT_B
 pkg_check_modules(VALGRIND QUIET valgrind)
 
 if(VALGRIND_FOUND)
-	add_flag(-DVALGRIND_MEMCHECK_ENABLED=1)
-	add_flag(-DVALGRIND_DRD_ENABLED=1)
-	add_flag(-DVALGRIND_HELGRIND_ENABLED=1)
+	add_flag(-DVG_MEMCHECK_ENABLED=1)
+	add_flag(-DVG_DRD_ENABLED=1)
+	add_flag(-DVG_HELGRIND_ENABLED=1)
 
 	include_directories(${VALGRIND_INCLUDE_DIRS})
 	find_pmemcheck()
 
 	if(VALGRIND_PMEMCHECK_FOUND)
-		add_flag(-DVALGRIND_PMEMCHECK_ENABLED=1)
+		add_flag(-DVG_PMEMCHECK_ENABLED=1)
 	endif()
 endif()
 

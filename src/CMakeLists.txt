@@ -47,8 +47,6 @@ target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
 
 if(VALGRIND_FOUND)
 	target_include_directories(rpma PRIVATE src/valgrind)
-	# Enable librpma valgrind annotations
-	target_compile_options(rpma PRIVATE -DVALGRIND_ENABLED=1)
 endif()
 
 install(TARGETS rpma
