@@ -73,6 +73,27 @@ err_info_delete:
 }
 
 /*
+ * rpma_utils_conn_event_2str -- return const string representation of
+ * RPMA_CONN_* enums
+ */
+const char *
+rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)
+{
+	switch (conn_event) {
+	case RPMA_CONN_UNDEFINED:
+		return "Undefined connection event";
+	case RPMA_CONN_ESTABLISHED:
+		return "Connection established";
+	case RPMA_CONN_CLOSED:
+		return "Connection closed";
+	case RPMA_CONN_LOST:
+		return "Connection lost";
+	default:
+		return "Unknown connection event";
+	}
+}
+
+/*
  * rpma_mr_reg -- XXX
  */
 int

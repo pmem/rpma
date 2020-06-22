@@ -19,6 +19,7 @@ LIBRPMA_1.0 {
 		rpma_ep_listen;
 		rpma_ep_next_conn_req;
 		rpma_ep_shutdown;
+		rpma_err_2str;
 		rpma_err_get_msg;
 		rpma_err_get_provider_error;
 		rpma_mr_dereg;
@@ -26,6 +27,7 @@ LIBRPMA_1.0 {
 		rpma_peer_delete;
 		rpma_peer_new;
 		rpma_read;
+		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
 	local:
 		*;
