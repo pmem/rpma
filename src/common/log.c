@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2019-2020, Intel Corporation */
+/* Copyright 2020, Intel Corporation */
+
+/*
+ * log.c -- support for logging output
+ *
+ */
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -11,7 +16,7 @@
 #include <assert.h>
 #endif
 
-#include "librpma_log_internal.h"
+#include "log_internal.h"
 
 #ifdef RPMA_LOG_BACKTRACE_LVL
 #define UNW_LOCAL_ONLY
@@ -28,29 +33,44 @@ static const char *const rpma_level_names[] = {
 
 #define MAX_TMPBUF 1024
 
-static logfunc *g_log = NULL;
+/*
+ * custom log function - if not NULL (see rpma_log_open)
+ * all logs end up there regardless of logging threshold
+ */
 
-enum rpma_log_level g_rpma_log_level = RPMA_LOG_NOTICE;
-enum rpma_log_level g_rpma_log_print_level = RPMA_LOG_NOTICE;
-enum rpma_log_level g_rpma_log_backtrace_level = RPMA_LOG_DISABLED;
+static logfunc *Custom_log_function = NULL;
 
+enum rpma_log_level Rpma_log_level = RPMA_LOG_NOTICE;
+enum rpma_log_level Rpma_log_print_level = RPMA_LOG_NOTICE;
+enum rpma_log_level Rpma_log_backtrace_level = RPMA_LOG_DISABLED;
+
+/* public librpma API */
+
+/*
+ * Initialize the logging module. Messages prior
+ * to this call will be dropped.
+ */
 void
-rpma_log_open(logfunc *logf)
+rpma_log_open(logfunc *custom_log_function)
 {
-	if (logf) {
-		g_log = logf;
+	if (custom_log_function) {
+		Custom_log_function = custom_log_function;
 	} else {
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 	}
 }
 
+/*
+ * Close the currently active log. Messages after this call
+ * will be dropped.
+ */
 void
 rpma_log_close(void)
 {
-	if (!g_log) {
+	if (!Custom_log_function) {
 		closelog();
 	} else {
-		g_log = NULL;
+		Custom_log_function = NULL;
 	}
 }
 
@@ -66,7 +86,7 @@ log_unwind_stack(FILE *fp, enum rpma_log_level level)
 	char f_name[64];
 	int frame;
 
-	if (level > g_rpma_log_backtrace_level) {
+	if (level > Rpma_log_backtrace_level) {
 		return;
 	}
 
@@ -93,6 +113,9 @@ log_unwind_stack(FILE *fp, enum rpma_log_level level)
 #define log_unwind_stack(fp, lvl)
 #endif
 
+/*
+ * Provide actual time in a readable string
+ */
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
 {
@@ -109,8 +132,12 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
 }
 
+/*
+ * Write messages either to the syslog and to stderr
+ * or call user defined log function.
+ */
 void
-rpma_log(enum rpma_log_level level, const char *file, const int line, \
+rpma_log(enum rpma_log_level level, const char *file, const int line,
 		const char *func, const char *format, ...)
 {
 	va_list ap;
@@ -120,8 +147,12 @@ rpma_log(enum rpma_log_level level, const char *file, const int line, \
 	va_end(ap);
 }
 
+/*
+ * Write messages either to the syslog and to stderr
+ * or call user defined log function.
+ */
 void
-rpma_vlog(enum rpma_log_level level, const char *file, const int line, \
+rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 		const char *func, const char *format, va_list ap)
 {
 	int severity = LOG_INFO;
@@ -129,12 +160,12 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line, \
 	char timestamp[45];
 	char message[MAX_TMPBUF];
 
-	if (g_log) {
-		g_log(level, file, line, func, format, ap);
+	if (Custom_log_function) {
+		Custom_log_function(level, file, line, func, format, ap);
 		return;
 	}
 
-	if (level > g_rpma_log_print_level && level > g_rpma_log_level) {
+	if (level > Rpma_log_print_level && level > Rpma_log_level) {
 		return;
 	}
 
@@ -167,56 +198,76 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line, \
 	} else {
 		prefix[0] = '\0';
 	}
-	if (level <= g_rpma_log_print_level) {
+	if (level <= Rpma_log_print_level) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
 		fprintf(stderr, "%s%s%s", timestamp, prefix, message);
 		if (file) {
 			log_unwind_stack(stderr, level);
 		}
 	}
-	if (level <= g_rpma_log_level) {
+	if (level <= Rpma_log_level) {
 		syslog(severity, "%s%s", prefix, message);
 	}
 }
 
+/*
+ * Set the log level threshold to log messages.
+ */
 void
 rpma_log_set_level(enum rpma_log_level level)
 {
 	assert(level >= RPMA_LOG_DISABLED);
 	assert(level <= RPMA_LOG_DEBUG);
-	g_rpma_log_level = level;
+	Rpma_log_level = level;
 }
 
+/*
+ * Get the current log level threshold.
+ */
 enum rpma_log_level
 rpma_log_get_level(void)
 {
-	return g_rpma_log_level;
+	return Rpma_log_level;
 }
 
+/*
+ * Set the current log level threshold for printing to stderr.
+ */
 void
 rpma_log_set_print_level(enum rpma_log_level level)
 {
 	assert(level >= RPMA_LOG_DISABLED);
 	assert(level <= RPMA_LOG_DEBUG);
-	g_rpma_log_print_level = level;
+	Rpma_log_print_level = level;
 }
 
+/*
+ * Get the current log level threshold for printing to stderr.
+ */
 enum rpma_log_level
 rpma_log_get_print_level(void)
 {
-	return g_rpma_log_print_level;
+	return Rpma_log_print_level;
 }
 
+/*
+ * Set the log level threshold to include stack trace in log messages.
+ */
 void
 rpma_log_set_backtrace_level(enum rpma_log_level level)
 {
 	assert(level >= RPMA_LOG_DISABLED);
 	assert(level <= RPMA_LOG_DEBUG);
-	g_rpma_log_backtrace_level = level;
+	Rpma_log_backtrace_level = level;
 }
 
+void rpma_log_set_backtrace_level(enum rpma_log_level level);
+
+/*
+ * Get the current log level threshold for showing stack trace in log message.
+ */
 enum rpma_log_level
 rpma_log_get_backtrace_level(void)
 {
-	return g_rpma_log_backtrace_level;
+	return Rpma_log_backtrace_level;
 }

@@ -10,9 +10,10 @@
 #include <stdlib.h>
 #include <syslog.h>
 #include <string.h>
+
+#include "../../src/common/log_internal.h"
 #include "cmocka_headers.h"
 #include "librpma_log.h"
-#include "librpma_log_internal.h"
 
 /*
  * openlog -- openlog() mock

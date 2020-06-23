@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "librpma_log_internal.h"
+#include "../../src/common/log_internal.h"
 
 void
 log_worker_is_doing_somethig(void)

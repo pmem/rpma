@@ -14,4 +14,4 @@ extern void mock_assert(const int result, const char *const expression, \
 #define assert(expression) \
 	mock_assert((int)(expression), #expression, __FILE__, __LINE__);
 #endif
-#include "../common/librpma_log.c"
+#include "../../src/common/log.c"

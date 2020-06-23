@@ -51,7 +51,6 @@ add_cstyle(examples-doc_snippets
 add_check_whitespace(examples-doc_snippets
 	${CMAKE_CURRENT_SOURCE_DIR}/doc_snippets/*.[ch])
 
-
 function(add_example name)
 	set(srcs ${ARGN})
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})

@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2019-2020, Intel Corporation */
+/* Copyright 2020, Intel Corporation */
 
 /*
  * \file
- * Logging interfaces
+ * Logging interfaces used by librpma internally to produce logging information.
  */
 
 #ifndef LIBRPMA_LOG_INTERNAL_H
 #define LIBRPMA_LOG_INTERNAL_H
 #include "librpma_log.h"
+
 
 #define RPMA_NOTICELOG(...) \
 	rpma_log(RPMA_LOG_NOTICE, __FILE__, __LINE__, __func__, __VA_ARGS__)
@@ -20,8 +21,10 @@
 	rpma_log(RPMA_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
 
 /*
- * Write messages to the log file. If \c level is set to \c RPMA_LOG_DISABLED,
- * this log message won't be written.
+ * Write messages either to the syslog and to stderr
+ * or call user defined log function.
+ * If \c level is set to \c RPMA_LOG_DISABLED,
+ * this log message won't be written to syslog and won't be written to stderr.
  *
  * \param level Log level threshold.
  * \param file Name of the current source file.
