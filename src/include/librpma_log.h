@@ -9,9 +9,6 @@
 #ifndef LIBRPMA_LOG_H
 #define LIBRPMA_LOG_H
 #include <stdio.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*
  * for passing user-provided log call
@@ -99,10 +96,5 @@ int rpma_log_set_print_level(enum rpma_log_level level);
  * \return the current log level print threshold.
  */
 enum rpma_log_level rpma_log_get_print_level(void);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* LIBRPMA_LOG_H */
