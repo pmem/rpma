@@ -14,6 +14,7 @@
 #include "../../src/common/log_internal.h"
 #include "cmocka_headers.h"
 #include "librpma_log.h"
+#include "librpma.h"
 
 /*
  * openlog -- openlog() mock
@@ -110,20 +111,20 @@ test_set_level(void **unused)
 {
 	enum rpma_log_level level;
 	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
-		rpma_log_set_level(level);
+		assert_int_equal(0, rpma_log_set_level(level));
 		assert_int_equal(level, rpma_log_get_level());
 	}
 }
 
 static void
-test_set_level_assert(void **unused)
+test_set_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_DEBUG;
 	level ++;
-	expect_assert_failure(rpma_log_set_level(level));
+	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
 	level = RPMA_LOG_DISABLED;
 	level --;
-	expect_assert_failure(rpma_log_set_level(level));
+	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
 }
 
 static void
@@ -131,20 +132,20 @@ test_set_print_level(void **unused)
 {
 	enum rpma_log_level level;
 	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
-		rpma_log_set_print_level(level);
+		assert_int_equal(0, rpma_log_set_print_level(level));
 		assert_int_equal(level, rpma_log_get_print_level());
 	}
 }
 
 static void
-test_set_print_level_assert(void **unused)
+test_set_print_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_DEBUG;
 	level ++;
-	expect_assert_failure(rpma_log_set_print_level(level));
+	assert_int_equal(RPMA_E_INVAL, rpma_log_set_print_level(level));
 	level = RPMA_LOG_DISABLED;
 	level --;
-	expect_assert_failure(rpma_log_set_print_level(level));
+	assert_int_equal(RPMA_E_INVAL, rpma_log_set_print_level(level));
 }
 
 static void
@@ -167,8 +168,8 @@ test_log_disabled(void **unused)
 	enum rpma_log_level level_min;
 	for (level_min = RPMA_LOG_DISABLED;
 			level_min <= RPMA_LOG_DEBUG; level_min ++) {
-		rpma_log_set_level(level_min);
-		rpma_log_set_print_level(level_min);
+		assert_int_equal(0, rpma_log_set_level(level_min));
+		assert_int_equal(0, rpma_log_set_print_level(level_min));
 		enum rpma_log_level level;
 		for (level = level_min + 1; level <= RPMA_LOG_DEBUG; level ++) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
@@ -236,17 +237,17 @@ main(int argc, char *argv[])
 			setup_without_logfunction, teardown),
 		cmocka_unit_test_setup_teardown(test_set_level,
 			setup_with_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_assert,
+		cmocka_unit_test_setup_teardown(test_set_level_invalid,
 			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_assert,
+		cmocka_unit_test_setup_teardown(test_set_level_invalid,
 			setup_with_logfunction, teardown),
 		cmocka_unit_test_setup_teardown(test_set_print_level,
 			setup_without_logfunction, teardown),
 		cmocka_unit_test_setup_teardown(test_set_print_level,
 			setup_with_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_assert,
+		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
 			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_assert,
+		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
 			setup_with_logfunction, teardown),
 
 		cmocka_unit_test_setup_teardown(test_log_to_user_function,

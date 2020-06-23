@@ -54,7 +54,7 @@ enum rpma_log_level {
  *
  * \param level Log level threshold to set to log messages.
  */
-void rpma_log_set_level(enum rpma_log_level level);
+int rpma_log_set_level(enum rpma_log_level level);
 
 /*
  * Get the current log level threshold.
@@ -74,7 +74,7 @@ enum rpma_log_level rpma_log_get_level(void);
  *
  * \param level Log level threshold for stacktrace.
  */
-void rpma_log_set_backtrace_level(enum rpma_log_level level);
+int rpma_log_set_backtrace_level(enum rpma_log_level level);
 
 /*
  * Get the current log level threshold for showing stack trace in log message.
@@ -91,7 +91,7 @@ enum rpma_log_level rpma_log_get_backtrace_level(void);
  *
  * \param level Log level threshold for printing to stderr.
  */
-void rpma_log_set_print_level(enum rpma_log_level level);
+int rpma_log_set_print_level(enum rpma_log_level level);
 
 /*
  * Get the current log level print threshold.

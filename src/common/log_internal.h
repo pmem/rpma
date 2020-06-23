@@ -48,6 +48,6 @@ void rpma_log(enum rpma_log_level level, const char *file, const int line,
  * \param ap printf arguments
  */
 void rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, va_list ap);
+		const char *func, const char *format, va_list arg);
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

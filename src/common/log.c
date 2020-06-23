@@ -12,10 +12,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
-#ifndef assert
-#include <assert.h>
-#endif
-
+#include "librpma.h"
 #include "log_internal.h"
 
 #ifdef RPMA_LOG_BACKTRACE_LVL
@@ -33,12 +30,16 @@ static const char *const rpma_level_names[] = {
 
 #define MAX_TMPBUF 1024
 
+static void
+default_log_function(int level, const char *file, const int line,
+		const char *func, const char *format, va_list args);
+
 /*
  * custom log function - if not NULL (see rpma_log_open)
  * all logs end up there regardless of logging threshold
  */
 
-static logfunc *Custom_log_function = NULL;
+static logfunc *log_function = NULL;
 
 enum rpma_log_level Rpma_log_level = RPMA_LOG_NOTICE;
 enum rpma_log_level Rpma_log_print_level = RPMA_LOG_NOTICE;
@@ -54,8 +55,9 @@ void
 rpma_log_open(logfunc *custom_log_function)
 {
 	if (custom_log_function) {
-		Custom_log_function = custom_log_function;
+		log_function = custom_log_function;
 	} else {
+		log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 	}
 }
@@ -67,10 +69,10 @@ rpma_log_open(logfunc *custom_log_function)
 void
 rpma_log_close(void)
 {
-	if (!Custom_log_function) {
+	if (default_log_function == log_function) {
 		closelog();
 	} else {
-		Custom_log_function = NULL;
+		log_function = NULL;
 	}
 }
 
@@ -132,38 +134,14 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
 }
 
-/*
- * Write messages either to the syslog and to stderr
- * or call user defined log function.
- */
-void
-rpma_log(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, ...)
-{
-	va_list ap;
-
-	va_start(ap, format);
-	rpma_vlog(level, file, line, func, format, ap);
-	va_end(ap);
-}
-
-/*
- * Write messages either to the syslog and to stderr
- * or call user defined log function.
- */
-void
-rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, va_list ap)
+static void
+default_log_function(int level, const char *file, const int line,
+		const char *func, const char *format, va_list arg)
 {
 	int severity = LOG_INFO;
 	char prefix[256];
 	char timestamp[45];
 	char message[MAX_TMPBUF];
-
-	if (Custom_log_function) {
-		Custom_log_function(level, file, line, func, format, ap);
-		return;
-	}
 
 	if (level > Rpma_log_print_level && level > Rpma_log_level) {
 		return;
@@ -189,11 +167,10 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 		return;
 	}
 
-	vsnprintf(message, sizeof(message), format, ap);
+	vsnprintf(message, sizeof(message), format, arg);
 
 	if (file) {
-		snprintf(prefix, sizeof(prefix), \
-				"%s:%4d:%s: *%s*: ", \
+		snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ", \
 				file, line, func, rpma_level_names[level]);
 	} else {
 		prefix[0] = '\0';
@@ -208,17 +185,48 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 	if (level <= Rpma_log_level) {
 		syslog(severity, "%s%s", prefix, message);
 	}
+
+}
+
+/*
+ * Write messages either to the syslog and to stderr
+ * or call user defined log function.
+ */
+void
+rpma_log(enum rpma_log_level level, const char *file, const int line,
+		const char *func, const char *format, ...)
+{
+	va_list arg;
+
+	va_start(arg, format);
+	rpma_vlog(level, file, line, func, format, arg);
+	va_end(arg);
+}
+
+/*
+ * Write messages either to the syslog and to stderr
+ * or call user defined log function.
+ */
+void
+rpma_vlog(enum rpma_log_level level, const char *file, const int line,
+		const char *func, const char *format, va_list arg)
+{
+	if (log_function) {
+		log_function(level, file, line, func, format, arg);
+	}
 }
 
 /*
  * Set the log level threshold to log messages.
  */
-void
+int
 rpma_log_set_level(enum rpma_log_level level)
 {
-	assert(level >= RPMA_LOG_DISABLED);
-	assert(level <= RPMA_LOG_DEBUG);
+	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+		return RPMA_E_INVAL;
+	}
 	Rpma_log_level = level;
+	return 0;
 }
 
 /*
@@ -233,12 +241,14 @@ rpma_log_get_level(void)
 /*
  * Set the current log level threshold for printing to stderr.
  */
-void
+int
 rpma_log_set_print_level(enum rpma_log_level level)
 {
-	assert(level >= RPMA_LOG_DISABLED);
-	assert(level <= RPMA_LOG_DEBUG);
+	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+		return RPMA_E_INVAL;
+	}
 	Rpma_log_print_level = level;
+	return 0;
 }
 
 /*
@@ -253,15 +263,15 @@ rpma_log_get_print_level(void)
 /*
  * Set the log level threshold to include stack trace in log messages.
  */
-void
+int
 rpma_log_set_backtrace_level(enum rpma_log_level level)
 {
-	assert(level >= RPMA_LOG_DISABLED);
-	assert(level <= RPMA_LOG_DEBUG);
+	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+		return RPMA_E_INVAL;
+	}
 	Rpma_log_backtrace_level = level;
+	return 0;
 }
-
-void rpma_log_set_backtrace_level(enum rpma_log_level level);
 
 /*
  * Get the current log level threshold for showing stack trace in log message.
