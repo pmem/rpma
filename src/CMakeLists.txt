@@ -23,6 +23,7 @@ set(SOURCES
 	info.c
 	librpma.c
 	peer.c
+	private_data.c
 	rpma_err.c
 	rpma.c)
 
