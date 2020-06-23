@@ -24,7 +24,7 @@
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
 
-#define NO_ERROR		0
+#define SUCCESS		0
 
 static const struct rdma_cm_id Cmid_zero = {0};
 
@@ -198,7 +198,7 @@ info_new_test_getaddrinfo_EAGAIN(void **unused)
 	will_return(rdma_getaddrinfo, &get_args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
 	will_return(rdma_getaddrinfo, EAGAIN);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_info *info = NULL;
@@ -249,7 +249,7 @@ info_test_lifecycle(void **unused)
 	struct rdma_addrinfo_args args = {MOCK_VALIDATE, &rai};
 	will_return(rdma_getaddrinfo, &args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(__wrap__test_malloc, SUCCESS);
 
 	/* run test - step 1 */
 	struct rpma_info *info = NULL;
@@ -257,7 +257,7 @@ info_test_lifecycle(void **unused)
 			&info);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_non_null(info);
 
 	/*
@@ -271,7 +271,7 @@ info_test_lifecycle(void **unused)
 	ret = rpma_info_delete(&info);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(info);
 }
 
@@ -309,7 +309,7 @@ info_delete_test_null_info(void **unused)
 	int ret = rpma_info_delete(&info);
 
 	/* verify the result */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(info);
 }
 
@@ -339,7 +339,7 @@ info_setup_passive(void **info_state_ptr)
 	struct rdma_addrinfo_args args = {MOCK_VALIDATE, &istate.rai};
 	will_return(rdma_getaddrinfo, &args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(__wrap__test_malloc, SUCCESS);
 
 	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_PASSIVE,
 			&istate.info);
@@ -369,7 +369,7 @@ info_setup_active(void **info_state_ptr)
 	struct rdma_addrinfo_args args = {MOCK_VALIDATE, &istate.rai};
 	will_return(rdma_getaddrinfo, &args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(__wrap__test_malloc, SUCCESS);
 
 	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_ACTIVE,
 			&istate.info);
@@ -399,7 +399,7 @@ info_teardown(void **info_state_ptr)
 
 	/* teardown */
 	int ret = rpma_info_delete(&istate->info);
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(istate->info);
 
 	return 0;
@@ -488,13 +488,13 @@ info_resolve_addr_test_success(void **info_state_ptr)
 	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
 	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
 	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT);
-	will_return(rdma_resolve_addr, NO_ERROR);
+	will_return(rdma_resolve_addr, SUCCESS);
 
 	/* run test */
 	int ret = rpma_info_resolve_addr(istate->info, &cmid);
 
 	/* verify the result */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
 }
 
@@ -577,13 +577,13 @@ info_bind_addr_test_success(void **info_state_ptr)
 	struct rdma_cm_id cmid = {0};
 	expect_value(rdma_bind_addr, id, &cmid);
 	expect_value(rdma_bind_addr, addr, MOCK_SRC_ADDR);
-	will_return(rdma_bind_addr, NO_ERROR);
+	will_return(rdma_bind_addr, SUCCESS);
 
 	/* run test */
 	int ret = rpma_info_bind_addr(istate->info, &cmid);
 
 	/* verify the result */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
 }
 
