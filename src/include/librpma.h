@@ -186,6 +186,7 @@ enum rpma_conn_event {
  * - RPMA_E_INVAL - conn or event is NULL
  * - RPMA_E_UNKNOWN - unexpected event
  * - RPMA_E_PROVIDER - rdma_get_cm_event() or rdma_ack_cm_event() failed
+ * - RPMA_E_NOMEM - out of memory
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
@@ -212,7 +213,8 @@ struct rpma_conn_private_data {
 };
 
 /** 3
- * rpma_conn_get_private_data - XXX
+ * rpma_conn_get_private_data - obtain a pointer to the connection's
+ *                              private data
  *
  * SYNOPSIS
  *
@@ -224,6 +226,11 @@ struct rpma_conn_private_data {
  * DESCRIPTION
  * Obtain a pointer to the private data given by the other side of the
  * connection.
+ *
+ * ERRORS
+ * rpma_conn_get_private_data() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or pdata is NULL
  */
 int rpma_conn_get_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
@@ -422,6 +429,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  * - RPMA_E_INVAL - ep or req is NULL
  * - RPMA_E_INVAL - obtained an event different than a connection request
  * - RPMA_E_PROVIDER - rdma_get_cm_event(3) failed
+ * - RPMA_E_NOMEM - out of memory
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
