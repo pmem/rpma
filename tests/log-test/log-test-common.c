@@ -1,15 +1,11 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
 
 /*
  * log-test-common.c -- unit tests of the log module - common tests
  */
 
-// #include <stdlib.h>
 #include <syslog.h>
-// #include <string.h>
 #include "cmocka_headers.h"
 #include "../../src/common/log_internal.h"
 

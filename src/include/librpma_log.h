@@ -1,9 +1,8 @@
-// SPDX-License-Identifier: BSD-3-Clause
+/* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
 
 /*
- * \file
- * Logging interfaces
+ * librpma_log.h -- public API fpr librpma logging interfaces
  */
 
 #ifndef LIBRPMA_LOG_H
@@ -11,6 +10,7 @@
 #include <stdio.h>
 #include <librpma.h> // for RDMA_E_INVAL
 
+// XXX documentation to be updated to src2man
 /*
  * for passing user-provided log call
  *
