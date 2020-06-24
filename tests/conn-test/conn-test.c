@@ -13,6 +13,9 @@
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
 #define MOCK_CQ			(struct ibv_cq *)0x00C0
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
+#define MOCK_CONN		(struct rpma_conn *)0xA41F
+#define MOCK_PRIVATE_DATA	((void *)"Random data")
+#define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 
 #define NO_ERROR	0
 
@@ -113,6 +116,69 @@ rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 		return -1;
 
 	return 0;
+}
+
+/*
+ * rpma_private_data_store -- rpma_private_data_store() mock
+ */
+int
+rpma_private_data_store(struct rdma_cm_event *edata,
+		struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(edata);
+	assert_non_null(pdata);
+
+	pdata->len = 0;
+
+	int ret = mock_type(int);
+	if (ret) {
+		pdata->ptr = NULL;
+		return ret;
+	}
+
+	pdata->ptr = mock_type(void *);
+	if (pdata->ptr)
+		pdata->len = strlen(pdata->ptr) + 1;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_copy -- rpma_private_data_copy() mock
+ */
+int
+rpma_private_data_copy(struct rpma_conn_private_data *src,
+		struct rpma_conn_private_data *dst)
+{
+	assert_non_null(src);
+	assert_non_null(dst);
+
+	dst->len = 0;
+
+	int ret = mock_type(int);
+	if (ret) {
+		dst->ptr = NULL;
+		return ret;
+	}
+
+	dst->ptr = mock_type(void *);
+	if (dst->ptr)
+		dst->len = strlen(dst->ptr) + 1;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_discard -- rpma_private_data_discard() mock
+ */
+void
+rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(pdata);
+	check_expected(pdata->ptr);
+	check_expected(pdata->len);
+	pdata->ptr = NULL;
+	pdata->len = 0;
 }
 
 void *__real__test_malloc(size_t size);
@@ -301,6 +367,168 @@ new_test_malloc_ENOMEM(void **unused)
 }
 
 /*
+ * set_private_data_test_failed_ENOMEM - rpma_conn_set_private_data() failed
+ *                                       with RPMA_E_NOMEM
+ */
+static void
+set_private_data_test_failed_ENOMEM(void **unused)
+{
+	/* configure mocks for rpma_conn_new() */
+	will_return(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return(rdma_migrate_id, NO_ERROR);
+	will_return(__wrap__test_malloc, NO_ERROR);
+
+	/* prepare a new conn object */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+
+	/* verify the results of rpma_conn_new() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_non_null(conn);
+
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = MOCK_PDATA_LEN;
+	will_return(rpma_private_data_copy, RPMA_E_NOMEM);
+
+	/* set private data */
+	ret = rpma_conn_set_private_data(conn, &data);
+
+	/* verify the results of rpma_conn_set_private_data() */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+
+	/* get private data */
+	struct rpma_conn_private_data check_data;
+	ret = rpma_conn_get_private_data(conn, &check_data);
+
+	/* verify the results of rpma_conn_get_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_ptr_equal(check_data.ptr, NULL);
+	assert_int_equal(check_data.len, 0);
+
+	/* configure mocks for rpma_conn_delete() */
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
+	will_return(ibv_destroy_cq, NO_ERROR);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, NO_ERROR);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
+
+	/* delete the conn object */
+	ret = rpma_conn_delete(&conn);
+
+	/* verify the results of rpma_conn_delete() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_null(conn);
+}
+
+/*
+ * set_private_data_test_success - rpma_conn_set_private_data() succeeds
+ */
+static void
+set_private_data_test_success(void **unused)
+{
+	/* configure mocks for rpma_conn_new() */
+	will_return(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return(rdma_migrate_id, NO_ERROR);
+	will_return(__wrap__test_malloc, NO_ERROR);
+
+	/* prepare a new conn object */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+
+	/* verify the results of rpma_conn_new() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_non_null(conn);
+
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = MOCK_PDATA_LEN;
+	will_return(rpma_private_data_copy, 0);
+	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
+
+	/* set private data */
+	ret = rpma_conn_set_private_data(conn, &data);
+
+	/* verify the results of rpma_conn_set_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+
+	/* get private data */
+	struct rpma_conn_private_data check_data;
+	ret = rpma_conn_get_private_data(conn, &check_data);
+
+	/* verify the results of rpma_conn_get_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_ptr_equal(check_data.ptr, data.ptr);
+	assert_int_equal(check_data.len, data.len);
+
+	/* configure mocks for rpma_conn_delete() */
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
+	will_return(ibv_destroy_cq, NO_ERROR);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, NO_ERROR);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
+
+	/* delete the conn object */
+	ret = rpma_conn_delete(&conn);
+
+	/* verify the results of rpma_conn_delete() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_null(conn);
+}
+
+/*
+ * get_private_data_test_conn_NULL - NULL conn is invalid
+ */
+static void
+get_private_data_test_conn_NULL(void **unused)
+{
+	/* get private data */
+	struct rpma_conn_private_data data = {0};
+	int ret = rpma_conn_get_private_data(NULL, &data);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_ptr_equal(data.ptr, NULL);
+	assert_int_equal(data.len, 0);
+}
+
+/*
+ * get_private_data_test_pdata_NULL - NULL pdata is invalid
+ */
+static void
+get_private_data_test_pdata_NULL(void **unused)
+{
+	/* get private data */
+	struct rpma_conn *conn = MOCK_CONN;
+	int ret = rpma_conn_get_private_data(conn, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_private_data_test_conn_NULL_pdata_NULL -
+ * (conn == NULL && pdata == NULL) is invalid
+ */
+static void
+get_private_data_test_conn_NULL_pdata_NULL(void **unused)
+{
+	/* get private data */
+	int ret = rpma_conn_get_private_data(NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * conn_setup - prepare a valid rpma_conn object
  */
 static int
@@ -339,6 +567,8 @@ conn_teardown(void **conn_ptr)
 	will_return(ibv_destroy_cq, NO_ERROR);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, NO_ERROR);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* delete the object */
 	int ret = rpma_conn_delete(&conn);
@@ -356,9 +586,20 @@ conn_teardown(void **conn_ptr)
  * conn_test_lifecycle - happy day scenario
  */
 static void
-conn_test_lifecycle(void **unused)
+conn_test_lifecycle(void **conn_ptr)
 {
-	/* the thing is done by conn_setup() and conn_teardown() */
+	/* main things are done by conn_setup() and conn_teardown() */
+
+	struct rpma_conn *conn = *conn_ptr;
+
+	/* get private data */
+	struct rpma_conn_private_data data;
+	int ret = rpma_conn_get_private_data(conn, &data);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_ptr_equal(data.ptr, NULL);
+	assert_int_equal(data.len, 0);
 }
 
 /*
@@ -600,6 +841,9 @@ next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, EINVAL);
 
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
+
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
 	int ret = rpma_conn_next_event(conn, &c_event);
@@ -607,6 +851,32 @@ next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
+	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
+}
+
+/*
+ * next_event_test_data_store_ENOMEM - rpma_private_data_store fails
+ *                                     with RPMA_E_NOMEM
+ */
+static void
+next_event_test_data_store_ENOMEM(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	will_return(rdma_get_cm_event, &event);
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+	will_return(rpma_private_data_store, RPMA_E_NOMEM);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
 	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
 }
 
@@ -625,6 +895,9 @@ next_event_test_success_ESTABLISHED(void **conn_ptr)
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	will_return(rpma_private_data_store, 0);
+	will_return(rpma_private_data_store, NULL);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -827,6 +1100,9 @@ main(int argc, char *argv[])
 			next_event_test_event_REJECTED_ack_EINVAL,
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
+			next_event_test_data_store_ENOMEM,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
 			next_event_test_success_ESTABLISHED,
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
@@ -850,6 +1126,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 			disconnect_test_success,
 			conn_setup, conn_teardown),
+
+		/* rpma_conn_set_private_data() unit tests */
+		cmocka_unit_test(set_private_data_test_failed_ENOMEM),
+		cmocka_unit_test(set_private_data_test_success),
+		cmocka_unit_test(get_private_data_test_conn_NULL),
+		cmocka_unit_test(get_private_data_test_pdata_NULL),
+		cmocka_unit_test(get_private_data_test_conn_NULL_pdata_NULL),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
