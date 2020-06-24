@@ -13,6 +13,7 @@
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
 #define MOCK_CQ			(struct ibv_cq *)0x00C0
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
+#define MOCK_PRIVATE_DATA	((void *)"Random data")
 
 #define NO_ERROR	0
 
@@ -113,6 +114,61 @@ rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 		return -1;
 
 	return 0;
+}
+
+/*
+ * rpma_private_data_store -- rpma_private_data_store() mock
+ */
+int
+rpma_private_data_store(struct rdma_cm_event *edata,
+		struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(edata);
+	assert_non_null(pdata);
+
+	pdata->ptr = mock_type(void *);
+	if (pdata->ptr == NULL) {
+		pdata->len = 0;
+		return RPMA_E_NOMEM;
+	}
+
+	pdata->len = strlen(pdata->ptr) + 1;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_copy -- rpma_private_data_copy() mock
+ */
+int
+rpma_private_data_copy(struct rpma_conn_private_data *src,
+		struct rpma_conn_private_data *dst)
+{
+	assert_non_null(src);
+	assert_non_null(dst);
+
+	dst->ptr = mock_type(void *);
+	if (dst->ptr == NULL) {
+		dst->len = 0;
+		return RPMA_E_NOMEM;
+	}
+
+	dst->len = strlen(dst->ptr) + 1;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_discard -- rpma_private_data_discard() mock
+ */
+void
+rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(pdata);
+	check_expected(pdata->ptr);
+	check_expected(pdata->len);
+	pdata->ptr = NULL;
+	pdata->len = 0;
 }
 
 void *__real__test_malloc(size_t size);
@@ -320,6 +376,18 @@ conn_setup(void **conn_ptr)
 	assert_int_equal(ret, NO_ERROR);
 	assert_non_null(conn);
 
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = strlen(data.ptr) + 1;
+	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
+
+	/* sanity test of rpma_conn_set_private_data() */
+	ret = rpma_conn_set_private_data(conn, &data);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+
 	*conn_ptr = conn;
 
 	return 0;
@@ -339,6 +407,9 @@ conn_teardown(void **conn_ptr)
 	will_return(ibv_destroy_cq, NO_ERROR);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, NO_ERROR);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len,
+		strlen(MOCK_PRIVATE_DATA) + 1);
 
 	/* delete the object */
 	int ret = rpma_conn_delete(&conn);
@@ -600,6 +671,10 @@ next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, EINVAL);
 
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len,
+		strlen(MOCK_PRIVATE_DATA) + 1);
+
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
 	int ret = rpma_conn_next_event(conn, &c_event);
@@ -607,6 +682,32 @@ next_event_test_event_REJECTED_ack_EINVAL(void **conn_ptr)
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
+	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
+}
+
+/*
+ * next_event_test_data_store_ENOMEM - rpma_private_data_store fails
+ *                                     with RPMA_E_NOMEM
+ */
+static void
+next_event_test_data_store_ENOMEM(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	will_return(rdma_get_cm_event, &event);
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+	will_return(rpma_private_data_store, NULL);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
 	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
 }
 
@@ -625,6 +726,8 @@ next_event_test_success_ESTABLISHED(void **conn_ptr)
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -825,6 +928,9 @@ main(int argc, char *argv[])
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
 			next_event_test_event_REJECTED_ack_EINVAL,
+			conn_setup, conn_teardown),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_data_store_ENOMEM,
 			conn_setup, conn_teardown),
 		cmocka_unit_test_setup_teardown(
 			next_event_test_success_ESTABLISHED,
