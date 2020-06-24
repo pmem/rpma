@@ -62,10 +62,10 @@ setup_cm_event(void **edata_ptr)
 }
 
 /*
- * test_new__data_NULL -- data == NULL should prevent storing a private data
+ * test_store__data_NULL -- data == NULL should prevent storing a private data
  */
 static void
-test_new__data_NULL(void **edata_ptr)
+test_store__data_NULL(void **edata_ptr)
 {
 	struct rdma_cm_event *edata = *edata_ptr;
 	edata->param.conn.private_data = NULL;
@@ -81,11 +81,11 @@ test_new__data_NULL(void **edata_ptr)
 }
 
 /*
- * test_new__data_len_0 -- data_len == 0 should prevent storing a private data
+ * test_store__data_len_0 -- data_len == 0 should prevent storing a private data
  * object
  */
 static void
-test_new__data_len_0(void **edata_ptr)
+test_store__data_len_0(void **edata_ptr)
 {
 	struct rdma_cm_event *edata = *edata_ptr;
 	edata->param.conn.private_data_len = 0;
@@ -101,11 +101,11 @@ test_new__data_len_0(void **edata_ptr)
 }
 
 /*
- * test_new__data_NULL_data_len_0 -- data == NULL && data_len == 0 should
+ * test_store__data_NULL_data_len_0 -- data == NULL && data_len == 0 should
  * prevent storing a private data
  */
 static void
-test_new__data_NULL_data_len_0(void **edata_ptr)
+test_store__data_NULL_data_len_0(void **edata_ptr)
 {
 	struct rdma_cm_event *edata = *edata_ptr;
 	edata->param.conn.private_data = NULL;
@@ -122,10 +122,10 @@ test_new__data_NULL_data_len_0(void **edata_ptr)
 }
 
 /*
- * test_new__malloc_ENOMEM -- malloc() fail with ENOMEM
+ * test_store__malloc_ENOMEM -- malloc() fail with ENOMEM
  */
 static void
-test_new__1st_malloc_ENOMEM(void **edata_ptr)
+test_store__malloc_ENOMEM(void **edata_ptr)
 {
 	/* configure mocks */
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -200,13 +200,14 @@ main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
 		/* rpma_private_data_store() unit tests */
-		cmocka_unit_test_setup_teardown(test_new__data_NULL,
+		cmocka_unit_test_setup_teardown(test_store__data_NULL,
 				setup_cm_event, NULL),
-		cmocka_unit_test_setup_teardown(test_new__data_len_0,
+		cmocka_unit_test_setup_teardown(test_store__data_len_0,
 				setup_cm_event, NULL),
-		cmocka_unit_test_setup_teardown(test_new__data_NULL_data_len_0,
+		cmocka_unit_test_setup_teardown(
+				test_store__data_NULL_data_len_0,
 				setup_cm_event, NULL),
-		cmocka_unit_test_setup_teardown(test_new__1st_malloc_ENOMEM,
+		cmocka_unit_test_setup_teardown(test_store__malloc_ENOMEM,
 				setup_cm_event, NULL),
 
 		/* rpma_private_data_store()/_discard() lifecycle */
