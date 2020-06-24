@@ -9,6 +9,7 @@
 
 #include "cmocka_alloc.h"
 #include "conn.h"
+#include "private_data.h"
 #include "rpma_err.h"
 #include "out.h"
 
@@ -16,6 +17,8 @@ struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
 	struct ibv_cq *cq; /* completion queue of the CM ID */
+
+	struct rpma_conn_private_data data; /* private data of the CM ID */
 };
 
 /* internal librpma API */
@@ -55,6 +58,7 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 		goto err_migrate_id_NULL;
 	}
 
+	memset(conn, 0, sizeof(*conn));
 	conn->id = id;
 	conn->evch = evch;
 	conn->cq = cq;
@@ -69,6 +73,23 @@ err_destroy_evch:
 	rdma_destroy_event_channel(evch);
 
 	return ret;
+}
+
+/*
+ * rpma_conn_set_private_data -- fill private data of the CM ID
+ */
+void
+rpma_conn_set_private_data(struct rpma_conn *conn,
+		struct rpma_conn_private_data *pdata)
+{
+	ASSERTne(conn, NULL);
+	ASSERTne(conn->data.ptr, NULL);
+	ASSERTne(pdata, NULL);
+	ASSERTne(pdata->ptr, NULL);
+
+	conn->data.len = pdata->len;
+	if (pdata->len)
+		memcpy(conn->data.ptr, pdata->ptr, pdata->len);
 }
 
 /* public librpma API */
@@ -97,6 +118,9 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	switch (cm_event) {
 		case RDMA_CM_EVENT_ESTABLISHED:
 			*event = RPMA_CONN_ESTABLISHED;
+			int ret = rpma_private_data_store(edata, &conn->data);
+			if (ret)
+				return ret;
 			break;
 		case RDMA_CM_EVENT_CONNECT_ERROR:
 		case RDMA_CM_EVENT_DEVICE_REMOVAL:
@@ -114,13 +138,13 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 }
 
 /*
- * rpma_conn_get_private_data -- XXX
+ * rpma_conn_get_private_data -- hand a pointer to the connection's private data
  */
-int
+void
 rpma_conn_get_private_data(struct rpma_conn *conn,
-		struct rpma_conn_private_data *pdata)
+		struct rpma_conn_private_data **pdata_ptr)
 {
-	return RPMA_E_NOSUPP;
+	*pdata_ptr = &conn->data;
 }
 
 /*
@@ -170,6 +194,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	}
 
 	rdma_destroy_event_channel(conn->evch);
+	rpma_private_data_discard(&conn->data);
 
 	Free(conn);
 	*conn_ptr = NULL;
