@@ -35,21 +35,21 @@ main(int argc, char *argv[])
 /*
  * log mesages to be produced to syslog as well as stderr
  */
-	rpma_log_open(NULL);
+	rpma_log_init(NULL);
 	fprintf(stderr, "Let's write messages to stderr and syslog\n");
 	rpma_log_set_print_level(RPMA_LOG_DEBUG);
 	rpma_log_set_level(RPMA_LOG_DEBUG);
 	log_worker_is_doing_somethig();
-	rpma_log_close();
+	rpma_log_fini();
 
 	/*
 	 * log mesages to be transfered only to custom user function
 	 */
-	rpma_log_open(user_logfunc);
+	rpma_log_init(user_logfunc);
 	fprintf(stderr, "Let's use custom log function" \
 			"to write messages to stderr\n");
 	fprintf(stderr, "No message should be written to syslog\n");
 	log_worker_is_doing_somethig();
-	rpma_log_close();
+	rpma_log_fini();
 	return 0;
 }

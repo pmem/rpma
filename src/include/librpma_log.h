@@ -9,6 +9,7 @@
 #ifndef LIBRPMA_LOG_H
 #define LIBRPMA_LOG_H
 #include <stdio.h>
+#include <librpma.h> // for RDMA_E_INVAL
 
 /*
  * for passing user-provided log call
@@ -27,22 +28,21 @@ typedef void logfunc(int level, const char *file, const int line,
  * Initialize the logging module. Messages prior
  * to this call will be dropped.
  */
-void rpma_log_open(logfunc *logf);
+void rpma_log_init(logfunc *logf);
 
 /*
  * Close the currently active log. Messages after this call
  * will be dropped.
  */
-void rpma_log_close(void);
+void rpma_log_fini(void);
 
 enum rpma_log_level {
-	/* All messages will be suppressed. */
-	RPMA_LOG_DISABLED = -1,
-	RPMA_LOG_ERROR,
-	RPMA_LOG_WARN,
-	RPMA_LOG_NOTICE,
-	RPMA_LOG_INFO,
-	RPMA_LOG_DEBUG,
+	RPMA_LOG_DISABLED = -1, // all messages will be suppressed
+	RPMA_LOG_ERROR, // error that cause library to stop working properly
+	RPMA_LOG_WARN, // errors that could be handled in the upper level
+	RPMA_LOG_NOTICE, // non-massive info e.g. connection established
+	RPMA_LOG_INFO, // massive info e.g. every write operation indication
+	RPMA_LOG_DEBUG, // debug info e.g. write operation dump
 };
 
 /*
@@ -50,6 +50,9 @@ enum rpma_log_level {
  * level than this are ignored.
  *
  * \param level Log level threshold to set to log messages.
+ *
+ * \return RDMA_E_INVAL if level out of scope otherwise 0
+ *
  */
 int rpma_log_set_level(enum rpma_log_level level);
 
@@ -70,6 +73,8 @@ enum rpma_log_level rpma_log_get_level(void);
  *  printing support.
  *
  * \param level Log level threshold for stacktrace.
+ *
+ * \return RDMA_E_INVAL if level out of scope otherwise 0
  */
 int rpma_log_set_backtrace_level(enum rpma_log_level level);
 
@@ -87,6 +92,9 @@ enum rpma_log_level rpma_log_get_backtrace_level(void);
  * suppress log printing.
  *
  * \param level Log level threshold for printing to stderr.
+ *
+ * \return RDMA_E_INVAL if level out of scope otherwise 0
+ *
  */
 int rpma_log_set_print_level(enum rpma_log_level level);
 
