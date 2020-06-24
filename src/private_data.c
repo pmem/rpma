@@ -50,6 +50,39 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
+ * rpma_private_data_copy -- copy private data from src to dst
+ */
+int
+rpma_private_data_copy(struct rpma_conn_private_data *src,
+		struct rpma_conn_private_data *dst)
+{
+	ASSERTne(src, NULL);
+	ASSERTne(dst, NULL);
+	ASSERTeq(dst->ptr, NULL);
+	ASSERTeq(dst->len, 0);
+
+	/* either (src->ptr == NULL && src->len == 0) ... */
+	if (src->ptr == NULL) {
+		ASSERTeq(src->len, 0);
+		return 0;
+	}
+
+	/* ... or (src->ptr != NULL && src->len != 0) */
+	ASSERTne(src->len, 0);
+
+	dst->ptr = Malloc(src->len);
+	if (dst->ptr == NULL) {
+		ASSERTeq(errno, ENOMEM);
+		return RPMA_E_NOMEM;
+	}
+
+	memcpy(dst->ptr, src->ptr, src->len);
+	dst->len = src->len;
+
+	return 0;
+}
+
+/*
  * rpma_private_data_discard -- free the private data
  */
 void
