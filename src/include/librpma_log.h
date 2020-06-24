@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <librpma.h> // for RDMA_E_INVAL
 
-// XXX documentation to be updated to src2man
+// XXX documentation to be updated to txt2man
 /*
  * for passing user-provided log call
  *
