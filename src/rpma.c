@@ -33,6 +33,7 @@ rpma_utils_get_ibv_context(const char *addr, struct ibv_context **dev)
 	if (ret) {
 		if (ret != RPMA_E_PROVIDER)
 			return ret;
+
 		/* if failed, check if it is a remote address */
 		side = RPMA_INFO_ACTIVE;
 		ret = rpma_info_new(addr, NULL /* service */, side, &info);
