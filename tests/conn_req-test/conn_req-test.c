@@ -14,15 +14,17 @@
 #include "info.h"
 #include "rpma_err.h"
 
-#define MOCK_IP_ADDRESS	"127.0.0.1"
-#define MOCK_SERVICE	"1234" /* a random port number */
+#define MOCK_IP_ADDRESS		"127.0.0.1"
+#define MOCK_SERVICE		"1234" /* a random port number */
 
 /* random values */
-#define MOCK_VERBS	(struct ibv_context *)0x4E4B
-#define MOCK_CQ		(struct ibv_cq *)0x00C0
-#define MOCK_PEER	(struct rpma_peer *)0xFEEF
-#define MOCK_INFO	(struct rpma_info *)0xE6B2
-#define MOCK_CONN	(struct rpma_peer *)0xC004
+#define MOCK_VERBS		(struct ibv_context *)0x4E4B
+#define MOCK_CQ			(struct ibv_cq *)0x00C0
+#define MOCK_PEER		(struct rpma_peer *)0xFEEF
+#define MOCK_INFO		(struct rpma_info *)0xE6B2
+#define MOCK_CONN		(struct rpma_peer *)0xC004
+#define MOCK_PRIVATE_DATA	((void *)"Random data")
+#define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 
 #define CM_EVENT_CONNECTION_REQUEST_INIT \
 	{NULL, NULL, RDMA_CM_EVENT_CONNECT_REQUEST, 0, {{0}}}
@@ -93,6 +95,20 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	*conn_ptr = NULL;
 	return 0;
+}
+
+/*
+ * rpma_conn_set_private_data -- rpma_conn_set_private_data() mock
+ */
+int
+rpma_conn_set_private_data(struct rpma_conn *conn,
+		struct rpma_conn_private_data *pdata)
+{
+	check_expected(conn);
+	check_expected(pdata->ptr);
+	check_expected(pdata->len);
+
+	return mock_type(int);
 }
 
 /*
@@ -361,6 +377,36 @@ rdma_disconnect(struct rdma_cm_id *id)
 	return 0;
 }
 
+/*
+ * rpma_private_data_store -- rpma_private_data_store() mock
+ */
+int
+rpma_private_data_store(struct rdma_cm_event *edata,
+		struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(edata);
+	assert_non_null(pdata);
+	assert_null(pdata->ptr);
+	assert_int_equal(pdata->len, 0);
+
+	pdata->ptr = mock_type(void *);
+	if (pdata->ptr == NULL)
+		return RPMA_E_NOMEM;
+
+	pdata->len = strlen(pdata->ptr) + 1;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_discard -- rpma_private_data_discard() mock
+ */
+void
+rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+{
+	assert_non_null(pdata);
+}
+
 void *__real__test_malloc(size_t size);
 
 /*
@@ -592,6 +638,37 @@ from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN(void **unused)
 }
 
 /*
+ * from_cm_event_test_private_data_store_ENOMEM -- rpma_private_data_store()
+ * fails with RPMA_E_NOMEM
+ */
+static void
+from_cm_event_test_private_data_store_ENOMEM(void **unused)
+{
+	/* configure mocks */
+	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
+	struct rdma_cm_id id = {0};
+	id.verbs = MOCK_VERBS;
+	event.id = &id;
+	will_return(ibv_create_cq, MOCK_CQ);
+	expect_value(rpma_peer_create_qp, id, &id);
+	will_return(rpma_peer_create_qp, NO_ERROR);
+	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(rpma_private_data_store, NULL);
+	expect_value(rdma_destroy_qp, id, &id);
+	will_return(ibv_destroy_cq, EAGAIN); /* second error */
+	expect_value(rdma_destroy_id, id, &id);
+	will_return(rdma_destroy_id, NO_ERROR);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_null(req);
+}
+
+/*
  * all the resources used between conn_req_from_cm_event_setup and
  * conn_req_from_cm_event_teardown
  */
@@ -619,6 +696,7 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, NO_ERROR);
 	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
 	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate.event,
@@ -1632,6 +1710,46 @@ conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
+ * conn_via_accept_test_set_private_data_ENOMEM -- rpma_conn_req_connect()
+ * fails with ENOMEM
+ */
+static void
+conn_via_accept_test_set_private_data_ENOMEM(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_test_state *cstate = NULL;
+	assert_int_equal(conn_req_from_cm_event_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_accept, id, &cstate->id);
+	will_return(rdma_accept, NO_ERROR);
+	expect_value(rdma_ack_cm_event, event, &cstate->event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+	expect_value(rpma_conn_new, id, &cstate->id);
+	will_return(rpma_conn_new, MOCK_CONN);
+	expect_value(rpma_conn_set_private_data, conn, MOCK_CONN);
+	expect_value(rpma_conn_set_private_data, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_conn_set_private_data, pdata->len, MOCK_PDATA_LEN);
+	will_return(rpma_conn_set_private_data, RPMA_E_NOMEM);
+	expect_value(rpma_conn_delete, conn, MOCK_CONN);
+	will_return(rpma_conn_delete, NO_ERROR);
+	expect_value(rdma_disconnect, id, &cstate->id);
+	will_return(rdma_disconnect, NO_ERROR);
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, NO_ERROR);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_req_connect(&cstate->req, NULL, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_null(cstate->req);
+	assert_null(conn);
+}
+
+/*
  * conn_via_accept_test_success_incoming -- rpma_conn_req_connect()
  * success (using an incoming connection request)
  */
@@ -1650,6 +1768,10 @@ conn_via_accept_test_success_incoming(void **unused)
 	will_return(rdma_ack_cm_event, NO_ERROR);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, MOCK_CONN);
+	expect_value(rpma_conn_set_private_data, conn, MOCK_CONN);
+	expect_value(rpma_conn_set_private_data, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_conn_set_private_data, pdata->len, MOCK_PDATA_LEN);
+	will_return(rpma_conn_set_private_data, 0);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1847,6 +1969,8 @@ main(int argc, char *argv[])
 		cmocka_unit_test(from_cm_event_test_malloc_ENOMEM),
 		cmocka_unit_test(
 			from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN),
+		cmocka_unit_test(
+			from_cm_event_test_private_data_store_ENOMEM),
 
 		/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 		cmocka_unit_test_setup_teardown(conn_req_from_cm_test_lifecycle,
@@ -1915,6 +2039,7 @@ main(int argc, char *argv[])
 			conn_via_accept_test_conn_new_EAGAIN),
 		cmocka_unit_test(
 			conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO),
+		cmocka_unit_test(conn_via_accept_test_set_private_data_ENOMEM),
 		cmocka_unit_test(conn_via_accept_test_success_incoming),
 		/* connect via rdma_connect() */
 		cmocka_unit_test(conn_via_connect_test_connect_EAGAIN),

@@ -9,6 +9,7 @@
 
 #include "cmocka_alloc.h"
 #include "conn.h"
+#include "private_data.h"
 #include "rpma_err.h"
 #include "out.h"
 
@@ -16,6 +17,8 @@ struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
 	struct ibv_cq *cq; /* completion queue of the CM ID */
+
+	struct rpma_conn_private_data data; /* private data of the CM ID */
 };
 
 /* internal librpma API */
@@ -58,6 +61,8 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 	conn->id = id;
 	conn->evch = evch;
 	conn->cq = cq;
+	conn->data.ptr = NULL;
+	conn->data.len = 0;
 	*conn_ptr = conn;
 
 	return 0;
@@ -71,6 +76,20 @@ err_destroy_evch:
 	return ret;
 }
 
+/*
+ * rpma_conn_set_private_data -- allocate a buffer and fill
+ * the private data of the CM ID
+ */
+int
+rpma_conn_set_private_data(struct rpma_conn *conn,
+		struct rpma_conn_private_data *pdata)
+{
+	ASSERTne(conn, NULL);
+	ASSERTne(pdata, NULL);
+
+	return rpma_private_data_copy(&conn->data, pdata);
+}
+
 /* public librpma API */
 
 /*
@@ -79,6 +98,8 @@ err_destroy_evch:
 int
 rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 {
+	int ret;
+
 	if (conn == NULL || event == NULL)
 		return RPMA_E_INVAL;
 
@@ -88,10 +109,19 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		return RPMA_E_PROVIDER;
 	}
 
+	if (edata->event == RDMA_CM_EVENT_ESTABLISHED) {
+		ret = rpma_private_data_store(edata, &conn->data);
+		if (ret) {
+			(void) rdma_ack_cm_event(edata);
+			return ret;
+		}
+	}
+
 	enum rdma_cm_event_type cm_event = edata->event;
 	if (rdma_ack_cm_event(edata)) {
 		Rpma_provider_error = errno;
-		return RPMA_E_PROVIDER;
+		ret = RPMA_E_PROVIDER;
+		goto err_private_data_discard;
 	}
 
 	switch (cm_event) {
@@ -111,16 +141,27 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	}
 
 	return 0;
+
+err_private_data_discard:
+	rpma_private_data_discard(&conn->data);
+
+	return ret;
 }
 
 /*
- * rpma_conn_get_private_data -- XXX
+ * rpma_conn_get_private_data -- hand a pointer to the connection's private data
  */
 int
 rpma_conn_get_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || pdata == NULL)
+		return RPMA_E_INVAL;
+
+	pdata->ptr = conn->data.ptr;
+	pdata->len = conn->data.len;
+
+	return 0;
 }
 
 /*
@@ -170,6 +211,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	}
 
 	rdma_destroy_event_channel(conn->evch);
+	rpma_private_data_discard(&conn->data);
 
 	Free(conn);
 	*conn_ptr = NULL;
