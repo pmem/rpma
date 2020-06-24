@@ -236,7 +236,7 @@ rpma_log(enum rpma_log_level level, const char *file, const int line,
 		const char *func, const char *format, ...)
 {
 	va_list arg;
-	if ((NULL != file) && (NULL == func)) {
+	if (NULL != file && NULL == func) {
 		return;
 	}
 	if (NULL == format) {
@@ -266,7 +266,7 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 int
 rpma_log_set_level(enum rpma_log_level level)
 {
-	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
 		return RPMA_E_INVAL;
 	}
 	Rpma_log_level = level;
@@ -288,7 +288,7 @@ rpma_log_get_level(void)
 int
 rpma_log_set_print_level(enum rpma_log_level level)
 {
-	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
 		return RPMA_E_INVAL;
 	}
 	Rpma_log_print_level = level;
@@ -310,7 +310,7 @@ rpma_log_get_print_level(void)
 int
 rpma_log_set_backtrace_level(enum rpma_log_level level)
 {
-	if ((level < RPMA_LOG_DISABLED) || (level > RPMA_LOG_DEBUG)) {
+	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
 		return RPMA_E_INVAL;
 	}
 	Rpma_log_backtrace_level = level;

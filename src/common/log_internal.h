@@ -2,8 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * log_internal.h -- Logging interfaces used by the librpma internally
- * to produce logging information.
+ * log_internal.h -- internal logging interfaces used by the librpma.
  */
 
 #ifndef LOG_INTERNAL_H

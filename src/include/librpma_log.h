@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * librpma_log.h -- public API fpr librpma logging interfaces
+ * librpma_log.h -- public API to control librpma logging mechanism behavior
  */
 
 #ifndef LIBRPMA_LOG_H
