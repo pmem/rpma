@@ -195,6 +195,81 @@ test_lifecycle(void **unused)
 	 */
 }
 
+/*
+ * test_copy__ptr_NULL_len_0 - ptr == NULL and len == 0 should prevent storing a
+ * private data
+ */
+static void
+test_copy__ptr_NULL_len_0(void **unused)
+{
+	struct rpma_conn_private_data src = {NULL, 0};
+	struct rpma_conn_private_data dst = {0};
+	int ret = rpma_private_data_copy(&dst, &src);
+
+	/* verify the result */
+	assert_int_equal(ret, SUCCESS);
+	assert_ptr_equal(src.ptr, NULL);
+	assert_int_equal(src.len, 0);
+	assert_ptr_equal(dst.ptr, NULL);
+	assert_int_equal(dst.len, 0);
+}
+
+/*
+ * test_copy__malloc_ENOMEM - malloc() fail with ENOMEM
+ */
+static void
+test_copy__malloc_ENOMEM(void **pdata_ptr)
+{
+	struct rpma_conn_private_data *src = *pdata_ptr;
+	void *src_ptr = src->ptr;
+	uint8_t src_len = src->len;
+
+	/* configure mocks */
+	will_return(__wrap__test_malloc, ENOMEM);
+
+	/* run test */
+	struct rpma_conn_private_data dst = {0};
+	int ret = rpma_private_data_copy(&dst, src);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_ptr_equal(src->ptr, src_ptr);
+	assert_int_equal(src->len, src_len);
+	assert_ptr_equal(dst.ptr, NULL);
+	assert_int_equal(dst.len, 0);
+}
+
+/*
+ * test_copy__success - happy day scenario
+ */
+static void
+test_copy__success(void **pdata_ptr)
+{
+	struct rpma_conn_private_data *src = *pdata_ptr;
+	void *src_ptr = src->ptr;
+	uint8_t src_len = src->len;
+
+	/* configure mocks */
+	will_return(__wrap__test_malloc, SUCCESS);
+
+	/* run test */
+	struct rpma_conn_private_data dst = {0};
+	int ret = rpma_private_data_copy(&dst, src);
+
+	/* verify the result */
+	assert_int_equal(ret, SUCCESS);
+	assert_ptr_equal(src->ptr, src_ptr);
+	assert_int_equal(src->len, src_len);
+	assert_int_equal(dst.len, src->len);
+	assert_string_equal(dst.ptr, src->ptr);
+
+	/* cleanup */
+	rpma_private_data_discard(&dst);
+	assert_int_equal(ret, SUCCESS);
+	assert_ptr_equal(dst.ptr, NULL);
+	assert_int_equal(dst.len, 0);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -213,6 +288,14 @@ main(int argc, char *argv[])
 		/* rpma_private_data_store()/_discard() lifecycle */
 		cmocka_unit_test_setup_teardown(test_lifecycle,
 				setup_private_data, teardown_private_data),
+
+		/* rpma_private_data_copy() unit tests */
+		cmocka_unit_test(test_copy__ptr_NULL_len_0),
+		cmocka_unit_test_setup_teardown(test_copy__malloc_ENOMEM,
+				setup_private_data, teardown_private_data),
+		cmocka_unit_test_setup_teardown(test_copy__success,
+				setup_private_data, teardown_private_data),
+
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
