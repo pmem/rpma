@@ -109,7 +109,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		return RPMA_E_PROVIDER;
 	}
 
-	if (edata->event == RDMA_CM_EVENT_ESTABLISHED) {
+	if (edata->event == RDMA_CM_EVENT_ESTABLISHED &&
+			conn->data.ptr == NULL) {
 		ret = rpma_private_data_store(edata, &conn->data);
 		if (ret) {
 			(void) rdma_ack_cm_event(edata);
