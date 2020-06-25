@@ -16,6 +16,8 @@
 #define MOCK_CONN		(struct rpma_conn *)0xA41F
 #define MOCK_PRIVATE_DATA	((void *)"Random data")
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
+#define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
+#define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
 
 #define NO_ERROR	0
 
@@ -136,9 +138,8 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	if (ret)
 		return ret;
 
-	pdata->ptr = mock_type(void *);
-	if (pdata->ptr)
-		pdata->len = strlen(pdata->ptr) + 1;
+	pdata->ptr = (void *)edata->param.conn.private_data;
+	pdata->len = edata->param.conn.private_data_len;
 
 	return 0;
 }
@@ -854,7 +855,7 @@ next_event_test_data_store_ENOMEM(void **conn_ptr)
 	will_return(rdma_get_cm_event, &event);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, NO_ERROR);
-	will_return(rpma_private_data_store, RPMA_E_NOMEM);
+	will_return_maybe(rpma_private_data_store, RPMA_E_NOMEM);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -866,27 +867,169 @@ next_event_test_data_store_ENOMEM(void **conn_ptr)
 }
 
 /*
- * next_event_test_success_ESTABLISHED - happy day scenario
+ * next_event_test_success_no_data_ESTABLISHED_no_data - happy day scenario,
+ * no private data in the connection and no private data in the event
  */
 static void
-next_event_test_success_ESTABLISHED(void **conn_ptr)
+next_event_test_success_no_data_ESTABLISHED_no_data(void **conn_ptr)
 {
 	struct rpma_conn *conn = *conn_ptr;
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	struct rdma_cm_event event;
 	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	/* no private data in the event */
+	event.param.conn.private_data = NULL;
+	event.param.conn.private_data_len = 0;
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, NO_ERROR);
 
-	will_return(rpma_private_data_store, 0);
-	will_return(rpma_private_data_store, NULL);
+	will_return_maybe(rpma_private_data_store, NO_ERROR);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
 	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(c_event, RPMA_CONN_ESTABLISHED);
+}
+
+/*
+ * next_event_test_success_no_data_ESTABLISHED_with_data - happy day scenario
+ * no private data in the connection and with private data in the event
+ */
+static void
+next_event_test_success_no_data_ESTABLISHED_with_data(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	/* with private data in the event */
+	event.param.conn.private_data = MOCK_PRIVATE_DATA;
+	event.param.conn.private_data_len = MOCK_PDATA_LEN;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	will_return_maybe(rpma_private_data_store, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	int ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(c_event, RPMA_CONN_ESTABLISHED);
+}
+
+/*
+ * next_event_test_success_with_data_ESTABLISHED_no_data - happy day scenario,
+ * with private data in the connection and with no private data in the event
+ */
+static void
+next_event_test_success_with_data_ESTABLISHED_no_data(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = MOCK_PDATA_LEN;
+	will_return(rpma_private_data_copy, 0);
+	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
+
+	/* set private data in the connection */
+	int ret = rpma_conn_set_private_data(conn, &data);
+
+	/* verify the results of rpma_conn_set_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+
+	/* get the private data */
+	struct rpma_conn_private_data check_data;
+	ret = rpma_conn_get_private_data(conn, &check_data);
+
+	/* verify the results of rpma_conn_get_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_ptr_equal(check_data.ptr, data.ptr);
+	assert_int_equal(check_data.len, data.len);
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	/* no private data in the event */
+	event.param.conn.private_data = NULL;
+	event.param.conn.private_data_len = 0;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	will_return_maybe(rpma_private_data_store, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	ret = rpma_conn_next_event(conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(c_event, RPMA_CONN_ESTABLISHED);
+}
+
+/*
+ * next_event_test_success_with_data_ESTABLISHED_with_data - happy day scenario,
+ * with private data in the connection and with another private data
+ * in the event
+ */
+static void
+next_event_test_success_with_data_ESTABLISHED_with_data(void **conn_ptr)
+{
+	struct rpma_conn *conn = *conn_ptr;
+
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = MOCK_PDATA_LEN;
+	will_return(rpma_private_data_copy, 0);
+	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
+
+	/* set private data in the connection */
+	int ret = rpma_conn_set_private_data(conn, &data);
+
+	/* verify the results of rpma_conn_set_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+
+	/* get the private data */
+	struct rpma_conn_private_data check_data;
+	ret = rpma_conn_get_private_data(conn, &check_data);
+
+	/* verify the results of rpma_conn_get_private_data() */
+	assert_int_equal(ret, NO_ERROR);
+	assert_ptr_equal(check_data.ptr, data.ptr);
+	assert_int_equal(check_data.len, data.len);
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_ESTABLISHED;
+	/* with another private data in the event */
+	event.param.conn.private_data = MOCK_PRIVATE_DATA_2;
+	event.param.conn.private_data_len = MOCK_PDATA_LEN_2;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, NO_ERROR);
+
+	/* another data in the event */
+	will_return_maybe(rpma_private_data_store, NO_ERROR);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	ret = rpma_conn_next_event(conn, &c_event);
 
 	/* verify the results */
 	assert_int_equal(ret, NO_ERROR);
@@ -1088,8 +1231,17 @@ main(int argc, char *argv[])
 			next_event_test_data_store_ENOMEM,
 			conn_setup, conn_teardown_no_data),
 		cmocka_unit_test_setup_teardown(
-			next_event_test_success_ESTABLISHED,
+			next_event_test_success_no_data_ESTABLISHED_no_data,
 			conn_setup, conn_teardown_no_data),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_no_data_ESTABLISHED_with_data,
+			conn_setup, conn_teardown_with_data),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_with_data_ESTABLISHED_no_data,
+			conn_setup, conn_teardown_with_data),
+		cmocka_unit_test_setup_teardown(
+			next_event_test_success_with_data_ESTABLISHED_with_data,
+			conn_setup, conn_teardown_with_data),
 		cmocka_unit_test_setup_teardown(
 			next_event_test_success_CONNECT_ERROR,
 			conn_setup, conn_teardown_no_data),
