@@ -15,6 +15,12 @@
 #include "librpma.h"
 
 /*
+ * ASSUMPTIONS
+ * - edata != NULL
+ * - pdata != NULL
+ * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
+ *     edata->event == RDMA_CM_EVENT_ESTABLISHED
+ *
  * ERRORS
  * rpma_private_data_store() can fail with the following error:
  *
@@ -38,6 +44,9 @@ int rpma_private_data_copy(struct rpma_conn_private_data *dst,
 		struct rpma_conn_private_data *src);
 
 /*
+ * ASSUMPTIONS
+ * - pdata != NULL
+ *
  * The function cannot fail.
  */
 void rpma_private_data_discard(struct rpma_conn_private_data *pdata);

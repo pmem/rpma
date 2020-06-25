@@ -19,11 +19,6 @@ int
 rpma_private_data_store(struct rdma_cm_event *edata,
 		struct rpma_conn_private_data *pdata)
 {
-	ASSERTne(edata, NULL);
-	ASSERTne(pdata, NULL);
-	ASSERT(edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
-			edata->event == RDMA_CM_EVENT_ESTABLISHED);
-
 	const void *ptr = edata->param.conn.private_data;
 	uint8_t len = edata->param.conn.private_data_len;
 
@@ -35,10 +30,8 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 
 	/* allocate a buffer for a copy of data from ptr */
 	void *ptr_copy = Malloc(len);
-	if (ptr_copy == NULL) {
-		ASSERTeq(errno, ENOMEM);
+	if (ptr_copy == NULL)
 		return RPMA_E_NOMEM;
-	}
 
 	/* copy the data to the buffer */
 	memcpy(ptr_copy, ptr, len);
@@ -75,8 +68,6 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 void
 rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 {
-	ASSERTne(pdata, NULL);
-
 	Free(pdata->ptr);
 
 	pdata->ptr = NULL;
