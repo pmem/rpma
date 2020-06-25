@@ -17,9 +17,10 @@
 /*
  * ASSUMPTIONS
  * - edata != NULL
- * - pdata != NULL
  * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
  *     edata->event == RDMA_CM_EVENT_ESTABLISHED
+ * - pdata != NULL
+ * - pdata == {NULL, 0}
  *
  * ERRORS
  * rpma_private_data_store() can fail with the following error:

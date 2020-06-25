@@ -22,11 +22,8 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	const void *ptr = edata->param.conn.private_data;
 	uint8_t len = edata->param.conn.private_data_len;
 
-	if (ptr == NULL || len == 0) {
-		pdata->ptr = NULL;
-		pdata->len = 0;
+	if (ptr == NULL || len == 0)
 		return 0;
-	}
 
 	/* allocate a buffer for a copy of data from ptr */
 	void *ptr_copy = Malloc(len);
