@@ -74,6 +74,7 @@ main(int argc, char *argv[])
 		print_error("rpma_ep_listen", ret);
 		goto err_peer_delete;
 	}
+	fprintf(stdout, "Waiting for incoming connections...\n");
 
 	/* obtain an incoming connection request */
 	ret = rpma_ep_next_conn_req(ep, &req);
