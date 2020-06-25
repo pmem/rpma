@@ -22,7 +22,7 @@
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
 
-#define NO_ERROR		0
+#define SUCCESS		0
 
 struct ibv_alloc_pd_mock_args {
 	int validate_params;
@@ -192,7 +192,7 @@ peer_new_test_alloc_pd_fail_ENOMEM(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
 	will_return(ibv_alloc_pd, ENOMEM);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
@@ -219,7 +219,7 @@ peer_new_test_alloc_pd_fail_EAGAIN(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
 	will_return(ibv_alloc_pd, EAGAIN);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
@@ -245,8 +245,8 @@ peer_new_test_alloc_pd_fail_no_error(void **unused)
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
-	will_return(ibv_alloc_pd, NO_ERROR);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return(ibv_alloc_pd, SUCCESS);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
@@ -268,7 +268,7 @@ peer_new_test_malloc_fail(void **unused)
 		{MOCK_PASSTHROUGH, MOCK_IBV_PD};
 	will_return_maybe(ibv_alloc_pd, &alloc_args);
 	struct ibv_dealloc_pd_mock_args dealloc_args =
-		{MOCK_PASSTHROUGH, NO_ERROR};
+		{MOCK_PASSTHROUGH, SUCCESS};
 	will_return_maybe(ibv_dealloc_pd, &dealloc_args);
 	will_return(__wrap__test_malloc, ENOMEM);
 
@@ -295,14 +295,14 @@ peer_new_test_success(void **unused)
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(__wrap__test_malloc, SUCCESS);
 
 	/* run test - step 1 */
 	struct rpma_peer *peer = NULL;
 	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_non_null(peer);
 
 	/*
@@ -311,7 +311,7 @@ peer_new_test_success(void **unused)
 	 * rpma_peer_delete().
 	 */
 	struct ibv_dealloc_pd_mock_args dealloc_args =
-		{MOCK_VALIDATE, NO_ERROR};
+		{MOCK_VALIDATE, SUCCESS};
 	will_return(ibv_dealloc_pd, &dealloc_args);
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
@@ -319,7 +319,7 @@ peer_new_test_success(void **unused)
 	ret = rpma_peer_delete(&peer);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(peer);
 }
 
@@ -357,7 +357,7 @@ peer_delete_test_null_peer(void **unused)
 	int ret = rpma_peer_delete(&peer);
 
 	/* verify the result */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(peer);
 }
 
@@ -376,7 +376,7 @@ peer_setup(void **peer_ptr)
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(__wrap__test_malloc, SUCCESS);
 
 	/* setup */
 	int ret = rpma_peer_new(MOCK_IBV_CTX, (struct rpma_peer **)peer_ptr);
@@ -398,13 +398,13 @@ peer_teardown(void **peer_ptr)
 	 * rpma_peer_delete().
 	 */
 	struct ibv_dealloc_pd_mock_args dealloc_args =
-		{MOCK_VALIDATE, NO_ERROR};
+		{MOCK_VALIDATE, SUCCESS};
 	will_return(ibv_dealloc_pd, &dealloc_args);
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
 	/* teardown */
 	int ret = rpma_peer_delete((struct rpma_peer **)peer_ptr);
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(*peer_ptr);
 
 	return 0;

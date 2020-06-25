@@ -23,7 +23,7 @@
 #define MOCK_INFO	(struct rpma_info *)0x14F0
 #define MOCK_CONN_REQ	(struct rpma_conn_req *)0xCFEF
 
-#define NO_ERROR	0
+#define SUCCESS	0
 #define MOCK_ERRNO	0xE440
 
 static const struct rdma_cm_id Cmid_zero = {0};
@@ -405,7 +405,7 @@ ep_listen_test_create_evch_EAGAIN(void **unused)
 	will_return(rdma_create_event_channel, EAGAIN);
 	/* - things which may happen: */
 	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -433,7 +433,7 @@ ep_listen_test_create_id_EAGAIN(void **unused)
 	will_return(rdma_create_id, EAGAIN);
 	/* - things which may happen: */
 	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(__wrap__test_malloc, NO_ERROR);
+	will_return_maybe(__wrap__test_malloc, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -463,7 +463,7 @@ ep_listen_test_info_new_E_NOMEM(void **unused)
 	will_return_maybe(rdma_create_event_channel, &evch);
 	struct rdma_cm_id id;
 	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rdma_destroy_id, NO_ERROR);
+	will_return_maybe(rdma_destroy_id, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -492,7 +492,7 @@ ep_listen_test_info_bind_addr_E_PROVIDER(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rpma_info_bind_addr, MOCK_ERRNO);
 	/* - deconstructing */
-	will_return(rdma_destroy_id, NO_ERROR);
+	will_return(rdma_destroy_id, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -519,10 +519,10 @@ ep_listen_test_listen_EAGAIN(void **unused)
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, NO_ERROR);
+	will_return(rpma_info_bind_addr, SUCCESS);
 	will_return(rdma_listen, EAGAIN);
 	/* - deconstructing */
-	will_return(rdma_destroy_id, NO_ERROR);
+	will_return(rdma_destroy_id, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -551,9 +551,9 @@ ep_listen_test_malloc_ENOMEM(void **unused)
 	struct rdma_cm_id id;
 	will_return_maybe(rdma_create_id, &id);
 	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(rpma_info_bind_addr, NO_ERROR);
-	will_return_maybe(rdma_listen, NO_ERROR);
-	will_return_maybe(rdma_destroy_id, NO_ERROR);
+	will_return_maybe(rpma_info_bind_addr, SUCCESS);
+	will_return_maybe(rdma_listen, SUCCESS);
+	will_return_maybe(rdma_destroy_id, SUCCESS);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -583,8 +583,8 @@ ep_listen_test_malloc_ENOMEM_destroy_id_EAGAIN(void **unused)
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, NO_ERROR);
-	will_return(rdma_listen, NO_ERROR);
+	will_return(rpma_info_bind_addr, SUCCESS);
+	will_return(rdma_listen, SUCCESS);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	/* - deconstructing */
 	will_return(rdma_destroy_id, MOCK_ERRNO); /* second error */
@@ -622,7 +622,7 @@ ep_shutdown_test_ep_NULL(void **unused)
 	int ret = rpma_ep_shutdown(&ep);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(ep);
 }
 
@@ -647,9 +647,9 @@ ep_setup(void **estate_ptr)
 	will_return(rdma_create_event_channel, &estate.evch);
 	will_return(rdma_create_id, &estate.cmid);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, NO_ERROR);
-	will_return(rdma_listen, NO_ERROR);
-	will_return(__wrap__test_malloc, NO_ERROR);
+	will_return(rpma_info_bind_addr, SUCCESS);
+	will_return(rdma_listen, SUCCESS);
+	will_return(__wrap__test_malloc, SUCCESS);
 	expect_value(rpma_info_delete, *info_ptr, MOCK_INFO);
 
 	/* prepare an object */
@@ -657,7 +657,7 @@ ep_setup(void **estate_ptr)
 		&estate.ep);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_non_null(estate.ep);
 	assert_int_equal(memcmp(&estate.cmid, &Cmid_zero, sizeof(estate.cmid)),
 		0);
@@ -682,14 +682,14 @@ ep_teardown(void **estate_ptr)
 
 	/* configure mocks: */
 	expect_value(rdma_destroy_id, id, &estate->cmid);
-	will_return(rdma_destroy_id, NO_ERROR);
+	will_return(rdma_destroy_id, SUCCESS);
 	expect_value(rdma_destroy_event_channel, channel, &estate->evch);
 
 	/* delete the object */
 	int ret = rpma_ep_shutdown(&estate->ep);
 
 	/* verify the results */
-	assert_int_equal(ret, NO_ERROR);
+	assert_int_equal(ret, SUCCESS);
 	assert_null(estate->ep);
 	assert_int_equal(memcmp(&estate->cmid, &Cmid_zero,
 		sizeof(estate->cmid)), 0);
@@ -814,7 +814,7 @@ ep_next_conn_req_test_event_REJECTED(void **estate_ptr)
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
-	will_return(rdma_ack_cm_event, NO_ERROR);
+	will_return(rdma_ack_cm_event, SUCCESS);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -872,7 +872,7 @@ ep_next_conn_req_test_conn_req_from_cm_event_ENOMEM(void **estate_ptr)
 	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
 
 	expect_value(rdma_ack_cm_event, event, &event);
-	will_return(rdma_ack_cm_event, NO_ERROR);
+	will_return(rdma_ack_cm_event, SUCCESS);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
