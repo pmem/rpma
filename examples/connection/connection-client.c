@@ -76,7 +76,11 @@ main(int argc, char *argv[])
 	}
 
 	/* connect the connection request and obtain the connection object */
-	ret = rpma_conn_req_connect(&req, NULL, &conn);
+	const char *msg = "Hello server!";
+	struct rpma_conn_private_data pdata;
+	pdata.ptr = (void *)msg;
+	pdata.len = (strlen(msg) + 1) * sizeof(char);
+	ret = rpma_conn_req_connect(&req, &pdata, &conn);
 	if (ret) {
 		print_error("rpma_conn_req_connect", ret);
 		goto err_req_delete;
@@ -98,6 +102,13 @@ main(int argc, char *argv[])
 	}
 
 	/* here you can use the newly established connection */
+	(void) rpma_conn_get_private_data(conn, &pdata);
+	if (pdata.ptr) {
+		char *msg = pdata.ptr;
+		fprintf(stdout, "Received a message: %s\n", msg);
+	} else {
+		fprintf(stdout, "No message received\n");
+	}
 
 	/* wait for the connection to being closed */
 	ret = rpma_conn_next_event(conn, &conn_event);
