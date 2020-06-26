@@ -42,10 +42,10 @@ __wrap_fprintf(FILE *__restrict __stream,
 	va_start(args, __format);
 	assert_ptr_equal(__stream, stderr);
 	check_expected(__format);
-	char *msg, *expected_msg = mock_ptr_type(char*);
-	va_arg(args, char*);
-	va_arg(args, char*);
-	msg = va_arg(args, char*);
+	char *msg, *expected_msg = mock_ptr_type(char *);
+	va_arg(args, char *);
+	va_arg(args, char *);
+	msg = va_arg(args, char *);
 
 	assert_string_equal(msg, expected_msg);
 	function_called();
@@ -54,7 +54,6 @@ __wrap_fprintf(FILE *__restrict __stream,
 	ret = vsnprintf(fprintf_temporary_buffer,
 			sizeof(fprintf_temporary_buffer), __format, args);
 	va_end(args);
-	assert_return_code(255, 23);
 	return ret;
 #if 0
 	int err = mock_type(int);
