@@ -93,7 +93,6 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env https_proxy=$https_proxy \
 	--env AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE \
 	--env GITHUB_REPO=$GITHUB_REPO \
-	--env GITHUB_TOKEN=$GITHUB_TOKEN \
 	--env WORKDIR=$WORKDIR \
 	--env SCRIPTSDIR=$SCRIPTSDIR \
 	--env COVERAGE=$COVERAGE \
@@ -106,6 +105,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env TRAVIS=$TRAVIS \
 	--env COVERITY_SCAN_TOKEN=$COVERITY_SCAN_TOKEN \
 	--env COVERITY_SCAN_NOTIFICATION_EMAIL=$COVERITY_SCAN_NOTIFICATION_EMAIL \
+	--env DOC_UPDATE_GITHUB_TOKEN=$DOC_UPDATE_GITHUB_TOKEN \
 	--env TEST_BUILD=$TEST_BUILD \
 	--env DEFAULT_TEST_DIR=/dev/shm \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
