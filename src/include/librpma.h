@@ -132,21 +132,26 @@ struct rpma_mr_remote;
 #define RPMA_MR_USAGE_READ_SRC	(1 << 0)
 #define RPMA_MR_USAGE_READ_DST	(1 << 1)
 
+enum rpma_mr_plt {
+	RPMA_MR_PLT_VOLATILE,
+	RPMA_MR_PLT_PERSISTENT
+};
+
 /** 3
- * rpma_mr_reg - create a local memory handle object
+ * rpma_mr_reg - create a local memory registration object
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
  *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
- *		int usage, int plt, struct rpma_mr_local **mr);
+ *		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr);
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
-		int usage, int plt, struct rpma_mr_local **mr);
+		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr);
 
 /** 3
- * rpma_mr_dereg - delete a local memory handle object
+ * rpma_mr_dereg - delete a local memory registration object
  *
  * SYNOPSIS
  *
@@ -155,6 +160,52 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *	int rpma_mr_dereg(struct rpma_mr_local **mr);
  */
 int rpma_mr_dereg(struct rpma_mr_local **mr);
+
+/** 3
+ * rpma_mr_serialize_get_size - size of the buffer for serialized memory region
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	size_t rpma_mr_serialize_get_size(void);
+ */
+size_t rpma_mr_serialize_get_size(void);
+
+/** 3
+ * rpma_mr_serialiaze - serialize a memory region
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_serialiaze(struct rpma_mr_local *mr, void *buff);
+ */
+int rpma_mr_serialiaze(struct rpma_mr_local *mr, void *buff);
+
+/** 3
+ * rpma_mr_deserialize - deserialize a memory region
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_deserialize(void *buff, size_t buff_size,
+ *		struct rpma_mr_remote **mr);
+ */
+int rpma_mr_deserialize(void *buff, size_t buff_size,
+		struct rpma_mr_remote **mr);
+
+/** 3
+ * rpma_mr_remote_delete - delete a remote memory region object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
+ */
+int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
 
 /* connection */
 

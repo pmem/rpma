@@ -24,4 +24,17 @@
 int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq);
 
+/*
+ * ASSUMPTIONS
+ * - peer != NULL
+ * - ibv_mr != NULL
+ *
+ * ERRORS
+ * rpma_peer_mr_reg() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - allocating a QP failed
+ */
+int rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
+	size_t length, int access);
+
 #endif /* LIBRPMA_PEER_H */
