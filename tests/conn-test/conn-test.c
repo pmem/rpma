@@ -1225,6 +1225,15 @@ disconnect_test_success(void **conn_ptr)
 	assert_int_equal(ret, NO_ERROR);
 }
 
+/*
+ * next_completion_test_sanity - sanity test of rpma_conn_next_completion()
+ */
+static void
+next_completion_test_sanity(void **unused)
+{
+	assert_int_equal(rpma_conn_next_completion(NULL, NULL), RPMA_E_NOSUPP);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1314,6 +1323,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test(get_private_data_test_conn_NULL),
 		cmocka_unit_test(get_private_data_test_pdata_NULL),
 		cmocka_unit_test(get_private_data_test_conn_NULL_pdata_NULL),
+
+		/* rpma_conn_next_completion() unit tests */
+		cmocka_unit_test(next_completion_test_sanity),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

@@ -469,7 +469,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_next_completion - obtain an operation completion
+ * rpma_conn_next_completion - obtain a completion of an operation
  *
  * SYNOPSIS
  *

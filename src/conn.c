@@ -229,3 +229,12 @@ err_destroy_event_channel:
 
 	return ret;
 }
+
+/*
+ * rpma_conn_next_completion -- obtain a completion of an operation
+ */
+int
+rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
+{
+	return RPMA_E_NOSUPP;
+}

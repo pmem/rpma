@@ -123,12 +123,3 @@ rpma_read(struct rpma_conn *conn, void *op_context,
 {
 	return RPMA_E_NOSUPP;
 }
-
-/*
- * rpma_conn_next_completion -- XXX
- */
-int
-rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
-{
-	return RPMA_E_NOSUPP;
-}
