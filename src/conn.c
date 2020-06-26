@@ -229,3 +229,24 @@ err_destroy_event_channel:
 
 	return ret;
 }
+
+/*
+ * rpma_read -- use rpma_mr_read(conn->id->qp)
+ */
+int
+rpma_read(struct rpma_conn *conn,
+	struct rpma_mr_local *dst, size_t dst_offset,
+	struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_conn_next_completion -- use ibv_poll_cq(conn->cq)
+ */
+int
+rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
+{
+	return RPMA_E_NOSUPP;
+}
