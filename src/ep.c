@@ -110,7 +110,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	struct rpma_ep *ep = *ep_ptr;
 	if (ep == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	if (rdma_destroy_id(ep->id)) {
 		Rpma_provider_error = errno;
@@ -122,7 +122,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 	Free(ep);
 	*ep_ptr = NULL;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -156,7 +156,7 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 	if (ret)
 		goto err_ack;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_ack:
 	(void) rdma_ack_cm_event(event);

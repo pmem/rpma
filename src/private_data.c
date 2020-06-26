@@ -23,7 +23,7 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	uint8_t len = edata->param.conn.private_data_len;
 
 	if (ptr == NULL || len == 0)
-		return 0;
+		return RPMA_SUCCESS;
 
 	/* allocate a buffer for a copy of data from ptr */
 	void *ptr_copy = Malloc(len);
@@ -36,7 +36,7 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	pdata->ptr = ptr_copy;
 	pdata->len = len;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -47,7 +47,7 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 		struct rpma_conn_private_data *src)
 {
 	if (src->ptr == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	dst->ptr = Malloc(src->len);
 	if (dst->ptr == NULL)
@@ -56,7 +56,7 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 	memcpy(dst->ptr, src->ptr, src->len);
 	dst->len = src->len;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*

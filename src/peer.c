@@ -60,7 +60,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	/* XXX should we have to validate qp_init_attr output values? */
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /* public librpma API */
@@ -107,7 +107,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	peer->pd = pd;
 	*peer_ptr = peer;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_dealloc_pd:
 	ibv_dealloc_pd(pd);
@@ -126,7 +126,7 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 
 	struct rpma_peer *peer = *peer_ptr;
 	if (peer == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	int ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
@@ -137,5 +137,5 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	Free(peer);
 	*peer_ptr = NULL;
 
-	return 0;
+	return RPMA_SUCCESS;
 }

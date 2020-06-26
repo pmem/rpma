@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 		goto err_exit;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_conn_disconnect:
 	(void) rpma_conn_disconnect(conn);

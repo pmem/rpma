@@ -24,6 +24,7 @@
 
 #define RPMA_W_WAIT_FOR_COMPLETION	(1)
 
+#define RPMA_SUCCESS			0
 #define RPMA_E_UNKNOWN			(-100000) /* Unknown error */
 #define RPMA_E_NOSUPP			(-100001) /* Not supported */
 #define RPMA_E_PROVIDER			(-100002) /* Provider error occurred */

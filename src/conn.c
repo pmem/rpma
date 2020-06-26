@@ -65,7 +65,7 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 	conn->data.len = 0;
 	*conn_ptr = conn;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_migrate_id_NULL:
 	(void) rdma_migrate_id(id, NULL);
@@ -141,7 +141,7 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 			return RPMA_E_UNKNOWN;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_private_data_discard:
 	rpma_private_data_discard(&conn->data);
@@ -162,7 +162,7 @@ rpma_conn_get_private_data(struct rpma_conn *conn,
 	pdata->ptr = conn->data.ptr;
 	pdata->len = conn->data.len;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -179,7 +179,7 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 		return RPMA_E_PROVIDER;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -193,7 +193,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	struct rpma_conn *conn = *conn_ptr;
 	if (conn == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	int ret = 0;
 
@@ -217,7 +217,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	Free(conn);
 	*conn_ptr = NULL;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_destroy_id:
 	(void) rdma_destroy_id(conn->id);

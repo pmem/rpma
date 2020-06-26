@@ -48,7 +48,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 
 	expect_value(rpma_info_delete, *info_ptr, *info_ptr);
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -72,7 +72,7 @@ rdma_create_id(struct rdma_event_channel *channel,
 
 	expect_value(rdma_destroy_id, id, *id);
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -119,7 +119,7 @@ rdma_destroy_id(struct rdma_cm_id *id)
 	if (errno)
 		return -1;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -133,7 +133,7 @@ rpma_info_delete(struct rpma_info **info_ptr)
 
 	check_expected(*info_ptr);
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*

@@ -164,7 +164,7 @@ main(int argc, char *argv[])
 		goto err_exit;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);

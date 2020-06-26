@@ -63,7 +63,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 	info->rai = rai;
 	*info_ptr = info;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_freeaddrinfo:
 	rdma_freeaddrinfo(rai);
@@ -82,13 +82,13 @@ rpma_info_delete(struct rpma_info **info_ptr)
 
 	struct rpma_info *info = *info_ptr;
 	if (info == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	rdma_freeaddrinfo(info->rai);
 	Free(info);
 	*info_ptr = NULL;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -109,7 +109,7 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 		return RPMA_E_PROVIDER;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -129,5 +129,5 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 		return RPMA_E_PROVIDER;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 }

@@ -70,7 +70,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	(*req)->data.ptr = NULL;
 	(*req)->data.len = 0;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_destroy_qp:
 	rdma_destroy_qp(id);
@@ -121,7 +121,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 		goto err_conn_delete;
 
 	*conn_ptr = conn;
-	return 0;
+	return RPMA_SUCCESS;
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
@@ -165,7 +165,7 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	}
 
 	*conn_ptr = conn;
-	return 0;
+	return RPMA_SUCCESS;
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
@@ -232,7 +232,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 		return RPMA_E_PROVIDER;
 	}
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /* internal librpma API */
@@ -264,7 +264,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 	req->edata = edata;
 	*req_ptr = req;
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_conn_req_delete:
 	(void) rpma_conn_req_delete(&req);
@@ -319,7 +319,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
 
 	(void) rpma_info_delete(&info);
 
-	return 0;
+	return RPMA_SUCCESS;
 
 err_destroy_id:
 	(void) rdma_destroy_id(id);
@@ -385,7 +385,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	struct rpma_conn_req *req = *req_ptr;
 	if (req == NULL)
-		return 0;
+		return RPMA_SUCCESS;
 
 	rdma_destroy_qp(req->id);
 

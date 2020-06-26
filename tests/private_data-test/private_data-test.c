@@ -58,7 +58,7 @@ setup_cm_event(void **edata_ptr)
 
 	*edata_ptr = &edata;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -165,7 +165,7 @@ setup_private_data(void **pdata_ptr)
 
 	*pdata_ptr = &pdata;
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
@@ -180,7 +180,7 @@ teardown_private_data(void **pdata_ptr)
 	assert_null(pdata->ptr);
 	assert_int_equal(pdata->len, 0);
 
-	return 0;
+	return RPMA_SUCCESS;
 }
 
 /*
