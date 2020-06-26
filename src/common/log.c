@@ -3,7 +3,7 @@
 
 /*
  * log.c -- support for logging output to either syslog or stderr or
- *          via default user defined function
+ *          via user defined function
  */
 
 #include <stddef.h>

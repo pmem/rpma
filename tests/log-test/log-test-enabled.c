@@ -30,6 +30,44 @@ closelog(void)
 }
 
 /*
+ * fprintf -- frpintf() mock
+ */
+char fprintf_temporary_buffer[1024];
+int
+__wrap_fprintf(FILE *__restrict __stream,
+		    const char *__restrict __format, ...)
+{
+	int ret;
+	va_list args;
+	va_start(args, __format);
+	assert_ptr_equal(__stream, stderr);
+	check_expected(__format);
+	char *msg, *expected_msg = mock_ptr_type(char*);
+	va_arg(args, char*);
+	va_arg(args, char*);
+	msg = va_arg(args, char*);
+
+	assert_string_equal(msg, expected_msg);
+	function_called();
+	va_end(args);
+	va_start(args, __format);
+	ret = vsnprintf(fprintf_temporary_buffer,
+			sizeof(fprintf_temporary_buffer), __format, args);
+	va_end(args);
+	assert_return_code(255, 23);
+	return ret;
+#if 0
+	int err = mock_type(int);
+
+	if (err) {
+		errno = err;
+		return NULL;
+	}
+	return fvprintf(...);
+#endif
+}
+
+/*
  * XXX missing tests to check initial logging levels:
  * #ifdef DEBUG
  *	rpma_log_set_level(RPMA_LOG_DEBUG);
@@ -39,6 +77,18 @@ closelog(void)
  *	rpma_log_set_print_level(RPMA_LOG_DISABLED);
  * #endif
  */
+
+void
+test_log__log_to_stderr(void **unused)
+{
+	assert_int_equal(0, rpma_log_set_level(RPMA_LOG_DISABLED));
+	assert_int_equal(0, rpma_log_set_print_level(RPMA_LOG_ERROR));
+	expect_function_call(__wrap_fprintf);
+	expect_string(__wrap_fprintf, __format, "%s%s%s");
+	will_return(__wrap_fprintf, "msg");
+
+	rpma_log(RPMA_LOG_ERROR, "file", 1, "func", "%s", "msg");
+}
 
 int
 main(int argc, char *argv[])
@@ -57,8 +107,8 @@ main(int argc, char *argv[])
 		cmocka_unit_test(test_log_to_syslog),
 		cmocka_unit_test(test_log_to_syslog_no_file),
 
+		cmocka_unit_test(test_log__log_to_stderr),
 	};
 
-	int retVal = cmocka_run_group_tests(tests, NULL, NULL);
-	return retVal;
+	return cmocka_run_group_tests(tests, NULL, NULL);
 }
