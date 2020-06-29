@@ -64,13 +64,22 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 }
 
 /*
- * rpma_peer_mr_reg -- use ibv_reg_mr()
+ * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
 rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	size_t length, int access)
 {
-	return RPMA_E_NOSUPP;
+	if (peer == NULL || ibv_mr == NULL || addr == NULL || length <= 0)
+		return RPMA_E_INVAL;
+
+	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, access);
+	if (*ibv_mr == NULL) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /* public librpma API */

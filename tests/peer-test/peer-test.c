@@ -17,7 +17,11 @@
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
 #define MOCK_IBV_CQ		(struct ibv_cq *)0xB4C0
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
-
+#define MOCK_MR			(struct ibv_mr *)0xD1AF
+#define MOCK_PEER		(struct rpma_peer *)0xE2DA
+#define MOCK_ADDR		(void *)0x2B6A
+#define MOCK_LEN		(size_t)627
+#define MOCK_ACCESS		(unsigned)823
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
@@ -28,6 +32,35 @@ struct ibv_alloc_pd_mock_args {
 	int validate_params;
 	struct ibv_pd *pd;
 };
+
+/*
+ * ibv_reg_mr -- ibv_reg_mr() mock
+ *
+ * The ibv_reg_mr symbol has to be undefined first,
+ * because it is defined as a macro in <infiniband/verbs.h>.
+ */
+#undef ibv_reg_mr
+struct ibv_mr *
+ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
+{
+	struct ibv_mr *mr = mock_type(struct ibv_mr *);
+	if (mr == NULL) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return mr;
+}
+
+/*
+ * ibv_reg_mr_iova2 -- ibv_reg_mr_iova2() mock
+ */
+struct ibv_mr *
+ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
+			uint64_t iova, unsigned access)
+{
+	return ibv_reg_mr(pd, addr, length, (int)access);
+}
 
 /*
  * ibv_alloc_pd -- ibv_alloc_pd() mock
@@ -553,6 +586,135 @@ create_qp_test_success(void **peer_ptr)
 	assert_int_equal(ret, 0);
 }
 
+/*
+ * mr_reg_test_peer_NULL -- NULL peer is invalid
+ */
+static void
+mr_reg_test_peer_NULL(void **unused)
+{
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(NULL /* peer */, &mr,
+				MOCK_ADDR, MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_ibv_mr_NULL -- NULL ibv_mr is invalid
+ */
+static void
+mr_reg_test_ibv_mr_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_peer_mr_reg(MOCK_PEER, NULL,
+				MOCK_ADDR, MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * mr_reg_test_addr_NULL -- NULL addr is invalid
+ */
+static void
+mr_reg_test_addr_NULL(void **unused)
+{
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(MOCK_PEER, &mr, NULL /* addr */,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_len_0 -- length == 0 is invalid
+ */
+static void
+mr_reg_test_len_0(void **unused)
+{
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(MOCK_PEER, &mr, MOCK_ADDR,
+				0 /* length */, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_fail_EINVAL -- ibv_reg_mr() failed with EINVAL
+ */
+static void
+mr_reg_test_fail_EINVAL(void **unused)
+{
+	/* configure mocks */
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, EINVAL);
+
+	/* run test */
+	void *mock_addr;
+	struct ibv_mr *mr = NULL;
+	struct rpma_peer *peer = (struct rpma_peer *)&mock_addr;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_fail_ENOMEM -- ibv_reg_mr() failed with ENOMEM
+ */
+static void
+mr_reg_test_fail_ENOMEM(void **unused)
+{
+	/* configure mocks */
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, ENOMEM);
+
+	/* run test */
+	void *mock_addr;
+	struct ibv_mr *mr = NULL;
+	struct rpma_peer *peer = (struct rpma_peer *)&mock_addr;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_success -- happy day scenario
+ */
+static void
+mr_reg_test_success(void **unused)
+{
+	/* configure mocks */
+	will_return(ibv_reg_mr, MOCK_MR);
+
+	/* run test */
+	void *mock_addr;
+	struct ibv_mr *mr;
+	struct rpma_peer *peer = (struct rpma_peer *)&mock_addr;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_ptr_equal(mr, MOCK_MR);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -585,6 +747,15 @@ main(int argc, char *argv[])
 				peer_setup, peer_teardown),
 		cmocka_unit_test_setup_teardown(create_qp_test_success,
 				peer_setup, peer_teardown),
+
+		/* rpma_peer_mr_reg() unit tests */
+		cmocka_unit_test(mr_reg_test_peer_NULL),
+		cmocka_unit_test(mr_reg_test_ibv_mr_NULL),
+		cmocka_unit_test(mr_reg_test_addr_NULL),
+		cmocka_unit_test(mr_reg_test_len_0),
+		cmocka_unit_test(mr_reg_test_fail_EINVAL),
+		cmocka_unit_test(mr_reg_test_fail_ENOMEM),
+		cmocka_unit_test(mr_reg_test_success),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
