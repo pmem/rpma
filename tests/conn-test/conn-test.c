@@ -127,9 +127,12 @@ int
 rpma_private_data_store(struct rdma_cm_event *edata,
 		struct rpma_conn_private_data *pdata)
 {
+	const LargestIntegralType allowed_events[] = {
+			RDMA_CM_EVENT_CONNECT_REQUEST,
+			RDMA_CM_EVENT_ESTABLISHED};
 	assert_non_null(edata);
-	assert_true(edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
-			edata->event == RDMA_CM_EVENT_ESTABLISHED);
+	assert_in_set(edata->event, allowed_events,
+		sizeof(allowed_events) / sizeof(allowed_events[0]));
 	assert_non_null(pdata);
 	assert_null(pdata->ptr);
 	assert_int_equal(pdata->len, 0);
