@@ -64,13 +64,32 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 }
 
 /*
- * rpma_peer_mr_reg -- use ibv_reg_mr()
+ * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
 rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	size_t length, int access)
 {
-	return RPMA_E_NOSUPP;
+/*
+ * Since rdma-core v27.0-105-g5a750676
+ * ibv_reg_mr() has been defined as a macro
+ * and its signature has been changed so that
+ * the 'access' argument is of the 'unsigned int' type now:
+ *
+ * https://github.com/linux-rdma/rdma-core/\
+ * /commit/5a750676e8312715100900c6336bbc98577e082b
+ */
+#if defined(ibv_reg_mr)
+	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, (unsigned)access);
+#else
+	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, access);
+#endif
+	if (*ibv_mr == NULL) {
+		Rpma_provider_error = errno;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /* public librpma API */
