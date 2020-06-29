@@ -197,6 +197,17 @@ int rpma_mr_deserialize(char *buff, size_t buff_size,
 		struct rpma_mr_remote **mr);
 
 /** 3
+ * rpma_mr_remote_get_size - get a remote memory region size
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+ */
+int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+
+/** 3
  * rpma_mr_remote_delete - delete a remote memory region object
  *
  * SYNOPSIS
@@ -486,6 +497,9 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
 /* remote memory access functions */
 
+/* generate operation completion regardless of its result */
+#define RPMA_F_COMPLETION_ALWAYS (1 << 0)
+
 /** 3
  * rpma_read - XXX
  *
@@ -501,6 +515,9 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
  * DESCRIPTION
  * Initialize a read operation (transferring data from
  * the remote memory to the local memory).
+ * By default the operation generates completion only on error. To receive the
+ * operation completion regardless of its result please set
+ * **RPMA_F_COMPLETION_ALWAYS**.
  */
 int rpma_read(struct rpma_conn *conn,
 	struct rpma_mr_local *dst, size_t dst_offset,
