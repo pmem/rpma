@@ -197,6 +197,17 @@ int rpma_mr_deserialize(char *buff, size_t buff_size,
 		struct rpma_mr_remote **mr);
 
 /** 3
+ * rpma_mr_remote_get_size - get a remote memory region size
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+ */
+int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+
+/** 3
  * rpma_mr_remote_delete - delete a remote memory region object
  *
  * SYNOPSIS
@@ -486,6 +497,11 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
 /* remote memory access functions */
 
+/* generate operation completion on error */
+#define RPMA_F_COMPLETION_ON_ERROR	(1 << 0)
+/* generate operation completion regardless of its result */
+#define RPMA_F_COMPLETION_ALWAYS	(1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+
 /** 3
  * rpma_read - XXX
  *
@@ -501,6 +517,13 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
  * DESCRIPTION
  * Initialize a read operation (transferring data from
  * the remote memory to the local memory).
+ *
+ * ERRORS
+ * rpma_read() can fail with the following erors:
+ *
+ * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_read(struct rpma_conn *conn,
 	struct rpma_mr_local *dst, size_t dst_offset,
