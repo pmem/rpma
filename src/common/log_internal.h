@@ -11,10 +11,13 @@
 
 #define RPMA_NOTICELOG(...) \
 	rpma_log(RPMA_LOG_NOTICE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+
 #define RPMA_WARNLOG(...) \
 	rpma_log(RPMA_LOG_WARN, __FILE__, __LINE__, __func__, __VA_ARGS__)
+
 #define RPMA_ERRLOG(...) \
 	rpma_log(RPMA_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
+
 #define RPMA_PRINTF(...) \
 	rpma_log(RPMA_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
 
@@ -31,8 +34,8 @@
  * format - Format string to the message.
  */
 void rpma_log(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, ...) \
-		__attribute__((__format__(__printf__, 5, 6)));
+	const char *func, const char *format, ...)
+	__attribute__((__format__(__printf__, 5, 6)));
 
 /*
  * Same as rpma_log except that instead of being called with variable number of
@@ -46,6 +49,6 @@ void rpma_log(enum rpma_log_level level, const char *file, const int line,
  * arg - printf arguments
  */
 void rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, va_list arg);
+	const char *func, const char *format, va_list arg);
 
 #endif /* LOG_INTERNAL_H */

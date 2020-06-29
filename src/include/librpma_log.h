@@ -8,7 +8,7 @@
 #ifndef LIBRPMA_LOG_H
 #define LIBRPMA_LOG_H
 #include <stdio.h>
-#include <librpma.h> // for RDMA_E_INVAL
+#include <librpma.h> /* for RDMA_E_INVAL */
 
 // XXX documentation to be updated to txt2man
 /*
@@ -37,12 +37,12 @@ void rpma_log_init(logfunc *logf);
 void rpma_log_fini(void);
 
 enum rpma_log_level {
-	RPMA_LOG_DISABLED = -1, // all messages will be suppressed
-	RPMA_LOG_ERROR, // error that cause library to stop working properly
-	RPMA_LOG_WARN, // errors that could be handled in the upper level
-	RPMA_LOG_NOTICE, // non-massive info e.g. connection established
-	RPMA_LOG_INFO, // massive info e.g. every write operation indication
-	RPMA_LOG_DEBUG, // debug info e.g. write operation dump
+	RPMA_LOG_DISABLED = -1, /* all messages will be suppressed */
+	RPMA_LOG_ERROR, /* error that cause library to stop working properly */
+	RPMA_LOG_WARN, /* errors that could be handled in the upper level */
+	RPMA_LOG_NOTICE, /* non-massive info e.g. connection established */
+	RPMA_LOG_INFO, /* massive info e.g. every write operation indication */
+	RPMA_LOG_DEBUG, /* debug info e.g. write operation dump */
 };
 
 /*

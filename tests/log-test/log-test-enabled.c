@@ -43,8 +43,8 @@ __wrap_fprintf(FILE *__restrict __stream,
 	assert_ptr_equal(__stream, stderr);
 	check_expected(__format);
 	char *msg, *expected_msg = mock_ptr_type(char *);
-	va_arg(args, char *);
-	va_arg(args, char *);
+	va_arg(args, char *); /* skip timestamp */
+	va_arg(args, char *); /* skip prefix */
 	msg = va_arg(args, char *);
 
 	assert_string_equal(msg, expected_msg);
