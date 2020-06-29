@@ -47,5 +47,7 @@ endfunction()
 add_example(template template-example/template-example.c)
 add_example(connection-server 01-connection/connection-server.c)
 add_example(connection-client 01-connection/connection-client.c)
+add_example(read-server 02-read-to-volatile/read-server.c)
+add_example(read-client 02-read-to-volatile/read-client.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
