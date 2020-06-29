@@ -63,6 +63,16 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	return 0;
 }
 
+/*
+ * rpma_peer_mr_reg -- use ibv_reg_mr()
+ */
+int
+rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
+	size_t length, int access)
+{
+	return RPMA_E_NOSUPP;
+}
+
 /* public librpma API */
 
 /*

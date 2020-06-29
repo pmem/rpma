@@ -22,6 +22,7 @@ set(SOURCES
 	ep.c
 	info.c
 	librpma.c
+	mr.c
 	peer.c
 	private_data.c
 	rpma_err.c
