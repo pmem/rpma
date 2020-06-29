@@ -45,10 +45,17 @@ function(add_example example binary)
 		OUTPUT_NAME ${binary}
 		RUNTIME_OUTPUT_DIRECTORY ${example})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
+	target_include_directories(${target} PRIVATE common)
 endfunction()
 
 add_example(template template template-example/template-example.c)
 add_example(01-connection server 01-connection/server.c)
 add_example(01-connection client 01-connection/client.c)
+add_example(02-read-to-volatile server
+	02-read-to-volatile/server.c
+	common/common.c)
+add_example(02-read-to-volatile client
+	02-read-to-volatile/client.c
+	common/common.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
