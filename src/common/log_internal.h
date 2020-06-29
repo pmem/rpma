@@ -24,8 +24,8 @@
 /*
  * Write messages either to the syslog and to stderr
  * or call user defined log function.
- * If \c level is set to \c RPMA_LOG_DISABLED,
- * this log message won't be written to syslog and won't be written to stderr.
+ * If level is set to RPMA_LOG_DISABLED,
+ * this log message will neither be written to syslog nor to stderr.
  *
  * level - Log level threshold.
  * file - Name of the current source file.

@@ -66,10 +66,10 @@ enum rpma_log_level rpma_log_get_level(void);
 /*
  * Set the log level threshold to include stack trace in log messages.
  * Messages with a higher level than this will not contain stack trace. You
- * can use \c RPMA_LOG_DISABLED to completely disable stack trace printing
+ * can use RPMA_LOG_DISABLED to completely disable stack trace printing
  * even if it is supported.
  *
- * \note This function has no effect if LIBRPMA is built without stack trace
+ * \note This function has no effect if librpma is built without stack trace
  *  printing support.
  *
  * \param level Log level threshold for stacktrace.
@@ -88,7 +88,7 @@ enum rpma_log_level rpma_log_get_backtrace_level(void);
 /*
  * Set the current log level threshold for printing to stderr.
  * Messages with a level less than or equal to this level
- * are also printed to stderr. You can use \c RPMA_LOG_DISABLED to completely
+ * are also printed to stderr. You can use RPMA_LOG_DISABLED to completely
  * suppress log printing.
  *
  * \param level Log level threshold for printing to stderr.
