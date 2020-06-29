@@ -197,6 +197,17 @@ int rpma_mr_deserialize(char *buff, size_t buff_size,
 		struct rpma_mr_remote **mr);
 
 /** 3
+ * rpma_mr_remote_size - read a remote memory region size
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_remote_size(struct rpma_mr_remote *mr, size_t *size);
+ */
+int rpma_mr_remote_size(struct rpma_mr_remote *mr, size_t *size);
+
+/** 3
  * rpma_mr_remote_delete - delete a remote memory region object
  *
  * SYNOPSIS
@@ -485,6 +496,9 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
 /* remote memory access functions */
+
+#define RPMA_OP_FLAG_COMPLETION		(0)
+#define RPMA_OP_FLAG_NO_COMPLETION	(1 << 0)
 
 /** 3
  * rpma_read - XXX
