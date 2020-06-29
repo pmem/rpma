@@ -82,6 +82,15 @@ rpma_mr_deserialize(char *buff, size_t buff_size, struct rpma_mr_remote **mr)
 }
 
 /*
+ * rpma_mr_remote_size -- XXX
+ */
+int
+rpma_mr_remote_size(struct rpma_mr_remote *mr, size_t *size)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
  * rpma_mr_remote_delete -- XXX
  */
 int
