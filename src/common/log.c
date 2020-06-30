@@ -194,9 +194,12 @@ default_log_function(int level, const char *file, const int line,
  * Initialize the logging module. Messages prior
  * to this call will be dropped.
  */
-void
+int
 rpma_log_init(logfunc *custom_log_function)
 {
+	if (NULL != log_function) {
+		return -1; /* log has already been opened */
+	}
 	if (custom_log_function &&
 		(default_log_function != custom_log_function)) {
 		log_function = custom_log_function;
@@ -211,6 +214,7 @@ rpma_log_init(logfunc *custom_log_function)
 		rpma_log_stderr_set_level(RPMA_LOG_ERROR);
 #endif
 	}
+	return 0;
 }
 
 /*
@@ -222,9 +226,8 @@ rpma_log_fini(void)
 {
 	if (default_log_function == log_function) {
 		closelog();
-	} else {
-		log_function = NULL;
 	}
+	log_function = NULL;
 }
 
 /*

@@ -1,10 +1,9 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
 
 /*
- * log-test.c -- unit tests of the log module
+ * log-test-enabled.c -- unit tests of the log module
+ * with logging enabled at startup
  */
 
 #include <stdlib.h>
@@ -20,9 +19,6 @@
 void
 openlog(const char *__ident, int __option, int __facility)
 {
-	check_expected(__ident);
-	check_expected(__option);
-	check_expected(__facility);
 }
 
 /*
@@ -31,125 +27,103 @@ openlog(const char *__ident, int __option, int __facility)
 void
 closelog(void)
 {
+}
+
+/*
+ * fprintf -- frpintf() mock
+ */
+char fprintf_temporary_buffer[1024];
+int
+__wrap_fprintf(FILE *__restrict __stream,
+		    const char *__restrict __format, ...)
+{
+	int ret;
+	va_list args;
+	va_start(args, __format);
+	assert_ptr_equal(__stream, stderr);
+	check_expected(__format);
+	char *msg, *expected_msg = mock_ptr_type(char *);
+	va_arg(args, char *); /* skip timestamp */
+	va_arg(args, char *); /* skip prefix */
+	msg = va_arg(args, char *);
+
+	assert_string_equal(msg, expected_msg);
 	function_called();
-}
+	va_end(args);
+	va_start(args, __format);
+	ret = vsnprintf(fprintf_temporary_buffer,
+			sizeof(fprintf_temporary_buffer), __format, args);
+	va_end(args);
+	return ret;
+#if 0
+	int err = mock_type(int);
 
-static void user_logfunc(int level, const char *file, const int line,
-		const char *func, const char *format, va_list args)
-{
-	check_expected(level);
-	check_expected(file);
-	check_expected(line);
-	check_expected(func);
-	check_expected(format);
-}
-
-static int
-setup_without_logfunction(void **p_logfunction)
-{
-	*p_logfunction = NULL;
-	expect_string(openlog, __ident, "rpma");
-	expect_value(openlog, __option, LOG_PID);
-	expect_value(openlog, __facility, LOG_LOCAL7);
-	rpma_log_init(NULL);
-	return 0;
-}
-
-static int
-setup_with_logfunction(void **p_logfunction)
-{
-	*p_logfunction = user_logfunc;
-	rpma_log_init(user_logfunc);
-	return 0;
-}
-
-static int
-teardown(void **p_logfunction)
-{
-	logfunc *logf = *p_logfunction;
-	if (NULL == logf) {
-		expect_function_call(closelog);
+	if (err) {
+		errno = err;
+		return NULL;
 	}
+	return fvprintf(...);
+#endif
+}
+
+/*
+ * XXX missing tests to check initial logging levels:
+ * #ifdef DEBUG
+ *	rpma_log_set_level(RPMA_LOG_DEBUG);
+ *	rpma_log_set_print_level(RPMA_LOG_WARN);
+ * #else
+ *	rpma_log_set_level(RPMA_LOG_WARN);
+ *	rpma_log_set_print_level(RPMA_LOG_DISABLED);
+ * #endif
+ */
+
+void
+test_log__log_to_stderr(void **unused)
+{
+	assert_int_equal(0, rpma_log_set_level(RPMA_LOG_DISABLED));
+	assert_int_equal(0, rpma_log_stderr_set_level(RPMA_LOG_ERROR));
+	expect_function_call(__wrap_fprintf);
+	expect_string(__wrap_fprintf, __format, "%s%s%s");
+	will_return(__wrap_fprintf, "msg");
+
+	rpma_log(RPMA_LOG_ERROR, "file", 1, "func", "%s", "msg");
+}
+
+void
+test_log__coudl_not_start_already_started_log(void **unused)
+{
+	assert_int_equal(-1, rpma_log_init(NULL));
 	rpma_log_fini();
-	return 0;
-}
-
-static void
-test_open_close_no_logfunction(void **unused)
-{
-
-}
-
-static void
-test_open_close_logfunction(void **unused)
-{
-
-}
-
-static void
-test_log_to_user_function(void **p_logfunction)
-{
-	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
-		expect_value(user_logfunc, level, level);
-		expect_string(user_logfunc, file, "file");
-		expect_value(user_logfunc, line, 1);
-		expect_string(user_logfunc, func, "func");
-		expect_string(user_logfunc, format, "%s");
-		rpma_log(level, "file", 1, "func", "%s", "msg");
-	}
+	assert_int_equal(0, rpma_log_init(NULL));
+	assert_int_equal(0, rpma_log_set_level(RPMA_LOG_DISABLED));
+	assert_int_equal(0, rpma_log_stderr_set_level(RPMA_LOG_ERROR));
+	expect_function_call(__wrap_fprintf);
+	expect_string(__wrap_fprintf, __format, "%s%s%s");
+	will_return(__wrap_fprintf, "msg");
+	rpma_log(RPMA_LOG_ERROR, "file", 1, "func", "%s", "msg");
+	rpma_log_fini();
 }
 
 int
 main(int argc, char *argv[])
 {
-// XXX missing tests for logging to stderr via fprintf
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_open_close_no_logfunction,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_open_close_logfunction,
-			setup_with_logfunction, teardown),
+		cmocka_unit_test(test_set_level),
+		cmocka_unit_test(test_set_level_invalid),
 
-		cmocka_unit_test_setup_teardown(test_set_level,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level,
-			setup_with_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_invalid,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_invalid,
-			setup_with_logfunction, teardown),
+		cmocka_unit_test(test_set_print_level),
+		cmocka_unit_test(test_set_print_level_invalid),
 
-		cmocka_unit_test_setup_teardown(test_set_print_level,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level,
-			setup_with_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
-			setup_with_logfunction, teardown),
+		cmocka_unit_test(test_set_backtrace_level),
+		cmocka_unit_test(test_set_backtrace_level_invalid),
 
-		cmocka_unit_test_setup_teardown(test_set_backtrace_level,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_set_backtrace_level,
-			setup_with_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(
-			test_set_backtrace_level_invalid,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(
-			test_set_backtrace_level_invalid,
-			setup_with_logfunction, teardown),
+		cmocka_unit_test(test_log_out_of_threshold),
+		cmocka_unit_test(test_log_to_syslog),
+		cmocka_unit_test(test_log_to_syslog_no_file),
 
-		cmocka_unit_test_setup_teardown(test_log_to_user_function,
-			setup_with_logfunction, teardown),
+		cmocka_unit_test(test_log__log_to_stderr),
 
-		cmocka_unit_test_setup_teardown(test_log_out_of_threshold,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_log_to_syslog,
-			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_log_to_syslog_no_file,
-				setup_without_logfunction, teardown),
-
-
+		cmocka_unit_test(test_log__coudl_not_start_already_started_log),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

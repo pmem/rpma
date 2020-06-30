@@ -10,26 +10,22 @@
 #include <stdio.h>
 #include <librpma.h> /* for RDMA_E_INVAL */
 
-// XXX documentation to be updated to txt2man
 /*
- * for passing user-provided log call
- *
- * \param level Log level threshold.
- * \param file Name of the current source file.
- * \param line Current source file line.
- * \param func Current source function name.
- * \param format Format string to the message.
- * \param args Additional arguments for format string.
+ * for passing user-defined log call
  */
-typedef void logfunc(int level, const char *file, const int line,
-		const char *function, const char *format, va_list args);
+typedef void logfunc(int level, /* log level threshold */
+	const char *file,	/* name of the current source file */
+	const int line,		/* current source file line */
+	const char *function,	/* current source function name */
+	const char *format,	/* format string to the message */
+	va_list args);		/* additional arguments for format string */
 
 /** 3
  * rpma_log_init - initialize logging module of the librpma
  * SYNOPSIS
  * #include <librpma_log.h>
  *
- * void \fBrpma_log_init\fP(logfunc *\fIuser_defined_log_function\fP);
+ * int rpma_log_init(logfunc *user_defined_log_function);
  *
  * DESCRIPTION
  * .BR rpma_log_init\fP()
@@ -50,19 +46,18 @@ typedef void logfunc(int level, const char *file, const int line,
  * .I user_defined_log_function
  * is provided.
  * Logging thresholds to
- * .BR syslog(3)
+ * .BR syslog (3)
  * /
- * .BR stderr(3)
+ * .BR stderr (3)
  * are set using
- * .BR rpma_log_set_level(3)
+ * .BR rpma_log_set_level (3)
  * and
- * .BR rpma_log_stderr_set_level(3)
- *
+ * .BR rpma_log_stderr_set_level (3)
  * .PP
  * User could provide own function which will be called instead of writing to
- * .BR syslog(3)
+ * .BR syslog (3)
  * /
- * .BR stderr(3)\fR.
+ * .BR stderr (3)\fR.
  * .PP
  * No threshold are used in such case - all messages are passed to
  * the given function.
@@ -70,24 +65,46 @@ typedef void logfunc(int level, const char *file, const int line,
  * User definie function shall have following signature:
  * .nf
  * typedef void logfunc(
- * .in +16
+ * .in +8
  * int level,		// logging level - see enum rpma_log_leve
  * const char *file,	// source file name where log message is produced
- * const int line,	// source file line number
- * const char *function,// function name which report message
- * const char *format,	// like \fBprintf \fR format o message
+ * const int line,	// source file line number here log message is produced
+ * const char *function,	// function name where log message is produced
+ * const char *format,		// like \fBprintf \fP() format o message
  * va_list args);	// message arguments (as described in \fIformat\fP)
- *
  * .PP
- * .ns
- * Argument \fIfile \fRis set to \fBNULL \fRif no file related information
+ * Argument \fIfile \fRis set to NULL if no file related information
  * is given. In such case \fIline \fRand \fIfunction \fR are undefined.
+ * .PP
+ * \fBrpma_log_init\fP(NULL) is automatically called when librpma library
+ * is loaded and following threshold are set:
+ * \fB RPMA_LOG_WARN \fRfor \fBsyslog \fP(3) and \fBRPMA_LOG_DISABLED
+ * \fRfor \fBstderr \fP(3). The log.c musy be compiled with
+ * .\fB-DRPMA_LOG_INIT_AT_STARTUP_SUSPENDED \fRdefined to disable log
+ * initialization at startup.
+ * ERRORS
+ * rpma_log_init() can fail with the following errors:
  *
+ * - -1 - logging has already been started. Call
+ * .BR rpma_log_fini (3)
+ * to close currently active log.
  */
-void rpma_log_init(logfunc *user_defined_log_function);
+int rpma_log_init(logfunc *user_defined_log_function);
 
 /*
  * Close the currently active log. Messages after this call
+ * will be dropped.
+ */
+/** 3
+ * rpma_log_finit - close the currently active log
+ * SYNOPSIS
+ * #include <librpma_log.h>
+ *
+ * void rpma_log_finit(void);
+ *
+ * DESCRIPTION
+ * .BR rpma_log_fini\fP()
+ *  close the currently active log. Messages after this call
  * will be dropped.
  */
 void rpma_log_fini(void);
@@ -111,7 +128,6 @@ enum rpma_log_level {
  *
  */
 int rpma_log_set_level(enum rpma_log_level level);
-
 /*
  * Get the current log level threshold.
  *
