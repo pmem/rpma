@@ -31,31 +31,23 @@ endif()
 include_directories(${LIBRPMA_INCLUDE_DIRS})
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-add_cstyle(examples-template-example
-	${CMAKE_CURRENT_SOURCE_DIR}/template-example/*.[ch])
-add_check_whitespace(examples-template-example
-	${CMAKE_CURRENT_SOURCE_DIR}/template-example/*.[ch])
+add_cstyle(examples-all
+	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
+add_check_whitespace(examples-all
+	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
 
-add_cstyle(example-connection
-	${CMAKE_CURRENT_SOURCE_DIR}/connection/*.[ch])
-add_check_whitespace(example-connection
-	${CMAKE_CURRENT_SOURCE_DIR}/connection/*.[ch])
-
-add_cstyle(examples-doc_snippets
-	${CMAKE_CURRENT_SOURCE_DIR}/doc_snippets/*.[ch])
-add_check_whitespace(examples-doc_snippets
-	${CMAKE_CURRENT_SOURCE_DIR}/doc_snippets/*.[ch])
-
-function(add_example name)
+function(add_example example binary)
 	set(srcs ${ARGN})
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
-	add_executable(example-${name} ${srcs})
-	target_include_directories(example-${name} PUBLIC ${LIBRPMA_INCLUDE_DIRS})
-	target_link_libraries(example-${name} ${LIBRPMA_LIBRARIES})
+	add_executable(example-${example}-${binary} ${srcs})
+	set_target_properties(example-${example}-${binary} PROPERTIES
+		OUTPUT_NAME ${binary}
+		RUNTIME_OUTPUT_DIRECTORY ${example})
+	target_link_libraries(example-${example}-${binary} ${LIBRPMA_LIBRARIES})
 endfunction()
 
-add_example(template template-example/template-example.c)
-add_example(connection-server connection/connection-server.c)
-add_example(connection-client connection/connection-client.c)
+add_example(template template template-example/template-example.c)
+add_example(01-connection server 01-connection/server.c)
+add_example(01-connection client 01-connection/client.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
