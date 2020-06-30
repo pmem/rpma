@@ -26,7 +26,8 @@ int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 /*
  * ASSUMPTIONS
- * - peer != NULL && ibv_mr != NULL && addr != NULL && length > 0
+ * - peer != NULL && ibv_mr != NULL && addr != NULL && length > 0 &&
+ *   && peer->pd != NULL
  *
  * ERRORS
  * rpma_peer_mr_reg() can fail with the following error:
