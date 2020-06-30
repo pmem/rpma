@@ -32,6 +32,11 @@ print_error(const char *fname, const int ret)
 		exit(-1);
 }
 
+#ifdef INTEGRATION_TEST
+int
+client_main(char *addr, char *service)
+{
+#else
 int
 main(int argc, char *argv[])
 {
@@ -44,6 +49,8 @@ main(int argc, char *argv[])
 	/* parameters */
 	char *addr = argv[1];
 	char *service = argv[2];
+
+#endif
 
 	/* resources */
 	struct ibv_context *dev = NULL;
