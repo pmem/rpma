@@ -351,7 +351,8 @@ line: while (<$filehandle>) {
 				if($eline =~ /[^\\]"|[^\\](\\\\)+"/) {
 					err("line > 80 characters");
 				}
-			} else {
+			# allow long line if it is an URL
+			} elsif (!($eline =~ / https?:\/\//)) {
 				err("line > 80 characters");
 			}
 		}

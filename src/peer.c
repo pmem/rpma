@@ -69,8 +69,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  * and its signature has been changed so that
  * the 'access' argument is of the 'unsigned int' type now:
  *
- * https://github.com/linux-rdma/rdma-core/\
- * /commit/5a750676e8312715100900c6336bbc98577e082b
+ * https://github.com/linux-rdma/rdma-core/commit/5a750676e8312715100900c6336bbc98577e082b
  */
 #if defined(ibv_reg_mr)
 #define RPMA_IBV_ACCESS(access) (unsigned)access
