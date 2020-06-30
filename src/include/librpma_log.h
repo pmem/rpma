@@ -91,10 +91,7 @@ typedef void logfunc(int level, /* log level threshold */
  */
 int rpma_log_init(logfunc *user_defined_log_function);
 
-/*
- * Close the currently active log. Messages after this call
- * will be dropped.
- */
+
 /** 3
  * rpma_log_finit - close the currently active log
  * SYNOPSIS
