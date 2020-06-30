@@ -38,8 +38,7 @@ struct ibv_alloc_pd_mock_args {
  * ibv_reg_mr() has been defined as a macro
  * in <infiniband/verbs.h>:
  *
- * https://github.com/linux-rdma/rdma-core/\
- * /commit/5a750676e8312715100900c6336bbc98577e082b
+ * https://github.com/linux-rdma/rdma-core/commit/5a750676e8312715100900c6336bbc98577e082b
  *
  * In order to mock the ibv_reg_mr() function
  * the `ibv_reg_mr` symbol has to be undefined first
