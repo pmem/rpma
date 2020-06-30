@@ -22,13 +22,69 @@
  * \param args Additional arguments for format string.
  */
 typedef void logfunc(int level, const char *file, const int line,
-		const char *func, const char *format, va_list args);
+		const char *function, const char *format, va_list args);
 
-/*
- * Initialize the logging module. Messages prior
- * to this call will be dropped.
+/** 3
+ * rpma_log_init - initialize logging module of the librpma
+ * SYNOPSIS
+ * #include <librpma_log.h>
+ *
+ * void \fBrpma_log_init\fP(logfunc *\fIuser_defined_log_function\fP);
+ *
+ * DESCRIPTION
+ * .BR rpma_log_init\fP()
+ * initializes the logging module. Messages prior to this call
+ * will be dropped. Logging messages are written either to
+ * .BR syslog(3)
+ * /
+ * .BR stderr(3)
+ * or delivered to end-user application via function given by
+ * \fIuser_defined_log_function\fP
+ * parameter.
+ * .PP
+ * Logging to
+ * .BR syslog(3)
+ * /
+ * .BR stderr(3)
+ * is enabled when no
+ * .I user_defined_log_function
+ * is provided.
+ * Logging thresholds to
+ * .BR syslog(3)
+ * /
+ * .BR stderr(3)
+ * are set using
+ * .BR rpma_log_set_level(3)
+ * and
+ * .BR rpma_log_stderr_set_level(3)
+ *
+ * .PP
+ * User could provide own function which will be called instead of writing to
+ * .BR syslog(3)
+ * /
+ * .BR stderr(3)\fR.
+ * .PP
+ * No threshold are used in such case - all messages are passed to
+ * the given function.
+ * .PP
+ * User definie function shall have following signature:
+ * .nf
+ * typedef void logfunc(
+ * .in +16
+ * int level,		// logging level - see enum rpma_log_leve
+ * const char *file,	// source file name where log message is produced
+ * const int line,	// source file line number
+ * const char *function,// function name which report message
+ * const char *format,	// like \fBprintf \fR format o message
+ * va_list args);	// message arguments (as described in \fIformat\fP)
+ *
+ * .PP
+ * .ns
+ * Argument \fIfile \fRis set to \fBNULL \fRif no file related information
+ * is given. In such case \fIline \fRand \fIfunction \fR are undefined.
+ *
  */
-void rpma_log_init(logfunc *logf);
+void rpma_log_init(logfunc *user_defined_log_function);
 
 /*
  * Close the currently active log. Messages after this call
@@ -70,7 +126,7 @@ enum rpma_log_level rpma_log_get_level(void);
  * even if it is supported.
  *
  * \note This function has no effect if librpma is built without stack trace
- *  printing support.
+ * printing support.
  *
  * \param level Log level threshold for stacktrace.
  *
@@ -96,13 +152,13 @@ enum rpma_log_level rpma_log_get_backtrace_level(void);
  * \return RDMA_E_INVAL if level out of scope otherwise 0
  *
  */
-int rpma_log_set_print_level(enum rpma_log_level level);
+int rpma_log_stderr_set_level(enum rpma_log_level level);
 
 /*
  * Get the current log level print threshold.
  *
  * \return the current log level print threshold.
  */
-enum rpma_log_level rpma_log_get_print_level(void);
+enum rpma_log_level rpma_log_stderr_get_level(void);
 
 #endif /* LIBRPMA_LOG_H */

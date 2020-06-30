@@ -46,10 +46,10 @@ __attribute__((constructor)) static void rpma_log_init_default(void)
 	rpma_log_init(NULL);
 #ifdef DEBUG
 	rpma_log_set_level(RPMA_LOG_DEBUG);
-	rpma_log_set_print_level(RPMA_LOG_WARN);
+	rpma_log_stderr_set_level(RPMA_LOG_WARN);
 #else
 	rpma_log_set_level(RPMA_LOG_WARN);
-	rpma_log_set_print_level(RPMA_LOG_DISABLED);
+	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 #endif
 }
 
@@ -205,10 +205,10 @@ rpma_log_init(logfunc *custom_log_function)
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 #ifdef DEBUG
 		rpma_log_set_level(RPMA_LOG_DEBUG);
-		rpma_log_set_print_level(RPMA_LOG_WARN);
+		rpma_log_stderr_set_level(RPMA_LOG_WARN);
 #else
 		rpma_log_set_level(RPMA_LOG_NOTICE);
-		rpma_log_set_print_level(RPMA_LOG_ERROR);
+		rpma_log_stderr_set_level(RPMA_LOG_ERROR);
 #endif
 	}
 }
@@ -286,7 +286,7 @@ rpma_log_get_level(void)
  * Set the current log level threshold for printing to stderr.
  */
 int
-rpma_log_set_print_level(enum rpma_log_level level)
+rpma_log_stderr_set_level(enum rpma_log_level level)
 {
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
 		return RPMA_E_INVAL;
@@ -299,7 +299,7 @@ rpma_log_set_print_level(enum rpma_log_level level)
  * Get the current log level threshold for printing to stderr.
  */
 enum rpma_log_level
-rpma_log_get_print_level(void)
+rpma_log_stderr_get_level(void)
 {
 	return Rpma_log_print_level;
 }
