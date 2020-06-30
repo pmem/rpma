@@ -17,7 +17,10 @@
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
 #define MOCK_IBV_CQ		(struct ibv_cq *)0xB4C0
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
-
+#define MOCK_MR			(struct ibv_mr *)0xD1AF
+#define MOCK_ADDR		(void *)0x2B6A
+#define MOCK_LEN		(size_t)627
+#define MOCK_ACCESS		(unsigned)823
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
@@ -28,6 +31,54 @@ struct ibv_alloc_pd_mock_args {
 	int validate_params;
 	struct ibv_pd *pd;
 };
+
+#if defined(ibv_reg_mr)
+/*
+ * Since rdma-core v27.0-105-g5a750676
+ * ibv_reg_mr() has been defined as a macro
+ * in <infiniband/verbs.h>:
+ *
+ * https://github.com/linux-rdma/rdma-core/\
+ * /commit/5a750676e8312715100900c6336bbc98577e082b
+ *
+ * In order to mock the ibv_reg_mr() function
+ * the `ibv_reg_mr` symbol has to be undefined first
+ * and the additional ibv_reg_mr_iova2() function
+ * has to be mocked, because it is called
+ * by the 'ibv_reg_mr' macro.
+ */
+#undef ibv_reg_mr
+
+/*
+ * ibv_reg_mr_iova2 -- ibv_reg_mr_iova2() mock
+ */
+struct ibv_mr *
+ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
+			uint64_t iova, unsigned access)
+{
+	return ibv_reg_mr(pd, addr, length, (int)access);
+}
+#endif
+
+/*
+ * ibv_reg_mr -- ibv_reg_mr() mock
+ */
+struct ibv_mr *
+ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
+{
+	check_expected_ptr(pd);
+	check_expected_ptr(addr);
+	check_expected(length);
+	check_expected(access);
+
+	struct ibv_mr *mr = mock_type(struct ibv_mr *);
+	if (mr == NULL) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return mr;
+}
 
 /*
  * ibv_alloc_pd -- ibv_alloc_pd() mock
@@ -553,6 +604,58 @@ create_qp_test_success(void **peer_ptr)
 	assert_int_equal(ret, 0);
 }
 
+/*
+ * mr_reg_test_fail_ENOMEM -- ibv_reg_mr() failed with ENOMEM
+ */
+static void
+mr_reg_test_fail_ENOMEM(void **peer_ptr)
+{
+	struct rpma_peer *peer = *peer_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, ENOMEM);
+
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_success -- happy day scenario
+ */
+static void
+mr_reg_test_success(void **peer_ptr)
+{
+	struct rpma_peer *peer = *peer_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	will_return(ibv_reg_mr, MOCK_MR);
+
+	/* run test */
+	struct ibv_mr *mr;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_ptr_equal(mr, MOCK_MR);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -584,6 +687,14 @@ main(int argc, char *argv[])
 				create_qp_test_rdma_create_qp_EAGAIN,
 				peer_setup, peer_teardown),
 		cmocka_unit_test_setup_teardown(create_qp_test_success,
+				peer_setup, peer_teardown),
+
+		/* rpma_peer_mr_reg() unit tests */
+		cmocka_unit_test_setup_teardown(
+				mr_reg_test_fail_ENOMEM,
+				peer_setup, peer_teardown),
+		cmocka_unit_test_setup_teardown(
+				mr_reg_test_success,
 				peer_setup, peer_teardown),
 	};
 
