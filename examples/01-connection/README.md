@@ -13,9 +13,9 @@ examples how to make real use of the connection please see other examples.
 ## Usage
 
 ```bash
-[user@server]$ ./connection-server $addr_server $service
+[user@server]$ ./example-connection-server $server_address $service
 ```
 
 ```bash
-[user@client]$ ./connection-client $add_client $addr_server $service
+[user@client]$ ./example-connection-client $server_address $service
 ```
