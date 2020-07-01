@@ -180,6 +180,11 @@ size_t rpma_mr_serialize_get_size(void);
  *	#include <librpma.h>
  *
  *	int rpma_mr_serialize(struct rpma_mr_local *mr, char *buff);
+ *
+ * ERRORS
+ * rpma_mr_serialize() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or buff is NULL
  */
 int rpma_mr_serialize(struct rpma_mr_local *mr, char *buff);
 
@@ -191,10 +196,21 @@ int rpma_mr_serialize(struct rpma_mr_local *mr, char *buff);
  *	#include <librpma.h>
  *
  *	int rpma_mr_deserialize(char *buff, size_t buff_size,
- *		struct rpma_mr_remote **mr);
+ *		struct rpma_mr_remote **mr_ptr);
+ *
+ * DESCRIPTION
+ * rpma_mr_deserialize() no matter what does not change the buff contents.
+ *
+ * ERRORS
+ * rpma_mr_deserialize() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - buff or mr_ptr is NULL
+ * - RPMA_E_NOSUPP - buff_size has an unexpected value
+ * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_UNKNOWN - deserialized information has no sense
  */
 int rpma_mr_deserialize(char *buff, size_t buff_size,
-		struct rpma_mr_remote **mr);
+		struct rpma_mr_remote **mr_ptr);
 
 /** 3
  * rpma_mr_remote_get_size - get a remote memory region size
@@ -204,19 +220,29 @@ int rpma_mr_deserialize(char *buff, size_t buff_size,
  *	#include <librpma.h>
  *
  *	int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+ *
+ * ERRORS
+ * rpma_mr_remote_get_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or size is NULL
  */
 int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
 
 /** 3
- * rpma_mr_remote_delete - delete a remote memory region object
+ * rpma_mr_remote_delete - delete a remote memory region's structure
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
+ *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
+ *
+ * ERRORS
+ * rpma_mr_remote_delete() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr_ptr is NULL
  */
-int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
+int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
 /* connection */
 
