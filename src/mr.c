@@ -5,6 +5,8 @@
  * mr.c -- librpma memory region-related implementations
  */
 
+#include <endian.h>
+
 #include "cmocka_alloc.h"
 #include "librpma.h"
 #include "mr.h"
@@ -22,6 +24,7 @@ struct rpma_mr_local {
 
 struct rpma_mr_remote {
 	uint64_t raddr; /* the base virtual address of the memory region */
+	uint64_t size; /* the size of the memory being registered */
 	uint32_t rkey; /* remote key of the memory region */
 	enum rpma_mr_plt plt; /* placement of the memory region */
 };
@@ -130,46 +133,107 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 }
 
 /*
- * rpma_mr_serialize_get_size -- XXX
+ * rpma_mr_serialize_get_size -- size of the buffer for serialized memory region
  */
 size_t
 rpma_mr_serialize_get_size()
 {
-	return sizeof(struct rpma_mr_remote); /* XXX alignment? */
+	/*
+	 * Calculate a sum of sizes of rpma_mr_remote structure's fields:
+	 * sum = raddr + size + rkey + plt
+	 *
+	 * Note: plt has two possible values so it fits perfectly into a single
+	 * uint8_t value.
+	 */
+	return sizeof(uint64_t) + sizeof(uint64_t) + sizeof(uint32_t) +
+			sizeof(uint8_t);
 }
 
 /*
- * rpma_mr_serialize -- XXX
+ * rpma_mr_serialize -- serialize a memory region
  */
 int
 rpma_mr_serialize(struct rpma_mr_local *mr, char *buff)
 {
-	return RPMA_E_NOSUPP;
+	if (mr == NULL || buff == NULL)
+		return RPMA_E_INVAL;
+
+	*((uint64_t *)buff) = htole64((uint64_t)mr->ibv_mr->addr);
+	buff += sizeof(uint64_t);
+	*((uint64_t *)buff) = htole64((uint64_t)mr->ibv_mr->length);
+	buff += sizeof(uint64_t);
+	*((uint32_t *)buff) = htole32(mr->ibv_mr->rkey);
+	buff += sizeof(uint32_t);
+	*((uint8_t *)buff) = (uint8_t)mr->plt;
+
+	return 0;
 }
 
 /*
- * rpma_mr_deserialize -- XXX
+ * rpma_mr_deserialize -- deserialize a memory region
  */
 int
-rpma_mr_deserialize(char *buff, size_t buff_size, struct rpma_mr_remote **mr)
+rpma_mr_deserialize(char *buff, size_t buff_size,
+		struct rpma_mr_remote **mr_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (buff == NULL || mr_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	if (buff_size != rpma_mr_serialize_get_size())
+		return RPMA_E_NOSUPP;
+
+	uint64_t raddr =  le64toh(*(uint64_t *)buff);
+	buff += sizeof(uint64_t);
+	uint64_t size = le64toh(*(uint64_t *)buff);
+	buff += sizeof(uint64_t);
+	uint32_t rkey = le32toh(*(uint32_t *)buff);
+	buff += sizeof(uint32_t);
+	uint8_t plt = *(uint8_t *)buff;
+
+	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT)
+		return RPMA_E_NOSUPP;
+
+	struct rpma_mr_remote *mr = Malloc(sizeof(struct rpma_mr_remote));
+	if (mr == NULL)
+		return RPMA_E_NOMEM;
+
+	mr->raddr = raddr;
+	mr->size = size;
+	mr->rkey = rkey;
+	mr->plt = plt;
+	*mr_ptr = mr;
+
+	return 0;
 }
 
 /*
- * rpma_mr_remote_get_size -- XXX
+ * rpma_mr_remote_get_size -- get a remote memory region size
  */
 int
 rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size)
 {
-	return RPMA_E_NOSUPP;
+	if (mr == NULL || size == NULL)
+		return RPMA_E_INVAL;
+
+	*size = mr->size;
+
+	return 0;
 }
 
 /*
- * rpma_mr_remote_delete -- XXX
+ * rpma_mr_remote_delete -- delete a remote memory region's structure
  */
 int
-rpma_mr_remote_delete(struct rpma_mr_remote **mr)
+rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (mr_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	if (*mr_ptr == NULL)
+		return 0;
+
+	Free(*mr_ptr);
+	*mr_ptr = NULL;
+
+	return 0;
 }
