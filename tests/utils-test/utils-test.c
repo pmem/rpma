@@ -33,6 +33,12 @@ int
 rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		struct rpma_info **info_ptr)
 {
+	/*
+	 * rpma_info_new() and rdma_create_id() may be called in any order.
+	 * If the first one fails, then the second one won't be called,
+	 * so we cannot add cmocka's expects here.
+	 * Otherwise, unconsumed expects would cause a test failure.
+	 */
 	assert_string_equal(addr, IP_ADDRESS);
 	assert_null(service);
 	assert_true(side == RPMA_INFO_PASSIVE || side == RPMA_INFO_ACTIVE);
@@ -59,6 +65,12 @@ rdma_create_id(struct rdma_event_channel *channel,
 		struct rdma_cm_id **id, void *context,
 		enum rdma_port_space ps)
 {
+	/*
+	 * rpma_info_new() and rdma_create_id() may be called in any order.
+	 * If the first one fails, then the second one won't be called,
+	 * so we cannot add cmocka's expects here.
+	 * Otherwise, unconsumed expects would cause a test failure.
+	 */
 	assert_non_null(id);
 	assert_null(context);
 	assert_int_equal(ps, RDMA_PS_TCP);
