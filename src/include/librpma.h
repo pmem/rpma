@@ -503,7 +503,7 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 #define RPMA_F_COMPLETION_ALWAYS	(1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
 
 /** 3
- * rpma_read - XXX
+ * rpma_read - initialize the read operation
  *
  * SYNOPSIS
  *
@@ -515,11 +515,11 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
  *		size_t len, int flags, void *op_context);
  *
  * DESCRIPTION
- * Initialize a read operation (transferring data from
+ * Initialize the read operation (transferring data from
  * the remote memory to the local memory).
  *
  * ERRORS
- * rpma_read() can fail with the following erors:
+ * rpma_read() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn, dst or src is NULL
  * - RPMA_E_INVAL - flags are not set
