@@ -84,9 +84,12 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	}
 
-	/* deserialize the remote memory registration structure */
-	ret = rpma_mr_deserialize(pdata.ptr, rpma_mr_serialize_get_size(),
-			&src_mr);
+	/*
+	 * create a remote memory registration structure from the received
+	 * descriptor
+	 */
+	rpma_mr_descriptor *desc = pdata.ptr;
+	ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
 	if (ret) {
 		print_error("rpma_mr_deserialize", ret);
 		goto err_conn_disconnect;
