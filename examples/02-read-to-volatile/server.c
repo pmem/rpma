@@ -71,23 +71,14 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 	}
 
-	/* prepare a buffer for serialized memory region information */
 	struct rpma_conn_private_data pdata;
-	pdata.len = rpma_mr_serialize_get_size();
-	pdata.ptr = malloc(pdata.len);
-	if (pdata.ptr == NULL) {
-		ret = -1;
-		goto err_mr_dereg;
-	}
+	rpma_mr_descriptor desc;
+	pdata.ptr = &desc;
 
-	/* serialize the memory region */
-	ret = rpma_mr_serialize(mr, pdata.ptr);
+	/* receive the memory region's descriptor */
+	ret = rpma_mr_get_descriptor(mr, &desc);
 	if (ret) {
-		print_error("rpma_mr_serialize", ret);
-	} else {
-		fprintf(stdout,
-				"Serialized memory region structure size: %"
-				PRIu8 "\n", pdata.len);
+		print_error("rpma_mr_get_descriptor", ret);
 	}
 
 	/*
@@ -96,7 +87,7 @@ main(int argc, char *argv[])
 	 */
 	ret = server_accept_connection(ep, &pdata, &conn);
 	if (ret)
-		goto err_pdata_ptr_free;
+		goto err_mr_dereg;
 
 	/*
 	 * Between the connection being established and the connection being
@@ -108,9 +99,6 @@ main(int argc, char *argv[])
 	 * structure.
 	 */
 	ret = server_disconnect(&conn);
-
-err_pdata_ptr_free:
-	free(pdata.ptr);
 
 err_mr_dereg:
 	/* deregister the memory region */

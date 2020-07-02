@@ -124,7 +124,7 @@ int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
  */
 int rpma_peer_delete(struct rpma_peer **peer);
 
-/* memory description structures */
+/* memory-related structures */
 
 struct rpma_mr_local;
 struct rpma_mr_remote;
@@ -183,40 +183,61 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  */
 int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
-/** 3
- * rpma_mr_serialize_get_size - size of the buffer for serialized memory region
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	size_t rpma_mr_serialize_get_size(void);
- */
-size_t rpma_mr_serialize_get_size(void);
+/* The number of bytes required to store a description of a memory region */
+#define RPMA_MR_DESCRIPTOR_SIZE 21
+
+typedef uint8_t rpma_mr_descriptor[RPMA_MR_DESCRIPTOR_SIZE];
 
 /** 3
- * rpma_mr_serialize - serialize a memory region
+ * rpma_mr_get_descriptor - get a descriptor of a memory region
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_serialize(struct rpma_mr_local *mr, char *buff);
+ *	int rpma_mr_get_descriptor(struct rpma_mr_local *mr,
+ *	    struct rpma_mr_descriptor *desc);
+ *
+ * DESCRIPTION
+ * rpma_mr_get_descriptor() writes a network-transferable description of
+ * the provided local memory region. Once the descriptor is transferred to
+ * the other side it can be consumed by rpma_mr_remote_from_descriptor() to
+ * create a remote memory region's structure which allows transferring data
+ * between the peers.
+ *
+ * ERRORS
+ * rpma_mr_get_descriptor() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or desc is NULL
  */
-int rpma_mr_serialize(struct rpma_mr_local *mr, char *buff);
+int rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc);
 
 /** 3
- * rpma_mr_deserialize - deserialize a memory region
+ * rpma_mr_remote_from_descriptor - create a memory region from a descriptor
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_deserialize(char *buff, size_t buff_size,
- *		struct rpma_mr_remote **mr);
+ *	int rpma_mr_remote_from_descriptor(
+ *          const struct rpma_mr_descriptor *desc,
+ *          struct rpma_mr_remote **mr_ptr);
+ *
+ * DESCRIPTION
+ * Create a remote memory region's structure based on the provided descriptor
+ * with a network-transferable description of the memory region local to
+ * the remote peer.
+ *
+ * ERRORS
+ * rpma_mr_remote_from_descriptor() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - desc or mr_ptr is NULL
+ * - RPMA_E_NOSUPP - deserialized information does not represent a valid memory
+ *   region
+ * - RPMA_E_NOMEM - out of memory
  */
-int rpma_mr_deserialize(char *buff, size_t buff_size,
-		struct rpma_mr_remote **mr);
+int rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
+		struct rpma_mr_remote **mr_ptr);
 
 /** 3
  * rpma_mr_remote_get_size - get a remote memory region size
@@ -226,19 +247,29 @@ int rpma_mr_deserialize(char *buff, size_t buff_size,
  *	#include <librpma.h>
  *
  *	int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+ *
+ * ERRORS
+ * rpma_mr_remote_get_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or size is NULL
  */
 int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
 
 /** 3
- * rpma_mr_remote_delete - delete a remote memory region object
+ * rpma_mr_remote_delete - delete a remote memory region's structure
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
+ *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
+ *
+ * ERRORS
+ * rpma_mr_remote_delete() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr_ptr is NULL
  */
-int rpma_mr_remote_delete(struct rpma_mr_remote **mr);
+int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
 /* connection */
 
