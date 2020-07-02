@@ -26,7 +26,8 @@ set(SOURCES
 	peer.c
 	private_data.c
 	rpma_err.c
-	rpma.c)
+	rpma.c
+	serializer.c)
 
 add_library(rpma SHARED ${SOURCES})
 
