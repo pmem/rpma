@@ -19,7 +19,27 @@
 #define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
 #define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
 
+#define MOCK_DST		(struct rpma_mr_local *)0xC411
+#define MOCK_SRC		(struct rpma_mr_remote *)0xC412
+#define MOCK_DST_OFFSET		(size_t)0xC413
+#define MOCK_SRC_OFFSET		(size_t)0xC414
+#define MOCK_LEN		(size_t)0xC415
+#define MOCK_FLAGS		(int)0xC416
+#define MOCK_OP_CONTEXT		(void *)0xC417
+
 #define MOCK_OK			0
+
+/*
+ * rpma_mr_read -- rpma_mr_read() mock
+ */
+int
+rpma_mr_read(struct ibv_qp *qp,
+	struct rpma_mr_local *dst, size_t dst_offset,
+	struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	return mock_type(int);
+}
 
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
@@ -1224,6 +1244,66 @@ disconnect_test_success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
+/*
+ * test_read__conn_NULL - NULL conn is invalid
+ */
+static void
+test_read__conn_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(NULL, MOCK_DST, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__dst_NULL - NULL dst is invalid
+ */
+static void
+test_read__dst_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, NULL, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__src_NULL - NULL src is invalid
+ */
+static void
+test_read__src_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
+				NULL, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__flags_0 - flags == 0 is invalid
+ */
+static void
+test_read__flags_0(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, 0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1313,6 +1393,12 @@ main(int argc, char *argv[])
 		cmocka_unit_test(get_private_data_test_conn_NULL),
 		cmocka_unit_test(get_private_data_test_pdata_NULL),
 		cmocka_unit_test(get_private_data_test_conn_NULL_pdata_NULL),
+
+		/* rpma_read() unit tests */
+		cmocka_unit_test(test_read__conn_NULL),
+		cmocka_unit_test(test_read__dst_NULL),
+		cmocka_unit_test(test_read__src_NULL),
+		cmocka_unit_test(test_read__flags_0),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
