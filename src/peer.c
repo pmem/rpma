@@ -129,7 +129,6 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 
 	struct rpma_peer *peer = Malloc(sizeof(*peer));
 	if (peer == NULL) {
-		ASSERTeq(errno, ENOMEM);
 		ret = RPMA_E_NOMEM;
 		goto err_dealloc_pd;
 	}

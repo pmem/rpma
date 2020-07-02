@@ -59,7 +59,6 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	*req = (struct rpma_conn_req *)Malloc(sizeof(struct rpma_conn_req));
 	if (*req == NULL) {
-		ASSERTeq(errno, ENOMEM);
 		ret = RPMA_E_NOMEM;
 		goto err_destroy_qp;
 	}
