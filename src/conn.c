@@ -53,7 +53,6 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 
 	struct rpma_conn *conn = Malloc(sizeof(*conn));
 	if (!conn) {
-		ASSERTeq(errno, ENOMEM);
 		ret = RPMA_E_NOMEM;
 		goto err_migrate_id_NULL;
 	}

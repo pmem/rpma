@@ -54,7 +54,6 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 
 	struct rpma_info *info = Malloc(sizeof(*info));
 	if (info == NULL) {
-		ASSERTeq(errno, ENOMEM);
 		ret = RPMA_E_NOMEM;
 		goto err_freeaddrinfo;
 	}
