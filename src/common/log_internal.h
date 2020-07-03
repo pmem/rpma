@@ -25,8 +25,8 @@
 	rpma_log(RPMA_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
 
 /*
- * Write messages either to the syslog and to stderr
- * or call user defined log function.
+ * Write messages either to syslog and to stderr
+ * or call user-defined log function.
  * If level is set to RPMA_LOG_DISABLED,
  * this log message will neither be written to syslog nor to stderr.
  *
