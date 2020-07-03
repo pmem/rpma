@@ -145,10 +145,22 @@ enum rpma_mr_plt {
  *	#include <librpma.h>
  *
  *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
- *		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr);
+ *		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
+ *
+ * DESCRIPTION
+ * rpma_mr_reg() registers a memory region and creates
+ * a local memory registration object.
+ *
+ * ERRORS
+ * rpma_mr_reg() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - peer or ptr or mr_ptr is NULL
+ * - RPMA_E_INVAL - size equals 0
+ * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_PROVIDER - memory registration failed
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
-		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr);
+		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
 
 /** 3
  * rpma_mr_dereg - delete a local memory registration object
@@ -157,9 +169,19 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_dereg(struct rpma_mr_local **mr);
+ *	int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
+ *
+ * DESCRIPTION
+ * rpma_mr_dereg() deregisters a memory region
+ * and deletes a local memory registration object.
+ *
+ * ERRORS
+ * rpma_mr_dereg() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr_ptr is NULL
+ * - RPMA_E_PROVIDER - memory deregistration failed
  */
-int rpma_mr_dereg(struct rpma_mr_local **mr);
+int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
 /** 3
  * rpma_mr_serialize_get_size - size of the buffer for serialized memory region
