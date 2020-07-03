@@ -10,9 +10,10 @@ function(add_conn_test test)
 	build_test_src(${name}
 		${name}.c
 		conn-test-common.c
+	       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/conn.c)
 
-	target_link_libraries(${name} test-rpma-utils)
+	target_compile_definitions(${name} PUBLIC TEST_MOCK_ALLOC)
 
 	set_target_properties(${name}
 		PROPERTIES
