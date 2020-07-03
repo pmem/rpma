@@ -33,9 +33,9 @@ if(LIBUNWIND_FOUND)
 endif()
 
 add_library(test-rpma-utils STATIC
-       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
-       ${LIBRPMA_SOURCE_DIR}/common/out.c
-       ${LIBRPMA_SOURCE_DIR}/common/util.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/common/out.c
+	${LIBRPMA_SOURCE_DIR}/common/util.c
 	${LIBRPMA_SOURCE_DIR}/common/log.c)
 target_include_directories(test-rpma-utils PRIVATE
        ${LIBRPMA_INCLUDE_DIRS}
