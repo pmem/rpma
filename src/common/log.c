@@ -35,7 +35,9 @@ static logfunc *log_function = NULL;
  * to enable logging to syslog (and stderr) at startup
  */
 #ifndef RPMA_LOG_INIT_AT_STARTUP_SUSPENDED
-__attribute__((constructor)) static void rpma_log_init_default(void)
+__attribute__((constructor))
+static void
+rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
 #ifdef DEBUG
@@ -47,7 +49,9 @@ __attribute__((constructor)) static void rpma_log_init_default(void)
 #endif
 }
 
-__attribute__((destructor)) static void rpma_log_fini_default(void)
+__attribute__((destructor))
+static void
+rpma_log_fini_default(void)
 {
 	rpma_log_fini();
 }

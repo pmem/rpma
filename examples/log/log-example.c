@@ -13,7 +13,8 @@
 
 extern void log_worker_is_doing_something(void);
 
-static void user_logfunc(int level, const char *file, const int line,
+static void
+user_logfunc(int level, const char *file, const int line,
 		const char *func, const char *format, va_list args)
 {
 

@@ -32,7 +32,7 @@ void
 test_set_level(void **unused)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
 		assert_int_equal(0, rpma_log_set_level(level));
 		assert_int_equal(level, rpma_log_get_level());
 	}
@@ -53,7 +53,7 @@ void
 test_set_print_level(void **unused)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
 		assert_int_equal(0, rpma_log_stderr_set_level(level));
 		assert_int_equal(level, rpma_log_stderr_get_level());
 	}
@@ -63,10 +63,10 @@ void
 test_set_print_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_DEBUG;
-	level ++;
+	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
 	level = RPMA_LOG_DISABLED;
-	level --;
+	level--;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
 }
 
@@ -75,11 +75,11 @@ test_log_out_of_threshold(void **unused)
 {
 	enum rpma_log_level level_min;
 	for (level_min = RPMA_LOG_DISABLED;
-			level_min <= RPMA_LOG_DEBUG; level_min ++) {
+			level_min <= RPMA_LOG_DEBUG; level_min++) {
 		assert_int_equal(0, rpma_log_set_level(level_min));
 		assert_int_equal(0, rpma_log_stderr_set_level(level_min));
 		enum rpma_log_level level;
-		for (level = level_min + 1; level <= RPMA_LOG_DEBUG; level ++) {
+		for (level = level_min + 1; level <= RPMA_LOG_DEBUG; level++) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
 		}
 	}
@@ -111,7 +111,7 @@ test_log_to_syslog(void **unused)
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 	rpma_log_set_level(RPMA_LOG_DEBUG);
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
 		if (level == RPMA_LOG_DISABLED) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
 			continue; // to avoid else and >80 length later in test
@@ -132,7 +132,7 @@ test_log_to_syslog_no_file(void **unused)
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 	rpma_log_set_level(RPMA_LOG_DEBUG);
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_ERROR; level <= RPMA_LOG_DEBUG; level ++) {
+	for (level = RPMA_LOG_ERROR; level <= RPMA_LOG_DEBUG; level++) {
 		expect_value(syslog, __pri, rpma_level_syslog[level]);
 		expect_string(syslog, syslog_temporary_buffer, "msg");
 		rpma_log(level, NULL, 0, NULL, "%s", "msg");
