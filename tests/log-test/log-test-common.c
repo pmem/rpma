@@ -42,10 +42,10 @@ void
 test_set_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_DEBUG;
-	level ++;
+	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
 	level = RPMA_LOG_DISABLED;
-	level --;
+	level--;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
 }
 
