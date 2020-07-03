@@ -88,10 +88,10 @@ rdma_create_id(struct rdma_event_channel *channel,
 }
 
 /*
- * rpma_info_bind_addr -- mock of rpma_info_bind_addr
+ * rpma_info_assign_addr -- mock of rpma_info_asign_addr
  */
 int
-rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
 	check_expected(info);
 	check_expected(id);
@@ -104,10 +104,11 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 }
 
 /*
- * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
+ * rpma_info_assign_addr -- mock of rpma_info_assign_addr
  */
+#if 0
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
 	check_expected(info);
 	check_expected(id);
@@ -119,6 +120,22 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 	return ret;
 }
 
+/*
+ * rpma_info_assign_addr -- mock of rpma_info_assign_addr
+ */
+int
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+{
+	check_expected(info);
+	check_expected(id);
+
+	int ret = mock_type(int);
+	if (ret)
+		Rpma_provider_error = mock_type(int);
+
+	return ret;
+}
+#endif
 /*
  * rdma_destroy_id -- mock of rdma_destroy_id
  */
@@ -300,7 +317,7 @@ test_create_id_failed(void **unused)
 }
 
 /*
- * test_bind_addr_failed_E_PROVIDER - rpma_info_bind_addr fails
+ * test_bind_addr_failed_E_PROVIDER - rpma_info_assign_addr fails
  *                                    with RPMA_E_PROVIDER
  */
 static void
@@ -314,10 +331,10 @@ test_bind_addr_failed_E_PROVIDER(void **unused)
 	will_return(rdma_create_id, &id);
 
 	/* a local address (passive side) */
-	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
-	expect_value(rpma_info_bind_addr, id, &id);
-	will_return(rpma_info_bind_addr, RPMA_E_PROVIDER);
-	will_return(rpma_info_bind_addr, ANY_ERRNO);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, RPMA_E_PROVIDER);
+	will_return(rpma_info_assign_addr, ANY_ERRNO);
 
 	will_return(rdma_destroy_id, 0);
 
@@ -333,7 +350,7 @@ test_bind_addr_failed_E_PROVIDER(void **unused)
 }
 
 /*
- * test_resolve_addr_failed_E_PROVIDER - rpma_info_resolve_addr fails
+ * test_resolve_addr_failed_E_PROVIDER - rpma_info_assign_addr fails
  *                                       with RPMA_E_PROVIDER
  */
 static void
@@ -347,10 +364,10 @@ test_resolve_addr_failed_E_PROVIDER(void **unused)
 	will_return(rdma_create_id, &id);
 
 	/* a remote address (active side) */
-	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, RPMA_E_PROVIDER);
-	will_return(rpma_info_resolve_addr, ANY_ERRNO);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, RPMA_E_PROVIDER);
+	will_return(rpma_info_assign_addr, ANY_ERRNO);
 
 	will_return(rdma_destroy_id, 0);
 
@@ -380,9 +397,9 @@ test_success_destroy_id_failed_passive(void **unused)
 	will_return(rdma_create_id, &id);
 
 	/* a local address (passive side) */
-	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
-	expect_value(rpma_info_bind_addr, id, &id);
-	will_return(rpma_info_bind_addr, 0);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, 0);
 
 	will_return(rdma_destroy_id, ANY_ERRNO);
 
@@ -411,9 +428,9 @@ test_success_destroy_id_failed_active(void **unused)
 	will_return(rdma_create_id, &id);
 
 	/* a remote address (active side) */
-	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, 0);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, 0);
 
 	will_return(rdma_destroy_id, ANY_ERRNO);
 
@@ -440,9 +457,9 @@ test_success_passive(void **unused)
 	id.verbs = MOCK_VERBS;
 	will_return(rdma_create_id, &id);
 
-	expect_value(rpma_info_bind_addr, info, MOCK_INFO);
-	expect_value(rpma_info_bind_addr, id, &id);
-	will_return(rpma_info_bind_addr, 0);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, 0);
 
 	will_return(rdma_destroy_id, 0);
 
@@ -469,9 +486,9 @@ test_success_active(void **unused)
 	id.verbs = MOCK_VERBS;
 	will_return(rdma_create_id, &id);
 
-	expect_value(rpma_info_resolve_addr, info, MOCK_INFO);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, 0);
+	expect_value(rpma_info_assign_addr, info, MOCK_INFO);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, 0);
 
 	will_return(rdma_destroy_id, 0);
 

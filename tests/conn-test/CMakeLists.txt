@@ -7,9 +7,10 @@ include(../cmake/ctest_helpers.cmake)
 
 build_test_src(conn-test
        conn-test.c
+       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
        ${LIBRPMA_SOURCE_DIR}/conn.c)
 
-target_link_libraries(conn-test test-rpma-utils)
+target_compile_definitions(conn-test PUBLIC TEST_MOCK_ALLOC)
 
 set_target_properties(conn-test
        PROPERTIES

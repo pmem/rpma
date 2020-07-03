@@ -8,9 +8,6 @@ include(../cmake/ctest_helpers.cmake)
 build_test_src(example-01-client
 	example-01-client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
-	${LIBRPMA_SOURCE_DIR}/common/alloc.c
-	${LIBRPMA_SOURCE_DIR}/common/out.c
-	${LIBRPMA_SOURCE_DIR}/common/util.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/ep.c

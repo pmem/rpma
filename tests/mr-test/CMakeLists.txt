@@ -6,10 +6,11 @@
 include(../cmake/ctest_helpers.cmake)
 
 build_test_src(mr-test
-       mr-test.c
-       ${LIBRPMA_SOURCE_DIR}/mr.c)
+	mr-test.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+ 	${LIBRPMA_SOURCE_DIR}/mr.c)
 
-target_link_libraries(mr-test test-rpma-utils)
+target_compile_definitions(mr-test PUBLIC TEST_MOCK_ALLOC)
 
 set_target_properties(mr-test
        PROPERTIES

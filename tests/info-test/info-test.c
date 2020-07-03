@@ -49,6 +49,11 @@ rdma_getaddrinfo(const char *node, const char *service,
 	}
 
 	*res = args->res;
+	if (*res != NULL) {
+		if (hints->ai_flags & RAI_PASSIVE) {
+			(*res)->ai_flags |= RAI_PASSIVE;
+		}
+	}
 
 	if (*res != NULL)
 		return 0;
@@ -237,6 +242,7 @@ info_new_test_malloc_ENOMEM(void **unused)
 /*
  * info_test_lifecycle -- happy day scenario
  */
+// XXX do we need info_test_lifecycle for PASSIVE info?
 static void
 info_test_lifecycle(void **unused)
 {
@@ -259,6 +265,7 @@ info_test_lifecycle(void **unused)
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
 	assert_non_null(info);
+// XXX shall we verify that this is a PASSIVE info
 
 	/*
 	 * configure mocks for rpma_info_delete():
@@ -347,6 +354,9 @@ info_setup_passive(void **info_state_ptr)
 	assert_non_null(istate.info);
 
 	*info_state_ptr = &istate;
+/*
+ * XXX shall we test here that INFO PASSIVE
+ */
 
 	return 0;
 }
@@ -377,7 +387,9 @@ info_setup_active(void **info_state_ptr)
 	assert_non_null(istate.info);
 
 	*info_state_ptr = &istate;
-
+/*
+ * XXX shall we test here that INFO ACTIVE
+ */
 	return 0;
 }
 
@@ -414,7 +426,7 @@ info_resolve_addr_test_id_NULL(void **info_state_ptr)
 	struct info_state *istate = *info_state_ptr;
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, NULL);
+	int ret = rpma_info_assign_addr(istate->info, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -428,7 +440,7 @@ info_resolve_addr_test_info_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_resolve_addr(NULL, &cmid);
+	int ret = rpma_info_assign_addr(NULL, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -442,7 +454,7 @@ static void
 info_resolve_addr_test_id_info_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_info_resolve_addr(NULL, NULL);
+	int ret = rpma_info_assign_addr(NULL, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -466,7 +478,7 @@ info_resolve_addr_test_resolve_addr_EAGAIN(void **info_state_ptr)
 	will_return(rdma_resolve_addr, EAGAIN);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -491,7 +503,7 @@ info_resolve_addr_test_success(void **info_state_ptr)
 	will_return(rdma_resolve_addr, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
@@ -507,7 +519,7 @@ info_bind_addr_test_id_NULL(void **info_state_ptr)
 	struct info_state *istate = *info_state_ptr;
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, NULL);
+	int ret = rpma_info_assign_addr(istate->info, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -521,7 +533,7 @@ info_bind_addr_test_info_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_bind_addr(NULL, &cmid);
+	int ret = rpma_info_assign_addr(NULL, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -535,14 +547,14 @@ static void
 info_bind_addr_test_id_info_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_info_bind_addr(NULL, NULL);
+	int ret = rpma_info_assign_addr(NULL, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * info_bind_addr_test_bind_addr_EAGAIN -- rpma_info_bind_addr() fails
+ * info_bind_addr_test_bind_addr_EAGAIN -- rpma_info_assign_addr() fails
  * with EAGAIN
  */
 static void
@@ -557,7 +569,7 @@ info_bind_addr_test_bind_addr_EAGAIN(void **info_state_ptr)
 	will_return(rdma_bind_addr, EAGAIN);
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -580,7 +592,7 @@ info_bind_addr_test_success(void **info_state_ptr)
 	will_return(rdma_bind_addr, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
@@ -591,6 +603,7 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
+
 		/* rpma_info_new() unit tests */
 		cmocka_unit_test(info_new_test_addr_NULL),
 		cmocka_unit_test(info_new_test_info_ptr_NULL),
@@ -615,11 +628,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				info_resolve_addr_test_resolve_addr_EAGAIN,
 				info_setup_active, info_teardown),
+
 		cmocka_unit_test_setup_teardown(
 				info_resolve_addr_test_success,
 				info_setup_active, info_teardown),
 
-		/* rpma_info_bind_addr() unit tests */
+
+		/* rpma_info_assign_addr() unit tests */
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_id_NULL,
 				info_setup_passive, info_teardown),
@@ -628,6 +643,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_bind_addr_EAGAIN,
 				info_setup_passive, info_teardown),
+
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_success,
 				info_setup_passive, info_teardown),

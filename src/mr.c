@@ -9,7 +9,6 @@
 #include "librpma.h"
 #include "mr.h"
 #include "peer.h"
-#include "out.h"
 #include "rpma_err.h"
 
 /* a bit-wise OR of all allowed values */
