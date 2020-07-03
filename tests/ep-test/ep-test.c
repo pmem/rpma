@@ -72,8 +72,8 @@ expect_info_bind()
 	if (!Mock_ctrl_info_bind_id || !Mock_ctrl_info_bind_info)
 		return;
 
-	expect_value(rpma_info_bind_addr, id, Mock_ctrl_info_bind_id);
-	expect_value(rpma_info_bind_addr, info, Mock_ctrl_info_bind_info);
+	expect_value(rpma_info_assign_addr, id, Mock_ctrl_info_bind_id);
+	expect_value(rpma_info_assign_addr, info, Mock_ctrl_info_bind_info);
 
 	Mock_ctrl_info_bind_id = NULL;
 	Mock_ctrl_info_bind_info = NULL;
@@ -215,11 +215,11 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
- * rpma_info_bind_addr -- rpma_info_bind_addr() mock
+ * rpma_info_assign_addr -- rpma_info_assign_addr() mock
  * Note: CM ID is not modified.
  */
 int
-rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
 	check_expected_ptr(info);
 	check_expected_ptr(id);
@@ -475,7 +475,7 @@ ep_listen_test_info_new_E_NOMEM(void **unused)
 }
 
 /*
- * ep_listen_test_info_bind_addr_E_PROVIDER - rpma_info_bind_addr() fails
+ * ep_listen_test_info_bind_addr_E_PROVIDER - rpma_info_assign_addr() fails
  * with RPMA_E_PROVIDER
  */
 static void
@@ -490,7 +490,7 @@ ep_listen_test_info_bind_addr_E_PROVIDER(void **unused)
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, MOCK_ERRNO);
+	will_return(rpma_info_assign_addr, MOCK_ERRNO);
 	/* - deconstructing */
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -519,7 +519,7 @@ ep_listen_test_listen_EAGAIN(void **unused)
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, MOCK_OK);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_listen, EAGAIN);
 	/* - deconstructing */
 	will_return(rdma_destroy_id, MOCK_OK);
@@ -551,7 +551,7 @@ ep_listen_test_malloc_ENOMEM(void **unused)
 	struct rdma_cm_id id;
 	will_return_maybe(rdma_create_id, &id);
 	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(rpma_info_bind_addr, MOCK_OK);
+	will_return_maybe(rpma_info_assign_addr, MOCK_OK);
 	will_return_maybe(rdma_listen, MOCK_OK);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
 
@@ -583,7 +583,7 @@ ep_listen_test_malloc_ENOMEM_destroy_id_EAGAIN(void **unused)
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, MOCK_OK);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_listen, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	/* - deconstructing */
@@ -647,7 +647,7 @@ ep_setup(void **estate_ptr)
 	will_return(rdma_create_event_channel, &estate.evch);
 	will_return(rdma_create_id, &estate.cmid);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rpma_info_bind_addr, MOCK_OK);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_listen, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	expect_value(rpma_info_delete, *info_ptr, MOCK_INFO);

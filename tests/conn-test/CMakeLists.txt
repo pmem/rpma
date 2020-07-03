@@ -14,9 +14,9 @@ build_test_src(conn-test
 	conn-test-next-event.c
 	conn-test-private-data.c
 	conn-test-read.c
+       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/conn.c)
-
-target_link_libraries(conn-test test-rpma-utils)
+	target_compile_definitions(conn-test PUBLIC TEST_MOCK_ALLOC)
 
 set_target_properties(conn-test
 	PROPERTIES

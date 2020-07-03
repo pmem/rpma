@@ -9,9 +9,6 @@ build_test_src(example-01-connection
 	example-01-connection.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
-	${LIBRPMA_SOURCE_DIR}/common/alloc.c
-	${LIBRPMA_SOURCE_DIR}/common/out.c
-	${LIBRPMA_SOURCE_DIR}/common/util.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/ep.c

@@ -13,7 +13,6 @@
 #include "conn_req.h"
 #include "info.h"
 #include "rpma_err.h"
-#include "out.h"
 
 #include "librpma.h"
 
@@ -51,6 +50,17 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		Rpma_provider_error = errno;
 		return RPMA_E_PROVIDER;
 	}
+
+#if 0
+	/* XXX to be moved to a separate PR */
+	/* sanity check for compatibility between rai and hints ai_flags */
+	if (hints.ai_flags & RAI_PASSIVE) {
+		if (!(rai->ai_flags & RAI_PASSIVE)) {
+			ret = RPMA_E_UNKNOWN;
+			goto err_freeaddrinfo;
+		}
+	}
+#endif
 
 	struct rpma_info *info = Malloc(sizeof(*info));
 	if (info == NULL) {
@@ -91,38 +101,25 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
- * rpma_info_resolve_addr -- resolve the ID destination address
+ * rpma_info_assign_addr -- assign address to the CM ID.
+ * Resolve the CM ID's destination address in case of active info type
+ * (RPMA_INFO_ACTIVE).
+ * Bind the CM ID to the local address in case of passive info type
+ * (RPMA_INFO_PASSIVE).
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
+	int ret;
 	if (id == NULL || info == NULL)
 		return RPMA_E_INVAL;
 
-	ASSERTeq(info->side, RPMA_INFO_ACTIVE);
+	if (info->side == RPMA_INFO_ACTIVE)
+		ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
+				info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
+	else /* info->side == RPMA_INFO_PASSIVE */
+		ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 
-	int ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
-			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
-	if (ret) {
-		Rpma_provider_error = errno;
-		return RPMA_E_PROVIDER;
-	}
-
-	return 0;
-}
-
-/*
- * rpma_info_bind_addr -- bind the ID to address
- */
-int
-rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
-{
-	if (id == NULL || info == NULL)
-		return RPMA_E_INVAL;
-
-	ASSERTeq(info->side, RPMA_INFO_PASSIVE);
-
-	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 	if (ret) {
 		Rpma_provider_error = errno;
 		return RPMA_E_PROVIDER;
