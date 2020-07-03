@@ -87,6 +87,7 @@ test_log_out_of_threshold(void **unused)
 }
 
 static const char *const rpma_level_names[] = {
+	[RPMA_LOG_FATAL]	= "FATAL",
 	[RPMA_LOG_ERROR]	= "ERROR",
 	[RPMA_LOG_WARN]		= "WARNING",
 	[RPMA_LOG_NOTICE]	= "NOTICE",
@@ -95,6 +96,7 @@ static const char *const rpma_level_names[] = {
 };
 
 static const int rpma_level_syslog[] = {
+	[RPMA_LOG_FATAL]	= LOG_CRIT,
 	[RPMA_LOG_ERROR]	= LOG_ERR,
 	[RPMA_LOG_WARN]		= LOG_WARNING,
 	[RPMA_LOG_NOTICE]	= LOG_NOTICE,
@@ -109,14 +111,18 @@ test_log_to_syslog(void **unused)
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 	rpma_log_set_level(RPMA_LOG_DEBUG);
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_ERROR; level <= RPMA_LOG_DEBUG; level ++) {
-		expect_value(syslog, __pri, rpma_level_syslog[level]);
-		expected_string[0] = '\0';
-		strcat(expected_string, "file:   1:func: *");
-		strcat(expected_string, rpma_level_names[level]);
-		strcat(expected_string, "*: msg");
-		expect_string(syslog, syslog_temporary_buffer, expected_string);
-		rpma_log(level, "file", 1, "func", "%s", "msg");
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
+		if(level == RPMA_LOG_DISABLED) {
+			rpma_log(level, "file", 1, "func", "%s", "msg");
+		} else {
+			expect_value(syslog, __pri, rpma_level_syslog[level]);
+			expected_string[0] = '\0';
+			strcat(expected_string, "file:   1:func: *");
+			strcat(expected_string, rpma_level_names[level]);
+			strcat(expected_string, "*: msg");
+			expect_string(syslog, syslog_temporary_buffer, expected_string);
+			rpma_log(level, "file", 1, "func", "%s", "msg");
+		}
 	}
 }
 

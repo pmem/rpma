@@ -18,6 +18,9 @@
 #define RPMA_ERRLOG(...) \
 	rpma_log(RPMA_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
+#define RPMA_FATALLOG(...) \
+	rpma_log(RPMA_LOG_FATAL, __FILE__, __LINE__, __func__, __VA_ARGS__)
+
 #define RPMA_PRINTF(...) \
 	rpma_log(RPMA_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
 

@@ -120,6 +120,8 @@ rpma_log_fini(void);
 enum rpma_log_level {
 	/* all messages will be suppressed */
 	RPMA_LOG_DISABLED = -1,
+	/* error that cause library to stop working immediately */
+	RPMA_LOG_FATAL,
 	/* error that cause library to stop working properly */
 	RPMA_LOG_ERROR,
 	/* errors that could be handled in the upper level */

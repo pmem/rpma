@@ -16,6 +16,7 @@
 #include "log_internal.h"
 
 static const char *const rpma_level_names[] = {
+	[RPMA_LOG_FATAL]	= "FATAL",
 	[RPMA_LOG_ERROR]	= "ERROR",
 	[RPMA_LOG_WARN]		= "WARNING",
 	[RPMA_LOG_NOTICE]	= "NOTICE",
@@ -96,6 +97,9 @@ default_log_function(int level, const char *file, const int line,
 	}
 
 	switch (level) {
+	case RPMA_LOG_FATAL:
+		severity = LOG_CRIT;
+		break;
 	case RPMA_LOG_ERROR:
 		severity = LOG_ERR;
 		break;
