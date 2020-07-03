@@ -28,8 +28,7 @@ endif()
 set(LIBRPMA_LIBRARIES rpma)
 set(LIBRPMA_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/src/)
 set(LIBRPMA_INCLUDE_DIRS
-	${CMAKE_SOURCE_DIR}/src/include/
-	${CMAKE_SOURCE_DIR}/src/common/)
+	${CMAKE_SOURCE_DIR}/src/include/)
 set(LIBRPMA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
 set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value

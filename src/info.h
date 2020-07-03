@@ -40,21 +40,25 @@ int rpma_info_new(const char *addr, const char *service,
 int rpma_info_delete(struct rpma_info **info);
 
 /*
+ * rpma_info_assign_addr - assign address with an rdma_cm_id
+ *
+ * DESCRIPTION
+ * Associates a remote or a local address with an rdma_cm_id.
+ * The local address is assigned via rdma_bind_addr(3),
+ * rdma_resolve_addre is used to resolve the remote address.
+ *
+ * ASSUMPTIONS
+ * - info->side == RPMA_INFO_ACTIVE || info->side == RPMA_INFO_PASSIVE
+ *
  * ERRORS
- * rpma_info_resolve_addr() can fail with the following error:
+ * rpma_info_assign_addr() can fail with the following errors:
  *
  * - RPMA_E_INVAL - id or info is NULL
- * - RPMA_E_PROVIDER - resolving the destination failed with error
+ * - RPMA_E_PROVIDER
+ * -- binding to a local address failed
+ * -- resolving the destination address failed
  */
-int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id);
-
-/*
- * ERRORS
- * rpma_info_bind_addr() can fail with the following error:
- *
- * - RPMA_E_INVAL - id or info is NULL
- * - RPMA_E_PROVIDER - binding to address failed with error
- */
-int rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id);
+int
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id);
 
 #endif /* LIBRPMA_INFO_H */
