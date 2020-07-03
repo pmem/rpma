@@ -91,7 +91,7 @@ static void
 test_log_to_user_function(void **p_logfunction)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
 		expect_value(user_logfunc, level, level);
 		expect_string(user_logfunc, file, "file");
 		expect_value(user_logfunc, line, 1);
@@ -104,7 +104,6 @@ test_log_to_user_function(void **p_logfunction)
 int
 main(int argc, char *argv[])
 {
-// XXX missing tests for logging to stderr via fprintf
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test_setup_teardown(test_open_close_no_logfunction,
 			setup_without_logfunction, teardown),
