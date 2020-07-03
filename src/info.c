@@ -13,7 +13,6 @@
 #include "conn_req.h"
 #include "info.h"
 #include "rpma_err.h"
-#include "out.h"
 
 #include "librpma.h"
 
@@ -96,10 +95,8 @@ rpma_info_delete(struct rpma_info **info_ptr)
 int
 rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
-	if (id == NULL || info == NULL)
+	if (id == NULL || info == NULL || info->side != RPMA_INFO_ACTIVE)
 		return RPMA_E_INVAL;
-
-	ASSERTeq(info->side, RPMA_INFO_ACTIVE);
 
 	int ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
 			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
@@ -117,10 +114,8 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 int
 rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
-	if (id == NULL || info == NULL)
+	if (id == NULL || info == NULL || info->side != RPMA_INFO_PASSIVE)
 		return RPMA_E_INVAL;
-
-	ASSERTeq(info->side, RPMA_INFO_PASSIVE);
 
 	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 	if (ret) {

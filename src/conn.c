@@ -11,7 +11,6 @@
 #include "conn.h"
 #include "private_data.h"
 #include "rpma_err.h"
-#include "out.h"
 
 struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
@@ -78,14 +77,14 @@ err_destroy_evch:
 /*
  * rpma_conn_set_private_data -- allocate a buffer and fill
  * the private data of the CM ID
+ *
+ * ASSUMPTIONS
+ * - conn != NULL && pdata != NULL
  */
 int
 rpma_conn_set_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
-	ASSERTne(conn, NULL);
-	ASSERTne(pdata, NULL);
-
 	return rpma_private_data_copy(&conn->data, pdata);
 }
 
