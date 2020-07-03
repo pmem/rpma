@@ -112,17 +112,17 @@ test_log_to_syslog(void **unused)
 	rpma_log_set_level(RPMA_LOG_DEBUG);
 	enum rpma_log_level level;
 	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level ++) {
-		if(level == RPMA_LOG_DISABLED) {
+		if (level == RPMA_LOG_DISABLED) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
-		} else {
-			expect_value(syslog, __pri, rpma_level_syslog[level]);
-			expected_string[0] = '\0';
-			strcat(expected_string, "file:   1:func: *");
-			strcat(expected_string, rpma_level_names[level]);
-			strcat(expected_string, "*: msg");
-			expect_string(syslog, syslog_temporary_buffer, expected_string);
-			rpma_log(level, "file", 1, "func", "%s", "msg");
+			continue; // to avoid else and >80 length later in test
 		}
+		expect_value(syslog, __pri, rpma_level_syslog[level]);
+		expected_string[0] = '\0';
+		strcat(expected_string, "file:   1:func: *");
+		strcat(expected_string, rpma_level_names[level]);
+		strcat(expected_string, "*: msg");
+		expect_string(syslog, syslog_temporary_buffer, expected_string);
+		rpma_log(level, "file", 1, "func", "%s", "msg");
 	}
 }
 
