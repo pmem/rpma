@@ -475,6 +475,25 @@ info_resolve_addr_test_resolve_addr_EAGAIN(void **info_state_ptr)
 }
 
 /*
+ * info_resolve_addr_test_passive -- rpma_info_resolve_addr failed because
+ *	called for a passive side
+ */
+static void
+info_resolve_addr_test_passive(void **info_state_ptr)
+{
+	struct rpma_info *info =  ((struct info_state *)info_state_ptr)->info;
+
+	/* configure mocks */
+	struct rdma_cm_id cmid = {0};
+
+	/* run test */
+	/* verify the result */
+	assert_int_equal(RPMA_E_INVAL,
+			rpma_info_resolve_addr(info, &cmid));
+	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
+}
+
+/*
  * info_resolve_addr_test_success -- happy day scenario
  */
 static void
@@ -566,6 +585,25 @@ info_bind_addr_test_bind_addr_EAGAIN(void **info_state_ptr)
 }
 
 /*
+ * info_bind_addr_test_active -- rpma_info_bind_addr failed because called
+ *	for an active side
+ */
+static void
+info_bind_addr_test_active(void **info_state_ptr)
+{
+	struct info_state *istate = *info_state_ptr;
+
+	/* configure mocks */
+	struct rdma_cm_id cmid = {0};
+
+	/* run test */
+	assert_int_equal(RPMA_E_INVAL,
+			rpma_info_bind_addr(istate->info, &cmid));
+	/* verify the result */
+	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
+}
+
+/*
  * info_bind_addr_test_success -- happy day scenario
  */
 static void
@@ -591,6 +629,7 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
+
 		/* rpma_info_new() unit tests */
 		cmocka_unit_test(info_new_test_addr_NULL),
 		cmocka_unit_test(info_new_test_info_ptr_NULL),
@@ -616,8 +655,13 @@ main(int argc, char *argv[])
 				info_resolve_addr_test_resolve_addr_EAGAIN,
 				info_setup_active, info_teardown),
 		cmocka_unit_test_setup_teardown(
+				info_resolve_addr_test_passive,
+				info_setup_passive, info_teardown),
+
+		cmocka_unit_test_setup_teardown(
 				info_resolve_addr_test_success,
 				info_setup_active, info_teardown),
+
 
 		/* rpma_info_bind_addr() unit tests */
 		cmocka_unit_test_setup_teardown(
@@ -628,6 +672,10 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_bind_addr_EAGAIN,
 				info_setup_passive, info_teardown),
+		cmocka_unit_test_setup_teardown(
+				info_bind_addr_test_active,
+				info_setup_active, info_teardown),
+
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_success,
 				info_setup_passive, info_teardown),

@@ -9,7 +9,6 @@
 
 #include "cmocka_alloc.h"
 #include "private_data.h"
-#include "out.h"
 
 /*
  * rpma_private_data_store -- store a copy of the data provided via the CM event
