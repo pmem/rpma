@@ -77,9 +77,6 @@ err_destroy_evch:
 /*
  * rpma_conn_set_private_data -- allocate a buffer and fill
  * the private data of the CM ID
- *
- * ASSUMPTIONS
- * - conn != NULL && pdata != NULL
  */
 int
 rpma_conn_set_private_data(struct rpma_conn *conn,
