@@ -30,6 +30,10 @@ int rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
  * rpma_conn_set_private_data -- allocate a buffer and fill
  * the private data of the CM ID
  *
+ * ASSUMPTIONS
+ * - conn != NULL && pdata != NULL
+ * TG
+ *
  * ERRORS
  * rpma_conn_set_private_data() can fail with the following error:
  *
