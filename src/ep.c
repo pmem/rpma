@@ -46,10 +46,15 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 	struct rpma_ep *ep = NULL;
 	int ret = 0;
 
+	ret = rpma_info_new(addr, service, RPMA_INFO_PASSIVE, &info);
+	if (ret)
+		return ret;
+
 	evch = rdma_create_event_channel();
 	if (evch == NULL) {
 		Rpma_provider_error = errno;
-		return RPMA_E_PROVIDER;
+		ret = RPMA_E_PROVIDER;
+		goto err_info_delete;
 	}
 
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
@@ -58,25 +63,21 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 		goto err_destroy_event_channel;
 	}
 
-	ret = rpma_info_new(addr, service, RPMA_INFO_PASSIVE, &info);
-	if (ret)
-		goto err_destroy_id;
-
 	ret = rpma_info_bind_addr(info, id);
 	if (ret)
-		goto err_info_delete;
+		goto err_destroy_id;
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		Rpma_provider_error = errno;
 		ret = RPMA_E_PROVIDER;
-		goto err_info_delete;
+		goto err_destroy_id;
 	}
 
 	ep = Malloc(sizeof(*ep));
 	if (ep == NULL) {
 		/* according to malloc(3) it can fail only with ENOMEM */
 		ret = RPMA_E_NOMEM;
-		goto err_info_delete;
+		goto err_destroy_id;
 	}
 
 	ep->peer = peer;
@@ -89,12 +90,13 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 
 	return ret;
 
-err_info_delete:
-	(void) rpma_info_delete(&info);
 err_destroy_id:
 	(void) rdma_destroy_id(id);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(evch);
+err_info_delete:
+	(void) rpma_info_delete(&info);
+
 	return ret;
 }
 
