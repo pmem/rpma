@@ -32,7 +32,6 @@ int rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
  *
  * ASSUMPTIONS
  * - conn != NULL && pdata != NULL
- * TG
  *
  * ERRORS
  * rpma_conn_set_private_data() can fail with the following error:
