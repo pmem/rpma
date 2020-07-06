@@ -268,13 +268,10 @@ rpma_info_delete(struct rpma_info **info_ptr)
 
 /*
  * rpma_info_assign_addr -- mock of rpma_info_assign_addr
- * TG
  */
 int
 rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
-// TG	assert_true(info->side == RPMA_INFO_ACTIVE ||
-// TG			info->side == RPMA_INFO_PASSIVE);
 	assert_int_equal(info, MOCK_INFO);
 	check_expected(id);
 
