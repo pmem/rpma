@@ -6,10 +6,11 @@
 include(../cmake/ctest_helpers.cmake)
 
 build_test_src(conn_req-test
-       conn_req-test.c
-       ${LIBRPMA_SOURCE_DIR}/conn_req.c)
+	conn_req-test.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/conn_req.c)
 
-target_link_libraries(conn_req-test test-rpma-utils)
+target_compile_definitions(conn_req-test PUBLIC TEST_MOCK_ALLOC)
 
 set_target_properties(conn_req-test
        PROPERTIES

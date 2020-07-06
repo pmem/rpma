@@ -9,8 +9,6 @@ build_test_src(mr-test
        mr-test.c
        ${LIBRPMA_SOURCE_DIR}/mr.c)
 
-target_link_libraries(mr-test test-rpma-utils)
-
 set_target_properties(mr-test
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
