@@ -10,16 +10,48 @@
 #include "cmocka_headers.h"
 #include "conn.h"
 
+static struct rdma_cm_id Cm_id;	/* mock CM ID */
+
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
 #define MOCK_CQ			(struct ibv_cq *)0x00C0
-#define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
+#define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
+#define MOCK_QP			(struct ibv_qp *)0xC41D
 #define MOCK_CONN		(struct rpma_conn *)0xA41F
 #define MOCK_PRIVATE_DATA	((void *)"Random data")
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 #define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
 #define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
 
+#define MOCK_DST		(struct rpma_mr_local *)0xC411
+#define MOCK_SRC		(struct rpma_mr_remote *)0xC412
+#define MOCK_DST_OFFSET		(size_t)0xC413
+#define MOCK_SRC_OFFSET		(size_t)0xC414
+#define MOCK_LEN		(size_t)0xC415
+#define MOCK_FLAGS		(int)0xC416
+#define MOCK_OP_CONTEXT		(void *)0xC417
+
 #define MOCK_OK			0
+
+/*
+ * rpma_mr_read -- rpma_mr_read() mock
+ */
+int
+rpma_mr_read(struct ibv_qp *qp,
+	struct rpma_mr_local *dst, size_t dst_offset,
+	struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(dst_offset);
+	check_expected_ptr(src);
+	check_expected(src_offset);
+	check_expected(len);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
 
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
@@ -1224,9 +1256,116 @@ disconnect_test_success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
+/*
+ * test_read__conn_NULL - NULL conn is invalid
+ */
+static void
+test_read__conn_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(NULL, MOCK_DST, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__dst_NULL - NULL dst is invalid
+ */
+static void
+test_read__dst_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, NULL, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__src_NULL - NULL src is invalid
+ */
+static void
+test_read__src_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
+				NULL, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__flags_0 - flags == 0 is invalid
+ */
+static void
+test_read__flags_0(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, 0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__conn_dst_src_NULL_flags_0 - NULL conn, dst, src
+ * and flags == 0 are invalid
+ */
+static void
+test_read__conn_dst_src_NULL_flags_0(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(NULL, NULL, MOCK_DST_OFFSET,
+				NULL, MOCK_SRC_OFFSET,
+				MOCK_LEN, 0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_read__success - happy day scenario
+ */
+static void
+test_read__success(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/* configure mocks */
+	expect_value(rpma_mr_read, qp, MOCK_QP);
+	expect_value(rpma_mr_read, dst, MOCK_DST);
+	expect_value(rpma_mr_read, dst_offset, MOCK_DST_OFFSET);
+	expect_value(rpma_mr_read, src, MOCK_SRC);
+	expect_value(rpma_mr_read, src_offset, MOCK_SRC_OFFSET);
+	expect_value(rpma_mr_read, len, MOCK_LEN);
+	expect_value(rpma_mr_read, flags, MOCK_FLAGS);
+	expect_value(rpma_mr_read, op_context, MOCK_OP_CONTEXT);
+	will_return(rpma_mr_read, MOCK_OK);
+
+	/* run test */
+	int ret = rpma_read(cstate->conn, MOCK_DST, MOCK_DST_OFFSET,
+				MOCK_SRC, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+}
+
 int
 main(int argc, char *argv[])
 {
+	/* set value of QP in mock of CM ID */
+	Cm_id.qp = MOCK_QP;
+
 	const struct CMUnitTest tests[] = {
 		/* rpma_conn_new() unit tests */
 		cmocka_unit_test(new_test_id_NULL),
@@ -1313,6 +1452,15 @@ main(int argc, char *argv[])
 		cmocka_unit_test(get_private_data_test_conn_NULL),
 		cmocka_unit_test(get_private_data_test_pdata_NULL),
 		cmocka_unit_test(get_private_data_test_conn_NULL_pdata_NULL),
+
+		/* rpma_read() unit tests */
+		cmocka_unit_test(test_read__conn_NULL),
+		cmocka_unit_test(test_read__dst_NULL),
+		cmocka_unit_test(test_read__src_NULL),
+		cmocka_unit_test(test_read__flags_0),
+		cmocka_unit_test(test_read__conn_dst_src_NULL_flags_0),
+		cmocka_unit_test_setup_teardown(test_read__success,
+			conn_setup, conn_teardown),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
