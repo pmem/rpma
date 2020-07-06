@@ -347,6 +347,16 @@ ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
 }
 
 /*
+ * ibv_dereg_mr -- ibv_dereg_mr() mock
+ */
+int
+ibv_dereg_mr(struct ibv_mr *mr)
+{
+	assert_true(0);
+	return 0;
+}
+
+/*
  * rdma_migrate_id -- rdma_migrate_id() mock
  */
 int
