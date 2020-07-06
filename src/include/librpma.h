@@ -22,6 +22,7 @@
  * librpma - remote persistent memory support library
  */
 
+#define RPMA_W_NO_COMPLETION		(2)
 #define RPMA_W_WAIT_FOR_COMPLETION	(1)
 
 #define RPMA_E_UNKNOWN			(-100000) /* Unknown error */
@@ -543,7 +544,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_next_completion - obtain an operation completion
+ * rpma_conn_next_completion - receive an operation completion
  *
  * SYNOPSIS
  *
@@ -551,6 +552,13 @@ struct rpma_completion {
  *
  *	int rpma_conn_next_completion(struct rpma_conn *conn,
  *		struct rpma_completion *cmpl);
+ *
+ * ERRORS
+ * rpma_conn_next_completion() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or cmpl is NULL
+ * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
+ * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error available
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
 	struct rpma_completion *cmpl);

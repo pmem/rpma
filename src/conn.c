@@ -249,10 +249,35 @@ rpma_read(struct rpma_conn *conn,
 }
 
 /*
- * rpma_conn_next_completion -- use ibv_poll_cq(conn->cq)
+ * rpma_conn_next_completion -- receive an operation completion
  */
 int
 rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || cmpl == NULL)
+		return RPMA_E_INVAL;
+
+	struct ibv_wc wc = {0};
+	int result = ibv_poll_cq(conn->cq, 1 /* num_entries */, &wc);
+	if (result == 0) {
+		return RPMA_W_NO_COMPLETION;
+	} else if (result < 0) {
+		Rpma_provider_error = result;
+		return RPMA_E_PROVIDER;
+	} else if (result > 1) {
+		return RPMA_E_UNKNOWN;
+	}
+
+	switch (wc.opcode) {
+	case IBV_WC_RDMA_READ:
+		cmpl->op = RPMA_OP_READ;
+		break;
+	default:
+		return RPMA_E_UNKNOWN;
+	}
+
+	cmpl->op_context = (void *)wc.wr_id;
+	cmpl->op_status = wc.status;
+
+	return 0;
 }

@@ -10,6 +10,8 @@
 #include "conn-test-common.h"
 
 struct rdma_cm_id Cm_id;	/* mock CM ID */
+struct ibv_context Ibv_context;	/* mock IBV context */
+struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
