@@ -61,7 +61,7 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 	if (ret)
 		goto err_destroy_id;
 
-	ret = rpma_info_bind_addr(info, id);
+	ret = rpma_info_assign_addr(info, id);
 	if (ret)
 		goto err_info_delete;
 

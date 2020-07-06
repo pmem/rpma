@@ -51,6 +51,15 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		return RPMA_E_PROVIDER;
 	}
 
+	//sanity check for compatibility between rai and hints ai_flags
+	if (hints.ai_flags & RAI_PASSIVE) {
+		if ( !(rai->ai_flags & RAI_PASSIVE)) {
+			ret = RPMA_E_UNKNOWN;
+			goto err_freeaddrinfo;
+		}
+
+	}
+
 	struct rpma_info *info = Malloc(sizeof(*info));
 	if (info == NULL) {
 		ret = RPMA_E_NOMEM;
@@ -90,38 +99,26 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
- * rpma_info_resolve_addr -- resolve the ID destination address
+ * rpma_info_assign_addr -- assign address to the ID
+ * either  resolve the ID destination address
+ * or bind the ID to address
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
-	if (id == NULL || info == NULL || info->side != RPMA_INFO_ACTIVE)
+	int ret = 0;
+	if (id == NULL || info == NULL)
 		return RPMA_E_INVAL;
 
-	int ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
-			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
+	if (info->side == RPMA_INFO_ACTIVE)
+		ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
+				info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
+	else
+		ret = rdma_bind_addr(id, info->rai->ai_src_addr);
+
 	if (ret) {
 		Rpma_provider_error = errno;
 		return RPMA_E_PROVIDER;
 	}
-
-	return 0;
-}
-
-/*
- * rpma_info_bind_addr -- bind the ID to address
- */
-int
-rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
-{
-	if (id == NULL || info == NULL || info->side != RPMA_INFO_PASSIVE)
-		return RPMA_E_INVAL;
-
-	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
-	if (ret) {
-		Rpma_provider_error = errno;
-		return RPMA_E_PROVIDER;
-	}
-
 	return 0;
 }
