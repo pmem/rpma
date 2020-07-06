@@ -29,6 +29,7 @@
 #define RPMA_E_PROVIDER			(-100002) /* Provider error occurred */
 #define RPMA_E_NOMEM			(-100003) /* Out of memory */
 #define RPMA_E_INVAL			(-100004) /* Invalid argument */
+#define RPMA_E_NO_COMPLETION		(-100005) /* No completion available */
 
 /* picking up an RDMA-capable device */
 
@@ -596,7 +597,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_next_completion - obtain an operation completion
+ * rpma_conn_next_completion - receive a completion of an operation
  *
  * SYNOPSIS
  *
@@ -604,6 +605,20 @@ struct rpma_completion {
  *
  *	int rpma_conn_next_completion(struct rpma_conn *conn,
  *		struct rpma_completion *cmpl);
+ *
+ * DESCRIPTION
+ * Receive a next available completion of an already posted operation. All
+ * operations are generating completion on error. All operations posted with
+ * a **RPMA_F_COMPLETION_ALWAYS** flag will also generate a completion on
+ * success.
+ *
+ * ERRORS
+ * rpma_conn_next_completion() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or cmpl is NULL
+ * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
+ * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
+ * - RPMA_E_NOSUPP - not supported opcode
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
 	struct rpma_completion *cmpl);

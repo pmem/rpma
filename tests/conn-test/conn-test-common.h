@@ -14,9 +14,11 @@
 #include "conn.h"
 
 extern struct rdma_cm_id Cm_id;	/* mock CM ID */
+extern struct ibv_context Ibv_context; /* mock IBV context */
+extern struct ibv_cq Ibv_cq; /* mock IBV CQ */
 
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
-#define MOCK_CQ			(struct ibv_cq *)0x00C0
+#define MOCK_CQ			(struct ibv_cq *)&Ibv_cq
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
 #define MOCK_QP			(struct ibv_qp *)0xC41D
 #define MOCK_CONN		(struct rpma_conn *)0xA41F
@@ -32,6 +34,7 @@ extern struct rdma_cm_id Cm_id;	/* mock CM ID */
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
+#define MOCK_WC_STATUS		(int)0x51A5
 
 #define MOCK_OK			0
 
