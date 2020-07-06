@@ -35,7 +35,6 @@ struct rpma_conn_req {
  *
  * ASSUMPTIONS
  * - peer != NULL && id != NULL && req != NULL
- * TG
  */
 static int
 rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
@@ -87,7 +86,6 @@ err_destroy_cq:
  *
  * ASSUMPTIONS
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
- * TG
  */
 static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
@@ -142,7 +140,6 @@ err_conn_req_delete:
  *
  * ASSUMPTIONS
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
- * TG
  */
 static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
@@ -182,7 +179,6 @@ err_conn_req_delete:
  *
  * ASSUMPTIONS
  * - req != NULL
- * TG
  */
 static int
 rpma_conn_req_reject(struct rpma_conn_req *req)
@@ -218,7 +214,6 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
  *
  * ASSUMPTIONS
  * - req != NULL
- * TG
  */
 static int
 rpma_conn_req_destroy(struct rpma_conn_req *req)
@@ -296,7 +291,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
 	}
 
 	/* resolve address */
-	ret = rpma_info_resolve_addr(info, id);
+	ret = rpma_info_assign_addr(info, id);
 	if (ret)
 		goto err_destroy_id;
 

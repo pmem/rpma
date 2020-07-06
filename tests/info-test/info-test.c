@@ -49,6 +49,11 @@ rdma_getaddrinfo(const char *node, const char *service,
 	}
 
 	*res = args->res;
+	if (*res != NULL) {
+		if (hints->ai_flags & RAI_PASSIVE) {
+			(*res)->ai_flags |=RAI_PASSIVE;
+		}
+	}
 
 	if (*res != NULL)
 		return 0;
@@ -259,7 +264,10 @@ info_test_lifecycle(void **unused)
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
 	assert_non_null(info);
-
+// TG	assert_int_equal(RPMA_INFO_PASSIVE, info->side);
+/*
+ * TG
+ */
 	/*
 	 * configure mocks for rpma_info_delete():
 	 * NOTE: it is not allowed to call rdma_getaddrinfo() nor malloc() in
@@ -377,7 +385,9 @@ info_setup_active(void **info_state_ptr)
 	assert_non_null(istate.info);
 
 	*info_state_ptr = &istate;
-
+/*
+ * TG shall we test here that INFO ACTIVE
+ */
 	return 0;
 }
 
@@ -414,7 +424,7 @@ info_resolve_addr_test_id_NULL(void **info_state_ptr)
 	struct info_state *istate = *info_state_ptr;
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, NULL);
+	int ret = rpma_info_assign_addr(istate->info, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -428,7 +438,7 @@ info_resolve_addr_test_info_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_resolve_addr(NULL, &cmid);
+	int ret = rpma_info_assign_addr(NULL, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -442,7 +452,7 @@ static void
 info_resolve_addr_test_id_info_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_info_resolve_addr(NULL, NULL);
+	int ret = rpma_info_assign_addr(NULL, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -466,30 +476,11 @@ info_resolve_addr_test_resolve_addr_EAGAIN(void **info_state_ptr)
 	will_return(rdma_resolve_addr, EAGAIN);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
-	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
-}
-
-/*
- * info_resolve_addr_test_passive -- rpma_info_resolve_addr failed because
- *	called for a passive side
- */
-static void
-info_resolve_addr_test_passive(void **info_state_ptr)
-{
-	struct rpma_info *info =  ((struct info_state *)info_state_ptr)->info;
-
-	/* configure mocks */
-	struct rdma_cm_id cmid = {0};
-
-	/* run test */
-	/* verify the result */
-	assert_int_equal(RPMA_E_INVAL,
-			rpma_info_resolve_addr(info, &cmid));
 	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
 }
 
@@ -510,7 +501,7 @@ info_resolve_addr_test_success(void **info_state_ptr)
 	will_return(rdma_resolve_addr, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
@@ -526,7 +517,7 @@ info_bind_addr_test_id_NULL(void **info_state_ptr)
 	struct info_state *istate = *info_state_ptr;
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, NULL);
+	int ret = rpma_info_assign_addr(istate->info, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -540,7 +531,7 @@ info_bind_addr_test_info_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_bind_addr(NULL, &cmid);
+	int ret = rpma_info_assign_addr(NULL, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -554,14 +545,14 @@ static void
 info_bind_addr_test_id_info_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_info_bind_addr(NULL, NULL);
+	int ret = rpma_info_assign_addr(NULL, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * info_bind_addr_test_bind_addr_EAGAIN -- rpma_info_bind_addr() fails
+ * info_bind_addr_test_bind_addr_EAGAIN -- rpma_info_assign_addr() fails
  * with EAGAIN
  */
 static void
@@ -576,30 +567,11 @@ info_bind_addr_test_bind_addr_EAGAIN(void **info_state_ptr)
 	will_return(rdma_bind_addr, EAGAIN);
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
-	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
-}
-
-/*
- * info_bind_addr_test_active -- rpma_info_bind_addr failed because called
- *	for an active side
- */
-static void
-info_bind_addr_test_active(void **info_state_ptr)
-{
-	struct info_state *istate = *info_state_ptr;
-
-	/* configure mocks */
-	struct rdma_cm_id cmid = {0};
-
-	/* run test */
-	assert_int_equal(RPMA_E_INVAL,
-			rpma_info_bind_addr(istate->info, &cmid));
-	/* verify the result */
 	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
 }
 
@@ -618,7 +590,7 @@ info_bind_addr_test_success(void **info_state_ptr)
 	will_return(rdma_bind_addr, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_info_bind_addr(istate->info, &cmid);
+	int ret = rpma_info_assign_addr(istate->info, &cmid);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
@@ -654,16 +626,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				info_resolve_addr_test_resolve_addr_EAGAIN,
 				info_setup_active, info_teardown),
-		cmocka_unit_test_setup_teardown(
-				info_resolve_addr_test_passive,
-				info_setup_passive, info_teardown),
 
 		cmocka_unit_test_setup_teardown(
 				info_resolve_addr_test_success,
 				info_setup_active, info_teardown),
 
 
-		/* rpma_info_bind_addr() unit tests */
+		/* rpma_info_assign_addr() unit tests */
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_id_NULL,
 				info_setup_passive, info_teardown),
@@ -672,9 +641,6 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_bind_addr_EAGAIN,
 				info_setup_passive, info_teardown),
-		cmocka_unit_test_setup_teardown(
-				info_bind_addr_test_active,
-				info_setup_active, info_teardown),
 
 		cmocka_unit_test_setup_teardown(
 				info_bind_addr_test_success,

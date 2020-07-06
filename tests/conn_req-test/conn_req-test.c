@@ -104,6 +104,8 @@ int
 rpma_conn_set_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
+	assert_non_null(conn);
+	assert_non_null(pdata);
 	check_expected(conn);
 	check_expected(pdata->ptr);
 	check_expected(pdata->len);
@@ -265,11 +267,14 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
- * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
+ * rpma_info_assign_addr -- mock of rpma_info_assign_addr
+ * TG
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_assign_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
+// TG	assert_true(info->side == RPMA_INFO_ACTIVE ||
+// TG			info->side == RPMA_INFO_PASSIVE);
 	assert_int_equal(info, MOCK_INFO);
 	check_expected(id);
 
@@ -882,7 +887,7 @@ new_test_create_id_EAGAIN(void **unused)
 }
 
 /*
- * new_test_resolve_addr_E_PROVIDER_EAGAIN -- rpma_info_resolve_addr() fails
+ * new_test_resolve_addr_E_PROVIDER_EAGAIN -- rpma_info_assign_addr() fails
  * with RPMA_E_PROVIDER+EAGAIN
  */
 static void
@@ -894,9 +899,9 @@ new_test_resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, RPMA_E_PROVIDER);
-	will_return(rpma_info_resolve_addr, EAGAIN);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, RPMA_E_PROVIDER);
+	will_return(rpma_info_assign_addr, EAGAIN);
 	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
@@ -922,8 +927,8 @@ new_test_resolve_route_EAGAIN(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, EAGAIN);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -950,8 +955,8 @@ new_test_create_cq_EAGAIN(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_cq, NULL);
 	will_return(ibv_create_cq, EAGAIN);
@@ -981,8 +986,8 @@ new_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_cq, MOCK_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
@@ -1014,8 +1019,8 @@ new_test_malloc_ENOMEM(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_cq, MOCK_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
@@ -1048,8 +1053,8 @@ new_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_cq, MOCK_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
@@ -1091,8 +1096,8 @@ conn_req_new_setup(void **cstate_ptr)
 	Mock_ctrl_defer_destruction = MOCK_CTRL_DEFER;
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &cstate.id);
-	expect_value(rpma_info_resolve_addr, id, &cstate.id);
-	will_return(rpma_info_resolve_addr, MOCK_OK);
+	expect_value(rpma_info_assign_addr, id, &cstate.id);
+	will_return(rpma_info_assign_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_cq, MOCK_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);

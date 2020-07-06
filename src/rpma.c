@@ -50,15 +50,9 @@ rpma_utils_get_ibv_context(const char *addr,
 		goto err_info_delete;
 	}
 
-	if (side == RPMA_INFO_PASSIVE) {
-		ret = rpma_info_bind_addr(info, temp_id);
-		if (ret)
-			goto err_destroy_id;
-	} else {
-		ret = rpma_info_resolve_addr(info, temp_id);
-		if (ret)
-			goto err_destroy_id;
-	}
+	ret = rpma_info_assign_addr(info, temp_id);
+	if (ret)
+		goto err_destroy_id;
 
 	/* obtain the device */
 	*dev = temp_id->verbs;
