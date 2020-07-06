@@ -51,9 +51,9 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		return RPMA_E_PROVIDER;
 	}
 
-	//sanity check for compatibility between rai and hints ai_flags
+	// sanity check for compatibility between rai and hints ai_flags
 	if (hints.ai_flags & RAI_PASSIVE) {
-		if ( !(rai->ai_flags & RAI_PASSIVE)) {
+		if (!(rai->ai_flags & RAI_PASSIVE)) {
 			ret = RPMA_E_UNKNOWN;
 			goto err_freeaddrinfo;
 		}
