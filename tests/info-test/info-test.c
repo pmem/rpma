@@ -51,7 +51,7 @@ rdma_getaddrinfo(const char *node, const char *service,
 	*res = args->res;
 	if (*res != NULL) {
 		if (hints->ai_flags & RAI_PASSIVE) {
-			(*res)->ai_flags |=RAI_PASSIVE;
+			(*res)->ai_flags |= RAI_PASSIVE;
 		}
 	}
 
