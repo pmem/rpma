@@ -22,6 +22,7 @@
 #define MOCK_SRC_ADDR		(struct sockaddr *)0x0ADD
 #define MOCK_DST_ADDR		(struct sockaddr *)0x0ADE
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
+#define MOCK_MR			(struct ibv_mr *)0x0AD5
 #define MOCK_TIMEOUT		1000 /* RPMA_DEFAULT_TIMEOUT */
 #define MOCK_DEFAULT_Q_SIZE	10 /* RPMA_DEFAULT_Q_SIZE */
 #define MOCK_MAX_SGE		1 /* RPMA_MAX_SGE */
@@ -29,6 +30,30 @@
 #define MOCK_OK			0
 
 /* mocks */
+
+/*
+ * ibv_dereg_mr -- a mock of ibv_dereg_mr()
+ */
+int
+ibv_dereg_mr(struct ibv_mr *mr)
+{
+	/*
+	 * rpma_peer_mr_reg() and malloc() may be called in any order.
+	 * If the first one fails, then the second one won't be called.
+	 * ibv_dereg_mr() will be called in rpma_mr_reg() only if:
+	 * 1) rpma_peer_mr_reg() succeeded and
+	 * 2) malloc() failed.
+	 * In the opposite case, when:
+	 * 1) malloc() succeeded and
+	 * 2) rpma_peer_mr_reg() failed,
+	 * ibv_dereg_mr() will not be called,
+	 * so we cannot add cmocka's expects here.
+	 * Otherwise, unconsumed expects would cause a test failure.
+	 */
+	assert_int_equal(mr, MOCK_MR);
+
+	return mock_type(int); /* errno */
+}
 
 /*
  * rdma_create_id -- rdma_create_id() mock
