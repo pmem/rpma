@@ -3,7 +3,7 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(../cmake/ctest_helpers.cmake)
+include(../../cmake/ctest_helpers.cmake)
 
 build_test_lib(template-test template-test.c)
 add_test_generic(NAME template-test TRACERS none)

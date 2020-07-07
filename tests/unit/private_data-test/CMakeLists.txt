@@ -3,7 +3,7 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(../cmake/ctest_helpers.cmake)
+include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(private_data-test
        private_data-test.c

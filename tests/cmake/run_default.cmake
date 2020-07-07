@@ -3,7 +3,7 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(${SRC_DIR}/../cmake/helpers.cmake)
+include(${SRC_DIR}/../../cmake/helpers.cmake)
 
 setup()
 
