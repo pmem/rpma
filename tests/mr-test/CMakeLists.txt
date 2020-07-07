@@ -23,3 +23,4 @@ endfunction()
 
 add_mr_test(reg)
 add_mr_test(descriptor)
+add_mr_test(read)
