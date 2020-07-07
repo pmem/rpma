@@ -62,5 +62,5 @@ add_subdirectory(utils-test)
 # Integration tests break codecov results. The root cause is unknown.
 # This condition is merely a WA for this issue.
 if(NOT COVERAGE)
-       add_subdirectory(example-01-client)
+       add_subdirectory(example-01-connection)
 endif()

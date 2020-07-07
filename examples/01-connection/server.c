@@ -13,6 +13,10 @@
 
 #include <librpma.h>
 
+#ifdef TEST_MOCK_MAIN
+#define main server_main
+#endif
+
 static void
 print_error(const char *fname, const int ret)
 {
