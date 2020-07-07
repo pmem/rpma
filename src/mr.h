@@ -16,7 +16,7 @@
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && dst != NULL && src != NULL
+ * - qp != NULL && dst != NULL && src != NULL && flags != 0
  *
  * ERRORS
  * rpma_mr_read() can fail with the following error:
