@@ -20,6 +20,10 @@
 #define RPMA_FLAG_ON(set, flag) (set) |= (flag)
 #define RPMA_FLAG_OFF(set, flag) (set) &= ~(flag)
 
+/* generate operation completion on success */
+#define RPMA_F_COMPLETION_ON_SUCCESS \
+	(RPMA_F_COMPLETION_ALWAYS & ~RPMA_F_COMPLETION_ON_ERROR)
+
 struct rpma_mr_local {
 	struct ibv_mr *ibv_mr; /* an IBV memory registration object */
 	enum rpma_mr_plt plt; /* placement of the memory region */
@@ -66,7 +70,33 @@ rpma_mr_read(struct ibv_qp *qp,
 	struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	struct ibv_send_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	wr.wr.rdma.remote_addr = src->raddr + src_offset;
+	wr.wr.rdma.rkey = src->rkey;
+
+	/* destination */
+	sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + dst_offset);
+	sge.length = (uint32_t)len;
+	sge.lkey = dst->ibv_mr->lkey;
+	wr.sg_list = &sge;
+	wr.num_sge = 1;
+
+	wr.wr_id = (uint64_t)op_context;
+	wr.opcode = IBV_WR_RDMA_READ;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+		IBV_SEND_SIGNALED : 0;
+
+	struct ibv_send_wr *bad_wr;
+	int ret = ibv_post_send(qp, &wr, &bad_wr);
+	if (ret) {
+		Rpma_provider_error = ret;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /* public librpma API */
