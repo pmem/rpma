@@ -9,6 +9,8 @@
 
 #include "mr-test-common.h"
 
+const struct rpma_mr_descriptor Desc_exp = DESC_EXP;
+
 void *__real__test_malloc(size_t size);
 
 /*
@@ -116,6 +118,47 @@ teardown__mr_dereg_success(void **mr_ptr)
 	int ret = rpma_mr_dereg(&mr);
 
 	/* verify the result */
+	assert_int_equal(ret, MOCK_OK);
+	assert_null(mr);
+
+	*mr_ptr = NULL;
+
+	return 0;
+}
+
+/*
+ * setup__mr_remote -- create a remote memory region structure based on mocked
+ * serialized memory region's data
+ */
+int
+setup__mr_remote(void **mr_ptr)
+{
+	/* configure mock */
+	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+
+	/* deserialize the memory region as a remote access structure */
+	struct rpma_mr_remote *mr = NULL;
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, &mr);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_non_null(mr);
+
+	*mr_ptr = mr;
+
+	return 0;
+}
+
+/*
+ * teardown__mr_remote -- delete the remote memory region's structure
+ */
+int
+teardown__mr_remote(void **mr_ptr)
+{
+	struct rpma_mr_remote *mr = *mr_ptr;
+
+	/* delete the remote memory region's structure */
+	int ret = rpma_mr_remote_delete(&mr);
 	assert_int_equal(ret, MOCK_OK);
 	assert_null(mr);
 

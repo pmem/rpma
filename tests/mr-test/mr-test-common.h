@@ -32,10 +32,14 @@
 			0x13, 0x12, 0x11, 0x10, \
 			0x01}}
 
+extern const struct rpma_mr_descriptor Desc_exp;
+
 /* setups & teardowns */
 
 int setup__mr_reg_success(void **mr_ptr);
-
 int teardown__mr_dereg_success(void **mr_ptr);
+
+int setup__mr_remote(void **mr_ptr);
+int teardown__mr_remote(void **mr_ptr);
 
 #endif /* MR_COMMON_H */
