@@ -3,7 +3,7 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(../cmake/ctest_helpers.cmake)
+include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(conn_req-test
        conn_req-test.c
