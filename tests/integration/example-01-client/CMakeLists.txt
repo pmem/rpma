@@ -3,7 +3,7 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(../cmake/ctest_helpers.cmake)
+include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(example-01-client
 	example-01-client.c
