@@ -242,6 +242,7 @@ info_new_test_malloc_ENOMEM(void **unused)
 /*
  * info_test_lifecycle -- happy day scenario
  */
+// XXX do we need info_test_lifecycle for PASSIVE info?
 static void
 info_test_lifecycle(void **unused)
 {
@@ -264,10 +265,8 @@ info_test_lifecycle(void **unused)
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
 	assert_non_null(info);
-// TG	assert_int_equal(RPMA_INFO_PASSIVE, info->side);
-/*
- * TG
- */
+// XXX shall we verify that this is a PASSIVE info
+
 	/*
 	 * configure mocks for rpma_info_delete():
 	 * NOTE: it is not allowed to call rdma_getaddrinfo() nor malloc() in
@@ -355,6 +354,9 @@ info_setup_passive(void **info_state_ptr)
 	assert_non_null(istate.info);
 
 	*info_state_ptr = &istate;
+/*
+ * XXX shall we test here that INFO PASSIVE
+ */
 
 	return 0;
 }
@@ -386,7 +388,7 @@ info_setup_active(void **info_state_ptr)
 
 	*info_state_ptr = &istate;
 /*
- * TG shall we test here that INFO ACTIVE
+ * XXX shall we test here that INFO ACTIVE
  */
 	return 0;
 }
