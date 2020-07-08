@@ -22,12 +22,11 @@ LIBRPMA_1.0 {
 		rpma_err_2str;
 		rpma_err_get_msg;
 		rpma_err_get_provider_error;
-		rpma_mr_deserialize;
 		rpma_mr_dereg;
+		rpma_mr_get_descriptor;
 		rpma_mr_reg;
-		rpma_mr_serialize;
-		rpma_mr_serialize_get_size;
 		rpma_mr_remote_delete;
+		rpma_mr_remote_from_descriptor;
 		rpma_mr_remote_get_size;
 		rpma_peer_delete;
 		rpma_peer_new;
