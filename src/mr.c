@@ -15,9 +15,6 @@
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST)
 
-#define RPMA_FLAG_ON(set, flag) (set) |= (flag)
-#define RPMA_FLAG_OFF(set, flag) (set) &= ~(flag)
-
 struct rpma_mr_local {
 	struct ibv_mr *ibv_mr; /* an IBV memory registration object */
 	enum rpma_mr_plt plt; /* placement of the memory region */
@@ -40,13 +37,13 @@ usage_to_access(int usage)
 	int access = 0;
 
 	if (usage & RPMA_MR_USAGE_READ_SRC) {
-		RPMA_FLAG_ON(access, IBV_ACCESS_REMOTE_READ);
-		RPMA_FLAG_OFF(usage, RPMA_MR_USAGE_READ_SRC);
+		access |= IBV_ACCESS_REMOTE_READ;
+		usage &= ~RPMA_MR_USAGE_READ_SRC;
 	}
 
 	if (usage & RPMA_MR_USAGE_READ_DST) {
-		RPMA_FLAG_ON(access, IBV_ACCESS_LOCAL_WRITE);
-		RPMA_FLAG_OFF(usage, RPMA_MR_USAGE_READ_DST);
+		access |= IBV_ACCESS_LOCAL_WRITE;
+		usage &= ~RPMA_MR_USAGE_READ_DST;
 	}
 
 	return access;
@@ -82,7 +79,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		return RPMA_E_INVAL;
 
 	struct rpma_mr_local *mr;
-	mr = (struct rpma_mr_local *)Malloc(sizeof(struct rpma_mr_local));
+	mr = Malloc(sizeof(struct rpma_mr_local));
 	if (mr == NULL)
 		return RPMA_E_NOMEM;
 
