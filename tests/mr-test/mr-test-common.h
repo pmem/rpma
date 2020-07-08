@@ -51,10 +51,14 @@ struct rpma_peer_mr_reg_args {
 	int verrno;
 };
 
+extern const rpma_mr_descriptor Desc_exp;
+
 /* setups & teardowns */
 
 int setup__reg_success(void **pprestate);
-
 int teardown__dereg_success(void **pprestate);
+
+int setup__mr_remote(void **mr_ptr);
+int teardown__mr_remote(void **mr_ptr);
 
 #endif /* MR_COMMON_H */
