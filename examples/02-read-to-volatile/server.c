@@ -74,6 +74,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	rpma_mr_descriptor desc;
 	pdata.ptr = &desc;
+	pdata.len = sizeof(rpma_mr_descriptor);
 
 	/* receive the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &desc);
