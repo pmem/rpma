@@ -262,7 +262,8 @@ test_get_descriptor__desc_alignment(void **pprestate)
 	 * Generate a miscellaneous output descriptor alignment just to be sure
 	 * the implementation does not prefer certain alignments.
 	 */
-	for (uintptr_t i = 0; i < MR_DESC_SIZE; ++i) {
+	uintptr_t i = 0;
+	for (; i < MR_DESC_SIZE; ++i) {
 		memset(buff_base, 0xff, MR_DESC_SIZE * 2);
 
 		/* run test */
@@ -305,7 +306,8 @@ test_remote_from_descriptor__desc_alignment(void **unused)
 	 * Generate a miscellaneous input descriptor alignment just to be sure
 	 * the implementation does not prefer certain alignments.
 	 */
-	for (uintptr_t i = 0; i < MR_DESC_SIZE; ++i) {
+	uintptr_t i = 0;
+	for (; i < MR_DESC_SIZE; ++i) {
 		memset(buff_base, 0xff, MR_DESC_SIZE * 2);
 
 		/* prepare a buffer contents */
