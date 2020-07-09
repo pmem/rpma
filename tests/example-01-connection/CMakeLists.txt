@@ -5,9 +5,10 @@
 
 include(../cmake/ctest_helpers.cmake)
 
-build_test_src(example-01-client
-	example-01-client.c
+build_test_src(example-01-connection
+	example-01-connection.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
+	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
 	${LIBRPMA_SOURCE_DIR}/common/alloc.c
 	${LIBRPMA_SOURCE_DIR}/common/out.c
 	${LIBRPMA_SOURCE_DIR}/common/util.c
@@ -22,14 +23,14 @@ build_test_src(example-01-client
 	${LIBRPMA_SOURCE_DIR}/rpma.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
-set_target_properties(example-01-client
+set_target_properties(example-01-connection
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=fprintf"
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-target_compile_definitions(example-01-client
+target_compile_definitions(example-01-connection
        PUBLIC TEST_MOCK_MAIN
        PUBLIC TEST_MOCK_ALLOC
        PRIVATE SRCVERSION="0.0")
 
-add_test_generic(NAME example-01-client TRACERS none)
+add_test_generic(NAME example-01-connection TRACERS none)
