@@ -62,4 +62,11 @@ int teardown__dereg_success(void **pprestate);
 int setup__mr_remote(void **mr_ptr);
 int teardown__mr_remote(void **mr_ptr);
 
+/* cmocka groups */
+extern const struct CMUnitTest tests_descriptor[];
+extern const struct CMUnitTest tests_read[];
+extern const struct CMUnitTest tests_reg[];
+
+int group_setup_read(void **unused);
+
 #endif /* MR_COMMON_H */

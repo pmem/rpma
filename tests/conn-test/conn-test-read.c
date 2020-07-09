@@ -116,22 +116,25 @@ test_read__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
+/*
+ * group_setup_read -- prepare resources for all tests in the group
+ */
 int
-main(int argc, char *argv[])
+group_setup_read(void **unused)
 {
 	/* set value of QP in mock of CM ID */
 	Cm_id.qp = MOCK_QP;
 
-	const struct CMUnitTest tests[] = {
-		/* rpma_read() unit tests */
-		cmocka_unit_test(test_read__conn_NULL),
-		cmocka_unit_test(test_read__dst_NULL),
-		cmocka_unit_test(test_read__src_NULL),
-		cmocka_unit_test(test_read__flags_0),
-		cmocka_unit_test(test_read__conn_dst_src_NULL_flags_0),
-		cmocka_unit_test_setup_teardown(test_read__success,
-			conn_setup, conn_teardown),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return 0;
 }
+
+const struct CMUnitTest tests_read[] = {
+	/* rpma_read() unit tests */
+	cmocka_unit_test(test_read__conn_NULL),
+	cmocka_unit_test(test_read__dst_NULL),
+	cmocka_unit_test(test_read__src_NULL),
+	cmocka_unit_test(test_read__flags_0),
+	cmocka_unit_test(test_read__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test_setup_teardown(test_read__success,
+		conn_setup, conn_teardown),
+};

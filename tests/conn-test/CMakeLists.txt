@@ -5,25 +5,22 @@
 
 include(../cmake/ctest_helpers.cmake)
 
-function(add_conn_test test)
-	set(name conn-test-${test})
-	build_test_src(${name}
-		${name}.c
-		conn-test-common.c
-		${LIBRPMA_SOURCE_DIR}/conn.c)
+set(name conn-test-${test})
+build_test_src(conn-test
+	conn-test.c
+	conn-test-common.c
+	conn-test-disconnect.c
+	conn-test-new.c
+	conn-test-next-completion.c
+	conn-test-next-event.c
+	conn-test-private-data.c
+	conn-test-read.c
+	${LIBRPMA_SOURCE_DIR}/conn.c)
 
-	target_link_libraries(${name} test-rpma-utils)
+target_link_libraries(conn-test test-rpma-utils)
 
-	set_target_properties(${name}
-		PROPERTIES
-		LINK_FLAGS "-Wl,--wrap=_test_malloc")
+set_target_properties(conn-test
+	PROPERTIES
+	LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-	add_test_generic(NAME ${name} TRACERS none)
-endfunction()
-
-add_conn_test(new)
-add_conn_test(next-event)
-add_conn_test(disconnect)
-add_conn_test(private-data)
-add_conn_test(read)
-add_conn_test(next-completion)
+add_test_generic(NAME conn-test TRACERS none)
