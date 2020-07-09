@@ -342,8 +342,8 @@ struct rpma_conn_private_data {
  *	    struct rpma_conn_private_data *pdata);
  *
  * DESCRIPTION
- * Obtain a pointer to the private data given by the other side of the
- * connection.
+ * Obtain a pointer to the private data given by the other side
+ * of the connection.
  *
  * ERRORS
  * rpma_conn_get_private_data() can fail with the following error:
@@ -648,12 +648,12 @@ int rpma_err_get_provider_error(void);
  *	const char *rpma_err_get_msg(void);
  *
  * DESCRIPTION
- * If an error is detected during the call to a librpma(7) function, the
- * application may retrieve an error message describing the reason of the
- * failure from rpma_err_get_msg(). The error message buffer is thread-local;
- * errors encountered in one thread do not affect its value in
- * other threads. The buffer is never cleared by any library function; its
- * content is significant only when the return value of the immediately
+ * If an error is detected during the call to a librpma(7) function,
+ * the application may retrieve an error message describing the reason
+ * of the failure from rpma_err_get_msg(). The error message buffer
+ * is thread-local; errors encountered in one thread do not affect its value
+ * in other threads. The buffer is never cleared by any library function;
+ * its content is significant only when the return value of the immediately
  * preceding call to a librpma(7) function indicated an error.
  * The application must not modify or free the error message string.
  * Subsequent calls to other library functions may modify the previous message.

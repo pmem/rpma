@@ -482,6 +482,9 @@ line: while (<$filehandle>) {
 	if (/^\t+ [^ \t\*]/ || /^\t+  \S/ || /^\t+   \S/) {
 		err("continuation line not indented by 4 spaces");
 	}
+	if (/ a$/ || / an$/ || / the$/) {
+		err("orphaned pronoun at the end of the line");
+	}
 	if (/$warlock_re/ && !/\*\//) {
 		$in_warlock_comment = 1;
 		$prev = $line;

@@ -83,8 +83,8 @@ err_destroy_cq:
 /*
  * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
  * request re-packing the connection request to a connection object. Otherwise,
- * rdma_disconnect()+rdma_destroy_qp()+ibv_destroy_cq() to destroy the
- * unsuccessful connection request.
+ * rdma_disconnect()+rdma_destroy_qp()+ibv_destroy_cq() to destroy
+ * the unsuccessful connection request.
  */
 static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
@@ -138,8 +138,8 @@ err_conn_req_delete:
 /*
  * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
  * re-packing the connection request to a connection object. Otherwise,
- * rdma_destroy_qp()+ibv_destroy_cq()+rdma_destroy_id() to destroy the
- * unsuccessful connection request.
+ * rdma_destroy_qp()+ibv_destroy_cq()+rdma_destroy_id() to destroy
+ * the unsuccessful connection request.
  */
 static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
@@ -275,8 +275,8 @@ err_conn_req_delete:
 
 /*
  * rpma_conn_req_new -- create a new outgoing connection request object. It uses
- * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds the
- * prepared ID into rpma_conn_req_from_id.
+ * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds
+ * the prepared ID into rpma_conn_req_from_id.
  */
 int
 rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,

@@ -70,8 +70,8 @@ err_freeaddrinfo:
 }
 
 /*
- * rpma_info_delete -- release the address translation cache and delete the
- * info object
+ * rpma_info_delete -- release the address translation cache and delete
+ * the info object
  */
 int
 rpma_info_delete(struct rpma_info **info_ptr)

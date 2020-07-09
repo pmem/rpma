@@ -89,8 +89,8 @@ rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 
 	/*
 	 * This mock assumes the first call to rdma_migrate_id() always migrate
-	 * a CM ID to an event channel. Whereas the second call migrate the
-	 * CM ID from the event channel (channel == NULL).
+	 * a CM ID to an event channel. Whereas the second call migrate
+	 * the CM ID from the event channel (channel == NULL).
 	 */
 	if (Rdma_migrate_id_counter == RDMA_MIGRATE_TO_EVCH)
 		assert_ptr_equal(channel, MOCK_EVCH);

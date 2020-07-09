@@ -110,8 +110,8 @@ ibv_alloc_pd(struct ibv_context *ibv_ctx)
 	/*
 	 * The ibv_alloc_pd(3) manual page does not document that this function
 	 * returns any error via errno but seemingly it is. For the usability
-	 * sake, in librpma we try to deduce what really happened using the
-	 * errno value.
+	 * sake, in librpma we try to deduce what really happened using
+	 * the errno value.
 	 */
 	errno = mock_type(int);
 
