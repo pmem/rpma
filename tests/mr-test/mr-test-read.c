@@ -180,8 +180,11 @@ test_read__success(void **mrs_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
+/*
+ * group_setup_mr_read -- prepare resources for all tests in the group
+ */
 int
-main(int argc, char *argv[])
+group_setup_mr_read(void **unused)
 {
 	/* configure global mocks */
 
@@ -198,15 +201,16 @@ main(int argc, char *argv[])
 	Ibv_context.ops.post_send = ibv_post_send_mock;
 	Ibv_qp.context = &Ibv_context;
 
-	const struct CMUnitTest tests[] = {
-		/* rpma_mr_read() unit tests */
-		cmocka_unit_test_setup_teardown(test_read__failed_E_PROVIDER,
-				setup__mr_local_and_remote,
-				teardown__mr_local_and_remote),
-		cmocka_unit_test_setup_teardown(test_read__success,
-				setup__mr_local_and_remote,
-				teardown__mr_local_and_remote),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return 0;
 }
+
+const struct CMUnitTest tests_mr_read[] = {
+	/* rpma_mr_read() unit tests */
+	cmocka_unit_test_setup_teardown(test_read__failed_E_PROVIDER,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(test_read__success,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test(NULL)
+};
