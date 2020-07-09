@@ -15,4 +15,14 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+static inline size_t
+cmocks_tests_num(const struct CMUnitTest * const tests)
+{
+	size_t i = 0;
+	while (tests[i].test_func != NULL)
+		++i;
+
+	return i - 1;
+}
+
 #endif /* LIBRPMA_CMOCKA_H */

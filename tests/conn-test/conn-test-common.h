@@ -51,7 +51,17 @@ struct conn_test_state {
 };
 
 int conn_setup(void **cstate_ptr);
-
 int conn_teardown(void **cstate_ptr);
+
+/* cmocka groups */
+extern const struct CMUnitTest tests_disconnect[];
+extern const struct CMUnitTest tests_new[];
+extern const struct CMUnitTest tests_next_completion[];
+extern const struct CMUnitTest tests_next_event[];
+extern const struct CMUnitTest tests_private_data[];
+extern const struct CMUnitTest tests_read[];
+
+int group_setup_next_completion(void **unused);
+int group_setup_read(void **unused);
 
 #endif /* CONN_COMMON */

@@ -175,33 +175,37 @@ test_next_completion__success(void **cstate_ptr)
 	assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
 }
 
+/*
+ * group_setup_next_completion -- prepare resources for all tests in the group
+ */
 int
-main(int argc, char *argv[])
+group_setup_next_completion(void **unused)
 {
 	/* set poll_cq call back in mock of IBV CQ */
 	Ibv_context.ops.poll_cq = poll_cq;
 	Ibv_cq.context = &Ibv_context;
 
-	const struct CMUnitTest tests[] = {
-		/* rpma_conn_next_completion() unit tests */
-		cmocka_unit_test(test_next_completion__conn_NULL),
-		cmocka_unit_test_setup_teardown(
-			test_next_completion__cmpl_NULL,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			test_next_completion__poll_cq_fail_EAGAIN,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_0,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_2,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			test_next_completion__success,
-			conn_setup, conn_teardown),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return 0;
 }
+
+const struct CMUnitTest tests_next_completion[] = {
+	/* rpma_conn_next_completion() unit tests */
+	cmocka_unit_test(test_next_completion__conn_NULL),
+	cmocka_unit_test_setup_teardown(
+		test_next_completion__cmpl_NULL,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		test_next_completion__poll_cq_fail_EAGAIN,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_0,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_2,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		test_next_completion__success,
+		conn_setup, conn_teardown),
+	cmocka_unit_test(NULL)
+};
