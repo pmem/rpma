@@ -127,8 +127,8 @@ err_conn_delete:
 }
 
 /*
- * client_disconnect -- disconnect, wait for RPMA_CONN_CLOSED and delete the
- * connection structure
+ * client_disconnect -- disconnect, wait for RPMA_CONN_CLOSED and delete
+ * the connection structure
  */
 int
 client_disconnect(struct rpma_conn **conn_ptr)
@@ -233,8 +233,8 @@ server_accept_connection(struct rpma_ep *ep,
 }
 
 /*
- * server_disconnect -- wait for RPMA_CONN_CLOSED, disconnect and delete the
- * connection structure
+ * server_disconnect -- wait for RPMA_CONN_CLOSED, disconnect and delete
+ * the connection structure
  */
 int
 server_disconnect(struct rpma_conn **conn_ptr)

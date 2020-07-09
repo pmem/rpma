@@ -242,8 +242,8 @@ test_remote_get_size__success(void **mr_ptr)
 /* rpma_mr_serialiaze()/_remote_from_descriptor() buffer alignment */
 
 /*
- * test_get_descriptor__desc_alignment - try rpma_mr_get_descriptor() with a
- * miscellaneous input descriptor alignment just to be sure the implementation
+ * test_get_descriptor__desc_alignment - try rpma_mr_get_descriptor() with
+ * a miscellaneous input descriptor alignment just to be sure the implementation
  * does not prefer certain alignments.
  */
 static void

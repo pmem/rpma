@@ -196,8 +196,8 @@ test_lifecycle(void **unused)
 }
 
 /*
- * test_copy__ptr_NULL_len_0 - ptr == NULL and len == 0 should prevent storing a
- * private data
+ * test_copy__ptr_NULL_len_0 - ptr == NULL and len == 0 should prevent storing
+ * a private data
  */
 static void
 test_copy__ptr_NULL_len_0(void **unused)

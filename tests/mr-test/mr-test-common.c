@@ -140,8 +140,8 @@ teardown__dereg_success(void **pprestate)
 }
 
 /*
- * setup__mr_remote -- create a remote memory region structure based on a
- * pre-prepared memory region's descriptor
+ * setup__mr_remote -- create a remote memory region structure based
+ * on a pre-prepared memory region's descriptor
  */
 int
 setup__mr_remote(void **mr_ptr)
