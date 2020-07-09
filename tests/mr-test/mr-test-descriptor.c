@@ -20,51 +20,6 @@
 
 #define MR_DESC_SIZE sizeof(rpma_mr_descriptor)
 
-static const rpma_mr_descriptor Desc_exp = DESC_EXP;
-
-/* setups & teardowns */
-
-/*
- * setup__mr_remote -- create a remote memory region structure based on a
- * pre-prepared memory region's descriptor
- */
-int
-setup__mr_remote(void **mr_ptr)
-{
-	/* configure mock */
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
-
-	/*
-	 * create a remote memory structure based on a pre-prepared descriptor
-	 */
-	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, &mr);
-
-	/* verify the results */
-	assert_int_equal(ret, MOCK_OK);
-	assert_non_null(mr);
-
-	*mr_ptr = mr;
-
-	return 0;
-}
-
-/*
- * teardown__mr_remote -- delete the remote memory region's structure
- */
-int
-teardown__mr_remote(void **mr_ptr)
-{
-	struct rpma_mr_remote *mr = *mr_ptr;
-
-	/* delete the remote memory region's structure */
-	int ret = rpma_mr_remote_delete(&mr);
-	assert_int_equal(ret, MOCK_OK);
-	assert_null(mr);
-
-	return 0;
-}
-
 /* rpma_mr_get_descriptor() unit test */
 
 /*

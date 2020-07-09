@@ -24,7 +24,8 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_PTR	(void *)0x0001020304050607
 #define MOCK_SIZE	(size_t)0x08090a0b0c0d0e0f
 #define MOCK_RKEY	(uint32_t)0x10111213
-#define MOCK_USAGE	(int)(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST)
+#define MOCK_USAGE	((int)(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST))
+#define MOCK_ACCESS	((int)(IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE))
 #define MOCK_PLT	RPMA_MR_PLT_PERSISTENT
 #define MOCK_MR		(struct ibv_mr *)&Ibv_mr
 #define MOCK_ERRNO	(int)(123)
@@ -51,10 +52,14 @@ struct rpma_peer_mr_reg_args {
 	int verrno;
 };
 
+extern const rpma_mr_descriptor Desc_exp;
+
 /* setups & teardowns */
 
 int setup__reg_success(void **pprestate);
-
 int teardown__dereg_success(void **pprestate);
+
+int setup__mr_remote(void **mr_ptr);
+int teardown__mr_remote(void **mr_ptr);
 
 #endif /* MR_COMMON_H */
