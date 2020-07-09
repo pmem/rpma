@@ -28,7 +28,7 @@
 static void
 test_get_descriptor__mr_NULL(void **unused)
 {
-	rpma_mr_descriptor desc = {0};
+	rpma_mr_descriptor desc = {{0}};
 
 	/* run test */
 	int ret = rpma_mr_get_descriptor(NULL, &desc);
@@ -133,7 +133,7 @@ test_remote_from_descriptor__malloc_ENOMEM(void **unused)
 static void
 test_remote_from_descriptor__buff_plt_invalid(void **unused)
 {
-	rpma_mr_descriptor desc_invalid = {0};
+	rpma_mr_descriptor desc_invalid = {{0}};
 	memset(&desc_invalid, 0xff, sizeof(rpma_mr_descriptor));
 
 	/* configure mock */

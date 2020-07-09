@@ -187,7 +187,9 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 /* The number of bytes required to store a description of a memory region */
 #define RPMA_MR_DESCRIPTOR_SIZE 21
 
-typedef uint8_t rpma_mr_descriptor[RPMA_MR_DESCRIPTOR_SIZE];
+typedef struct {
+	uint8_t data[RPMA_MR_DESCRIPTOR_SIZE];
+} rpma_mr_descriptor;
 
 /** 3
  * rpma_mr_get_descriptor - get a descriptor of a memory region
