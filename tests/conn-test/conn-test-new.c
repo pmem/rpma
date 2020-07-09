@@ -283,31 +283,26 @@ delete_test_destroy_id_EAGAIN(void **unused)
 	assert_null(cstate->conn);
 }
 
-int
-main(int argc, char *argv[])
-{
-	const struct CMUnitTest tests[] = {
-		/* rpma_conn_new() unit tests */
-		cmocka_unit_test(new_test_id_NULL),
-		cmocka_unit_test(new_test_cq_NULL),
-		cmocka_unit_test(new_test_conn_ptr_NULL),
-		cmocka_unit_test(new_test_id_cq_conn_ptr_NULL),
-		cmocka_unit_test(new_test_create_evch_EAGAIN),
-		cmocka_unit_test(new_test_migrate_id_EAGAIN),
-		cmocka_unit_test(new_test_malloc_ENOMEM),
+const struct CMUnitTest tests_new[] = {
+	/* rpma_conn_new() unit tests */
+	cmocka_unit_test(new_test_id_NULL),
+	cmocka_unit_test(new_test_cq_NULL),
+	cmocka_unit_test(new_test_conn_ptr_NULL),
+	cmocka_unit_test(new_test_id_cq_conn_ptr_NULL),
+	cmocka_unit_test(new_test_create_evch_EAGAIN),
+	cmocka_unit_test(new_test_migrate_id_EAGAIN),
+	cmocka_unit_test(new_test_malloc_ENOMEM),
 
-		/* rpma_conn_new()/_delete() lifecycle */
-		cmocka_unit_test_setup_teardown(conn_test_lifecycle,
-			conn_setup, conn_teardown),
+	/* rpma_conn_new()/_delete() lifecycle */
+	cmocka_unit_test_setup_teardown(conn_test_lifecycle,
+		conn_setup, conn_teardown),
 
-		/* rpma_conn_delete() unit tests */
-		cmocka_unit_test(delete_test_conn_ptr_NULL),
-		cmocka_unit_test(delete_test_conn_NULL),
-		cmocka_unit_test(delete_test_destroy_cq_EAGAIN),
-		cmocka_unit_test(
-			delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN),
-		cmocka_unit_test(delete_test_destroy_id_EAGAIN),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
-}
+	/* rpma_conn_delete() unit tests */
+	cmocka_unit_test(delete_test_conn_ptr_NULL),
+	cmocka_unit_test(delete_test_conn_NULL),
+	cmocka_unit_test(delete_test_destroy_cq_EAGAIN),
+	cmocka_unit_test(
+		delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN),
+	cmocka_unit_test(delete_test_destroy_id_EAGAIN),
+	cmocka_EOF
+};

@@ -4,7 +4,7 @@
  */
 
 /*
- * mr-test.c -- the memory region registration/deregistration unit tests
+ * mr-test-reg.c -- the memory region registration/deregistration unit tests
  *
  * APIs covered:
  * - rpma_mr_reg()
@@ -259,39 +259,34 @@ test_dereg__failed_E_PROVIDER(void **pprestate)
 	assert_null(mr);
 }
 
-int
-main(int argc, char *argv[])
-{
-	const struct CMUnitTest tests[] = {
-		/* rpma_mr_reg() unit tests */
-		cmocka_unit_test(test_reg__NULL_peer),
-		cmocka_unit_test(test_reg__NULL_ptr),
-		cmocka_unit_test(test_reg__NULL_mr_ptr),
-		cmocka_unit_test(test_reg__NULL_peer_ptr_mr_ptr),
-		cmocka_unit_test(test_reg__0_size),
-		cmocka_unit_test(test_reg__0_usage),
-		cmocka_unit_test(test_reg__wrong_usage),
-		cmocka_unit_test(test_reg__failed_E_NOMEM),
-		cmocka_unit_test(test_reg__peer_mr_reg_failed_E_PROVIDER),
-		cmocka_unit_test_prestate_setup_teardown(
-			test_reg_dereg__success,
-			setup__reg_success, teardown__dereg_success,
-			prestates + 0),
-		cmocka_unit_test_prestate_setup_teardown(
-			test_reg_dereg__success,
-			setup__reg_success, teardown__dereg_success,
-			prestates + 1),
-		cmocka_unit_test_prestate_setup_teardown(
-			test_reg_dereg__success,
-			setup__reg_success, teardown__dereg_success,
-			prestates + 2),
+const struct CMUnitTest tests_reg[] = {
+	/* rpma_mr_reg() unit tests */
+	cmocka_unit_test(test_reg__NULL_peer),
+	cmocka_unit_test(test_reg__NULL_ptr),
+	cmocka_unit_test(test_reg__NULL_mr_ptr),
+	cmocka_unit_test(test_reg__NULL_peer_ptr_mr_ptr),
+	cmocka_unit_test(test_reg__0_size),
+	cmocka_unit_test(test_reg__0_usage),
+	cmocka_unit_test(test_reg__wrong_usage),
+	cmocka_unit_test(test_reg__failed_E_NOMEM),
+	cmocka_unit_test(test_reg__peer_mr_reg_failed_E_PROVIDER),
+	cmocka_unit_test_prestate_setup_teardown(
+		test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success,
+		prestates + 0),
+	cmocka_unit_test_prestate_setup_teardown(
+		test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success,
+		prestates + 1),
+	cmocka_unit_test_prestate_setup_teardown(
+		test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success,
+		prestates + 2),
 
-		/* rpma_mr_dereg() unit tests */
-		cmocka_unit_test(test_dereg__NULL_mr_ptr),
-		cmocka_unit_test(test_dereg__NULL_mr),
-		cmocka_unit_test_prestate(test_dereg__failed_E_PROVIDER,
-			prestates + 2),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
-}
+	/* rpma_mr_dereg() unit tests */
+	cmocka_unit_test(test_dereg__NULL_mr_ptr),
+	cmocka_unit_test(test_dereg__NULL_mr),
+	cmocka_unit_test_prestate(test_dereg__failed_E_PROVIDER,
+		prestates + 2),
+	cmocka_EOF
+};
