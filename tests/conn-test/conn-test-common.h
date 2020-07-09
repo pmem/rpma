@@ -51,7 +51,9 @@ struct conn_test_state {
 };
 
 int conn_setup(void **cstate_ptr);
-
 int conn_teardown(void **cstate_ptr);
+
+int group_setup_next_completion(void **unused);
+int group_setup_read(void **unused);
 
 #endif /* CONN_COMMON */

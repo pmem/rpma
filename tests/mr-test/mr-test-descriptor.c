@@ -333,55 +333,50 @@ test_remote_from_descriptor__desc_alignment(void **unused)
 	}
 }
 
-int
-main(int argc, char *argv[])
-{
-	struct prestate prestate =
+static struct prestate prestate =
 		{RPMA_MR_USAGE_READ_SRC, IBV_ACCESS_REMOTE_READ, NULL};
 
-	const struct CMUnitTest tests[] = {
-		/* rpma_mr_get_descriptor() unit test */
-		cmocka_unit_test(test_get_descriptor__mr_NULL),
-		cmocka_unit_test_prestate_setup_teardown(
-			test_get_descriptor__desc_NULL,
-			setup__reg_success,
-			teardown__dereg_success,
-			&prestate),
-		cmocka_unit_test(test_get_descriptor__mr_NULL_desc_NULL),
+const struct CMUnitTest tests_descriptor[] = {
+	/* rpma_mr_get_descriptor() unit test */
+	cmocka_unit_test(test_get_descriptor__mr_NULL),
+	cmocka_unit_test_prestate_setup_teardown(
+		test_get_descriptor__desc_NULL,
+		setup__reg_success,
+		teardown__dereg_success,
+		&prestate),
+	cmocka_unit_test(test_get_descriptor__mr_NULL_desc_NULL),
 
-		/* rpma_mr_remote_from_descriptor() unit test */
-		cmocka_unit_test(test_remote_from_descriptor__desc_NULL),
-		cmocka_unit_test(test_remote_from_descriptor__mr_ptr_NULL),
-		cmocka_unit_test(
-			test_remote_from_descriptor__mr_ptr_NULL_desc_NULL),
-		cmocka_unit_test(test_remote_from_descriptor__malloc_ENOMEM),
-		cmocka_unit_test(test_remote_from_descriptor__buff_plt_invalid),
+	/* rpma_mr_remote_from_descriptor() unit test */
+	cmocka_unit_test(test_remote_from_descriptor__desc_NULL),
+	cmocka_unit_test(test_remote_from_descriptor__mr_ptr_NULL),
+	cmocka_unit_test(
+		test_remote_from_descriptor__mr_ptr_NULL_desc_NULL),
+	cmocka_unit_test(test_remote_from_descriptor__malloc_ENOMEM),
+	cmocka_unit_test(test_remote_from_descriptor__buff_plt_invalid),
 
-		/* rpma_mr_remote_delete() unit test */
-		cmocka_unit_test(test_remote_delete__mr_ptr_NULL),
-		cmocka_unit_test(test_remote_delete__mr_NULL),
+	/* rpma_mr_remote_delete() unit test */
+	cmocka_unit_test(test_remote_delete__mr_ptr_NULL),
+	cmocka_unit_test(test_remote_delete__mr_NULL),
 
-		/* rpma_mr_remote_get_size() unit test */
-		cmocka_unit_test(test_remote_get_size__mr_ptr_NULL),
-		cmocka_unit_test_setup_teardown(test_remote_get_size__size_NULL,
-			setup__mr_remote,
-			teardown__mr_remote),
-		cmocka_unit_test(test_remote_get_size__mr_ptr_NULL_size_NULL),
-		cmocka_unit_test_setup_teardown(test_remote_get_size__success,
-			setup__mr_remote,
-			teardown__mr_remote),
+	/* rpma_mr_remote_get_size() unit test */
+	cmocka_unit_test(test_remote_get_size__mr_ptr_NULL),
+	cmocka_unit_test_setup_teardown(test_remote_get_size__size_NULL,
+		setup__mr_remote,
+		teardown__mr_remote),
+	cmocka_unit_test(test_remote_get_size__mr_ptr_NULL_size_NULL),
+	cmocka_unit_test_setup_teardown(test_remote_get_size__success,
+		setup__mr_remote,
+		teardown__mr_remote),
 
-		/*
-		 * rpma_mr_get_descriptor()/rpma_mr_remote_from_descriptor()
-		 * buffer alignment
-		 */
-		cmocka_unit_test_prestate_setup_teardown(
-			test_get_descriptor__desc_alignment,
-			setup__reg_success,
-			teardown__dereg_success,
-			&prestate),
-		cmocka_unit_test(test_remote_from_descriptor__desc_alignment),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
-}
+	/*
+	 * rpma_mr_get_descriptor()/rpma_mr_remote_from_descriptor()
+	 * buffer alignment
+	 */
+	cmocka_unit_test_prestate_setup_teardown(
+		test_get_descriptor__desc_alignment,
+		setup__reg_success,
+		teardown__dereg_success,
+		&prestate),
+	cmocka_unit_test(test_remote_from_descriptor__desc_alignment),
+	cmocka_unit_test(NULL)
+};

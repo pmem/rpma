@@ -62,4 +62,6 @@ int teardown__dereg_success(void **pprestate);
 int setup__mr_remote(void **mr_ptr);
 int teardown__mr_remote(void **mr_ptr);
 
+int group_setup_mr_read(void **unused);
+
 #endif /* MR_COMMON_H */

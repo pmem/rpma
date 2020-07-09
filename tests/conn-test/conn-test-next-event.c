@@ -485,53 +485,48 @@ next_event_test_success_TIMEWAIT_EXIT(void **cstate_ptr)
 	assert_int_equal(c_event, RPMA_CONN_CLOSED);
 }
 
-int
-main(int argc, char *argv[])
-{
-	const struct CMUnitTest tests[] = {
-		/* rpma_conn_next_event() unit tests */
-		cmocka_unit_test(next_event_test_conn_NULL),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_event_NULL,
-			conn_setup, conn_teardown),
-		cmocka_unit_test(next_event_test_conn_NULL_event_NULL),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_get_cm_event_EAGAIN,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_event_REJECTED,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_event_REJECTED_ack_EINVAL,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_data_store_ENOMEM,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_no_data_ESTABLISHED_no_data,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_no_data_ESTABLISHED_with_data,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_with_data_ESTABLISHED_no_data,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_with_data_ESTABLISHED_with_data,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_CONNECT_ERROR,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_DEVICE_REMOVAL,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_DISCONNECTED,
-			conn_setup, conn_teardown),
-		cmocka_unit_test_setup_teardown(
-			next_event_test_success_TIMEWAIT_EXIT,
-			conn_setup, conn_teardown),
-	};
-
-	return cmocka_run_group_tests(tests, NULL, NULL);
-}
+const struct CMUnitTest tests_next_event[] = {
+	/* rpma_conn_next_event() unit tests */
+	cmocka_unit_test(next_event_test_conn_NULL),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_event_NULL,
+		conn_setup, conn_teardown),
+	cmocka_unit_test(next_event_test_conn_NULL_event_NULL),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_get_cm_event_EAGAIN,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_event_REJECTED,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_event_REJECTED_ack_EINVAL,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_data_store_ENOMEM,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_no_data_ESTABLISHED_no_data,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_no_data_ESTABLISHED_with_data,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_with_data_ESTABLISHED_no_data,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_with_data_ESTABLISHED_with_data,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_CONNECT_ERROR,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_DEVICE_REMOVAL,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_DISCONNECTED,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_success_TIMEWAIT_EXIT,
+		conn_setup, conn_teardown),
+	cmocka_unit_test(NULL)
+};

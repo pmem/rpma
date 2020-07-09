@@ -5,22 +5,18 @@
 
 include(../cmake/ctest_helpers.cmake)
 
-function(add_mr_test test)
-	set(name mr-test-${test})
-	build_test_src(${name}
-		${name}.c
-		mr-test-common.c
-		${LIBRPMA_SOURCE_DIR}/mr.c)
+build_test_src(mr-test
+	mr-test.c
+	mr-test-common.c
+	mr-test-descriptor.c
+	mr-test-read.c
+	mr-test-reg.c
+	${LIBRPMA_SOURCE_DIR}/mr.c)
 
-	target_link_libraries(${name} test-rpma-utils)
+target_link_libraries(mr-test test-rpma-utils)
 
-	set_target_properties(${name}
-		PROPERTIES
-		LINK_FLAGS "-Wl,--wrap=_test_malloc")
+set_target_properties(mr-test
+	PROPERTIES
+	LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-	add_test_generic(NAME ${name} TRACERS none)
-endfunction()
-
-add_mr_test(descriptor)
-add_mr_test(read)
-add_mr_test(reg)
+add_test_generic(NAME mr-test TRACERS none)
