@@ -42,7 +42,7 @@ disconnect_test_rdma_disconnect_EINVAL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(errno, EINVAL);
+	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
 }
 
 /*
