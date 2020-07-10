@@ -13,7 +13,6 @@
 #include "conn.h"
 #include "conn_req.h"
 #include "info.h"
-#include "out.h"
 #include "peer.h"
 #include "private_data.h"
 #include "rpma_err.h"
@@ -33,15 +32,14 @@ struct rpma_conn_req {
 /*
  * rpma_conn_req_from_id -- allocate a new conn_req object from CM ID and equip
  * the latter with QP and CQ
+ *
+ * ASSUMPTIONS
+ * - peer != NULL && id != NULL && req != NULL
  */
 static int
 rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_conn_req **req)
 {
-	ASSERTne(peer, NULL);
-	ASSERTne(id, NULL);
-	ASSERTne(req, NULL);
-
 	/* create a CQ */
 	struct ibv_cq *cq = ibv_create_cq(id->verbs, RPMA_DEFAULT_Q_SIZE,
 				NULL /* cq_context */,
@@ -85,15 +83,14 @@ err_destroy_cq:
  * request re-packing the connection request to a connection object. Otherwise,
  * rdma_disconnect()+rdma_destroy_qp()+ibv_destroy_cq() to destroy
  * the unsuccessful connection request.
+ *
+ * ASSUMPTIONS
+ * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
-	ASSERTne(req, NULL);
-	ASSERTne(conn_param, NULL);
-	ASSERTne(conn_ptr, NULL);
-
 	int ret = 0;
 
 	if (rdma_accept(req->id, conn_param)) {
@@ -140,15 +137,14 @@ err_conn_req_delete:
  * re-packing the connection request to a connection object. Otherwise,
  * rdma_destroy_qp()+ibv_destroy_cq()+rdma_destroy_id() to destroy
  * the unsuccessful connection request.
+ *
+ * ASSUMPTIONS
+ * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
-	ASSERTne(req, NULL);
-	ASSERTne(conn_param, NULL);
-	ASSERTne(conn_ptr, NULL);
-
 	int ret = 0;
 	int provider_error = 0;
 
@@ -180,12 +176,13 @@ err_conn_req_delete:
 
 /*
  * rpma_conn_req_reject -- destroy CQ of the CM ID and reject the connection.
+ *
+ * ASSUMPTIONS
+ * - req != NULL
  */
 static int
 rpma_conn_req_reject(struct rpma_conn_req *req)
 {
-	ASSERTne(req, NULL);
-
 	int ret = 0;
 
 	Rpma_provider_error = ibv_destroy_cq(req->cq);
@@ -214,12 +211,13 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 
 /*
  * rpma_conn_req_destroy -- destroy CQ of the CM ID and destroy the CM ID.
+ *
+ * ASSUMPTIONS
+ * - req != NULL
  */
 static int
 rpma_conn_req_destroy(struct rpma_conn_req *req)
 {
-	ASSERTne(req, NULL);
-
 	Rpma_provider_error = ibv_destroy_cq(req->cq);
 	if (Rpma_provider_error) {
 		(void) rdma_destroy_id(req->id);
@@ -254,7 +252,6 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 	int ret = rpma_conn_req_from_id(peer, edata->id, &req);
 	if (ret)
 		return ret;
-	ASSERTne(req, NULL);
 
 	ret = rpma_private_data_store(edata, &req->data);
 	if (ret)
