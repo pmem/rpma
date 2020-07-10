@@ -25,14 +25,14 @@ static const char *const rpma_level_names[] = {
 };
 
 /*
- * log function - used if not NULL (see rpma_log_open)
+ * Log function - used if not NULL (see rpma_log_open)
  * all logs end up there regardless of logging threshold
  */
-static logfunc *log_function = NULL;
+static logfunc *Log_function;
 
 
 /*
- * to enable logging to syslog (and stderr) at startup
+ * rpma_log_init_default -- enable logging to syslog (and stderr) at startup
  */
 #ifndef RPMA_LOG_INIT_AT_STARTUP_SUSPENDED
 __attribute__((constructor))
@@ -48,7 +48,9 @@ rpma_log_init_default(void)
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 #endif
 }
-
+/*
+ * rpma_log_fini_default -- disable logging at library unload
+ */
 __attribute__((destructor))
 static void
 rpma_log_fini_default(void)
@@ -60,13 +62,13 @@ rpma_log_fini_default(void)
 /*
  * loging level tresholds
  */
-// syslog treshold
+/* syslog treshold */
 enum rpma_log_level Rpma_log_level = RPMA_LOG_DISABLED;
-// stderr treshold
+/* stderr treshold */
 enum rpma_log_level Rpma_log_print_level = RPMA_LOG_DISABLED;
 
 /*
- * Provide actual time in a readable string
+ * get_timestamp_prefix -- provide actual time in a readable string
  */
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
@@ -85,7 +87,8 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 }
 
 /*
- * default logging function used to log to syslog and/or stderr
+ * default_log_function -- default logging function used to log
+ * to syslog and/or stderr
  */
 static void
 default_log_function(int level, const char *file, const int line,
@@ -145,20 +148,20 @@ default_log_function(int level, const char *file, const int line,
 /* public librpma log API */
 
 /*
- * Initialize the logging module. Messages prior
- * to this call will be dropped.
+ * rpma_log_init -- initialize the logging module. Messages prior to this call
+ * will be dropped.
  */
 int
 rpma_log_init(logfunc *custom_log_function)
 {
-	if (NULL != log_function) {
+	if (NULL != Log_function) {
 		return -1; /* log has already been opened */
 	}
 	if (custom_log_function &&
 		(default_log_function != custom_log_function)) {
-		log_function = custom_log_function;
+		Log_function = custom_log_function;
 	} else {
-		log_function = default_log_function;
+		Log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 #ifdef DEBUG
 		rpma_log_set_level(RPMA_LOG_DEBUG);
@@ -172,53 +175,56 @@ rpma_log_init(logfunc *custom_log_function)
 }
 
 /*
- * Close the currently active log. Messages after this call
+ * rpma_log_fini -- close the currently active log. Messages after this call
  * will be dropped.
  */
 void
 rpma_log_fini(void)
 {
-	if (default_log_function == log_function) {
+	if (default_log_function == Log_function) {
 		closelog();
 	}
-	log_function = NULL;
+	Log_function = NULL;
 }
 
 /*
- * Write messages either to the syslog and to stderr
- * or call user defined log function.
+ * rpma_log -- convert additional format arguments to variable argument list
+ * and call main logging function rpma_vlog to write messages either
+ * to the syslog and to stderr or call custom log function.
  */
 void
 rpma_log(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, ...)
+	const char *func, const char *format, ...)
 {
 	va_list arg;
-	if (NULL != file && NULL == func) {
-		return;
-	}
-	if (NULL == format) {
-		return;
-	}
 	va_start(arg, format);
 	rpma_vlog(level, file, line, func, format, arg);
 	va_end(arg);
 }
 
 /*
- * Write messages either to the syslog and to stderr
- * or call user defined log function.
+ * rpma_vlog -- call Log_function to write messages either
+ * to the syslog and to stderr or call the custom log function provided via
+ * rpma_log_init.
+ * Message is started with prefix composed from file, line, func parameters
+ * followed by string pointed by format. If format includes format specifiers
+ * (subsequences beginning with %), the additional arguments following format
+ * are formatted and inserted in the message.
  */
 void
 rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, va_list arg)
+	const char *func, const char *format, va_list arg)
 {
-	if (log_function) {
-		log_function(level, file, line, func, format, arg);
+	if ((NULL != file && NULL == func) || (NULL == format)) {
+		return;
+	}
+	if (Log_function) {
+		Log_function(level, file, line, func, format, arg);
 	}
 }
 
 /*
- * Set the log level threshold to log messages.
+ * rpma_log_set_level -- set the log level threshold to log messages.
  */
 int
 rpma_log_set_level(enum rpma_log_level level)
@@ -231,7 +237,7 @@ rpma_log_set_level(enum rpma_log_level level)
 }
 
 /*
- * Get the current log level threshold.
+ * rpma_log_get_level -- get the current log level threshold.
  */
 enum rpma_log_level
 rpma_log_get_level(void)
@@ -240,7 +246,8 @@ rpma_log_get_level(void)
 }
 
 /*
- * Set the current log level threshold for printing to stderr.
+ * rpma_log_stderr_set_level -- set the current log level threshold
+ * for printing to stderr.
  */
 int
 rpma_log_stderr_set_level(enum rpma_log_level level)
@@ -253,7 +260,8 @@ rpma_log_stderr_set_level(enum rpma_log_level level)
 }
 
 /*
- * Get the current log level threshold for printing to stderr.
+ * rpma_log_stderr_get_level -- get the current log level threshold
+ * for printing to stderr.
  */
 enum rpma_log_level
 rpma_log_stderr_get_level(void)
