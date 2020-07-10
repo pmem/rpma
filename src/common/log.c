@@ -16,19 +16,19 @@
 #include "log_internal.h"
 
 static const char *const rpma_level_names[] = {
-	[RPMA_LOG_FATAL]	= "FATAL",
-	[RPMA_LOG_ERROR]	= "ERROR",
-	[RPMA_LOG_WARN]		= "WARNING",
-	[RPMA_LOG_NOTICE]	= "NOTICE",
-	[RPMA_LOG_INFO]		= "INFO",
-	[RPMA_LOG_DEBUG]	= "DEBUG",
+	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
+	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
+	[RPMA_LOG_LEVEL_WARNING]	= "WARNING",
+	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
+	[RPMA_LOG_LEVEL_INFO]	= "INFO",
+	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
 };
 
 /*
  * Log function - used if not NULL (see rpma_log_open)
  * all logs end up there regardless of logging threshold
  */
-static logfunc *Log_function;
+static log_function *Log_function;
 
 
 /*
@@ -41,10 +41,10 @@ rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
 #ifdef DEBUG
-	rpma_log_set_level(RPMA_LOG_DEBUG);
-	rpma_log_stderr_set_level(RPMA_LOG_WARN);
+	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
+	rpma_log_stderr_set_level(RPMA_LOG_LEVEL_WARNING);
 #else
-	rpma_log_set_level(RPMA_LOG_WARN);
+	rpma_log_set_level(RPMA_LOG_LEVEL_WARNING);
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 #endif
 }
@@ -104,22 +104,22 @@ default_log_function(int level, const char *file, const int line,
 	}
 
 	switch (level) {
-	case RPMA_LOG_FATAL:
+	case RPMA_LOG_LEVEL_FATAL:
 		severity = LOG_CRIT;
 		break;
-	case RPMA_LOG_ERROR:
+	case RPMA_LOG_LEVEL_ERROR:
 		severity = LOG_ERR;
 		break;
-	case RPMA_LOG_WARN:
+	case RPMA_LOG_LEVEL_WARNING:
 		severity = LOG_WARNING;
 		break;
-	case RPMA_LOG_NOTICE:
+	case RPMA_LOG_LEVEL_NOTICE:
 		severity = LOG_NOTICE;
 		break;
-	case RPMA_LOG_INFO:
+	case RPMA_LOG_LEVEL_INFO:
 		severity = LOG_INFO;
 		break;
-	case RPMA_LOG_DEBUG:
+	case RPMA_LOG_LEVEL_DEBUG:
 		severity = LOG_DEBUG;
 		break;
 	case RPMA_LOG_DISABLED:
@@ -152,7 +152,7 @@ default_log_function(int level, const char *file, const int line,
  * will be dropped.
  */
 int
-rpma_log_init(logfunc *custom_log_function)
+rpma_log_init(log_function *custom_log_function)
 {
 	if (NULL != Log_function) {
 		return -1; /* log has already been opened */
@@ -164,11 +164,11 @@ rpma_log_init(logfunc *custom_log_function)
 		Log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 #ifdef DEBUG
-		rpma_log_set_level(RPMA_LOG_DEBUG);
-		rpma_log_stderr_set_level(RPMA_LOG_WARN);
+		rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
+		rpma_log_stderr_set_level(RPMA_LOG_LEVEL_WARNING);
 #else
-		rpma_log_set_level(RPMA_LOG_NOTICE);
-		rpma_log_stderr_set_level(RPMA_LOG_ERROR);
+		rpma_log_set_level(RPMA_LOG_LEVEL_NOTICE);
+		rpma_log_stderr_set_level(RPMA_LOG_LEVEL_ERROR);
 #endif
 	}
 	return 0;
@@ -229,7 +229,7 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 int
 rpma_log_set_level(enum rpma_log_level level)
 {
-	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
+	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG) {
 		return RPMA_E_INVAL;
 	}
 	Rpma_log_level = level;
@@ -252,7 +252,7 @@ rpma_log_get_level(void)
 int
 rpma_log_stderr_set_level(enum rpma_log_level level)
 {
-	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_DEBUG) {
+	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG) {
 		return RPMA_E_INVAL;
 	}
 	Rpma_log_print_level = level;

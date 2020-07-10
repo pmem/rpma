@@ -9,27 +9,27 @@
 #define LOG_INTERNAL_H
 #include "librpma_log.h"
 
-#define RPMA_NOTICELOG(...) \
-	rpma_log(RPMA_LOG_NOTICE, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define RPMA_LOG_NOTICE(...) \
+	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
-#define RPMA_WARNLOG(...) \
-	rpma_log(RPMA_LOG_WARN, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define RPMA_LOG_WARNING(...) \
+	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
-#define RPMA_ERRLOG(...) \
-	rpma_log(RPMA_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define RPMA_LOG_ERROR(...) \
+	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
-#define RPMA_FATALLOG(...) \
-	rpma_log(RPMA_LOG_FATAL, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define RPMA_LOG_FATAL(...) \
+	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
 #define RPMA_PRINTF(...) \
-	rpma_log(RPMA_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
+	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, __VA_ARGS__)
 
 /*
  * rpma_log -- write messages either to syslog and to stderr
  * or call custom log function.
  * If level is set to RPMA_LOG_DISABLED,
  * the log message will neither be written to syslog nor to stderr.
- * Threshold is ignored if custom log function is provided via rpma_log_init()
+ * Threshold is ignored if custom log function is provided via rpma_log_init().
  *
  * level - log level threshold.
  * file - name of the current source file.

@@ -32,7 +32,7 @@ void
 test_set_level(void **unused)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, rpma_log_set_level(level));
 		assert_int_equal(level, rpma_log_get_level());
 	}
@@ -41,7 +41,7 @@ test_set_level(void **unused)
 void
 test_set_level_invalid(void **unused)
 {
-	enum rpma_log_level level = RPMA_LOG_DEBUG;
+	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
 	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
 	level = RPMA_LOG_DISABLED;
@@ -53,7 +53,7 @@ void
 test_set_print_level(void **unused)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, rpma_log_stderr_set_level(level));
 		assert_int_equal(level, rpma_log_stderr_get_level());
 	}
@@ -62,7 +62,7 @@ test_set_print_level(void **unused)
 void
 test_set_print_level_invalid(void **unused)
 {
-	enum rpma_log_level level = RPMA_LOG_DEBUG;
+	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
 	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
 	level = RPMA_LOG_DISABLED;
@@ -75,11 +75,11 @@ test_log_out_of_threshold(void **unused)
 {
 	enum rpma_log_level level_min;
 	for (level_min = RPMA_LOG_DISABLED;
-			level_min <= RPMA_LOG_DEBUG; level_min++) {
+			level_min <= RPMA_LOG_LEVEL_DEBUG; level_min++) {
 		assert_int_equal(0, rpma_log_set_level(level_min));
 		assert_int_equal(0, rpma_log_stderr_set_level(level_min));
 		enum rpma_log_level level;
-		for (level = level_min + 1; level <= RPMA_LOG_DEBUG; level++) {
+		for (level = level_min + 1; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
 		}
 	}
@@ -87,21 +87,21 @@ test_log_out_of_threshold(void **unused)
 }
 
 static const char *const rpma_level_names[] = {
-	[RPMA_LOG_FATAL]	= "FATAL",
-	[RPMA_LOG_ERROR]	= "ERROR",
-	[RPMA_LOG_WARN]		= "WARNING",
-	[RPMA_LOG_NOTICE]	= "NOTICE",
-	[RPMA_LOG_INFO]		= "INFO",
-	[RPMA_LOG_DEBUG]	= "DEBUG",
+	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
+	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
+	[RPMA_LOG_LEVEL_WARNING]	= "WARNING",
+	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
+	[RPMA_LOG_LEVEL_INFO]	= "INFO",
+	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
 };
 
 static const int rpma_level_syslog[] = {
-	[RPMA_LOG_FATAL]	= LOG_CRIT,
-	[RPMA_LOG_ERROR]	= LOG_ERR,
-	[RPMA_LOG_WARN]		= LOG_WARNING,
-	[RPMA_LOG_NOTICE]	= LOG_NOTICE,
-	[RPMA_LOG_INFO]		= LOG_INFO,
-	[RPMA_LOG_DEBUG]	= LOG_DEBUG,
+	[RPMA_LOG_LEVEL_FATAL]	= LOG_CRIT,
+	[RPMA_LOG_LEVEL_ERROR]	= LOG_ERR,
+	[RPMA_LOG_LEVEL_WARNING]	= LOG_WARNING,
+	[RPMA_LOG_LEVEL_NOTICE]	= LOG_NOTICE,
+	[RPMA_LOG_LEVEL_INFO]	= LOG_INFO,
+	[RPMA_LOG_LEVEL_DEBUG]	= LOG_DEBUG,
 };
 
 void
@@ -109,9 +109,9 @@ test_log_to_syslog(void **unused)
 {
 	static char expected_string[256] = "";
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
-	rpma_log_set_level(RPMA_LOG_DEBUG);
+	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		if (level == RPMA_LOG_DISABLED) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
 			continue; // to avoid else and >80 length later in test
@@ -130,9 +130,9 @@ void
 test_log_to_syslog_no_file(void **unused)
 {
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
-	rpma_log_set_level(RPMA_LOG_DEBUG);
+	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_ERROR; level <= RPMA_LOG_DEBUG; level++) {
+	for (level = RPMA_LOG_LEVEL_ERROR; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(syslog, __pri, rpma_level_syslog[level]);
 		expect_string(syslog, syslog_temporary_buffer, "msg");
 		rpma_log(level, NULL, 0, NULL, "%s", "msg");

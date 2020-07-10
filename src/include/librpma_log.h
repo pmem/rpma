@@ -13,7 +13,7 @@
 /*
  * for passing user-defined log call
  */
-typedef void logfunc(int level, /* log level threshold */
+typedef void log_function(int level, /* log level threshold */
 	const char *file,	/* name of the current source file */
 	const int line,		/* current source file line */
 	const char *function,	/* current source function name */
@@ -25,7 +25,7 @@ typedef void logfunc(int level, /* log level threshold */
  * SYNOPSIS
  * #include <librpma_log.h>
  *
- * int rpma_log_init(logfunc *user_defined_log_function);
+ * int rpma_log_init(log_function *user_defined_log_function);
  *
  * DESCRIPTION
  * .BR rpma_log_init\fP()
@@ -62,9 +62,9 @@ typedef void logfunc(int level, /* log level threshold */
  * No threshold are used in such case - all messages are passed to
  * the given function.
  * .PP
- * User definie function shall have following signature:
+ * User-define function shall have following signature:
  * .nf
- * typedef void logfunc(
+ * typedef void log_function(
  * .in +8
  * // logging level - see enum rpma_log_leve
  * int level,
@@ -99,7 +99,7 @@ typedef void logfunc(int level, /* log level threshold */
  * to close currently active log.
  */
 int
-rpma_log_init(logfunc *user_defined_log_function);
+rpma_log_init(log_function *user_defined_log_function);
 
 /** 3
  * rpma_log_finit - close the currently active log
@@ -121,17 +121,17 @@ enum rpma_log_level {
 	/* all messages will be suppressed */
 	RPMA_LOG_DISABLED = -1,
 	/* error that cause library to stop working immediately */
-	RPMA_LOG_FATAL,
+	RPMA_LOG_LEVEL_FATAL,
 	/* error that cause library to stop working properly */
-	RPMA_LOG_ERROR,
+	RPMA_LOG_LEVEL_ERROR,
 	/* errors that could be handled in the upper level */
-	RPMA_LOG_WARN,
+	RPMA_LOG_LEVEL_WARNING,
 	/* non-massive info e.g. connection established */
-	RPMA_LOG_NOTICE,
+	RPMA_LOG_LEVEL_NOTICE,
 	/* massive info e.g. every write operation indication */
-	RPMA_LOG_INFO,
+	RPMA_LOG_LEVEL_INFO,
 	/* debug info e.g. write operation dump */
-	RPMA_LOG_DEBUG,
+	RPMA_LOG_LEVEL_DEBUG,
 };
 
 /** 3
@@ -160,15 +160,16 @@ enum rpma_log_level {
  *	// all messages will be suppressed
  *	RPMA_LOG_DISABLED = -1,
  *	// error that cause library to stop working properly
- *	RPMA_LOG_ERROR,
+ *	RPMA_LOG_LEVEL_ERROR,
  *	// errors that could be handled in the upper level
- *	RPMA_LOG_WARN,
- *	// non-massive info e.g. connection established
- *	RPMA_LOG_NOTICE,
+ *	RPMA_LOG_LEVEL_WARN,
+ *	// non-massive info mainly related to public API function complitions
+ *	// e.g. connection established
+ *	RPMA_LOG_LEVEL_NOTICE,
  *	// massive info e.g. every write operation indication
- *	RPMA_LOG_INFO,
+ *	RPMA_LOG_LEVEL_INFO,
  *	// debug info e.g. write operation dump
- *	RPMA_LOG_DEBUG
+ *	RPMA_LOG_LEVEL_DEBUG
  * }
  *
  * RETURN VALUE

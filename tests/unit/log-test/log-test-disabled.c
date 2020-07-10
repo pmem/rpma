@@ -67,7 +67,7 @@ setup_with_logfunction(void **p_logfunction)
 static int
 teardown(void **p_logfunction)
 {
-	logfunc *logf = *p_logfunction;
+	log_function *logf = *p_logfunction;
 	if (NULL == logf) {
 		expect_function_call(closelog);
 	}
@@ -91,7 +91,7 @@ static void
 test_log_to_user_function(void **p_logfunction)
 {
 	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_DEBUG; level++) {
+	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(user_logfunc, level, level);
 		expect_string(user_logfunc, file, "file");
 		expect_value(user_logfunc, line, 1);
