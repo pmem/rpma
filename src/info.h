@@ -40,6 +40,11 @@ int rpma_info_new(const char *addr, const char *service,
 int rpma_info_delete(struct rpma_info **info);
 
 /*
+ * rpma_info_resolve_addr -- resolve the CM ID's destination address
+ *
+ * ASSUMPTIONS:
+ * - info->side == RPMA_INFO_ACTIVE
+ *
  * ERRORS
  * rpma_info_resolve_addr() can fail with the following error:
  *
@@ -49,6 +54,11 @@ int rpma_info_delete(struct rpma_info **info);
 int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id);
 
 /*
+ * rpma_info_bind_addr -- Bind the CM ID to the local address
+ *
+ * ASSUMPTIONS:
+ * - info->side == RPMA_INFO_ACTIVE
+ *
  * ERRORS
  * rpma_info_bind_addr() can fail with the following error:
  *
