@@ -104,6 +104,8 @@ int
 rpma_conn_set_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
+	assert_non_null(conn);
+	assert_non_null(pdata);
 	check_expected(conn);
 	check_expected(pdata->ptr);
 	check_expected(pdata->len);

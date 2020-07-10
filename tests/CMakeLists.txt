@@ -32,17 +32,6 @@ if(LIBUNWIND_FOUND)
 	target_compile_definitions(test_backtrace PUBLIC USE_LIBUNWIND=1)
 endif()
 
-add_library(test-rpma-utils STATIC
-       ${LIBRPMA_SOURCE_DIR}/rpma_err.c
-       ${LIBRPMA_SOURCE_DIR}/common/out.c
-       ${LIBRPMA_SOURCE_DIR}/common/util.c)
-target_include_directories(test-rpma-utils PRIVATE
-       ${LIBRPMA_INCLUDE_DIRS}
-       ${LIBRPMA_SOURCE_DIR})
-target_compile_definitions(test-rpma-utils
-       PUBLIC TEST_MOCK_ALLOC
-       PRIVATE SRCVERSION="0.0")
-
 add_cstyle(tests-all
        ${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
        ${CMAKE_CURRENT_SOURCE_DIR}/*/*/*.[ch])
