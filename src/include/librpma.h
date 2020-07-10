@@ -177,7 +177,7 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  * and deletes a local memory registration object.
  *
  * ERRORS
- * rpma_mr_dereg() can fail with the following error:
+ * rpma_mr_dereg() can fail with the following errors:
  *
  * - RPMA_E_INVAL - mr_ptr is NULL
  * - RPMA_E_PROVIDER - memory deregistration failed

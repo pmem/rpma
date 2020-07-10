@@ -13,7 +13,6 @@
 #include "conn_req.h"
 #include "info.h"
 #include "rpma_err.h"
-#include "out.h"
 
 #include "librpma.h"
 
@@ -91,7 +90,7 @@ rpma_info_delete(struct rpma_info **info_ptr)
 }
 
 /*
- * rpma_info_resolve_addr -- resolve the ID destination address
+ * rpma_info_resolve_addr -- resolve the CM ID's destination address
  */
 int
 rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
@@ -99,7 +98,6 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 	if (id == NULL || info == NULL)
 		return RPMA_E_INVAL;
 
-	ASSERTeq(info->side, RPMA_INFO_ACTIVE);
 
 	int ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
 			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
@@ -112,15 +110,13 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 }
 
 /*
- * rpma_info_bind_addr -- bind the ID to address
+ * rpma_info_bind_addr -- Bind the CM ID to the local address
  */
 int
 rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 {
 	if (id == NULL || info == NULL)
 		return RPMA_E_INVAL;
-
-	ASSERTeq(info->side, RPMA_INFO_PASSIVE);
 
 	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 	if (ret) {

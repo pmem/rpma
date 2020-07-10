@@ -12,7 +12,6 @@
 #include "librpma.h"
 #include "rpma_err.h"
 #include "info.h"
-#include "out.h"
 
 /* public librpma API */
 
