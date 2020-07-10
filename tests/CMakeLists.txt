@@ -44,23 +44,16 @@ target_compile_definitions(test-rpma-utils
        PRIVATE SRCVERSION="0.0")
 
 add_cstyle(tests-all
-       ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
+       ${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+       ${CMAKE_CURRENT_SOURCE_DIR}/*/*/*.[ch])
 add_check_whitespace(tests-all
-       ${CMAKE_CURRENT_SOURCE_DIR}/*/*.c)
+       ${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
+       ${CMAKE_CURRENT_SOURCE_DIR}/*/*/*.[ch])
 
-add_subdirectory(conn-test)
-add_subdirectory(conn_req-test)
-add_subdirectory(ep-test)
-add_subdirectory(error-test)
-add_subdirectory(info-test)
-add_subdirectory(mr-test)
-add_subdirectory(peer-test)
-add_subdirectory(private_data-test)
-add_subdirectory(template-test)
-add_subdirectory(utils-test)
+add_subdirectory(unit)
 
 # Integration tests break codecov results. The root cause is unknown.
 # This condition is merely a WA for this issue.
 if(NOT COVERAGE)
-       add_subdirectory(example-01-connection)
+       add_subdirectory(integration)
 endif()
