@@ -2,8 +2,8 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * log-test-enabled.c -- unit tests of the log module
- * with logging enabled at startup
+ * log-test-enabled.c -- unit tests of the log module with logging
+ * enabled at startup
  */
 
 #include <stdlib.h>

@@ -36,12 +36,14 @@ void test_set_print_level_invalid(void **unused);
 void test_log_out_of_threshold(void **unused);
 
 /*
- * test_log_to_syslog -- message written to syslog
+ * test_log_to_syslog -- successful logging to syslog with file related
+ * information like file name, line number and function name
  */
 void test_log_to_syslog(void **unused);
 
 /*
- * test_log_to_syslog -- message (without file information) written to syslog
+ * test_log_to_syslog -- successful logging to syslog without file related
+ * information
  */
 void test_log_to_syslog_no_file(void **unused);
 

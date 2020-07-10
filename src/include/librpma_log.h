@@ -2,13 +2,14 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * librpma_log.h -- public API to control librpma logging mechanism behavior
+ * librpma_log.h -- definitions of librpma logging mechanism
  */
 
 #ifndef LIBRPMA_LOG_H
 #define LIBRPMA_LOG_H
+
 #include <stdio.h>
-#include <librpma.h> /* for RDMA_E_INVAL */
+#include <librpma.h> /* for RPMA_E_INVAL */
 
 /*
  * for passing user-defined log call
@@ -22,6 +23,7 @@ typedef void log_function(int level, /* log level threshold */
 
 /** 3
  * rpma_log_init - initialize logging module of the librpma
+ *
  * SYNOPSIS
  * #include <librpma_log.h>
  *
@@ -88,7 +90,7 @@ typedef void log_function(int level, /* log level threshold */
  * \fRfor \fBstderr \fP(3).
  * .PP
  * The log.c musy be compiled with
- * .B -DRPMA_LOG_INIT_AT_STARTUP_SUSPENDED
+ * .B -DRPMA_LOG_INIT_DEFAULT_OFF
  * defined to disable log initialization at startup.
  *
  * ERRORS
@@ -102,12 +104,13 @@ int
 rpma_log_init(log_function *user_defined_log_function);
 
 /** 3
- * rpma_log_finit - close the currently active log
+ * rpma_log_fini - close the currently active log
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * void
- * rpma_log_finit(void);
+ * rpma_log_fini(void);
  *
  * DESCRIPTION
  * .BR rpma_log_fini\fP()
@@ -143,7 +146,6 @@ enum rpma_log_level {
  * int rpma_log_set_level(enum rpma_log_level level);
  *
  * DESCRIPTION
- *
  * rpma_log_set_level()
  * set the log level threshold to log messages. Messages with a higher
  * level than this are ignored.
@@ -162,7 +164,7 @@ enum rpma_log_level {
  *	// error that cause library to stop working properly
  *	RPMA_LOG_LEVEL_ERROR,
  *	// errors that could be handled in the upper level
- *	RPMA_LOG_LEVEL_WARN,
+ *	RPMA_LOG_LEVEL_WARNING,
  *	// non-massive info mainly related to public API function complitions
  *	// e.g. connection established
  *	RPMA_LOG_LEVEL_NOTICE,
@@ -189,6 +191,7 @@ rpma_log_set_level(enum rpma_log_level level);
  * rpma_log_get_level - get the current log level threshold
  *
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * .B enum rpma_log_level

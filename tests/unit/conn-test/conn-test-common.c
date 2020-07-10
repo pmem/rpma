@@ -157,7 +157,7 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 		return ret;
 	}
 
-	dst->ptr = mock_type(void *);
+	// TG XXX dst->ptr = moc_type(void *);
 	if (dst->ptr)
 		dst->len = strlen(dst->ptr) + 1;
 

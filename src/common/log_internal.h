@@ -43,7 +43,7 @@ rpma_log(enum rpma_log_level level, const char *file, const int line,
 	__attribute__((__format__(__printf__, 5, 6)));
 
 /*
- * rpma_vlog -- Same as rpma_log except that instead of being called with variable number of
+ * rpma_vlog -- same as rpma_log except that instead of being called with variable number of
  * arguments it is called with an argument list as defined in stdarg.h
  *
  * level - Log level threshold.

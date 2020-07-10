@@ -22,6 +22,6 @@ build_test_src(log-test-disabled-at-startup
 	${LIBRPMA_SOURCE_DIR}/common/log.c)
 
 set_target_properties(log-test-disabled-at-startup PROPERTIES 
-	COMPILE_FLAGS -DRPMA_LOG_INIT_AT_STARTUP_SUSPENDED)
+	COMPILE_FLAGS -DRPMA_LOG_INIT_DEFAULT_OFF)
 
 add_test_generic(NAME log-test-disabled-at-startup TRACERS none)

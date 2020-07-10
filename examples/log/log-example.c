@@ -14,7 +14,7 @@
 extern void log_worker_is_doing_something(void);
 
 static void
-user_logfunc(int level, const char *file, const int line,
+user_log_function(int level, const char *file, const int line,
 		const char *func, const char *format, va_list args)
 {
 
@@ -44,7 +44,7 @@ main(int argc, char *argv[])
 	/*
 	 * log messages to be transfered only to custom user function
 	 */
-	rpma_log_init(user_logfunc);
+	rpma_log_init(user_log_function);
 	fprintf(stderr, "Let's use custom log function" \
 			"to write messages to stderr\n");
 	fprintf(stderr, "No message should be written to syslog\n");

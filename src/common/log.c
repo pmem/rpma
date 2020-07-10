@@ -3,7 +3,7 @@
 
 /*
  * log.c -- support for logging output to either syslog or stderr or
- *		via user defined function
+ *	via user defined function
  */
 
 #include <stddef.h>
@@ -30,11 +30,11 @@ static const char *const rpma_level_names[] = {
  */
 static log_function *Log_function;
 
-
 /*
- * rpma_log_init_default -- enable logging to syslog (and stderr) at startup
+ * rpma_log_init_default -- enable logging to syslog (and stderr)
+ * at library load
  */
-#ifndef RPMA_LOG_INIT_AT_STARTUP_SUSPENDED
+#ifndef RPMA_LOG_INIT_DEFAULT_OFF
 __attribute__((constructor))
 static void
 rpma_log_init_default(void)

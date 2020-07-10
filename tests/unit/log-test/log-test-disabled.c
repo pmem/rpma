@@ -4,8 +4,8 @@
  */
 
 /*
- * log-test-disabled.c -- unit tests of the log module
- * with logging not enabled at startup
+ * log-test-disabled.c -- unit tests of the log module with logging
+ * not enabled at startup
  */
 
 #include <stdlib.h>
@@ -35,8 +35,12 @@ closelog(void)
 	function_called();
 }
 
-static void user_logfunc(int level, const char *file, const int line,
-		const char *func, const char *format, va_list args)
+/*
+ * user_logfunc -- use-defined log function mock
+ */
+static void
+user_logfunc(int level, const char *file, const int line,
+	const char *func, const char *format, va_list args)
 {
 	check_expected(level);
 	check_expected(file);
@@ -45,6 +49,10 @@ static void user_logfunc(int level, const char *file, const int line,
 	check_expected(format);
 }
 
+/*
+ * setup_without_logfunction -- logging setup without user-defined function
+ * default log enabling path expected
+ */
 static int
 setup_without_logfunction(void **p_logfunction)
 {
@@ -56,6 +64,10 @@ setup_without_logfunction(void **p_logfunction)
 	return 0;
 }
 
+/*
+ * setup_with_logfunction -- logging setup with user-defined log function
+ * no use of syslog and stderr
+ */
 static int
 setup_with_logfunction(void **p_logfunction)
 {
@@ -64,6 +76,10 @@ setup_with_logfunction(void **p_logfunction)
 	return 0;
 }
 
+/*
+ * teardown -- logging finit and closelog() called in case of no user-defined
+ * log function
+ */
 static int
 teardown(void **p_logfunction)
 {
@@ -75,23 +91,25 @@ teardown(void **p_logfunction)
 	return 0;
 }
 
+/*
+ * test_log_lifecycle -- logging lifecycle - proper sequence of in logging
+ * initialization and shutdown
+ */
 static void
-test_open_close_no_logfunction(void **unused)
+test_log_lifecycle(void **unused)
 {
 
 }
 
-static void
-test_open_close_logfunction(void **unused)
-{
-
-}
-
+/*
+ * test_log_to_user_function -- logging via custom user-defined log function
+ *
+ */
 static void
 test_log_to_user_function(void **p_logfunction)
 {
-	enum rpma_log_level level;
-	for (level = RPMA_LOG_DISABLED; level <= RPMA_LOG_LEVEL_DEBUG; level++) {
+	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
+		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(user_logfunc, level, level);
 		expect_string(user_logfunc, file, "file");
 		expect_value(user_logfunc, line, 1);
@@ -105,9 +123,9 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test_setup_teardown(test_open_close_no_logfunction,
+		cmocka_unit_test_setup_teardown(test_log_lifecycle,
 			setup_without_logfunction, teardown),
-		cmocka_unit_test_setup_teardown(test_open_close_logfunction,
+		cmocka_unit_test_setup_teardown(test_log_lifecycle,
 			setup_with_logfunction, teardown),
 
 		cmocka_unit_test_setup_teardown(test_set_level,
