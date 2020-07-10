@@ -9,7 +9,7 @@ build_test_src(private_data-test
        private_data-test.c
        ${LIBRPMA_SOURCE_DIR}/private_data.c)
 
-target_link_libraries(private_data-test test-rpma-utils)
+target_compile_definitions(private_data-test PRIVATE TEST_MOCK_ALLOC)
 
 set_target_properties(private_data-test
        PROPERTIES

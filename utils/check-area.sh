@@ -37,8 +37,7 @@ categorize rpma      -e "^src/"
 categorize test      -e "^tests/"
 categorize examples  -e "^examples/"
 categorize doc       -e "^doc/" -e ".md\$" -e "^ChangeLog" -e "README"
-categorize common    -e "^src/common/" \
-			-e "^utils/" \
+categorize common    -e "^utils/" \
 			-e ".inc\$" \
 			-e ".yml\$" \
 			-e ".gitattributes" \
