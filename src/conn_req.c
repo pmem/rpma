@@ -257,18 +257,14 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 	ASSERTne(req, NULL);
 
 	ret = rpma_private_data_store(edata, &req->data);
-	if (ret)
-		goto err_conn_req_delete;
-
+	if (ret) {
+		(void) rpma_conn_req_delete(&req);
+		return ret;
+	}
 	req->edata = edata;
 	*req_ptr = req;
 
 	return 0;
-
-err_conn_req_delete:
-	(void) rpma_conn_req_delete(&req);
-
-	return ret;
 }
 
 /* public librpma API */
