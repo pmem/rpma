@@ -6,13 +6,14 @@
 include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(info-test
-       info-test.c
-       ${LIBRPMA_SOURCE_DIR}/info.c)
+	info-test.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/info.c)
 
-target_link_libraries(info-test test-rpma-utils)
+target_compile_definitions(info-test PRIVATE TEST_MOCK_ALLOC)
 
 set_target_properties(info-test
-       PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=_test_malloc")
+	PROPERTIES
+	LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
 add_test_generic(NAME info-test TRACERS none)

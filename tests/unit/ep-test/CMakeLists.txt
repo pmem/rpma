@@ -6,13 +6,14 @@
 include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(ep-test
-       ep-test.c
-       ${LIBRPMA_SOURCE_DIR}/ep.c)
+	ep-test.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/ep.c)
 
-target_link_libraries(ep-test test-rpma-utils)
+target_compile_definitions(ep-test PRIVATE TEST_MOCK_ALLOC)
 
 set_target_properties(ep-test
-       PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=_test_malloc")
+	PROPERTIES
+	LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
 add_test_generic(NAME ep-test TRACERS none)

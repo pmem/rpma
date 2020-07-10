@@ -11,9 +11,10 @@ build_test_src(mr-test
 	mr-test-descriptor.c
 	mr-test-read.c
 	mr-test-reg.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/mr.c)
 
-target_link_libraries(mr-test test-rpma-utils)
+target_compile_definitions(mr-test PRIVATE TEST_MOCK_ALLOC)
 
 set_target_properties(mr-test
 	PROPERTIES

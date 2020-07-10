@@ -13,7 +13,6 @@
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
-#include "out.h"
 #include "rpma_err.h"
 
 struct rpma_ep {
