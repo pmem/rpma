@@ -5,18 +5,13 @@
 
 add_cstyle(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
-	${CMAKE_CURRENT_SOURCE_DIR}/common/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 add_check_whitespace(src
 	${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
-	${CMAKE_CURRENT_SOURCE_DIR}/common/*.[ch]
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 set(SOURCES
-	common/alloc.c
-	common/out.c
-	common/util.c
 	conn.c
 	conn_req.c
 	ep.c
@@ -30,7 +25,7 @@ set(SOURCES
 
 add_library(rpma SHARED ${SOURCES})
 
-target_include_directories(rpma PRIVATE . include common)
+target_include_directories(rpma PRIVATE . include)
 
 if(TESTS_USE_FAULT_INJECTION)
 	target_compile_definitions(rpma PUBLIC FAULT_INJECTION=1)
