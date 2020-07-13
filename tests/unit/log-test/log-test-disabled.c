@@ -40,7 +40,7 @@ closelog(void)
  * instead of writing to syslog/stderr.
  */
 static void
-custom_log_function(int level, const char *file, const int line,
+custom_log_function(rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, va_list args)
 {
 	check_expected(level);
