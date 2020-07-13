@@ -141,17 +141,20 @@ default_log_function(int level, const char *file, const int line,
 		return;
 	}
 
-	vsnprintf(message, sizeof(message), format, arg);
+	if (0 > vsnprintf(message, sizeof(message), format, arg))
+		return;
 
 	if (file)
 		snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ", \
 				file, line, func, rpma_level_names[level]);
 	else
 		prefix[0] = '\0';
+
 	if (level <= Rpma_log_stderr_level) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
 		fprintf(stderr, "%s%s%s", timestamp, prefix, message);
 	}
+
 	if (level <= Rpma_log_syslog_level)
 		syslog(severity, "%s%s", prefix, message);
 }
