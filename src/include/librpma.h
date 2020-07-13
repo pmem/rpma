@@ -132,6 +132,8 @@ struct rpma_mr_remote;
 
 #define RPMA_MR_USAGE_READ_SRC	(1 << 0)
 #define RPMA_MR_USAGE_READ_DST	(1 << 1)
+#define RPMA_MR_USAGE_WRITE_SRC	(1 << 2)
+#define RPMA_MR_USAGE_WRITE_DST	(1 << 3)
 
 enum rpma_mr_plt {
 	RPMA_MR_PLT_VOLATILE, /* the region comes from volatile memory */
@@ -585,6 +587,73 @@ int rpma_read(struct rpma_conn *conn,
 	struct rpma_mr_local *dst, size_t dst_offset,
 	struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, void *op_context);
+
+/** 3
+ * rpma_write - initialize the write operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_write(struct rpma_conn *conn,
+ *		struct rpma_mr_remote *dst, size_t dst_offset,
+ *		struct rpma_mr_local *src,  size_t src_offset,
+ *		size_t len, int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the write operation (transferring data from
+ * the local memory to the remote memory).
+ *
+ * ERRORS
+ * rpma_write() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_write(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, void *op_context);
+
+enum rpma_flush_type {
+	/*
+	 * flush data to a power-fail protected domain on the remote peer system
+	 */
+	RPMA_FLUSH_TYPE_PERSISTENT,
+	/*
+	 * flush data so it will be globally visible on the remote peer system
+	 */
+	RPMA_FLUSH_TYPE_VISIBILITY,
+};
+
+/** 3
+ * rpma_flush - initialize the flush operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_flush(struct rpma_conn *conn,
+ *		struct rpma_mr_remote *dst, size_t dst_offset,
+ *		size_t len, enum rpma_flush_type type, int flags,
+ *		void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the flush operation (flushing data already transferred to
+ * the remote memory to a place on the remote system which is specified
+ * by a flush type).
+ *
+ * ERRORS
+ * rpma_flush() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or dst is NULL
+ * - RPMA_E_INVAL - flush_type or flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_flush(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, void *op_context);
 
 /* completion handling */
 

@@ -9,11 +9,13 @@ build_test_src(conn-test
 	conn-test.c
 	conn-test-common.c
 	conn-test-disconnect.c
+	conn-test-flush.c
 	conn-test-new.c
 	conn-test-next-completion.c
 	conn-test-next-event.c
 	conn-test-private-data.c
 	conn-test-read.c
+	conn-test-write.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/conn.c)
 

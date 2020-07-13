@@ -245,6 +245,34 @@ rpma_read(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_write -- initialize the write operation
+ *
+ * XXX uses rpma_mr_write
+ */
+int
+rpma_write(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_flush -- initialize the flush operation
+ *
+ * XXX uses rpma_mr_read where local memory is provided by preregistered
+ * local DRAM buffer
+ */
+int
+rpma_flush(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
  * rpma_conn_next_completion -- receive an operation completion
  */
 int
