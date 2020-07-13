@@ -25,7 +25,7 @@ static const char *const rpma_level_names[] = {
 };
 
 /*
- * Log function - pointer to main logging function.
+ * Log function - pointer to the main logging function.
  * It is set by default to default_log_function() but could be set to custom
  * logging function in rpma_log_init().
  *
@@ -35,7 +35,7 @@ static log_function *Log_function;
 
 /*
  * rpma_log_init_default -- enable logging to syslog (and stderr)
- * at library load
+ * during library load
  */
 #ifndef RPMA_LOG_INIT_DEFAULT_OFF
 __attribute__((constructor))
@@ -52,7 +52,7 @@ rpma_log_init_default(void)
 #endif
 }
 /*
- * rpma_log_fini_default -- disable logging at library unload
+ * rpma_log_fini_default -- disable logging during library unload
  */
 __attribute__((destructor))
 static void
@@ -84,12 +84,20 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	struct timespec ts;
 	long usec;
 
-	clock_gettime(CLOCK_REALTIME, &ts);
-	info = localtime(&ts.tv_sec);
+	if (clock_gettime(CLOCK_REALTIME, &ts) ||
+		(NULL == (info = localtime(&ts.tv_sec)))) {
+		snprintf(buf, buf_size, "[unknown time] ");
+		return;
+	}
 	usec = ts.tv_nsec / 1000;
-
-	strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info);
-	snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
+	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
+		snprintf(buf, buf_size, "[unknown time] ");
+		return;
+	}
+	if (0 > snprintf(buf, buf_size, "[%s.%06ld] ", date, usec)) {
+		*buf = '\0';
+		return;
+	}
 }
 
 /*
@@ -145,8 +153,8 @@ default_log_function(int level, const char *file, const int line,
 		return;
 
 	if (file)
-		snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ", \
-				file, line, func, rpma_level_names[level]);
+		snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ",
+			file, line, func, rpma_level_names[level]);
 	else
 		prefix[0] = '\0';
 
