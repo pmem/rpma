@@ -18,7 +18,7 @@ typedef void log_function(int level, /* log level threshold */
 	const char *file,	/* name of the current source file */
 	const int line,		/* current source file line */
 	const char *function,	/* current source function name */
-	const char *format,	/* format string to the message */
+	const char *format,	/* format string for the message */
 	va_list args);		/* additional arguments for format string */
 
 /** 3
@@ -28,6 +28,14 @@ typedef void log_function(int level, /* log level threshold */
  *
  * #include <librpma_log.h>
  *
+ * typedef void log_function(
+ *	int level,
+ *	const char *file,
+ *	const int line,
+ *	const char *function,
+ *	const char *format,
+ *	va_list args);
+
  * int rpma_log_init(log_function *user_defined_log_function);
  *
  * DESCRIPTION
@@ -57,40 +65,32 @@ typedef void log_function(int level, /* log level threshold */
  * and
  * .BR rpma_log_stderr_set_level (3)
  * .PP
- * User could provide own function which will be called instead of writing to
+ * The user could provide own function which will be called instead of writing to
  * .BR syslog (3)
  * /
  * .BR stderr (3)\fR.
  * .PP
- * No threshold are used in such case - all messages are passed to
+ * No threshold is used in such case - all messages are passed to
  * the given function.
  * .PP
- * User-define function shall have following signature:
- * .nf
- * typedef void log_function(
- * .in +8
- * // logging level - see enum rpma_log_leve
- * int level,
- * // source file name where log message is produced
- * const char *file,
- * // source file line number here log message is produced
- * const int line,
- * // function name where log message is produced
- * const char *function,
- * // like printf(3) format o message
- * const char *format,
- * // message arguments (as described in \fIformat\fP)
- * va_list args);
+ * Parameters of User-define function are as follow:
+ * - level - actual logging level of message - see enum rpma_log_level
+ * - file - source file name where log message is produced
+ * - line - source file line number here log message is produced
+ * - function - function name where log message is produced
+ * - format - like printf(3) format of message
+ * - args - va_list of arguments as described in \fIformat\fP
+ *
  * .PP
- * Argument \fIfile \fRis set to NULL if no file related information
- * is given. In such case \fIline \fRand \fIfunction \fR are undefined.
+ * The \fIfile \fR argument is set to NULL if no file related information
+ * is given. In such a case \fIline \fRand \fIfunction \fRare undefined.
  * .PP
  * \fBrpma_log_init\fP(NULL) is automatically called when librpma library
  * is loaded and following thresholds are set:
  * \fB RPMA_LOG_WARN \fRfor \fBsyslog \fP(3) and \fBRPMA_LOG_DISABLED
  * \fRfor \fBstderr \fP(3).
  * .PP
- * The log.c musy be compiled with
+ * The log.c must be compiled with
  * .B -DRPMA_LOG_INIT_DEFAULT_OFF
  * defined to disable log initialization at startup.
  *
@@ -122,14 +122,18 @@ rpma_log_init(log_function *user_defined_log_function);
 void
 rpma_log_fini(void);
 
+/*
+ * threshold levels used to setup threshold for syslog and stderr and
+ * to provide logging level when logging function is called
+ */
 enum rpma_log_level {
 	/* all messages will be suppressed */
 	RPMA_LOG_DISABLED = -1,
-	/* error that cause library to stop working immediately */
+	/* an error that causes the library to stop working immediately */
 	RPMA_LOG_LEVEL_FATAL,
-	/* error that cause library to stop working properly */
+	/* an error that causes the library to stop working properly */
 	RPMA_LOG_LEVEL_ERROR,
-	/* errors that could be handled in the upper level */
+	/* an errors that could be handled in the upper level */
 	RPMA_LOG_LEVEL_WARNING,
 	/* non-massive info e.g. connection established */
 	RPMA_LOG_LEVEL_NOTICE,
@@ -146,6 +150,15 @@ enum rpma_log_level {
  *
  * #include <librpma_log.h>
  *
+ * enum rpma_log_level {
+ *	RPMA_LOG_DISABLED = -1,
+  *	RPMA_LOG_LEVEL_ERROR,
+ *	RPMA_LOG_LEVEL_WARNING,
+ *	RPMA_LOG_LEVEL_NOTICE,
+ *	RPMA_LOG_LEVEL_INFO,
+ *	RPMA_LOG_LEVEL_DEBUG
+ * }
+ *
  * int rpma_log_set_level(enum rpma_log_level level);
  *
  * DESCRIPTION
@@ -155,26 +168,17 @@ enum rpma_log_level {
  * .B RPMA_LOG_DISABLE
  *  shall be used to completely suppress writing to syslog(3).
  * .PP
- * Threshold for
+ * The threshold for
  * \fBstderr\fR is controlled separately via rpma_log_stderr_set_level()
  * .PP
  * Available threshold levels are defined by enum rpma_log_level:
- * .nf
- * enum rpma_log_level {
- * .in +8
- *	// all messages will be suppressed
- *	RPMA_LOG_DISABLED = -1,
- *	// error that cause library to stop working properly
- *	RPMA_LOG_LEVEL_ERROR,
- *	// errors that could be handled in the upper level
- *	RPMA_LOG_LEVEL_WARNING,
- *	// non-massive info mainly related to public API function complitions
- *	// e.g. connection established
- *	RPMA_LOG_LEVEL_NOTICE,
- *	// massive info e.g. every write operation indication
- *	RPMA_LOG_LEVEL_INFO,
- *	// debug info e.g. write operation dump
- *	RPMA_LOG_LEVEL_DEBUG
+ * - RPMA_LOG_DISABLED - all messages will be suppressed
+ * - RPMA_LOG_LEVEL_ERROR - error that cause library to stop working properly
+ * - RPMA_LOG_LEVEL_WARNING - errors that could be handled in the upper level
+ * - RPMA_LOG_LEVEL_NOTICE - non-massive info mainly related to public
+ * API function completions e.g. connection established
+ * - RPMA_LOG_LEVEL_INFO - massive info e.g. every write operation indication
+ * - RPMA_LOG_LEVEL_DEBUG - debug info e.g. write operation dump
  * }
  *
  * RETURN VALUE
@@ -182,7 +186,7 @@ enum rpma_log_level {
  * error code on failure.
  *
  * ERRORS
- * rpma_log_set_level() can fail with the following errors:
+ * rpma_log_set_level() can fail with the following error:
  *
  * - RPMA_E_INVAL - level out of scope
  *
@@ -207,7 +211,7 @@ rpma_log_set_level(enum rpma_log_level level);
  * .B RPMA_LOG_DISABLE
  * indicates completely suppress writing to syslog(3).
  * .PP
- * For available threshold see rpma_log_set_level(3).
+ * See rpma_log_set_level(3) for available thresholds.
  *
  * RETURN VALUE
  * rpma_log_get_level() returns actual log to syslog() threshold or
@@ -224,7 +228,7 @@ rpma_log_get_level(void);
  *
  * #include <librpma_log.h>
  *
- * int rpma_log_stderrset_level(enum rpma_log_level level);
+ * int rpma_log_stderr_set_level(enum rpma_log_level level);
  *
  * DESCRIPTION
  * rpma_log_stderr_set_level()

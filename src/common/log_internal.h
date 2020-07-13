@@ -7,6 +7,7 @@
 
 #ifndef LIBRPMA_LOG_INTERNAL_H
 #define LIBRPMA_LOG_INTERNAL_H
+
 #include "librpma_log.h"
 
 #define RPMA_LOG_NOTICE(...) \
