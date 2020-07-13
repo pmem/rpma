@@ -14,6 +14,7 @@ build_test_src(conn-test
 	conn-test-next-event.c
 	conn-test-private-data.c
 	conn-test-read.c
+	conn-test-write.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/conn.c)
 
