@@ -55,9 +55,9 @@ custom_log_function(int level, const char *file, const int line,
  * default log enabling path expected
  */
 static int
-setup_without_custom_log_function(void **p_logfunction)
+setup_without_custom_log_function(void **p_custom_log_function)
 {
-	*p_logfunction = NULL;
+	*p_custom_log_function = NULL;
 	expect_string(openlog, __ident, "rpma");
 	expect_value(openlog, __option, LOG_PID);
 	expect_value(openlog, __facility, LOG_LOCAL7);
@@ -70,9 +70,9 @@ setup_without_custom_log_function(void **p_logfunction)
  * no use of syslog and stderr
  */
 static int
-setup_with_custom_log_function(void **p_logfunction)
+setup_with_custom_log_function(void **p_custom_log_function)
 {
-	*p_logfunction = custom_log_function;
+	*p_custom_log_function = custom_log_function;
 	assert_int_equal(0, rpma_log_init(custom_log_function));
 	return 0;
 }
@@ -82,10 +82,10 @@ setup_with_custom_log_function(void **p_logfunction)
  * log function
  */
 static int
-teardown(void **p_logfunction)
+teardown(void **p_custom_log_function)
 {
-	log_function *logf = *p_logfunction;
-	if (NULL == logf)
+	log_function *custom_log_function = *p_custom_log_function;
+	if (NULL == custom_log_function)
 		expect_function_call(closelog);
 	rpma_log_fini();
 	return 0;
@@ -98,7 +98,11 @@ teardown(void **p_logfunction)
 static void
 test_log_lifecycle(void **unused)
 {
-
+	/*
+	 * The whole thing is done by setup_without_custom_log_function()
+	 * or setup_with_custom_log_function
+	 * and teardown().
+	 */
 }
 
 /*
