@@ -11,6 +11,7 @@ build_test_src(mr-test
 	mr-test-descriptor.c
 	mr-test-read.c
 	mr-test-reg.c
+	mr-test-write.c
 	${LIBRPMA_SOURCE_DIR}/mr.c)
 
 target_link_libraries(mr-test test-rpma-utils)

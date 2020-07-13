@@ -96,6 +96,20 @@ rpma_mr_read(struct ibv_qp *qp,
 	return 0;
 }
 
+/*
+ * rpma_mr_write -- post an RDMA write from src to dst
+ *
+ * XXX use ibv_post_send()
+ */
+int
+rpma_mr_write(struct ibv_qp *qp,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
 /* public librpma API */
 
 /*
