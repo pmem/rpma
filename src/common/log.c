@@ -18,7 +18,7 @@
 static const char *const rpma_level_names[] = {
 	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
 	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
-	[RPMA_LOG_LEVEL_WARNING]	= "WARNING",
+	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
 	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
 	[RPMA_LOG_LEVEL_INFO]	= "INFO",
 	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
@@ -36,7 +36,9 @@ static log_function *Log_function;
 /*
  * rpma_log_init_default -- enable logging to syslog (and stderr)
  * during library load
- */
+ * The log.c must be compiled with -DRPMA_LOG_INIT_DEFAULT_OFF defined
+ * to disable log initialization at startup.
+*/
 #ifndef RPMA_LOG_INIT_DEFAULT_OFF
 __attribute__((constructor))
 static void
@@ -114,40 +116,15 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  * - file == NULL || (file != NULL && function != NULL)
  */
 static void
-default_log_function(int level, const char *file, const int line,
+default_log_function(rpma_log_level level, const char *file, const int line,
 		const char *func, const char *format, va_list arg)
 {
-	int severity = LOG_INFO;
 	char prefix[256] = "";
 	char timestamp[45] = "";
 	char message[1024] = "";
 
 	if (level > Rpma_log_stderr_level && level > Rpma_log_syslog_level)
 		return;
-
-	switch (level) {
-	case RPMA_LOG_LEVEL_FATAL:
-		severity = LOG_CRIT;
-		break;
-	case RPMA_LOG_LEVEL_ERROR:
-		severity = LOG_ERR;
-		break;
-	case RPMA_LOG_LEVEL_WARNING:
-		severity = LOG_WARNING;
-		break;
-	case RPMA_LOG_LEVEL_NOTICE:
-		severity = LOG_NOTICE;
-		break;
-	case RPMA_LOG_LEVEL_INFO:
-		severity = LOG_INFO;
-		break;
-	case RPMA_LOG_LEVEL_DEBUG:
-		severity = LOG_DEBUG;
-		break;
-	case RPMA_LOG_DISABLED:
-	default:
-		return;
-	}
 
 	if (0 > vsnprintf(message, sizeof(message), format, arg))
 		return;
@@ -163,8 +140,33 @@ default_log_function(int level, const char *file, const int line,
 		fprintf(stderr, "%s%s%s", timestamp, prefix, message);
 	}
 
-	if (level <= Rpma_log_syslog_level)
+	if (level <= Rpma_log_syslog_level) {
+		int severity = LOG_INFO;
+		switch (level) {
+		case RPMA_LOG_LEVEL_FATAL:
+			severity = LOG_CRIT;
+			break;
+		case RPMA_LOG_LEVEL_ERROR:
+			severity = LOG_ERR;
+			break;
+		case RPMA_LOG_LEVEL_WARNING:
+			severity = LOG_WARNING;
+			break;
+		case RPMA_LOG_LEVEL_NOTICE:
+			severity = LOG_NOTICE;
+			break;
+		case RPMA_LOG_LEVEL_INFO:
+			severity = LOG_INFO;
+			break;
+		case RPMA_LOG_LEVEL_DEBUG:
+			severity = LOG_DEBUG;
+			break;
+		case RPMA_LOG_DISABLED:
+		default:
+			return;
+		}
 		syslog(severity, "%s%s", prefix, message);
+	}
 }
 
 /* public librpma log API */
@@ -242,7 +244,7 @@ rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 }
 
 /*
- * rpma_log_set_level -- set the log level threshold for syslog messages.
+ * rpma_log_set_level -- set the log level threshold for syslog's messages.
  */
 int
 rpma_log_set_level(enum rpma_log_level level)
