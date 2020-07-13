@@ -142,7 +142,6 @@ enum rpma_log_level {
 	/* debug info e.g. write operation dump */
 	RPMA_LOG_LEVEL_DEBUG,
 };
-
 /** 3
  * rpma_log_set_level - set the log level threshold for syslog
  *
@@ -150,16 +149,16 @@ enum rpma_log_level {
  *
  * #include <librpma_log.h>
  *
+ * int rpma_log_set_level(enum rpma_log_level level);
+ *
  * enum rpma_log_level {
  *	RPMA_LOG_DISABLED = -1,
-  *	RPMA_LOG_LEVEL_ERROR,
+ *	RPMA_LOG_LEVEL_ERROR,
  *	RPMA_LOG_LEVEL_WARNING,
  *	RPMA_LOG_LEVEL_NOTICE,
  *	RPMA_LOG_LEVEL_INFO,
  *	RPMA_LOG_LEVEL_DEBUG
- * }
- *
- * int rpma_log_set_level(enum rpma_log_level level);
+ * };
  *
  * DESCRIPTION
  * rpma_log_set_level()
@@ -191,6 +190,7 @@ enum rpma_log_level {
  * - RPMA_E_INVAL - level out of scope
  *
  */
+
 int
 rpma_log_set_level(enum rpma_log_level level);
 
@@ -222,7 +222,7 @@ enum rpma_log_level
 rpma_log_get_level(void);
 
 /** 3
- * rpma_log_stderrset_level - set the log level threshold for stderr
+ * rpma_log_stderr_set_level - set the log level threshold for stderr
  *
  * SYNOPSIS
  *
@@ -244,7 +244,7 @@ rpma_log_get_level(void);
  * error code on failure.
  *
  * ERRORS
- * rpma_log_stderr_set_level() can fail with the following errors:
+ * rpma_log_stderr_set_level() can fail with the following error:
  *
  * - RPMA_E_INVAL - level out of scope
  *
@@ -252,7 +252,7 @@ rpma_log_get_level(void);
 int rpma_log_stderr_set_level(enum rpma_log_level level);
 
 /** 3
- * rpma_log_stderr_get_level - get the current log level print threshold
+ * rpma_log_stderr_get_level - get the current log level to stderr threshold
  *
  * SYNOPSIS
  *
@@ -268,7 +268,7 @@ int rpma_log_stderr_set_level(enum rpma_log_level level);
  * .B RPMA_LOG_DISABLE
  * indicates completely suppress printing on \fBstderr\fR.
  * .PP
- * For available threshold see rpma_log_set_level(3).
+ * For available thresholds see rpma_log_set_level(3).
  *
  * RETURN VALUE
  * rpma_log_stderr_get_level() returns actual log print to \fBstderr\fR

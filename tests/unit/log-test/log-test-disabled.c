@@ -85,9 +85,8 @@ static int
 teardown(void **p_logfunction)
 {
 	log_function *logf = *p_logfunction;
-	if (NULL == logf) {
+	if (NULL == logf)
 		expect_function_call(closelog);
-	}
 	rpma_log_fini();
 	return 0;
 }
@@ -132,7 +131,6 @@ main(int argc, char *argv[])
 			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_lifecycle,
 			setup_with_custom_log_function, teardown),
-
 		/*
 		 * negative tests with custom log function
 		 */
@@ -144,7 +142,6 @@ main(int argc, char *argv[])
 			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_level_invalid,
 			setup_with_custom_log_function, teardown),
-
 		/*
 		 * negative test with default log function
 		 */
@@ -158,7 +155,6 @@ main(int argc, char *argv[])
 			setup_with_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_to_user_function,
 			setup_with_custom_log_function, teardown),
-
 		/*
 		 * negative test with level out of threshold
 		 */
@@ -167,9 +163,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(test_log_to_syslog,
 			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_to_syslog_no_file,
-				setup_without_custom_log_function, teardown),
-
-
+			setup_without_custom_log_function, teardown),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

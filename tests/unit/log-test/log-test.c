@@ -71,7 +71,7 @@ test_log__log_to_stderr(void **unused)
 }
 
 void
-test_log__coudl_not_start_already_started_log(void **unused)
+test_log__could_not_start_already_started_log(void **unused)
 {
 	assert_int_equal(-1, rpma_log_init(NULL));
 	rpma_log_fini();
@@ -101,7 +101,7 @@ main(int argc, char *argv[])
 
 		cmocka_unit_test(test_log__log_to_stderr),
 
-		cmocka_unit_test(test_log__coudl_not_start_already_started_log),
+		cmocka_unit_test(test_log__could_not_start_already_started_log),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
