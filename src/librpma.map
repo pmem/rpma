@@ -36,8 +36,8 @@ LIBRPMA_1.0 {
 		rpma_log_init;
 		rpma_log_fini;
 		rpma_log;
-		rpma_log_set_level;
-		rpma_log_stderr_set_level;
+		rpma_log_syslog_set_threshold;
+		rpma_log_stderr_set_threshold;
 		
 	local:
 		*;

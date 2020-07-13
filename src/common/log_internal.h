@@ -26,7 +26,7 @@
  * format - format string to the message.
  */
 void
-rpma_log(enum rpma_log_level level, const char *file, const int line,
+rpma_log(rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, ...)
 	__attribute__((__format__(__printf__, 5, 6)));
 

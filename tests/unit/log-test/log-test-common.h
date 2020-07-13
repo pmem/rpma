@@ -9,42 +9,42 @@
 #define LOG_TEST_COMMON_H
 
 /*
- * test_set_level - is it possible to set all logging levels?
+ * syslog_set_threshold - test if it is possible to set all logging levels?
  */
-void test_set_level(void **unused);
+void syslog_set_threshold(void **unused);
 
 /*
- * test_set_level_invalid - do out of scope logging levels rejected?
+ * syslog_set_threshold__invalid - do out of scope logging levels rejected?
  */
-void test_set_level_invalid(void **unused);
+void syslog_set_threshold__invalid(void **unused);
 
 /*
- * test_set_print_level - is it possible to set all logging to stderr levels?
+ * stderr_set_threshold - is it possible to set all logging to stderr levels?
  */
-void test_set_print_level(void **unused);
+void stderr_set_threshold(void **unused);
 
 /*
- * test_set_print_level_invalid -- do out of scope logging to stderr
- * levels rejected?
+ * stderr_set_threshold__invalid -- do out of scope logging to stderr levels
+ * rejected?
  */
-void test_set_print_level_invalid(void **unused);
+void stderr_set_threshold__invalid(void **unused);
 
 /*
- * test_log_out_of_threshold -- no output to stderr and syslog produced
+ * log__out_of_threshold -- no output to stderr and syslog produced
  * for logging level out of threshold
  */
-void test_log_out_of_threshold(void **unused);
+void log__out_of_threshold(void **unused);
 
 /*
- * test_log_to_syslog -- successful logging to syslog with file related
+ * log__to_syslog -- successful logging to syslog with file related
  * information like file name, line number and function name
  */
-void test_log_to_syslog(void **unused);
+void log__to_syslog(void **unused);
 
 /*
- * test_log_to_syslog -- successful logging to syslog without file related
+ * log_to_syslog_no_file -- successful logging to syslog without file related
  * information
  */
-void test_log_to_syslog_no_file(void **unused);
+void log__to_syslog_no_file(void **unused);
 
 #endif /* LOG_TEST_COMMON_H */

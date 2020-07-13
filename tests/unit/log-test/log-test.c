@@ -61,8 +61,8 @@ __wrap_fprintf(FILE *__restrict __stream,
 void
 test_log__log_to_stderr(void **unused)
 {
-	assert_int_equal(0, rpma_log_set_level(RPMA_LOG_DISABLED));
-	assert_int_equal(0, rpma_log_stderr_set_level(RPMA_LOG_LEVEL_ERROR));
+	assert_int_equal(0, rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED));
+	assert_int_equal(0, rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
 	expect_function_call(__wrap_fprintf);
 	expect_string(__wrap_fprintf, __format, "%s%s%s");
 	will_return(__wrap_fprintf, "msg");
@@ -76,8 +76,8 @@ test_log__could_not_start_already_started_log(void **unused)
 	assert_int_equal(-1, rpma_log_init(NULL));
 	rpma_log_fini();
 	assert_int_equal(0, rpma_log_init(NULL));
-	assert_int_equal(0, rpma_log_set_level(RPMA_LOG_DISABLED));
-	assert_int_equal(0, rpma_log_stderr_set_level(RPMA_LOG_LEVEL_ERROR));
+	assert_int_equal(0, rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED));
+	assert_int_equal(0, rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
 	expect_function_call(__wrap_fprintf);
 	expect_string(__wrap_fprintf, __format, "%s%s%s");
 	will_return(__wrap_fprintf, "msg");
@@ -89,15 +89,15 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_set_level),
-		cmocka_unit_test(test_set_level_invalid),
+		cmocka_unit_test(syslog_set_threshold),
+		cmocka_unit_test(syslog_set_threshold__invalid),
 
-		cmocka_unit_test(test_set_print_level),
-		cmocka_unit_test(test_set_print_level_invalid),
+		cmocka_unit_test(stderr_set_threshold),
+		cmocka_unit_test(stderr_set_threshold__invalid),
 
-		cmocka_unit_test(test_log_out_of_threshold),
-		cmocka_unit_test(test_log_to_syslog),
-		cmocka_unit_test(test_log_to_syslog_no_file),
+		cmocka_unit_test(log__out_of_threshold),
+		cmocka_unit_test(log__to_syslog),
+		cmocka_unit_test(log__to_syslog_no_file),
 
 		cmocka_unit_test(test_log__log_to_stderr),
 

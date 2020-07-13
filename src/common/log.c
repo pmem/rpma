@@ -46,11 +46,11 @@ rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
 #ifdef DEBUG
-	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
-	rpma_log_stderr_set_level(RPMA_LOG_LEVEL_WARNING);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
 #else
-	rpma_log_set_level(RPMA_LOG_LEVEL_WARNING);
-	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
+	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
 #endif
 }
 /*
@@ -68,9 +68,9 @@ rpma_log_fini_default(void)
  * logging level thresholds
  */
 /* logging to syslog level threshold */
-enum rpma_log_level Rpma_log_syslog_level = RPMA_LOG_DISABLED;
+rpma_log_level Rpma_log_syslog_threshold = RPMA_LOG_DISABLED;
 /* logging on stderr level threshold */
-enum rpma_log_level Rpma_log_stderr_level = RPMA_LOG_DISABLED;
+rpma_log_level Rpma_log_stderr_threshold = RPMA_LOG_DISABLED;
 
 /*
  * get_timestamp_prefix -- provide actual time in a readable string
@@ -123,7 +123,7 @@ default_log_function(rpma_log_level level, const char *file, const int line,
 	char timestamp[45] = "";
 	char message[1024] = "";
 
-	if (level > Rpma_log_stderr_level && level > Rpma_log_syslog_level)
+	if (level > Rpma_log_stderr_threshold && level > Rpma_log_syslog_threshold)
 		return;
 
 	if (0 > vsnprintf(message, sizeof(message), format, arg))
@@ -135,12 +135,12 @@ default_log_function(rpma_log_level level, const char *file, const int line,
 	else
 		prefix[0] = '\0';
 
-	if (level <= Rpma_log_stderr_level) {
+	if (level <= Rpma_log_stderr_threshold) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
 		fprintf(stderr, "%s%s%s", timestamp, prefix, message);
 	}
 
-	if (level <= Rpma_log_syslog_level) {
+	if (level <= Rpma_log_syslog_threshold) {
 		int severity = LOG_INFO;
 		switch (level) {
 		case RPMA_LOG_LEVEL_FATAL:
@@ -188,11 +188,11 @@ rpma_log_init(log_function *custom_log_function)
 		Log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 #ifdef DEBUG
-		rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
-		rpma_log_stderr_set_level(RPMA_LOG_LEVEL_WARNING);
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
 #else
-		rpma_log_set_level(RPMA_LOG_LEVEL_NOTICE);
-		rpma_log_stderr_set_level(RPMA_LOG_LEVEL_ERROR);
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_NOTICE);
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR);
 #endif
 	}
 
@@ -218,7 +218,7 @@ rpma_log_fini(void)
  * via rpma_log_init.
  */
 void
-rpma_log(enum rpma_log_level level, const char *file, const int line,
+rpma_log(rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, ...)
 {
 	if ((NULL != file && NULL == func) || (NULL == format))
@@ -234,48 +234,48 @@ rpma_log(enum rpma_log_level level, const char *file, const int line,
 }
 
 /*
- * rpma_log_set_level -- set the log level threshold for syslog's messages.
+ * rpma_log_syslog_set_threshold -- set the log level threshold for syslog's messages.
  */
 int
-rpma_log_set_level(enum rpma_log_level level)
+rpma_log_syslog_set_threshold(rpma_log_level level)
 {
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
-	Rpma_log_syslog_level = level;
+	Rpma_log_syslog_threshold = level;
 	return 0;
 }
 
 /*
- * rpma_log_get_level -- get the current log level threshold for syslog
+ * rpma_log_syslog_get_threshold -- get the current log level threshold for syslog
  * messages.
  */
-enum rpma_log_level
-rpma_log_get_level(void)
+rpma_log_level
+rpma_log_syslog_get_threshold(void)
 {
-	return Rpma_log_syslog_level;
+	return Rpma_log_syslog_threshold;
 }
 
 /*
- * rpma_log_stderr_set_level -- set the current log level threshold
+ * rpma_log_stderr_set_threshold -- set the current log level threshold
  * for printing to stderr.
  */
 int
-rpma_log_stderr_set_level(enum rpma_log_level level)
+rpma_log_stderr_set_threshold(rpma_log_level level)
 {
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
-	Rpma_log_stderr_level = level;
+	Rpma_log_stderr_threshold = level;
 	return 0;
 }
 
 /*
- * rpma_log_stderr_get_level -- get the current log level threshold
+ * rpma_log_stderr_get_threshold -- get the current log level threshold
  * for printing to stderr.
  */
-enum rpma_log_level
-rpma_log_stderr_get_level(void)
+rpma_log_level
+rpma_log_stderr_get_threshold(void)
 {
-	return Rpma_log_stderr_level;
+	return Rpma_log_stderr_threshold;
 }

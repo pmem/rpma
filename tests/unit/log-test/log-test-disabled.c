@@ -92,11 +92,11 @@ teardown(void **p_custom_log_function)
 }
 
 /*
- * test_log_lifecycle -- logging lifecycle - proper sequence of in logging
+ * log__lifecycle -- logging lifecycle - proper sequence of in logging
  * initialization and shutdown
  */
 static void
-test_log_lifecycle(void **unused)
+log__lifecycle(void **unused)
 {
 	/*
 	 * The whole thing is done by setup_without_custom_log_function()
@@ -106,13 +106,13 @@ test_log_lifecycle(void **unused)
 }
 
 /*
- * test_log_to_user_function -- logging via custom user-defined log function
+ * log__to_user_function -- logging via custom user-defined log function
  *
  */
 static void
-test_log_to_user_function(void **p_logfunction)
+log__to_user_function(void **p_logfunction)
 {
-	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
+	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(custom_log_function, level, level);
 		expect_string(custom_log_function, file, "file");
@@ -131,42 +131,42 @@ main(int argc, char *argv[])
 		 * lifecycle tests for initialization with and without
 		 * custom log function provided
 		 */
-		cmocka_unit_test_setup_teardown(test_log_lifecycle,
+		cmocka_unit_test_setup_teardown(log__lifecycle,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_log_lifecycle,
+		cmocka_unit_test_setup_teardown(log__lifecycle,
 			setup_with_custom_log_function, teardown),
 		/*
 		 * negative tests with custom log function
 		 */
-		cmocka_unit_test_setup_teardown(test_set_level,
+		cmocka_unit_test_setup_teardown(syslog_set_threshold,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level,
+		cmocka_unit_test_setup_teardown(syslog_set_threshold,
 			setup_with_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_invalid,
+		cmocka_unit_test_setup_teardown(syslog_set_threshold__invalid,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_level_invalid,
+		cmocka_unit_test_setup_teardown(syslog_set_threshold__invalid,
 			setup_with_custom_log_function, teardown),
 		/*
 		 * negative test with default log function
 		 */
-		cmocka_unit_test_setup_teardown(test_set_print_level,
+		cmocka_unit_test_setup_teardown(stderr_set_threshold,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level,
+		cmocka_unit_test_setup_teardown(stderr_set_threshold,
 			setup_with_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
+		cmocka_unit_test_setup_teardown(stderr_set_threshold__invalid,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
+		cmocka_unit_test_setup_teardown(stderr_set_threshold__invalid,
 			setup_with_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_log_to_user_function,
+		cmocka_unit_test_setup_teardown(log__to_user_function,
 			setup_with_custom_log_function, teardown),
 		/*
 		 * negative test with level out of threshold
 		 */
-		cmocka_unit_test_setup_teardown(test_log_out_of_threshold,
+		cmocka_unit_test_setup_teardown(log__out_of_threshold,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_log_to_syslog,
+		cmocka_unit_test_setup_teardown(log__to_syslog,
 			setup_without_custom_log_function, teardown),
-		cmocka_unit_test_setup_teardown(test_log_to_syslog_no_file,
+		cmocka_unit_test_setup_teardown(log__to_syslog_no_file,
 			setup_without_custom_log_function, teardown),
 	};
 

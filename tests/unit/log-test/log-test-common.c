@@ -29,80 +29,80 @@ syslog(int __pri, const char *__fmt, ...)
 }
 
 /*
- * test_set_level - is it possible to set all logging levels?
+ * syslog_set_threshold - is it possible to set all logging levels?
  */
 void
-test_set_level(void **unused)
+syslog_set_threshold(void **unused)
 {
-	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
+	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		assert_int_equal(0, rpma_log_set_level(level));
-		assert_int_equal(level, rpma_log_get_level());
+		assert_int_equal(0, rpma_log_syslog_set_threshold(level));
+		assert_int_equal(level, rpma_log_syslog_get_threshold());
 	}
 }
 
 
 /*
- * test_set_level_invalid - do out of scope logging levels rejected?
+ * syslog_set_threshold__invalid - do out of scope logging levels rejected?
  */
 void
-test_set_level_invalid(void **unused)
+syslog_set_threshold__invalid(void **unused)
 {
-	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
-	enum rpma_log_level level_org = rpma_log_get_level();
+	rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
+	rpma_log_level level_org = rpma_log_syslog_get_threshold();
 	level++;
-	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
-	assert_int_equal(level_org, rpma_log_get_level());
+	assert_int_equal(RPMA_E_INVAL, rpma_log_syslog_set_threshold(level));
+	assert_int_equal(level_org, rpma_log_syslog_get_threshold());
 
 	level = RPMA_LOG_DISABLED;
 	level--;
-	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
-	assert_int_equal(level_org, rpma_log_get_level());
+	assert_int_equal(RPMA_E_INVAL, rpma_log_syslog_set_threshold(level));
+	assert_int_equal(level_org, rpma_log_syslog_get_threshold());
 }
 
 /*
- * test_set_print_level - is it possible to set all logging to stderr levels?
+ * stderr_set_threshold - is it possible to set all logging to stderr levels?
  */
  void
-test_set_print_level(void **unused)
+stderr_set_threshold(void **unused)
 {
-	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
+	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		assert_int_equal(0, rpma_log_stderr_set_level(level));
-		assert_int_equal(level, rpma_log_stderr_get_level());
+		assert_int_equal(0, rpma_log_stderr_set_threshold(level));
+		assert_int_equal(level, rpma_log_stderr_get_threshold());
 	}
 }
 
 /*
- * test_set_print_level_invalid -- do out of scope logging to stderr
- * levels rejected?
+ * stderr_set_threshold__invalid -- do out of scope logging to stderr levels
+ * rejected?
  */
 void
-test_set_print_level_invalid(void **unused)
+stderr_set_threshold__invalid(void **unused)
 {
-	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
-	enum rpma_log_level level_org = rpma_log_stderr_get_level();
+	rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
+	rpma_log_level level_org = rpma_log_stderr_get_threshold();
 	level++;
-	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
-	assert_int_equal(level_org, rpma_log_stderr_get_level());
+	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_threshold(level));
+	assert_int_equal(level_org, rpma_log_stderr_get_threshold());
 	level = RPMA_LOG_DISABLED;
 	level--;
-	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
-	assert_int_equal(level_org, rpma_log_stderr_get_level());
+	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_threshold(level));
+	assert_int_equal(level_org, rpma_log_stderr_get_threshold());
 }
 
 /*
- * test_log_out_of_threshold -- no output to stderr and syslog produced
+ * log__out_of_threshold -- no output to stderr and syslog produced
  * for logging level out of threshold
  */
 void
-test_log_out_of_threshold(void **unused)
+log__out_of_threshold(void **unused)
 {
-	for (enum rpma_log_level level_min = RPMA_LOG_DISABLED;
+	for (rpma_log_level level_min = RPMA_LOG_DISABLED;
 			level_min <= RPMA_LOG_LEVEL_DEBUG; level_min++) {
-		assert_int_equal(0, rpma_log_set_level(level_min));
-		assert_int_equal(0, rpma_log_stderr_set_level(level_min));
-		for (enum rpma_log_level level = level_min + 1;
+		assert_int_equal(0, rpma_log_syslog_set_threshold(level_min));
+		assert_int_equal(0, rpma_log_stderr_set_threshold(level_min));
+		for (rpma_log_level level = level_min + 1;
 			level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 			rpma_log(level, "file", 1, "func", "%s", "msg");
 		}
@@ -128,16 +128,16 @@ static const int expected_level_in_syslog[] = {
 };
 
 /*
- * test_log_to_syslog -- successful logging to syslog with file related
+ * log__to_syslog -- successful logging to syslog with file related
  * information like file name, line number and function name
  */
 void
-test_log_to_syslog(void **unused)
+log__to_syslog(void **unused)
 {
 	static char expected_string[256] = "";
-	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
-	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
-	for (enum rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
+	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(syslog, __pri, expected_level_in_syslog[level]);
 		expected_string[0] = '\0';
@@ -150,15 +150,15 @@ test_log_to_syslog(void **unused)
 }
 
 /*
- * test_log_to_syslog -- successful logging to syslog without file related
+ * log__to_syslog -- successful logging to syslog without file related
  * information
  */
 void
-test_log_to_syslog_no_file(void **unused)
+log__to_syslog_no_file(void **unused)
 {
-	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
-	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
-	for (enum rpma_log_level level = RPMA_LOG_LEVEL_ERROR;
+	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+	for (rpma_log_level level = RPMA_LOG_LEVEL_ERROR;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(syslog, __pri, expected_level_in_syslog[level]);
 		expect_string(syslog, syslog_temporary_buffer, "msg");

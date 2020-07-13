@@ -35,8 +35,8 @@ main(int argc, char *argv[])
 	 * log messages to be produced to syslog as well as stderr
 	 */
 	printf("Let's write messages to stderr and syslog\n");
-	rpma_log_stderr_set_level(RPMA_LOG_LEVEL_DEBUG);
-	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
+	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
 	log_worker_is_doing_something();
 	rpma_log_fini();
 
