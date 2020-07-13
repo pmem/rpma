@@ -13,7 +13,6 @@
 #include "conn_req.h"
 #include "peer.h"
 #include "rpma_err.h"
-#include "out.h"
 
 struct rpma_peer {
 	struct ibv_pd *pd; /* a protection domain */
