@@ -17,7 +17,7 @@
 
 #define RPMA_LOG_NOTICE(format, ...) \
 	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__ )
+		format "\n", ##__VA_ARGS__)
 
 #define RPMA_LOG_WARNING(format, ...) \
 	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, \
@@ -32,7 +32,7 @@
 		format "\n", ##__VA_ARGS__)
 
 #define RPMA_PRINTF(...) \
-	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL,__VA_ARGS__)
+	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, __VA_ARGS__)
 
 /*
  * rpma_log -- write messages either to syslog and to stderr

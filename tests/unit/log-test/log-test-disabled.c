@@ -51,8 +51,8 @@ custom_log_function(rpma_log_level level, const char *file, const int line,
 }
 
 /*
- * setup_without_custom_log_function -- logging setup without user-defined function
- * default log enabling path expected
+ * setup_without_custom_log_function -- logging setup without user-defined
+ * function - default log enabling path expected
  */
 static int
 setup_without_custom_log_function(void **p_custom_log_function)
@@ -66,8 +66,8 @@ setup_without_custom_log_function(void **p_custom_log_function)
 }
 
 /*
- * setup_with_custom_log_function -- logging setup with user-defined log function
- * no use of syslog and stderr
+ * setup_with_custom_log_function -- logging setup with user-defined log
+ * function - no use of syslog and stderr
  */
 static int
 setup_with_custom_log_function(void **p_custom_log_function)

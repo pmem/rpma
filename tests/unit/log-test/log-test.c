@@ -62,7 +62,8 @@ void
 test_log__log_to_stderr(void **unused)
 {
 	assert_int_equal(0, rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED));
-	assert_int_equal(0, rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
+	assert_int_equal(0,
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
 	expect_function_call(__wrap_fprintf);
 	expect_string(__wrap_fprintf, __format, "%s%s%s");
 	will_return(__wrap_fprintf, "msg");
@@ -77,7 +78,8 @@ test_log__could_not_start_already_started_log(void **unused)
 	rpma_log_fini();
 	assert_int_equal(0, rpma_log_init(NULL));
 	assert_int_equal(0, rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED));
-	assert_int_equal(0, rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
+	assert_int_equal(0,
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR));
 	expect_function_call(__wrap_fprintf);
 	expect_string(__wrap_fprintf, __format, "%s%s%s");
 	will_return(__wrap_fprintf, "msg");

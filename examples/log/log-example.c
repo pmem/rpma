@@ -14,7 +14,7 @@ static void
 user_log_function(int level, const char *file, const int line,
 		const char *func, const char *format, va_list args)
 {
-	if (((NULL != file) && (NULL==func)) || (NULL == format)) {
+	if (((NULL != file) && (NULL == func)) || (NULL == format)) {
 		return;
 	}
 	fprintf(stderr, "Custom log handling: \n");

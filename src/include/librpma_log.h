@@ -25,8 +25,10 @@ typedef enum {
 	RPMA_LOG_LEVEL_ERROR,
 	/* an errors that could be handled in the upper level */
 	RPMA_LOG_LEVEL_WARNING,
-	/* non-massive info mainly related to public API function completions
-	 * e.g. connection established */
+	/*
+	 * non-massive info mainly related to public API function completions
+	 * e.g. connection established
+	 */
 	RPMA_LOG_LEVEL_NOTICE,
 	/* massive info e.g. every write operation indication */
 	RPMA_LOG_LEVEL_INFO,
@@ -74,7 +76,8 @@ typedef void log_function(
  * or delivered to end-user application via function given by
  * user_defined_log_function parameter.
  * Logging thresholds to syslog(3)/stderr(3)
- * are set using rpma_log_syslog_set_threshold(3) and rpma_log_stderr_set_threshold(3).
+ * are set using rpma_log_syslog_set_threshold(3) and
+ * rpma_log_stderr_set_threshold(3).
  *
  * rpma_log_init() is automatically called when librpma library is loaded
  * and default thresholds are set:
@@ -222,7 +225,7 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  * rpma_log_stderr_set_threshold() can fail with the following error:
  *
  * - -1 - level out of scope
-
+ *
  * NOTES
  * rpma_log_stderr_set_threshold() is automatically called during loading of
  * the library to set default stderr(3) logging threshold to RPMA_LOG_DISABLED
@@ -248,8 +251,8 @@ int rpma_log_stderr_set_threshold(rpma_log_level level);
  * For available thresholds see rpma_log_syslog_set_threshold(3).
  *
  * RETURN VALUE
- * rpma_log_stderr_get_threshold() returns actual log print to stderr(3) threshold
- * or RPMA_LOG_DISABLED if log printing to stderr is disabled.
+ * rpma_log_stderr_get_threshold() returns actual log print to stderr(3)
+ * threshold or RPMA_LOG_DISABLED if log printing to stderr is disabled.
  */
 rpma_log_level rpma_log_stderr_get_threshold(void);
 

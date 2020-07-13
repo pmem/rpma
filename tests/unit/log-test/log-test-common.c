@@ -64,7 +64,7 @@ syslog_set_threshold__invalid(void **unused)
 /*
  * stderr_set_threshold - is it possible to set all logging to stderr levels?
  */
- void
+void
 stderr_set_threshold(void **unused)
 {
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
@@ -113,7 +113,7 @@ log__out_of_threshold(void **unused)
 static const char *const expected_level_names[] = {
 	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
 	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
-	[RPMA_LOG_LEVEL_WARNING]= "WARNING",
+	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
 	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
 	[RPMA_LOG_LEVEL_INFO]	= "INFO",
 	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
