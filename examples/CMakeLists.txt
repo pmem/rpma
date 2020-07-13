@@ -57,6 +57,7 @@ add_example(02-read-to-volatile server
 add_example(02-read-to-volatile client
 	02-read-to-volatile/client.c
 	common/common.c)
+
 add_example(log log log/log-example.c log/log-worker.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
