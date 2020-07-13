@@ -15,6 +15,7 @@ extern const struct CMUnitTest tests_next_completion[];
 extern const struct CMUnitTest tests_next_event[];
 extern const struct CMUnitTest tests_private_data[];
 extern const struct CMUnitTest tests_read[];
+extern const struct CMUnitTest tests_write[];
 
 struct rpma_test_group groups[] = {
 	RPMA_TEST_GROUP(tests_disconnect, NULL),
@@ -23,6 +24,7 @@ struct rpma_test_group groups[] = {
 	RPMA_TEST_GROUP(tests_next_event, NULL),
 	RPMA_TEST_GROUP(tests_private_data, NULL),
 	RPMA_TEST_GROUP(tests_read, group_setup_read),
+	RPMA_TEST_GROUP(tests_write, NULL),
 	RPMA_TEST_GROUP(NULL, NULL),
 };
 
