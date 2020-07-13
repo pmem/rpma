@@ -49,11 +49,15 @@ void
 test_set_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
+	enum rpma_log_level level_org = rpma_log_get_level();
 	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
+	assert_int_equal(level_org, rpma_log_get_level());
+
 	level = RPMA_LOG_DISABLED;
 	level--;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_set_level(level));
+	assert_int_equal(level_org, rpma_log_get_level());
 }
 
 /*
@@ -77,11 +81,14 @@ void
 test_set_print_level_invalid(void **unused)
 {
 	enum rpma_log_level level = RPMA_LOG_LEVEL_DEBUG;
+	enum rpma_log_level level_org = rpma_log_stderr_get_level();
 	level++;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
+	assert_int_equal(level_org, rpma_log_stderr_get_level());
 	level = RPMA_LOG_DISABLED;
 	level--;
 	assert_int_equal(RPMA_E_INVAL, rpma_log_stderr_set_level(level));
+	assert_int_equal(level_org, rpma_log_stderr_get_level());
 }
 
 /*
