@@ -10,7 +10,29 @@
 
 #include "librpma_log.h"
 
+/*
+ * Set of macros that shuold be used as the primary API for logging.
+ * Direct call to rpma_log shall be used only in exceptional, corner cases.
+ */
 
+#define RPMA_LOG_NOTICE(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__ )
+
+#define RPMA_LOG_WARNING(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_ERROR(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_FATAL(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_PRINTF(...) \
+	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL,__VA_ARGS__)
 
 /*
  * rpma_log -- write messages either to syslog and to stderr
@@ -25,28 +47,8 @@
  * func - current source function name.
  * format - format string to the message.
  */
-void
-rpma_log(rpma_log_level level, const char *file, const int line,
+void rpma_log(rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, ...)
 	__attribute__((__format__(__printf__, 5, 6)));
-
-#define RPMA_LOG_NOTICE(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__ )
-
-#define RPMA_LOG_WARNING(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
-
-#define RPMA_LOG_ERROR(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
-
-#define RPMA_LOG_FATAL(...) \
-	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
-
-#define RPMA_PRINTF(...) \
-	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL,__VA_ARGS__)
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

@@ -9,13 +9,12 @@
 #define LIBRPMA_LOG_H
 
 #include <stdio.h>
-#include <librpma.h> /* for RPMA_E_INVAL */
 
 /*
  * Available log levels in librpma.
  * Log levels (except RPMA_LOG_DISABLED) are used in logging API calls to
  * indicate logging message severity.
- * Log levels are also set to define thresholds for loggin.
+ * Log levels are also set to define thresholds for logging.
  */
 typedef enum {
 	/* all messages will be suppressed */
@@ -26,7 +25,8 @@ typedef enum {
 	RPMA_LOG_LEVEL_ERROR,
 	/* an errors that could be handled in the upper level */
 	RPMA_LOG_LEVEL_WARNING,
-	/* non-massive info e.g. connection established */
+	/* non-massive info mainly related to public API function completions
+	 * e.g. connection established */
 	RPMA_LOG_LEVEL_NOTICE,
 	/* massive info e.g. every write operation indication */
 	RPMA_LOG_LEVEL_INFO,
@@ -37,12 +37,19 @@ typedef enum {
 /*
  * for passing user-defined log call
  */
-typedef void log_function(rpma_log_level, /* log level threshold */
-	const char *file,	/* name of the current source file */
-	const int line,		/* current source file line */
-	const char *function,	/* current source function name */
-	const char *format,	/* format string for the message */
-	va_list args);		/* additional arguments for format string */
+typedef void log_function(
+	/* log level of actuall message passed to the function */
+	rpma_log_level level,
+	/* name of the current source file */
+	const char *file_name,
+	/* current source file line */
+	const int line_no,
+	/* current source function name */
+	const char *function_name,
+	/* printf(3) like format string for the message */
+	const char *message_format,
+	/* additional arguments for format string */
+	va_list args);
 
 /** 3
  * rpma_log_init - initialize logging module of the librpma
@@ -53,10 +60,10 @@ typedef void log_function(rpma_log_level, /* log level threshold */
  *
  * typedef void log_function(
  *	rpma_log_level level,
- *	const char *file,
- *	const int line,
- *	const char *function,
- *	const char *format,
+ *	const char *file_name,
+ *	const int line_no,
+ *	const char *function_name,
+ *	const char *message_format,
  *	va_list args);
  *
  * int rpma_log_init(log_function *user_defined_log_function);
@@ -80,17 +87,16 @@ typedef void log_function(rpma_log_level, /* log level threshold */
  *
  * Parameters of a user-define log function are as follow:
  * - level - actual logging level of message - see rpma_log_level
- * - file - source file name where log message is produced. Could be set to NULL
- * and in such a case neither line nor function value are valid
- * - line - source file line number where log message is produced
- * - function - function name where log message is produced
- * - format - printf(3) like format of message
- * - args - va_list of arguments as described in \fIformat\fP
+ * - file_name - source file name where log message is produced. Could be set
+ * to NULL and in such a case neither line_no nor function_name are provided
+ * - line_no - source file line number where log message is produced
+ * - function_name - function name where log message is produced
+ * - message_format - printf(3) like format of the message
+ * - args - va_list of arguments as described in message_format
  *
  * ERRORS
  * rpma_log_init() can fail with the following error:
- *
- * - -1 - logging has already been started. Call rpma_log_fini (3) to close
+ * * - -1 - logging has already been started. Call rpma_log_fini (3) to close
  * currently active log.
  */
 int rpma_log_init(log_function *user_defined_log_function);
@@ -111,7 +117,6 @@ int rpma_log_init(log_function *user_defined_log_function);
  */
 void rpma_log_fini(void);
 
-
 /** 3
  * rpma_log_syslog_set_threshold - set the log level threshold for syslog
  *
@@ -123,6 +128,7 @@ void rpma_log_fini(void);
  *
  * typedef enum {
  *	RPMA_LOG_DISABLED,
+ *	RPMA_LOG_LEVEL_FATAL,
  *	RPMA_LOG_LEVEL_ERROR,
  *	RPMA_LOG_LEVEL_WARNING,
  *	RPMA_LOG_LEVEL_NOTICE,
@@ -136,29 +142,33 @@ void rpma_log_fini(void);
  * level than this are ignored. RPMA_LOG_DISABLED
  *  shall be used to completely suppress writing to syslog(3).
  *
- * The threshold for stderr(3) is controlled separately via rpma_log_stderr_set_threshold()
+ * The threshold for stderr(3) is controlled separately via
+ * rpma_log_stderr_set_threshold()
  *
  * Available threshold levels are defined by rpma_log_level:
  * - RPMA_LOG_DISABLED - all messages will be suppressed
- * - RPMA_LOG_LEVEL_ERROR - error that cause library to stop working properly
- * - RPMA_LOG_LEVEL_WARNING - errors that could be handled in the upper level
+ * - RPMA_LOG_LEVEL_FATAL - an error that causes the library to stop working
+ * immediately
+ * - RPMA_LOG_LEVEL_ERROR - an error that causes the library to stop working
+ * properly
+ * - RPMA_LOG_LEVEL_WARNING - an error that could be handled in the upper level
  * - RPMA_LOG_LEVEL_NOTICE - non-massive info mainly related to public
  * API function completions e.g. connection established
  * - RPMA_LOG_LEVEL_INFO - massive info e.g. every write operation indication
  * - RPMA_LOG_LEVEL_DEBUG - debug info e.g. write operation dump
  *
  * RETURN VALUE
- * rpma_log_syslog_set_threshold() function returns 0 on success or error code on failure.
+ * rpma_log_syslog_set_threshold() function returns 0 on success or error code
+ * on failure.
  *
  * ERRORS
  * rpma_log_syslog_set_threshold() can fail with the following error:
- *
- * - RPMA_E_INVAL - level out of scope
+ * - -1 - level out of scope
  *
  * NOTES
- * rpma_log_syslog_set_threshold() is automatically called during library load to set
- * default syslog(3) logging threshold to RPMA_LOG_LEVEL_WARNING
- *
+ * rpma_log_syslog_set_threshold() is automatically called during loading of
+ * the library to set default syslog(3) logging threshold to
+ * RPMA_LOG_LEVEL_WARNING
  */
 
 int rpma_log_syslog_set_threshold(rpma_log_level level);
@@ -211,11 +221,11 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  * ERRORS
  * rpma_log_stderr_set_threshold() can fail with the following error:
  *
- * - RPMA_E_INVAL - level out of scope
+ * - -1 - level out of scope
 
  * NOTES
- * rpma_log_stderr_set_threshold() is automatically called during library load
- * to set default stderr(3) logging threshold to RPMA_LOG_DISABLED
+ * rpma_log_stderr_set_threshold() is automatically called during loading of
+ * the library to set default stderr(3) logging threshold to RPMA_LOG_DISABLED
  *
  */
 int rpma_log_stderr_set_threshold(rpma_log_level level);

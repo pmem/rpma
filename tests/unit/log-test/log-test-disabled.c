@@ -107,7 +107,6 @@ log__lifecycle(void **unused)
 
 /*
  * log__to_user_function -- logging via custom user-defined log function
- *
  */
 static void
 log__to_user_function(void **p_logfunction)

@@ -3,7 +3,7 @@
 
 /*
  * log.c -- support for logging output to either syslog or stderr or
- *	via user defined function
+ * via user defined function
  */
 
 #include <stddef.h>
@@ -29,13 +29,13 @@ static const char *const rpma_level_names[] = {
  * It is set by default to default_log_function() but could be set to custom
  * logging function in rpma_log_init().
  *
- * Logging does not work if this pointer is set to NULL.
+ * Logging is turn-off if this pointer is set to NULL.
  */
 static log_function *Log_function;
 
 /*
  * rpma_log_init_default -- enable logging to syslog (and stderr)
- * during library load
+ * during loading of the library.
  * The log.c must be compiled with -DRPMA_LOG_INIT_DEFAULT_OFF defined
  * to disable log initialization at startup.
 */
@@ -45,13 +45,6 @@ static void
 rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
-#ifdef DEBUG
-	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
-	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
-#else
-	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
-	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
-#endif
 }
 /*
  * rpma_log_fini_default -- disable logging during library unload
@@ -64,13 +57,11 @@ rpma_log_fini_default(void)
 }
 #endif
 
-/*
- * logging level thresholds
- */
-/* logging to syslog level threshold */
-rpma_log_level Rpma_log_syslog_threshold = RPMA_LOG_DISABLED;
-/* logging on stderr level threshold */
-rpma_log_level Rpma_log_stderr_threshold = RPMA_LOG_DISABLED;
+/* threshold level for logging to syslog*/
+static rpma_log_level Rpma_log_syslog_threshold = RPMA_LOG_DISABLED;
+
+/* threshold level for logging to stderr*/
+static rpma_log_level Rpma_log_stderr_threshold = RPMA_LOG_DISABLED;
 
 /*
  * get_timestamp_prefix -- provide actual time in a readable string
@@ -87,16 +78,18 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	long usec;
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
-		(NULL == (info = localtime(&ts.tv_sec)))) {
+			(NULL == (info = localtime(&ts.tv_sec)))) {
 		snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
+
 	usec = ts.tv_nsec / 1000;
 	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
 		snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
-	if (0 > snprintf(buf, buf_size, "[%s.%06ld] ", date, usec)) {
+
+	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
 		*buf = '\0';
 		return;
 	}
@@ -116,8 +109,9 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  * - file == NULL || (file != NULL && function != NULL)
  */
 static void
-default_log_function(rpma_log_level level, const char *file, const int line,
-		const char *func, const char *format, va_list arg)
+default_log_function(rpma_log_level level, const char *file_name,
+		const int line_no, const char *function_name,
+		const char *message_format, va_list arg)
 {
 	char prefix[256] = "";
 	char timestamp[45] = "";
@@ -126,18 +120,20 @@ default_log_function(rpma_log_level level, const char *file, const int line,
 	if (level > Rpma_log_stderr_threshold && level > Rpma_log_syslog_threshold)
 		return;
 
-	if (0 > vsnprintf(message, sizeof(message), format, arg))
+	if (vsnprintf(message, sizeof(message), message_format, arg) < 0)
 		return;
 
-	if (file)
-		snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ",
-			file, line, func, rpma_level_names[level]);
+	if (file_name) {
+		if (snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ",
+				file_name, line_no, function_name, rpma_level_names[level]) < 0)
+			strcpy(prefix, "[error prefix]: ");
+	}
 	else
 		prefix[0] = '\0';
 
 	if (level <= Rpma_log_stderr_threshold) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
-		fprintf(stderr, "%s%s%s", timestamp, prefix, message);
+		(void)fprintf(stderr, "%s%s%s", timestamp, prefix, message);
 	}
 
 	if (level <= Rpma_log_syslog_threshold) {
@@ -188,11 +184,11 @@ rpma_log_init(log_function *custom_log_function)
 		Log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 #ifdef DEBUG
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
-		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
 #else
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_NOTICE);
-		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_ERROR);
+	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
+	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
 #endif
 	}
 
@@ -206,8 +202,11 @@ rpma_log_init(log_function *custom_log_function)
 void
 rpma_log_fini(void)
 {
-	if (default_log_function == Log_function)
+	if (default_log_function == Log_function) {
+		rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED);
+		rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
 		closelog();
+	}
 	Log_function = NULL;
 }
 
@@ -240,7 +239,7 @@ int
 rpma_log_syslog_set_threshold(rpma_log_level level)
 {
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
-		return RPMA_E_INVAL;
+		return -1;
 
 	Rpma_log_syslog_threshold = level;
 	return 0;
@@ -264,7 +263,7 @@ int
 rpma_log_stderr_set_threshold(rpma_log_level level)
 {
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
-		return RPMA_E_INVAL;
+		return -1;
 
 	Rpma_log_stderr_threshold = level;
 	return 0;
