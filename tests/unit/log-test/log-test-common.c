@@ -137,12 +137,8 @@ test_log_to_syslog(void **unused)
 	static char expected_string[256] = "";
 	rpma_log_stderr_set_level(RPMA_LOG_DISABLED);
 	rpma_log_set_level(RPMA_LOG_LEVEL_DEBUG);
-	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
+	for (enum rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		if (level == RPMA_LOG_DISABLED) {
-			rpma_log(level, "file", 1, "func", "%s", "msg");
-			continue;
-		}
 		expect_value(syslog, __pri, expected_level_in_syslog[level]);
 		expected_string[0] = '\0';
 		strcat(expected_string, "file:   1:func: *");
