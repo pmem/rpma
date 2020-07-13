@@ -36,10 +36,11 @@ closelog(void)
 }
 
 /*
- * user_logfunc -- use-defined log function mock
+ * custom_log_function -- use-defined custom log function mock. It is used
+ * instead of writing to syslog/stderr.
  */
 static void
-user_logfunc(int level, const char *file, const int line,
+custom_log_function(int level, const char *file, const int line,
 	const char *func, const char *format, va_list args)
 {
 	check_expected(level);
@@ -50,11 +51,11 @@ user_logfunc(int level, const char *file, const int line,
 }
 
 /*
- * setup_without_logfunction -- logging setup without user-defined function
+ * setup_without_custom_log_function -- logging setup without user-defined function
  * default log enabling path expected
  */
 static int
-setup_without_logfunction(void **p_logfunction)
+setup_without_custom_log_function(void **p_logfunction)
 {
 	*p_logfunction = NULL;
 	expect_string(openlog, __ident, "rpma");
@@ -65,14 +66,14 @@ setup_without_logfunction(void **p_logfunction)
 }
 
 /*
- * setup_with_logfunction -- logging setup with user-defined log function
+ * setup_with_custom_log_function -- logging setup with user-defined log function
  * no use of syslog and stderr
  */
 static int
-setup_with_logfunction(void **p_logfunction)
+setup_with_custom_log_function(void **p_logfunction)
 {
-	*p_logfunction = user_logfunc;
-	assert_int_equal(0, rpma_log_init(user_logfunc));
+	*p_logfunction = custom_log_function;
+	assert_int_equal(0, rpma_log_init(custom_log_function));
 	return 0;
 }
 
@@ -110,11 +111,11 @@ test_log_to_user_function(void **p_logfunction)
 {
 	for (enum rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		expect_value(user_logfunc, level, level);
-		expect_string(user_logfunc, file, "file");
-		expect_value(user_logfunc, line, 1);
-		expect_string(user_logfunc, func, "func");
-		expect_string(user_logfunc, format, "%s");
+		expect_value(custom_log_function, level, level);
+		expect_string(custom_log_function, file, "file");
+		expect_value(custom_log_function, line, 1);
+		expect_string(custom_log_function, func, "func");
+		expect_string(custom_log_function, format, "%s");
 		rpma_log(level, "file", 1, "func", "%s", "msg");
 	}
 }
@@ -123,38 +124,50 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
+		/*
+		 * lifecycle tests for initialization with and without
+		 * custom log function provided
+		 */
 		cmocka_unit_test_setup_teardown(test_log_lifecycle,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_lifecycle,
-			setup_with_logfunction, teardown),
+			setup_with_custom_log_function, teardown),
 
+		/*
+		 * negative tests with custom log function
+		 */
 		cmocka_unit_test_setup_teardown(test_set_level,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_level,
-			setup_with_logfunction, teardown),
+			setup_with_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_level_invalid,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_level_invalid,
-			setup_with_logfunction, teardown),
+			setup_with_custom_log_function, teardown),
 
+		/*
+		 * negative test with default log function
+		 */
 		cmocka_unit_test_setup_teardown(test_set_print_level,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_print_level,
-			setup_with_logfunction, teardown),
+			setup_with_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_set_print_level_invalid,
-			setup_with_logfunction, teardown),
-
+			setup_with_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_to_user_function,
-			setup_with_logfunction, teardown),
+			setup_with_custom_log_function, teardown),
 
+		/*
+		 * negative test with level out of threshold
+		 */
 		cmocka_unit_test_setup_teardown(test_log_out_of_threshold,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_to_syslog,
-			setup_without_logfunction, teardown),
+			setup_without_custom_log_function, teardown),
 		cmocka_unit_test_setup_teardown(test_log_to_syslog_no_file,
-				setup_without_logfunction, teardown),
+				setup_without_custom_log_function, teardown),
 
 
 	};

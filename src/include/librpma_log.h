@@ -25,6 +25,7 @@ typedef void log_function(int level, /* log level threshold */
  * rpma_log_init - initialize logging module of the librpma
  *
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * int rpma_log_init(log_function *user_defined_log_function);
@@ -105,6 +106,7 @@ rpma_log_init(log_function *user_defined_log_function);
 
 /** 3
  * rpma_log_fini - close the currently active log
+ *
  * SYNOPSIS
  *
  * #include <librpma_log.h>
@@ -141,6 +143,7 @@ enum rpma_log_level {
  * rpma_log_set_level - set the log level threshold for syslog
  *
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * int rpma_log_set_level(enum rpma_log_level level);
@@ -198,7 +201,6 @@ rpma_log_set_level(enum rpma_log_level level);
  * rpma_log_get_level(void);
  *
  * DESCRIPTION
- *
  * rpma_log_get_level()
  * get the current log level threshold to messages written to syslog(3).
  * .PP
@@ -219,12 +221,12 @@ rpma_log_get_level(void);
  * rpma_log_stderrset_level - set the log level threshold for stderr
  *
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * int rpma_log_stderrset_level(enum rpma_log_level level);
  *
  * DESCRIPTION
- *
  * rpma_log_stderr_set_level()
  * set the log level threshold to log messages for \fBstderr\fR.
  * Messages with a higher level than this are not shown on \fBstderr\fR.
@@ -249,13 +251,13 @@ int rpma_log_stderr_set_level(enum rpma_log_level level);
  * rpma_log_stderr_get_level - get the current log level print threshold
  *
  * SYNOPSIS
+ *
  * #include <librpma_log.h>
  *
  * .B enum rpma_log_level
  * rpma_log_stderr_get_level(void);
  *
  * DESCRIPTION
- *
  * rpma_log_stderr_get_level()
  * get the current log level print to \fBstderr\fR threshold.
  * .PP

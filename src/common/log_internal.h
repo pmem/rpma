@@ -5,8 +5,8 @@
  * log_internal.h -- internal logging interfaces used by the librpma.
  */
 
-#ifndef LOG_INTERNAL_H
-#define LOG_INTERNAL_H
+#ifndef LIBRPMA_LOG_INTERNAL_H
+#define LIBRPMA_LOG_INTERNAL_H
 #include "librpma_log.h"
 
 #define RPMA_LOG_NOTICE(...) \
@@ -27,7 +27,7 @@
 /*
  * rpma_log -- write messages either to syslog and to stderr
  * or call custom log function.
- * If level is set to RPMA_LOG_DISABLED,
+ * If the level is set to RPMA_LOG_DISABLED,
  * the log message will neither be written to syslog nor to stderr.
  * Threshold is ignored if custom log function is provided via rpma_log_init().
  *
@@ -46,15 +46,15 @@ rpma_log(enum rpma_log_level level, const char *file, const int line,
  * rpma_vlog -- same as rpma_log except that instead of being called with variable number of
  * arguments it is called with an argument list as defined in stdarg.h
  *
- * level - Log level threshold.
- * file - Name of the current source file.
- * line - Current source line number.
- * func - Current source function name.
- * format - Format string to the message.
+ * level - log level threshold.
+ * file - name of the current source file.
+ * line - current source line number.
+ * func - current source function name.
+ * format - format string to the message.
  * arg - printf arguments
  */
 void
 rpma_vlog(enum rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, va_list arg);
 
-#endif /* LOG_INTERNAL_H */
+#endif /* LIBRPMA_LOG_INTERNAL_H */

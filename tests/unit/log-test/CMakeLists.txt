@@ -5,8 +5,6 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-add_flag(-DUNIT_TESTING=1)
-
 build_test_src(log-test
 	log-test.c
 	log-test-common.c

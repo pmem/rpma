@@ -54,28 +54,9 @@ __wrap_fprintf(FILE *__restrict __stream,
 	ret = vsnprintf(fprintf_temporary_buffer,
 			sizeof(fprintf_temporary_buffer), __format, args);
 	va_end(args);
+
 	return ret;
-#if 0
-	int err = mock_type(int);
-
-	if (err) {
-		errno = err;
-		return NULL;
-	}
-	return fvprintf(...);
-#endif
 }
-
-/*
- * XXX missing tests to check initial logging levels:
- * #ifdef DEBUG
- *	rpma_log_set_level(RPMA_LOG_DEBUG);
- *	rpma_log_set_print_level(RPMA_LOG_WARN);
- * #else
- *	rpma_log_set_level(RPMA_LOG_WARN);
- *	rpma_log_set_print_level(RPMA_LOG_DISABLED);
- * #endif
- */
 
 void
 test_log__log_to_stderr(void **unused)
