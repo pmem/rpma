@@ -10,20 +10,7 @@
 
 #include "librpma_log.h"
 
-#define RPMA_LOG_NOTICE(...) \
-	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, __VA_ARGS__)
 
-#define RPMA_LOG_WARNING(...) \
-	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, __VA_ARGS__)
-
-#define RPMA_LOG_ERROR(...) \
-	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
-
-#define RPMA_LOG_FATAL(...) \
-	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, __VA_ARGS__)
-
-#define RPMA_PRINTF(...) \
-	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, __VA_ARGS__)
 
 /*
  * rpma_log -- write messages either to syslog and to stderr
@@ -43,19 +30,23 @@ rpma_log(enum rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, ...)
 	__attribute__((__format__(__printf__, 5, 6)));
 
-/*
- * rpma_vlog -- same as rpma_log except that instead of being called with variable number of
- * arguments it is called with an argument list as defined in stdarg.h
- *
- * level - log level threshold.
- * file - name of the current source file.
- * line - current source line number.
- * func - current source function name.
- * format - format string to the message.
- * arg - printf arguments
- */
-void
-rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-	const char *func, const char *format, va_list arg);
+#define RPMA_LOG_NOTICE(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__ )
+
+#define RPMA_LOG_WARNING(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_ERROR(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_FATAL(...) \
+	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
+#define RPMA_PRINTF(...) \
+	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL,__VA_ARGS__)
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

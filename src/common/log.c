@@ -221,26 +221,16 @@ void
 rpma_log(enum rpma_log_level level, const char *file, const int line,
 	const char *func, const char *format, ...)
 {
-	va_list arg;
-	va_start(arg, format);
-	rpma_vlog(level, file, line, func, format, arg);
-	va_end(arg);
-}
-
-/*
- * rpma_vlog -- call Log_function to write messages either
- * to the syslog and to stderr via default_log_function() function
- * or call the custom log function provided via rpma_log_init.
- */
-void
-rpma_vlog(enum rpma_log_level level, const char *file, const int line,
-	const char *func, const char *format, va_list arg)
-{
 	if ((NULL != file && NULL == func) || (NULL == format))
 		return;
 
-	if (Log_function)
-		Log_function(level, file, line, func, format, arg);
+	if(NULL == Log_function)
+		return;
+
+	va_list arg;
+	va_start(arg, format);
+	Log_function(level, file, line, func, format, arg);
+	va_end(arg);
 }
 
 /*

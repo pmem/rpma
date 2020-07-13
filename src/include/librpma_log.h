@@ -63,20 +63,12 @@ typedef void log_function(rpma_log_level, /* log level threshold */
  * int rpma_log_init(log_function *user_defined_log_function);
  *
  * DESCRIPTION
- * .BR rpma_log_init\fP()
- * initializes the logging module. Messages prior to this call
- * will be dropped. Logging messages are written either to
- * .BR syslog(3)
- * /
- * .BR stderr(3)
+ * rpma_log_init() initializes the logging module. Messages prior to this call
+ * will be dropped. Logging messages are written either to syslog(3) / stderr(3)
  * or delivered to end-user application via function given by
- * \fIuser_defined_log_function\fP
- * parameter.
+ * user_defined_log_function parameter.
  * .PP
- * Logging to
- * .BR syslog(3)
- * /
- * .BR stderr(3)
+ * Logging to syslog(3)/stderr(3)
  * is enabled when no
  * .I user_defined_log_function
  * is provided.
@@ -153,14 +145,14 @@ rpma_log_fini(void);
  *
  * int rpma_log_set_level(rpma_log_level level);
  *
- * typedef rpma_log_level enum rpma_log_level {
+ * typedef enum {
  *	RPMA_LOG_DISABLED = -1,
  *	RPMA_LOG_LEVEL_ERROR,
  *	RPMA_LOG_LEVEL_WARNING,
  *	RPMA_LOG_LEVEL_NOTICE,
  *	RPMA_LOG_LEVEL_INFO,
  *	RPMA_LOG_LEVEL_DEBUG
- * };
+ * } rpma_log_level;
  *
  * DESCRIPTION
  * rpma_log_set_level()
