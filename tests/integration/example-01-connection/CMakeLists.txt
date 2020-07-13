@@ -5,10 +5,14 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(example-01-connection
+set(TARGET "example-01-connection")
+
+build_test_src(${TARGET}
 	example-01-connection.c
+	../common/mocks.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
+	${CMAKE_SOURCE_DIR}/examples/common/common.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/ep.c
@@ -20,14 +24,18 @@ build_test_src(example-01-connection
 	${LIBRPMA_SOURCE_DIR}/rpma.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
-set_target_properties(example-01-connection
+target_include_directories(${TARGET} PRIVATE
+	../common
+	${CMAKE_SOURCE_DIR}/examples/common)
+
+set_target_properties(${TARGET}
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=fprintf"
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-target_compile_definitions(example-01-connection
+target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCK_MAIN
        PRIVATE TEST_MOCK_ALLOC
        PRIVATE SRCVERSION="0.0")
 
-add_test_generic(NAME example-01-connection TRACERS none)
+add_test_generic(NAME ${TARGET} TRACERS none)
