@@ -91,7 +91,7 @@ main(int argc, char *argv[])
 	rpma_mr_descriptor *desc = pdata.ptr;
 	ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
 	if (ret) {
-		print_error("rpma_mr_deserialize", ret);
+		print_error("rpma_mr_remote_from_descriptor", ret);
 		goto err_conn_disconnect;
 	}
 
