@@ -21,9 +21,9 @@
 #define CM_EVENT_VALID		RDMA_CM_EVENT_CONNECT_REQUEST
 
 #define DEFAULT_VALUE		"The default one"
-#define DEFAULT_LEN			(strlen(DEFAULT_VALUE) + 1)
+#define DEFAULT_LEN		(strlen(DEFAULT_VALUE) + 1)
 
-#define SUCCESS		0
+#define SUCCESS			0
 
 void *__real__test_malloc(size_t size);
 
