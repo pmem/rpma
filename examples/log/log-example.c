@@ -48,8 +48,8 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("Let's use custom log function to write messages to stderr\n" \
-		"No message should be written to syslog\n");
+	printf(
+		"Let's use custom log function to write messages to stderr\n No message should be written to syslog\n");
 	log_worker_is_doing_something();
 	rpma_log_fini();
 
