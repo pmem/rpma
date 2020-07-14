@@ -38,13 +38,6 @@ ENV VALGRIND_DEPS "\
 	automake \
 	devscripts"
 
-# PMDK deps
-ENV PMDK_DEPS "\
-	debhelper \
-	libdaxctl-dev \
-	libndctl-dev \
-	pandoc"
-
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -61,7 +54,6 @@ ENV RPMA_DEPS "\
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
 	$EX_DEPS \
-	$PMDK_DEPS \
 	$RPMA_DEPS \
 	$VALGRIND_DEPS \
 && rm -rf /var/lib/apt/lists/*
