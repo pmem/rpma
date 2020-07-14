@@ -55,12 +55,12 @@ function(add_example)
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
 	target_include_directories(${target} PRIVATE common)
 
-	if(USE_PMEM2_IF_FOUND AND LIBPMEM2_FOUND)
-		target_include_directories(example-${EXAMPLE_NAME}
+	if(EXAMPLE_USE_PMEM2_IF_FOUND AND LIBPMEM2_FOUND)
+		target_include_directories(${target}
 			PRIVATE
 				${LIBPMEM2_INCLUDE_DIRS})
-		target_link_libraries(example-${EXAMPLE_NAME} libpmem2)
-		target_compile_definitions(example-${EXAMPLE_NAME}
+		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
+		target_compile_definitions(${target}
 			PRIVATE USE_PMEM2)
 	endif()
 endfunction()
@@ -75,5 +75,9 @@ add_example(NAME 02-read-to-volatile BIN server
 	SRCS 02-read-to-volatile/server.c common/common.c)
 add_example(NAME 02-read-to-volatile BIN client
 	SRCS 02-read-to-volatile/client.c common/common.c)
+add_example(NAME 03-read-to-persistent BIN server USE_PMEM2_IF_FOUND
+	SRCS 03-read-to-persistent/server.c common/common.c)
+add_example(NAME 03-read-to-persistent BIN client USE_PMEM2_IF_FOUND
+	SRCS 03-read-to-persistent/client.c common/common.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)

@@ -9,6 +9,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef USE_PMEM2
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
+
 #include "common.h"
 
 /*
@@ -282,3 +287,112 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 
 	return ret;
 }
+
+#ifdef USE_PMEM2
+
+#define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
+#define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
+
+/*
+ * common_pmem2_map -- prepare pmem using libpmem2 API
+ */
+int
+common_pmem2_map(const char *path, int *fd, struct pmem2_map **map_ptr,
+		size_t *data_offset, int *initialized)
+{
+	struct pmem2_config *cfg;
+	struct pmem2_source *src;
+
+	/* prepare a config */
+	int ret = pmem2_config_new(&cfg);
+	if (ret) {
+		pmem2_perror("pmem2_config_new failed");
+		return ret;
+	}
+
+	ret = pmem2_config_set_required_store_granularity(cfg,
+			PMEM2_GRANULARITY_CACHE_LINE);
+	if (ret) {
+		pmem2_perror(
+		    "pmem2_config_set_required_store_granularity failed");
+		goto err_config_delete;
+	}
+
+	/* open a file descriptor */
+	*fd = open(path, O_RDWR);
+	if (*fd == -1) {
+		ret = errno != 0 ? errno : -1;
+		(void) fprintf(stderr, "open returned failed: %s\n",
+		    strerror(ret));
+		goto err_config_delete;
+	}
+
+	/* open a source from file descriptor */
+	ret = pmem2_source_from_fd(&src, *fd);
+	if (ret) {
+		pmem2_perror("pmem2_source_from_fd failed");
+		goto err_config_delete;
+	}
+
+	/* map the source */
+	struct pmem2_map *map;
+	ret = pmem2_map(cfg, src, &map);
+	if (ret) {
+		pmem2_perror("pmem2_map failed");
+		goto err_source_delete;
+	}
+
+	/* get the root address */
+	char *ptr = pmem2_map_get_address(map);
+	size_t size = pmem2_map_get_size(map);
+	if (size < SIGNATURE_LEN) {
+		(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+		    path, size, SIGNATURE_LEN);
+		ret = -1;
+		(void) pmem2_unmap(&map);
+		goto err_source_delete;
+	}
+
+	*initialized = (strncmp(ptr, SIGNATURE_STR, SIGNATURE_LEN) == 0);
+	*data_offset = SIGNATURE_LEN;
+	*map_ptr = map;
+
+err_source_delete:
+	(void) pmem2_source_delete(&src);
+err_config_delete:
+	(void) pmem2_config_delete(&cfg);
+
+	return ret;
+}
+
+/*
+ * common_write_signature -- write SIGNATURE_STR at the beginning of the pmem
+ * mapping
+ */
+void
+common_write_signature(struct pmem2_map *map)
+{
+	char *ptr = pmem2_map_get_address(map);
+	memcpy(ptr, SIGNATURE_STR, SIGNATURE_LEN);
+	pmem2_persist_fn persist_fn = pmem2_get_persist_fn(map);
+	persist_fn(ptr, SIGNATURE_LEN);
+}
+
+/*
+ * common_pmem2_unmap -- cleanup pmem resources
+ */
+void
+common_pmem2_unmap(int fd, struct pmem2_map **map_ptr)
+{
+	int ret = pmem2_unmap(map_ptr);
+	if (ret)
+		pmem2_perror("pmem2_unmap failed");
+
+	ret = close(fd);
+	if (ret)
+		fprintf(stderr, "close failed: %s\n", strerror(ret));
+
+
+}
+
+#endif

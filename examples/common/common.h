@@ -10,6 +10,16 @@
 
 #include <librpma.h>
 
+#ifdef USE_PMEM2
+#include <libpmem2.h>
+#endif
+
+struct common_data {
+	rpma_mr_descriptor desc;
+	size_t data_offset;
+	size_t data_len;
+};
+
 #define KILOBYTE 1024
 
 void print_error(const char *fname, int ret);
@@ -41,5 +51,14 @@ int server_accept_connection(struct rpma_ep *ep,
 
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
+
+#ifdef USE_PMEM2
+int common_pmem2_map(const char *path, int *fd, struct pmem2_map **map_ptr,
+		size_t *data_offset, int *initialized);
+
+void common_pmem2_unmap(int fd, struct pmem2_map **map_ptr);
+
+void common_write_signature(struct pmem2_map *map);
+#endif
 
 #endif /* EXAMPLES_COMMON */
