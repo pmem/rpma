@@ -185,11 +185,11 @@ rpma_log_init(log_function *custom_log_function)
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 
 #ifdef DEBUG
-	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
-	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
 #else
-	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
-	rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
+		rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
 #endif
 	}
 
