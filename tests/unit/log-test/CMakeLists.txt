@@ -5,11 +5,10 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(log-test
-	log-test.c
-	log-test-common.c
-	${LIBRPMA_SOURCE_DIR}/common/log.c)
+#build_test_src(log-test
+#	log-test.c
+#	${LIBRPMA_SOURCE_DIR}/common/log.c)
 
-set_target_properties(log-test PROPERTIES LINK_FLAGS "-Wl,--wrap=fprintf")
+#set_target_properties(log-test PROPERTIES LINK_FLAGS "-Wl,--wrap=fprintf")
 
-add_test_generic(NAME log-test TRACERS none)
+#add_test_generic(NAME log-test TRACERS none)
