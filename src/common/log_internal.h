@@ -36,7 +36,7 @@
 /*
  * rpma_log - call either a default or a custom log function.
  *
- * The default log function write messages either to syslog and to stderr.
+ * The default log function write messages to syslog and to stderr.
  * The message flow can be controlled with help of threshold setters function:
  * rpma_log_syslog_set_threshold and rpma_log_stderr_set_threshold.
  * Threshold set to RPMA_LOG_DISABLED disable particular message destination

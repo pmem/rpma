@@ -3,7 +3,9 @@
 # Copyright 2020, Intel Corporation
 #
 
-include(../../cmake/ctest_helpers.cmake)
+# XXX to be implemented soon
+
+#include(../../cmake/ctest_helpers.cmake)
 
 #build_test_src(log-test
 #	log-test.c
