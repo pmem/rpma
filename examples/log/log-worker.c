@@ -14,7 +14,7 @@ void
 log_worker_is_doing_something(void)
 {
 	RPMA_LOG_NOTICE("Just a notice");
-	RPMA_LOG_WARNING("Important warning about value: %d%c", 720401, '\n');
-	RPMA_LOG_ERROR("Error due to order %x%c", 102, '\n');
-	RPMA_PRINTF("I feel lost and do not know what to say, Master\n");
+	RPMA_LOG_WARNING("Important warning about value: %d", 720401);
+	RPMA_LOG_ERROR("Error due to order %x", 102);
+	RPMA_PRINTF("PRINTF message requires explicit '\\n' at the end\n");
 }

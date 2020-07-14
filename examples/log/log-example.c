@@ -46,6 +46,8 @@ main(int argc, char *argv[])
 	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
 	log_worker_is_doing_something();
 	rpma_log_fini();
+	printf(
+		"Use: \n$ sudo tail -n 60 /var/log/syslog | grep rpma\nto see messages in the syslog.");
 
 	/*
 	 * log messages to be transfered only to custom user function

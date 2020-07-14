@@ -23,7 +23,7 @@ static const char *const rpma_level_names[] = {
 
 /*
  * Log function - pointer to the main logging function.
- * It is set by default to default_log_function() but could be set to custom
+ * It is set by default to rpma_log_function() but could be set to custom
  * logging function in rpma_log_init().
  *
  * Logging is turned-off if this pointer is set to NULL.
@@ -94,7 +94,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 }
 
 /*
- * default_log_function -- default logging function used to log a message
+ * rpma_log_function -- default logging function used to log a message
  * to syslog and/or stderr
  *
  * The message is started with prefix composed from file, line, func parameters
@@ -107,7 +107,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  * - file == NULL || (file != NULL && function != NULL)
  */
 static void
-default_log_function(rpma_log_level level, const char *file_name,
+rpma_log_function(rpma_log_level level, const char *file_name,
 		const int line_no, const char *function_name,
 		const char *message_format, va_list arg)
 {
@@ -123,7 +123,7 @@ default_log_function(rpma_log_level level, const char *file_name,
 		return;
 
 	if (file_name) {
-		if (snprintf(prefix, sizeof(prefix), "%s:%4d:%s: *%s*: ",
+		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
 				file_name, line_no, function_name,
 				rpma_level_names[level]) < 0)
 			strcpy(prefix, "[error prefix]: ");
@@ -178,10 +178,10 @@ rpma_log_init(log_function *custom_log_function)
 		return -1; /* log has already been opened */
 
 	if (custom_log_function &&
-		(default_log_function != custom_log_function)) {
+		(rpma_log_function != custom_log_function)) {
 		Log_function = custom_log_function;
 	} else {
-		Log_function = default_log_function;
+		Log_function = rpma_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
 
 #ifdef DEBUG
@@ -203,7 +203,7 @@ rpma_log_init(log_function *custom_log_function)
 void
 rpma_log_fini(void)
 {
-	if (default_log_function == Log_function) {
+	if (rpma_log_function == Log_function) {
 		closelog();
 	}
 	Log_function = NULL;
