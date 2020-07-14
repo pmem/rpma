@@ -18,10 +18,10 @@
  * Both RDMA_CM_EVENT_CONNECT_REQUEST and RDMA_CM_EVENT_ESTABLISHED are valid.
  * After the event type check, the behavior should not differ.
  */
-#define CM_EVENT_VALID		RDMA_CM_EVENT_CONNECT_REQUEST
+#define CM_EVENT_VALID	RDMA_CM_EVENT_CONNECT_REQUEST
 
-#define DEFAULT_VALUE		"The default one"
-#define DEFAULT_LEN			(strlen(DEFAULT_VALUE) + 1)
+#define DEFAULT_VALUE	"The default one"
+#define DEFAULT_LEN	(strlen(DEFAULT_VALUE) + 1)
 
 #define SUCCESS		0
 
