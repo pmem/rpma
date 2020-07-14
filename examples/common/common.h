@@ -8,6 +8,10 @@
 #ifndef EXAMPLES_COMMON
 #define EXAMPLES_COMMON
 
+#include <librpma.h>
+
+#define KILOBYTE 1024
+
 void print_error(const char *fname, int ret);
 
 void *malloc_aligned(size_t size);
@@ -25,9 +29,8 @@ int common_peer_via_address(const char *addr,
 				peer_ptr)
 
 int client_connect(struct rpma_peer *peer, const char *addr,
-		const char *service, struct rpma_conn **conn_ptr);
-
-int client_disconnect(struct rpma_conn **conn_ptr);
+		const char *service, struct rpma_conn_private_data *pdata,
+		struct rpma_conn **conn_ptr);
 
 int server_listen(struct rpma_peer *peer, const char *addr, const char *service,
 		struct rpma_ep **ep_ptr);
@@ -36,6 +39,7 @@ int server_accept_connection(struct rpma_ep *ep,
 		struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 
-int server_disconnect(struct rpma_conn **conn_ptr);
+int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
+int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
 
 #endif /* EXAMPLES_COMMON */

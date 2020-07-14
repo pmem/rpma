@@ -36,26 +36,35 @@ add_cstyle(examples-all
 add_check_whitespace(examples-all
 	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
 
-function(add_example example binary)
-	set(srcs ${ARGN})
-	set(target example-${example}-${binary})
+function(add_example)
+	set(options "")
+	set(oneValueArgs NAME BIN)
+	set(multiValueArgs SRCS)
+	cmake_parse_arguments(EXAMPLE
+		"${options}"
+		"${oneValueArgs}"
+		"${multiValueArgs}"
+		${ARGN})
+
+	set(target example-${EXAMPLE_NAME}-${EXAMPLE_BIN})
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
-	add_executable(${target} ${srcs})
+	add_executable(${target} ${EXAMPLE_SRCS})
 	set_target_properties(${target} PROPERTIES
-		OUTPUT_NAME ${binary}
-		RUNTIME_OUTPUT_DIRECTORY ${example})
+		OUTPUT_NAME ${EXAMPLE_BIN}
+		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
 	target_include_directories(${target} PRIVATE common)
 endfunction()
 
-add_example(template template template-example/template-example.c)
-add_example(01-connection server 01-connection/server.c)
-add_example(01-connection client 01-connection/client.c)
-add_example(02-read-to-volatile server
-	02-read-to-volatile/server.c
-	common/common.c)
-add_example(02-read-to-volatile client
-	02-read-to-volatile/client.c
-	common/common.c)
+add_example(NAME template BIN template
+	SRCS template-example/template-example.c)
+add_example(NAME 01-connection BIN server
+	SRCS 01-connection/server.c)
+add_example(NAME 01-connection BIN client
+	SRCS 01-connection/client.c)
+add_example(NAME 02-read-to-volatile BIN server
+	SRCS 02-read-to-volatile/server.c common/common.c)
+add_example(NAME 02-read-to-volatile BIN client
+	SRCS 02-read-to-volatile/client.c common/common.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
