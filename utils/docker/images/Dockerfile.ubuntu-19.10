@@ -29,11 +29,21 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
+ENV EX_DEPS "\
+	libpmem-dev"
+
 # Valgrind deps
 ENV VALGRIND_DEPS "\
 	autoconf \
 	automake \
 	devscripts"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	debhelper \
+	libdaxctl-dev \
+	libndctl-dev \
+	pandoc"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -50,6 +60,8 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
+	$EX_DEPS \
+	$PMDK_DEPS \
 	$RPMA_DEPS \
 	$VALGRIND_DEPS \
 && rm -rf /var/lib/apt/lists/*
