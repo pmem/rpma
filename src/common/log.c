@@ -72,7 +72,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	long usec;
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
-			(NULL == (info = localtime(&ts.tv_sec)))) {
+	    (NULL == (info = localtime(&ts.tv_sec)))) {
 		snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
@@ -104,15 +104,15 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  */
 static void
 rpma_log_function(rpma_log_level level, const char *file_name,
-		const int line_no, const char *function_name,
-		const char *message_format, va_list arg)
+	const int line_no, const char *function_name,
+	const char *message_format, va_list arg)
 {
 	char prefix[256] = "";
 	char timestamp[45] = "";
 	char message[1024] = "";
 
 	if (level > Rpma_log_stderr_threshold &&
-			level > Rpma_log_syslog_threshold)
+	    level > Rpma_log_syslog_threshold)
 		return;
 
 	if (vsnprintf(message, sizeof(message), message_format, arg) < 0)
@@ -179,17 +179,34 @@ rpma_log_init(log_function *custom_log_function)
 	} else {
 		Log_function = rpma_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
-
-#ifdef DEBUG
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
-		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
-#else
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_WARNING);
-		rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
-#endif
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_SYSLOG_DEFAULT);
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_STDERR_DEFAULT);
 	}
 
 	return 0;
+}
+
+/*
+ * rpma_log -- convert additional format arguments to variable argument list
+ * and call main logging function pointed by Log_function.
+ */
+void
+rpma_log(rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...)
+{
+	if ((NULL != file_name && NULL == function_name) ||
+	    (NULL == message_format)) {
+		return;
+	}
+
+	if (NULL == Log_function)
+		return;
+
+	va_list arg;
+	va_start(arg, message_format);
+	Log_function(level, file_name, line_no, function_name, message_format,
+			arg);
+	va_end(arg);
 }
 
 /*
@@ -203,29 +220,6 @@ rpma_log_fini(void)
 		closelog();
 	}
 	Log_function = NULL;
-}
-
-/*
- * rpma_log -- convert additional format arguments to variable argument list
- * and call main logging function pointed by Log_function.
- */
-void
-rpma_log(rpma_log_level level, const char *file_name, const int line_no,
-	const char *function_name, const char *message_format, ...)
-{
-	if ((NULL != file_name && NULL == function_name) ||
-			(NULL == message_format)) {
-		return;
-	}
-
-	if (NULL == Log_function)
-		return;
-
-	va_list arg;
-	va_start(arg, message_format);
-	Log_function(level, file_name, line_no, function_name, message_format,
-			arg);
-	va_end(arg);
 }
 
 /*

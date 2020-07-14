@@ -64,4 +64,15 @@ __attribute__((__format__(__printf__, 5, 6)))
 void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 	const char *function_name, const char *message_format, ...);
 
+/*
+ * Default threshold for logging level
+ */
+#ifdef DEBUG
+#define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_DEBUG
+#define RPMA_LOG_LEVEL_STDERR_DEFAULT RPMA_LOG_LEVEL_WARNING
+#else
+#define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_WARNING
+#define RPMA_LOG_LEVEL_STDERR_DEFAULT RPMA_LOG_DISABLED
+#endif
+
 #endif /* LIBRPMA_LOG_INTERNAL_H */
