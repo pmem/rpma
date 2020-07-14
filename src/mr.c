@@ -14,7 +14,8 @@
 #include "rpma_err.h"
 
 /* a bit-wise OR of all allowed values */
-#define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST)
+#define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
+		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST)
 
 /* generate operation completion on success */
 #define RPMA_F_COMPLETION_ON_SUCCESS \
@@ -50,6 +51,20 @@ usage_to_access(int usage)
 	if (usage & RPMA_MR_USAGE_READ_DST) {
 		access |= IBV_ACCESS_LOCAL_WRITE;
 		usage &= ~RPMA_MR_USAGE_READ_DST;
+	}
+
+	if (usage & RPMA_MR_USAGE_WRITE_SRC) {
+		access |= IBV_ACCESS_LOCAL_WRITE;
+		usage &= ~RPMA_MR_USAGE_WRITE_SRC;
+	}
+
+	if (usage & RPMA_MR_USAGE_WRITE_DST) {
+		/*
+		 * if IBV_ACCESS_REMOTE_WRITE is set, then
+		 * IBV_ACCESS_LOCAL_WRITE must be set too.
+		 */
+		access |= IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE;
+		usage &= ~RPMA_MR_USAGE_WRITE_DST;
 	}
 
 	return access;
