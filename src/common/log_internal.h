@@ -34,18 +34,18 @@
 	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, format, ##__VA_ARGS__)
 
 /*
- * rpma_log - write messages either to syslog and to stderr or call
- * custom log function.
+ * rpma_log - call either a default or a custom log function.
  *
- * Message flow to syslog and stderr can be controlled with help of
- * threshold setters function: rpma_log_syslog_set_threshold and
- * rpma_log_stderr_set_threshold.
- *
+ * The default log function write messages either to syslog and to stderr.
+ * The message flow can be controlled with help of threshold setters function:
+ * rpma_log_syslog_set_threshold and rpma_log_stderr_set_threshold.
  * Threshold set to RPMA_LOG_DISABLED disable particular message destination
  * (syslog/stderr).
  *
  * All log messages are redirected to a custom log function if it is provided
  * by rmpa_log_init() function. No messages are produced to syslog and stderr.
+ * A custom log function receives all log messages and it is not affected by
+ * the thresholds described above.
  *
  * Parameters are as follow:
  * level - log level.
@@ -65,7 +65,7 @@ void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 	const char *function_name, const char *message_format, ...);
 
 /*
- * Default threshold for logging level
+ * Default thresholds for logging levels
  */
 #ifdef DEBUG
 #define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_DEBUG

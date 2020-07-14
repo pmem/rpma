@@ -73,7 +73,7 @@ typedef void log_function(
  * rpma_log_init() initializes the logging module. Messages prior to this call
  * will be dropped. Logging messages are written either to syslog(3)/stderr(3)
  * or delivered to end-user application via function given by
- *  user_defined_log_function parameter.
+ * user_defined_log_function parameter.
  *
  * Logging thresholds to syslog(3)/stderr(3) are set using
  * rpma_log_syslog_set_threshold(3) and rpma_log_stderr_set_threshold(3).
@@ -138,9 +138,10 @@ void rpma_log_fini(void);
  * } rpma_log_level;
  *
  * DESCRIPTION
- * rpma_log_syslog_set_threshold() set the threshold level for logging to
- * syslog(3). Messages with a higher level than this are ignored.
- * RPMA_LOG_DISABLED shall be used to completely suppress writing to syslog(3).
+ * rpma_log_syslog_set_threshold() set the threshold level for default
+ * logging function for logging to syslog(3). Messages with a higher level than
+ * this are ignored. RPMA_LOG_DISABLED shall be used to completely suppress
+ * writing to syslog(3).
  *
  * The threshold for stderr(3) is controlled separately via
  * rpma_log_stderr_set_threshold()
@@ -208,9 +209,10 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  * int rpma_log_stderr_set_threshold(rpma_log_level level);
  *
  * DESCRIPTION
- * rpma_log_stderr_set_threshold() set threshold level for logging to stderr(3).
- * Messages with a higher level than this are not shown on stderr(3).
- * RPMA_LOG_DISABLED shall be used to completely suppress writing to stderr(3).
+ * rpma_log_stderr_set_threshold() set threshold level for default
+ * logging function for logging to to stderr(3). Messages with a higher level
+ * than this are not shown on stderr(3).  * RPMA_LOG_DISABLED shall be used
+ * to completely suppress writing to stderr(3).
  *
  * See rpma_log_syslog_set_threshold(3) for available thresholds.
  *
