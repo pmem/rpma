@@ -27,6 +27,9 @@ ENV BASE_DEPS "\
 	pkg-config \
 	which"
 
+ENV EX_DEPS "\
+	libpmem-devel"
+
 # Valgrind deps
 ENV VALGRIND_DEPS "\
 	autoconf \
@@ -46,6 +49,7 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
+	$EX_DEPS \
 	$RPMA_DEPS \
 	$VALGRIND_DEPS \
 && dnf clean all

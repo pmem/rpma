@@ -81,7 +81,7 @@ for file in $files; do
 		# Rebuild Docker image for the current OS version
 		echo "Rebuilding the Docker image for the Dockerfile.$OS-$OS_VER"
 		pushd $images_dir_name
-		./build-image.sh ${DOCKERHUB_REPO} ${OS}-${OS_VER}
+		./build-image.sh ${DOCKERHUB_REPO} ${OS}-${OS_VER} ${SKIP_PMDK_BUILD}
 		popd
 
 		# Check if the image has to be pushed to Docker Hub
