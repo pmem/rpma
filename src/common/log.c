@@ -184,7 +184,6 @@ rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 	va_end(arg);
 }
 
-
 /* public librpma log API */
 
 /*
