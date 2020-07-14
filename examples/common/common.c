@@ -9,6 +9,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef USE_LIBPMEM
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
+
 #include "common.h"
 
 /*
@@ -285,3 +290,62 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 
 	return ret;
 }
+
+#ifdef USE_LIBPMEM
+
+/* signature marking the persistent contents as valid */
+#define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
+#define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
+
+/*
+ * common_pmem_map -- prepare pmem using libpmem API
+ */
+int
+common_pmem_map(const char *path, void **ptr, size_t *mapped_len,
+		size_t *data_offset, int *has_contents)
+{
+	int is_pmem = 0;
+
+	/* get the root address */
+	*ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
+			0 /* mode */, mapped_len, &is_pmem);
+	if (ptr == NULL)
+		return -1;
+
+	/* pmem is expected */
+	if (!is_pmem) {
+		(void) pmem_unmap(*ptr, *mapped_len);
+		return -1;
+	}
+
+	/*
+	 * At the beginning of the persistent memory is stored a signature which
+	 * marks its contents as valid. So the length of the mapped memory has
+	 * to be at least of the length of the signature to convey any
+	 * meaningful contents and be usable as a persistent store.
+	 */
+	if (*mapped_len < SIGNATURE_LEN) {
+		(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+				path, *mapped_len, SIGNATURE_LEN);
+		(void) pmem_unmap(*ptr, *mapped_len);
+		return -1;
+	}
+
+	*has_contents = (strncmp(*ptr, SIGNATURE_STR, SIGNATURE_LEN) == 0);
+	*data_offset = SIGNATURE_LEN;
+
+	return 0;
+}
+
+/*
+ * common_write_signature -- write SIGNATURE_STR at the beginning of the pmem
+ * mapping aka marking the pmem contents as valid
+ */
+void
+common_write_signature(char *ptr)
+{
+	memcpy(ptr, SIGNATURE_STR, SIGNATURE_LEN);
+	pmem_persist(ptr, SIGNATURE_LEN);
+}
+
+#endif

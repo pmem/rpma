@@ -56,11 +56,11 @@ function(add_example)
 	target_include_directories(${target} PRIVATE common
 		${LIBRPMA_SOURCE_DIR})
 
-	if(USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
-		target_include_directories(example-${EXAMPLE_NAME}
-			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(example-${EXAMPLE_NAME} libpmem)
-		target_compile_definitions(example-${EXAMPLE_NAME}
+	if(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
+		target_include_directories(${target}
+			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
+		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM)
 	endif()
 endfunction()
@@ -75,6 +75,10 @@ add_example(NAME 02-read-to-volatile BIN server
 	SRCS 02-read-to-volatile/server.c common/common.c)
 add_example(NAME 02-read-to-volatile BIN client
 	SRCS 02-read-to-volatile/client.c common/common.c)
+add_example(NAME 03-read-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+	SRCS 03-read-to-persistent/server.c common/common.c)
+add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+	SRCS 03-read-to-persistent/client.c common/common.c)
 
 add_example(NAME log BIN log SRCS log/log-example.c log/log-worker.c)
 

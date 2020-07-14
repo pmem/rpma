@@ -10,6 +10,15 @@
 
 #include <librpma.h>
 
+#ifdef USE_LIBPMEM
+#include <libpmem.h>
+#endif
+
+struct common_data {
+	rpma_mr_descriptor desc;
+	size_t data_offset;
+};
+
 #define KILOBYTE 1024
 
 void print_error_ex(const char *fname, int ret);
@@ -41,5 +50,11 @@ int server_accept_connection(struct rpma_ep *ep,
 
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
+
+#ifdef USE_LIBPMEM
+int common_pmem_map(const char *path, void **ptr, size_t *mapped_len,
+		size_t *data_offset, int *has_contents);
+void common_write_signature(char *ptr);
+#endif
 
 #endif /* EXAMPLES_COMMON */
