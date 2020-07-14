@@ -11,7 +11,7 @@ build_test_src(log-test
 	log-test-to-stderr.c
 	log-test-to-syslog.c
 	log-test-custom.c
-	${LIBRPMA_SOURCE_DIR}/common/log.c)
+	${LIBRPMA_SOURCE_DIR}/log.c)
 
 set_target_properties(log-test PROPERTIES LINK_FLAGS "-Wl,--wrap=fprintf")
 

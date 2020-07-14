@@ -11,11 +11,11 @@
 #include "log-test-to-syslog.h"
 #include "log-test-to-stderr.h"
 
-extern const struct CMUnitTest tests_log_common[];
+extern const struct CMUnitTest log_test_common[];
 extern const struct CMUnitTest tests_custom_function[];
 
 struct rpma_test_group groups[] = {
-	RPMA_TEST_GROUP(tests_log_common, NULL),
+	RPMA_TEST_GROUP(log_test_common, NULL),
 	RPMA_TEST_GROUP(tests_log_to_stderr, NULL),
 	RPMA_TEST_GROUP(tests_log_to_syslog, NULL),
 	RPMA_TEST_GROUP(tests_custom_function, NULL),

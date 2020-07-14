@@ -7,10 +7,7 @@
  *
  */
 
-#include <syslog.h>
 #include <string.h>
-#include "cmocka_headers.h"
-#include "../../src/common/log_internal.h"
 #include "log-test-common.h"
 
 /*
@@ -61,11 +58,12 @@ setup_default_threshold(void **unused)
 }
 
 void
-test_setup_default_treshold(void  **unused) {
+test_setup_default_treshold(void  **unused)
+{
 	;
 }
 
-const struct CMUnitTest tests_log_common[] = {
+const struct CMUnitTest log_test_common[] = {
 	cmocka_unit_test_setup(test_setup_default_treshold,
 		setup_default_threshold),
 	cmocka_unit_test(NULL)

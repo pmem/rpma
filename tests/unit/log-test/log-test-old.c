@@ -3,6 +3,7 @@
  * Copyright 2020, Intel Corporation
  */
 
+// XXX to be removed when all tests are distributed
 
 #if 0
 /*
@@ -188,9 +189,10 @@ log__to_user_function(void **p_logfunction)
 		expect_value(custom_log_function, level, level);
 		expect_string(custom_log_function, file, TEST_FILE);
 		expect_value(custom_log_function, line, 1);
-		expect_string(custom_log_function, func, TEST_FUNCTION_NAME,);
+		expect_string(custom_log_function, func, TEST_FUNCTION_NAME);
 		expect_string(custom_log_function, format, "%s");
-		rpma_log(level, TEST_FILE_NAME, 1, TEST_FUNCTION_NAME,, "%s", TEST_MESSAGE);
+		rpma_log(level, TEST_FILE_NAME, 1, TEST_FUNCTION_NAME,
+				"%s", TEST_MESSAGE);
 	}
 }
 #endif

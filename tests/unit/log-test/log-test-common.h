@@ -8,7 +8,7 @@
 #ifndef LOG_TEST_COMMON_H
 #define LOG_TEST_COMMON_H
 #include "cmocka_headers.h"
-#include "common/log_internal.h"
+#include "log_internal.h"
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)

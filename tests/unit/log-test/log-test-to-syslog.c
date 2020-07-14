@@ -8,8 +8,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "cmocka_headers.h"
-#include "common/log_internal.h"
 #include "log-test-to-syslog.h"
 
 
@@ -214,7 +212,8 @@ test_log__could_not_start_already_started_log(void **unused)
 	expect_function_call(__wrap_fprintf);
 	expect_string(__wrap_fprintf, __format, "%s%s%s");
 	will_return(__wrap_fprintf, TEST_MESSAGE);
-	rpma_log(RPMA_LOG_LEVEL_ERROR, TEST_FILE_NAME, 1, TEST_FUNCTION_NAME,, "%s", TEST_MESSAGE);
+	rpma_log(RPMA_LOG_LEVEL_ERROR, TEST_FILE_NAME, 1, TEST_FUNCTION_NAME,
+			"%s", TEST_MESSAGE);
 	rpma_log_fini();
 #endif
 	syslog_mock_disable();
