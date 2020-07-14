@@ -32,6 +32,11 @@ set(LIBRPMA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
 set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
 set(LIBRDMACM_REQUIRED_VERSION 1.0)  # XXX set the required value
+# required only for some examples
+# Note: The exact version of libpmem2 is required only because its API is still
+# experimental. The exact version should be replaced with any compatible (>=)
+# when the libpmem2 API will have the first release.
+set(LIBPMEM2_REQUIRED_VERSION 1.9)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
@@ -102,6 +107,7 @@ endif()
 
 pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
 pkg_check_modules(LIBRDMACM REQUIRED librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
+pkg_check_modules(LIBPMEM2 QUIET libpmem2=${LIBPMEM2_REQUIRED_VERSION})
 
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
