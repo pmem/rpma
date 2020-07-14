@@ -33,10 +33,7 @@ static log_function *Log_function;
 /*
  * rpma_log_init_default -- enable logging to syslog (and stderr)
  * during loading of the library.
- * The log.c must be compiled with -DRPMA_LOG_INIT_DEFAULT_OFF defined
- * to disable log initialization at startup.
  */
-#ifndef RPMA_LOG_INIT_DEFAULT_OFF
 __attribute__((constructor))
 static void
 rpma_log_init_default(void)
@@ -53,7 +50,6 @@ rpma_log_fini_default(void)
 {
 	rpma_log_fini();
 }
-#endif
 
 /* threshold level for logging to syslog */
 static rpma_log_level Rpma_log_syslog_threshold = RPMA_LOG_DISABLED;

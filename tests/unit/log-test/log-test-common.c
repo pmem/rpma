@@ -142,7 +142,7 @@ log__to_syslog(void **unused)
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		expect_value(syslog, __pri, expected_syslog_level[level]);
 		expected_string[0] = '\0';
-		strcat(expected_string, "file:   1:func: *");
+		strcat(expected_string, "file:    1: func: *");
 		strcat(expected_string, expected_level_names[level]);
 		strcat(expected_string, "*: msg");
 		expect_string(syslog, syslog_temporary_buffer, expected_string);
