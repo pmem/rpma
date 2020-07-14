@@ -161,6 +161,30 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	}
 }
 
+/*
+ * rpma_log -- convert additional format arguments to variable argument list
+ * and call main logging function pointed by Log_function.
+ */
+void
+rpma_log(rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...)
+{
+	if ((NULL != file_name && NULL == function_name) ||
+	    (NULL == message_format)) {
+		return;
+	}
+
+	if (NULL == Log_function)
+		return;
+
+	va_list arg;
+	va_start(arg, message_format);
+	Log_function(level, file_name, line_no, function_name, message_format,
+			arg);
+	va_end(arg);
+}
+
+
 /* public librpma log API */
 
 /*
@@ -186,28 +210,6 @@ rpma_log_init(log_function *custom_log_function)
 	return 0;
 }
 
-/*
- * rpma_log -- convert additional format arguments to variable argument list
- * and call main logging function pointed by Log_function.
- */
-void
-rpma_log(rpma_log_level level, const char *file_name, const int line_no,
-	const char *function_name, const char *message_format, ...)
-{
-	if ((NULL != file_name && NULL == function_name) ||
-	    (NULL == message_format)) {
-		return;
-	}
-
-	if (NULL == Log_function)
-		return;
-
-	va_list arg;
-	va_start(arg, message_format);
-	Log_function(level, file_name, line_no, function_name, message_format,
-			arg);
-	va_end(arg);
-}
 
 /*
  * rpma_log_fini -- close the currently active log. Messages after this call
