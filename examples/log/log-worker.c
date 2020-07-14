@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * log-worker.c -- an example of how log internal APIis used by
+ * log-worker.c -- an example of how log internal API is used by
  * the RPMA library
  */
 

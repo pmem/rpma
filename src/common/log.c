@@ -6,13 +6,10 @@
  * via user defined function
  */
 
-#include <stddef.h>
 #include <stdarg.h>
 #include <syslog.h>
 #include <time.h>
 #include <string.h>
-#include <ctype.h>
-#include "librpma.h"
 #include "log_internal.h"
 
 static const char *const rpma_level_names[] = {
@@ -29,7 +26,7 @@ static const char *const rpma_level_names[] = {
  * It is set by default to default_log_function() but could be set to custom
  * logging function in rpma_log_init().
  *
- * Logging is turn-off if this pointer is set to NULL.
+ * Logging is turned-off if this pointer is set to NULL.
  */
 static log_function *Log_function;
 
@@ -46,6 +43,7 @@ rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
 }
+
 /*
  * rpma_log_fini_default -- disable logging during library unload
  */
@@ -99,7 +97,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  * default_log_function -- default logging function used to log a message
  * to syslog and/or stderr
  *
- * Message is started with prefix composed from file, line, func parameters
+ * The message is started with prefix composed from file, line, func parameters
  * followed by string pointed by format. If format includes format specifiers
  * (subsequences beginning with %), the additional arguments following format
  * are formatted and inserted in the message.
@@ -129,9 +127,9 @@ default_log_function(rpma_log_level level, const char *file_name,
 				file_name, line_no, function_name,
 				rpma_level_names[level]) < 0)
 			strcpy(prefix, "[error prefix]: ");
-	}
-	else
+	} else {
 		prefix[0] = '\0';
+	}
 
 	if (level <= Rpma_log_stderr_threshold) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
@@ -185,6 +183,7 @@ rpma_log_init(log_function *custom_log_function)
 	} else {
 		Log_function = default_log_function;
 		openlog("rpma", LOG_PID, LOG_LOCAL7);
+
 #ifdef DEBUG
 	rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_DEBUG);
 	rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_WARNING);
@@ -205,8 +204,6 @@ void
 rpma_log_fini(void)
 {
 	if (default_log_function == Log_function) {
-		rpma_log_syslog_set_threshold(RPMA_LOG_DISABLED);
-		rpma_log_stderr_set_threshold(RPMA_LOG_DISABLED);
 		closelog();
 	}
 	Log_function = NULL;
@@ -214,23 +211,24 @@ rpma_log_fini(void)
 
 /*
  * rpma_log -- convert additional format arguments to variable argument list
- * and call main logging function rpma_vlog to write messages either
- * to the syslog and to stderr or call custom log function provided
- * via rpma_log_init.
+ * and call main logging function pointed by Log_function.
  */
 void
-rpma_log(rpma_log_level level, const char *file, const int line,
-	const char *func, const char *format, ...)
+rpma_log(rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...)
 {
-	if ((NULL != file && NULL == func) || (NULL == format))
+	if ((NULL != file_name && NULL == function_name) ||
+			(NULL == message_format)) {
 		return;
+	}
 
 	if (NULL == Log_function)
 		return;
 
 	va_list arg;
-	va_start(arg, format);
-	Log_function(level, file, line, func, format, arg);
+	va_start(arg, message_format);
+	Log_function(level, file_name, line_no, function_name, message_format,
+			arg);
 	va_end(arg);
 }
 

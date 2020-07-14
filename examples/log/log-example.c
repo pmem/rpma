@@ -11,21 +11,28 @@
 extern void log_worker_is_doing_something(void);
 
 static void
-user_log_function(int level, const char *file, const int line,
-		const char *func, const char *format, va_list args)
+user_log_function(int level, const char *file_name, const int line_no,
+		const char *func_name, const char *message_format,
+		va_list args)
 {
-	if (((NULL != file) && (NULL == func)) || (NULL == format)) {
+	if (((NULL != file_name) && (NULL == func_name)) ||
+			(NULL == message_format)) {
 		return;
 	}
-	fprintf(stderr, "Custom log handling: \n");
-	if (NULL != file) {
-		fprintf(stderr, "%s %4d %s:\n", file, line, func);
+	if (fprintf(stderr, "Custom log handling: \n") < 0)
+		return;
+	if (NULL != file_name) {
+		if (fprintf(stderr, "%s %4d %s:\n", file_name, line_no,
+				func_name) < 0) {
+			return;
+		}
 	}
-	fprintf(stderr, "level: %d ", level);
-	vfprintf(stderr, format, args);
-	if (NULL != file) {
+	if (fprintf(stderr, "level: %d ", level) < 0)
+		return;
+	if (vfprintf(stderr, message_format, args) < 0)
+		return;
+	if (NULL != file_name)
 		fprintf(stderr, "\n");
-	}
 }
 
 int
@@ -44,7 +51,7 @@ main(int argc, char *argv[])
 	 * log messages to be transfered only to custom user function
 	 */
 	if (rpma_log_init(user_log_function)) {
-		fprintf(stderr, "Could not initialize log\n");
+		(void) fprintf(stderr, "Could not initialize log\n");
 		return -1;
 	}
 
