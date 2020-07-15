@@ -68,6 +68,6 @@ add_example(NAME 02-read-to-volatile BIN server
 add_example(NAME 02-read-to-volatile BIN client
 	SRCS 02-read-to-volatile/client.c common/common.c)
 
-add_example(log log log/log-example.c log/log-worker.c)
+add_example(NAME log BIN log SRCS log/log-example.c log/log-worker.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
