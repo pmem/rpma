@@ -1,7 +1,8 @@
 Example of logging mechanism in librpma
 ===
 
-The log example demonstrating different log mechanisms in the librpma library.
+This directory contains an example demonstrating different logging mechanisms
+in the librpma library.
 
 ## Usage
 

@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * log-example.c -- an example of how to use and control the log behavior
+ * log-example.c -- an example of how to use and control behavior of the log.
  */
 
 #include <stdio.h>

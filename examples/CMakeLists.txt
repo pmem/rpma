@@ -45,7 +45,8 @@ function(add_example example binary)
 		OUTPUT_NAME ${binary}
 		RUNTIME_OUTPUT_DIRECTORY ${example})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
-	target_include_directories(${target} PRIVATE common ${LIBRPMA_INCLUDE_DIRS}/.. )
+	target_include_directories(${target} PRIVATE common
+	    ${LIBRPMA_SOURCE_DIR})
 endfunction()
 
 add_example(template template template-example/template-example.c)

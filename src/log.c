@@ -42,7 +42,7 @@ rpma_log_init_default(void)
 }
 
 /*
- * rpma_log_fini_default -- disable logging during library unload
+ * rpma_log_fini_default -- disable logging during unloading the library.
  */
 __attribute__((destructor))
 static void
@@ -270,3 +270,23 @@ rpma_log_stderr_get_threshold(void)
 {
 	return Rpma_log_stderr_threshold;
 }
+
+/*
+ * rpma_level2syslog_severity - logging level to syslog severity conversion.
+ *
+ * ASSUMPTIONS:
+ * - level != RPMA_LOG_DISABLE
+ */
+static const int level2syslog_severity[] = {
+	[RPMA_LOG_LEVEL_FATAL]	= LOG_CRIT,
+	[RPMA_LOG_LEVEL_ERROR]	= LOG_ERR,
+	[RPMA_LOG_LEVEL_WARNING] = LOG_WARNING,
+	[RPMA_LOG_LEVEL_NOTICE]	= LOG_NOTICE,
+	[RPMA_LOG_LEVEL_INFO]	= LOG_INFO,
+	[RPMA_LOG_LEVEL_DEBUG]	= LOG_DEBUG,
+};
+int
+rpma_level2syslog_severity(rpma_log_level level)
+{
+	return level2syslog_severity[level];
+};

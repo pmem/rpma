@@ -34,7 +34,7 @@
 	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, format, ##__VA_ARGS__)
 
 /*
- * rpma_log - call either a default or a custom log function.
+ * rpma_log - call either the default or a custom log function.
  *
  * The default log function write messages to syslog and to stderr.
  * The message flow can be controlled with help of threshold setters function:
@@ -65,6 +65,11 @@ void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 	const char *function_name, const char *message_format, ...);
 
 /*
+ * rpma_level2syslog_severity - logging level to syslog severity conversion.
+ */
+int rpma_level2syslog_severity(rpma_log_level level);
+
+/*
  * Default thresholds for logging levels
  */
 #ifdef DEBUG
@@ -74,5 +79,7 @@ void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 #define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_WARNING
 #define RPMA_LOG_LEVEL_STDERR_DEFAULT RPMA_LOG_DISABLED
 #endif
+
+
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */
