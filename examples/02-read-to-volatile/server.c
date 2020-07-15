@@ -67,7 +67,7 @@ main(int argc, char *argv[])
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC,
 			RPMA_MR_PLT_VOLATILE, &mr);
 	if (ret) {
-		print_error("rpma_mr_reg", ret);
+		print_error_ex("rpma_mr_reg", ret);
 		goto err_mr_free;
 	}
 
@@ -79,7 +79,7 @@ main(int argc, char *argv[])
 	/* receive the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &desc);
 	if (ret) {
-		print_error("rpma_mr_get_descriptor", ret);
+		print_error_ex("rpma_mr_get_descriptor", ret);
 	}
 
 	/*
@@ -105,7 +105,7 @@ err_mr_dereg:
 	/* deregister the memory region */
 	ret = rpma_mr_dereg(&mr);
 	if (ret)
-		print_error("rpma_mr_dereg", ret);
+		print_error_ex("rpma_mr_dereg", ret);
 
 err_mr_free:
 	/* free the memory */
@@ -115,13 +115,13 @@ err_ep_shutdown:
 	/* shutdown the endpoint */
 	ret = rpma_ep_shutdown(&ep);
 	if (ret)
-		print_error("rpma_ep_shutdown", ret);
+		print_error_ex("rpma_ep_shutdown", ret);
 
 err_peer_delete:
 	/* delete the peer object */
 	ret = rpma_peer_delete(&peer);
 	if (ret)
-		print_error("rpma_peer_delete", ret);
+		print_error_ex("rpma_peer_delete", ret);
 
 	return ret;
 }

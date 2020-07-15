@@ -18,7 +18,7 @@
 #endif
 
 static void
-print_error(const char *fname, const int ret)
+print_error_ex(const char *fname, const int ret)
 {
 	int result = 0;
 
@@ -61,21 +61,21 @@ main(int argc, char *argv[])
 	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE,
 			&dev);
 	if (ret) {
-		print_error("rpma_utils_get_ibv_context", ret);
+		print_error_ex("rpma_utils_get_ibv_context", ret);
 		return -1;
 	}
 
 	/* create a new peer object */
 	ret = rpma_peer_new(dev, &peer);
 	if (ret) {
-		print_error("rpma_peer_new", ret);
+		print_error_ex("rpma_peer_new", ret);
 		return -1;
 	}
 
 	/* create a connection request */
 	ret = rpma_conn_req_new(peer, addr, service, &req);
 	if (ret) {
-		print_error("rpma_conn_req_new", ret);
+		print_error_ex("rpma_conn_req_new", ret);
 		goto err_peer_delete;
 	}
 
@@ -86,14 +86,14 @@ main(int argc, char *argv[])
 	pdata.len = (strlen(msg) + 1) * sizeof(char);
 	ret = rpma_conn_req_connect(&req, &pdata, &conn);
 	if (ret) {
-		print_error("rpma_conn_req_connect", ret);
+		print_error_ex("rpma_conn_req_connect", ret);
 		goto err_req_delete;
 	}
 
 	/* wait for the connection to establish */
 	ret = rpma_conn_next_event(conn, &conn_event);
 	if (ret) {
-		print_error("rpma_conn_next_event", ret);
+		print_error_ex("rpma_conn_next_event", ret);
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr, "rpma_conn_next_event returned an unexptected "
@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 	/* wait for the connection to being closed */
 	ret = rpma_conn_next_event(conn, &conn_event);
 	if (ret) {
-		print_error("rpma_conn_next_event", ret);
+		print_error_ex("rpma_conn_next_event", ret);
 		goto err_conn_disconnect;
 	} else if (conn_event != RPMA_CONN_CLOSED) {
 		fprintf(stderr, "rpma_conn_next_event returned an unexptected "
@@ -132,21 +132,21 @@ main(int argc, char *argv[])
 	/* disconnect the connection */
 	ret = rpma_conn_disconnect(conn);
 	if (ret) {
-		print_error("rpma_conn_disconnect", ret);
+		print_error_ex("rpma_conn_disconnect", ret);
 		goto err_conn_delete;
 	}
 
 	/* delete the connection object */
 	ret = rpma_conn_delete(&conn);
 	if (ret) {
-		print_error("rpma_conn_delete", ret);
+		print_error_ex("rpma_conn_delete", ret);
 		goto err_peer_delete;
 	}
 
 	/* delete the peer object */
 	ret = rpma_peer_delete(&peer);
 	if (ret) {
-		print_error("rpma_peer_delete", ret);
+		print_error_ex("rpma_peer_delete", ret);
 		goto err_exit;
 	}
 
