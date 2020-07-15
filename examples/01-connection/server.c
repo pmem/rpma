@@ -13,7 +13,7 @@
 
 #include <librpma.h>
 
-#ifdef TEST_MOCK_MAIN
+#ifdef TEST_MOCKS
 #define main server_main
 #endif
 

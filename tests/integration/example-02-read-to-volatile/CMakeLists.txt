@@ -5,13 +5,13 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-set(TARGET "example-01-connection")
+set(TARGET "example-02-read-to-volatile")
 
 build_test_src(${TARGET}
-	example-01-connection.c
+	example-02-read-to-volatile.c
 	../common/mocks.c
-	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
-	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
+	${CMAKE_SOURCE_DIR}/examples/02-read-to-volatile/client.c
+	${CMAKE_SOURCE_DIR}/examples/02-read-to-volatile/server.c
 	${CMAKE_SOURCE_DIR}/examples/common/common.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
@@ -30,8 +30,7 @@ target_include_directories(${TARGET} PRIVATE
 
 set_target_properties(${TARGET}
        PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=fprintf"
-       LINK_FLAGS "-Wl,--wrap=_test_malloc")
+       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf")
 
 target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCKS

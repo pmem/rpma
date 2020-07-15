@@ -17,6 +17,11 @@
 
 #define HELLO_STR "Hello client!"
 
+#ifdef TEST_MOCKS
+#include "test_mocks.h"
+#define main server_main
+#endif
+
 int
 main(int argc, char *argv[])
 {
