@@ -12,7 +12,11 @@
 
 #define KILOBYTE 1024
 
-void print_error(const char *fname, int ret);
+/*
+ * The name is "print_error_ex" to distinguish
+ * from the cmocka's "print_error" function.
+ */
+void print_error_ex(const char *fname, int ret);
 
 void *malloc_aligned(size_t size);
 
