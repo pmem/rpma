@@ -12,7 +12,7 @@
 #include <string.h>
 #include "log_internal.h"
 
-static const char *const rpma_level_names[] = {
+static const char *const rpma_log_level_names[] = {
 	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
 	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
 	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
@@ -21,6 +21,14 @@ static const char *const rpma_level_names[] = {
 	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
 };
 
+static const int rpma_log_level_syslog_severity[] = {
+	[RPMA_LOG_LEVEL_FATAL]	= LOG_CRIT,
+	[RPMA_LOG_LEVEL_ERROR]	= LOG_ERR,
+	[RPMA_LOG_LEVEL_WARNING] = LOG_WARNING,
+	[RPMA_LOG_LEVEL_NOTICE]	= LOG_NOTICE,
+	[RPMA_LOG_LEVEL_INFO]	= LOG_INFO,
+	[RPMA_LOG_LEVEL_DEBUG]	= LOG_DEBUG,
+};
 /*
  * Log function - pointer to the main logging function.
  * It is set by default to rpma_log_function() but could be set to custom
@@ -121,7 +129,7 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	if (file_name) {
 		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
 				file_name, line_no, function_name,
-				rpma_level_names[level]) < 0)
+				rpma_log_level_names[level]) < 0)
 			strcpy(prefix, "[error prefix]: ");
 	} else {
 		prefix[0] = '\0';
@@ -133,31 +141,10 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	}
 
 	if (level <= Rpma_log_syslog_threshold) {
-		int severity = LOG_INFO;
-		switch (level) {
-		case RPMA_LOG_LEVEL_FATAL:
-			severity = LOG_CRIT;
-			break;
-		case RPMA_LOG_LEVEL_ERROR:
-			severity = LOG_ERR;
-			break;
-		case RPMA_LOG_LEVEL_WARNING:
-			severity = LOG_WARNING;
-			break;
-		case RPMA_LOG_LEVEL_NOTICE:
-			severity = LOG_NOTICE;
-			break;
-		case RPMA_LOG_LEVEL_INFO:
-			severity = LOG_INFO;
-			break;
-		case RPMA_LOG_LEVEL_DEBUG:
-			severity = LOG_DEBUG;
-			break;
-		case RPMA_LOG_DISABLED:
-		default:
-			return;
+		if (level != RPMA_LOG_DISABLED) {
+			int severity = rpma_log_level2syslog_severity(level);
+			syslog(severity, "%s%s", prefix, message);
 		}
-		syslog(severity, "%s%s", prefix, message);
 	}
 }
 
@@ -277,16 +264,8 @@ rpma_log_stderr_get_threshold(void)
  * ASSUMPTIONS:
  * - level != RPMA_LOG_DISABLE
  */
-static const int level2syslog_severity[] = {
-	[RPMA_LOG_LEVEL_FATAL]	= LOG_CRIT,
-	[RPMA_LOG_LEVEL_ERROR]	= LOG_ERR,
-	[RPMA_LOG_LEVEL_WARNING] = LOG_WARNING,
-	[RPMA_LOG_LEVEL_NOTICE]	= LOG_NOTICE,
-	[RPMA_LOG_LEVEL_INFO]	= LOG_INFO,
-	[RPMA_LOG_LEVEL_DEBUG]	= LOG_DEBUG,
-};
 int
-rpma_level2syslog_severity(rpma_log_level level)
+rpma_log_level2syslog_severity(rpma_log_level level)
 {
-	return level2syslog_severity[level];
+	return rpma_log_level_syslog_severity[level];
 };
