@@ -8,6 +8,7 @@
 #
 
 set(TEST_ROOT_DIR ${PROJECT_SOURCE_DIR}/tests)
+set(TEST_UNIT_COMMON_DIR ${TEST_ROOT_DIR}/unit/common)
 
 set(GLOBAL_TEST_ARGS
 	-DPERL_EXECUTABLE=${PERL_EXECUTABLE}
@@ -80,20 +81,31 @@ function(build_test_lib name)
 	add_dependencies(tests ${name})
 endfunction()
 
-function(build_test_src name)
-	set(srcs ${ARGN})
+function(build_test_src)
+	set(options UNIT)
+	set(oneValueArgs NAME)
+	set(multiValueArgs SRCS)
+	cmake_parse_arguments(TEST
+		"${options}"
+		"${oneValueArgs}"
+		"${multiValueArgs}"
+		${ARGN})
 
-	add_executable(${name} ${srcs})
-	target_include_directories(${name} PRIVATE
+	add_executable(${TEST_NAME} ${TEST_SRCS})
+	target_include_directories(${TEST_NAME} PRIVATE
 		${LIBRPMA_INCLUDE_DIRS}
 		${LIBRPMA_SOURCE_DIR})
+	if(TEST_UNIT)
+		target_include_directories(${TEST_NAME} PRIVATE
+			${TEST_UNIT_COMMON_DIR})
+	endif()
 	# do not link with the rpma library
-	target_link_libraries(${name} cmocka test_backtrace)
+	target_link_libraries(${TEST_NAME} cmocka test_backtrace)
 	if(LIBUNWIND_FOUND)
-		target_link_libraries(${name} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
+		target_link_libraries(${TEST_NAME} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
 	endif()
 
-	add_dependencies(tests ${name})
+	add_dependencies(tests ${TEST_NAME})
 endfunction()
 
 set(vg_tracers memcheck helgrind drd pmemcheck)

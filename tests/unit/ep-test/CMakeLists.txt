@@ -5,7 +5,7 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(ep-test
+build_test_src(UNIT NAME ep-test SRCS
 	ep-test.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/ep.c)
