@@ -5,7 +5,6 @@
  * common.c -- a common functions used by examples
  */
 
-#include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -83,6 +82,7 @@ common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
  */
 int
 client_connect(struct rpma_peer *peer, const char *addr, const char *service,
+		struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr)
 {
 	struct rpma_conn_req *req = NULL;
@@ -96,7 +96,7 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *service,
 	}
 
 	/* connect the connection request and obtain the connection object */
-	ret = rpma_conn_req_connect(&req, NULL, conn_ptr);
+	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
 	if (ret) {
 		print_error("rpma_conn_req_connect", ret);
 		(void) rpma_conn_req_delete(&req);
@@ -122,44 +122,6 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *service,
 
 err_conn_delete:
 	(void) rpma_conn_delete(conn_ptr);
-
-	return ret;
-}
-
-/*
- * client_disconnect -- disconnect, wait for RPMA_CONN_CLOSED and delete
- * the connection structure
- */
-int
-client_disconnect(struct rpma_conn **conn_ptr)
-{
-	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
-
-	/* disconnect the connection */
-	int ret = rpma_conn_disconnect(*conn_ptr);
-	if (ret) {
-		print_error("rpma_conn_disconnect", ret);
-		goto err_conn_delete;
-	}
-
-	/* wait for the connection to be closed */
-	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
-	if (ret) {
-		print_error("rpma_conn_next_event", ret);
-	} else if (conn_event != RPMA_CONN_CLOSED) {
-		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
-	} else {
-		fprintf(stderr, "rpma_conn_next_event returned an event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
-	}
-
-err_conn_delete:
-	/* delete the connection object */
-	ret = rpma_conn_delete(conn_ptr);
-	if (ret)
-		print_error("rpma_conn_delete", ret);
 
 	return ret;
 }
@@ -233,16 +195,31 @@ server_accept_connection(struct rpma_ep *ep,
 }
 
 /*
- * server_disconnect -- wait for RPMA_CONN_CLOSED, disconnect and delete
- * the connection structure
+ * common_disconnect_verbose -- call rpma_conn_disconnect() and print an error
+ * message on error
  */
-int
-server_disconnect(struct rpma_conn **conn_ptr)
+static inline int
+common_disconnect_verbose(struct rpma_conn *conn)
+{
+	/* disconnect the connection */
+	int ret = rpma_conn_disconnect(conn);
+	if (ret)
+		print_error("rpma_conn_disconnect", ret);
+
+	return ret;
+}
+
+/*
+ * common_wait_for_conn_close_verbose -- wait for RPMA_CONN_CLOSED and print
+ * an error message on error
+ */
+static inline int
+common_wait_for_conn_close_verbose(struct rpma_conn *conn)
 {
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 
 	/* wait for the connection to be closed */
-	int ret = rpma_conn_next_event(*conn_ptr, &conn_event);
+	int ret = rpma_conn_next_event(conn, &conn_event);
 	if (ret) {
 		print_error("rpma_conn_next_event", ret);
 	} else if (conn_event != RPMA_CONN_CLOSED) {
@@ -255,15 +232,53 @@ server_disconnect(struct rpma_conn **conn_ptr)
 				rpma_utils_conn_event_2str(conn_event));
 	}
 
-	/* disconnect the connection */
-	ret = rpma_conn_disconnect(*conn_ptr);
-	if (ret)
-		print_error("rpma_conn_disconnect", ret);
+	return ret;
+}
 
+/*
+ * common_conn_delete_verbose -- call rpma_conn_delete() and print an error
+ * message on error
+ */
+static inline int
+common_conn_delete_verbose(struct rpma_conn **conn_ptr)
+{
 	/* delete the connection object */
-	ret = rpma_conn_delete(conn_ptr);
+	int ret = rpma_conn_delete(conn_ptr);
 	if (ret)
 		print_error("rpma_conn_delete", ret);
+
+	return ret;
+}
+
+/*
+ * common_wait_for_conn_close_and_disconnect -- wait for RPMA_CONN_CLOSED,
+ * disconnect and delete the connection structure
+ */
+int
+common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr)
+{
+	int ret = 0;
+	ret |= common_wait_for_conn_close_verbose(*conn_ptr);
+	ret |= common_disconnect_verbose(*conn_ptr);
+	ret |= common_conn_delete_verbose(conn_ptr);
+
+	return ret;
+}
+
+/*
+ * common_disconnect_and_wait_for_conn_close -- disconnect, wait for
+ * RPMA_CONN_CLOSED and delete the connection structure
+ */
+int
+common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
+{
+	int ret = 0;
+
+	ret |= common_disconnect_verbose(*conn_ptr);
+	if (ret == 0)
+		ret |= common_wait_for_conn_close_verbose(*conn_ptr);
+
+	ret |= common_conn_delete_verbose(conn_ptr);
 
 	return ret;
 }

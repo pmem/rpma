@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
 	 * structure.
 	 */
-	ret = server_disconnect(&conn);
+	(void) common_wait_for_conn_close_and_disconnect(&conn);
 
 err_mr_dereg:
 	/* deregister the memory region */
