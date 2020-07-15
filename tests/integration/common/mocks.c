@@ -10,6 +10,51 @@
 #include "mocks.h"
 #include "cmocka_headers.h"
 
+struct ibv_cq Ibv_cq; /* mock IBV CQ */
+struct ibv_mr Ibv_mr; /* mock IBV MR */
+
+/*
+ * ibv_post_send_mock -- mock of ibv_post_send()
+ */
+int
+ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
+			struct ibv_send_wr **bad_wr)
+{
+	struct ibv_post_send_mock_args *args =
+		mock_type(struct ibv_post_send_mock_args *);
+
+	assert_non_null(qp);
+	assert_non_null(wr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->opcode, args->opcode);
+	assert_int_equal(wr->send_flags, args->send_flags);
+	assert_int_equal(wr->wr_id, args->wr_id);
+
+	return args->ret;
+}
+
+/*
+ * ibv_poll_cq_mock -- ibv_poll_cq() mock
+ */
+int
+ibv_poll_cq_mock(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
+{
+	check_expected_ptr(cq);
+	assert_int_equal(num_entries, 1);
+	assert_non_null(wc);
+
+	int result = mock_type(int);
+	if (result != 1)
+		return result;
+
+	struct ibv_wc *wc_ret = mock_type(struct ibv_wc *);
+	memcpy(wc, wc_ret, sizeof(struct ibv_wc));
+
+	return 1;
+}
+
 /*
  * ibv_dereg_mr -- a mock of ibv_dereg_mr()
  */
@@ -52,8 +97,6 @@ rdma_create_id(struct rdma_event_channel *channel,
 		errno = mock_type(int);
 		return -1;
 	}
-
-	memset(*id, 0, sizeof(struct rdma_cm_id));
 
 	return 0;
 }
@@ -344,8 +387,18 @@ ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
 struct ibv_mr *
 ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
 {
-	assert_true(0);
-	return NULL;
+	check_expected_ptr(pd);
+	assert_non_null(addr); /* posix_memalign()'ed address */
+	check_expected(length);
+	check_expected(access);
+
+	struct ibv_mr *mr = mock_type(struct ibv_mr *);
+	if (mr == NULL) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return mr;
 }
 
 /*

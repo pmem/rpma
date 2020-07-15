@@ -14,6 +14,10 @@
 
 #include "common.h"
 
+#ifdef TEST_MOCK_MAIN
+#define main client_main
+#endif
+
 int
 main(int argc, char *argv[])
 {
