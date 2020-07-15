@@ -12,7 +12,7 @@
 
 #define KILOBYTE 1024
 
-void print_error(const char *fname, int ret);
+void print_error_ex(const char *fname, int ret);
 
 void *malloc_aligned(size_t size);
 

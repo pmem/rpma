@@ -60,7 +60,7 @@ main(int argc, char *argv[])
 	ret = rpma_mr_reg(peer, dst_ptr, KILOBYTE, RPMA_MR_USAGE_READ_DST,
 			RPMA_MR_PLT_VOLATILE, &dst_mr);
 	if (ret) {
-		print_error("rpma_mr_reg", ret);
+		print_error_ex("rpma_mr_reg", ret);
 		goto err_mr_free;
 	}
 
@@ -73,10 +73,10 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	ret = rpma_conn_get_private_data(conn, &pdata);
 	if (ret) {
-		print_error("rpma_conn_next_event", ret);
+		print_error_ex("rpma_conn_next_event", ret);
 		goto err_conn_disconnect;
 	} else if (pdata.ptr == NULL) {
-		print_error(
+		print_error_ex(
 				"The server has not provided a remote memory region. (the connection's private data is empty)",
 				ret);
 		goto err_conn_disconnect;
@@ -89,14 +89,14 @@ main(int argc, char *argv[])
 	rpma_mr_descriptor *desc = pdata.ptr;
 	ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
 	if (ret) {
-		print_error("rpma_mr_remote_from_descriptor", ret);
+		print_error_ex("rpma_mr_remote_from_descriptor", ret);
 		goto err_conn_disconnect;
 	}
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(src_mr, &src_size);
 	if (ret) {
-		print_error("rpma_mr_remote_size", ret);
+		print_error_ex("rpma_mr_remote_size", ret);
 		goto err_mr_remote_delete;
 	} else if (src_size > KILOBYTE) {
 		fprintf(stderr,
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 	/* wait for a completion of the RDMA read */
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret) {
-		print_error("rpma_conn_next_completion", ret);
+		print_error_ex("rpma_conn_next_completion", ret);
 	} else if (cmpl.op != RPMA_OP_READ) {
 		fprintf(stderr,
 				"rpma_conn_next_completion returned a completion of an unexpected operation: %d\n",
@@ -132,7 +132,7 @@ err_mr_remote_delete:
 	/* delete the remote memory region's structure */
 	ret = rpma_mr_remote_delete(&src_mr);
 	if (ret)
-		print_error("rpma_mr_remote_delete", ret);
+		print_error_ex("rpma_mr_remote_delete", ret);
 
 err_conn_disconnect:
 	(void) common_disconnect_and_wait_for_conn_close(&conn);
@@ -141,7 +141,7 @@ err_mr_dereg:
 	/* deregister the memory region */
 	ret = rpma_mr_dereg(&dst_mr);
 	if (ret)
-		print_error("rpma_mr_dereg", ret);
+		print_error_ex("rpma_mr_dereg", ret);
 
 err_mr_free:
 	/* free the memory */
@@ -151,7 +151,7 @@ err_peer_delete:
 	/* delete the peer */
 	ret = rpma_peer_delete(&peer);
 	if (ret)
-		print_error("rpma_peer_delete", ret);
+		print_error_ex("rpma_peer_delete", ret);
 
 	return ret;
 }
