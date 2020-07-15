@@ -71,26 +71,26 @@ typedef void log_function(
  *
  * DESCRIPTION
  * rpma_log_init() initializes the logging module. Messages prior to this call
- * will be dropped. Logging messages are written either to syslog(3)/stderr(3)
- * or delivered to end-user application via function given by
- * user_defined_log_function parameter.
+ * will be dropped. The logged messages are written either to syslog(3)/
+ * stderr(3) or delivered to end-user application via function given by
+ * the user_defined_log_function parameter.
  *
  * Logging thresholds to syslog(3)/stderr(3) are set using
  * rpma_log_syslog_set_threshold(3) and rpma_log_stderr_set_threshold(3).
  *
  * rpma_log_init() is automatically called when librpma library is loaded
- * and default thresholds are set:
+ * and the default thresholds are set:
  * - RPMA_LOG_WARNING for syslog(3)
  * - RPMA_LOG_DISABLED for stderr(3).
  *
  * Logging to syslog(3)/stderr(3) is disabled when user_defined_log_function
- * is provided. In such a case all messages are passed directly
+ * is provided. In such case all messages are passed directly
  * to the given function.
  *
- * Parameters of a user-define log function are as follow:
+ * Parameters of a user-defined log function are as follow:
  * - level - actual logging level of message - see rpma_log_level
- * - file_name - source file name where log message is produced. Could be set
- * to NULL and in such a case neither line_no nor function_name are provided
+ * - file_name - source file name where log message is produced. It could be
+ * set to NULL and in such case neither line_no nor function_name are provided
  * - line_no - source file line number where log message is produced
  * - function_name - function name where log message is produced
  * - message_format - printf(3) like format of the message
@@ -99,12 +99,12 @@ typedef void log_function(
  * ERRORS
  * rpma_log_init() can fail with the following error:
  * * - -1 - logging has already been started. Call rpma_log_fini (3) to close
- * currently active log.
+ * the currently active log.
  */
 int rpma_log_init(log_function *user_defined_log_function);
 
 /** 3
- * rpma_log_fini - close the currently active log
+ * rpma_log_fini - closes the currently active log
  *
  * SYNOPSIS
  *
@@ -113,13 +113,13 @@ int rpma_log_init(log_function *user_defined_log_function);
  * void rpma_log_fini(void);
  *
  * DESCRIPTION
- * rpma_log_fini() close the currently active log. Messages after this call
+ * rpma_log_fini() close the currently active log. All messages after this call
  * will be dropped.
  */
 void rpma_log_fini(void);
 
 /** 3
- * rpma_log_syslog_set_threshold - set threshold level for logging to syslog
+ * rpma_log_syslog_set_threshold - set the hreshold level for logging to syslog
  *
  * SYNOPSIS
  *
@@ -138,7 +138,7 @@ void rpma_log_fini(void);
  * } rpma_log_level;
  *
  * DESCRIPTION
- * rpma_log_syslog_set_threshold() set the threshold level for the default
+ * rpma_log_syslog_set_threshold() sets the threshold level for the default
  * logging function for logging to syslog(3). Messages with a higher level than
  * this are ignored. RPMA_LOG_DISABLED shall be used to completely suppress
  * writing to syslog(3).
@@ -168,7 +168,7 @@ void rpma_log_fini(void);
  *
  * NOTES
  * - rpma_log_syslog_set_threshold() is automatically called during loading of
- * the library to set default syslog(3) logging threshold to
+ * the library to set the default syslog(3) logging threshold to
  * RPMA_LOG_LEVEL_WARNING
  * - rpma_log_syslog_set_threshold() does not affect calling
  * user_defined_log_function() in any way.
@@ -176,7 +176,8 @@ void rpma_log_fini(void);
 int rpma_log_syslog_set_threshold(rpma_log_level level);
 
 /** 3
- * rpma_log_syslog_get_threshold - current threshold level for logging to syslog
+ * rpma_log_syslog_get_threshold - get the current threshold level for logging
+ * to syslog
  *
  * SYNOPSIS
  *
@@ -185,22 +186,23 @@ int rpma_log_syslog_set_threshold(rpma_log_level level);
  * rpma_log_level rpma_log_syslog_get_threshold(void);
  *
  * DESCRIPTION
- * rpma_log_syslog_get_threshold()
- * get the current log level threshold for messages written to syslog(3).
+ * rpma_log_syslog_get_threshold() gets the current log level threshold for
+ * messages written to syslog(3).
  *
- * RPMA_LOG_DISABLED indicates completely suppress writing to syslog(3).
+ * RPMA_LOG_DISABLED indicates that writing to syslog(3) is disabled.
  *
  * See rpma_log_syslog_set_threshold(3) for available thresholds.
  *
  * RETURN VALUE
- * rpma_log_syslog_get_threshold() returns actual log to syslog() threshold or
- * RPMA_LOG_DISABLED if logging to syslog() is disabled.
+ * rpma_log_syslog_get_threshold() returns the actual threshold for logging
+ * to syslog(3) or RPMA_LOG_DISABLED if logging to syslog(3) is disabled.
  *
  */
 rpma_log_level rpma_log_syslog_get_threshold(void);
 
 /** 3
- * rpma_log_stderr_set_threshold - set threshold level for logging to stderr
+ * rpma_log_stderr_set_threshold - set the threshold level for logging to
+ * stderr
  *
  * SYNOPSIS
  *
@@ -209,9 +211,9 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  * int rpma_log_stderr_set_threshold(rpma_log_level level);
  *
  * DESCRIPTION
- * rpma_log_stderr_set_threshold() set threshold level for the default
+ * rpma_log_stderr_set_threshold() sets threshold level for the default
  * logging function for logging to stderr(3). Messages with a higher level
- * than this are not shown on stderr(3).  * RPMA_LOG_DISABLED shall be used
+ * than this are not shown on stderr(3). RPMA_LOG_DISABLED shall be used
  * to completely suppress writing to stderr(3).
  *
  * See rpma_log_syslog_set_threshold(3) for available thresholds.
@@ -222,7 +224,6 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  *
  * ERRORS
  * rpma_log_stderr_set_threshold() can fail with the following error:
- *
  * - -1 - level out of scope
  *
  * NOTES
@@ -244,17 +245,16 @@ int rpma_log_stderr_set_threshold(rpma_log_level level);
  * rpma_log_level rpma_log_stderr_get_threshold(void);
  *
  * DESCRIPTION
- * rpma_log_stderr_get_threshold() - get the current log level to stderr
+ * rpma_log_stderr_get_threshold(3) gets the current log level to stderr(3)
  * threshold.
  *
- * RPMA_LOG_DISABLED indicates completely suppress messages printing
- * on stderr(3).
+ * RPMA_LOG_DISABLED indicates that writing to stderr(3) is disabled.
  *
  * See rpma_log_syslog_set_threshold(3) for available thresholds.
  *
  * RETURN VALUE
- * rpma_log_stderr_get_threshold() returns actual log print to stderr(3)
- * threshold or RPMA_LOG_DISABLED if log printing to stderr is disabled.
+ * rpma_log_stderr_get_threshold() returns the actual threshold for logging
+ * to stderr(3) or RPMA_LOG_DISABLED if logging to stderr(3) is disabled.
  */
 rpma_log_level rpma_log_stderr_get_threshold(void);
 
