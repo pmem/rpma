@@ -54,6 +54,7 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 	assert_int_equal(wr->opcode, args->opcode);
 	assert_int_equal(wr->send_flags, args->send_flags);
 	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_null(wr->next);
 
 	return args->ret;
 }

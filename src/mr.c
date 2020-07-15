@@ -96,6 +96,7 @@ rpma_mr_read(struct ibv_qp *qp,
 	wr.num_sge = 1;
 
 	wr.wr_id = (uint64_t)op_context;
+	wr.next = NULL;
 	wr.opcode = IBV_WR_RDMA_READ;
 	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
 		IBV_SEND_SIGNALED : 0;
