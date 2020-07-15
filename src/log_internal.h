@@ -65,12 +65,6 @@ void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
 	const char *function_name, const char *message_format, ...);
 
 /*
- * rpma_log_level2syslog_severity - logging level to syslog severity
- * conversion.
- */
-int rpma_log_level2syslog_severity(rpma_log_level level);
-
-/*
  * Default thresholds for logging levels
  */
 #ifdef DEBUG

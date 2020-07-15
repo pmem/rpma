@@ -98,6 +98,18 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 }
 
 /*
+ * rpma_level2syslog_severity - logging level to syslog severity conversion.
+ *
+ * ASSUMPTIONS:
+ * - level != RPMA_LOG_DISABLE
+ */
+static inline int
+rpma_log_level2syslog_severity(rpma_log_level level)
+{
+	return rpma_log_level_syslog_severity[level];
+};
+
+/*
  * rpma_log_function -- default logging function used to log a message
  * to syslog and/or stderr
  *
@@ -257,15 +269,3 @@ rpma_log_stderr_get_threshold(void)
 {
 	return Rpma_log_stderr_threshold;
 }
-
-/*
- * rpma_level2syslog_severity - logging level to syslog severity conversion.
- *
- * ASSUMPTIONS:
- * - level != RPMA_LOG_DISABLE
- */
-int
-rpma_log_level2syslog_severity(rpma_log_level level)
-{
-	return rpma_log_level_syslog_severity[level];
-};
