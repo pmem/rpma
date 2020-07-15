@@ -53,8 +53,8 @@ function(add_example)
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
-	target_include_directories(${target} PRIVATE common 
-	${LIBRPMA_SOURCE_DIR})
+	target_include_directories(${target} PRIVATE common
+		${LIBRPMA_SOURCE_DIR})
 endfunction()
 
 add_example(NAME template BIN template
