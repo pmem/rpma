@@ -113,13 +113,13 @@ int rpma_log_init(log_function *user_defined_log_function);
  * void rpma_log_fini(void);
  *
  * DESCRIPTION
- * rpma_log_fini() close the currently active log. All messages after this call
+ * rpma_log_fini() closes the currently active log. All messages after this call
  * will be dropped.
  */
 void rpma_log_fini(void);
 
 /** 3
- * rpma_log_syslog_set_threshold - set the hreshold level for logging to syslog
+ * rpma_log_syslog_set_threshold - set the threshold level for logging to syslog
  *
  * SYNOPSIS
  *
@@ -211,7 +211,7 @@ rpma_log_level rpma_log_syslog_get_threshold(void);
  * int rpma_log_stderr_set_threshold(rpma_log_level level);
  *
  * DESCRIPTION
- * rpma_log_stderr_set_threshold() sets threshold level for the default
+ * rpma_log_stderr_set_threshold() sets the threshold level for the default
  * logging function for logging to stderr(3). Messages with a higher level
  * than this are not shown on stderr(3). RPMA_LOG_DISABLED shall be used
  * to completely suppress writing to stderr(3).
