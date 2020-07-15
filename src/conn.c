@@ -246,8 +246,6 @@ rpma_read(struct rpma_conn *conn,
 
 /*
  * rpma_write -- initialize the write operation
- *
- * XXX uses rpma_mr_write
  */
 int
 rpma_write(struct rpma_conn *conn,
@@ -255,7 +253,13 @@ rpma_write(struct rpma_conn *conn,
 	struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_write(conn->id->qp,
+			dst, dst_offset,
+			src, src_offset,
+			len, flags, op_context);
 }
 
 /*
