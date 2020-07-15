@@ -7,7 +7,7 @@ include(../../cmake/ctest_helpers.cmake)
 
 set(TARGET "example-01-connection")
 
-build_test_src(${TARGET}
+build_test_src(INTEGRATION NAME ${TARGET} SRCS
 	example-01-connection.c
 	../common/mocks.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
