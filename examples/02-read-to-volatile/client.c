@@ -14,8 +14,6 @@
 
 #include "common.h"
 
-#define KILOBYTE 1024
-
 int
 main(int argc, char *argv[])
 {
@@ -67,7 +65,7 @@ main(int argc, char *argv[])
 	}
 
 	/* establish a new connection to a server listening at addr:service */
-	ret = client_connect(peer, addr, service, &conn);
+	ret = client_connect(peer, addr, service, NULL, &conn);
 	if (ret)
 		goto err_mr_dereg;
 
@@ -137,7 +135,7 @@ err_mr_remote_delete:
 		print_error("rpma_mr_remote_delete", ret);
 
 err_conn_disconnect:
-	(void) client_disconnect(&conn);
+	(void) common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
 	/* deregister the memory region */
