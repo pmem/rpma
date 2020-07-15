@@ -5,10 +5,17 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(conn_req-test
-	conn_req-test.c
-	${LIBRPMA_SOURCE_DIR}/rpma_err.c
-	${LIBRPMA_SOURCE_DIR}/conn_req.c)
+build_test_src(UNIT NAME conn_req-test SRCS
+       conn_req-test.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-conn.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-ibv.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-info.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-peer.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-private_data.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+       ${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
+       ${LIBRPMA_SOURCE_DIR}/conn_req.c
+       ${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
 target_compile_definitions(conn_req-test PRIVATE TEST_MOCK_ALLOC)
 
