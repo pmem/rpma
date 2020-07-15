@@ -5,7 +5,7 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(mr-test
+build_test_src(UNIT NAME mr-test SRCS
 	mr-test.c
 	mr-test-common.c
 	mr-test-descriptor.c

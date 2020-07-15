@@ -5,7 +5,7 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(peer-test
+build_test_src(UNIT NAME peer-test SRCS
 	peer-test.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/peer.c)
