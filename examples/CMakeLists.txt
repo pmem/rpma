@@ -53,7 +53,8 @@ function(add_example)
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
-	target_include_directories(${target} PRIVATE common)
+	target_include_directories(${target} PRIVATE common
+		${LIBRPMA_SOURCE_DIR})
 endfunction()
 
 add_example(NAME template BIN template
@@ -66,5 +67,7 @@ add_example(NAME 02-read-to-volatile BIN server
 	SRCS 02-read-to-volatile/server.c common/common.c)
 add_example(NAME 02-read-to-volatile BIN client
 	SRCS 02-read-to-volatile/client.c common/common.c)
+
+add_example(NAME log BIN log SRCS log/log-example.c log/log-worker.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
