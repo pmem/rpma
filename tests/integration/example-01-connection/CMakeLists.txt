@@ -30,8 +30,7 @@ target_include_directories(${TARGET} PRIVATE
 
 set_target_properties(${TARGET}
        PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=fprintf"
-       LINK_FLAGS "-Wl,--wrap=_test_malloc")
+       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=fprintf")
 
 target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCK_MAIN
