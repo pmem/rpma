@@ -32,6 +32,8 @@ set(LIBRPMA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
 set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
 set(LIBRDMACM_REQUIRED_VERSION 1.0)  # XXX set the required value
+# required only for some examples
+set(LIBPMEM_REQUIRED_VERSION 1.6)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
@@ -102,6 +104,7 @@ endif()
 
 pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
 pkg_check_modules(LIBRDMACM REQUIRED librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
+pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
