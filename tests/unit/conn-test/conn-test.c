@@ -24,7 +24,7 @@ struct rpma_test_group groups[] = {
 	RPMA_TEST_GROUP(tests_next_event, NULL),
 	RPMA_TEST_GROUP(tests_private_data, NULL),
 	RPMA_TEST_GROUP(tests_read, group_setup_read),
-	RPMA_TEST_GROUP(tests_write, NULL),
+	RPMA_TEST_GROUP(tests_write, group_setup_write),
 	RPMA_TEST_GROUP(NULL, NULL),
 };
 

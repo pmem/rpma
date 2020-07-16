@@ -19,8 +19,8 @@ static void
 test_read__conn_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_read(NULL, MOCK_DST, MOCK_DST_OFFSET,
-				MOCK_SRC, MOCK_SRC_OFFSET,
+	int ret = rpma_read(NULL, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -34,8 +34,8 @@ static void
 test_read__dst_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_read(MOCK_CONN, NULL, MOCK_DST_OFFSET,
-				MOCK_SRC, MOCK_SRC_OFFSET,
+	int ret = rpma_read(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -49,8 +49,8 @@ static void
 test_read__src_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
-				NULL, MOCK_SRC_OFFSET,
+	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+				NULL, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -64,8 +64,8 @@ static void
 test_read__flags_0(void **unused)
 {
 	/* run test */
-	int ret = rpma_read(MOCK_CONN, MOCK_DST, MOCK_DST_OFFSET,
-				MOCK_SRC, MOCK_SRC_OFFSET,
+	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, 0, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -80,8 +80,8 @@ static void
 test_read__conn_dst_src_NULL_flags_0(void **unused)
 {
 	/* run test */
-	int ret = rpma_read(NULL, NULL, MOCK_DST_OFFSET,
-				NULL, MOCK_SRC_OFFSET,
+	int ret = rpma_read(NULL, NULL, MOCK_LOCAL_OFFSET,
+				NULL, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, 0, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -98,18 +98,18 @@ test_read__success(void **cstate_ptr)
 
 	/* configure mocks */
 	expect_value(rpma_mr_read, qp, MOCK_QP);
-	expect_value(rpma_mr_read, dst, MOCK_DST);
-	expect_value(rpma_mr_read, dst_offset, MOCK_DST_OFFSET);
-	expect_value(rpma_mr_read, src, MOCK_SRC);
-	expect_value(rpma_mr_read, src_offset, MOCK_SRC_OFFSET);
+	expect_value(rpma_mr_read, dst, MOCK_RPMA_MR_LOCAL);
+	expect_value(rpma_mr_read, dst_offset, MOCK_LOCAL_OFFSET);
+	expect_value(rpma_mr_read, src, MOCK_RPMA_MR_REMOTE);
+	expect_value(rpma_mr_read, src_offset, MOCK_REMOTE_OFFSET);
 	expect_value(rpma_mr_read, len, MOCK_LEN);
 	expect_value(rpma_mr_read, flags, MOCK_FLAGS);
 	expect_value(rpma_mr_read, op_context, MOCK_OP_CONTEXT);
 	will_return(rpma_mr_read, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_read(cstate->conn, MOCK_DST, MOCK_DST_OFFSET,
-				MOCK_SRC, MOCK_SRC_OFFSET,
+	int ret = rpma_read(cstate->conn, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
 
 	/* verify the results */
