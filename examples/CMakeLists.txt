@@ -37,7 +37,7 @@ add_check_whitespace(examples-all
 	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
 
 function(add_example)
-	set(options "")
+	set(options USE_LIBPMEM_IF_FOUND)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(EXAMPLE
@@ -55,6 +55,14 @@ function(add_example)
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
 	target_include_directories(${target} PRIVATE common
 		${LIBRPMA_SOURCE_DIR})
+
+	if(USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
+		target_include_directories(example-${EXAMPLE_NAME}
+			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
+		target_link_libraries(example-${EXAMPLE_NAME} libpmem)
+		target_compile_definitions(example-${EXAMPLE_NAME}
+			PRIVATE USE_LIBPMEM)
+	endif()
 endfunction()
 
 add_example(NAME template BIN template
