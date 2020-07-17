@@ -21,10 +21,10 @@ int server_main(int argc, char *argv[]);
 /* tests */
 
 /*
- * test_client -- connection integration test, client
+ * test_client__success -- connection integration test, client
  */
 void
-test_client(void **unused)
+test_client__success(void **unused)
 {
 	/* configure mocks for rpma_utils_get_ibv_context */
 	struct rdma_addrinfo res1;
@@ -137,10 +137,10 @@ test_client(void **unused)
 }
 
 /*
- * test_server -- connection integration test, server
+ * test_server__success -- connection integration test, server
  */
 void
-test_server(void **unused)
+test_server__success(void **unused)
 {
 	/* configure mocks for rpma_utils_get_ibv_context */
 	struct rdma_addrinfo res1;
@@ -274,8 +274,8 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_client),
-		cmocka_unit_test(test_server),
+		cmocka_unit_test(test_client__success),
+		cmocka_unit_test(test_server__success),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
