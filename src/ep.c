@@ -8,8 +8,8 @@
  */
 
 #include <errno.h>
+#include <stdlib.h>
 
-#include "cmocka_alloc.h"
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
@@ -23,6 +23,10 @@ struct rpma_ep {
 	/* event channel of the CM ID */
 	struct rdma_event_channel *evch;
 };
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#endif
 
 /* public librpma API */
 
@@ -71,7 +75,7 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 		goto err_info_delete;
 	}
 
-	ep = Malloc(sizeof(*ep));
+	ep = malloc(sizeof(*ep));
 	if (ep == NULL) {
 		/* according to malloc(3) it can fail only with ENOMEM */
 		ret = RPMA_E_NOMEM;
@@ -118,7 +122,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	rdma_destroy_event_channel(ep->evch);
 
-	Free(ep);
+	free(ep);
 	*ep_ptr = NULL;
 
 	return 0;
