@@ -144,7 +144,9 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 				rpma_log_level_names[level]) < 0)
 			strcpy(prefix, "[error prefix]: ");
 	} else {
-		prefix[0] = '\0';
+		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
+				rpma_log_level_names[level]) < 0)
+			strcpy(prefix, "[error prefix]: ");
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
