@@ -7,11 +7,16 @@
  * conn.c -- librpma connection-related implementations
  */
 
-#include "cmocka_alloc.h"
 #include "conn.h"
 #include "mr.h"
 #include "private_data.h"
 #include "rpma_err.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#else
+#include <stdlib.h>
+#endif
 
 struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
@@ -51,7 +56,7 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 		goto err_destroy_evch;
 	}
 
-	struct rpma_conn *conn = Malloc(sizeof(*conn));
+	struct rpma_conn *conn = malloc(sizeof(*conn));
 	if (!conn) {
 		ret = RPMA_E_NOMEM;
 		goto err_migrate_id_NULL;
@@ -210,7 +215,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	rdma_destroy_event_channel(conn->evch);
 	rpma_private_data_discard(&conn->data);
 
-	Free(conn);
+	free(conn);
 	*conn_ptr = NULL;
 
 	return 0;
@@ -220,7 +225,7 @@ err_destroy_id:
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
 
-	Free(conn);
+	free(conn);
 	*conn_ptr = NULL;
 
 	return ret;

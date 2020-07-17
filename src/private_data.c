@@ -7,8 +7,13 @@
  * private_data.c -- a store for connections' private data
  */
 
-#include "cmocka_alloc.h"
 #include "private_data.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#else
+#include <stdlib.h>
+#endif
 
 /*
  * rpma_private_data_store -- store a copy of the data provided via the CM event
@@ -25,7 +30,7 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 		return 0;
 
 	/* allocate a buffer for a copy of data from ptr */
-	void *ptr_copy = Malloc(len);
+	void *ptr_copy = malloc(len);
 	if (ptr_copy == NULL)
 		return RPMA_E_NOMEM;
 
@@ -48,7 +53,7 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 	if (src->ptr == NULL)
 		return 0;
 
-	dst->ptr = Malloc(src->len);
+	dst->ptr = malloc(src->len);
 	if (dst->ptr == NULL)
 		return RPMA_E_NOMEM;
 
@@ -64,7 +69,7 @@ rpma_private_data_copy(struct rpma_conn_private_data *dst,
 void
 rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 {
-	Free(pdata->ptr);
+	free(pdata->ptr);
 
 	pdata->ptr = NULL;
 	pdata->len = 0;

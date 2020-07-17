@@ -7,11 +7,16 @@
 
 #include <endian.h>
 
-#include "cmocka_alloc.h"
 #include "librpma.h"
 #include "mr.h"
 #include "peer.h"
 #include "rpma_err.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#else
+#include <stdlib.h>
+#endif
 
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
@@ -141,7 +146,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		return RPMA_E_INVAL;
 
 	struct rpma_mr_local *mr;
-	mr = Malloc(sizeof(struct rpma_mr_local));
+	mr = malloc(sizeof(struct rpma_mr_local));
 	if (mr == NULL)
 		return RPMA_E_NOMEM;
 
@@ -149,7 +154,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 	int ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size,
 			usage_to_access(usage));
 	if (ret) {
-		Free(mr);
+		free(mr);
 		return ret;
 	}
 
@@ -180,7 +185,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 		ret = RPMA_E_PROVIDER;
 	}
 
-	Free(mr);
+	free(mr);
 	*mr_ptr = NULL;
 
 	return ret;
@@ -232,7 +237,7 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT)
 		return RPMA_E_NOSUPP;
 
-	struct rpma_mr_remote *mr = Malloc(sizeof(struct rpma_mr_remote));
+	struct rpma_mr_remote *mr = malloc(sizeof(struct rpma_mr_remote));
 	if (mr == NULL)
 		return RPMA_E_NOMEM;
 
@@ -271,7 +276,7 @@ rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 	if (*mr_ptr == NULL)
 		return 0;
 
-	Free(*mr_ptr);
+	free(*mr_ptr);
 	*mr_ptr = NULL;
 
 	return 0;

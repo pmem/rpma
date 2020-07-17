@@ -9,12 +9,17 @@
 
 #include <errno.h>
 
-#include "cmocka_alloc.h"
 #include "conn_req.h"
 #include "info.h"
 #include "rpma_err.h"
 
 #include "librpma.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#else
+#include <stdlib.h>
+#endif
 
 struct rpma_info {
 	/* either active or passive side of the connection */
@@ -51,7 +56,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 		return RPMA_E_PROVIDER;
 	}
 
-	struct rpma_info *info = Malloc(sizeof(*info));
+	struct rpma_info *info = malloc(sizeof(*info));
 	if (info == NULL) {
 		ret = RPMA_E_NOMEM;
 		goto err_freeaddrinfo;
@@ -83,7 +88,7 @@ rpma_info_delete(struct rpma_info **info_ptr)
 		return 0;
 
 	rdma_freeaddrinfo(info->rai);
-	Free(info);
+	free(info);
 	*info_ptr = NULL;
 
 	return 0;
