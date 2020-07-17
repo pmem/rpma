@@ -10,6 +10,64 @@
 #include "mocks.h"
 #include "cmocka_headers.h"
 
+struct ibv_cq Ibv_cq; /* mock IBV CQ */
+struct ibv_mr Ibv_mr; /* mock IBV MR */
+
+/*
+ * ibv_post_send_mock -- mock of ibv_post_send()
+ */
+int
+ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
+			struct ibv_send_wr **bad_wr)
+{
+	struct ibv_post_send_mock_args *args =
+		mock_type(struct ibv_post_send_mock_args *);
+
+	assert_non_null(qp);
+	assert_non_null(wr);
+	assert_null(wr->next);
+	assert_non_null(wr->sg_list);
+	assert_non_null(wr->sg_list->addr);
+	assert_non_null(wr->wr.rdma.remote_addr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->opcode, args->opcode);
+	assert_int_equal(wr->send_flags, args->send_flags);
+	assert_int_equal(wr->wr_id, args->wr_id);
+
+	assert_int_equal(wr->num_sge, 1);
+	assert_int_equal(wr->sg_list->addr, *args->pdst_addr);
+	assert_int_equal(wr->sg_list->length, args->dst_len);
+	assert_int_equal(wr->wr.rdma.remote_addr, args->src_addr);
+
+	/* mock of RDMA read */
+	memcpy((void *)wr->sg_list->addr,
+		(void *)wr->wr.rdma.remote_addr, wr->sg_list->length);
+
+	return args->ret;
+}
+
+/*
+ * ibv_poll_cq_mock -- ibv_poll_cq() mock
+ */
+int
+ibv_poll_cq_mock(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
+{
+	check_expected_ptr(cq);
+	assert_int_equal(num_entries, 1);
+	assert_non_null(wc);
+
+	int result = mock_type(int);
+	if (result != 1)
+		return result;
+
+	struct ibv_wc *wc_ret = mock_type(struct ibv_wc *);
+	memcpy(wc, wc_ret, sizeof(struct ibv_wc));
+
+	return 1;
+}
+
 /*
  * ibv_dereg_mr -- a mock of ibv_dereg_mr()
  */
@@ -299,6 +357,8 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
 	if (errno)
 		return -1;
 
+	id->qp = mock_type(struct ibv_qp *);
+
 	return 0;
 }
 
@@ -344,8 +404,24 @@ ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
 struct ibv_mr *
 ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
 {
-	assert_true(0);
-	return NULL;
+	struct ibv_reg_mr_args *args =
+		mock_type(struct ibv_reg_mr_args *);
+
+	assert_ptr_equal(pd, args->pd);
+	assert_ptr_equal(addr, *args->paddr);
+	assert_int_equal(length, args->length);
+	assert_int_equal(access, args->access);
+
+	struct ibv_mr *mr = args->mr;
+	if (mr == NULL) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	mr->addr = addr;
+	mr->length = length;
+
+	return mr;
 }
 
 /*
@@ -479,6 +555,26 @@ __wrap__test_malloc(size_t size)
 	}
 
 	return __real__test_malloc(size);
+}
+
+/*
+ * __wrap_posix_memalign -- posix_memalign() mock
+ */
+int
+__wrap_posix_memalign(void **memptr, size_t alignment, size_t size)
+{
+	struct posix_memalign_args *args =
+		mock_type(struct posix_memalign_args *);
+
+	*memptr = __real__test_malloc(size);
+
+	/* save the address of the allocated memory to verify it later */
+	args->ptr = *memptr;
+
+	if (*memptr == NULL)
+		return ENOMEM;
+
+	return 0;
 }
 
 /*
