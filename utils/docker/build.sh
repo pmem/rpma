@@ -60,7 +60,6 @@ fi
 
 if [ "$COVERAGE" == "1" ]; then
 	docker_opts="${docker_opts} `bash <(curl -s https://codecov.io/env)`";
-	ci_env=`bash <(curl -s https://codecov.io/env)`
 fi
 
 if [ -n "$DNS_SERVER" ]; then DNS_SETTING=" --dns=$DNS_SERVER "; fi
@@ -88,7 +87,6 @@ echo Building 0.1-${OS}-${OS_VER}
 docker run --privileged=true --name=$containerName -i $TTY \
 	$DNS_SETTING \
 	${docker_opts} \
-	$ci_env \
 	--env http_proxy=$http_proxy \
 	--env https_proxy=$https_proxy \
 	--env AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE \

@@ -40,9 +40,4 @@ add_check_whitespace(tests-all
        ${CMAKE_CURRENT_SOURCE_DIR}/*/*/*.[ch])
 
 add_subdirectory(unit)
-
-# Integration tests break codecov results. The root cause is unknown.
-# This condition is merely a WA for this issue.
-if(NOT COVERAGE)
-       add_subdirectory(integration)
-endif()
+add_subdirectory(integration)

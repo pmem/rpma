@@ -16,6 +16,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Additional parameters to build docker without building components
 ARG SKIP_VALGRIND_BUILD
+ARG SKIP_SCRIPTS_DOWNLOAD
 
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
@@ -69,6 +70,11 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Download scripts required in run-*.sh
+COPY download-scripts.sh download-scripts.sh
+COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
+RUN ./download-scripts.sh
 
 # Add user
 ENV USER user
