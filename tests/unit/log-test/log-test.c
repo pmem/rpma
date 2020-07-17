@@ -6,15 +6,13 @@
 /*
  * log-test.c -- the log unit tests hub
  */
-/*
- *
- * XXX - move custom test to log-test-custom.h/c
- */
 
 #include "log-test-common.h"
-#include "log-test-to-stderr.h"
 #include "log-test-to-syslog.h"
 
+extern const struct CMUnitTest log_test_common[];
+extern const struct CMUnitTest log_test_to_stderr[];
+extern const struct CMUnitTest log_test_to_syslog[];
 extern const struct CMUnitTest log_test_to_custom_function[];
 
 struct rpma_test_group groups[] = {

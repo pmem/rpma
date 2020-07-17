@@ -2,15 +2,10 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * XXX WIP - missing tests with time and with/without file information
- */
-
-/*
  * log-test-default.c -- unit tests of the log module with the default
  * log function (logging to stderr and syslog)
  */
 
-#include "log-test-to-stderr.h"
 #include <stdlib.h>
 #include <string.h>
 #include "time.h"

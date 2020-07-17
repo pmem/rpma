@@ -5,17 +5,15 @@
  * log-test-common.h -- log unit tests common module
  */
 
-
 #ifndef LOG_TEST_COMMON_H
 #define LOG_TEST_COMMON_H
+
 #include "cmocka_headers.h"
 #include "log_internal.h"
 
-extern const struct CMUnitTest log_test_common[];
-
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-#define TEST_FILE_NAME "ala_ma_kota.c"
+#define TEST_FILE_NAME "foo_bar.c"
 #define TEST_FUNCTION_NAME "foo_bar()"
 #define TEST_LINE_NO 1
 #define TEST_MESSAGE "Message"

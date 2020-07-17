@@ -11,8 +11,6 @@
 #include "log-test-common.h"
 #include <syslog.h>
 
-extern const struct CMUnitTest log_test_to_syslog[];
-
 /*
  * syslog_mock_enable() - enable mock behavior of syslog mocks
  */
