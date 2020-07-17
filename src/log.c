@@ -154,8 +154,8 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 
 	if (level <= Rpma_log_syslog_threshold) {
 		if (level != RPMA_LOG_DISABLED) {
-			int severity = rpma_log_level2syslog_severity(level);
-			syslog(severity, "%s%s", prefix, message);
+			syslog(rpma_log_level2syslog_severity(level),
+				"%s%s", prefix, message);
 		}
 	}
 }
