@@ -12,9 +12,9 @@
 #include "log-test-to-syslog.h" /* for syslog mock enabling/disabling */
 
 /*
- * fprintf -- frpintf() mock - dedicated for stderr
+ * fprintf -- frprintf() mock - dedicated for stderr
  */
-char fprintf_output[1024];
+static char fprintf_output[1024];
 
 int
 __wrap_fprintf(FILE *__restrict __stream, const char *__restrict __format, ...)
@@ -37,6 +37,32 @@ __wrap_fprintf(FILE *__restrict __stream, const char *__restrict __format, ...)
 
 	return ret;
 }
+
+/*
+ * snprintf -- snprintf() mock
+ */
+int
+__wrap_snprintf(char *__restrict __s, size_t __maxlen,
+		const char *__restrict __format, ...)
+{
+	// int ret = mock_type(int);
+	// if (ret < 0)
+	//	return ret;
+
+	va_list args;
+	va_start(args, __format);
+
+	int ret = vsnprintf(__s, __maxlen, __format, args);
+	assert_true(ret > 0);
+//	if (ret > 0)
+//		check_expected_ptr(snprintf_output);
+
+	va_end(args);
+
+	return ret;
+
+}
+
 
 #define TEST_TIME_STR "[1970-01-01 00:00:00.000000] "
 #define TEST_TIME_ERROR_STR "[unknown time] "

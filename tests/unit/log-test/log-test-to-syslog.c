@@ -105,6 +105,7 @@ setup_log(void **config_ptr)
 	rpma_log_fini();
 	assert_int_equal(0, rpma_log_init(NULL));
 	syslog_mock_enable();
+	// will_return_maybe(__wrap_snprintf, 1);
 	return setup_threshold(config_ptr);
 }
 

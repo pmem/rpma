@@ -14,6 +14,6 @@ build_test_src(UNIT NAME log-test SRCS
 	${LIBRPMA_SOURCE_DIR}/log.c)
 
 set_target_properties(log-test PROPERTIES 
-	LINK_FLAGS "-Wl,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime")
+	LINK_FLAGS "-Wl,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime,--wrap=snprintf")
 
 add_test_generic(NAME log-test TRACERS none)
