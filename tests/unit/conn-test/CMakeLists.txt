@@ -5,7 +5,7 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(conn-test
+build_test_src(UNIT NAME conn-test SRCS
 	conn-test.c
 	conn-test-common.c
 	conn-test-disconnect.c
