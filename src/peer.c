@@ -8,11 +8,15 @@
  */
 
 #include <errno.h>
+#include <stdlib.h>
 
-#include "cmocka_alloc.h"
 #include "conn_req.h"
 #include "peer.h"
 #include "rpma_err.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#endif
 
 struct rpma_peer {
 	struct ibv_pd *pd; /* a protection domain */
@@ -126,7 +130,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 		}
 	}
 
-	struct rpma_peer *peer = Malloc(sizeof(*peer));
+	struct rpma_peer *peer = malloc(sizeof(*peer));
 	if (peer == NULL) {
 		ret = RPMA_E_NOMEM;
 		goto err_dealloc_pd;
@@ -162,7 +166,7 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 		return RPMA_E_PROVIDER;
 	}
 
-	Free(peer);
+	free(peer);
 	*peer_ptr = NULL;
 
 	return 0;

@@ -7,15 +7,19 @@
  * conn_req.c -- librpma connection-request-related implementations
  */
 
+#include <stdlib.h>
 #include <rdma/rdma_cma.h>
 
-#include "cmocka_alloc.h"
 #include "conn.h"
 #include "conn_req.h"
 #include "info.h"
 #include "peer.h"
 #include "private_data.h"
 #include "rpma_err.h"
+
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#endif
 
 struct rpma_conn_req {
 	/* RDMA_CM_EVENT_CONNECT_REQUEST event (if applicable) */
@@ -55,7 +59,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	if (ret)
 		goto err_destroy_cq;
 
-	*req = (struct rpma_conn_req *)Malloc(sizeof(struct rpma_conn_req));
+	*req = (struct rpma_conn_req *)malloc(sizeof(struct rpma_conn_req));
 	if (*req == NULL) {
 		ret = RPMA_E_NOMEM;
 		goto err_destroy_qp;
@@ -358,7 +362,7 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	else
 		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
 
-	Free(req);
+	free(req);
 	*req_ptr = NULL;
 
 	return ret;
@@ -390,7 +394,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	rpma_private_data_discard(&req->data);
 
-	Free(req);
+	free(req);
 	*req_ptr = NULL;
 
 	return ret;
