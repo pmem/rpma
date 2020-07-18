@@ -96,6 +96,22 @@ log__to_user_function(void **config_ptr)
 			"%s", TEST_MESSAGE);
 	}
 	rpma_log_fini();
+
+	/*
+	 * ensure that custom log function is not call in any situation
+	 */
+	for (rpma_log_level level = RPMA_LOG_DISABLED;
+		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
+		/*
+		 * run test
+		 */
+		rpma_log(level,
+			rpma_log_input_non_null == *config?TEST_FILE_NAME:NULL,
+			TEST_LINE_NO,
+			rpma_log_input_file_name_function_name_null != *config?
+				TEST_FUNCTION_NAME: NULL,
+			"%s", TEST_MESSAGE);
+	}
 }
 
 /*

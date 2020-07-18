@@ -69,7 +69,7 @@ static rpma_log_level Rpma_log_stderr_threshold = RPMA_LOG_DISABLED;
  * get_timestamp_prefix -- provide actual time in a readable string
  *
  * ASSUMPTIONS:
- * - buf != NULL
+ * - buf != NULL && buf_size >= 16
  */
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
@@ -79,20 +79,26 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	struct timespec ts;
 	long usec;
 
+	/*
+	 * to ensure that we have enough space for fixed messages
+	 */
+	if (buf_size < 16)
+		return;
+
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
 	    (NULL == (info = localtime(&ts.tv_sec)))) {
-		snprintf(buf, buf_size, "[unknown time] ");
+		(void) snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
 
 	usec = ts.tv_nsec / 1000;
 	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
-		snprintf(buf, buf_size, "[unknown time] ");
+		(void) snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
 
 	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
-		*buf = '\0';
+		(void) snprintf(buf, buf_size, "[unknown time] ");
 		return;
 	}
 }
