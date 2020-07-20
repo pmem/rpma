@@ -18,113 +18,8 @@
 #include "mr-test-common.h"
 
 /* mocks */
-
 static struct ibv_qp Ibv_qp;
 static struct ibv_context Ibv_context;
-
-#define MOCK_DST_OFFSET		(size_t)0xC413
-#define MOCK_SRC_OFFSET		(size_t)0xC414
-#define MOCK_LEN		(size_t)0xC415
-#define MOCK_OP_CONTEXT		(void *)0xC417
-#define MOCK_QP			(struct ibv_qp *)&Ibv_qp
-
-struct ibv_post_send_mock_args {
-	struct ibv_qp *qp;
-	enum ibv_wr_opcode opcode;
-	unsigned send_flags;
-	uint64_t wr_id;
-	int ret;
-};
-
-/*
- * ibv_post_send_mock -- mock of ibv_post_send()
- */
-int
-ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
-			struct ibv_send_wr **bad_wr)
-{
-	struct ibv_post_send_mock_args *args =
-		mock_type(struct ibv_post_send_mock_args *);
-
-	assert_non_null(qp);
-	assert_non_null(wr);
-	assert_non_null(bad_wr);
-
-	assert_int_equal(qp, args->qp);
-	assert_int_equal(wr->opcode, args->opcode);
-	assert_int_equal(wr->send_flags, args->send_flags);
-	assert_int_equal(wr->wr_id, args->wr_id);
-	assert_null(wr->next);
-
-	return args->ret;
-}
-
-/* setups & teardowns */
-
-struct mrs {
-	struct rpma_mr_local *dst;
-	struct rpma_mr_remote *src;
-};
-
-/*
- * setup__mr_local_and_remote -- create a local and a remote
- * memory region structures
- */
-int
-setup__mr_local_and_remote(void **mrs_ptr)
-{
-	static struct mrs mrs = {0};
-	int ret;
-
-	struct prestate prestate = {MOCK_USAGE, MOCK_ACCESS, NULL};
-	struct prestate *pprestate = &prestate;
-
-	/* create a local memory region structure */
-	ret = setup__reg_success((void **)&pprestate);
-	mrs.dst = prestate.mr;
-
-	/* verify the result */
-	assert_int_equal(ret, MOCK_OK);
-
-	/* create a remote memory region structure */
-	ret = setup__mr_remote((void **)&mrs.src);
-
-	/* verify the result */
-	assert_int_equal(ret, MOCK_OK);
-
-	*mrs_ptr = &mrs;
-
-	return 0;
-}
-
-/*
- * teardown__mr_local_and_remote -- delete a local and a remote
- * memory region structures
- */
-int
-teardown__mr_local_and_remote(void **mrs_ptr)
-{
-	struct mrs *mrs = (struct mrs *)*mrs_ptr;
-	int ret;
-
-	struct prestate prestate = {0};
-	struct prestate *pprestate = &prestate;
-	prestate.mr = mrs->dst;
-
-	/* create a local memory region structure */
-	ret = teardown__dereg_success((void **)&pprestate);
-
-	/* verify the result */
-	assert_int_equal(ret, MOCK_OK);
-
-	/* create a remote memory region structure */
-	ret = teardown__mr_remote((void **)&mrs->src);
-
-	/* verify the result */
-	assert_int_equal(ret, MOCK_OK);
-
-	return 0;
-}
 
 /*
  * test_read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
@@ -144,8 +39,8 @@ test_read__failed_E_PROVIDER(void **mrs_ptr)
 	will_return(ibv_post_send_mock, &args);
 
 	/* run test */
-	int ret = rpma_mr_read(MOCK_QP, mrs->dst, MOCK_DST_OFFSET,
-				mrs->src, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
+				mrs->remote, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
 				MOCK_OP_CONTEXT);
 
@@ -172,8 +67,8 @@ test_read__success(void **mrs_ptr)
 	will_return(ibv_post_send_mock, &args);
 
 	/* run test */
-	int ret = rpma_mr_read(MOCK_QP, mrs->dst, MOCK_DST_OFFSET,
-				mrs->src, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
+				mrs->remote, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
 				MOCK_OP_CONTEXT);
 
@@ -194,9 +89,9 @@ group_setup_mr_read(void **unused)
 	 * in the included header <infiniband/verbs.h>,
 	 * so we cannot define it again. It is defined as:
 	 * {
-	 *     return qp->context->ops.post_recv(qp, wr, bad_wr);
+	 *     return qp->context->ops.post_send(qp, wr, bad_wr);
 	 * }
-	 * so we can set the 'qp->context->ops.post_recv' function pointer
+	 * so we can set the 'qp->context->ops.post_send' function pointer
 	 * to our mock function.
 	 */
 	Ibv_context.ops.post_send = ibv_post_send_mock;
