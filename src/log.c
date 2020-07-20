@@ -42,8 +42,12 @@ static log_function *Log_function;
  * rpma_log_init_default -- enable logging to syslog (and stderr)
  * during loading of the library.
  */
+#ifdef RPMA_LOG_INIT_DEFAULT_OFF
+void
+#else
 __attribute__((constructor))
 static void
+#endif
 rpma_log_init_default(void)
 {
 	rpma_log_init(NULL);
@@ -52,8 +56,12 @@ rpma_log_init_default(void)
 /*
  * rpma_log_fini_default -- disable logging during unloading the library.
  */
-__attribute__((destructor))
+#ifdef RPMA_LOG_INIT_DEFAULT_OFF
+void
+#else
+__attribute__((constructor))
 static void
+#endif
 rpma_log_fini_default(void)
 {
 	rpma_log_fini();
