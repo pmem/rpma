@@ -10,6 +10,19 @@
 
 #include <librpma.h>
 
+#ifdef USE_LIBPMEM
+
+/* signature marking the persistent contents as valid */
+#define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
+#define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
+
+#endif
+
+struct common_data {
+	rpma_mr_descriptor desc;
+	size_t data_offset;
+};
+
 #define KILOBYTE 1024
 
 void print_error_ex(const char *fname, int ret);
