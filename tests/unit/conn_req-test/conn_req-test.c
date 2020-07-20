@@ -246,7 +246,7 @@ from_cm_event_test_private_data_store_ENOMEM(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
-	will_return(rpma_private_data_store, NULL);
+	will_return(rpma_private_data_store, RPMA_E_NOMEM);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(ibv_destroy_cq, EAGAIN); /* second error */
 	expect_value(rdma_destroy_id, id, &id);
@@ -282,6 +282,9 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	memset(&cstate, 0, sizeof(cstate));
 	cstate.event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	cstate.event.id = &cstate.id;
+	cstate.event.param.conn.private_data = MOCK_PRIVATE_DATA;
+	cstate.event.param.conn.private_data_len =
+		strlen(MOCK_PRIVATE_DATA) + 1;
 	cstate.id.verbs = MOCK_VERBS;
 
 	/* configure mocks */
@@ -289,7 +292,7 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
-	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
+	will_return(rpma_private_data_store, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate.event,

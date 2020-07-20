@@ -28,7 +28,7 @@ rdma_destroy_qp(struct rdma_cm_id *id)
 int
 ibv_destroy_cq(struct ibv_cq *cq)
 {
-	check_expected_ptr(cq);
+	assert_int_equal(cq, MOCK_CQ);
 
 	return mock_type(int);
 }
@@ -332,7 +332,6 @@ conn_teardown(void **cstate_ptr)
 
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
-	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);

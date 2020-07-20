@@ -30,11 +30,12 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	assert_null(pdata->ptr);
 	assert_int_equal(pdata->len, 0);
 
-	pdata->ptr = mock_type(void *);
-	if (pdata->ptr == NULL)
-		return RPMA_E_NOMEM;
+	int ret = mock_type(int);
+	if (ret)
+		return ret;
 
-	pdata->len = strlen(pdata->ptr) + 1;
+	pdata->ptr = (void *)edata->param.conn.private_data;
+	pdata->len = edata->param.conn.private_data_len;
 
 	return 0;
 }
