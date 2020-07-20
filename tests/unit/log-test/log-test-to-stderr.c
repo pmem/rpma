@@ -195,7 +195,6 @@ log__to_stderr(void **config_ptr)
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
 		expect_string(__wrap_fprintf, fprintf_output,
 				expected_fprintf_output);
-
 		/* run test */
 		rpma_log(level, TEST_FILE_NAME, TEST_LINE_NO,
 			TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);

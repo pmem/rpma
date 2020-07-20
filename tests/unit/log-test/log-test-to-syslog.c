@@ -112,7 +112,7 @@ setup_log(void **config_ptr)
 }
 
 /*
- * teardown_log() -- close log
+ * teardown_log() - close log
  */
 int
 teardown_log(void **unused)

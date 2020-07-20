@@ -10,6 +10,9 @@
 #include "log-test-common.h"
 #include <string.h>
 
+/*
+ * level2names -- log levels represented by strings
+ */
 static const char *const level2names[] = {
 	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
 	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
@@ -58,14 +61,15 @@ set_threshold(void **config_ptr)
 	struct threshold_config *config =
 			(struct threshold_config *)*config_ptr;
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
-		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
+	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, config->set_threshold(level));
 		assert_int_equal(level, config->get_threshold());
 	}
 }
 
 /*
- * stderr_set_threshold__invalid -- out of scope threshold shall be rejected
+ * stderr_set_threshold__invalid -- try to set an invalid threshold values
+ * (DEBUG+1 and DISABLED - 1), values shall be rejected
  */
 void
 set_threshold__invalid(void **config_ptr)
@@ -76,10 +80,10 @@ set_threshold__invalid(void **config_ptr)
 	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, config->set_threshold(level));
 		assert_int_equal(-1,
-		    config->set_threshold(RPMA_LOG_LEVEL_DEBUG + 1));
+			config->set_threshold(RPMA_LOG_LEVEL_DEBUG + 1));
 		assert_int_equal(level, config->get_threshold());
 		assert_int_equal(-1,
-		    config->set_threshold(RPMA_LOG_DISABLED - 1));
+			config->set_threshold(RPMA_LOG_DISABLED - 1));
 		assert_int_equal(level, config->get_threshold());
 	}
 }
@@ -98,7 +102,7 @@ log__out_of_threshold(void **config_ptr)
 	    level_min <= RPMA_LOG_LEVEL_DEBUG; level_min++) {
 		assert_int_equal(0, config->set_threshold(level_min));
 		for (rpma_log_level level = level_min + 1;
-			level <= RPMA_LOG_LEVEL_DEBUG; level++) {
+		    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 			rpma_log(level, TEST_FILE_NAME, 1, TEST_FUNCTION_NAME,
 				"%s", TEST_MESSAGE);
 		}
@@ -122,6 +126,7 @@ setup_default_threshold(void **unused)
 		rpma_log_stderr_get_threshold());
 	return 0;
 }
+
 /*
  * init__default_treshold -- are we able to setup thresholds as it is done in
  * init function?
