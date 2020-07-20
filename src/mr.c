@@ -117,8 +117,6 @@ rpma_mr_read(struct ibv_qp *qp,
 
 /*
  * rpma_mr_write -- post an RDMA write from src to dst
- *
- * XXX use ibv_post_send()
  */
 int
 rpma_mr_write(struct ibv_qp *qp,
@@ -126,7 +124,34 @@ rpma_mr_write(struct ibv_qp *qp,
 	struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	struct ibv_send_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + src_offset);
+	sge.length = (uint32_t)len;
+	sge.lkey = src->ibv_mr->lkey;
+	wr.sg_list = &sge;
+	wr.num_sge = 1;
+
+	/* destination */
+	wr.wr.rdma.remote_addr = dst->raddr + dst_offset;
+	wr.wr.rdma.rkey = dst->rkey;
+
+	wr.wr_id = (uint64_t)op_context;
+	wr.next = NULL;
+	wr.opcode = IBV_WR_RDMA_WRITE;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+		IBV_SEND_SIGNALED : 0;
+
+	struct ibv_send_wr *bad_wr;
+	int ret = ibv_post_send(qp, &wr, &bad_wr);
+	if (ret) {
+		Rpma_provider_error = ret;
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /* public librpma API */

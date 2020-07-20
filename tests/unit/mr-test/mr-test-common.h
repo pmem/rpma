@@ -40,6 +40,31 @@ extern struct ibv_mr Ibv_mr;
 			0x13, 0x12, 0x11, 0x10, \
 			0x01}}
 
+#define MOCK_DST_OFFSET		(size_t)0xC413
+#define MOCK_SRC_OFFSET		(size_t)0xC414
+#define MOCK_LEN		(size_t)0xC415
+#define MOCK_OP_CONTEXT		(void *)0xC417
+#define MOCK_QP			(struct ibv_qp *)&Ibv_qp
+
+struct ibv_post_send_mock_args {
+	struct ibv_qp *qp;
+	enum ibv_wr_opcode opcode;
+	unsigned send_flags;
+	uint64_t wr_id;
+	int ret;
+};
+
+int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
+			struct ibv_send_wr **bad_wr);
+
+struct mrs {
+	struct rpma_mr_local *local;
+	struct rpma_mr_remote *remote;
+};
+
+int setup__mr_local_and_remote(void **mrs_ptr);
+int teardown__mr_local_and_remote(void **mrs_ptr);
+
 /* prestate structure passed to unit test functions */
 struct prestate {
 	int usage;
@@ -67,5 +92,6 @@ int setup__mr_remote(void **mr_ptr);
 int teardown__mr_remote(void **mr_ptr);
 
 int group_setup_mr_read(void **unused);
+int group_setup_mr_write(void **unused);
 
 #endif /* MR_COMMON_H */
