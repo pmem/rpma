@@ -129,10 +129,10 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,
 	const char *message_format, va_list arg)
 {
-	char prefix[256] = "";
-	char timestamp[45] = "";
+	char file_info_buffer[256] = "";
+	const char *file_info = file_info_buffer;
 	char message[1024] = "";
-	const char prefix_error_message[] = "[error prefix]: ";
+	const char file_info_error[] = "[file info error]: ";
 
 	if (level > Rpma_log_stderr_threshold &&
 	    level > Rpma_log_syslog_threshold)
@@ -150,30 +150,23 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 			/* skip '/' */
 			base_file_name++;
 
-		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
-		    base_file_name, line_no, function_name,
-		    rpma_log_level_names[level]) < 0) {
-			memcpy(prefix, prefix_error_message,
-				sizeof(prefix_error_message));
-		}
-	} else {
-		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
-		    rpma_log_level_names[level]) < 0) {
-			memcpy(prefix, prefix_error_message,
-				sizeof(prefix_error_message));
+		if (snprintf(file_info_buffer, sizeof(file_info_buffer),
+				"%s: %4d: %s: ", base_file_name, line_no,
+				function_name) < 0) {
+			file_info = file_info_error;
 		}
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
-		get_timestamp_prefix(timestamp, sizeof(timestamp));
-		(void) fprintf(stderr, "%s%s%s", timestamp, prefix, message);
+		char times_tamp[45] = "";
+		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
+		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp, file_info,
+			rpma_log_level_names[level], message);
 	}
 
 	if (level <= Rpma_log_syslog_threshold) {
-		if (level != RPMA_LOG_DISABLED) {
-			syslog(rpma_log_level2syslog_severity(level),
-				"%s%s", prefix, message);
-		}
+		syslog(rpma_log_level2syslog_severity(level), "%s*%s*: %s",
+			file_info, rpma_log_level_names[level], message);
 	}
 }
 
