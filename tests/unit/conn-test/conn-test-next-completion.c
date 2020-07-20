@@ -149,30 +149,38 @@ test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)
 
 /*
  * test_next_completion__success - handling ibv_poll_cq() successfully
+ * with all possible values of opcode
  */
 static void
 test_next_completion__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
-	struct ibv_wc wc = {0};
 
-	/* configure mock */
-	expect_value(poll_cq, cq, MOCK_CQ);
-	will_return(poll_cq, 1);
-	wc.opcode = IBV_WC_RDMA_READ;
-	wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	wc.status = MOCK_WC_STATUS;
-	will_return(poll_cq, &wc);
+	enum ibv_wc_opcode opcodes[] = {IBV_WC_RDMA_READ, IBV_WC_RDMA_WRITE};
+	enum rpma_op ops[] = {RPMA_OP_READ, RPMA_OP_WRITE};
+	int n_values = sizeof(opcodes) / sizeof(opcodes[0]);
 
-	/* run test */
-	struct rpma_completion cmpl = {0};
-	int ret = rpma_conn_next_completion(cstate->conn, &cmpl);
+	for (int i = 0; i < n_values; i++) {
+		struct ibv_wc wc = {0};
 
-	/* verify the result */
-	assert_int_equal(ret, 0);
-	assert_int_equal(cmpl.op, RPMA_OP_READ);
-	assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
-	assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
+		/* configure mock */
+		expect_value(poll_cq, cq, MOCK_CQ);
+		will_return(poll_cq, 1);
+		wc.opcode = opcodes[i];
+		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		wc.status = MOCK_WC_STATUS;
+		will_return(poll_cq, &wc);
+
+		/* run test */
+		struct rpma_completion cmpl = {0};
+		int ret = rpma_conn_next_completion(cstate->conn, &cmpl);
+
+		/* verify the result */
+		assert_int_equal(ret, 0);
+		assert_int_equal(cmpl.op, ops[i]);
+		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
+		assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
+	}
 }
 
 /*

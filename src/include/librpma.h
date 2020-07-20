@@ -620,6 +620,7 @@ int rpma_write(struct rpma_conn *conn,
 
 enum rpma_op {
 	RPMA_OP_READ,
+	RPMA_OP_WRITE,
 };
 
 struct rpma_completion {
