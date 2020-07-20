@@ -291,6 +291,9 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	case IBV_WC_RDMA_READ:
 		cmpl->op = RPMA_OP_READ;
 		break;
+	case IBV_WC_RDMA_WRITE:
+		cmpl->op = RPMA_OP_WRITE;
+		break;
 	default:
 		return RPMA_E_NOSUPP;
 	}
