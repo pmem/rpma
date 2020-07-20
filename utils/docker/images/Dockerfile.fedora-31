@@ -12,9 +12,6 @@
 FROM fedora:31
 MAINTAINER tomasz.gromadzki@intel.com
 
-# Additional parameters to build docker without building components
-ARG SKIP_VALGRIND_BUILD
-
 # Update all packages
 RUN dnf update -y
 
@@ -29,11 +26,6 @@ ENV BASE_DEPS "\
 
 ENV EXAMPLES_DEPS "\
 	libpmem-devel"
-
-# Valgrind deps
-ENV VALGRIND_DEPS "\
-	autoconf \
-	automake"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -51,12 +43,7 @@ RUN dnf install -y \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
 	$RPMA_DEPS \
-	$VALGRIND_DEPS \
 && dnf clean all
-
-# Install valgrind
-COPY install-valgrind.sh install-valgrind.sh
-RUN ./install-valgrind.sh
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
