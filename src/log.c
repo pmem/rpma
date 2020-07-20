@@ -142,15 +142,23 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 		return;
 
 	if (file_name) {
+		/* extract base_file_name */
+		const char *base_file_name = strrchr(file_name, '/');
+		if (!base_file_name)
+			base_file_name = file_name;
+		else
+			/* skip '/' */
+			base_file_name++;
+
 		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
-				file_name, line_no, function_name,
-				rpma_log_level_names[level]) < 0) {
+		    base_file_name, line_no, function_name,
+		    rpma_log_level_names[level]) < 0) {
 			memcpy(prefix, prefix_error_message,
 				sizeof(prefix_error_message));
 		}
 	} else {
 		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
-				rpma_log_level_names[level]) < 0) {
+		    rpma_log_level_names[level]) < 0) {
 			memcpy(prefix, prefix_error_message,
 				sizeof(prefix_error_message));
 		}
