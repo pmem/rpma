@@ -18,9 +18,6 @@
 #define TEST_LINE_NO 1
 #define TEST_MESSAGE "Message"
 
-
-const char *const level2name(rpma_log_level level);
-
 /*
  * threshold tests config, setter/getter functions as well as expected
  * thresholds for stderr and syslog
@@ -32,6 +29,7 @@ struct threshold_config {
 	const rpma_log_level syslog_threshold;
 };
 
+const char *const level2name(rpma_log_level level);
 int setup_threshold(void **config_ptr);
 void set_threshold(void **config_ptr);
 void set_threshold__invalid(void **config_ptr);
