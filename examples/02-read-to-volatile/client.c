@@ -14,6 +14,12 @@
 
 #include "common.h"
 
+#ifdef TEST_MOCK_MAIN
+#include "cmocka_headers.h"
+#include "cmocka_alloc.h"
+#define main client_main
+#endif
+
 int
 main(int argc, char *argv[])
 {
