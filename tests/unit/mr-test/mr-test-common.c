@@ -11,6 +11,8 @@
 
 const rpma_mr_descriptor Desc_exp = DESC_EXP;
 struct ibv_mr Ibv_mr = {0};
+struct ibv_qp Ibv_qp;
+struct ibv_context Ibv_context;
 
 /*
  * rpma_peer_mr_reg -- a mock of rpma_peer_mr_reg()
@@ -69,6 +71,29 @@ ibv_dereg_mr(struct ibv_mr *mr)
 	return mock_type(int); /* errno */
 }
 
+/*
+ * ibv_post_send_mock -- mock of ibv_post_send()
+ */
+int
+ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
+			struct ibv_send_wr **bad_wr)
+{
+	struct ibv_post_send_mock_args *args =
+		mock_type(struct ibv_post_send_mock_args *);
+
+	assert_non_null(qp);
+	assert_non_null(wr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->opcode, args->opcode);
+	assert_int_equal(wr->send_flags, args->send_flags);
+	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_null(wr->next);
+
+	return args->ret;
+}
+
 void *__real__test_malloc(size_t size);
 
 /*
@@ -86,6 +111,67 @@ __wrap__test_malloc(size_t size)
 }
 
 /* common setups & teardowns */
+
+/*
+ * setup__mr_local_and_remote -- create a local and a remote
+ * memory region structures
+ */
+int
+setup__mr_local_and_remote(void **mrs_ptr)
+{
+	static struct mrs mrs = {0};
+	int ret;
+
+	struct prestate prestate = {MOCK_USAGE, MOCK_ACCESS, NULL};
+	struct prestate *pprestate = &prestate;
+
+	/* create a local memory region structure */
+	ret = setup__reg_success((void **)&pprestate);
+	mrs.local = prestate.mr;
+
+	/* verify the result */
+	assert_int_equal(ret, MOCK_OK);
+
+	/* create a remote memory region structure */
+	ret = setup__mr_remote((void **)&mrs.remote);
+
+	/* verify the result */
+	assert_int_equal(ret, MOCK_OK);
+
+	*mrs_ptr = &mrs;
+
+	return 0;
+}
+
+/*
+ * teardown__mr_local_and_remote -- delete a local and a remote
+ * memory region structures
+ */
+int
+teardown__mr_local_and_remote(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+	int ret;
+
+	struct prestate prestate = {0};
+	struct prestate *pprestate = &prestate;
+	prestate.mr = mrs->local;
+
+	/* create a local memory region structure */
+	ret = teardown__dereg_success((void **)&pprestate);
+
+	/* verify the result */
+	assert_int_equal(ret, MOCK_OK);
+
+	/* create a remote memory region structure */
+	ret = teardown__mr_remote((void **)&mrs->remote);
+
+	/* verify the result */
+	assert_int_equal(ret, MOCK_OK);
+
+	return 0;
+}
+
 
 /*
  * setup__reg_success -- create a local memory registration object
