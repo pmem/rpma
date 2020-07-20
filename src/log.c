@@ -79,26 +79,22 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	struct timespec ts;
 	long usec;
 
-	/*
-	 * to ensure that we have enough space for fixed messages
-	 */
-	if (buf_size < 16)
-		return;
+	const char error_message[] = "[unknown time] ";
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
 	    (NULL == (info = localtime(&ts.tv_sec)))) {
-		(void) snprintf(buf, buf_size, "[unknown time] ");
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 
 	usec = ts.tv_nsec / 1000;
 	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
-		(void) snprintf(buf, buf_size, "[unknown time] ");
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 
 	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
-		(void) snprintf(buf, buf_size, "[unknown time] ");
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 }
@@ -136,6 +132,7 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	char prefix[256] = "";
 	char timestamp[45] = "";
 	char message[1024] = "";
+	const char prefix_error_message[] = "[error prefix]: ";
 
 	if (level > Rpma_log_stderr_threshold &&
 	    level > Rpma_log_syslog_threshold)
@@ -147,12 +144,16 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	if (file_name) {
 		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
 				file_name, line_no, function_name,
-				rpma_log_level_names[level]) < 0)
-			strcpy(prefix, "[error prefix]: ");
+				rpma_log_level_names[level]) < 0) {
+			memcpy(prefix, prefix_error_message,
+				sizeof(prefix_error_message));
+		}
 	} else {
 		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
-				rpma_log_level_names[level]) < 0)
-			strcpy(prefix, "[error prefix]: ");
+				rpma_log_level_names[level]) < 0) {
+			memcpy(prefix, prefix_error_message,
+				sizeof(prefix_error_message));
+		}
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
