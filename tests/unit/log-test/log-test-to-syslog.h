@@ -12,12 +12,12 @@
 #include <syslog.h>
 
 /*
- * syslog_mock_enable() - enable mock behavior of syslog mocks
+ * syslog_mock_enable() -- enable mock behavior of syslog mocks
  */
 void syslog_mock_enable();
 
 /*
- * syslog_mock_disable() - disble mock behavior of syslog mocks
+ * syslog_mock_disable() -- disble mock behavior of syslog mocks
  */
 void syslog_mock_disable();
 
@@ -28,7 +28,7 @@ void syslog_mock_disable();
 int setup_log(void **config_ptr);
 
 /*
- * teardown_log() - close log
+ * teardown_log() -- close log
  */
 int teardown_log(void **unused);
 #endif /* LOG_TEST_TO_SYSLOG_H */

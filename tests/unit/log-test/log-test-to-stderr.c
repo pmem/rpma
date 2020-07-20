@@ -14,7 +14,7 @@
 #include "log-test-to-syslog.h" /* for syslog mock enabling/disabling */
 
 /*
- * fprintf -- frprintf() mock - dedicated for stderr
+ * fprintf -- frprintf() mock -- dedicated for stderr
  */
 static char fprintf_output[1024];
 
@@ -70,7 +70,7 @@ __wrap_snprintf(char *__restrict __s, size_t __maxlen,
 #define TEST_TIME_ERROR_STR "[unknown time] "
 
 /*
- * __wrap_clock_gettime() - clock_gettime() mock
+ * __wrap_clock_gettime() -- clock_gettime() mock
  */
 int
 __wrap_clock_gettime(clockid_t __clock_id, struct timespec *__tp)
@@ -86,7 +86,7 @@ __wrap_clock_gettime(clockid_t __clock_id, struct timespec *__tp)
 }
 
 /*
- * __wrap_localtime() - localtime() mock
+ * __wrap_localtime() -- localtime() mock
  */
 extern struct tm *__real_localtime(const time_t *__timer);
 
@@ -100,10 +100,9 @@ __wrap_localtime(const time_t *__timer)
 
 	/*
 	 * return fix predefine point in time
-	 * localtime() might add daylight shift causing indeterministic
-	 * tests result
-	 * return __real_localtime(__timer);
-	 * */
+	 * alternative approach with real localtime() might add daylight
+	 * shift causing indeterministic tests result
+	 */
 	static struct tm value = {0};
 	value.tm_yday = 1; // XXX combine this with TEST_TIME_STR
 	value.tm_mday = 1;
@@ -112,7 +111,7 @@ __wrap_localtime(const time_t *__timer)
 }
 
 /*
- * __wrap_strftime() - strftime mock
+ * __wrap_strftime() -- strftime mock
  */
 extern size_t __real_strftime(char *__restrict __s, size_t __maxsize,
 	const char *__restrict __format, const struct tm *__restrict __tp);
@@ -132,22 +131,22 @@ typedef struct {
 	const int clock_gettime_error;
 	const int localtime_error;
 	const int strftime_error;
-	threshold_config *tresholds;
+	struct threshold_config *tresholds;
 } mock_config;
 
 /*
- * setup_log_stderr() - wraper for setup_log_syslog() call
+ * setup_log_stderr() -- wraper for setup_log_syslog() call
  */
 int
 setup_log_stderr(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
-	threshold_config *th_config = config->tresholds;
+	struct threshold_config *th_config = config->tresholds;
 	return setup_log((void **)&th_config);
 }
 
 /*
- * teardown_log_stderr() - wraper for teardown_log_syslog() call
+ * teardown_log_stderr() -- wraper for teardown_log_syslog() call
  */
 int
 teardown_log_stderr(void **config_ptr)
@@ -173,7 +172,7 @@ teardown_log_stderr(void **config_ptr)
 	}
 
 /*
- * log__to_stderr - successful logging to stderr with file related
+ * log__to_stderr -- successful logging to stderr with file related
  * information like file name, line number and function name
  */
 static void
@@ -182,14 +181,10 @@ log__to_stderr(void **config_ptr)
 	mock_config *config = (mock_config *)*config_ptr;
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		/*
-		 * setup time-related mock
-		 */
+		/* setup time-related mock */
 		TIME_MOCKS_INIT(config);
 
-		/*
-		 * setup frprintf mock
-		 */
+		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
 			config->localtime_error || config->strftime_error?
@@ -200,15 +195,14 @@ log__to_stderr(void **config_ptr)
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
 		expect_string(__wrap_fprintf, fprintf_output,
 				expected_fprintf_output);
-		/*
-		 * run test
-		 */
+
+		/* run test */
 		rpma_log(level, TEST_FILE_NAME, TEST_LINE_NO,
 			TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);
 	}
 }
 /*
- * log__to_stderr_file_name_function_name_NULL - successful logging to stderr
+ * log__to_stderr_file_name_function_name_NULL -- successful logging to stderr
  * without file name and function name provided
  */
 static void
@@ -218,14 +212,10 @@ log__to_stderr_file_name_function_name_NULL(void **config_ptr)
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 
-		/*
-		 * setup time-related mock
-		 */
+		/* setup time-related mock */
 		TIME_MOCKS_INIT(config);
 
-		/*
-		 * setup frprintf mock
-		 */
+		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
 			config->localtime_error || config->strftime_error?
@@ -247,13 +237,9 @@ log__to_stderr_file_name_NULL(void **config_ptr)
 	mock_config *config = (mock_config *)*config_ptr;
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		/*
-		 * setup time-related mock
-		 */
+		/* setup time-related mock */
 		TIME_MOCKS_INIT(config);
-		/*
-		 * setup frprintf mock
-		 */
+		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
 		config->localtime_error || config->strftime_error?
@@ -280,31 +266,23 @@ init_fini__lifecycle(void **unused)
 	 */
 	log__to_stderr(unused);
 
-	/*
-	 * log shall not be reinitialized without closing it first
-	 */
+	/* log shall not be reinitialized without closing it first */
 	assert_int_equal(-1, rpma_log_init(NULL));
 
-	/*
-	 * verify that logging to syslog still works as expected
-	 */
+	/* verify that logging to syslog still works as expected */
 	log__to_stderr(unused);
 
-	/*
-	 * close log
-	 */
+	/* close log */
 	expect_function_call(closelog);
 	rpma_log_fini();
 
-	/*
-	 * verify that no output is produced to syslog
-	 */
+	/* verify that no output is produced to syslog */
 	rpma_log(RPMA_LOG_LEVEL_FATAL, TEST_FILE_NAME, TEST_LINE_NO,
 		TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);
 	rpma_log(RPMA_LOG_LEVEL_FATAL, NULL, 0, NULL, "%s", TEST_MESSAGE);
 };
 
-static threshold_config th_config = {
+static struct threshold_config th_config = {
 	rpma_log_stderr_set_threshold,
 	rpma_log_stderr_get_threshold,
 	RPMA_LOG_LEVEL_DEBUG, RPMA_LOG_DISABLED
@@ -328,24 +306,18 @@ static mock_config config_strftime_error = {
 
 const struct CMUnitTest log_test_to_stderr[] = {
 
-	/*
-	 * threshold setters/getters tests
-	 */
+	/* threshold setters/getters tests */
 	cmocka_unit_test_prestate_setup_teardown(set_threshold__invalid,
 		setup_threshold, NULL, &th_config),
 	cmocka_unit_test_prestate_setup_teardown(set_threshold,
 		setup_threshold, NULL, &th_config),
 
-	/*
-	 * logging with levels out of threshold
-	 */
+	/* logging with levels out of threshold */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__out_of_threshold,
 		setup_log, teardown_log, &th_config),
 
-	/*
-	 * logging to stderr with file information
-	 */
+	/* logging to stderr with file information */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),
@@ -361,9 +333,7 @@ const struct CMUnitTest log_test_to_stderr[] = {
 
 
 
-	/*
-	 * Logging to stderr without file and function information
-	 */
+	/* Logging to stderr without file and function information */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr_file_name_function_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),
@@ -377,9 +347,7 @@ const struct CMUnitTest log_test_to_stderr[] = {
 		log__to_stderr_file_name_function_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_strftime_error),
 
-	/*
-	 * Logging to stderr without file information
-	 */
+	/* Logging to stderr without file information */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr_file_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),
@@ -394,9 +362,7 @@ const struct CMUnitTest log_test_to_stderr[] = {
 		setup_log_stderr, teardown_log_stderr, &config_strftime_error),
 
 
-	/*
-	 * logging to syslog life cycle
-	 */
+	/* logging to syslog life cycle */
 	cmocka_unit_test_prestate_setup_teardown(
 		init_fini__lifecycle,
 		setup_log_stderr,

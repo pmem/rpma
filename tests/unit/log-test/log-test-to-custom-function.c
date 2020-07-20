@@ -51,26 +51,18 @@ void
 log__to_user_function(void **config_ptr)
 {
 	enum rpma_log_input *config = (enum rpma_log_input *) *config_ptr;
-	/*
-	 * disable mocks for clean log shutdown
-	 */
+	/* disable mocks for clean log shutdown */
 	syslog_mock_disable();
 	rpma_log_fini();
 
-	/*
-	 * enable syslog mocks to monitor there is no calls related to syslog()
-	 */
+	/* enable syslog mocks to monitor there is no calls to syslog() */
 	syslog_mock_enable();
 
-	/*
-	 * start log with a custom function
-	 */
+	/* start log with a custom function */
 	assert_int_equal(0, rpma_log_init(custom_log_function));
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		/*
-		 * mock setup
-		 */
+		/* mock setup */
 		expect_value(custom_log_function, level, level);
 
 		if (rpma_log_input__no_nulls == *config) {
@@ -106,9 +98,7 @@ log__to_user_function(void **config_ptr)
 	 */
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
-		/*
-		 * run test
-		 */
+		/* run test */
 		rpma_log(level,
 			rpma_log_input__no_nulls == *config?TEST_FILE_NAME:NULL,
 			TEST_LINE_NO,
@@ -133,19 +123,13 @@ static enum rpma_log_input file_name_function_name_null =
 				rpma_log_input__file_function_NULL;
 
 const struct CMUnitTest log_test_to_custom_function[] = {
-	/*
-	 * test with file name and function name provided
-	 */
+	/* test with file name and function name provided */
 	cmocka_unit_test_prestate(log__to_user_function,
 				&non_null),
-	/*
-	 * test with no file name provided
-	 */
+	/* test with no file name provided */
 	cmocka_unit_test_prestate(log__to_user_function,
 				&file_name__null),
-	/*
-	 * test with no file name and no function name provided
-	 */
+	/* test with no file name and no function name provided */
 	cmocka_unit_test_prestate(log__to_user_function,
 				&file_name_function_name_null),
 	cmocka_unit_test(NULL)

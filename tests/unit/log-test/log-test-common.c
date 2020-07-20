@@ -19,6 +19,9 @@ static const char *const level2names[] = {
 	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
 };
 
+/*
+ * level2name -- log level to visible name string conversion
+ */
 const char *const
 level2name(rpma_log_level level)
 {
@@ -26,12 +29,13 @@ level2name(rpma_log_level level)
 }
 
 /*
- * setup_threshold - set thresholds according to configuration
+ * setup_threshold -- set thresholds according to configuration
  */
 int
 setup_threshold(void **config_ptr)
 {
-	threshold_config *config = (threshold_config *) *config_ptr;
+	struct threshold_config *config =
+			(struct threshold_config *)*config_ptr;
 	int ret_stderr_set_threshold, ret_syslog_set_threshold;
 
 	ret_stderr_set_threshold = rpma_log_stderr_set_threshold(
@@ -46,12 +50,13 @@ setup_threshold(void **config_ptr)
 }
 
 /*
- * set_threshold - is it possible to set all logging levels?
+ * set_threshold -- all available threshold shall be settable
  */
 void
 set_threshold(void **config_ptr)
 {
-	threshold_config *config = (threshold_config *) *config_ptr;
+	struct threshold_config *config =
+			(struct threshold_config *)*config_ptr;
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, config->set_threshold(level));
@@ -60,13 +65,13 @@ set_threshold(void **config_ptr)
 }
 
 /*
- * stderr_set_threshold__invalid - do out of scope logging to stderr levels
- * rejected?
+ * stderr_set_threshold__invalid -- out of scope threshold shall be rejected
  */
 void
 set_threshold__invalid(void **config_ptr)
 {
-	threshold_config *config = (threshold_config *) *config_ptr;
+	struct threshold_config *config =
+			(struct threshold_config *)*config_ptr;
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		assert_int_equal(0, config->set_threshold(level));
@@ -86,10 +91,9 @@ set_threshold__invalid(void **config_ptr)
 void
 log__out_of_threshold(void **config_ptr)
 {
-	/*
-	 * log to stderr and syslog enabled in setup()
-	 */
-	threshold_config *config = (threshold_config *) *config_ptr;
+	/* log to stderr and syslog enabled in setup() */
+	struct threshold_config *config =
+			(struct threshold_config *)*config_ptr;
 	for (rpma_log_level level_min = RPMA_LOG_LEVEL_FATAL;
 	    level_min <= RPMA_LOG_LEVEL_DEBUG; level_min++) {
 		assert_int_equal(0, config->set_threshold(level_min));
@@ -102,7 +106,7 @@ log__out_of_threshold(void **config_ptr)
 }
 
 /*
- * setup_default_threshold - setup and verify that default threshold
+ * setup_default_threshold -- setup and verify that default threshold
  * are accepted
  */
 int
@@ -119,7 +123,7 @@ setup_default_threshold(void **unused)
 	return 0;
 }
 /*
- * init__default_treshold - are we able to setup thresholds as it is done in
+ * init__default_treshold -- are we able to setup thresholds as it is done in
  * init function?
  */
 void

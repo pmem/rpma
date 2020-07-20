@@ -20,7 +20,7 @@
 static int Syslog_mock_enabled;
 
 /*
- * syslog_mock_enable() - enable mock behavior of syslog mocks
+ * syslog_mock_enable() -- enable mock behavior of syslog mocks
  */
 void
 syslog_mock_enable()
@@ -29,7 +29,7 @@ syslog_mock_enable()
 }
 
 /*
- * syslog_mock_disable() - disble mock behavior of syslog mocks
+ * syslog_mock_disable() -- disble mock behavior of syslog mocks
  */
 void
 syslog_mock_disable()
@@ -61,7 +61,7 @@ closelog(void)
 }
 
 /*
- * syslog_output - produced syslog message
+ * syslog_output -- produced syslog message
  * message shall be composed in a test and provided via expected_string macro.
  * e.g. expect_string(syslog, syslog_output, expected_syslog_message);
  *
@@ -112,7 +112,7 @@ setup_log(void **config_ptr)
 }
 
 /*
- * teardown_log() - close log
+ * teardown_log() -- close log
  */
 int
 teardown_log(void **unused)
@@ -133,9 +133,7 @@ log__to_syslog(void **unused)
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 
-		/*
-		 * setup syslog() mock, priority and output message
-		 */
+		/* setup syslog() mock, priority and output message */
 		expect_value(syslog, __pri, expected_syslog_level[level]);
 
 		char expected_syslog_message[256] = "";
@@ -146,16 +144,14 @@ log__to_syslog(void **unused)
 		strcat(expected_syslog_message, "*: " TEST_MESSAGE);
 		expect_string(syslog, syslog_output, expected_syslog_message);
 
-		/*
-		 * run test
-		 */
+		/* run test */
 		rpma_log(level, TEST_FILE_NAME, TEST_LINE_NO,
 			TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);
 	}
 }
 
 /*
- * log__to_syslog_file_name_function_name_NULL - successful logging to syslog
+ * log__to_syslog_file_name_function_name_NULL -- successful logging to syslog
  * without file name and function name provided
  */
 static void
@@ -211,25 +207,17 @@ init_fini__lifecycle(void **unused)
 	 */
 	log__to_syslog(NULL);
 
-	/*
-	 * log shall not be reinitialized without closing it first
-	 */
+	/* log shall not be reinitialized without closing it first */
 	assert_int_equal(-1, rpma_log_init(NULL));
 
-	/*
-	 * verify that logging to syslog still works as expected
-	 */
+	/* verify that logging to syslog still works as expected */
 	log__to_syslog(NULL);
 
-	/*
-	 * close log
-	 */
+	/* close log */
 	expect_function_call(closelog);
 	rpma_log_fini();
 
-	/*
-	 * verify that no output is produced to syslog
-	 */
+	/* verify that no output is produced to syslog */
 	rpma_log(RPMA_LOG_LEVEL_FATAL, TEST_FILE_NAME, TEST_LINE_NO,
 		TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);
 	rpma_log(RPMA_LOG_LEVEL_FATAL, NULL, 0, NULL, "%s", TEST_MESSAGE);
@@ -257,16 +245,14 @@ init_default(void **unused)
 	rpma_log_fini();
 }
 
-static threshold_config config = {
+static struct threshold_config config = {
 		rpma_log_syslog_set_threshold,
 		rpma_log_syslog_get_threshold,
 		RPMA_LOG_DISABLED, RPMA_LOG_LEVEL_DEBUG
 };
 
 const struct CMUnitTest log_test_to_syslog[] = {
-	/*
-	 * threshold setters/getters tests
-	 */
+	/* threshold setters/getters tests */
 	cmocka_unit_test_prestate_setup_teardown(
 		set_threshold__invalid,
 		setup_threshold, NULL, &config),
@@ -275,18 +261,14 @@ const struct CMUnitTest log_test_to_syslog[] = {
 		set_threshold,
 		setup_threshold, NULL, &config),
 
-	/*
-	 * logging with levels out of threshold
-	 */
+	/* logging with levels out of threshold */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__out_of_threshold,
 		setup_log,
 		teardown_log,
 		&config),
 
-	/*
-	 * logging to syslog
-	 */
+	/* logging to syslog */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_syslog,
 		setup_log,
@@ -305,9 +287,7 @@ const struct CMUnitTest log_test_to_syslog[] = {
 		teardown_log,
 		&config),
 
-	/*
-	 * logging to syslog life cycle
-	 */
+	/* logging to syslog life cycle */
 	cmocka_unit_test_prestate_setup_teardown(
 		init_fini__lifecycle,
 		setup_log,
