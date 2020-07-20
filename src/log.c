@@ -69,7 +69,7 @@ static rpma_log_level Rpma_log_stderr_threshold = RPMA_LOG_DISABLED;
  * get_timestamp_prefix -- provide actual time in a readable string
  *
  * ASSUMPTIONS:
- * - buf != NULL
+ * - buf != NULL && buf_size >= 16
  */
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
@@ -79,20 +79,22 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	struct timespec ts;
 	long usec;
 
+	const char error_message[] = "[time error] ";
+
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
 	    (NULL == (info = localtime(&ts.tv_sec)))) {
-		snprintf(buf, buf_size, "[unknown time] ");
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 
 	usec = ts.tv_nsec / 1000;
 	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
-		snprintf(buf, buf_size, "[unknown time] ");
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 
 	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
-		*buf = '\0';
+		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 }
@@ -130,6 +132,7 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	char prefix[256] = "";
 	char timestamp[45] = "";
 	char message[1024] = "";
+	const char prefix_error_message[] = "[error prefix]: ";
 
 	if (level > Rpma_log_stderr_threshold &&
 	    level > Rpma_log_syslog_threshold)
@@ -141,10 +144,16 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	if (file_name) {
 		if (snprintf(prefix, sizeof(prefix), "%s: %4d: %s: *%s*: ",
 				file_name, line_no, function_name,
-				rpma_log_level_names[level]) < 0)
-			strcpy(prefix, "[error prefix]: ");
+				rpma_log_level_names[level]) < 0) {
+			memcpy(prefix, prefix_error_message,
+				sizeof(prefix_error_message));
+		}
 	} else {
-		prefix[0] = '\0';
+		if (snprintf(prefix, sizeof(prefix), "*%s*: ",
+				rpma_log_level_names[level]) < 0) {
+			memcpy(prefix, prefix_error_message,
+				sizeof(prefix_error_message));
+		}
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
@@ -154,8 +163,8 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 
 	if (level <= Rpma_log_syslog_threshold) {
 		if (level != RPMA_LOG_DISABLED) {
-			int severity = rpma_log_level2syslog_severity(level);
-			syslog(severity, "%s%s", prefix, message);
+			syslog(rpma_log_level2syslog_severity(level),
+				"%s%s", prefix, message);
 		}
 	}
 }
