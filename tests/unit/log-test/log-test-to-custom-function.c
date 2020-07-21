@@ -33,7 +33,7 @@ custom_log_function(rpma_log_level level, const char *file_name,
 }
 
 /*
- * lrpma_log_input -- test condition selection enum
+ * rpma_log_input -- test condition selection enum
  */
 enum rpma_log_input {
 	/* file name and function name is given */
