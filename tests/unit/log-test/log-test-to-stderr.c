@@ -137,18 +137,17 @@ typedef struct {
 } mock_config;
 
 /*
- * setup_log_stderr() -- wraper for setup_log_syslog() call
+ * setup_log_stderr() -- call setup_log_syslog() with proper parameters
  */
 int
 setup_log_stderr(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
-	struct threshold_config *th_config = config->tresholds;
-	return setup_log((void **)&th_config);
+	return setup_log((void **)&(config->tresholds));
 }
 
 /*
- * teardown_log_stderr() -- wraper for teardown_log_syslog() call
+ * teardown_log_stderr() -- call setup_log_syslog() with proper parameters
  */
 int
 teardown_log_stderr(void **config_ptr)
@@ -276,7 +275,7 @@ log__to_stderr_file_name_NULL(void **config_ptr)
 }
 
 /*
- * log life-cycle scenarios
+ * init_fini__lifecycle -- log life-cycle scenario
  */
 static void
 init_fini__lifecycle(void **unused)
@@ -304,12 +303,18 @@ init_fini__lifecycle(void **unused)
 	rpma_log(RPMA_LOG_LEVEL_FATAL, NULL, 0, NULL, "%s", TEST_MESSAGE);
 };
 
+/*
+ * threshold related setup
+ */
 static struct threshold_config th_config = {
 	rpma_log_stderr_set_threshold,
 	rpma_log_stderr_get_threshold,
 	RPMA_LOG_LEVEL_DEBUG, RPMA_LOG_DISABLED
 };
 
+/*
+ * different time mocks configurations
+ */
 static mock_config config_no_error = {
 	0, 0, 0, &th_config
 };
@@ -339,7 +344,10 @@ const struct CMUnitTest log_test_to_stderr[] = {
 		log__out_of_threshold,
 		setup_log, teardown_log, &th_config),
 
-	/* logging to stderr with file information */
+	/*
+	 * logging to stderr with file information
+	 * different time related mocks behaviors
+	 */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),
@@ -355,7 +363,10 @@ const struct CMUnitTest log_test_to_stderr[] = {
 
 
 
-	/* Logging to stderr without file and function information */
+	/*
+	 * Logging to stderr without file and function information
+	 * different time related mocks behaviors
+	 */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr_file_name_function_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),
@@ -369,7 +380,10 @@ const struct CMUnitTest log_test_to_stderr[] = {
 		log__to_stderr_file_name_function_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_strftime_error),
 
-	/* Logging to stderr without file information */
+	/*
+	 * Logging to stderr without file information
+	 * different time related mocks behaviors
+	 */
 	cmocka_unit_test_prestate_setup_teardown(
 		log__to_stderr_file_name_NULL,
 		setup_log_stderr, teardown_log_stderr, &config_no_error),

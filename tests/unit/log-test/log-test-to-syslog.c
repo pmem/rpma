@@ -13,7 +13,7 @@
 #include <string.h>
 
 /*
- * openlog()/closelog() log are called during library loading/unloading,
+ * openlog()/closelog() log are called during loading/unloading the library ,
  * when mock are not yet configured. We have to enable them before running some
  * tests.
  */
