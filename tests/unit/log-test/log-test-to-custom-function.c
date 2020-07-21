@@ -51,6 +51,9 @@ void
 log__to_user_function(void **config_ptr)
 {
 	enum rpma_log_input *config = (enum rpma_log_input *) *config_ptr;
+
+	char *test_file_name = NULL;
+	char *test_function_name = NULL;
 	/* disable mocks for clean log shutdown */
 	syslog_mock_disable();
 	rpma_log_fini();
@@ -66,17 +69,21 @@ log__to_user_function(void **config_ptr)
 		expect_value(custom_log_function, level, level);
 
 		if (rpma_log_input__no_nulls == *config) {
+			test_file_name = TEST_FILE_NAME;
 			expect_string(custom_log_function, file_name,
-					TEST_FILE_NAME);
+					test_file_name);
 		} else {
-			expect_value(custom_log_function, file_name, NULL);
+			expect_value(custom_log_function, file_name,
+					test_file_name);
 		}
 		expect_value(custom_log_function, line_no, TEST_LINE_NO);
 		if (rpma_log_input__file_function_NULL != *config) {
+			test_function_name = TEST_FUNCTION_NAME;
 			expect_string(custom_log_function, function_name,
-				TEST_FUNCTION_NAME);
+					test_function_name);
 		} else {
-			expect_value(custom_log_function, function_name, NULL);
+			expect_value(custom_log_function, function_name,
+					test_function_name);
 		}
 
 		expect_string(custom_log_function, message_format, "%s");
@@ -85,10 +92,9 @@ log__to_user_function(void **config_ptr)
 		 * run test
 		 */
 		rpma_log(level,
-			rpma_log_input__no_nulls == *config?TEST_FILE_NAME:NULL,
+			test_file_name,
 			TEST_LINE_NO,
-			rpma_log_input__file_function_NULL != *config?
-				TEST_FUNCTION_NAME: NULL,
+			test_function_name,
 			"%s", TEST_MESSAGE);
 	}
 	rpma_log_fini();
@@ -97,13 +103,14 @@ log__to_user_function(void **config_ptr)
 	 * ensure that custom log function is not call in any situation
 	 */
 	for (rpma_log_level level = RPMA_LOG_DISABLED;
-		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
+	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		/* run test */
 		rpma_log(level,
-			rpma_log_input__no_nulls == *config?TEST_FILE_NAME:NULL,
+			rpma_log_input__no_nulls == *config ?
+				TEST_FILE_NAME : NULL,
 			TEST_LINE_NO,
-			rpma_log_input__file_function_NULL != *config?
-				TEST_FUNCTION_NAME: NULL,
+			rpma_log_input__file_function_NULL != *config ?
+				TEST_FUNCTION_NAME : NULL,
 			"%s", TEST_MESSAGE);
 	}
 }

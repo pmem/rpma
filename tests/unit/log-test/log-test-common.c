@@ -48,7 +48,26 @@ setup_threshold(void **config_ptr)
 /*
  * tests definitions
  */
+/*
+ * set_threshold__default -- default threshold are accepted
+ */
+static void
+set_threshold__default(void  **unused)
+{
+	assert_int_equal(0,
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_SYSLOG_DEFAULT));
+	assert_int_equal(RPMA_LOG_LEVEL_SYSLOG_DEFAULT,
+		rpma_log_syslog_get_threshold());
+	assert_int_equal(0,
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_STDERR_DEFAULT));
+	assert_int_equal(RPMA_LOG_LEVEL_STDERR_DEFAULT,
+		rpma_log_stderr_get_threshold());
+}
 
+
+/*
+ * common tests used in other test groups
+ */
 /*
  * set_threshold__all -- set all possible threshold values
  */
@@ -85,26 +104,6 @@ set_threshold__invalid(void **config_ptr)
 }
 
 /*
- * set_threshold__default --default threshold are setup during default init?
- */
-static void
-set_threshold__default(void  **unused)
-{
-	assert_int_equal(0,
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_SYSLOG_DEFAULT));
-	assert_int_equal(RPMA_LOG_LEVEL_SYSLOG_DEFAULT,
-		rpma_log_syslog_get_threshold());
-	assert_int_equal(0,
-		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_STDERR_DEFAULT));
-	assert_int_equal(RPMA_LOG_LEVEL_STDERR_DEFAULT,
-		rpma_log_stderr_get_threshold());
-}
-
-/*
- * common tests used in other test groups
- */
-
-/*
  * log__out_of_threshold -- no output to stderr or syslog produced for logging
  * level out of threshold
  */
@@ -126,8 +125,6 @@ log__out_of_threshold(void **config_ptr)
 }
 
 const struct CMUnitTest log_test_common[] = {
-	cmocka_unit_test(set_threshold__all),
-	cmocka_unit_test(set_threshold__invalid),
 	cmocka_unit_test(set_threshold__default),
 
 	cmocka_unit_test(NULL)

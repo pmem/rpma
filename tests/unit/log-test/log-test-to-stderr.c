@@ -187,7 +187,7 @@ log__to_stderr(void **config_ptr)
 		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
-			config->localtime_error || config->strftime_error?
+			config->localtime_error || config->strftime_error ?
 			TEST_TIME_ERROR_STR : TEST_TIME_STR);
 		strcat(expected_fprintf_output, TEST_FILE_NAME ":    " \
 			STR(TEST_LINE_NO) ": " TEST_FUNCTION_NAME ": *");
@@ -218,7 +218,7 @@ log__to_stderr_file_name_function_name_NULL(void **config_ptr)
 		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
-			config->localtime_error || config->strftime_error?
+			config->localtime_error || config->strftime_error ?
 			TEST_TIME_ERROR_STR "*": TEST_TIME_STR "*");
 		strcat(expected_fprintf_output, level2string(level));
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
@@ -242,7 +242,7 @@ log__to_stderr_file_name_NULL(void **config_ptr)
 		/* setup frprintf mock */
 		char expected_fprintf_output[256] = "";
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
-		config->localtime_error || config->strftime_error?
+		config->localtime_error || config->strftime_error ?
 		TEST_TIME_ERROR_STR "*": TEST_TIME_STR "*");
 		strcat(expected_fprintf_output, level2string(level));
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
