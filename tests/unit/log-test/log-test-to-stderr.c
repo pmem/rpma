@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
 
-/* XXX WIP */
-
 /*
- * log-test-default.c -- unit tests of the log module with the default
- * log function (logging to stderr and syslog)
+ * log-test-to-stderr.c -- unit tests of the log module with the default
+ * log function (logging to stderr but with logging to syslog disabled)
  */
 
 #include <stdlib.h>

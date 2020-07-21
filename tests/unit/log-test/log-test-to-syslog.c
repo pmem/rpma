@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
 
-/* WIP XXX */
-
 /*
  * log-test-to-syslog.c -- unit tests of the log module with the default
  * log function (logging to syslog)
@@ -97,8 +95,8 @@ static const int expected_syslog_level[] = {
 };
 
 /*
- * ensure that log is enabled & call setup_treshold to backup and setup
- * thresholds according to configuration
+ * setup_log -- enable the default log function and set thresholds according to
+ * the passed configuration
  */
 int
 setup_log(void **config_ptr)
