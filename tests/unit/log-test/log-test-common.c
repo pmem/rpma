@@ -10,7 +10,7 @@
 #include "log-test-common.h"
 #include <string.h>
 
-static const char *const level2names[] = {
+static const char *const levels2strings[] = {
 	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
 	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
 	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
@@ -20,40 +20,40 @@ static const char *const level2names[] = {
 };
 
 /*
- * level2name -- log level to visible name string conversion
+ * level2string -- convert a log level to a string
  */
 const char *const
-level2name(rpma_log_level level)
+level2string(rpma_log_level level)
 {
-	return level2names[level];
+	return levels2strings[level];
 }
 
 /*
- * setup_threshold -- set thresholds according to configuration
+ * setup_threshold -- set thresholds according to the configuration
  */
 int
 setup_threshold(void **config_ptr)
 {
 	struct threshold_config *config =
 			(struct threshold_config *)*config_ptr;
-	int ret_stderr_set_threshold, ret_syslog_set_threshold;
 
-	ret_stderr_set_threshold = rpma_log_stderr_set_threshold(
-			config->stderr_threshold);
-	assert_int_equal(ret_stderr_set_threshold, 0);
+	assert_int_equal(rpma_log_stderr_set_threshold(
+				config->stderr_threshold), 0);
+	assert_int_equal(rpma_log_syslog_set_threshold(
+				config->syslog_threshold), 0);
 
-	ret_syslog_set_threshold = rpma_log_syslog_set_threshold(
-			config->syslog_threshold);
-	assert_int_equal(ret_syslog_set_threshold, 0);
-
-	return ret_stderr_set_threshold || ret_syslog_set_threshold;
+	return 0;
 }
 
 /*
- * set_threshold -- all available threshold shall be settable
+ * tests definitions
+ */
+
+/*
+ * set_threshold__all -- set all possible threshold values
  */
 void
-set_threshold(void **config_ptr)
+set_threshold__all(void **config_ptr)
 {
 	struct threshold_config *config =
 			(struct threshold_config *)*config_ptr;
@@ -85,6 +85,26 @@ set_threshold__invalid(void **config_ptr)
 }
 
 /*
+ * set_threshold__default --default threshold are setup during default init?
+ */
+static void
+set_threshold__default(void  **unused)
+{
+	assert_int_equal(0,
+		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_SYSLOG_DEFAULT));
+	assert_int_equal(RPMA_LOG_LEVEL_SYSLOG_DEFAULT,
+		rpma_log_syslog_get_threshold());
+	assert_int_equal(0,
+		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_STDERR_DEFAULT));
+	assert_int_equal(RPMA_LOG_LEVEL_STDERR_DEFAULT,
+		rpma_log_stderr_get_threshold());
+}
+
+/*
+ * common tests used in other test groups
+ */
+
+/*
  * log__out_of_threshold -- no output to stderr or syslog produced for logging
  * level out of threshold
  */
@@ -105,36 +125,10 @@ log__out_of_threshold(void **config_ptr)
 	}
 }
 
-/*
- * setup_default_threshold -- setup and verify that default threshold
- * are accepted
- */
-int
-setup_default_threshold(void **unused)
-{
-	assert_int_equal(0,
-		rpma_log_syslog_set_threshold(RPMA_LOG_LEVEL_SYSLOG_DEFAULT));
-	assert_int_equal(RPMA_LOG_LEVEL_SYSLOG_DEFAULT,
-		rpma_log_syslog_get_threshold());
-	assert_int_equal(0,
-		rpma_log_stderr_set_threshold(RPMA_LOG_LEVEL_STDERR_DEFAULT));
-	assert_int_equal(RPMA_LOG_LEVEL_STDERR_DEFAULT,
-		rpma_log_stderr_get_threshold());
-	return 0;
-}
-/*
- * init__default_treshold -- are we able to setup thresholds as it is done in
- * init function?
- */
-void
-init__default_treshold(void  **unused)
-{
-	;
-}
-
 const struct CMUnitTest log_test_common[] = {
-	cmocka_unit_test_setup(init__default_treshold,
-		setup_default_threshold),
+	cmocka_unit_test(set_threshold__all),
+	cmocka_unit_test(set_threshold__invalid),
+	cmocka_unit_test(set_threshold__default),
 
 	cmocka_unit_test(NULL)
 };

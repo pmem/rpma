@@ -191,7 +191,7 @@ log__to_stderr(void **config_ptr)
 			TEST_TIME_ERROR_STR : TEST_TIME_STR);
 		strcat(expected_fprintf_output, TEST_FILE_NAME ":    " \
 			STR(TEST_LINE_NO) ": " TEST_FUNCTION_NAME ": *");
-		strcat(expected_fprintf_output, level2name(level));
+		strcat(expected_fprintf_output, level2string(level));
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
 		expect_string(__wrap_fprintf, fprintf_output,
 				expected_fprintf_output);
@@ -220,7 +220,7 @@ log__to_stderr_file_name_function_name_NULL(void **config_ptr)
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
 			config->localtime_error || config->strftime_error?
 			TEST_TIME_ERROR_STR "*": TEST_TIME_STR "*");
-		strcat(expected_fprintf_output, level2name(level));
+		strcat(expected_fprintf_output, level2string(level));
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
 		expect_string(__wrap_fprintf, fprintf_output,
 				expected_fprintf_output);
@@ -244,7 +244,7 @@ log__to_stderr_file_name_NULL(void **config_ptr)
 		strcat(expected_fprintf_output, config->clock_gettime_error ||
 		config->localtime_error || config->strftime_error?
 		TEST_TIME_ERROR_STR "*": TEST_TIME_STR "*");
-		strcat(expected_fprintf_output, level2name(level));
+		strcat(expected_fprintf_output, level2string(level));
 		strcat(expected_fprintf_output, "*: " TEST_MESSAGE);
 		expect_string(__wrap_fprintf, fprintf_output,
 				expected_fprintf_output);
@@ -309,7 +309,7 @@ const struct CMUnitTest log_test_to_stderr[] = {
 	/* threshold setters/getters tests */
 	cmocka_unit_test_prestate_setup_teardown(set_threshold__invalid,
 		setup_threshold, NULL, &th_config),
-	cmocka_unit_test_prestate_setup_teardown(set_threshold,
+	cmocka_unit_test_prestate_setup_teardown(set_threshold__all,
 		setup_threshold, NULL, &th_config),
 
 	/* logging with levels out of threshold */

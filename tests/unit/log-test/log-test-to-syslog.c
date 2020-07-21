@@ -140,7 +140,7 @@ log__to_syslog(void **unused)
 		strcat(expected_syslog_message,
 			TEST_FILE_NAME ":    " STR(TEST_LINE_NO) ": " \
 			TEST_FUNCTION_NAME ": *");
-		strcat(expected_syslog_message, level2name(level));
+		strcat(expected_syslog_message, level2string(level));
 		strcat(expected_syslog_message, "*: " TEST_MESSAGE);
 		expect_string(syslog, syslog_output, expected_syslog_message);
 
@@ -164,7 +164,7 @@ log__to_syslog_file_name_function_name_NULL(void **unused)
 
 		char expected_syslog_message[256] = "";
 		strcat(expected_syslog_message, "*");
-		strcat(expected_syslog_message, level2name(level));
+		strcat(expected_syslog_message, level2string(level));
 		strcat(expected_syslog_message, "*: " TEST_MESSAGE);
 		expect_string(syslog, syslog_output, expected_syslog_message);
 
@@ -186,7 +186,7 @@ log__to_syslog_file_name_NULL(void **unused)
 		expect_value(syslog, __pri, expected_syslog_level[level]);
 		char expected_syslog_message[256] = "";
 		strcat(expected_syslog_message, "*");
-		strcat(expected_syslog_message, level2name(level));
+		strcat(expected_syslog_message, level2string(level));
 		strcat(expected_syslog_message, "*: " TEST_MESSAGE);
 		expect_string(syslog, syslog_output, expected_syslog_message);
 		rpma_log(level, NULL, TEST_LINE_NO, TEST_FUNCTION_NAME, "%s",
@@ -258,7 +258,7 @@ const struct CMUnitTest log_test_to_syslog[] = {
 		setup_threshold, NULL, &config),
 
 	cmocka_unit_test_prestate_setup_teardown(
-		set_threshold,
+		set_threshold__all,
 		setup_threshold, NULL, &config),
 
 	/* logging with levels out of threshold */

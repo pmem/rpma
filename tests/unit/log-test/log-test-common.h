@@ -19,7 +19,7 @@
 #define TEST_MESSAGE "Message"
 
 
-const char *const level2name(rpma_log_level level);
+const char *const level2string(rpma_log_level level);
 
 /*
  * threshold tests config, setter/getter functions as well as expected
@@ -33,9 +33,8 @@ struct threshold_config {
 };
 
 int setup_threshold(void **config_ptr);
-void set_threshold(void **config_ptr);
+void set_threshold__all(void **config_ptr);
 void set_threshold__invalid(void **config_ptr);
 void log__out_of_threshold(void **config_ptr);
-int setup_default_threshold(void **unused);
 
 #endif /* LOG_TEST_COMMON_H */
