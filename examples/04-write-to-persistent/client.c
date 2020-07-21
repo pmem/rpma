@@ -1,0 +1,322 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
+
+/*
+ * client.c -- a client of the write-to-persistent example
+ *
+ * Please see README.md for a detailed description of this example.
+ */
+
+#include <librpma.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifdef USE_LIBPMEM
+#include <libpmem.h>
+#define USAGE_STR "usage: %s <server_address> <service> [<pmem-path>]\n"
+#else
+#define USAGE_STR "usage: %s <server_address> <service>\n"
+#endif /* USE_LIBPMEM */
+
+#include "common.h"
+
+enum lang_t {en, es};
+
+static const char *hello_str[] = {
+	[en] = "Hello world!",
+	[es] = "¡Hola Mundo!"
+};
+
+#define LANG_NUM	(sizeof(hello_str) / sizeof(hello_str[0]))
+
+struct hello_t {
+	enum lang_t lang;
+	char str[KILOBYTE];
+};
+
+static inline void
+write_hello_str(struct hello_t *hello, enum lang_t lang)
+{
+	hello->lang = lang;
+	strncpy(hello->str, hello_str[hello->lang], KILOBYTE);
+}
+
+static void
+translate(struct hello_t *hello)
+{
+	printf("translating...\n");
+	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
+	write_hello_str(hello, lang);
+}
+
+int
+main(int argc, char *argv[])
+{
+	/* validate parameters */
+	if (argc < 3) {
+		fprintf(stderr, USAGE_STR, argv[0]);
+		exit(-1);
+	}
+
+	/* read common parameters */
+	char *addr = argv[1];
+	char *service = argv[2];
+	int ret;
+
+	/* resources - memory region */
+	void *mr_ptr = NULL;
+	size_t mr_size = 0;
+	size_t data_offset = 0;
+	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
+	struct rpma_mr_remote *dst_mr = NULL;
+	size_t dst_size = 0;
+	size_t dst_offset = 0;
+	struct rpma_mr_local *src_mr = NULL;
+	struct rpma_completion cmpl;
+
+	/* read-after-write memory region */
+	void *raw = NULL;
+	struct rpma_mr_local *raw_mr = NULL;
+
+	struct hello_t *hello = NULL;
+
+#ifdef USE_LIBPMEM
+	if (argc >= 4) {
+		char *path = argv[3];
+		int is_pmem;
+
+		/* map the file */
+		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
+				0 /* mode */, &mr_size, &is_pmem);
+		if (mr_ptr == NULL)
+			return -1;
+
+		/* pmem is expected */
+		if (!is_pmem) {
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+
+		/*
+		 * At the beginning of the persistent memory, a signature is
+		 * stored which marks its content as valid. So the length
+		 * of the mapped memory has to be at least of the length of
+		 * the signature to convey any meaningful content and be usable
+		 * as a persistent store.
+		 */
+		if (mr_size < SIGNATURE_LEN) {
+			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, SIGNATURE_LEN);
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+		data_offset = SIGNATURE_LEN;
+
+		/*
+		 * The space under the offset is intended for storing the hello
+		 * structure. So the total space is assumed to be at least
+		 * 1 KiB + offset of the string contents.
+		 */
+		if (mr_size - data_offset < sizeof(struct hello_t)) {
+			fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, sizeof(struct hello_t));
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+
+		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
+
+		/*
+		 * If the signature is not in place the persistent content has
+		 * to be initialized and persisted.
+		 */
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+			/* write an initial value and persist it */
+			write_hello_str(hello, en);
+			pmem_persist(hello, sizeof(struct hello_t));
+			/* write the signature to mark the content as valid */
+			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+			pmem_persist(mr_ptr, SIGNATURE_LEN);
+		}
+
+		mr_plt = RPMA_MR_PLT_PERSISTENT;
+	}
+#endif
+
+	/* if no pmem support or it is not provided */
+	if (mr_ptr == NULL) {
+		mr_ptr = malloc_aligned(sizeof(struct hello_t));
+		if (mr_ptr == NULL)
+			return -1;
+
+		mr_size = sizeof(struct hello_t);
+		hello = mr_ptr;
+		mr_plt = RPMA_MR_PLT_VOLATILE;
+
+		/* write an initial value */
+		write_hello_str(hello, en);
+	}
+
+	/* alloc memory for the read-after-write buffer (RAW) */
+	raw = malloc_aligned(KILOBYTE);
+	if (raw == NULL)
+		return -1;
+
+	(void) printf("Next value: %s\n", hello->str);
+
+	/* RPMA resources */
+	struct rpma_peer *peer = NULL;
+	struct rpma_conn *conn = NULL;
+
+	/*
+	 * lookup an ibv_context via the address and create a new peer using it
+	 */
+	ret = client_peer_via_address(addr, &peer);
+	if (ret)
+		goto err_free;
+
+	/* establish a new connection to a server listening at addr:service */
+	ret = client_connect(peer, addr, service, NULL, &conn);
+	if (ret)
+		goto err_peer_delete;
+
+	/* register the memory RDMA write */
+	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
+			RPMA_MR_USAGE_WRITE_SRC,
+			mr_plt, &src_mr);
+	if (ret) {
+		print_error_ex("rpma_mr_reg", ret);
+		goto err_mr_dereg;
+	}
+
+	/* register the RAW buffer */
+	ret = rpma_mr_reg(peer, raw, 8,
+			RPMA_MR_USAGE_READ_DST,
+			mr_plt, &raw_mr);
+	if (ret) {
+		print_error_ex("rpma_mr_reg", ret);
+		goto err_mr_dereg;
+	}
+
+	/* obtain the remote memory description */
+	struct rpma_conn_private_data pdata;
+	ret = rpma_conn_get_private_data(conn, &pdata);
+	if (ret) {
+		goto err_mr_dereg;
+	} else if (pdata.ptr == NULL) {
+		print_error_ex(
+				"The server has not provided a remote memory region. (the connection's private data is empty)",
+				ret);
+		goto err_conn_disconnect;
+	}
+
+	/*
+	 * Create a remote memory registration structure from the received
+	 * descriptor.
+	 */
+	rpma_mr_descriptor *desc = pdata.ptr;
+	ret = rpma_mr_remote_from_descriptor(desc, &dst_mr);
+	if (ret) {
+		print_error_ex("rpma_mr_remote_from_descriptor", ret);
+		goto err_conn_disconnect;
+	}
+
+	/* get the remote memory region size */
+	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
+	if (ret) {
+		print_error_ex("rpma_mr_remote_size", ret);
+		goto err_mr_remote_delete;
+	} else if (dst_size < KILOBYTE) {
+		fprintf(stderr,
+				"Remote memory region size too small for writing the data of the assumed size (%zu < %d)\n",
+				dst_size, KILOBYTE);
+		goto err_mr_remote_delete;
+	} else {
+		fprintf(stdout, "Remote memory region size: %zu\n",
+				dst_size);
+	}
+
+	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
+			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
+			RPMA_F_COMPLETION_ON_ERROR, NULL);
+	if (ret)
+		goto err_conn_disconnect;
+
+	/* the read serves here as flushing primitive */
+	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, 8,
+			RPMA_F_COMPLETION_ALWAYS, NULL);
+	if (ret)
+		goto err_conn_disconnect;
+
+	ret = rpma_conn_next_completion(conn, &cmpl);
+	if (ret) {
+		print_error_ex("rpma_conn_next_completion", ret);
+		goto err_conn_disconnect;
+	}
+
+	if (cmpl.op != RPMA_OP_READ) {
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value (%d != %d)\n",
+				cmpl.op, (RPMA_OP_READ | RPMA_OP_WRITE));
+		goto err_conn_disconnect;
+	}
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		(void) fprintf(stderr, "rpma_read failed with %d\n",
+				cmpl.op_status);
+		goto err_conn_disconnect;
+	}
+
+	/*
+	 * Translate the message so the next time the greeting will be
+	 * surprising.
+	 */
+	translate(hello);
+#ifdef USE_LIBPMEM
+	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+		pmem_persist(hello, sizeof(struct hello_t));
+	}
+#endif
+
+	(void) printf("Translation: %s\n", hello->str);
+
+err_conn_disconnect:
+	(void) common_disconnect_and_wait_for_conn_close(&conn);
+
+err_mr_remote_delete:
+	/* delete the remote memory region's structure */
+	ret = rpma_mr_remote_delete(&dst_mr);
+	if (ret)
+		print_error_ex("rpma_mr_remote_delete", ret);
+
+err_mr_dereg:
+	/* deregister the memory region */
+	ret = rpma_mr_dereg(&src_mr);
+	if (ret)
+		print_error_ex("rpma_mr_dereg", ret);
+
+	ret = rpma_mr_dereg(&raw_mr);
+	if (ret)
+		print_error_ex("rpma_mr_dereg", ret);
+
+err_peer_delete:
+	/* delete the peer */
+	ret = rpma_peer_delete(&peer);
+	if (ret)
+		print_error_ex("rpma_peer_delete", ret);
+
+err_free:
+#ifdef USE_LIBPMEM
+	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+		pmem_unmap(mr_ptr, mr_size);
+		mr_ptr = NULL;
+	}
+#endif
+
+	if (mr_ptr != NULL)
+		free(mr_ptr);
+
+	if (raw != NULL)
+		free(raw);
+
+	return ret;
+}
