@@ -67,7 +67,7 @@ __wrap_snprintf(char *__restrict __s, size_t __maxlen,
 
 
 #define TEST_TIME_STR "[1970-01-01 00:00:00.000000] "
-#define TEST_TIME_ERROR_STR "[unknown time] "
+#define TEST_TIME_ERROR_STR "[time error] "
 
 /*
  * __wrap_clock_gettime() -- clock_gettime() mock
