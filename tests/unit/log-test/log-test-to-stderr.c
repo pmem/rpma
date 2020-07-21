@@ -65,8 +65,9 @@ __wrap_snprintf(char *__restrict __s, size_t __maxlen,
 
 }
 
-
-#define TEST_TIME_STR "[1970-01-01 00:00:00.000000] "
+#define TEST_TIME_OF_DAY {00, 00, 00, 1, 0, 70, 0, 365, 0}
+#define TEST_TIME_OF_DAY_STR "1970-01-01 00:00:00"
+#define TEST_TIME_STR "[" TEST_TIME_OF_DAY_STR ".000000] "
 #define TEST_TIME_ERROR_STR "[time error] "
 
 /*
@@ -76,55 +77,56 @@ int
 __wrap_clock_gettime(clockid_t __clock_id, struct timespec *__tp)
 {
 	assert_int_equal(__clock_id, CLOCK_REALTIME);
-	int err = mock_type(int);
-	if (err)
-		return err;
+	assert_non_null(__tp);
+	struct timespec *tp = mock_type(struct timespec *);
+	if (NULL == tp)
+		return -1;
 
-	__tp->tv_nsec = 0;
-	__tp->tv_sec = 0;
+	memcpy(__tp, tp, sizeof(struct timespec));
 	return 0;
 }
 
 /*
  * __wrap_localtime() -- localtime() mock
  */
-extern struct tm *__real_localtime(const time_t *__timer);
-
 struct tm *
 __wrap_localtime(const time_t *__timer)
 {
 	assert_non_null(__timer);
-	int ret = mock_type(int);
-	if (!ret)
-		return NULL;
+	time_t *timer = mock_type(time_t *);
+	assert_memory_equal(__timer, timer, sizeof(timer_t));
 
-	/*
-	 * return fix predefine point in time
-	 * alternative approach with real localtime() might add daylight
-	 * shift causing indeterministic tests result
-	 */
-	static struct tm value = {0};
-	value.tm_yday = 1; // XXX combine this with TEST_TIME_STR
-	value.tm_mday = 1;
-	value.tm_year = 70;
-	return &value;
+	struct tm *tm = mock_type(struct tm *);
+	return tm;
 }
 
 /*
  * __wrap_strftime() -- strftime mock
  */
-extern size_t __real_strftime(char *__restrict __s, size_t __maxsize,
-	const char *__restrict __format, const struct tm *__restrict __tp);
-
 size_t
 __wrap_strftime(char *__restrict __s, size_t __maxsize,
 	const char *__restrict __format, const struct tm *__restrict __tp)
 {
-	int ret = mock_type(int);
-	if (!ret)
+	assert_non_null(__s);
+	assert_non_null(__format);
+	/* check that format string is not empty */
+	assert_int_not_equal(*__format, '\0');
+
+	assert_non_null(__tp);
+
+	char *s = mock_type(char *);
+	if (!s)
 		return 0;
 
-	return __real_strftime(__s, __maxsize, __format, __tp);
+	/* check expected input time */
+	struct tm *tp = mock_type(struct tm *);
+	assert_memory_equal(__tp, tp, sizeof(struct tm));
+
+	/* check enough space in result buffer */
+	assert_in_range(__maxsize, strlen(s) + 1, 1024);
+
+	strcpy(__s, s);
+	return strlen(s);
 }
 
 typedef struct {
@@ -154,21 +156,27 @@ teardown_log_stderr(void **config_ptr)
 	mock_config *config = (mock_config *)*config_ptr;
 	return teardown_log((void **)&(config->tresholds));
 }
-
+/*
+ * setup time related mocks
+ */
 #define TIME_MOCKS_INIT(x) \
 	if (x->clock_gettime_error) { \
-		will_return(__wrap_clock_gettime, -1); \
+		will_return(__wrap_clock_gettime, NULL); \
 	} else if (x->localtime_error) { \
-		will_return(__wrap_clock_gettime, 0); \
-		will_return(__wrap_localtime, 0); \
+		will_return(__wrap_clock_gettime, &__tp); \
+		will_return(__wrap_localtime, &__tp); \
+		will_return(__wrap_localtime, NULL); \
 	} else if (x->strftime_error) { \
-		will_return(__wrap_clock_gettime, 0); \
-		will_return(__wrap_localtime, 1); \
-		will_return(__wrap_strftime, 0); \
+		will_return(__wrap_clock_gettime, &__tp); \
+		will_return(__wrap_localtime, &__tp); \
+		will_return(__wrap_localtime, &tm); \
+		will_return(__wrap_strftime, NULL); \
 	} else { \
-		will_return(__wrap_clock_gettime, 0); \
-		will_return(__wrap_localtime, 1); \
-		will_return(__wrap_strftime, 1); \
+		will_return(__wrap_clock_gettime, &__tp); \
+		will_return(__wrap_localtime, &__tp); \
+		will_return(__wrap_localtime, &tm); \
+		will_return(__wrap_strftime, strftime_return); \
+		will_return(__wrap_strftime, &tm); \
 	}
 
 /*
@@ -179,6 +187,10 @@ static void
 log__to_stderr(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
+	struct timespec __tp = {0};
+	struct tm tm = TEST_TIME_OF_DAY;
+	char *strftime_return = TEST_TIME_OF_DAY_STR;
+
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 	    level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		/* setup time-related mock */
@@ -201,6 +213,7 @@ log__to_stderr(void **config_ptr)
 			TEST_FUNCTION_NAME, "%s", TEST_MESSAGE);
 	}
 }
+
 /*
  * log__to_stderr_file_name_function_name_NULL -- successful logging to stderr
  * without file name and function name provided
@@ -209,6 +222,10 @@ static void
 log__to_stderr_file_name_function_name_NULL(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
+	struct timespec __tp = {0};
+	struct tm tm = TEST_TIME_OF_DAY;
+	char *strftime_return = TEST_TIME_OF_DAY_STR;
+
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 
@@ -227,6 +244,7 @@ log__to_stderr_file_name_function_name_NULL(void **config_ptr)
 		rpma_log(level, NULL, 0, NULL, "%s", TEST_MESSAGE);
 	}
 }
+
 /*
  * log__to_stderr_file_name_NULL -- successful logging to stderr without file
  * name provided
@@ -235,6 +253,10 @@ static void
 log__to_stderr_file_name_NULL(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
+	struct timespec __tp = {0};
+	struct tm tm = TEST_TIME_OF_DAY;
+	char *strftime_return = TEST_TIME_OF_DAY_STR;
+
 	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 		/* setup time-related mock */
