@@ -129,9 +129,10 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,
 	const char *message_format, va_list arg)
 {
-	char file_info[256] = "";
+	char file_info_buffer[256] = "";
+	const char *file_info = file_info_buffer;
 	char message[1024] = "";
-	const char prefix_error_message[] = "[error prefix]: ";
+	const char file_info_error[] = "[file info error]: ";
 
 	if (level > Rpma_log_stderr_threshold &&
 	    level > Rpma_log_syslog_threshold)
@@ -149,37 +150,25 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 			/* skip '/' */
 			base_file_name++;
 
-		if (snprintf(file_info, sizeof(file_info), "%s: %4d: %s: ",
-		    base_file_name, line_no, function_name) < 0) {
-			*file_info = '\0';
+		if (snprintf(file_info_buffer, sizeof(file_info_buffer),
+				"%s: %4d: %s: ", base_file_name, line_no,
+				function_name) < 0) {
+			file_info = file_info_error;
+		} else {
+			file_info = file_info_buffer;
 		}
-	} else {
-		*file_info = '\0';
 	}
 
 	if (level <= Rpma_log_stderr_threshold) {
 		char times_tamp[45] = "";
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
-		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp,
-			/*
-			 * Empty file_info when file name is provided
-			 * indicates about error situation and print
-			 * prefix_error.
-			 * Otherwise file_info is either empty or contains
-			 * full file related information
-			 */
-			(file_name && (*file_info == '\0')) ?
-				prefix_error_message :
-				file_info,
+		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp, file_info,
 			rpma_log_level_names[level], message);
 	}
 
 	if (level <= Rpma_log_syslog_threshold) {
 		syslog(rpma_log_level2syslog_severity(level), "%s*%s*: %s",
-			(file_name && (*file_info == '\0')) ?
-				prefix_error_message :
-				file_info,
-			rpma_log_level_names[level], message);
+			file_info, rpma_log_level_names[level], message);
 	}
 }
 
