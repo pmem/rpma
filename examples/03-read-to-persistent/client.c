@@ -136,13 +136,16 @@ main(int argc, char *argv[])
 
 	/* if no pmem support or it is not provided */
 	if (mr_ptr == NULL) {
-		mr_ptr = malloc_aligned(KILOBYTE);
+		mr_ptr = malloc_aligned(sizeof(struct hello_t));
 		if (mr_ptr == NULL)
 			return -1;
 
-		mr_size = KILOBYTE;
+		mr_size = sizeof(struct hello_t);
 		hello = mr_ptr;
 		mr_plt = RPMA_MR_PLT_VOLATILE;
+
+		/* write an initial value */
+		write_hello_str(hello, en);
 	}
 
 	(void) printf("Next value: %s\n", hello->str);
