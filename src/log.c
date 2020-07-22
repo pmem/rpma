@@ -161,15 +161,24 @@ rpma_log_function(rpma_log_level level, const char *file_name,
 		char times_tamp[45] = "";
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp,
-			*file_info != '\0' || !file_name? file_info :
-				prefix_error_message,
+			/*
+			 * Empty file_info when file name is provided
+			 * indicates about error situation and print
+			 * prefix_error.
+			 * Otherwise file_info is either empty or contains
+			 * full file related information
+			 */
+			(file_name && (*file_info == '\0')) ?
+				prefix_error_message :
+				file_info,
 			rpma_log_level_names[level], message);
 	}
 
 	if (level <= Rpma_log_syslog_threshold) {
 		syslog(rpma_log_level2syslog_severity(level), "%s*%s*: %s",
-			*file_info != '\0' || !file_name? file_info :
-				prefix_error_message,
+			(file_name && (*file_info == '\0')) ?
+				prefix_error_message :
+				file_info,
 			rpma_log_level_names[level], message);
 	}
 }
