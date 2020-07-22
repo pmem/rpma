@@ -39,7 +39,7 @@ target_link_libraries(rpma PRIVATE
 
 set_target_properties(rpma PROPERTIES
 	SOVERSION 0
-	PUBLIC_HEADER include/librpma.h)
+	PUBLIC_HEADER "include/librpma.h;include/librpma_log.h")
 
 target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
 
