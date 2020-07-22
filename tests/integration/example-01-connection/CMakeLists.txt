@@ -18,6 +18,7 @@ build_test_src(NAME ${TARGET} SRCS
 	${LIBRPMA_SOURCE_DIR}/ep.c
 	${LIBRPMA_SOURCE_DIR}/info.c
 	${LIBRPMA_SOURCE_DIR}/librpma.c
+	${LIBRPMA_SOURCE_DIR}/log.c
 	${LIBRPMA_SOURCE_DIR}/mr.c
 	${LIBRPMA_SOURCE_DIR}/peer.c
 	${LIBRPMA_SOURCE_DIR}/private_data.c

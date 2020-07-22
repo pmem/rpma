@@ -13,6 +13,7 @@
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
+#include "log_internal.h"
 #include "rpma_err.h"
 
 struct rpma_ep {
@@ -108,8 +109,10 @@ err_destroy_event_channel:
 int
 rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 {
-	if (ep_ptr == NULL)
+	if (ep_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": ep_ptr is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	struct rpma_ep *ep = *ep_ptr;
 	if (ep == NULL)
@@ -117,6 +120,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	if (rdma_destroy_id(ep->id)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 

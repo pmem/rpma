@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "conn.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "private_data.h"
 #include "rpma_err.h"
@@ -157,8 +158,11 @@ int
 rpma_conn_get_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
-	if (conn == NULL || pdata == NULL)
+	if (conn == NULL || pdata == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR
+				": either conn or pdata is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	pdata->ptr = conn->data.ptr;
 	pdata->len = conn->data.len;
@@ -240,8 +244,11 @@ rpma_read(struct rpma_conn *conn,
 	struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
-	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+	if (conn == NULL || dst == NULL || src == NULL || flags == 0) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR
+				":  either conn or dst or src is NULL or flags == 0");
 		return RPMA_E_INVAL;
+	}
 
 	return rpma_mr_read(conn->id->qp,
 			dst, dst_offset,
@@ -273,17 +280,24 @@ rpma_write(struct rpma_conn *conn,
 int
 rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 {
-	if (conn == NULL || cmpl == NULL)
+	if (conn == NULL || cmpl == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR
+				":  either conn or cmpl is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	struct ibv_wc wc = {0};
 	int result = ibv_poll_cq(conn->cq, 1 /* num_entries */, &wc);
 	if (result == 0) {
+		RPMA_LOG_ERROR(RPMA_E_NO_COMPLETION_STR);
 		return RPMA_E_NO_COMPLETION;
 	} else if (result < 0) {
 		Rpma_provider_error = result;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	} else if (result > 1) {
+		RPMA_LOG_ERROR(RPMA_E_UNKNOWN_STR
+				": too many completions (impossible)");
 		return RPMA_E_UNKNOWN;
 	}
 
@@ -295,6 +309,8 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 		cmpl->op = RPMA_OP_WRITE;
 		break;
 	default:
+		RPMA_LOG_ERROR(RPMA_E_NOSUPP_STR
+				": unexpected wc.opcode value");
 		return RPMA_E_NOSUPP;
 	}
 

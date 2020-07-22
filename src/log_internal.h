@@ -14,6 +14,10 @@
  * Set of macros that should be used as the primary API for logging.
  * Direct call to rpma_log shall be used only in exceptional, corner cases.
  */
+#define RPMA_LOG_DEBUG(format, ...) \
+	rpma_log(RPMA_LOG_LEVEL_DEBUG, __FILE__, __LINE__, __func__, \
+		format "\n", ##__VA_ARGS__)
+
 #define RPMA_LOG_NOTICE(format, ...) \
 	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
 		format "\n", ##__VA_ARGS__)
@@ -25,6 +29,10 @@
 #define RPMA_LOG_ERROR(format, ...) \
 	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, \
 		format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_PROVIDER_ERROR(provider_error) \
+	RPMA_LOG_ERROR(RPMA_E_PROVIDER_STR ": %s", \
+		strerror(provider_error))
 
 #define RPMA_LOG_FATAL(format, ...) \
 	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, \

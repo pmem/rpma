@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "conn_req.h"
+#include "log_internal.h"
 #include "peer.h"
 #include "rpma_err.h"
 
@@ -90,6 +91,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr == NULL) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -153,8 +155,10 @@ err_dealloc_pd:
 int
 rpma_peer_delete(struct rpma_peer **peer_ptr)
 {
-	if (peer_ptr == NULL)
+	if (peer_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": peer_ptr is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	struct rpma_peer *peer = *peer_ptr;
 	if (peer == NULL)
@@ -163,6 +167,7 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	int ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
 		Rpma_provider_error = ret;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 

@@ -7,6 +7,7 @@ include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(UNIT NAME ep-test SRCS
 	ep-test.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/ep.c)
 

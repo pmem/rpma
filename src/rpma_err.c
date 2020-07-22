@@ -41,15 +41,17 @@ rpma_err_2str(int ret)
 {
 	switch (ret) {
 	case RPMA_E_NOSUPP:
-		return "Not supported";
+		return RPMA_E_NOSUPP_STR;
 	case RPMA_E_PROVIDER:
-		return "Provider error occurred";
+		return RPMA_E_PROVIDER_STR;
 	case RPMA_E_NOMEM:
-		return "Out of memory";
+		return RPMA_E_NOMEM_STR;
 	case RPMA_E_INVAL:
-		return "Invalid argument";
+		return RPMA_E_INVAL_STR;
+	case RPMA_E_NO_COMPLETION:
+		return RPMA_E_NO_COMPLETION_STR;
 	case RPMA_E_UNKNOWN:
 	default:
-		return "Unknown error";
+		return RPMA_E_UNKNOWN_STR;
 	}
 }

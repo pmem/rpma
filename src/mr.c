@@ -6,9 +6,11 @@
  */
 
 #include <endian.h>
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "librpma.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "peer.h"
 #include "rpma_err.h"
@@ -109,8 +111,18 @@ rpma_mr_read(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
+
+	RPMA_LOG_DEBUG(
+			"read %zu bytes from remote 0x%.12" PRIXPTR
+			" to local 0x%.12" PRIXPTR " %s completion",
+			len,
+			(src->raddr + src_offset),
+			(uint64_t)((uintptr_t)dst->ibv_mr->addr + dst_offset),
+			((flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+				"with" : "without"));
 
 	return 0;
 }
@@ -163,16 +175,23 @@ int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr)
 {
-	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)
+	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR
+				": either peer or ptr or mr_ptr is NULL or size == 0");
 		return RPMA_E_INVAL;
+	}
 
-	if (usage == 0 || (usage & ~USAGE_ALL_ALLOWED))
+	if (usage == 0 || (usage & ~USAGE_ALL_ALLOWED)) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": unexpected usage value");
 		return RPMA_E_INVAL;
+	}
 
 	struct rpma_mr_local *mr;
 	mr = malloc(sizeof(struct rpma_mr_local));
-	if (mr == NULL)
+	if (mr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_NOMEM_STR);
 		return RPMA_E_NOMEM;
+	}
 
 	struct ibv_mr *ibv_mr;
 	int ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size,
@@ -195,8 +214,10 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 int
 rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 {
-	if (mr_ptr == NULL)
+	if (mr_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": mr_ptr is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	if (*mr_ptr == NULL)
 		return 0;
@@ -206,6 +227,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	errno = ibv_dereg_mr(mr->ibv_mr);
 	if (errno) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_PROVIDER_ERROR(Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 	}
 
@@ -221,8 +243,10 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 int
 rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc)
 {
-	if (mr == NULL || desc == NULL)
+	if (mr == NULL || desc == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": either mr or desc is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	char *buff = (char *)desc;
 
@@ -245,8 +269,11 @@ int
 rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 		struct rpma_mr_remote **mr_ptr)
 {
-	if (desc == NULL || mr_ptr == NULL)
+	if (desc == NULL || mr_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR
+				": either desc or mr_ptr is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	char *buff = (char *)desc;
 
@@ -258,12 +285,16 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	buff += sizeof(uint32_t);
 	uint8_t plt = *(uint8_t *)buff;
 
-	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT)
+	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT) {
+		RPMA_LOG_ERROR(RPMA_E_NOSUPP_STR ": unexpected plt value");
 		return RPMA_E_NOSUPP;
+	}
 
 	struct rpma_mr_remote *mr = malloc(sizeof(struct rpma_mr_remote));
-	if (mr == NULL)
+	if (mr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_NOMEM_STR);
 		return RPMA_E_NOMEM;
+	}
 
 	mr->raddr = raddr;
 	mr->size = size;
@@ -280,8 +311,10 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 int
 rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size)
 {
-	if (mr == NULL || size == NULL)
+	if (mr == NULL || size == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": either mr or size is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	*size = mr->size;
 
@@ -294,8 +327,10 @@ rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size)
 int
 rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 {
-	if (mr_ptr == NULL)
+	if (mr_ptr == NULL) {
+		RPMA_LOG_ERROR(RPMA_E_INVAL_STR ": mr_ptr is NULL");
 		return RPMA_E_INVAL;
+	}
 
 	if (*mr_ptr == NULL)
 		return 0;
