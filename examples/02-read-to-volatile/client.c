@@ -33,6 +33,10 @@ main(int argc, char *argv[])
 	char *addr = argv[1];
 	char *service = argv[2];
 
+	/* close the default RPMA log and open a custom one */
+	rpma_log_fini();
+	rpma_log_init(print_log);
+
 	/* resources - general */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
@@ -65,10 +69,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, dst_ptr, KILOBYTE, RPMA_MR_USAGE_READ_DST,
 			RPMA_MR_PLT_VOLATILE, &dst_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_mr_free;
-	}
 
 	/* establish a new connection to a server listening at addr:service */
 	ret = client_connect(peer, addr, service, NULL, &conn);
@@ -79,12 +81,10 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	ret = rpma_conn_get_private_data(conn, &pdata);
 	if (ret) {
-		print_error_ex("rpma_conn_next_event", ret);
 		goto err_conn_disconnect;
 	} else if (pdata.ptr == NULL) {
-		print_error_ex(
-				"The server has not provided a remote memory region. (the connection's private data is empty)",
-				ret);
+		fprintf(stderr,
+				"The server has not provided a remote memory region. (the connection's private data is empty)\n");
 		goto err_conn_disconnect;
 	}
 
@@ -94,15 +94,12 @@ main(int argc, char *argv[])
 	 */
 	rpma_mr_descriptor *desc = pdata.ptr;
 	ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_remote_from_descriptor", ret);
+	if (ret)
 		goto err_conn_disconnect;
-	}
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(src_mr, &src_size);
 	if (ret) {
-		print_error_ex("rpma_mr_remote_size", ret);
 		goto err_mr_remote_delete;
 	} else if (src_size > KILOBYTE) {
 		fprintf(stderr,
@@ -121,7 +118,7 @@ main(int argc, char *argv[])
 	/* wait for a completion of the RDMA read */
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret) {
-		print_error_ex("rpma_conn_next_completion", ret);
+		;
 	} else if (cmpl.op != RPMA_OP_READ) {
 		fprintf(stderr,
 				"rpma_conn_next_completion returned a completion of an unexpected operation: %d\n",
@@ -136,18 +133,14 @@ main(int argc, char *argv[])
 
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
-	ret = rpma_mr_remote_delete(&src_mr);
-	if (ret)
-		print_error_ex("rpma_mr_remote_delete", ret);
+	(void) rpma_mr_remote_delete(&src_mr);
 
 err_conn_disconnect:
 	(void) common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&dst_mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
+	(void) rpma_mr_dereg(&dst_mr);
 
 err_mr_free:
 	/* free the memory */
@@ -155,9 +148,10 @@ err_mr_free:
 
 err_peer_delete:
 	/* delete the peer */
-	ret = rpma_peer_delete(&peer);
-	if (ret)
-		print_error_ex("rpma_peer_delete", ret);
+	(void) rpma_peer_delete(&peer);
+
+	/* close the RPMA log */
+	rpma_log_fini();
 
 	return ret;
 }

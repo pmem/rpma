@@ -8,6 +8,7 @@
  */
 
 #include <librpma.h>
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -62,6 +63,10 @@ main(int argc, char *argv[])
 	char *addr = argv[1];
 	char *service = argv[2];
 	int ret;
+
+	/* close the default RPMA log and open a custom one */
+	rpma_log_fini();
+	rpma_log_init(print_log);
 
 	/* resources - memory region */
 	void *mr_ptr = NULL;
@@ -174,15 +179,13 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC, mr_plt,
 			&mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_peer_delete;
-	}
 
 	/* get the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &data.desc);
 	if (ret)
-		print_error_ex("rpma_mr_get_descriptor", ret);
+		goto err_mr_dereg;
 
 	/* establish a new connection to a server listening at addr:service */
 	struct rpma_conn_private_data pdata;
@@ -214,15 +217,11 @@ main(int argc, char *argv[])
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
+	(void) rpma_mr_dereg(&mr);
 
 err_peer_delete:
 	/* delete the peer */
-	ret = rpma_peer_delete(&peer);
-	if (ret)
-		print_error_ex("rpma_peer_delete", ret);
+	(void) rpma_peer_delete(&peer);
 
 
 err_free:
@@ -235,6 +234,9 @@ err_free:
 
 	if (mr_ptr != NULL)
 		free(mr_ptr);
+
+	/* close the RPMA log */
+	rpma_log_fini();
 
 	return ret;
 }

@@ -9,6 +9,7 @@
 
 #include <inttypes.h>
 #include <librpma.h>
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -34,6 +35,10 @@ main(int argc, char *argv[])
 	char *addr = argv[1];
 	char *service = argv[2];
 	int ret;
+
+	/* close the default RPMA log and open a custom one */
+	rpma_log_fini();
+	rpma_log_init(print_log);
 
 	/* resources - memory region */
 	void *dst_ptr = NULL;
@@ -134,10 +139,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
 			dst_plt, &dst_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_ep_shutdown;
-	}
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
@@ -189,21 +192,15 @@ err_disconnect:
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&dst_mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
+	(void) rpma_mr_dereg(&dst_mr);
 
 err_ep_shutdown:
 	/* shutdown the endpoint */
-	ret = rpma_ep_shutdown(&ep);
-	if (ret)
-		print_error_ex("rpma_ep_shutdown", ret);
+	(void) rpma_ep_shutdown(&ep);
 
 err_peer_delete:
 	/* delete the peer object */
-	ret = rpma_peer_delete(&peer);
-	if (ret)
-		print_error_ex("rpma_peer_delete", ret);
+	(void) rpma_peer_delete(&peer);
 
 err_free:
 #ifdef USE_LIBPMEM
@@ -215,6 +212,9 @@ err_free:
 
 	if (dst_ptr != NULL)
 		free(dst_ptr);
+
+	/* close the RPMA log */
+	rpma_log_fini();
 
 	return ret;
 }

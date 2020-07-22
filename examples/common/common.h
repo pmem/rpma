@@ -9,6 +9,7 @@
 #define EXAMPLES_COMMON
 
 #include <librpma.h>
+#include <librpma_log.h>
 
 #ifdef USE_LIBPMEM
 
@@ -26,6 +27,10 @@ struct common_data {
 #define KILOBYTE 1024
 
 void print_error_ex(const char *fname, int ret);
+
+void print_log(rpma_log_level level, const char *file_name,
+		const int line_no, const char *function_name,
+		const char *message_format, va_list args);
 
 void *malloc_aligned(size_t size);
 

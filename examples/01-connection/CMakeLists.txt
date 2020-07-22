@@ -19,9 +19,10 @@ link_directories(${LIBRPMA_LIBRARY_DIRS})
 function(add_example name)
 	set(srcs ${ARGN})
 	add_executable(${name} ${srcs})
-	target_include_directories(${name} PUBLIC ${LIBRPMA_INCLUDE_DIRS})
+	target_include_directories(${name}
+		PUBLIC ${LIBRPMA_INCLUDE_DIRS} ../common)
 	target_link_libraries(${name} rpma)
 endfunction()
 
-add_example(server server.c)
-add_example(client client.c)
+add_example(server server.c ../common/common.c)
+add_example(client client.c ../common/common.c)

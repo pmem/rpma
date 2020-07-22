@@ -12,29 +12,13 @@
 #include <stdio.h>
 
 #include <librpma.h>
+#include <librpma_log.h>
+
+#include "common.h"
 
 #ifdef TEST_MOCK_MAIN
 #define main client_main
 #endif
-
-static void
-print_error_ex(const char *fname, const int ret)
-{
-	int result = 0;
-
-	if (ret == RPMA_E_PROVIDER) {
-		int errnum = rpma_err_get_provider_error();
-		const char *errstr = strerror(errnum);
-		result = fprintf(stderr, "%s failed: %s (%s)\n", fname,
-				rpma_err_2str(ret), errstr);
-	} else {
-		result = fprintf(stderr, "%s failed: %s\n", fname,
-				rpma_err_2str(ret));
-	}
-
-	if (result < 0)
-		exit(-1);
-}
 
 int
 main(int argc, char *argv[])
@@ -48,6 +32,10 @@ main(int argc, char *argv[])
 	/* parameters */
 	char *addr = argv[1];
 	char *service = argv[2];
+
+	/* close the default RPMA log and open a custom one */
+	rpma_log_fini();
+	rpma_log_init(print_log);
 
 	/* resources */
 	struct ibv_context *dev = NULL;
@@ -145,10 +133,8 @@ main(int argc, char *argv[])
 
 	/* delete the peer object */
 	ret = rpma_peer_delete(&peer);
-	if (ret) {
-		print_error_ex("rpma_peer_delete", ret);
+	if (ret)
 		goto err_exit;
-	}
 
 	return 0;
 
@@ -163,5 +149,9 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_exit:
+
+	/* close the RPMA log */
+	rpma_log_fini();
+
 	return -1;
 }

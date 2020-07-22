@@ -10,6 +10,7 @@
 
 #include <inttypes.h>
 #include <librpma.h>
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -35,6 +36,10 @@ main(int argc, char *argv[])
 	/* parameters */
 	char *addr = argv[1];
 	char *service = argv[2];
+
+	/* close the default RPMA log and open a custom one */
+	rpma_log_fini();
+	rpma_log_init(print_log);
 
 	/* resources - general */
 	struct rpma_peer *peer = NULL;
@@ -72,10 +77,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC,
 			RPMA_MR_PLT_VOLATILE, &mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_mr_free;
-	}
 
 	struct rpma_conn_private_data pdata;
 	rpma_mr_descriptor desc;
@@ -84,9 +87,8 @@ main(int argc, char *argv[])
 
 	/* receive the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &desc);
-	if (ret) {
-		print_error_ex("rpma_mr_get_descriptor", ret);
-	}
+	if (ret)
+		goto err_mr_dereg;
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
@@ -109,9 +111,7 @@ main(int argc, char *argv[])
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
+	(void) rpma_mr_dereg(&mr);
 
 err_mr_free:
 	/* free the memory */
@@ -119,15 +119,14 @@ err_mr_free:
 
 err_ep_shutdown:
 	/* shutdown the endpoint */
-	ret = rpma_ep_shutdown(&ep);
-	if (ret)
-		print_error_ex("rpma_ep_shutdown", ret);
+	(void) rpma_ep_shutdown(&ep);
 
 err_peer_delete:
 	/* delete the peer object */
-	ret = rpma_peer_delete(&peer);
-	if (ret)
-		print_error_ex("rpma_peer_delete", ret);
+	(void) rpma_peer_delete(&peer);
+
+	/* close the RPMA log */
+	rpma_log_fini();
 
 	return ret;
 }

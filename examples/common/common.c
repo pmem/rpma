@@ -5,6 +5,7 @@
  * common.c -- a common functions used by examples
  */
 
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -29,6 +30,16 @@ print_error_ex(const char *fname, int ret)
 		(void) fprintf(stderr, "%s failed: %s\n", fname,
 				rpma_err_2str(ret));
 	}
+}
+
+/*
+ * print_log -- print RPMA log message
+ */
+void print_log(rpma_log_level level, const char *file_name,
+		const int line_no, const char *function_name,
+		const char *message_format, va_list args)
+{
+	(void) vfprintf(stderr, message_format, args);
 }
 
 /*

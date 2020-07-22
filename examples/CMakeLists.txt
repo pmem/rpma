@@ -68,9 +68,9 @@ endfunction()
 add_example(NAME template BIN template
 	SRCS template-example/template-example.c)
 add_example(NAME 01-connection BIN server
-	SRCS 01-connection/server.c)
+	SRCS 01-connection/server.c common/common.c)
 add_example(NAME 01-connection BIN client
-	SRCS 01-connection/client.c)
+	SRCS 01-connection/client.c common/common.c)
 add_example(NAME 02-read-to-volatile BIN server
 	SRCS 02-read-to-volatile/server.c common/common.c)
 add_example(NAME 02-read-to-volatile BIN client
