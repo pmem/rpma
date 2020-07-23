@@ -32,8 +32,9 @@ if(TESTS_USE_FAULT_INJECTION)
 	target_compile_definitions(rpma PUBLIC FAULT_INJECTION=1)
 endif()
 
-target_link_libraries(rpma PRIVATE
-	${LIBIBVERBS_LIBRARIES}
+target_link_libraries(rpma
+	PUBLIC ${LIBIBVERBS_LIBRARIES}
+	PRIVATE
 	${LIBRDMACM_LIBRARIES}
 	-Wl,--version-script=${CMAKE_SOURCE_DIR}/src/librpma.map)
 
