@@ -150,12 +150,6 @@ main(int argc, char *argv[])
 
 	(void) printf("Next value: %s\n", hello->str);
 
-#ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
-		pmem_persist(hello, sizeof(struct hello_t));
-	}
-#endif
-
 	/* calculate data for the server read */
 	struct common_data data;
 	data.data_offset = data_offset + offsetof(struct hello_t, str);

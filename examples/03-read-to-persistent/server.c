@@ -169,8 +169,23 @@ main(int argc, char *argv[])
 		goto err_disconnect;
 
 	ret = rpma_conn_next_completion(conn, &cmpl);
-	if (ret)
+	if (ret) {
+		print_error_ex("rpma_conn_next_completion", ret);
 		goto err_disconnect;
+	}
+
+	if (cmpl.op != RPMA_OP_READ) {
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value (%d != %d)\n",
+				cmpl.op, RPMA_OP_READ);
+		goto err_disconnect;
+	}
+
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		(void) fprintf(stderr, "rpma_read failed with %d\n",
+				cmpl.op_status);
+		goto err_disconnect;
+	}
 
 #ifdef USE_LIBPMEM
 	if (dst_plt == RPMA_MR_PLT_PERSISTENT) {
