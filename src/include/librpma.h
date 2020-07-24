@@ -616,11 +616,49 @@ int rpma_write(struct rpma_conn *conn,
 	struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context);
 
+/*
+ * possible types of rpma_flush() operation
+ */
+enum rpma_flush_type {
+	/* flush data down to the persistent domain */
+	RPMA_FLUSH_TYPE_PERSISTENT,
+	/* flush data deep enough to make it visible on the remote node */
+	RPMA_FLUSH_TYPE_VISIBILITY,
+};
+
+/** 3
+ * rpma_flush - initialize the flush operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_flush(struct rpma_conn *conn,
+ *		struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+ *		enum rpma_flush_type type, int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the flush operation (finalizing a transfer of data to
+ * the remote memory).
+ *
+ * ERRORS
+ * rpma_flush() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or dst is NULL
+ * - RPMA_E_INVAL - unknown type value
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_flush(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	enum rpma_flush_type type, int flags, void *op_context);
+
 /* completion handling */
 
 enum rpma_op {
 	RPMA_OP_READ,
 	RPMA_OP_WRITE,
+	RPMA_OP_FLUSH,
 };
 
 struct rpma_completion {

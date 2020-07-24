@@ -15,6 +15,7 @@ set(SOURCES
 	conn.c
 	conn_req.c
 	ep.c
+	flush.c
 	info.c
 	librpma.c
 	log.c
