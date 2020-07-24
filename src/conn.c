@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "conn.h"
+#include "flush.h"
 #include "mr.h"
 #include "private_data.h"
 #include "rpma_err.h"
@@ -24,6 +25,7 @@ struct rpma_conn {
 	struct ibv_cq *cq; /* completion queue of the CM ID */
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
+	struct rpma_flush *flush; /* flushing object */
 };
 
 /* internal librpma API */
@@ -67,6 +69,9 @@ rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
 	conn->cq = cq;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
+
+	/* XXX peer is needed here to call rpma_flush_new() */
+	conn->flush = NULL;
 	*conn_ptr = conn;
 
 	return 0;
@@ -198,6 +203,8 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	int ret = 0;
 
+	/* XXX call rpma_flush_delete() */
+
 	rdma_destroy_qp(conn->id);
 
 	Rpma_provider_error = ibv_destroy_cq(conn->cq);
@@ -265,6 +272,19 @@ rpma_write(struct rpma_conn *conn,
 			dst, dst_offset,
 			src, src_offset,
 			len, flags, op_context);
+}
+
+/*
+ * rpma_flush -- initialize the flush operation
+ *
+ * XXX use conn->flush->func
+ */
+int
+rpma_flush(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	enum rpma_flush_type type, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
 }
 
 /*
