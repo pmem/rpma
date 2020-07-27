@@ -311,7 +311,8 @@ conn_setup(void **cstate_ptr)
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* prepare an object */
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &cstate.conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
+				MOCK_IBV_CQ, &cstate.conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -332,7 +333,7 @@ conn_teardown(void **cstate_ptr)
 
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
-	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
+	expect_value(ibv_destroy_cq, cq, MOCK_IBV_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);

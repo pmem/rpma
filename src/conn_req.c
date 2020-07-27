@@ -31,6 +31,9 @@ struct rpma_conn_req {
 
 	/* private data of the CM ID (incoming only) */
 	struct rpma_conn_private_data data;
+
+	/* a parent RPMA peer of this request - needed for derivative objects */
+	struct rpma_peer *peer;
 };
 
 /*
@@ -70,6 +73,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	(*req)->cq = cq;
 	(*req)->data.ptr = NULL;
 	(*req)->data.len = 0;
+	(*req)->peer = peer;
 
 	return 0;
 
@@ -112,7 +116,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	}
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->id, req->cq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, &conn);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -153,7 +157,7 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	int provider_error = 0;
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->id, req->cq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, &conn);
 	if (ret)
 		goto err_conn_req_delete;
 
