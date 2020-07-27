@@ -311,7 +311,7 @@ conn_setup(void **cstate_ptr)
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* prepare an object */
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &cstate.conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_CQ, &cstate.conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);

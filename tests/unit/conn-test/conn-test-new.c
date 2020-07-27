@@ -14,6 +14,21 @@
 #include "conn-test-common.h"
 
 /*
+ * new_test_peer_NULL - NULL peer is invalid
+ */
+static void
+new_test_peer_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(NULL, MOCK_CM_ID, MOCK_CQ, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(conn);
+}
+
+/*
  * new_test_id_NULL - NULL id is invalid
  */
 static void
@@ -21,7 +36,7 @@ new_test_id_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(NULL, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, NULL, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -36,7 +51,7 @@ new_test_cq_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, NULL, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -50,21 +65,21 @@ static void
 new_test_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, NULL);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_CQ, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * new_test_id_cq_conn_ptr_NULL - NULL id, cq and conn_ptr are
+ * new_test_peer_id_cq_conn_ptr_NULL - NULL peer, id, cq and conn_ptr are
  * invalid
  */
 static void
-new_test_id_cq_conn_ptr_NULL(void **unused)
+new_test_peer_id_cq_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(NULL, NULL, NULL);
+	int ret = rpma_conn_new(NULL, NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -83,7 +98,7 @@ new_test_create_evch_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -105,7 +120,7 @@ new_test_migrate_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -127,7 +142,7 @@ new_test_malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_CM_ID, MOCK_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_CQ, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -285,10 +300,11 @@ delete_test_destroy_id_EAGAIN(void **unused)
 
 const struct CMUnitTest tests_new[] = {
 	/* rpma_conn_new() unit tests */
+	cmocka_unit_test(new_test_peer_NULL),
 	cmocka_unit_test(new_test_id_NULL),
 	cmocka_unit_test(new_test_cq_NULL),
 	cmocka_unit_test(new_test_conn_ptr_NULL),
-	cmocka_unit_test(new_test_id_cq_conn_ptr_NULL),
+	cmocka_unit_test(new_test_peer_id_cq_conn_ptr_NULL),
 	cmocka_unit_test(new_test_create_evch_EAGAIN),
 	cmocka_unit_test(new_test_migrate_id_EAGAIN),
 	cmocka_unit_test(new_test_malloc_ENOMEM),

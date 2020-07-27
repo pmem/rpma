@@ -22,6 +22,7 @@ extern struct ibv_cq Ibv_cq; /* mock IBV CQ */
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
 #define MOCK_QP			(struct ibv_qp *)0xC41D
 #define MOCK_CONN		(struct rpma_conn *)0xA41F
+#define MOCK_PEER		(struct rpma_peer *)0xFEEF
 #define MOCK_PRIVATE_DATA	((void *)"Random data")
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 #define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
