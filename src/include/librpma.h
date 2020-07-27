@@ -30,6 +30,7 @@
 #define RPMA_E_NOMEM			(-100003) /* Out of memory */
 #define RPMA_E_INVAL			(-100004) /* Invalid argument */
 #define RPMA_E_NO_COMPLETION		(-100005) /* No completion available */
+#define RPMA_E_NO_NEXT			(-100006) /* No next event available */
 
 /* picking up an RDMA-capable device */
 
@@ -588,6 +589,7 @@ int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
  * - RPMA_E_INVAL - obtained an event different than a connection request
  * - RPMA_E_PROVIDER - rdma_get_cm_event(3) failed
  * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_NO_NEXT - no next connection request available
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
 
