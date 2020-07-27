@@ -23,8 +23,8 @@
  *                     fail
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_conn_new(struct rdma_cm_id *id, struct ibv_cq *cq,
-		struct rpma_conn **conn_ptr);
+int rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
+		struct ibv_cq *cq, struct rpma_conn **conn_ptr);
 
 /*
  * rpma_conn_set_private_data -- allocate a buffer and fill
