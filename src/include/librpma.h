@@ -280,6 +280,25 @@ int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
 struct rpma_conn;
 
+/** 3
+ * rpma_conn_get_event_fd - get an event file descriptor of the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd);
+ *
+ * DESCRIPTION
+ * Get an event file descriptor of the connection.
+ *
+ * ERRORS
+ * rpma_conn_get_event_fd() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or fd is NULL
+ */
+int rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd);
+
 enum rpma_conn_event {
 	RPMA_CONN_UNDEFINED = -1,	/* Undefined connection event */
 	RPMA_CONN_ESTABLISHED,		/* Connection established */
@@ -531,6 +550,25 @@ int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 int rpma_ep_shutdown(struct rpma_ep **ep);
 
 /** 3
+ * rpma_ep_get_fd - get a file descriptor of the endpoint
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+ *
+ * DESCRIPTION
+ * Get a file descriptor of the endpoint.
+ *
+ * ERRORS
+ * rpma_ep_get_fd() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - ep or fd is NULL
+ */
+int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+
+/** 3
  * rpma_ep_next_conn_req - obtain an incoming connection request
  *
  * SYNOPSIS
@@ -654,6 +692,25 @@ int rpma_flush(struct rpma_conn *conn,
 	enum rpma_flush_type type, int flags, void *op_context);
 
 /* completion handling */
+
+/** 3
+ * rpma_conn_get_completion_fd - get a completion file descriptor
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd);
+ *
+ * DESCRIPTION
+ * Get a completion file descriptor of the connection.
+ *
+ * ERRORS
+ * rpma_conn_get_completion_fd() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or fd is NULL
+ */
+int rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd);
 
 enum rpma_op {
 	RPMA_OP_READ,

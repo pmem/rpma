@@ -99,6 +99,21 @@ rpma_conn_set_private_data(struct rpma_conn *conn,
 /* public librpma API */
 
 /*
+ * rpma_conn_get_event_fd -- get a file descriptor of the event channel
+ * associated with the connection
+ */
+int
+rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd)
+{
+	if (conn == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
+	*fd = conn->evch->fd;
+
+	return 0;
+}
+
+/*
  * rpma_conn_next_event -- obtain the next event from the connection
  */
 int
@@ -283,6 +298,18 @@ int
 rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_conn_get_completion_fd -- get a file descriptor of the completion event
+ * channel associated with the connection
+ *
+ * XXX a completion event channel has to be created before creating a CQ.
+ */
+int
+rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd)
 {
 	return RPMA_E_NOSUPP;
 }

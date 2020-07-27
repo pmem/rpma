@@ -129,6 +129,21 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 }
 
 /*
+ * rpma_ep_get_fd -- get a file descriptor of the event channel associated with
+ * the endpoint
+ */
+int
+rpma_ep_get_fd(struct rpma_ep *ep, int *fd)
+{
+	if (ep == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
+	*fd = ep->evch->fd;
+
+	return 0;
+}
+
+/*
  * rpma_ep_next_conn_req -- get the next event in the hope it will be
  * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation
  * of a connection request object based on the obtained request.
