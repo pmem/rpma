@@ -22,12 +22,13 @@
 #define MOCK_PEER	(struct rpma_peer *)0xFEEF
 #define MOCK_INFO	(struct rpma_info *)0x14F0
 #define MOCK_CONN_REQ	(struct rpma_conn_req *)0xCFEF
+#define MOCK_FD		0x00FD
 
 #define MOCK_OK	0
 #define MOCK_ERRNO	0xE440
 
 static const struct rdma_cm_id Cmid_zero = {0};
-static const struct rdma_event_channel Evch_zero = {0};
+static const struct rdma_event_channel Evch_zero = {fd: MOCK_FD};
 
 /*
  * The following graph depicts the relationships between mocked function
@@ -644,6 +645,7 @@ ep_setup(void **estate_ptr)
 	/* configure mocks: */
 	Mock_ctrl_defer_destruction = MOCK_CTRL_DEFER;
 	static struct ep_test_state estate = {{0}};
+	estate.evch.fd = MOCK_FD;
 	will_return(rdma_create_event_channel, &estate.evch);
 	will_return(rdma_create_id, &estate.cmid);
 	will_return(rpma_info_new, MOCK_INFO);
@@ -963,6 +965,53 @@ ep_next_conn_req_test_success(void **estate_ptr)
 	assert_int_equal(ret, 0);
 }
 
+/*
+ * ep_get_fd__ep_NULL -- ep NULL is invalid
+ */
+static void
+ep_get_fd__ep_NULL(void **unused)
+{
+	/* run test */
+	int fd = 0;
+	int ret = rpma_ep_get_fd(NULL, &fd);
+
+	/* verify the results */
+	assert_ptr_equal(ret, RPMA_E_INVAL);
+	assert_int_equal(fd, 0);
+}
+
+/*
+ * ep_get_fd__fd_NULL - fd NULL is invalid
+ */
+static void
+ep_get_fd__fd_NULL(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	/* run test */
+	int ret = rpma_ep_get_fd(estate->ep, NULL);
+
+	/* verify the results */
+	assert_ptr_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * ep_get_fd__success - happy day scenario
+ */
+static void
+ep_get_fd__success(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	/* run test */
+	int fd = 0;
+	int ret = rpma_ep_get_fd(estate->ep, &fd);
+
+	/* verify the results */
+	assert_ptr_equal(ret, MOCK_OK);
+	assert_ptr_equal(fd, MOCK_FD);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1020,6 +1069,13 @@ main(int argc, char *argv[])
 		cmocka_unit_test_setup_teardown(
 			ep_next_conn_req_test_success,
 			ep_setup, ep_teardown),
+
+		/* rpma_ep_get_fd() unit tests */
+		cmocka_unit_test(ep_get_fd__ep_NULL),
+		cmocka_unit_test_setup_teardown(
+			ep_get_fd__fd_NULL, ep_setup, ep_teardown),
+		cmocka_unit_test_setup_teardown(
+			ep_get_fd__success, ep_setup, ep_teardown),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
