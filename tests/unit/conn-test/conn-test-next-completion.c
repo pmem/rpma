@@ -10,6 +10,7 @@
  * - rpma_conn_next_completion()
  */
 
+#include "test-common.h"
 #include "conn-test-common.h"
 
 /*
@@ -70,7 +71,7 @@ test_next_completion__poll_cq_fail_EAGAIN(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mock */
-	expect_value(poll_cq, cq, MOCK_CQ);
+	expect_value(poll_cq, cq, MOCK_IBV_CQ);
 	will_return(poll_cq, -EAGAIN);
 
 	/* run test */
@@ -91,7 +92,7 @@ test_next_completion__poll_cq_0(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mock */
-	expect_value(poll_cq, cq, MOCK_CQ);
+	expect_value(poll_cq, cq, MOCK_IBV_CQ);
 	will_return(poll_cq, 0);
 
 	/* run test */
@@ -112,7 +113,7 @@ test_next_completion__poll_cq_2(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mock */
-	expect_value(poll_cq, cq, MOCK_CQ);
+	expect_value(poll_cq, cq, MOCK_IBV_CQ);
 	will_return(poll_cq, 2);
 
 	/* run test */
@@ -134,7 +135,7 @@ test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)
 	struct ibv_wc wc = {0};
 
 	/* configure mock */
-	expect_value(poll_cq, cq, MOCK_CQ);
+	expect_value(poll_cq, cq, MOCK_IBV_CQ);
 	will_return(poll_cq, 1);
 	wc.opcode = IBV_WC_BIND_MW;
 	will_return(poll_cq, &wc);
@@ -164,7 +165,7 @@ test_next_completion__success(void **cstate_ptr)
 		struct ibv_wc wc = {0};
 
 		/* configure mock */
-		expect_value(poll_cq, cq, MOCK_CQ);
+		expect_value(poll_cq, cq, MOCK_IBV_CQ);
 		will_return(poll_cq, 1);
 		wc.opcode = opcodes[i];
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;

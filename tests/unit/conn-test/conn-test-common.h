@@ -11,21 +11,15 @@
 #define CONN_COMMON
 
 #include "cmocka_headers.h"
+#include "test-common.h"
 #include "conn.h"
 
 extern struct rdma_cm_id Cm_id;	/* mock CM ID */
 extern struct ibv_context Ibv_context; /* mock IBV context */
-extern struct ibv_cq Ibv_cq; /* mock IBV CQ */
 
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
-#define MOCK_CQ			(struct ibv_cq *)&Ibv_cq
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
 #define MOCK_QP			(struct ibv_qp *)0xC41D
-#define MOCK_CONN		(struct rpma_conn *)0xA41F
-#define MOCK_PRIVATE_DATA	((void *)"Random data")
-#define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
-#define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
-#define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
 
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
 #define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
