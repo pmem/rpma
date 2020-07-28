@@ -130,7 +130,7 @@ from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -159,7 +159,7 @@ from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO(
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -186,7 +186,7 @@ from_cm_event_test_malloc_ENOMEM(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -214,7 +214,7 @@ from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -242,7 +242,7 @@ from_cm_event_test_private_data_store_ENOMEM(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -285,7 +285,7 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	cstate.id.verbs = MOCK_VERBS;
 
 	/* configure mocks */
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -572,7 +572,7 @@ new_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -605,7 +605,7 @@ new_test_malloc_ENOMEM(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -639,7 +639,7 @@ new_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -682,7 +682,7 @@ conn_req_new_setup(void **cstate_ptr)
 	expect_value(rpma_info_resolve_addr, id, &cstate.id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
