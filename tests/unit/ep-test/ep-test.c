@@ -800,6 +800,28 @@ ep_next_conn_req_test_get_cm_event_EAGAIN(void **estate_ptr)
 }
 
 /*
+ * ep_next_conn_req_test_get_cm_event_ENODATA -
+ * rdma_get_cm_event() fails with ENODATA
+ */
+static void
+ep_next_conn_req_test_get_cm_event_ENODATA(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, ENODATA);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NO_NEXT);
+	assert_null(req);
+}
+
+/*
  * ep_next_conn_req_test_event_REJECTED -
  * RDMA_CM_EVENT_REJECTED is unexpected
  */
@@ -977,6 +999,9 @@ main(int argc, char *argv[])
 			ep_next_conn_req_test_req_NULL,
 			ep_setup, ep_teardown),
 		cmocka_unit_test(ep_next_conn_req_test_ep_NULL_req_NULL),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req_test_get_cm_event_ENODATA,
+			ep_setup, ep_teardown),
 		cmocka_unit_test_setup_teardown(
 			ep_next_conn_req_test_get_cm_event_EAGAIN,
 			ep_setup, ep_teardown),
