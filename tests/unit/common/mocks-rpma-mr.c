@@ -1,0 +1,64 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ * Copyright 2020, Intel Corporation
+ */
+
+/*
+ * mocks-rpma-mr.c -- librpma mr.c module mocks
+ */
+
+#include <librpma.h>
+
+#include "cmocka_headers.h"
+
+/*
+ * rpma_mr_read -- rpma_mr_read() mock
+ */
+int
+rpma_mr_read(struct ibv_qp *qp,
+	struct rpma_mr_local *dst, size_t dst_offset,
+	struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	assert_non_null(qp);
+	assert_non_null(dst);
+	assert_non_null(src);
+	assert_int_not_equal(flags, 0);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(dst_offset);
+	check_expected_ptr(src);
+	check_expected(src_offset);
+	check_expected(len);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
+
+/*
+ * rpma_mr_write -- rpma_mr_write() mock
+ */
+int
+rpma_mr_write(struct ibv_qp *qp,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, void *op_context)
+{
+	assert_non_null(qp);
+	assert_non_null(dst);
+	assert_non_null(src);
+	assert_int_not_equal(flags, 0);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(dst_offset);
+	check_expected_ptr(src);
+	check_expected(src_offset);
+	check_expected(len);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}

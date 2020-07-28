@@ -130,7 +130,7 @@ from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -159,7 +159,7 @@ from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO(
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -186,7 +186,7 @@ from_cm_event_test_malloc_ENOMEM(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -214,7 +214,7 @@ from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -242,15 +242,17 @@ from_cm_event_test_private_data_store_ENOMEM(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
-	will_return(rpma_private_data_store, NULL);
+	will_return(rpma_private_data_store, RPMA_E_NOMEM);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(ibv_destroy_cq, EAGAIN); /* second error */
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -282,14 +284,16 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	memset(&cstate, 0, sizeof(cstate));
 	cstate.event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	cstate.event.id = &cstate.id;
+	cstate.event.param.conn.private_data = MOCK_PRIVATE_DATA;
+	cstate.event.param.conn.private_data_len = MOCK_PDATA_LEN;
 	cstate.id.verbs = MOCK_VERBS;
 
 	/* configure mocks */
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
-	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
+	will_return(rpma_private_data_store, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate.event,
@@ -320,6 +324,8 @@ conn_req_from_cm_event_teardown(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -572,7 +578,7 @@ new_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -605,7 +611,7 @@ new_test_malloc_ENOMEM(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -639,7 +645,7 @@ new_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	expect_value(rpma_info_resolve_addr, id, &id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -682,7 +688,7 @@ conn_req_new_setup(void **cstate_ptr)
 	expect_value(rpma_info_resolve_addr, id, &cstate.id);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_cq, MOCK_CQ);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -716,6 +722,8 @@ conn_req_new_teardown(void **cstate_ptr)
 	will_return(ibv_destroy_cq, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -786,6 +794,8 @@ del_via_reject_test_destroy_cq_EAGAIN(void **unused)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -816,6 +826,8 @@ del_via_reject_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rdma_reject, EIO);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -844,6 +856,8 @@ del_via_reject_test_reject_EAGAIN(void **unused)
 	will_return(rdma_reject, EAGAIN);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -873,6 +887,8 @@ del_via_reject_test_reject_EAGAIN_ack_EIO(void **unused)
 	will_return(rdma_reject, EAGAIN);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -901,6 +917,8 @@ del_via_reject_test_ack_EAGAIN(void **unused)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EAGAIN);
+	expect_value(rpma_private_data_discard, pdata->ptr, MOCK_PRIVATE_DATA);
+	expect_value(rpma_private_data_discard, pdata->len, MOCK_PDATA_LEN);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -928,6 +946,8 @@ del_via_destroy_test_destroy_cq_EAGAIN(void **unused)
 	will_return(ibv_destroy_cq, EAGAIN);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -955,6 +975,8 @@ del_via_destroy_test_destroy_cq_EAGAIN_destroy_id_EIO(void **unused)
 	will_return(ibv_destroy_cq, EAGAIN);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, EIO);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -982,6 +1004,8 @@ del_via_destroy_test_destroy_id_EAGAIN(void **unused)
 	will_return(ibv_destroy_cq, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, EAGAIN);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);

@@ -10,6 +10,11 @@
 #ifndef MOCKS_RDMA_CM_H
 #define MOCKS_RDMA_CM_H
 
+extern struct rdma_cm_id Cm_id;	/* mock CM ID */
+
+#define MOCK_CM_ID	(struct rdma_cm_id *)&Cm_id
+#define MOCK_EVCH	(struct rdma_event_channel *)0xE4C4
+
 #define CM_EVENT_CONNECTION_REQUEST_INIT \
 	{NULL, NULL, RDMA_CM_EVENT_CONNECT_REQUEST, 0, {{0}}}
 
@@ -28,5 +33,11 @@
  * which will be called in the teardown.
  */
 extern int Mock_ctrl_defer_destruction;
+
+#define RDMA_MIGRATE_TO_EVCH 0
+#define RDMA_MIGRATE_FROM_EVCH 1
+#define RDMA_MIGRATE_COUNTER_INIT (RDMA_MIGRATE_TO_EVCH)
+
+extern int Rdma_migrate_id_counter;
 
 #endif /* MOCKS_RDMA_CM_H */

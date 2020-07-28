@@ -12,6 +12,7 @@
 
 #include "test-common.h"
 #include "conn-test-common.h"
+#include "test-common.h"
 
 /*
  * poll_cq -- poll_cq() mock

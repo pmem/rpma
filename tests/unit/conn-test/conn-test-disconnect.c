@@ -11,6 +11,8 @@
  */
 
 #include "conn-test-common.h"
+#include "mocks-rdma_cm.h"
+#include "test-common.h"
 
 /*
  * disconnect_test_conn_NULL - NULL conn is invalid

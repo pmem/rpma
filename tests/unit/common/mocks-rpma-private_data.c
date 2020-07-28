@@ -30,11 +30,41 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 	assert_null(pdata->ptr);
 	assert_int_equal(pdata->len, 0);
 
-	pdata->ptr = mock_type(void *);
-	if (pdata->ptr == NULL)
-		return RPMA_E_NOMEM;
+	int ret = mock_type(int);
+	if (ret)
+		return ret;
 
-	pdata->len = strlen(pdata->ptr) + 1;
+	pdata->ptr = (void *)edata->param.conn.private_data;
+	pdata->len = edata->param.conn.private_data_len;
+
+	return 0;
+}
+
+/*
+ * rpma_private_data_copy -- rpma_private_data_copy() mock
+ */
+int
+rpma_private_data_copy(struct rpma_conn_private_data *dst,
+		struct rpma_conn_private_data *src)
+{
+	assert_non_null(src);
+	assert_non_null(dst);
+	assert_null(dst->ptr);
+	assert_int_equal(dst->len, 0);
+	assert_true((src->ptr == NULL && src->len == 0) ||
+			(src->ptr != NULL && src->len != 0));
+
+	dst->len = 0;
+
+	int ret = mock_type(int);
+	if (ret) {
+		dst->ptr = NULL;
+		return ret;
+	}
+
+	dst->ptr = mock_type(void *);
+	if (dst->ptr)
+		dst->len = strlen(dst->ptr) + 1;
 
 	return 0;
 }
@@ -46,4 +76,8 @@ void
 rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 {
 	assert_non_null(pdata);
+	check_expected(pdata->ptr);
+	check_expected(pdata->len);
+	pdata->ptr = NULL;
+	pdata->len = 0;
 }

@@ -12,6 +12,7 @@
  */
 
 #include "conn-test-common.h"
+#include "test-common.h"
 
 /*
  * get_private_data_test_conn_NULL - NULL conn is invalid
