@@ -292,6 +292,8 @@ conn_setup(void **cstate_ptr)
 	cstate.data.ptr = NULL;
 	cstate.data.len = 0;
 
+	Ibv_cq.channel = MOCK_COMP_CHANNEL;
+
 	/* configure mock: */
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
@@ -322,6 +324,7 @@ conn_teardown(void **cstate_ptr)
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, cstate->data.ptr);

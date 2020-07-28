@@ -70,6 +70,8 @@ test_client__success(void **unused)
 	expect_value(rdma_resolve_route, id, &id);
 	will_return(rdma_resolve_route, MOCK_OK);
 
+	will_return(ibv_create_comp_channel, &Ibv_comp_channel);
+
 	will_return(ibv_create_cq, MOCK_CQ);
 
 	expect_value(rdma_create_qp, id, &id);
@@ -120,6 +122,8 @@ test_client__success(void **unused)
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
+
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
@@ -197,6 +201,8 @@ test_server__success(void **unused)
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	will_return(rdma_get_cm_event, &f_event);
 
+	will_return(ibv_create_comp_channel, &Ibv_comp_channel);
+
 	will_return(ibv_create_cq, MOCK_CQ);
 
 	expect_value(rdma_create_qp, id, &id);
@@ -249,6 +255,8 @@ test_server__success(void **unused)
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
+
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
