@@ -9,6 +9,7 @@ build_test_src(UNIT NAME conn-test SRCS
 	conn-test.c
 	conn-test-common.c
 	conn-test-disconnect.c
+	conn-test-get_event_fd.c
 	conn-test-new.c
 	conn-test-next-completion.c
 	conn-test-next-event.c
