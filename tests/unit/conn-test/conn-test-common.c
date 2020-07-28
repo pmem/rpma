@@ -10,8 +10,6 @@
 #include "conn-test-common.h"
 
 struct rdma_cm_id Cm_id;	/* mock CM ID */
-struct ibv_context Ibv_context;	/* mock IBV context */
-struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
@@ -20,17 +18,6 @@ void
 rdma_destroy_qp(struct rdma_cm_id *id)
 {
 	check_expected_ptr(id);
-}
-
-/*
- * ibv_destroy_cq -- ibv_destroy_cq() mock
- */
-int
-ibv_destroy_cq(struct ibv_cq *cq)
-{
-	check_expected_ptr(cq);
-
-	return mock_type(int);
 }
 
 /*
@@ -333,7 +320,6 @@ conn_teardown(void **cstate_ptr)
 
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
-	expect_value(ibv_destroy_cq, cq, MOCK_IBV_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);

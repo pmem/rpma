@@ -15,12 +15,9 @@
 #include "conn.h"
 
 extern struct rdma_cm_id Cm_id;	/* mock CM ID */
-extern struct ibv_context Ibv_context; /* mock IBV context */
 
 #define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
-#define MOCK_QP			(struct ibv_qp *)0xC41D
-
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
 #define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
 #define MOCK_LOCAL_OFFSET	(size_t)0xC413
@@ -29,8 +26,6 @@ extern struct ibv_context Ibv_context; /* mock IBV context */
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_WC_STATUS		(int)0x51A5
-
-#define MOCK_OK			0
 
 extern int Rdma_migrate_id_counter;
 

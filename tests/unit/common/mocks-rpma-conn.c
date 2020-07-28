@@ -23,7 +23,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 {
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
-	assert_ptr_equal(cq, MOCK_CQ);
+	assert_ptr_equal(cq, MOCK_IBV_CQ);
 
 	assert_non_null(conn_ptr);
 

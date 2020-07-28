@@ -15,6 +15,7 @@ build_test_src(UNIT NAME conn-test SRCS
 	conn-test-private-data.c
 	conn-test-read.c
 	conn-test-write.c
+	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/conn.c)
 
