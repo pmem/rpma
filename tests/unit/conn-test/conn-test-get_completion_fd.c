@@ -11,6 +11,7 @@
  */
 
 #include "conn-test-common.h"
+#include "mocks-ibverbs.h"
 
 /*
  * get_completion_fd__conn_NULL -- conn NULL is invalid
