@@ -28,6 +28,7 @@ extern struct rdma_event_channel Evch; /* mock event channel */
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_WC_STATUS		(int)0x51A5
 #define MOCK_FD			0x00FD
+#define MOCK_COMPLETION_FD	0x00FE
 
 extern int Rdma_migrate_id_counter;
 
@@ -44,6 +45,7 @@ struct conn_test_state {
 int conn_setup(void **cstate_ptr);
 int conn_teardown(void **cstate_ptr);
 
+int group_setup_get_completion_fd(void **unused);
 int group_setup_get_event_fd(void **unused);
 int group_setup_next_completion(void **unused);
 int group_setup_read(void **unused);
