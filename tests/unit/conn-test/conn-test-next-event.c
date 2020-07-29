@@ -79,6 +79,28 @@ next_event_test_get_cm_event_EAGAIN(void **cstate_ptr)
 }
 
 /*
+ * next_event_test_get_cm_event_ENODATA -
+ * rdma_get_cm_event() fails with ENODATA
+ */
+static void
+next_event_test_get_cm_event_ENODATA(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, ENODATA);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	int ret = rpma_conn_next_event(cstate->conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NO_NEXT);
+	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
+}
+
+/*
  * next_event_test_event_REJECTED -
  * RDMA_CM_EVENT_REJECTED is unexpected
  */
@@ -494,6 +516,9 @@ const struct CMUnitTest tests_next_event[] = {
 	cmocka_unit_test(next_event_test_conn_NULL_event_NULL),
 	cmocka_unit_test_setup_teardown(
 		next_event_test_get_cm_event_EAGAIN,
+		conn_setup, conn_teardown),
+	cmocka_unit_test_setup_teardown(
+		next_event_test_get_cm_event_ENODATA,
 		conn_setup, conn_teardown),
 	cmocka_unit_test_setup_teardown(
 		next_event_test_event_REJECTED,
