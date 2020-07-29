@@ -11,9 +11,12 @@
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 
-struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
-struct ibv_context Ibv_context;	/* mock IBV context */
-struct ibv_cq Ibv_cq;		/* mock IBV CQ */
+/* mocked IBV entities */
+struct ibv_comp_channel Ibv_comp_channel;
+struct ibv_context Ibv_context;
+struct ibv_cq Ibv_cq;
+struct ibv_qp Ibv_qp;
+struct ibv_mr Ibv_mr;
 
 /*
  * ibv_create_cq -- ibv_create_cq() mock
@@ -119,3 +122,51 @@ ibv_ack_cq_events(struct ibv_cq *cq, unsigned nevents)
 	check_expected_ptr(cq);
 	assert_int_equal(nevents, 1);
 }
+
+/*
+ * ibv_dereg_mr -- a mock of ibv_dereg_mr()
+ */
+int
+ibv_dereg_mr(struct ibv_mr *mr)
+{
+	/*
+	 * rpma_peer_mr_reg() and malloc() may be called in any order.
+	 * If the first one fails, then the second one won't be called.
+	 * ibv_dereg_mr() will be called in rpma_mr_reg() only if:
+	 * 1) rpma_peer_mr_reg() succeeded and
+	 * 2) malloc() failed.
+	 * In the opposite case, when:
+	 * 1) malloc() succeeded and
+	 * 2) rpma_peer_mr_reg() failed,
+	 * ibv_dereg_mr() will not be called,
+	 * so we cannot add cmocka's expects here.
+	 * Otherwise, unconsumed expects would cause a test failure.
+	 */
+	assert_int_equal(mr, MOCK_MR);
+
+	return mock_type(int); /* errno */
+}
+
+/*
+ * ibv_post_send_mock -- mock of ibv_post_send()
+ */
+int
+ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
+			struct ibv_send_wr **bad_wr)
+{
+	struct ibv_post_send_mock_args *args =
+		mock_type(struct ibv_post_send_mock_args *);
+
+	assert_non_null(qp);
+	assert_non_null(wr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->opcode, args->opcode);
+	assert_int_equal(wr->send_flags, args->send_flags);
+	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_null(wr->next);
+
+	return args->ret;
+}
+

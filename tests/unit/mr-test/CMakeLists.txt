@@ -12,6 +12,7 @@ build_test_src(UNIT NAME mr-test SRCS
 	mr-test-read.c
 	mr-test-reg.c
 	mr-test-write.c
+	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/mr.c)
 
