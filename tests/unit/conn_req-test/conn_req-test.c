@@ -95,6 +95,31 @@ from_cm_event_test_RDMA_CM_EVENT_CONNECT_ERROR(void **unused)
 }
 
 /*
+ * from_cm_event_test_create_comp_channel_EAGAIN -- ibv_create_comp_channel()
+ * fails with EAGAIN
+ */
+static void
+from_cm_event_test_create_comp_channel_EAGAIN(void **unused)
+{
+	/* configure mocks */
+	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
+	struct rdma_cm_id id = {0};
+	id.verbs = MOCK_VERBS;
+	event.id = &id;
+	will_return(ibv_create_comp_channel, NULL);
+	will_return(ibv_create_comp_channel, EAGAIN);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(req);
+}
+
+/*
  * from_cm_event_test_create_cq_EAGAIN -- ibv_create_cq() fails with EAGAIN
  */
 static void
@@ -151,11 +176,12 @@ from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO -- rpma_peer_create_qp()
- * fail with RPMA_E_PROVIDER+EAGAIN followed by ibv_destroy_cq() fail with EIO
+ * from_cm_event_test_create_qp_EAGAIN_subsequent_EIO -- rpma_peer_create_qp()
+ * fails with RPMA_E_PROVIDER+EAGAIN followed by ibv_destroy_cq() and
+ * ibv_destroy_comp_channel() fail with EIO
  */
 static void
-from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO(
+from_cm_event_test_create_qp_EAGAIN_subsequent_EIO(
 		void **unused)
 {
 	/* configure mocks */
@@ -169,7 +195,7 @@ from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO(
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
 	will_return(rpma_peer_create_qp, EAGAIN);
 	will_return(ibv_destroy_cq, EIO); /* second error */
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -211,11 +237,12 @@ from_cm_event_test_malloc_ENOMEM(void **unused)
 }
 
 /*
- * from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN -- malloc() fail with
- * ENOMEM followed by ibv_destroy_cq() fail with EAGAIN
+ * from_cm_event_test_malloc_ENOMEM_subsequent_EAGAIN -- malloc() fail with
+ * ENOMEM followed by ibv_destroy_cq() and ibv_destroy_comp_channel() fail with
+ * EAGAIN
  */
 static void
-from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN(void **unused)
+from_cm_event_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -229,7 +256,7 @@ from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN(void **unused)
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(ibv_destroy_cq, EAGAIN); /* second error */
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN); /* third error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -541,6 +568,37 @@ new_test_resolve_route_EAGAIN(void **unused)
 }
 
 /*
+ * new_test_create_comp_channel_EAGAIN -- ibv_create_comp_channel() fails with
+ * EAGAIN
+ */
+static void
+new_test_create_comp_channel_EAGAIN(void **unused)
+{
+	struct rdma_cm_id id = {0};
+	id.verbs = MOCK_VERBS;
+
+	/* configure mocks */
+	will_return(rpma_info_new, MOCK_INFO);
+	will_return(rdma_create_id, &id);
+	expect_value(rpma_info_resolve_addr, id, &id);
+	will_return(rpma_info_resolve_addr, MOCK_OK);
+	will_return(rdma_resolve_route, MOCK_OK);
+	will_return(ibv_create_comp_channel, NULL);
+	will_return(ibv_create_comp_channel, EAGAIN);
+	will_return(rdma_destroy_id, MOCK_OK);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+			&req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(req);
+}
+
+/*
  * new_test_create_cq_EAGAIN -- ibv_create_cq() fails with EAGAIN
  */
 static void
@@ -666,8 +724,8 @@ new_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(ibv_destroy_cq, EAGAIN); /* second error */
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
-	will_return(rdma_destroy_id, EAGAIN); /* third error */
+	will_return(ibv_destroy_comp_channel, EAGAIN); /* third error */
+	will_return(rdma_destroy_id, EAGAIN); /* fourth error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -837,11 +895,11 @@ del_via_reject_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(ibv_destroy_cq, EAGAIN);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EIO); /* first error */
 	expect_value(rdma_reject, id, &cstate->id);
-	will_return(rdma_reject, EIO);
+	will_return(rdma_reject, EIO); /* second error */
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EIO);
+	will_return(rdma_ack_cm_event, EIO); /* third error */
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -853,7 +911,67 @@ del_via_reject_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * del_via_reject_test_reject_EAGAIN - rdma_reject() fails with EAGAIN
+ * del_via_reject_test_destroy_comp_channel_EAGAIN -- ibv_destroy_comp_channel()
+ * fails with EAGAIN
+ */
+static void
+del_via_reject_test_destroy_comp_channel_EAGAIN(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_test_state *cstate = NULL;
+	assert_int_equal(conn_req_from_cm_event_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN);
+	expect_value(rdma_reject, id, &cstate->id);
+	will_return(rdma_reject, MOCK_OK);
+	expect_value(rdma_ack_cm_event, event, &cstate->event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
+ * del_via_reject_test_destroy_comp_channel_EAGAIN_subsequent_EIO --
+ * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail with EIO
+ */
+static void
+del_via_reject_test_destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_test_state *cstate = NULL;
+	assert_int_equal(conn_req_from_cm_event_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN); /* first error */
+	expect_value(rdma_reject, id, &cstate->id);
+	will_return(rdma_reject, EIO); /* second error */
+	expect_value(rdma_ack_cm_event, event, &cstate->event);
+	will_return(rdma_ack_cm_event, EIO); /* third error */
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
+ * del_via_reject_test_reject_EAGAIN -- rdma_reject() fails with EAGAIN
  */
 static void
 del_via_reject_test_reject_EAGAIN(void **unused)
@@ -969,11 +1087,12 @@ del_via_destroy_test_destroy_cq_EAGAIN(void **unused)
 }
 
 /*
- * del_via_destroy_test_destroy_cq_EAGAIN_destroy_id_EIO - rdma_destroy_id()
- * fails with EIO after ibv_destroy_cq() failed with EAGAIN
+ * del_via_destroy_test_destroy_cq_EAGAIN_subsequent_EIO --
+ * ibv_destroy_comp_channel() and rdma_destroy_id() fail with EIO after
+ * ibv_destroy_cq() failed with EAGAIN
  */
 static void
-del_via_destroy_test_destroy_cq_EAGAIN_destroy_id_EIO(void **unused)
+del_via_destroy_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_new_test_state *cstate = NULL;
@@ -982,10 +1101,10 @@ del_via_destroy_test_destroy_cq_EAGAIN_destroy_id_EIO(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EAGAIN);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EAGAIN); /* first error */
+	will_return(ibv_destroy_comp_channel, EIO); /* second error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO);
+	will_return(rdma_destroy_id, EIO); /* third error */
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -1177,12 +1296,12 @@ conn_via_accept_test_accept_EAGAIN_subsequent_EIO(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_accept, id, &cstate->id);
-	will_return(rdma_accept, EAGAIN);
+	will_return(rdma_accept, EAGAIN); /* first error */
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EIO);
+	will_return(rdma_ack_cm_event, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EIO); /* third error */
+	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1245,12 +1364,12 @@ conn_via_accept_test_ack_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_accept, id, &cstate->id);
 	will_return(rdma_accept, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EAGAIN);
+	will_return(rdma_ack_cm_event, EAGAIN); /* first error */
 	expect_value(rdma_disconnect, id, &cstate->id);
-	will_return(rdma_disconnect, EIO);
+	will_return(rdma_disconnect, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EIO); /* third error */
+	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1322,12 +1441,12 @@ conn_via_accept_test_conn_new_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN);
+	will_return(rpma_conn_new, EAGAIN); /* first error */
 	expect_value(rdma_disconnect, id, &cstate->id);
-	will_return(rdma_disconnect, EIO);
+	will_return(rdma_disconnect, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EIO); /* third error */
+	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1467,15 +1586,15 @@ conn_via_connect_test_connect_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
-	will_return(rdma_connect, EAGAIN);
+	will_return(rdma_connect, EAGAIN); /* first error */
 	expect_value(rpma_conn_delete, conn, MOCK_CONN);
 	will_return(rpma_conn_delete, RPMA_E_PROVIDER);
-	will_return(rpma_conn_delete, EIO);
+	will_return(rpma_conn_delete, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EIO); /* third error */
+	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO);
+	will_return(rdma_destroy_id, EIO); /* fifth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1539,12 +1658,12 @@ conn_via_connect_test_conn_new_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN);
+	will_return(rpma_conn_new, EAGAIN); /* first error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_cq, EIO); /* second error */
+	will_return(ibv_destroy_comp_channel, EIO); /* third error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO);
+	will_return(rdma_destroy_id, EIO); /* fourth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -1597,14 +1716,15 @@ main(int argc, char *argv[])
 			from_cm_event_test_peer_NULL_edata_NULL_req_ptr_NULL),
 		cmocka_unit_test(
 			from_cm_event_test_RDMA_CM_EVENT_CONNECT_ERROR),
+		cmocka_unit_test(from_cm_event_test_create_comp_channel_EAGAIN),
 		cmocka_unit_test(from_cm_event_test_create_cq_EAGAIN),
 		cmocka_unit_test(
 			from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN),
 		cmocka_unit_test(
-			from_cm_event_test_create_qp_EAGAIN_destroy_cq_EIO),
+			from_cm_event_test_create_qp_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(from_cm_event_test_malloc_ENOMEM),
 		cmocka_unit_test(
-			from_cm_event_test_malloc_ENOMEM_destroy_cq_EAGAIN),
+			from_cm_event_test_malloc_ENOMEM_subsequent_EAGAIN),
 		cmocka_unit_test(
 			from_cm_event_test_private_data_store_ENOMEM),
 
@@ -1623,6 +1743,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new_test_create_id_EAGAIN),
 		cmocka_unit_test(new_test_resolve_addr_E_PROVIDER_EAGAIN),
 		cmocka_unit_test(new_test_resolve_route_EAGAIN),
+		cmocka_unit_test(new_test_create_comp_channel_EAGAIN),
 		cmocka_unit_test(new_test_create_cq_EAGAIN),
 		cmocka_unit_test(new_test_peer_create_qp_E_PROVIDER_EAGAIN),
 		cmocka_unit_test(new_test_malloc_ENOMEM),
@@ -1637,13 +1758,17 @@ main(int argc, char *argv[])
 		cmocka_unit_test(del_via_reject_test_destroy_cq_EAGAIN),
 		cmocka_unit_test(
 			del_via_reject_test_destroy_cq_EAGAIN_subsequent_EIO),
+		cmocka_unit_test(
+			del_via_reject_test_destroy_comp_channel_EAGAIN),
+		cmocka_unit_test(
+		del_via_reject_test_destroy_comp_channel_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(del_via_reject_test_reject_EAGAIN),
 		cmocka_unit_test(del_via_reject_test_reject_EAGAIN_ack_EIO),
 		cmocka_unit_test(del_via_reject_test_ack_EAGAIN),
 		/* delete via rdma_destroy_id() */
 		cmocka_unit_test(del_via_destroy_test_destroy_cq_EAGAIN),
 		cmocka_unit_test(
-			del_via_destroy_test_destroy_cq_EAGAIN_destroy_id_EIO),
+			del_via_destroy_test_destroy_cq_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(del_via_destroy_test_destroy_id_EAGAIN),
 
 		/* rpma_conn_req_connect() unit tests */
