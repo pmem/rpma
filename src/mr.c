@@ -19,7 +19,8 @@
 
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
-		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST)
+		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
+		RPMA_MR_USAGE_FLUSHABLE)
 
 /* generate operation completion on success */
 #define RPMA_F_COMPLETION_ON_SUCCESS \
@@ -41,15 +42,17 @@ struct rpma_mr_remote {
 
 /*
  * usage_to_access -- convert usage to access
+ *
+ * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
  */
 static int
 usage_to_access(int usage)
 {
 	int access = 0;
 
-	if (usage & RPMA_MR_USAGE_READ_SRC) {
+	if (usage & (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_FLUSHABLE)) {
 		access |= IBV_ACCESS_REMOTE_READ;
-		usage &= ~RPMA_MR_USAGE_READ_SRC;
+		usage &= ~(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_FLUSHABLE);
 	}
 
 	if (usage & RPMA_MR_USAGE_READ_DST) {

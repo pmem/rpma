@@ -33,11 +33,16 @@ static struct prestate prestates[] = {
 	{RPMA_MR_USAGE_WRITE_DST,
 		(IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE), NULL},
 	/* values used in test_reg_dereg__success called with (prestates + 5) */
-	{(RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST),
-		(IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE), NULL},
+	{RPMA_MR_USAGE_FLUSHABLE, IBV_ACCESS_REMOTE_READ, NULL},
 	/* values used in test_reg_dereg__success called with (prestates + 6) */
+	{(RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |
+	RPMA_MR_USAGE_FLUSHABLE),
+		(IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE |
+		IBV_ACCESS_REMOTE_READ), NULL},
+	/* values used in test_reg_dereg__success called with (prestates + 7) */
 	{(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |
-	RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST),
+	RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |
+	RPMA_MR_USAGE_FLUSHABLE),
 		(IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE |
 		IBV_ACCESS_LOCAL_WRITE), NULL},
 };
@@ -293,10 +298,12 @@ const struct CMUnitTest tests_reg[] = {
 		setup__reg_success, teardown__dereg_success, prestates + 3},
 	{ "reg_dereg__USAGE_WRITE_DST", test_reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates + 4},
-	{ "reg_dereg__USAGE_WRITE_SRC_DST", test_reg_dereg__success,
+	{ "reg_dereg__USAGE_FLUSHABLE", test_reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates + 5},
-	{ "reg_dereg__USAGE_ALL", test_reg_dereg__success,
+	{ "reg_dereg__USAGE_WRITE_SRC_DST_FLUSHABLE", test_reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates + 6},
+	{ "reg_dereg__USAGE_ALL", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 7},
 
 	/* rpma_mr_dereg() unit tests */
 	cmocka_unit_test(test_dereg__NULL_mr_ptr),
