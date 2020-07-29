@@ -216,6 +216,7 @@ delete_test_destroy_cq_EAGAIN(void **unused)
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, EAGAIN);
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -248,6 +249,7 @@ delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN(void **unused)
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, EAGAIN); /* first error */
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EIO); /* second error */
 
@@ -284,6 +286,7 @@ delete_test_destroy_id_EAGAIN(void **unused)
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EAGAIN);
 

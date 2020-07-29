@@ -22,6 +22,7 @@
 struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
+	struct ibv_comp_channel *channel; /* completion event channel */
 	struct ibv_cq *cq; /* completion queue of the CM ID */
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
@@ -38,8 +39,8 @@ struct rpma_conn {
  * ID has any outstanding (unacknowledged) events.
  */
 int
-rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct ibv_cq *cq,
-		struct rpma_conn **conn_ptr)
+rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
+		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -68,6 +69,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct ibv_cq *cq,
 
 	conn->id = id;
 	conn->evch = evch;
+	conn->channel = cq->channel;
 	conn->cq = cq;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
@@ -231,6 +233,12 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	Rpma_provider_error = ibv_destroy_cq(conn->cq);
 	if (Rpma_provider_error) {
 		ret = RPMA_E_PROVIDER;
+		goto err_destroy_comp_channel;
+	}
+
+	Rpma_provider_error = ibv_destroy_comp_channel(conn->channel);
+	if (Rpma_provider_error) {
+		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
 
@@ -248,6 +256,8 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	return 0;
 
+err_destroy_comp_channel:
+	(void) ibv_destroy_comp_channel(conn->channel);
 err_destroy_id:
 	(void) rdma_destroy_id(conn->id);
 err_destroy_event_channel:

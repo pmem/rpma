@@ -13,11 +13,14 @@
 #define MOCK_IP_ADDRESS		"127.0.0.1"
 #define MOCK_SERVICE		"1234" /* a random port number */
 
+/* mock IBV completion channel */
+extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_context Ibv_context;	/* mock IBV context */
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 
 /* random values */
 #define MOCK_VERBS		(struct ibv_context *)0x4E4B
+#define MOCK_COMP_CHANNEL	(struct ibv_comp_channel *)&Ibv_comp_channel
 #define MOCK_IBV_CQ		(struct ibv_cq *)&Ibv_cq
 #define MOCK_QP			(struct ibv_qp *)0xC41D
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF
