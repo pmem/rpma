@@ -15,6 +15,7 @@ build_test_src(NAME ${TARGET} SRCS
 	${CMAKE_SOURCE_DIR}/examples/common/common.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
+	${LIBRPMA_SOURCE_DIR}/flush.c
 	${LIBRPMA_SOURCE_DIR}/ep.c
 	${LIBRPMA_SOURCE_DIR}/info.c
 	${LIBRPMA_SOURCE_DIR}/librpma.c
@@ -30,7 +31,7 @@ target_include_directories(${TARGET} PRIVATE
 
 set_target_properties(${TARGET}
        PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=fprintf")
+       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf")
 
 target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCK_MAIN
