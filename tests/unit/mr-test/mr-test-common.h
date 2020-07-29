@@ -18,8 +18,6 @@
 #include "librpma.h"
 #include "rpma_err.h"
 
-extern struct ibv_mr Ibv_mr;
-
 #define MOCK_PEER	(struct rpma_peer *)0x0AD0
 #define MOCK_PTR	(void *)0x0001020304050607
 #define MOCK_SIZE	(size_t)0x08090a0b0c0d0e0f
@@ -31,7 +29,6 @@ extern struct ibv_mr Ibv_mr;
 	((int)(IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE |\
 	IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE))
 #define MOCK_PLT	RPMA_MR_PLT_PERSISTENT
-#define MOCK_MR		(struct ibv_mr *)&Ibv_mr
 #define MOCK_ERRNO	(int)(123)
 #define MOCK_OK		(int)0
 
@@ -44,21 +41,6 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_SRC_OFFSET		(size_t)0xC414
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_OP_CONTEXT		(void *)0xC417
-#define MOCK_QP			(struct ibv_qp *)&Ibv_qp
-
-extern struct ibv_qp Ibv_qp;
-extern struct ibv_context Ibv_context;
-
-struct ibv_post_send_mock_args {
-	struct ibv_qp *qp;
-	enum ibv_wr_opcode opcode;
-	unsigned send_flags;
-	uint64_t wr_id;
-	int ret;
-};
-
-int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
-			struct ibv_send_wr **bad_wr);
 
 /* a state used for rpma_mr_read/_write tests */
 struct mrs {

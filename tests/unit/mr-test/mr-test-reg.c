@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <infiniband/verbs.h>
 
+#include "mocks-ibverbs.h"
 #include "mr-test-common.h"
 
 #define USAGE_WRONG	(~((int)0)) /* not allowed value of usage */
