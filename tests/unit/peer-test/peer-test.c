@@ -11,117 +11,14 @@
 
 #include "cmocka_headers.h"
 #include "conn_req.h"
+#include "mocks-ibverbs.h"
 #include "peer.h"
+#include "test-common.h"
 
-#define MOCK_IBV_CTX		(struct ibv_context *)0x00C0
-#define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
-#define MOCK_IBV_CQ		(struct ibv_cq *)0xB4C0
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
-#define MOCK_MR			(struct ibv_mr *)0xD1AF
 #define MOCK_ADDR		(void *)0x2B6A
 #define MOCK_LEN		(size_t)627
 #define MOCK_ACCESS		(unsigned)823
-
-#define MOCK_PASSTHROUGH	0
-#define MOCK_VALIDATE		1
-
-#define MOCK_OK		0
-
-struct ibv_alloc_pd_mock_args {
-	int validate_params;
-	struct ibv_pd *pd;
-};
-
-#if defined(ibv_reg_mr)
-/*
- * Since rdma-core v27.0-105-g5a750676
- * ibv_reg_mr() has been defined as a macro
- * in <infiniband/verbs.h>:
- *
- * https://github.com/linux-rdma/rdma-core/commit/5a750676e8312715100900c6336bbc98577e082b
- *
- * In order to mock the ibv_reg_mr() function
- * the `ibv_reg_mr` symbol has to be undefined first
- * and the additional ibv_reg_mr_iova2() function
- * has to be mocked, because it is called
- * by the 'ibv_reg_mr' macro.
- */
-#undef ibv_reg_mr
-
-/*
- * ibv_reg_mr_iova2 -- ibv_reg_mr_iova2() mock
- */
-struct ibv_mr *
-ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
-			uint64_t iova, unsigned access)
-{
-	return ibv_reg_mr(pd, addr, length, (int)access);
-}
-#endif
-
-/*
- * ibv_reg_mr -- ibv_reg_mr() mock
- */
-struct ibv_mr *
-ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
-{
-	check_expected_ptr(pd);
-	check_expected_ptr(addr);
-	check_expected(length);
-	check_expected(access);
-
-	struct ibv_mr *mr = mock_type(struct ibv_mr *);
-	if (mr == NULL) {
-		errno = mock_type(int);
-		return NULL;
-	}
-
-	return mr;
-}
-
-/*
- * ibv_alloc_pd -- ibv_alloc_pd() mock
- */
-struct ibv_pd *
-ibv_alloc_pd(struct ibv_context *ibv_ctx)
-{
-	struct ibv_alloc_pd_mock_args *args =
-			mock_type(struct ibv_alloc_pd_mock_args *);
-	if (args->validate_params == MOCK_VALIDATE)
-		check_expected_ptr(ibv_ctx);
-
-	if (args->pd != NULL)
-		return args->pd;
-
-	/*
-	 * The ibv_alloc_pd(3) manual page does not document that this function
-	 * returns any error via errno but seemingly it is. For the usability
-	 * sake, in librpma we try to deduce what really happened using
-	 * the errno value.
-	 */
-	errno = mock_type(int);
-
-	return NULL;
-}
-
-struct ibv_dealloc_pd_mock_args {
-	int validate_params;
-	int ret;
-};
-
-/*
- * ibv_dealloc_pd -- ibv_dealloc_pd() mock
- */
-int
-ibv_dealloc_pd(struct ibv_pd *pd)
-{
-	struct ibv_dealloc_pd_mock_args *args =
-			mock_type(struct ibv_dealloc_pd_mock_args *);
-	if (args->validate_params == MOCK_VALIDATE)
-		check_expected_ptr(pd);
-
-	return args->ret;
-}
 
 /*
  * rdma_create_qp -- rdma_create_qp() mock
@@ -202,7 +99,7 @@ peer_new_test_peer_ptr_eq_NULL(void **unused)
 	 */
 
 	/* run test */
-	int ret = rpma_peer_new(MOCK_IBV_CTX, NULL);
+	int ret = rpma_peer_new(MOCK_VERBS, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -240,13 +137,13 @@ peer_new_test_alloc_pd_fail_ENOMEM(void **unused)
 	 */
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
-	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
+	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, ENOMEM);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
-	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -267,13 +164,13 @@ peer_new_test_alloc_pd_fail_EAGAIN(void **unused)
 	 */
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
-	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
+	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, EAGAIN);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
-	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -294,13 +191,13 @@ peer_new_test_alloc_pd_fail_no_error(void **unused)
 	 */
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
-	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
+	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_OK);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
-	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_UNKNOWN);
@@ -324,7 +221,7 @@ peer_new_test_malloc_fail(void **unused)
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
-	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -344,12 +241,12 @@ peer_new_test_success(void **unused)
 	 */
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
-	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
+	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test - step 1 */
 	struct rpma_peer *peer = NULL;
-	int ret = rpma_peer_new(MOCK_IBV_CTX, &peer);
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -425,11 +322,11 @@ peer_setup(void **peer_ptr)
 	 */
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
-	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_IBV_CTX);
+	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* setup */
-	int ret = rpma_peer_new(MOCK_IBV_CTX, (struct rpma_peer **)peer_ptr);
+	int ret = rpma_peer_new(MOCK_VERBS, (struct rpma_peer **)peer_ptr);
 	assert_int_equal(ret, 0);
 	assert_non_null(*peer_ptr);
 
