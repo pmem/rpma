@@ -59,12 +59,15 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		goto err_destroy_evch;
 	}
 
-	/* XXX use rpma_flush_new() */
+	struct rpma_flush *flush;
+	ret = rpma_flush_new(peer, &flush);
+	if (ret)
+		goto err_migrate_id_NULL;
 
 	struct rpma_conn *conn = malloc(sizeof(*conn));
 	if (!conn) {
 		ret = RPMA_E_NOMEM;
-		goto err_migrate_id_NULL;
+		goto err_flush_delete;
 	}
 
 	conn->id = id;
@@ -73,13 +76,14 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	conn->cq = cq;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
-	conn->flush = NULL;
+	conn->flush = flush;
 
 	*conn_ptr = conn;
 
 	return 0;
 
-/* XXX use rpma_flush_delete() */
+err_flush_delete:
+	(void) rpma_flush_delete(&flush);
 
 err_migrate_id_NULL:
 	(void) rdma_migrate_id(id, NULL);
@@ -226,7 +230,9 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	int ret = 0;
 
-	/* XXX call rpma_flush_delete() */
+	ret = rpma_flush_delete(&conn->flush);
+	if (ret)
+		goto err_destroy_cq;
 
 	rdma_destroy_qp(conn->id);
 
@@ -256,6 +262,8 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	return 0;
 
+err_destroy_cq:
+	(void) ibv_destroy_cq(conn->cq);
 err_destroy_comp_channel:
 	(void) ibv_destroy_comp_channel(conn->channel);
 err_destroy_id:
@@ -307,15 +315,15 @@ rpma_write(struct rpma_conn *conn,
 
 /*
  * rpma_flush -- initialize the flush operation
- *
- * XXX use conn->flush->func
  */
 int
 rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	rpma_flush_func flush = conn->flush->func;
+	return flush(conn->id->qp, conn->flush, dst, dst_offset,
+			len, type, flags, op_context);
 }
 
 /*
