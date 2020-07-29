@@ -10,8 +10,9 @@
 #include <rdma/rdma_cma.h>
 #include <librpma.h>
 
-#include "rpma_err.h"
 #include "cmocka_headers.h"
+#include "mocks-ibverbs.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*
