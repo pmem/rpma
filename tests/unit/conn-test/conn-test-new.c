@@ -140,6 +140,7 @@ new_test_malloc_ENOMEM(void **unused)
 	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return_maybe(rdma_migrate_id, MOCK_OK);
+	will_return(rpma_flush_new, MOCK_FLUSH);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
