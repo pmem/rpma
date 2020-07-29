@@ -90,6 +90,15 @@ test_client__success(void **unused)
 	expect_value(rdma_migrate_id, channel, MOCK_EVCH);
 	will_return(rdma_migrate_id, MOCK_OK);
 
+	struct posix_memalign_args allocated_raw = {0};
+	will_return(__wrap_posix_memalign, &allocated_raw);
+
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
+	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	will_return(ibv_reg_mr, &allocated_raw.ptr);
+	will_return(ibv_reg_mr, MOCK_MR);
+
 	expect_value(rdma_connect, id, &id);
 	will_return(rdma_connect, MOCK_OK);
 
@@ -120,6 +129,9 @@ test_client__success(void **unused)
 	will_return(rdma_disconnect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_delete() */
+	expect_value(ibv_dereg_mr, mr, MOCK_MR);
+	will_return(ibv_dereg_mr, MOCK_OK);
+
 	expect_value(rdma_destroy_qp, id, &id);
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
@@ -227,6 +239,15 @@ test_server__success(void **unused)
 	expect_value(rdma_migrate_id, channel, MOCK_EVCH);
 	will_return(rdma_migrate_id, MOCK_OK);
 
+	struct posix_memalign_args allocated_raw = {0};
+	will_return(__wrap_posix_memalign, &allocated_raw);
+
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
+	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	will_return(ibv_reg_mr, &allocated_raw.ptr);
+	will_return(ibv_reg_mr, MOCK_MR);
+
 	/* configure mocks for rpma_conn_next_event() */
 	struct rdma_cm_event s_event;
 	const char *s_msg = "Hello server!";
@@ -255,6 +276,9 @@ test_server__success(void **unused)
 	will_return(rdma_ack_cm_event, MOCK_OK);
 
 	/* configure mocks for rpma_conn_delete() */
+	expect_value(ibv_dereg_mr, mr, MOCK_MR);
+	will_return(ibv_dereg_mr, MOCK_OK);
+
 	expect_value(rdma_destroy_qp, id, &id);
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);

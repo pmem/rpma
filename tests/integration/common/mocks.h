@@ -13,6 +13,8 @@
 #define MOCK_ADDR		"127.0.0.1"
 #define MOCK_SERVICE		"1234"
 #define MOCK_MR			(&Ibv_mr)
+#define MOCK_MR_RAW		(&Ibv_mr_raw)
+#define MOCK_RAW_SIZE		8 /* memory region size */
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
 #define MOCK_CQ			(&Ibv_cq)
 #define MOCK_VERBS		(&Ibv_context)
@@ -35,6 +37,7 @@ extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_context Ibv_context;	/* mock IBV context */
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
+extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
 
 struct posix_memalign_args {
 	void *ptr;
