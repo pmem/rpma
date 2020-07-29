@@ -230,11 +230,12 @@ delete_test_destroy_cq_EAGAIN(void **unused)
 }
 
 /*
- * delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN - rdma_destroy_id() fails
- * with EIO when exiting after ibv_destroy_cq() fail (EAGAIN)
+ * delete_test_destroy_cq_EAGAIN_subsequent_EIO -- rdma_destroy_id() and
+ * ibv_destroy_comp_channel() fail with EIO when exiting after
+ * ibv_destroy_cq() fail (EAGAIN)
  */
 static void
-delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN(void **unused)
+delete_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -249,7 +250,7 @@ delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN(void **unused)
 	/* configure mocks: */
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, EAGAIN); /* first error */
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EIO);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EIO); /* second error */
 
@@ -268,7 +269,73 @@ delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN(void **unused)
 }
 
 /*
- * delete_test_destroy_id_EAGAIN - ibv_destroy_cq() fails with EAGAIN
+ * delete_test_destroy_comp_channel_EAGAIN -- ibv_destroy_comp_channel() fails
+ * with EAGAIN
+ */
+static void
+delete_test_destroy_comp_channel_EAGAIN(void **unused)
+{
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	struct conn_test_state *cstate;
+	int ret = conn_setup((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, MOCK_OK);
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->conn);
+}
+
+/*
+ * delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO --
+ * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail wit EIO
+ */
+static void
+delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
+{
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	struct conn_test_state *cstate;
+	int ret = conn_setup((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, EIO);
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->conn);
+}
+
+/*
+ * delete_test_destroy_id_EAGAIN -- ibv_destroy_cq() fails with EAGAIN
  */
 static void
 delete_test_destroy_id_EAGAIN(void **unused)
@@ -318,8 +385,10 @@ const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(delete_test_conn_ptr_NULL),
 	cmocka_unit_test(delete_test_conn_NULL),
 	cmocka_unit_test(delete_test_destroy_cq_EAGAIN),
+	cmocka_unit_test(delete_test_destroy_cq_EAGAIN_subsequent_EIO),
+	cmocka_unit_test(delete_test_destroy_comp_channel_EAGAIN),
 	cmocka_unit_test(
-		delete_test_destroy_cq_EAGAIN_destroy_id_EAGAIN),
+		delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO),
 	cmocka_unit_test(delete_test_destroy_id_EAGAIN),
 	cmocka_unit_test(NULL)
 };
