@@ -10,8 +10,9 @@
  * - rpma_conn_next_completion()
  */
 
-#include "test-common.h"
 #include "conn-test-common.h"
+#include "mocks-ibverbs.h"
+#include "test-common.h"
 
 /*
  * poll_cq -- poll_cq() mock

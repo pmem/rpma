@@ -9,7 +9,7 @@
 
 #include "conn_req.h"
 #include "cmocka_headers.h"
-#include "test-common.h"
+#include "mocks-ibverbs.h"
 
 struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_context Ibv_context;	/* mock IBV context */

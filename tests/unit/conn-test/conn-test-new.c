@@ -12,6 +12,7 @@
  */
 
 #include "conn-test-common.h"
+#include "mocks-ibverbs.h"
 #include "test-common.h"
 
 /*
