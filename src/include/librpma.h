@@ -135,6 +135,7 @@ struct rpma_mr_remote;
 #define RPMA_MR_USAGE_READ_DST	(1 << 1)
 #define RPMA_MR_USAGE_WRITE_SRC	(1 << 2)
 #define RPMA_MR_USAGE_WRITE_DST	(1 << 3)
+#define RPMA_MR_USAGE_FLUSHABLE	(1 << 4)
 
 enum rpma_mr_plt {
 	RPMA_MR_PLT_VOLATILE, /* the region comes from volatile memory */
