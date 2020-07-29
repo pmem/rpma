@@ -11,6 +11,9 @@
 #include "cmocka_headers.h"
 #include "test-common.h"
 
+struct ibv_context Ibv_context;	/* mock IBV context */
+struct ibv_cq Ibv_cq;		/* mock IBV CQ */
+
 /*
  * ibv_create_cq -- ibv_create_cq() mock
  */
@@ -38,7 +41,7 @@ ibv_create_cq(struct ibv_context *context, int cqe, void *cq_context,
 int
 ibv_destroy_cq(struct ibv_cq *cq)
 {
-	assert_int_equal(cq, MOCK_CQ);
+	assert_int_equal(cq, MOCK_IBV_CQ);
 
 	return mock_type(int);
 }
