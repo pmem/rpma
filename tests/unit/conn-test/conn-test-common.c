@@ -298,6 +298,7 @@ conn_setup(void **cstate_ptr)
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return(rdma_migrate_id, MOCK_OK);
+	will_return(rpma_flush_new, MOCK_FLUSH);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* prepare an object */
