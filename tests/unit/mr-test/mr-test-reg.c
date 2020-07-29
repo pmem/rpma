@@ -283,34 +283,20 @@ const struct CMUnitTest tests_reg[] = {
 	cmocka_unit_test(test_reg__wrong_usage),
 	cmocka_unit_test(test_reg__failed_E_NOMEM),
 	cmocka_unit_test(test_reg__peer_mr_reg_failed_E_PROVIDER),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 0),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 1),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 2),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 3),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 4),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 5),
-	cmocka_unit_test_prestate_setup_teardown(
-		test_reg_dereg__success,
-		setup__reg_success, teardown__dereg_success,
-		prestates + 6),
+	{ "reg_dereg__USAGE_READ_SRC", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 0},
+	{ "reg_dereg__USAGE_READ_DST", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 1},
+	{ "reg_dereg__USAGE_READ_SRC_DST", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 2},
+	{ "reg_dereg__USAGE_WRITE_SRC", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 3},
+	{ "reg_dereg__USAGE_WRITE_DST", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 4},
+	{ "reg_dereg__USAGE_WRITE_SRC_DST", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 5},
+	{ "reg_dereg__USAGE_ALL", test_reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 6},
 
 	/* rpma_mr_dereg() unit tests */
 	cmocka_unit_test(test_dereg__NULL_mr_ptr),
