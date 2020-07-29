@@ -16,8 +16,9 @@
 
 extern struct rdma_cm_id Cm_id;	/* mock CM ID */
 extern struct ibv_context Ibv_context; /* mock IBV context */
+extern struct rdma_event_channel Evch; /* mock event channel */
 
-#define MOCK_EVCH		(struct rdma_event_channel *)0xE4C4
+#define MOCK_EVCH		(struct rdma_event_channel *)&Evch
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
 #define MOCK_QP			(struct ibv_qp *)0xC41D
 
@@ -29,6 +30,7 @@ extern struct ibv_context Ibv_context; /* mock IBV context */
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_WC_STATUS		(int)0x51A5
+#define MOCK_FD			0x00FD
 
 #define MOCK_OK			0
 
@@ -47,6 +49,7 @@ struct conn_test_state {
 int conn_setup(void **cstate_ptr);
 int conn_teardown(void **cstate_ptr);
 
+int group_setup_get_event_fd(void **unused);
 int group_setup_next_completion(void **unused);
 int group_setup_read(void **unused);
 int group_setup_write(void **unused);
