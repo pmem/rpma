@@ -19,7 +19,7 @@ typedef int (*rpma_flush_func)(struct ibv_qp *qp, struct rpma_flush *flush,
 	enum rpma_flush_type type, int flags, void *op_context);
 
 struct rpma_flush {
-	rpma_flush_func func;
+	rpma_flush_func flush_func;
 };
 
 /*

@@ -58,7 +58,11 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct ibv_cq *cq,
 		goto err_destroy_evch;
 	}
 
-	/* XXX use rpma_flush_new() */
+	struct rpma_flush *flush;
+	if (rpma_flush_new(peer, &flush)) {
+		ret = RPMA_E_NOMEM;
+		goto err_flush_delete;
+	}
 
 	struct rpma_conn *conn = malloc(sizeof(*conn));
 	if (!conn) {
@@ -71,13 +75,14 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct ibv_cq *cq,
 	conn->cq = cq;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
-	conn->flush = NULL;
+	conn->flush = flush;
 
 	*conn_ptr = conn;
 
 	return 0;
 
-/* XXX use rpma_flush_delete() */
+err_flush_delete:
+	(void) rpma_flush_delete(&flush);
 
 err_migrate_id_NULL:
 	(void) rdma_migrate_id(id, NULL);
