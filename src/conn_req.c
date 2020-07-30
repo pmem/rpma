@@ -218,7 +218,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 	}
 
 	int perror = ibv_destroy_comp_channel(req->channel);
-	if (perror) {
+	if (!ret && perror) {
 		Rpma_provider_error = perror;
 		ret = RPMA_E_PROVIDER;
 	}
