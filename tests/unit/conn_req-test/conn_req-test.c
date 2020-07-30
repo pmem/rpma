@@ -1116,6 +1116,62 @@ del_via_destroy_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
+ * del_via_destroy_test_destroy_comp_channel_EAGAIN --
+ * ibv_destroy_comp_channel() fails with EAGAIN
+ */
+static void
+del_via_destroy_test_destroy_comp_channel_EAGAIN(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, MOCK_OK);
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
+ * del_via_destroy_test_destroy_comp_channel_EAGAIN_subsequent_EIO --
+ * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail with EIO
+ */
+static void
+del_via_destroy_test_destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = NULL;
+	assert_int_equal(conn_req_new_setup((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, EAGAIN);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, EIO);
+
+	/* run test */
+	int ret = rpma_conn_req_delete(&cstate->req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(cstate->req);
+}
+
+/*
  * del_via_destroy_test_destroy_id_EAGAIN - rdma_destroy_id()
  * fails with EAGAIN
  */
@@ -1769,6 +1825,10 @@ main(int argc, char *argv[])
 		cmocka_unit_test(del_via_destroy_test_destroy_cq_EAGAIN),
 		cmocka_unit_test(
 			del_via_destroy_test_destroy_cq_EAGAIN_subsequent_EIO),
+		cmocka_unit_test(
+			del_via_destroy_test_destroy_comp_channel_EAGAIN),
+		cmocka_unit_test(
+	del_via_destroy_test_destroy_comp_channel_EAGAIN_subsequent_EIO),
 		cmocka_unit_test(del_via_destroy_test_destroy_id_EAGAIN),
 
 		/* rpma_conn_req_connect() unit tests */
