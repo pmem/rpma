@@ -24,6 +24,9 @@ struct common_data {
 };
 
 #define KILOBYTE 1024
+#define DWORD 32
+
+#define TIMEOUT_15s (15000) /* [msec] == 15s */
 
 void print_error_ex(const char *fname, int ret);
 
