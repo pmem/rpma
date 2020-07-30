@@ -49,5 +49,6 @@ int
 rpma_flush_delete(struct rpma_flush **flush_ptr)
 {
 	assert_non_null(flush_ptr);
+
 	return 0;
 }
