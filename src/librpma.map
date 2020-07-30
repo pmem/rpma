@@ -25,6 +25,7 @@ LIBRPMA_1.0 {
 		rpma_err_2str;
 		rpma_err_get_msg;
 		rpma_err_get_provider_error;
+		rpma_flush;
 		rpma_mr_dereg;
 		rpma_mr_get_descriptor;
 		rpma_mr_reg;
