@@ -55,6 +55,11 @@ main(int argc, char *argv[])
 	if (ret)
 		return ret;
 
+	/* establish a new connection to a server listening at addr:service */
+	ret = client_connect(peer, addr, service, NULL, &conn);
+	if (ret)
+		goto err_mr_dereg;
+
 	/* allocate a memory */
 	dst_ptr = malloc_aligned(KILOBYTE);
 	if (dst_ptr == NULL) {
@@ -69,11 +74,6 @@ main(int argc, char *argv[])
 		print_error_ex("rpma_mr_reg", ret);
 		goto err_mr_free;
 	}
-
-	/* establish a new connection to a server listening at addr:service */
-	ret = client_connect(peer, addr, service, NULL, &conn);
-	if (ret)
-		goto err_mr_dereg;
 
 	/* receive a memory info from the server */
 	struct rpma_conn_private_data pdata;

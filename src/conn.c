@@ -230,7 +230,9 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	int ret = 0;
 
-	rpma_flush_delete(&conn->flush);
+	ret = rpma_flush_delete(&conn->flush);
+	if (ret)
+		goto err_flush_delete;
 
 	rdma_destroy_qp(conn->id);
 
@@ -266,7 +268,7 @@ err_destroy_id:
 	(void) rdma_destroy_id(conn->id);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
-
+err_flush_delete:
 	free(conn);
 	*conn_ptr = NULL;
 
@@ -319,7 +321,9 @@ rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	rpma_flush_func flush = conn->flush->func;
+	return flush(conn->id->qp, conn->flush, dst, dst_offset,
+			len, type, flags, op_context);
 }
 
 /*

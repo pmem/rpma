@@ -130,6 +130,27 @@ new_test_migrate_id_EAGAIN(void **unused)
 }
 
 /*
+ * new_test_flush_ENOMEM - rpma_flush_new() fails with ENOMEM
+ */
+static void
+new_test_flush_ENOMEM(void **unused)
+{
+	/* configure mock */
+	will_return(rdma_create_event_channel, MOCK_EVCH);
+	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
+	will_return_maybe(rdma_migrate_id, MOCK_OK);
+	will_return(rpma_flush_new, RPMA_E_NOMEM);
+
+	/* run test */
+	struct rpma_conn *conn = NULL;
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_IBV_CQ, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_null(conn);
+}
+
+/*
  * new_test_malloc_ENOMEM - malloc() fails with ENOMEM
  */
 static void
@@ -140,7 +161,7 @@ new_test_malloc_ENOMEM(void **unused)
 	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return_maybe(rdma_migrate_id, MOCK_OK);
-	will_return(rpma_flush_new, MOCK_FLUSH);
+	will_return(rpma_flush_new, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -376,6 +397,7 @@ const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(new_test_peer_id_cq_conn_ptr_NULL),
 	cmocka_unit_test(new_test_create_evch_EAGAIN),
 	cmocka_unit_test(new_test_migrate_id_EAGAIN),
+	cmocka_unit_test(new_test_flush_ENOMEM),
 	cmocka_unit_test(new_test_malloc_ENOMEM),
 
 	/* rpma_conn_new()/_delete() lifecycle */

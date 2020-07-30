@@ -11,6 +11,7 @@
 #define CONN_COMMON
 
 #include "cmocka_headers.h"
+#include "mocks-rpma-flush.h"
 #include "test-common.h"
 #include "conn.h"
 
@@ -29,7 +30,6 @@ extern struct rdma_event_channel Evch; /* mock event channel */
 #define MOCK_WC_STATUS		(int)0x51A5
 #define MOCK_FD			0x00FD
 #define MOCK_COMPLETION_FD	0x00FE
-#define MOCK_FLUSH		(struct rpma_flush *)0x51A6
 
 extern int Rdma_migrate_id_counter;
 

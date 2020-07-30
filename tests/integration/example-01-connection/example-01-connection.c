@@ -129,7 +129,6 @@ test_client__success(void **unused)
 	will_return(rdma_disconnect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_delete() */
-
 	will_return(ibv_dereg_mr, MOCK_OK);
 
 	expect_value(rdma_destroy_qp, id, &id);
@@ -166,6 +165,8 @@ test_server__success(void **unused)
 	will_return(rdma_getaddrinfo, MOCK_OK);
 	will_return(rdma_getaddrinfo, &res1);
 	will_return_always(__wrap__test_malloc, MOCK_OK);
+
+	will_return(__wrap_posix_memalign, &Allocated);
 
 	struct rdma_cm_id id;
 	will_return(rdma_create_id, &id);
@@ -272,7 +273,7 @@ test_server__success(void **unused)
 
 	/* configure mocks for rpma_conn_delete() */
 	will_return(ibv_dereg_mr, MOCK_OK);
-	
+
 	expect_value(rdma_destroy_qp, id, &id);
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);

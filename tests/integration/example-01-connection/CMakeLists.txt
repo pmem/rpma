@@ -15,6 +15,7 @@ build_test_src(NAME ${TARGET} SRCS
 	${CMAKE_SOURCE_DIR}/examples/common/common.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
+	${LIBRPMA_SOURCE_DIR}/flush.c
 	${LIBRPMA_SOURCE_DIR}/ep.c
 	${LIBRPMA_SOURCE_DIR}/info.c
 	${LIBRPMA_SOURCE_DIR}/librpma.c

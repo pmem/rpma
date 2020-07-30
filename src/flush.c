@@ -12,6 +12,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef TEST_MOCK_ALLOC
+#include "cmocka_alloc.h"
+#endif
+
 #include "flush.h"
 #include "mr.h"
 #include "rpma_err.h"
@@ -46,8 +50,10 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 {
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
+	struct flush_apm *flush_apm =
+			(struct flush_apm *)flush_internal->context;
 
-	return rpma_mr_read(qp, flush_internal->context, 0, dst, dst_offset,
+	return rpma_mr_read(qp, flush_apm->raw_mr, 0, dst, dst_offset,
 			RAW_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL);
 }
 
@@ -59,10 +65,10 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 {
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
-
 	struct flush_apm *flush_apm =
 			(struct flush_apm *)flush_internal->context;
 	int ret = rpma_mr_dereg(&flush_apm->raw_mr);
+
 	free(flush_apm->raw);
 	free(flush_apm);
 
@@ -75,6 +81,7 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 static int
 rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 {
+	/* a memory registration has to be page-aligned */
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
 		Rpma_provider_error = errno;
@@ -82,7 +89,7 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 	}
 
 	/* alloc memory for the read-after-write buffer (RAW) */
-	void *raw;
+	void *raw = NULL;
 	int ret = posix_memalign(&raw, (size_t)pagesize, RAW_SIZE);
 	if (ret) {
 		Rpma_provider_error = errno;
@@ -91,7 +98,6 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 
 	/* register the RAW buffer */
 	struct rpma_mr_local *raw_mr = NULL;
-
 	ret = rpma_mr_reg(peer, raw, RAW_SIZE, RPMA_MR_USAGE_READ_DST,
 			RPMA_MR_PLT_VOLATILE, &raw_mr);
 	if (ret) {
@@ -105,7 +111,6 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
-
 	flush_internal->flush_func = rpma_flush_apm_do;
 	flush_internal->delete_func = rpma_flush_apm_delete;
 	flush_internal->context = flush_apm;
@@ -117,9 +122,6 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 
 /*
  * rpma_flush_new -- peak a flush implementation and return the flushing object
- *
- * XXX allocate the flush object, fill the pointers and call the appropriate
- * constructor. For now the only implementation is APM.
  */
 int
 rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
@@ -129,8 +131,10 @@ rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 		return RPMA_E_NOMEM;
 
 	int ret = rpma_flush_apm_new(peer, flush);
-	if (ret)
+	if (ret) {
+		free(flush);
 		return ret;
+	}
 
 	*flush_ptr = flush;
 
@@ -139,8 +143,6 @@ rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 
 /*
  * rpma_flush_delete -- delete the flushing object
- *
- * XXX call the destructor and free the object
  */
 int
 rpma_flush_delete(struct rpma_flush **flush_ptr)
