@@ -321,13 +321,16 @@ rpma_flush(struct rpma_conn *conn,
 /*
  * rpma_conn_get_completion_fd -- get a file descriptor of the completion event
  * channel associated with the connection
- *
- * XXX a completion event channel has to be created before creating a CQ.
  */
 int
 rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
+	*fd = conn->channel->fd;
+
+	return 0;
 }
 
 /*
