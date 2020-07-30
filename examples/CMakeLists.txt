@@ -87,6 +87,10 @@ add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 05-flush-to-persistent/server.c common/common.c)
 add_example(NAME 05-flush-to-persistent BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 05-flush-to-persistent/client.c common/common.c)
+add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
+	SRCS 06-multiple-connections/server.c common/common.c common/common-epoll.c)
+add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
+	SRCS 06-multiple-connections/client.c common/common.c)
 
 add_example(NAME log BIN log SRCS log/log-example.c log/log-worker.c)
 
