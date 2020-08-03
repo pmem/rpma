@@ -18,6 +18,14 @@
 
 struct rpma_flush Rpma_flush;
 
+int
+rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, void *op_context)
+{
+	return 0;
+}
+
 /*
  * rpma_flush_new -- rpma_flush_new() mock
  */
@@ -26,6 +34,8 @@ rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	assert_int_equal(peer, MOCK_PEER);
 	assert_non_null(flush_ptr);
+	Rpma_flush.func = rpma_flush_apm_do;
+
 
 	int ret = mock_type(int);
 	if (ret == MOCK_OK)

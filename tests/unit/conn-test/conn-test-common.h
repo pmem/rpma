@@ -46,6 +46,7 @@ int conn_setup(void **cstate_ptr);
 int conn_teardown(void **cstate_ptr);
 
 int group_setup_get_completion_fd(void **unused);
+int group_setup_flush(void **unused);
 int group_setup_get_event_fd(void **unused);
 int group_setup_next_completion(void **unused);
 int group_setup_read(void **unused);
