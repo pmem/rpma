@@ -728,6 +728,28 @@ struct rpma_completion {
 };
 
 /** 3
+ * rpma_conn_prepare_completions - wait for completions
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_prepare_completions(struct rpma_conn *conn);
+ *
+ * DESCRIPTION
+ * rpma_conn_prepare_completions() waits for incoming completions. If it
+ * succeeded the completions can be collected using rpma_conn_next_completion().
+ *
+ * ERRORS
+ * rpma_conn_prepare_completions() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn is NULL
+ * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
+ * - RPMA_E_NO_COMPLETION - no completions available
+ */
+int rpma_conn_prepare_completions(struct rpma_conn *conn);
+
+/** 3
  * rpma_conn_next_completion - receive a completion of an operation
  *
  * SYNOPSIS
@@ -747,6 +769,7 @@ struct rpma_completion {
  * rpma_conn_next_completion() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn or cmpl is NULL
+ * - RPMA_E_NO_COMPLETION - no completions available
  * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
  * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
  * - RPMA_E_NOSUPP - not supported opcode

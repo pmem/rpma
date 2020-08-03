@@ -29,7 +29,6 @@ struct private_data_buffer {
 
 /* global mocks */
 static struct rdma_cm_id Cm_id;		/* mock CM ID */
-static struct ibv_context Ibv_context;	/* mock IBV context */
 static struct ibv_qp Ibv_qp;		/* mock IBV QP */
 
 /* arguments for mock of posix_memalign() */
@@ -104,12 +103,9 @@ test_client__success(void **unused)
 
 	will_return(ibv_create_comp_channel, &Ibv_comp_channel);
 
-	Ibv_context.ops.post_send = ibv_post_send_mock;
-	Ibv_context.ops.poll_cq = ibv_poll_cq_mock;
-	Ibv_cq.context = &Ibv_context;
-	Ibv_qp.context = &Ibv_context;
-
 	will_return(ibv_create_cq, &Ibv_cq);
+
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
 	expect_value(rdma_create_qp, id, &Cm_id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
@@ -271,6 +267,8 @@ test_server__success(void **unused)
 
 	will_return(ibv_create_cq, &Ibv_cq);
 
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+
 	expect_value(rdma_create_qp, id, &Cm_id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
 	will_return(rdma_create_qp, MOCK_OK);
@@ -351,6 +349,12 @@ test_server__success(void **unused)
 int
 main(int argc, char *argv[])
 {
+	Ibv_context.ops.post_send = ibv_post_send_mock;
+	Ibv_context.ops.poll_cq = ibv_poll_cq_mock;
+	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = &Ibv_context;
+	Ibv_qp.context = &Ibv_context;
+
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_client__success),
 		cmocka_unit_test(test_server__success),

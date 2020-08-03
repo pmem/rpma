@@ -70,6 +70,13 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		goto err_destroy_comp_channel;
 	}
 
+	/* request for the next completion on the completion channel */
+	Rpma_provider_error = ibv_req_notify_cq(cq, 0 /* all completions */);
+	if (Rpma_provider_error) {
+		ret = RPMA_E_PROVIDER;
+		goto err_destroy_cq;
+	}
+
 	/* create a QP */
 	ret = rpma_peer_create_qp(peer, id, cq);
 	if (ret)

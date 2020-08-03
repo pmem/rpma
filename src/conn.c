@@ -334,6 +334,38 @@ rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd)
 }
 
 /*
+ * rpma_conn_prepare_completions -- wait for completions
+ */
+int
+rpma_conn_prepare_completions(struct rpma_conn *conn)
+{
+	if (conn == NULL)
+		return RPMA_E_INVAL;
+
+	/* wait for the completion event */
+	struct ibv_cq *ev_cq;	/* unused */
+	void *ev_ctx;		/* unused */
+	if (ibv_get_cq_event(conn->channel, &ev_cq, &ev_ctx))
+		return RPMA_E_NO_COMPLETION;
+
+	/*
+	 * ACK the collected CQ event.
+	 *
+	 * XXX for performance reasons, it may be beneficial to ACK more than
+	 * one CQ event at the same time.
+	 */
+	ibv_ack_cq_events(conn->cq, 1 /* # of CQ events */);
+
+	/* request for the next event on the CQ channel */
+	Rpma_provider_error = ibv_req_notify_cq(conn->cq,
+			0 /* all completions */);
+	if (Rpma_provider_error)
+		return RPMA_E_PROVIDER;
+
+	return 0;
+}
+
+/*
  * rpma_conn_next_completion -- receive an operation completion
  */
 int
@@ -345,6 +377,9 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	struct ibv_wc wc = {0};
 	int result = ibv_poll_cq(conn->cq, 1 /* num_entries */, &wc);
 	if (result == 0) {
+		/*
+		 * There may be an extra CQ event with no completion in the CQ.
+		 */
 		return RPMA_E_NO_COMPLETION;
 	} else if (result < 0) {
 		Rpma_provider_error = result;

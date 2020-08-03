@@ -190,7 +190,7 @@ test_next_completion__success(void **cstate_ptr)
 int
 group_setup_next_completion(void **unused)
 {
-	/* set poll_cq call back in mock of IBV CQ */
+	/* set the poll_cq callback in mock of IBV CQ */
 	Ibv_context.ops.poll_cq = poll_cq;
 	Ibv_cq.context = &Ibv_context;
 
