@@ -89,6 +89,7 @@ rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
 		assert_true(0);
 
 	++Rdma_migrate_id_counter;
+	id->qp = MOCK_QP;
 
 	errno = mock_type(int);
 	if (errno)
