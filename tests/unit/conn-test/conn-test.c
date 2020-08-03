@@ -10,6 +10,7 @@
 #include "conn-test-common.h"
 
 extern const struct CMUnitTest tests_disconnect[];
+extern const struct CMUnitTest tests_flush[];
 extern const struct CMUnitTest tests_get_completion_fd[];
 extern const struct CMUnitTest tests_get_event_fd[];
 extern const struct CMUnitTest tests_new[];
@@ -21,6 +22,7 @@ extern const struct CMUnitTest tests_write[];
 
 struct rpma_test_group groups[] = {
 	RPMA_TEST_GROUP(tests_disconnect, NULL),
+	RPMA_TEST_GROUP(tests_flush, NULL),
 	RPMA_TEST_GROUP(tests_get_completion_fd, group_setup_get_completion_fd),
 	RPMA_TEST_GROUP(tests_get_event_fd, group_setup_get_event_fd),
 	RPMA_TEST_GROUP(tests_new, NULL),
