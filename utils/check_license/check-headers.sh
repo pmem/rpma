@@ -104,8 +104,23 @@ for file in $FILES ; do
 	iconv -f $ENCODING -t "UTF-8" $src_path > $TEMPFILE
 
 	if ! grep -q "SPDX-License-Identifier: $LICENSE" $src_path; then
-		echo >&2 "error: no $LICENSE SPDX tag in file: $src_path"
+		echo "error: no $LICENSE SPDX tag in file: $src_path" >&2
 		RV=1
+	elif [[ $(echo $file) =~ ".cmake" ]] || [[ $(echo $file) =~ ".sh" ]]; then
+		if ! grep -q -e "# SPDX-License-Identifier: $LICENSE" $src_path; then
+			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
+			RV=1
+		fi
+	elif [[ $(echo $file) =~ ".c" ]]; then
+		if ! grep -q -e "\/\/ SPDX-License-Identifier: $LICENSE" $src_path; then
+			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
+			RV=1
+		fi
+	elif [[ $(echo $file) =~ ".h" ]]; then
+		if grep -q -e "\/\/ SPDX-License-Identifier: $LICENSE" $src_path; then
+			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
+			RV=1
+		fi
 	fi
 
 	if [ $SHALLOW_CLONE -eq 0 ]; then
