@@ -14,6 +14,7 @@ struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_context Ibv_context;	/* mock IBV context */
 struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
+struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
 
 /*
  * ibv_req_notify_cq_mock -- ibv_req_notify_cq() mock
@@ -117,21 +118,7 @@ ibv_poll_cq_mock(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
 int
 ibv_dereg_mr(struct ibv_mr *mr)
 {
-	/*
-	 * rpma_peer_mr_reg() and malloc() may be called in any order.
-	 * If the first one fails, then the second one won't be called.
-	 * ibv_dereg_mr() will be called in rpma_mr_reg() only if:
-	 * 1) rpma_peer_mr_reg() succeeded and
-	 * 2) malloc() failed.
-	 * In the opposite case, when:
-	 * 1) malloc() succeeded and
-	 * 2) rpma_peer_mr_reg() failed,
-	 * ibv_dereg_mr() will not be called,
-	 * so we cannot add cmocka's expects here.
-	 * Otherwise, unconsumed expects would cause a test failure.
-	 */
-	assert_int_equal(mr, MOCK_MR);
-
+	check_expected_ptr(mr);
 	return mock_type(int); /* errno */
 }
 
