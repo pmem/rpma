@@ -76,3 +76,46 @@ ibv_destroy_comp_channel(struct ibv_comp_channel *channel)
 
 	return mock_type(int);
 }
+
+/*
+ * ibv_req_notify_cq_mock -- ibv_req_notify_cq() mock
+ */
+int
+ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only)
+{
+	assert_ptr_equal(cq, MOCK_IBV_CQ);
+	assert_int_equal(solicited_only, 0);
+
+	return mock_type(int);
+}
+
+/*
+ * ibv_get_cq_event -- ibv_get_cq_event() mock
+ */
+int
+ibv_get_cq_event(struct ibv_comp_channel *channel, struct ibv_cq **cq,
+		void **cq_context)
+{
+	check_expected_ptr(channel);
+	assert_non_null(cq);
+	assert_non_null(cq_context);
+
+	errno = mock_type(int);
+	if (!errno) {
+		*cq = mock_type(struct ibv_cq *);
+		*cq_context = NULL;
+		return 0;
+	}
+
+	return -1;
+}
+
+/*
+ * ibv_ack_cq_events -- ibv_ack_cq_events() mock
+ */
+void
+ibv_ack_cq_events(struct ibv_cq *cq, unsigned nevents)
+{
+	check_expected_ptr(cq);
+	assert_int_equal(nevents, 1);
+}

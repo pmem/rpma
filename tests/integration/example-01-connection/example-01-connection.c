@@ -74,6 +74,8 @@ test_client__success(void **unused)
 
 	will_return(ibv_create_cq, MOCK_CQ);
 
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+
 	expect_value(rdma_create_qp, id, &id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
 	will_return(rdma_create_qp, MOCK_OK);
@@ -205,6 +207,8 @@ test_server__success(void **unused)
 
 	will_return(ibv_create_cq, MOCK_CQ);
 
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+
 	expect_value(rdma_create_qp, id, &id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
 	will_return(rdma_create_qp, MOCK_OK);
@@ -283,6 +287,9 @@ test_server__success(void **unused)
 int
 main(int argc, char *argv[])
 {
+	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = &Ibv_context;
+
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_client__success),
 		cmocka_unit_test(test_server__success),
