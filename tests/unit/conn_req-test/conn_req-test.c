@@ -14,6 +14,7 @@
 #include "info.h"
 #include "rpma_err.h"
 #include "test-common.h"
+#include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
 
 /* tests */
@@ -159,6 +160,7 @@ from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -191,6 +193,7 @@ from_cm_event_test_create_qp_EAGAIN_subsequent_EIO(
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -220,6 +223,7 @@ from_cm_event_test_malloc_ENOMEM(void **unused)
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -251,6 +255,7 @@ from_cm_event_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -281,6 +286,7 @@ from_cm_event_test_private_data_store_ENOMEM(void **unused)
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -326,6 +332,7 @@ conn_req_from_cm_event_setup(void **cstate_ptr)
 	/* configure mocks */
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -648,6 +655,7 @@ new_test_peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
@@ -683,6 +691,7 @@ new_test_malloc_ENOMEM(void **unused)
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -719,6 +728,7 @@ new_test_malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
@@ -764,6 +774,7 @@ conn_req_new_setup(void **cstate_ptr)
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -1760,6 +1771,19 @@ conn_via_connect_test_success_outgoing(void **unused)
 	assert_int_equal(conn, MOCK_CONN);
 }
 
+/*
+ * group_setup_next_completion -- prepare resources for all tests in the group
+ */
+int
+group_setup_conn_req(void **unused)
+{
+	/* set the req_notify_cq callback in mock of IBV CQ */
+	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = &Ibv_context;
+
+	return 0;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1872,5 +1896,5 @@ main(int argc, char *argv[])
 		cmocka_unit_test(conn_via_connect_test_success_outgoing),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	return cmocka_run_group_tests(tests, group_setup_conn_req, NULL);
 }

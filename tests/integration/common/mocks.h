@@ -15,7 +15,7 @@
 #define MOCK_MR			(&Ibv_mr)
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
 #define MOCK_CQ			(&Ibv_cq)
-#define MOCK_VERBS		((struct ibv_context *)0xABC1)
+#define MOCK_VERBS		(&Ibv_context)
 #define MOCK_EVCH		((struct rdma_event_channel *)0xE4C4)
 #define MOCK_SRC_ADDR		((struct sockaddr *)0x0ADD)
 #define MOCK_DST_ADDR		((struct sockaddr *)0x0ADE)
@@ -32,8 +32,9 @@
 
 /* mock IBV completion channel */
 extern struct ibv_comp_channel Ibv_comp_channel;
-extern struct ibv_cq Ibv_cq;	/* mock IBV CQ */
-extern struct ibv_mr Ibv_mr;	/* mock IBV MR */
+extern struct ibv_context Ibv_context;	/* mock IBV context */
+extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
+extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 
 struct posix_memalign_args {
 	void *ptr;
@@ -42,6 +43,8 @@ struct posix_memalign_args {
 int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 			struct ibv_send_wr **bad_wr);
 int ibv_poll_cq_mock(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc);
+
+int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 
 void *__real__test_malloc(size_t size);
 void *__wrap__test_malloc(size_t size);
