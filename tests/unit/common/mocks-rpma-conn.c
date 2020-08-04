@@ -11,6 +11,7 @@
 #include <librpma.h>
 
 #include "cmocka_headers.h"
+#include "mocks-ibverbs.h"
 #include "test-common.h"
 #include "rpma_err.h"
 

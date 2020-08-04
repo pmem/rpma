@@ -8,6 +8,7 @@
  */
 
 #include "conn-test-common.h"
+#include "mocks-ibverbs.h"
 
 struct rdma_cm_id Cm_id;	/* mock CM ID */
 struct rdma_event_channel Evch;	/* mock event channel */

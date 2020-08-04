@@ -11,6 +11,7 @@
  */
 
 #include "conn-test-common.h"
+#include "mocks-ibverbs.h"
 
 /*
  * test_write__conn_NULL -- NULL conn is invalid
