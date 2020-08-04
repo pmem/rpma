@@ -15,6 +15,7 @@
 #include "librpma.h"
 #include "rpma_err.h"
 
+#include "mocks-ibverbs.h"
 #include "mr-test-common.h"
 
 /*

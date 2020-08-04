@@ -16,6 +16,7 @@
 #include "rpma_err.h"
 
 #include "mr-test-common.h"
+#include "mocks-ibverbs.h"
 
 /*
  * test_read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
