@@ -321,6 +321,9 @@ rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context)
 {
+	if (conn == NULL || dst == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
 			len, type, flags, op_context);

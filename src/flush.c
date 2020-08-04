@@ -154,9 +154,9 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	struct rpma_flush_internal *flush_internal =
 			*(struct rpma_flush_internal **)flush_ptr;
 
-	flush_internal->delete_func(*flush_ptr);
+	int ret = flush_internal->delete_func(*flush_ptr);
 	free(*flush_ptr);
 	*flush_ptr = NULL;
 
-	return 0;
+	return ret;
 }
