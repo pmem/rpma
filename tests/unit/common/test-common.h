@@ -24,4 +24,7 @@
 
 #define MOCK_OK 0
 
+#define MOCK_PASSTHROUGH	0
+#define MOCK_VALIDATE		1
+
 #endif /* TEST_COMMON_H */

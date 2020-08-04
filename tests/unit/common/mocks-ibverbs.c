@@ -10,6 +10,7 @@
 #include "conn_req.h"
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
+#include "test-common.h"
 
 /* mocked IBV entities */
 struct ibv_comp_channel Ibv_comp_channel;
@@ -78,6 +79,53 @@ ibv_destroy_comp_channel(struct ibv_comp_channel *channel)
 	assert_ptr_equal(channel, MOCK_COMP_CHANNEL);
 
 	return mock_type(int);
+}
+
+#if defined(ibv_reg_mr)
+/*
+ * Since rdma-core v27.0-105-g5a750676
+ * ibv_reg_mr() has been defined as a macro
+ * in <infiniband/verbs.h>:
+ *
+ * https://github.com/linux-rdma/rdma-core/commit/5a750676e8312715100900c6336bbc98577e082b
+ *
+ * In order to mock the ibv_reg_mr() function
+ * the `ibv_reg_mr` symbol has to be undefined first
+ * and the additional ibv_reg_mr_iova2() function
+ * has to be mocked, because it is called
+ * by the 'ibv_reg_mr' macro.
+ */
+#undef ibv_reg_mr
+
+/*
+ * ibv_reg_mr_iova2 -- ibv_reg_mr_iova2() mock
+ */
+struct ibv_mr *
+ibv_reg_mr_iova2(struct ibv_pd *pd, void *addr, size_t length,
+			uint64_t iova, unsigned access)
+{
+	return ibv_reg_mr(pd, addr, length, (int)access);
+}
+#endif
+
+/*
+ * ibv_reg_mr -- ibv_reg_mr() mock
+ */
+struct ibv_mr *
+ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
+{
+	check_expected_ptr(pd);
+	check_expected_ptr(addr);
+	check_expected(length);
+	check_expected(access);
+
+	struct ibv_mr *mr = mock_type(struct ibv_mr *);
+	if (mr == NULL) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return mr;
 }
 
 /*
@@ -166,6 +214,45 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 	assert_int_equal(wr->send_flags, args->send_flags);
 	assert_int_equal(wr->wr_id, args->wr_id);
 	assert_null(wr->next);
+
+	return args->ret;
+}
+
+/*
+ * ibv_alloc_pd -- ibv_alloc_pd() mock
+ */
+struct ibv_pd *
+ibv_alloc_pd(struct ibv_context *ibv_ctx)
+{
+	struct ibv_alloc_pd_mock_args *args =
+			mock_type(struct ibv_alloc_pd_mock_args *);
+	if (args->validate_params == MOCK_VALIDATE)
+		check_expected_ptr(ibv_ctx);
+
+	if (args->pd != NULL)
+		return args->pd;
+
+	/*
+	 * The ibv_alloc_pd(3) manual page does not document that this function
+	 * returns any error via errno but seemingly it is. For the usability
+	 * sake, in librpma we try to deduce what really happened using
+	 * the errno value.
+	 */
+	errno = mock_type(int);
+
+	return NULL;
+}
+
+/*
+ * ibv_dealloc_pd -- ibv_dealloc_pd() mock
+ */
+int
+ibv_dealloc_pd(struct ibv_pd *pd)
+{
+	struct ibv_dealloc_pd_mock_args *args =
+			mock_type(struct ibv_dealloc_pd_mock_args *);
+	if (args->validate_params == MOCK_VALIDATE)
+		check_expected_ptr(pd);
 
 	return args->ret;
 }
