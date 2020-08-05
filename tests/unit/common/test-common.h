@@ -21,6 +21,7 @@
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 #define MOCK_PRIVATE_DATA_2	((void *)"Another random data")
 #define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
+#define MOCK_ERRNO		123456
 
 #define MOCK_OK 0
 

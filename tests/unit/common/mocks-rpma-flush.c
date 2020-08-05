@@ -43,5 +43,9 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	assert_ptr_equal(*flush_ptr, MOCK_FLUSH);
 	*flush_ptr = NULL;
 
-	return 0;
+	int ret = mock_type(int);
+	if (ret == RPMA_E_PROVIDER)
+		Rpma_provider_error = mock_type(int);
+
+	return ret;
 }
