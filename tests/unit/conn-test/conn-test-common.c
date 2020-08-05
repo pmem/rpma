@@ -324,6 +324,7 @@ conn_teardown(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks: */
+	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(ibv_destroy_cq, MOCK_OK);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
