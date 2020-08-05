@@ -14,6 +14,7 @@ build_test_src(UNIT NAME conn-test SRCS
 	conn-test-new.c
 	conn-test-next-completion.c
 	conn-test-next-event.c
+	conn-test-prepare-completions.c
 	conn-test-private-data.c
 	conn-test-read.c
 	conn-test-write.c
