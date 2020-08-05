@@ -1772,7 +1772,7 @@ conn_via_connect_test_success_outgoing(void **unused)
 }
 
 /*
- * group_setup_next_completion -- prepare resources for all tests in the group
+ * group_setup_conn_req -- prepare resources for all tests in the group
  */
 int
 group_setup_conn_req(void **unused)
