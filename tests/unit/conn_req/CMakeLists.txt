@@ -6,7 +6,7 @@
 include(../../cmake/ctest_helpers.cmake)
 
 build_test_src(UNIT NAME conn_req-test SRCS
-       conn_req-test.c
+       conn_req.c
        ${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
        ${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
        ${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn.c
