@@ -147,6 +147,33 @@ from_cm_event_test_create_cq_EAGAIN(void **unused)
 }
 
 /*
+ * from_cm_event_test_req_notify_cq_fail -- ibv_req_notify_cq() fails
+ */
+static void
+from_cm_event_test_req_notify_cq_fail(void **unused)
+{
+	/* configure mocks */
+	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
+	struct rdma_cm_id id = {0};
+	id.verbs = MOCK_VERBS;
+	event.id = &id;
+	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
+	will_return(ibv_destroy_cq, MOCK_OK);
+	will_return(ibv_destroy_comp_channel, MOCK_OK);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
+	assert_null(req);
+}
+
+/*
  * from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN -- rpma_peer_create_qp()
  * fails with RPMA_E_PROVIDER+EAGAIN
  */
@@ -1798,6 +1825,7 @@ main(int argc, char *argv[])
 			from_cm_event_test_RDMA_CM_EVENT_CONNECT_ERROR),
 		cmocka_unit_test(from_cm_event_test_create_comp_channel_EAGAIN),
 		cmocka_unit_test(from_cm_event_test_create_cq_EAGAIN),
+		cmocka_unit_test(from_cm_event_test_req_notify_cq_fail),
 		cmocka_unit_test(
 			from_cm_event_test_peer_create_qp_E_PROVIDER_EAGAIN),
 		cmocka_unit_test(
