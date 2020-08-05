@@ -71,6 +71,7 @@ set_private_data_test_failed_ENOMEM(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks for rpma_conn_set_private_data() */
+	const char Private_data[] = "Random data";
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
@@ -105,6 +106,7 @@ set_private_data_test_success(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks for rpma_conn_set_private_data() */
+	const char Private_data[] = "Random data";
 	cstate->data.ptr = MOCK_PRIVATE_DATA;
 	cstate->data.len = MOCK_PDATA_LEN;
 	will_return(rpma_private_data_copy, 0);

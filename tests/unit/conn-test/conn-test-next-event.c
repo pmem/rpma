@@ -242,6 +242,7 @@ next_event_test_success_no_data_ESTABLISHED_with_data(void **cstate_ptr)
 	struct rdma_cm_event event;
 	event.event = RDMA_CM_EVENT_ESTABLISHED;
 	/* with private data in the event */
+	const char Private_data[] = "Random data";
 	event.param.conn.private_data = MOCK_PRIVATE_DATA;
 	event.param.conn.private_data_len = MOCK_PDATA_LEN;
 	will_return(rdma_get_cm_event, &event);
@@ -284,6 +285,7 @@ next_event_test_success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 
 	/* configure mocks for rpma_conn_set_private_data() */
 	struct rpma_conn_private_data data;
+	const char Private_data[] = "Random data";
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
 	will_return(rpma_private_data_copy, 0);
@@ -351,6 +353,7 @@ next_event_test_success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 
 	/* configure mocks for rpma_conn_set_private_data() */
 	struct rpma_conn_private_data data;
+	const char Private_data[] = "Random data";
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
 	will_return(rpma_private_data_copy, 0);
@@ -376,6 +379,7 @@ next_event_test_success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 	struct rdma_cm_event event;
 	event.event = RDMA_CM_EVENT_ESTABLISHED;
 	/* with another private data in the event */
+	const char Private_data_2[] = "Another random data";
 	event.param.conn.private_data = MOCK_PRIVATE_DATA_2;
 	event.param.conn.private_data_len = MOCK_PDATA_LEN_2;
 	will_return(rdma_get_cm_event, &event);

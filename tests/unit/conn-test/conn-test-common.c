@@ -13,6 +13,9 @@
 struct rdma_cm_id Cm_id;	/* mock CM ID */
 struct rdma_event_channel Evch;	/* mock event channel */
 
+const char Private_data[] = "Random data";
+const char Private_data_2[] = "Another random data";
+
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
  */
