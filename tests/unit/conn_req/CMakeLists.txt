@@ -5,8 +5,13 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(UNIT NAME conn_req-test SRCS
-       conn_req-test.c
+build_test_src(UNIT NAME conn_req SRCS
+       conn_req.c
+       conn_req-common.c
+       conn_req-connect.c
+       conn_req-delete.c
+       conn_req-from_cm_event.c
+       conn_req-new.c
        ${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
        ${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
        ${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn.c
@@ -17,10 +22,10 @@ build_test_src(UNIT NAME conn_req-test SRCS
        ${LIBRPMA_SOURCE_DIR}/conn_req.c
        ${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
-target_compile_definitions(conn_req-test PRIVATE TEST_MOCK_ALLOC)
+target_compile_definitions(conn_req PRIVATE TEST_MOCK_ALLOC)
 
-set_target_properties(conn_req-test
+set_target_properties(conn_req
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-add_test_generic(NAME conn_req-test TRACERS none)
+add_test_generic(NAME conn_req TRACERS none)
