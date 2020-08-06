@@ -49,6 +49,7 @@ int group_setup_get_completion_fd(void **unused);
 int group_setup_flush(void **unused);
 int group_setup_get_event_fd(void **unused);
 int group_setup_next_completion(void **unused);
+int group_setup_prepare_completions(void **unused);
 int group_setup_read(void **unused);
 int group_setup_write(void **unused);
 
