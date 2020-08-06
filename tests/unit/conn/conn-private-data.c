@@ -126,18 +126,24 @@ set_private_data__success(void **cstate_ptr)
 	assert_int_equal(check_data.len, cstate->data.len);
 }
 
-const struct CMUnitTest tests_private_data[] = {
-	/* rpma_conn_set_private_data() unit tests */
-	cmocka_unit_test_setup_teardown(
-		set_private_data__failed_ENOMEM,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		set_private_data__success,
-		setup__conn_new, teardown__conn_delete),
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests_private_data[] = {
+		/* rpma_conn_set_private_data() unit tests */
+		cmocka_unit_test_setup_teardown(
+			set_private_data__failed_ENOMEM,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			set_private_data__success,
+			setup__conn_new, teardown__conn_delete),
 
-	/* rpma_conn_get_private_data() unit tests */
-	cmocka_unit_test(get_private_data__conn_NULL),
-	cmocka_unit_test(get_private_data__pdata_NULL),
-	cmocka_unit_test(get_private_data__conn_NULL_pdata_NULL),
-	cmocka_unit_test(NULL)
-};
+		/* rpma_conn_get_private_data() unit tests */
+		cmocka_unit_test(get_private_data__conn_NULL),
+		cmocka_unit_test(get_private_data__pdata_NULL),
+		cmocka_unit_test(get_private_data__conn_NULL_pdata_NULL),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_private_data, NULL, NULL);
+}

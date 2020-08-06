@@ -185,37 +185,35 @@ next_completion__success(void **cstate_ptr)
 	}
 }
 
-/*
- * group_setup_next_completion -- prepare resources for all tests in the group
- */
 int
-group_setup_next_completion(void **unused)
+main(int argc, char *argv[])
 {
+	/* prepare resources for all tests in the group */
 	/* set the poll_cq callback in mock of IBV CQ */
 	Ibv_context.ops.poll_cq = poll_cq;
 	Ibv_cq.context = &Ibv_context;
 
-	return 0;
-}
+	const struct CMUnitTest tests_next_completion[] = {
+		/* rpma_conn_next_completion() unit tests */
+		cmocka_unit_test(next_completion__conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			next_completion__cmpl_NULL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_completion__poll_cq_fail_EAGAIN,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(next_completion__poll_cq_0,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(next_completion__poll_cq_2,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_completion__success,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(NULL)
+	};
 
-const struct CMUnitTest tests_next_completion[] = {
-	/* rpma_conn_next_completion() unit tests */
-	cmocka_unit_test(next_completion__conn_NULL),
-	cmocka_unit_test_setup_teardown(
-		next_completion__cmpl_NULL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_completion__poll_cq_fail_EAGAIN,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(next_completion__poll_cq_0,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(next_completion__poll_cq_2,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_completion__success,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
-};
+	return cmocka_run_group_tests(tests_next_completion, NULL, NULL);
+}

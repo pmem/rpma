@@ -5,29 +5,32 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(UNIT NAME conn SRCS
-	conn.c
-	conn-common.c
-	conn-disconnect.c
-	conn-flush.c
-	conn-get_completion_fd.c
-	conn-get_event_fd.c
-	conn-new.c
-	conn-next-completion.c
-	conn-next-event.c
-	conn-prepare-completions.c
-	conn-private-data.c
-	conn-read.c
-	conn-write.c
-	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
-	${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
-	${LIBRPMA_SOURCE_DIR}/rpma_err.c
-	${LIBRPMA_SOURCE_DIR}/conn.c)
+function(add_test_conn name)
+	build_test_src(UNIT NAME ${name} SRCS
+		${name}.c
+		conn-common.c
+		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
+		${LIBRPMA_SOURCE_DIR}/rpma_err.c
+		${LIBRPMA_SOURCE_DIR}/conn.c)
 
-target_compile_definitions(conn PRIVATE TEST_MOCK_ALLOC)
+	target_compile_definitions(${name} PRIVATE TEST_MOCK_ALLOC)
 
-set_target_properties(conn
-	PROPERTIES
-	LINK_FLAGS "-Wl,--wrap=_test_malloc")
+	set_target_properties(${name}
+		PROPERTIES
+		LINK_FLAGS "-Wl,--wrap=_test_malloc")
 
-add_test_generic(NAME conn TRACERS none)
+	add_test_generic(NAME ${name} TRACERS none)
+endfunction()
+
+add_test_conn(conn-disconnect)
+add_test_conn(conn-flush)
+add_test_conn(conn-get_completion_fd)
+add_test_conn(conn-get_event_fd)
+add_test_conn(conn-new)
+add_test_conn(conn-next-completion)
+add_test_conn(conn-next-event)
+add_test_conn(conn-prepare-completions)
+add_test_conn(conn-private-data)
+add_test_conn(conn-read)
+add_test_conn(conn-write)

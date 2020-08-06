@@ -72,25 +72,24 @@ get_event_fd__success(void **cstate_ptr)
 	assert_int_equal(fd, MOCK_FD);
 }
 
-/*
- * group_setup_get_event_fd -- prepare resources for all tests in the group
- */
 int
-group_setup_get_event_fd(void **unused)
+main(int argc, char *argv[])
 {
+	/* prepare resources for all tests in the group */
 	Evch.fd = MOCK_FD;
-	return 0;
-}
 
-const struct CMUnitTest tests_get_event_fd[] = {
-	/* rpma_conn_get_event_fd() unit tests */
-	cmocka_unit_test(get_event_fd__conn_NULL),
-	cmocka_unit_test_setup_teardown(
-		get_event_fd__fd_NULL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(get_event_fd__conn_fd_NULL),
-	cmocka_unit_test_setup_teardown(
-		get_event_fd__success,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
-};
+	const struct CMUnitTest tests_get_event_fd[] = {
+		/* rpma_conn_get_event_fd() unit tests */
+		cmocka_unit_test(get_event_fd__conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			get_event_fd__fd_NULL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(get_event_fd__conn_fd_NULL),
+		cmocka_unit_test_setup_teardown(
+			get_event_fd__success,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_get_event_fd, NULL, NULL);
+}

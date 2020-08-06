@@ -433,31 +433,37 @@ delete__destroy_id_EAGAIN(void **unused)
 	assert_null(cstate->conn);
 }
 
-const struct CMUnitTest tests_new[] = {
-	/* rpma_conn_new() unit tests */
-	cmocka_unit_test(new__peer_NULL),
-	cmocka_unit_test(new__id_NULL),
-	cmocka_unit_test(new__cq_NULL),
-	cmocka_unit_test(new__conn_ptr_NULL),
-	cmocka_unit_test(new__peer_id_cq_conn_ptr_NULL),
-	cmocka_unit_test(new__create_evch_EAGAIN),
-	cmocka_unit_test(new__migrate_id_EAGAIN),
-	cmocka_unit_test(new__flush_ENOMEM),
-	cmocka_unit_test(new__malloc_ENOMEM),
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests_new[] = {
+		/* rpma_conn_new() unit tests */
+		cmocka_unit_test(new__peer_NULL),
+		cmocka_unit_test(new__id_NULL),
+		cmocka_unit_test(new__cq_NULL),
+		cmocka_unit_test(new__conn_ptr_NULL),
+		cmocka_unit_test(new__peer_id_cq_conn_ptr_NULL),
+		cmocka_unit_test(new__create_evch_EAGAIN),
+		cmocka_unit_test(new__migrate_id_EAGAIN),
+		cmocka_unit_test(new__flush_ENOMEM),
+		cmocka_unit_test(new__malloc_ENOMEM),
 
-	/* rpma_conn_new()/_delete() lifecycle */
-	cmocka_unit_test_setup_teardown(conn_test_lifecycle,
-		setup__conn_new, teardown__conn_delete),
+		/* rpma_conn_new()/_delete() lifecycle */
+		cmocka_unit_test_setup_teardown(conn_test_lifecycle,
+			setup__conn_new, teardown__conn_delete),
 
-	/* rpma_conn_delete() unit tests */
-	cmocka_unit_test(delete__conn_ptr_NULL),
-	cmocka_unit_test(delete__conn_NULL),
-	cmocka_unit_test(delete__flush_delete_E_PROVIDER),
-	cmocka_unit_test(delete__destroy_cq_EAGAIN),
-	cmocka_unit_test(delete__destroy_cq_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(delete__destroy_comp_channel_EAGAIN),
-	cmocka_unit_test(
-		delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO),
-	cmocka_unit_test(delete__destroy_id_EAGAIN),
-	cmocka_unit_test(NULL)
-};
+		/* rpma_conn_delete() unit tests */
+		cmocka_unit_test(delete__conn_ptr_NULL),
+		cmocka_unit_test(delete__conn_NULL),
+		cmocka_unit_test(delete__flush_delete_E_PROVIDER),
+		cmocka_unit_test(delete__destroy_cq_EAGAIN),
+		cmocka_unit_test(delete__destroy_cq_EAGAIN_subsequent_EIO),
+		cmocka_unit_test(delete__destroy_comp_channel_EAGAIN),
+		cmocka_unit_test(
+			delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO),
+		cmocka_unit_test(delete__destroy_id_EAGAIN),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_new, NULL, NULL);
+}

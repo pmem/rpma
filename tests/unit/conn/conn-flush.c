@@ -100,13 +100,19 @@ flush__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
-const struct CMUnitTest tests_flush[] = {
-	/* rpma_read() unit tests */
-	cmocka_unit_test(flush__conn_NULL),
-	cmocka_unit_test(flush__dst_NULL),
-	cmocka_unit_test(flush__flags_0),
-	cmocka_unit_test(flush__conn_dst_NULL_flags_0),
-	cmocka_unit_test_setup_teardown(flush__success,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
-};
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests_flush[] = {
+		/* rpma_read() unit tests */
+		cmocka_unit_test(flush__conn_NULL),
+		cmocka_unit_test(flush__dst_NULL),
+		cmocka_unit_test(flush__flags_0),
+		cmocka_unit_test(flush__conn_dst_NULL_flags_0),
+		cmocka_unit_test_setup_teardown(flush__success,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_flush, NULL, NULL);
+}

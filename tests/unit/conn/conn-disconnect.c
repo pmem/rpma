@@ -63,14 +63,20 @@ disconnect__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
-const struct CMUnitTest tests_disconnect[] = {
-	/* rpma_conn_disconnect() unit tests */
-	cmocka_unit_test(disconnect__conn_NULL),
-	cmocka_unit_test_setup_teardown(
-		disconnect__rdma_disconnect_EINVAL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		disconnect__success,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
-};
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests_disconnect[] = {
+		/* rpma_conn_disconnect() unit tests */
+		cmocka_unit_test(disconnect__conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			disconnect__rdma_disconnect_EINVAL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			disconnect__success,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_disconnect, NULL, NULL);
+}

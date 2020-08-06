@@ -507,51 +507,57 @@ next_event__success_TIMEWAIT_EXIT(void **cstate_ptr)
 	assert_int_equal(c_event, RPMA_CONN_CLOSED);
 }
 
-const struct CMUnitTest tests_next_event[] = {
-	/* rpma_conn_next_event() unit tests */
-	cmocka_unit_test(next_event__conn_NULL),
-	cmocka_unit_test_setup_teardown(
-		next_event__event_NULL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(next_event__conn_NULL_event_NULL),
-	cmocka_unit_test_setup_teardown(
-		next_event__get_cm_event_EAGAIN,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__get_cm_event_ENODATA,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__event_REJECTED,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__event_REJECTED_ack_EINVAL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__data_store_ENOMEM,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_no_data_ESTABLISHED_no_data,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_no_data_ESTABLISHED_with_data,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_with_data_ESTABLISHED_no_data,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_with_data_ESTABLISHED_with_data,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_CONNECT_ERROR,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_DEVICE_REMOVAL,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_DISCONNECTED,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		next_event__success_TIMEWAIT_EXIT,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
-};
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests_next_event[] = {
+		/* rpma_conn_next_event() unit tests */
+		cmocka_unit_test(next_event__conn_NULL),
+		cmocka_unit_test_setup_teardown(
+			next_event__event_NULL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(next_event__conn_NULL_event_NULL),
+		cmocka_unit_test_setup_teardown(
+			next_event__get_cm_event_EAGAIN,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__get_cm_event_ENODATA,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__event_REJECTED,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__event_REJECTED_ack_EINVAL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__data_store_ENOMEM,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_no_data_ESTABLISHED_no_data,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_no_data_ESTABLISHED_with_data,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_with_data_ESTABLISHED_no_data,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_with_data_ESTABLISHED_with_data,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_CONNECT_ERROR,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_DEVICE_REMOVAL,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_DISCONNECTED,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test_setup_teardown(
+			next_event__success_TIMEWAIT_EXIT,
+			setup__conn_new, teardown__conn_delete),
+		cmocka_unit_test(NULL)
+	};
+
+	return cmocka_run_group_tests(tests_next_event, NULL, NULL);
+}
