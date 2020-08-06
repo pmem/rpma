@@ -36,14 +36,14 @@ extern int Rdma_migrate_id_counter;
 #define RDMA_MIGRATE_FROM_EVCH 1
 #define RDMA_MIGRATE_COUNTER_INIT (RDMA_MIGRATE_TO_EVCH)
 
-/* all the resources used between conn_setup and conn_teardown */
+/* all the resources used between setup__conn_new and teardown__conn_delete */
 struct conn_test_state {
 	struct rpma_conn *conn;
 	struct rpma_conn_private_data data;
 };
 
-int conn_setup(void **cstate_ptr);
-int conn_teardown(void **cstate_ptr);
+int setup__conn_new(void **cstate_ptr);
+int teardown__conn_delete(void **cstate_ptr);
 
 int group_setup_get_completion_fd(void **unused);
 int group_setup_flush(void **unused);
