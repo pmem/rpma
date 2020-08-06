@@ -8,7 +8,7 @@
  * - rpma_conn_prepare_completions()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 #include "mocks-ibverbs.h"
 
 /*
@@ -107,12 +107,12 @@ const struct CMUnitTest tests_prepare_completions[] = {
 	cmocka_unit_test(prepare_completions__conn_NULL),
 	cmocka_unit_test_setup_teardown(
 		prepare_completions__get_cq_event_fail,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		prepare_completions__req_notify_cq_fail,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		prepare_completions__success,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
