@@ -5,7 +5,7 @@
 
 add_subdirectory(conn-test)
 add_subdirectory(conn_req-test)
-add_subdirectory(ep-test)
+add_subdirectory(ep)
 add_subdirectory(error-test)
 add_subdirectory(flush-test)
 add_subdirectory(info-test)
