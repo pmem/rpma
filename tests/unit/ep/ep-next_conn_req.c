@@ -1,0 +1,280 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ * Copyright 2020, Intel Corporation
+ */
+
+/*
+ * ep-next_conn_req.c -- the endpoint unit tests of the following API:
+ *
+ * - rpma_ep_next_conn_req
+ */
+
+#include "librpma.h"
+#include "ep-common.h"
+#include "cmocka_headers.h"
+
+/*
+ * ep_next_conn_req__ep_NULL - NULL ep is invalid
+ */
+static void
+ep_next_conn_req__ep_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(NULL, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__req_NULL - NULL req is invalid
+ */
+static void
+ep_next_conn_req__req_NULL(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	/* run test */
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * ep_next_conn_req__ep_NULL_req_NULL - NULL ep and NULL req are invalid
+ */
+static void
+ep_next_conn_req__ep_NULL_req_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_ep_next_conn_req(NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * ep_next_conn_req__get_cm_event_EAGAIN -
+ * rdma_get_cm_event() fails with EAGAIN
+ */
+static void
+ep_next_conn_req__get_cm_event_EAGAIN(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, EAGAIN);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__get_cm_event_ENODATA -
+ * rdma_get_cm_event() fails with ENODATA
+ */
+static void
+ep_next_conn_req__get_cm_event_ENODATA(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	will_return(rdma_get_cm_event, NULL);
+	will_return(rdma_get_cm_event, ENODATA);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NO_NEXT);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__event_REJECTED -
+ * RDMA_CM_EVENT_REJECTED is unexpected
+ */
+static void
+ep_next_conn_req__event_REJECTED(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_REJECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__event_REJECTED_ack_EINVAL -
+ * rdma_ack_cm_event() fails with EINVAL after obtaining
+ * an RDMA_CM_EVENT_REJECTED event (!= RDMA_CM_EVENT_CONNECT_REQUEST)
+ */
+static void
+ep_next_conn_req__event_REJECTED_ack_EINVAL(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_REJECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, EINVAL);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__conn_req_from_cm_event_ENOMEM -
+ * rpma_conn_req_from_cm_event() fails with ENOMEM
+ */
+static void
+ep_next_conn_req__conn_req_from_cm_event_ENOMEM(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	will_return(rpma_conn_req_from_cm_event, NULL);
+	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__from_cm_event_ENOMEM_ack_EINVAL -
+ * rpma_conn_req_from_cm_event() fails and
+ * rdma_ack_cm_event() fails with EINVAL
+ */
+static void
+ep_next_conn_req__from_cm_event_ENOMEM_ack_EINVAL(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	will_return(rpma_conn_req_from_cm_event, NULL);
+	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, EINVAL);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_null(req);
+}
+
+/*
+ * ep_next_conn_req__success - happy day scenario
+ */
+static void
+ep_next_conn_req__success(void **estate_ptr)
+{
+	struct ep_test_state *estate = *estate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, &estate->evch);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	will_return(rpma_conn_req_from_cm_event, MOCK_CONN_REQ);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+
+	/* verify the results */
+	assert_ptr_equal(req, MOCK_CONN_REQ);
+	assert_int_equal(ret, 0);
+}
+
+int
+main(int argc, char *argv[])
+{
+	const struct CMUnitTest tests[] = {
+		/* rpma_ep_next_conn_req() unit tests */
+		cmocka_unit_test(ep_next_conn_req__ep_NULL),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__req_NULL,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test(ep_next_conn_req__ep_NULL_req_NULL),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__get_cm_event_ENODATA,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__get_cm_event_EAGAIN,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__event_REJECTED,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__event_REJECTED_ack_EINVAL,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__conn_req_from_cm_event_ENOMEM,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__from_cm_event_ENOMEM_ack_EINVAL,
+			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_setup_teardown(
+			ep_next_conn_req__success,
+			setup__ep_listen, teardown__ep_shutdown),
+	};
+
+	return cmocka_run_group_tests(tests, NULL, NULL);
+}
