@@ -188,8 +188,8 @@ next_completion__success(void **cstate_ptr)
 /*
  * group_setup_next_completion -- prepare resources for all tests in the group
  */
-int
-group_setup_next_completion(void **unused)
+static int
+group_setup_next_completion(void)
 {
 	/* set the poll_cq callback in mock of IBV CQ */
 	Ibv_context.ops.poll_cq = poll_cq;
@@ -219,3 +219,12 @@ const struct CMUnitTest tests_next_completion[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_next_completion();
+
+	return cmocka_run_group_tests(tests_next_completion, NULL, NULL);
+}

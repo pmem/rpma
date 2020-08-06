@@ -120,8 +120,8 @@ read__success(void **cstate_ptr)
 /*
  * group_setup_read -- prepare resources for all tests in the group
  */
-int
-group_setup_read(void **unused)
+static int
+group_setup_read(void)
 {
 	/* set value of QP in mock of CM ID */
 	Cm_id.qp = MOCK_QP;
@@ -140,3 +140,12 @@ const struct CMUnitTest tests_read[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_read();
+
+	return cmocka_run_group_tests(tests_read, NULL, NULL);
+}

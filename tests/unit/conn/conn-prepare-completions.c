@@ -92,8 +92,8 @@ prepare_completions__success(void **cstate_ptr)
  * group_setup_prepare_completions -- prepare resources
  * for all tests in the group
  */
-int
-group_setup_prepare_completions(void **unused)
+static int
+group_setup_prepare_completions(void)
 {
 	/* set the req_notify_cq callback in mock of IBV CQ */
 	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
@@ -116,3 +116,12 @@ const struct CMUnitTest tests_prepare_completions[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_prepare_completions();
+
+	return cmocka_run_group_tests(tests_prepare_completions, NULL, NULL);
+}

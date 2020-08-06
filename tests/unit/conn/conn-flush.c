@@ -110,3 +110,9 @@ const struct CMUnitTest tests_flush[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_flush, NULL, NULL);
+}

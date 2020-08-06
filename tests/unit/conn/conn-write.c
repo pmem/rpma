@@ -121,8 +121,8 @@ write__success(void **cstate_ptr)
 /*
  * group_setup_write -- prepare resources for all tests in the group
  */
-int
-group_setup_write(void **unused)
+static int
+group_setup_write(void)
 {
 	/* set value of QP in mock of CM ID */
 	Cm_id.qp = MOCK_QP;
@@ -141,3 +141,12 @@ const struct CMUnitTest tests_write[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_write();
+
+	return cmocka_run_group_tests(tests_write, NULL, NULL);
+}

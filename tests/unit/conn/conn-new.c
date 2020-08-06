@@ -461,3 +461,9 @@ const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(delete__destroy_id_EAGAIN),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_new, NULL, NULL);
+}

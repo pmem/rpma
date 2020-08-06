@@ -74,3 +74,9 @@ const struct CMUnitTest tests_disconnect[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_disconnect, NULL, NULL);
+}

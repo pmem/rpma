@@ -141,3 +141,9 @@ const struct CMUnitTest tests_private_data[] = {
 	cmocka_unit_test(get_private_data__conn_NULL_pdata_NULL),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_private_data, NULL, NULL);
+}

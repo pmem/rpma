@@ -76,8 +76,8 @@ get_completion_fd__success(void **cstate_ptr)
 /*
  * group_setup_get_completion_fd -- prepare resources for all tests in the group
  */
-int
-group_setup_get_completion_fd(void **unused)
+static int
+group_setup_get_completion_fd(void)
 {
 	Ibv_comp_channel.fd = MOCK_COMPLETION_FD;
 	return 0;
@@ -95,3 +95,12 @@ const struct CMUnitTest tests_get_completion_fd[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_get_completion_fd();
+
+	return cmocka_run_group_tests(tests_get_completion_fd, NULL, NULL);
+}
