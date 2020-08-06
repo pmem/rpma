@@ -10,7 +10,8 @@
  * - rpma_conn_get_event_fd()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
+#include "mocks-rdma_cm.h"
 
 /*
  * get_event_fd__conn_NULL -- conn NULL is invalid
@@ -75,8 +76,8 @@ get_event_fd__success(void **cstate_ptr)
 /*
  * group_setup_get_event_fd -- prepare resources for all tests in the group
  */
-int
-group_setup_get_event_fd(void **unused)
+static int
+group_setup_get_event_fd(void)
 {
 	Evch.fd = MOCK_FD;
 	return 0;
@@ -87,10 +88,19 @@ const struct CMUnitTest tests_get_event_fd[] = {
 	cmocka_unit_test(get_event_fd__conn_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_event_fd__fd_NULL,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(get_event_fd__conn_fd_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_event_fd__success,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_get_event_fd();
+
+	return cmocka_run_group_tests(tests_get_event_fd, NULL, NULL);
+}

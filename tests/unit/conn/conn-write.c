@@ -10,14 +10,15 @@
  * - rpma_write()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 #include "mocks-ibverbs.h"
+#include "mocks-rdma_cm.h"
 
 /*
- * test_write__conn_NULL -- NULL conn is invalid
+ * write__conn_NULL -- NULL conn is invalid
  */
 static void
-test_write__conn_NULL(void **unused)
+write__conn_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_write(NULL, MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
@@ -29,10 +30,10 @@ test_write__conn_NULL(void **unused)
 }
 
 /*
- * test_write__dst_NULL -- NULL dst is invalid
+ * write__dst_NULL -- NULL dst is invalid
  */
 static void
-test_write__dst_NULL(void **unused)
+write__dst_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_write(MOCK_CONN, NULL, MOCK_REMOTE_OFFSET,
@@ -44,10 +45,10 @@ test_write__dst_NULL(void **unused)
 }
 
 /*
- * test_write__src_NULL -- NULL src is invalid
+ * write__src_NULL -- NULL src is invalid
  */
 static void
-test_write__src_NULL(void **unused)
+write__src_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_write(MOCK_CONN, MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
@@ -59,10 +60,10 @@ test_write__src_NULL(void **unused)
 }
 
 /*
- * test_write__flags_0 -- flags == 0 is invalid
+ * write__flags_0 -- flags == 0 is invalid
  */
 static void
-test_write__flags_0(void **unused)
+write__flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_write(MOCK_CONN, MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
@@ -74,11 +75,11 @@ test_write__flags_0(void **unused)
 }
 
 /*
- * test_write__conn_dst_src_NULL_flags_0 -- NULL conn, dst, src
+ * write__conn_dst_src_NULL_flags_0 -- NULL conn, dst, src
  * and flags == 0 are invalid
  */
 static void
-test_write__conn_dst_src_NULL_flags_0(void **unused)
+write__conn_dst_src_NULL_flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_write(NULL, NULL, MOCK_REMOTE_OFFSET,
@@ -90,10 +91,10 @@ test_write__conn_dst_src_NULL_flags_0(void **unused)
 }
 
 /*
- * test_write__success -- happy day scenario
+ * write__success -- happy day scenario
  */
 static void
-test_write__success(void **cstate_ptr)
+write__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -121,8 +122,8 @@ test_write__success(void **cstate_ptr)
 /*
  * group_setup_write -- prepare resources for all tests in the group
  */
-int
-group_setup_write(void **unused)
+static int
+group_setup_write(void)
 {
 	/* set value of QP in mock of CM ID */
 	Cm_id.qp = MOCK_QP;
@@ -132,12 +133,21 @@ group_setup_write(void **unused)
 
 const struct CMUnitTest tests_write[] = {
 	/* rpma_read() unit tests */
-	cmocka_unit_test(test_write__conn_NULL),
-	cmocka_unit_test(test_write__dst_NULL),
-	cmocka_unit_test(test_write__src_NULL),
-	cmocka_unit_test(test_write__flags_0),
-	cmocka_unit_test(test_write__conn_dst_src_NULL_flags_0),
-	cmocka_unit_test_setup_teardown(test_write__success,
-		conn_setup, conn_teardown),
+	cmocka_unit_test(write__conn_NULL),
+	cmocka_unit_test(write__dst_NULL),
+	cmocka_unit_test(write__src_NULL),
+	cmocka_unit_test(write__flags_0),
+	cmocka_unit_test(write__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test_setup_teardown(write__success,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_write();
+
+	return cmocka_run_group_tests(tests_write, NULL, NULL);
+}
