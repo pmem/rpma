@@ -14,10 +14,10 @@
 #include "conn-test-common.h"
 
 /*
- * get_private_data_test_conn_NULL - NULL conn is invalid
+ * get_private_data__conn_NULL - NULL conn is invalid
  */
 static void
-get_private_data_test_conn_NULL(void **unused)
+get_private_data__conn_NULL(void **unused)
 {
 	/* get private data */
 	struct rpma_conn_private_data data = {0};
@@ -30,10 +30,10 @@ get_private_data_test_conn_NULL(void **unused)
 }
 
 /*
- * get_private_data_test_pdata_NULL - NULL pdata is invalid
+ * get_private_data__pdata_NULL - NULL pdata is invalid
  */
 static void
-get_private_data_test_pdata_NULL(void **unused)
+get_private_data__pdata_NULL(void **unused)
 {
 	/* get private data */
 	struct rpma_conn *conn = MOCK_CONN;
@@ -44,11 +44,11 @@ get_private_data_test_pdata_NULL(void **unused)
 }
 
 /*
- * get_private_data_test_conn_NULL_pdata_NULL -
+ * get_private_data__conn_NULL_pdata_NULL -
  * (conn == NULL && pdata == NULL) is invalid
  */
 static void
-get_private_data_test_conn_NULL_pdata_NULL(void **unused)
+get_private_data__conn_NULL_pdata_NULL(void **unused)
 {
 	/* get private data */
 	int ret = rpma_conn_get_private_data(NULL, NULL);
@@ -58,15 +58,15 @@ get_private_data_test_conn_NULL_pdata_NULL(void **unused)
 }
 
 /*
- * set_private_data_test_failed_ENOMEM - rpma_conn_set_private_data() failed
+ * set_private_data__failed_ENOMEM - rpma_conn_set_private_data() failed
  *                                       with RPMA_E_NOMEM
  */
 static void
-set_private_data_test_failed_ENOMEM(void **cstate_ptr)
+set_private_data__failed_ENOMEM(void **cstate_ptr)
 {
 	/*
-	 * Common things are done by conn_setup()
-	 * and conn_teardown().
+	 * Common things are done by setup__conn_new()
+	 * and teardown__conn_delete().
 	 */
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -93,14 +93,14 @@ set_private_data_test_failed_ENOMEM(void **cstate_ptr)
 }
 
 /*
- * set_private_data_test_success - rpma_conn_set_private_data() succeeds
+ * set_private_data__success - rpma_conn_set_private_data() succeeds
  */
 static void
-set_private_data_test_success(void **cstate_ptr)
+set_private_data__success(void **cstate_ptr)
 {
 	/*
-	 * Common things are done by conn_setup()
-	 * and conn_teardown().
+	 * Common things are done by setup__conn_new()
+	 * and teardown__conn_delete().
 	 */
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -129,15 +129,15 @@ set_private_data_test_success(void **cstate_ptr)
 const struct CMUnitTest tests_private_data[] = {
 	/* rpma_conn_set_private_data() unit tests */
 	cmocka_unit_test_setup_teardown(
-		set_private_data_test_failed_ENOMEM,
-		conn_setup, conn_teardown),
+		set_private_data__failed_ENOMEM,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		set_private_data_test_success,
-		conn_setup, conn_teardown),
+		set_private_data__success,
+		setup__conn_new, teardown__conn_delete),
 
 	/* rpma_conn_get_private_data() unit tests */
-	cmocka_unit_test(get_private_data_test_conn_NULL),
-	cmocka_unit_test(get_private_data_test_pdata_NULL),
-	cmocka_unit_test(get_private_data_test_conn_NULL_pdata_NULL),
+	cmocka_unit_test(get_private_data__conn_NULL),
+	cmocka_unit_test(get_private_data__pdata_NULL),
+	cmocka_unit_test(get_private_data__conn_NULL_pdata_NULL),
 	cmocka_unit_test(NULL)
 };

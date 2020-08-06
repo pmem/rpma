@@ -87,10 +87,10 @@ const struct CMUnitTest tests_get_event_fd[] = {
 	cmocka_unit_test(get_event_fd__conn_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_event_fd__fd_NULL,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(get_event_fd__conn_fd_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_event_fd__success,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };

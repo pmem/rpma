@@ -284,10 +284,10 @@ __wrap__test_malloc(size_t size)
 }
 
 /*
- * conn_setup - prepare a valid rpma_conn object
+ * setup__conn_new - prepare a valid rpma_conn object
  */
 int
-conn_setup(void **cstate_ptr)
+setup__conn_new(void **cstate_ptr)
 {
 	static struct conn_test_state cstate;
 	cstate.conn = NULL;
@@ -317,10 +317,10 @@ conn_setup(void **cstate_ptr)
 }
 
 /*
- * conn_teardown - delete the rpma_conn object
+ * teardown__conn_delete - delete the rpma_conn object
  */
 int
-conn_teardown(void **cstate_ptr)
+teardown__conn_delete(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 

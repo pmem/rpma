@@ -35,10 +35,10 @@ poll_cq(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
 }
 
 /*
- * test_next_completion__conn_NULL - NULL conn is invalid
+ * next_completion__conn_NULL - NULL conn is invalid
  */
 static void
-test_next_completion__conn_NULL(void **unused)
+next_completion__conn_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_completion cmpl = {0};
@@ -49,10 +49,10 @@ test_next_completion__conn_NULL(void **unused)
 }
 
 /*
- * test_next_completion__cmpl_NULL - NULL cmpl is invalid
+ * next_completion__cmpl_NULL - NULL cmpl is invalid
  */
 static void
-test_next_completion__cmpl_NULL(void **cstate_ptr)
+next_completion__cmpl_NULL(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -64,10 +64,10 @@ test_next_completion__cmpl_NULL(void **cstate_ptr)
 }
 
 /*
- * test_next_completion__poll_cq_fail_EAGAIN - ibv_poll_cq() fails with EAGAIN
+ * next_completion__poll_cq_fail_EAGAIN - ibv_poll_cq() fails with EAGAIN
  */
 static void
-test_next_completion__poll_cq_fail_EAGAIN(void **cstate_ptr)
+next_completion__poll_cq_fail_EAGAIN(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -85,10 +85,10 @@ test_next_completion__poll_cq_fail_EAGAIN(void **cstate_ptr)
 }
 
 /*
- * test_next_completion__poll_cq_0 - ibv_poll_cq() returns 0 (no data)
+ * next_completion__poll_cq_0 - ibv_poll_cq() returns 0 (no data)
  */
 static void
-test_next_completion__poll_cq_0(void **cstate_ptr)
+next_completion__poll_cq_0(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -105,11 +105,11 @@ test_next_completion__poll_cq_0(void **cstate_ptr)
 }
 
 /*
- * test_next_completion__poll_cq_2 - ibv_poll_cq() returns 2 which is
+ * next_completion__poll_cq_2 - ibv_poll_cq() returns 2 which is
  * an abnormal situation
  */
 static void
-test_next_completion__poll_cq_2(void **cstate_ptr)
+next_completion__poll_cq_2(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -126,11 +126,11 @@ test_next_completion__poll_cq_2(void **cstate_ptr)
 }
 
 /*
- * test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW - ibv_poll_cq() returns
+ * next_completion__poll_cq_opcode_IBV_WC_BIND_MW - ibv_poll_cq() returns
  * IBV_WC_BIND_MW (an unexptected opcode)
  */
 static void
-test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)
+next_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 	struct ibv_wc wc = {0};
@@ -150,11 +150,11 @@ test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)
 }
 
 /*
- * test_next_completion__success - handling ibv_poll_cq() successfully
+ * next_completion__success - handling ibv_poll_cq() successfully
  * with all possible values of opcode
  */
 static void
-test_next_completion__success(void **cstate_ptr)
+next_completion__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -200,22 +200,22 @@ group_setup_next_completion(void **unused)
 
 const struct CMUnitTest tests_next_completion[] = {
 	/* rpma_conn_next_completion() unit tests */
-	cmocka_unit_test(test_next_completion__conn_NULL),
+	cmocka_unit_test(next_completion__conn_NULL),
 	cmocka_unit_test_setup_teardown(
-		test_next_completion__cmpl_NULL,
-		conn_setup, conn_teardown),
+		next_completion__cmpl_NULL,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		test_next_completion__poll_cq_fail_EAGAIN,
-		conn_setup, conn_teardown),
-	cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_0,
-		conn_setup, conn_teardown),
-	cmocka_unit_test_setup_teardown(test_next_completion__poll_cq_2,
-		conn_setup, conn_teardown),
+		next_completion__poll_cq_fail_EAGAIN,
+		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test_setup_teardown(next_completion__poll_cq_0,
+		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test_setup_teardown(next_completion__poll_cq_2,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		test_next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
-		conn_setup, conn_teardown),
+		next_completion__poll_cq_opcode_IBV_WC_BIND_MW,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		test_next_completion__success,
-		conn_setup, conn_teardown),
+		next_completion__success,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
