@@ -7,7 +7,7 @@
  * conn-test.c -- the conn unit tests hub
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 
 extern const struct CMUnitTest tests_disconnect[];
 extern const struct CMUnitTest tests_flush[];

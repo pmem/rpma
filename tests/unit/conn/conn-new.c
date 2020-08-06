@@ -11,15 +11,15 @@
  * - rpma_conn_delete()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 #include "mocks-ibverbs.h"
 #include "test-common.h"
 
 /*
- * new_test_peer_NULL - NULL peer is invalid
+ * new__peer_NULL - NULL peer is invalid
  */
 static void
-new_test_peer_NULL(void **unused)
+new__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -31,10 +31,10 @@ new_test_peer_NULL(void **unused)
 }
 
 /*
- * new_test_id_NULL - NULL id is invalid
+ * new__id_NULL - NULL id is invalid
  */
 static void
-new_test_id_NULL(void **unused)
+new__id_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -46,10 +46,10 @@ new_test_id_NULL(void **unused)
 }
 
 /*
- * new_test_cq_NULL - NULL cq is invalid
+ * new__cq_NULL - NULL cq is invalid
  */
 static void
-new_test_cq_NULL(void **unused)
+new__cq_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -61,10 +61,10 @@ new_test_cq_NULL(void **unused)
 }
 
 /*
- * new_test_conn_ptr_NULL - NULL conn_ptr is invalid
+ * new__conn_ptr_NULL - NULL conn_ptr is invalid
  */
 static void
-new_test_conn_ptr_NULL(void **unused)
+new__conn_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_IBV_CQ, NULL);
@@ -74,11 +74,11 @@ new_test_conn_ptr_NULL(void **unused)
 }
 
 /*
- * new_test_peer_id_cq_conn_ptr_NULL - NULL peer, id, cq and conn_ptr are
+ * new__peer_id_cq_conn_ptr_NULL - NULL peer, id, cq and conn_ptr are
  * invalid
  */
 static void
-new_test_peer_id_cq_conn_ptr_NULL(void **unused)
+new__peer_id_cq_conn_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_conn_new(NULL, NULL, NULL, NULL);
@@ -88,10 +88,10 @@ new_test_peer_id_cq_conn_ptr_NULL(void **unused)
 }
 
 /*
- * new_test_create_evch_EAGAIN - rdma_create_event_channel() fails with EAGAIN
+ * new__create_evch_EAGAIN - rdma_create_event_channel() fails with EAGAIN
  */
 static void
-new_test_create_evch_EAGAIN(void **unused)
+new__create_evch_EAGAIN(void **unused)
 {
 	/* configure mock */
 	will_return(rdma_create_event_channel, NULL);
@@ -110,10 +110,10 @@ new_test_create_evch_EAGAIN(void **unused)
 }
 
 /*
- * new_test_migrate_id_EAGAIN - rdma_migrate_id() fails with EAGAIN
+ * new__migrate_id_EAGAIN - rdma_migrate_id() fails with EAGAIN
  */
 static void
-new_test_migrate_id_EAGAIN(void **unused)
+new__migrate_id_EAGAIN(void **unused)
 {
 	/* configure mock */
 	will_return(rdma_create_event_channel, MOCK_EVCH);
@@ -133,10 +133,10 @@ new_test_migrate_id_EAGAIN(void **unused)
 }
 
 /*
- * new_test_flush_ENOMEM - rpma_flush_new() fails with ENOMEM
+ * new__flush_ENOMEM - rpma_flush_new() fails with ENOMEM
  */
 static void
-new_test_flush_ENOMEM(void **unused)
+new__flush_ENOMEM(void **unused)
 {
 	/* configure mock */
 	will_return(rpma_flush_new, RPMA_E_NOMEM);
@@ -154,10 +154,10 @@ new_test_flush_ENOMEM(void **unused)
 }
 
 /*
- * new_test_malloc_ENOMEM - malloc() fails with ENOMEM
+ * new__malloc_ENOMEM - malloc() fails with ENOMEM
  */
 static void
-new_test_malloc_ENOMEM(void **unused)
+new__malloc_ENOMEM(void **unused)
 {
 	/* configure mock */
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -182,8 +182,10 @@ new_test_malloc_ENOMEM(void **unused)
 static void
 conn_test_lifecycle(void **cstate_ptr)
 {
-	/* main things are done by conn_setup() and conn_teardown() */
-
+	/*
+	 * Main things are done by setup__conn_new()
+	 * and teardown__conn_delete().
+	 */
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* get private data */
@@ -197,10 +199,10 @@ conn_test_lifecycle(void **cstate_ptr)
 }
 
 /*
- * delete_test_conn_ptr_NULL - conn_ptr NULL is invalid
+ * delete__conn_ptr_NULL - conn_ptr NULL is invalid
  */
 static void
-delete_test_conn_ptr_NULL(void **unused)
+delete__conn_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_conn_delete(NULL);
@@ -210,10 +212,10 @@ delete_test_conn_ptr_NULL(void **unused)
 }
 
 /*
- * delete_test_conn_NULL - *conn_ptr NULL should cause quick exit
+ * delete__conn_NULL - *conn_ptr NULL should cause quick exit
  */
 static void
-delete_test_conn_NULL(void **unused)
+delete__conn_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -224,11 +226,11 @@ delete_test_conn_NULL(void **unused)
 }
 
 /*
- * delete_test_flush_delete_E_PROVIDER - rpma_flush_delete()
+ * delete__flush_delete_E_PROVIDER - rpma_flush_delete()
  * fails with RPMA_E_PROVIDER
  */
 static void
-delete_test_flush_delete_E_PROVIDER(void **unused)
+delete__flush_delete_E_PROVIDER(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -236,7 +238,7 @@ delete_test_flush_delete_E_PROVIDER(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -258,10 +260,10 @@ delete_test_flush_delete_E_PROVIDER(void **unused)
 }
 
 /*
- * delete_test_destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
+ * delete__destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
  */
 static void
-delete_test_destroy_cq_EAGAIN(void **unused)
+delete__destroy_cq_EAGAIN(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -269,7 +271,7 @@ delete_test_destroy_cq_EAGAIN(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -291,12 +293,12 @@ delete_test_destroy_cq_EAGAIN(void **unused)
 }
 
 /*
- * delete_test_destroy_cq_EAGAIN_subsequent_EIO -- rdma_destroy_id() and
+ * delete__destroy_cq_EAGAIN_subsequent_EIO -- rdma_destroy_id() and
  * ibv_destroy_comp_channel() fail with EIO when exiting after
  * ibv_destroy_cq() fail (EAGAIN)
  */
 static void
-delete_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
+delete__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -304,7 +306,7 @@ delete_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -331,11 +333,11 @@ delete_test_destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * delete_test_destroy_comp_channel_EAGAIN -- ibv_destroy_comp_channel() fails
+ * delete__destroy_comp_channel_EAGAIN -- ibv_destroy_comp_channel() fails
  * with EAGAIN
  */
 static void
-delete_test_destroy_comp_channel_EAGAIN(void **unused)
+delete__destroy_comp_channel_EAGAIN(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -343,7 +345,7 @@ delete_test_destroy_comp_channel_EAGAIN(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -365,11 +367,11 @@ delete_test_destroy_comp_channel_EAGAIN(void **unused)
 }
 
 /*
- * delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO --
+ * delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO --
  * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail wit EIO
  */
 static void
-delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
+delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -377,7 +379,7 @@ delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -399,10 +401,10 @@ delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
 }
 
 /*
- * delete_test_destroy_id_EAGAIN -- ibv_destroy_cq() fails with EAGAIN
+ * delete__destroy_id_EAGAIN -- ibv_destroy_cq() fails with EAGAIN
  */
 static void
-delete_test_destroy_id_EAGAIN(void **unused)
+delete__destroy_id_EAGAIN(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -410,7 +412,7 @@ delete_test_destroy_id_EAGAIN(void **unused)
 	 * will deallocate the rpma_conn object.
 	 */
 	struct conn_test_state *cstate;
-	int ret = conn_setup((void **)&cstate);
+	int ret = setup__conn_new((void **)&cstate);
 	assert_int_equal(ret, 0);
 	assert_non_null(cstate->conn);
 
@@ -433,29 +435,29 @@ delete_test_destroy_id_EAGAIN(void **unused)
 
 const struct CMUnitTest tests_new[] = {
 	/* rpma_conn_new() unit tests */
-	cmocka_unit_test(new_test_peer_NULL),
-	cmocka_unit_test(new_test_id_NULL),
-	cmocka_unit_test(new_test_cq_NULL),
-	cmocka_unit_test(new_test_conn_ptr_NULL),
-	cmocka_unit_test(new_test_peer_id_cq_conn_ptr_NULL),
-	cmocka_unit_test(new_test_create_evch_EAGAIN),
-	cmocka_unit_test(new_test_migrate_id_EAGAIN),
-	cmocka_unit_test(new_test_flush_ENOMEM),
-	cmocka_unit_test(new_test_malloc_ENOMEM),
+	cmocka_unit_test(new__peer_NULL),
+	cmocka_unit_test(new__id_NULL),
+	cmocka_unit_test(new__cq_NULL),
+	cmocka_unit_test(new__conn_ptr_NULL),
+	cmocka_unit_test(new__peer_id_cq_conn_ptr_NULL),
+	cmocka_unit_test(new__create_evch_EAGAIN),
+	cmocka_unit_test(new__migrate_id_EAGAIN),
+	cmocka_unit_test(new__flush_ENOMEM),
+	cmocka_unit_test(new__malloc_ENOMEM),
 
 	/* rpma_conn_new()/_delete() lifecycle */
 	cmocka_unit_test_setup_teardown(conn_test_lifecycle,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 
 	/* rpma_conn_delete() unit tests */
-	cmocka_unit_test(delete_test_conn_ptr_NULL),
-	cmocka_unit_test(delete_test_conn_NULL),
-	cmocka_unit_test(delete_test_flush_delete_E_PROVIDER),
-	cmocka_unit_test(delete_test_destroy_cq_EAGAIN),
-	cmocka_unit_test(delete_test_destroy_cq_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(delete_test_destroy_comp_channel_EAGAIN),
+	cmocka_unit_test(delete__conn_ptr_NULL),
+	cmocka_unit_test(delete__conn_NULL),
+	cmocka_unit_test(delete__flush_delete_E_PROVIDER),
+	cmocka_unit_test(delete__destroy_cq_EAGAIN),
+	cmocka_unit_test(delete__destroy_cq_EAGAIN_subsequent_EIO),
+	cmocka_unit_test(delete__destroy_comp_channel_EAGAIN),
 	cmocka_unit_test(
-		delete_test_destroy_comp_channel_EAGAIN_subseqeunt_EIO),
-	cmocka_unit_test(delete_test_destroy_id_EAGAIN),
+		delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO),
+	cmocka_unit_test(delete__destroy_id_EAGAIN),
 	cmocka_unit_test(NULL)
 };
