@@ -4,7 +4,7 @@
  */
 
 /*
- * mocks-rmda_cm.c -- librdmacm mocks
+ * mocks-rdma_cm.c -- librdmacm mocks
  */
 
 #include <rdma/rdma_cma.h>
@@ -16,6 +16,35 @@
 
 /* mock control entity */
 int Mock_ctrl_defer_destruction = MOCK_CTRL_NO_DEFER;
+
+/*
+ * rdma_create_qp -- rdma_create_qp() mock
+ */
+int
+rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
+		struct ibv_qp_init_attr *qp_init_attr)
+{
+	check_expected_ptr(id);
+	check_expected_ptr(pd);
+	assert_non_null(qp_init_attr);
+	check_expected(qp_init_attr->qp_context);
+	check_expected(qp_init_attr->send_cq);
+	check_expected(qp_init_attr->recv_cq);
+	assert_null(qp_init_attr->srq);
+	check_expected(qp_init_attr->cap.max_send_wr);
+	check_expected(qp_init_attr->cap.max_recv_wr);
+	check_expected(qp_init_attr->cap.max_send_sge);
+	check_expected(qp_init_attr->cap.max_recv_sge);
+	check_expected(qp_init_attr->cap.max_inline_data);
+	assert_int_equal(qp_init_attr->qp_type, IBV_QPT_RC);
+	assert_int_equal(qp_init_attr->sq_sig_all, 0);
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
+}
 
 /*
  * rdma_destroy_qp -- rdma_destroy_qp() mock
