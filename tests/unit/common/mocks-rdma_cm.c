@@ -10,9 +10,19 @@
 #include <rdma/rdma_cma.h>
 #include <librpma.h>
 
-#include "conn_req.h"
 #include "cmocka_headers.h"
+#include "conn_req.h"
+#include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
+
+struct rdma_event_channel Evch; /* mock event channel */
+struct rdma_cm_id Cm_id;	/* mock CM ID */
+
+/*
+ * Rdma_migrate_id_counter -- counter of calls to rdma_migrate_id() which allows
+ * controlling its mock behaviour from call-to-call.
+ */
+int Rdma_migrate_id_counter = 0;
 
 /* mock control entity */
 int Mock_ctrl_defer_destruction = MOCK_CTRL_NO_DEFER;
@@ -173,5 +183,80 @@ rdma_disconnect(struct rdma_cm_id *id)
 	if (errno)
 		return -1;
 
+	return 0;
+}
+
+/*
+ * rdma_create_event_channel -- rdma_create_event_channel() mock
+ */
+struct rdma_event_channel *
+rdma_create_event_channel(void)
+{
+	struct rdma_event_channel *evch =
+		mock_type(struct rdma_event_channel *);
+	if (!evch) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return evch;
+}
+
+/*
+ * rdma_destroy_event_channel -- rdma_destroy_event_channel() mock
+ */
+void
+rdma_destroy_event_channel(struct rdma_event_channel *channel)
+{
+	assert_ptr_equal(channel, MOCK_EVCH);
+}
+
+/*
+ * rdma_migrate_id -- rdma_migrate_id() mock
+ */
+int
+rdma_migrate_id(struct rdma_cm_id *id, struct rdma_event_channel *channel)
+{
+	assert_ptr_equal(id, MOCK_CM_ID);
+
+	/*
+	 * This mock assumes the first call to rdma_migrate_id() always migrate
+	 * a CM ID to an event channel. Whereas the second call migrate
+	 * the CM ID from the event channel (channel == NULL).
+	 */
+	if (Rdma_migrate_id_counter == RDMA_MIGRATE_TO_EVCH)
+		assert_ptr_equal(channel, MOCK_EVCH);
+	else if (Rdma_migrate_id_counter == RDMA_MIGRATE_FROM_EVCH)
+		assert_ptr_equal(channel, NULL);
+	else
+		assert_true(0);
+
+	++Rdma_migrate_id_counter;
+	id->qp = MOCK_QP;
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+
+	return 0;
+}
+
+/*
+ * rdma_get_cm_event -- rdma_get_cm_event() mock
+ */
+int
+rdma_get_cm_event(struct rdma_event_channel *channel,
+		struct rdma_cm_event **event_ptr)
+{
+	check_expected_ptr(channel);
+	assert_non_null(event_ptr);
+
+	struct rdma_cm_event *event = mock_type(struct rdma_cm_event *);
+	if (!event) {
+		errno = mock_type(int);
+		return -1;
+	}
+
+	*event_ptr = event;
 	return 0;
 }

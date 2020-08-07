@@ -10,13 +10,14 @@
  * - rpma_conn_next_event()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
+#include "mocks-rdma_cm.h"
 
 /*
- * next_event_test_conn_NULL - NULL conn is invalid
+ * next_event__conn_NULL - NULL conn is invalid
  */
 static void
-next_event_test_conn_NULL(void **unused)
+next_event__conn_NULL(void **unused)
 {
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -28,10 +29,10 @@ next_event_test_conn_NULL(void **unused)
 }
 
 /*
- * next_event_test_event_NULL - NULL event is invalid
+ * next_event__event_NULL - NULL event is invalid
  */
 static void
-next_event_test_event_NULL(void **cstate_ptr)
+next_event__event_NULL(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -43,10 +44,10 @@ next_event_test_event_NULL(void **cstate_ptr)
 }
 
 /*
- * next_event_test_conn_NULL_event_NULL - NULL conn and NULL event are invalid
+ * next_event__conn_NULL_event_NULL - NULL conn and NULL event are invalid
  */
 static void
-next_event_test_conn_NULL_event_NULL(void **unused)
+next_event__conn_NULL_event_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_conn_next_event(NULL, NULL);
@@ -56,11 +57,11 @@ next_event_test_conn_NULL_event_NULL(void **unused)
 }
 
 /*
- * next_event_test_get_cm_event_EAGAIN -
+ * next_event__get_cm_event_EAGAIN -
  * rdma_get_cm_event() fails with EAGAIN
  */
 static void
-next_event_test_get_cm_event_EAGAIN(void **cstate_ptr)
+next_event__get_cm_event_EAGAIN(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -79,11 +80,11 @@ next_event_test_get_cm_event_EAGAIN(void **cstate_ptr)
 }
 
 /*
- * next_event_test_get_cm_event_ENODATA -
+ * next_event__get_cm_event_ENODATA -
  * rdma_get_cm_event() fails with ENODATA
  */
 static void
-next_event_test_get_cm_event_ENODATA(void **cstate_ptr)
+next_event__get_cm_event_ENODATA(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -101,11 +102,11 @@ next_event_test_get_cm_event_ENODATA(void **cstate_ptr)
 }
 
 /*
- * next_event_test_event_REJECTED -
+ * next_event__event_REJECTED -
  * RDMA_CM_EVENT_REJECTED is unexpected
  */
 static void
-next_event_test_event_REJECTED(void **cstate_ptr)
+next_event__event_REJECTED(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -127,12 +128,12 @@ next_event_test_event_REJECTED(void **cstate_ptr)
 }
 
 /*
- * next_event_test_event_REJECTED_ack_EINVAL -
+ * next_event__event_REJECTED_ack_EINVAL -
  * rdma_ack_cm_event() fails with EINVAL after obtaining
  * an RDMA_CM_EVENT_REJECTED event
  */
 static void
-next_event_test_event_REJECTED_ack_EINVAL(void **cstate_ptr)
+next_event__event_REJECTED_ack_EINVAL(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -158,11 +159,11 @@ next_event_test_event_REJECTED_ack_EINVAL(void **cstate_ptr)
 }
 
 /*
- * next_event_test_data_store_ENOMEM - rpma_private_data_store fails
+ * next_event__data_store_ENOMEM - rpma_private_data_store fails
  * with RPMA_E_NOMEM
  */
 static void
-next_event_test_data_store_ENOMEM(void **cstate_ptr)
+next_event__data_store_ENOMEM(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -184,11 +185,11 @@ next_event_test_data_store_ENOMEM(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_no_data_ESTABLISHED_no_data - happy day scenario,
+ * next_event__success_no_data_ESTABLISHED_no_data - happy day scenario,
  * no private data in the connection and no private data in the event
  */
 static void
-next_event_test_success_no_data_ESTABLISHED_no_data(void **cstate_ptr)
+next_event__success_no_data_ESTABLISHED_no_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -229,11 +230,11 @@ next_event_test_success_no_data_ESTABLISHED_no_data(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_no_data_ESTABLISHED_with_data - happy day scenario
+ * next_event__success_no_data_ESTABLISHED_with_data - happy day scenario
  * no private data in the connection and with private data in the event
  */
 static void
-next_event_test_success_no_data_ESTABLISHED_with_data(void **cstate_ptr)
+next_event__success_no_data_ESTABLISHED_with_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -274,11 +275,11 @@ next_event_test_success_no_data_ESTABLISHED_with_data(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_with_data_ESTABLISHED_no_data - happy day scenario,
+ * next_event__success_with_data_ESTABLISHED_no_data - happy day scenario,
  * with private data in the connection and with no private data in the event
  */
 static void
-next_event_test_success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
+next_event__success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -340,12 +341,12 @@ next_event_test_success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_with_data_ESTABLISHED_with_data - happy day scenario,
+ * next_event__success_with_data_ESTABLISHED_with_data - happy day scenario,
  * with private data in the connection and with another private data
  * in the event
  */
 static void
-next_event_test_success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
+next_event__success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -408,10 +409,10 @@ next_event_test_success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_CONNECT_ERROR - happy day scenario
+ * next_event__success_CONNECT_ERROR - happy day scenario
  */
 static void
-next_event_test_success_CONNECT_ERROR(void **cstate_ptr)
+next_event__success_CONNECT_ERROR(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -433,10 +434,10 @@ next_event_test_success_CONNECT_ERROR(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_DEVICE_REMOVAL - happy day scenario
+ * next_event__success_DEVICE_REMOVAL - happy day scenario
  */
 static void
-next_event_test_success_DEVICE_REMOVAL(void **cstate_ptr)
+next_event__success_DEVICE_REMOVAL(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -458,10 +459,10 @@ next_event_test_success_DEVICE_REMOVAL(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_DISCONNECTED - happy day scenario
+ * next_event__success_DISCONNECTED - happy day scenario
  */
 static void
-next_event_test_success_DISCONNECTED(void **cstate_ptr)
+next_event__success_DISCONNECTED(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -483,10 +484,10 @@ next_event_test_success_DISCONNECTED(void **cstate_ptr)
 }
 
 /*
- * next_event_test_success_TIMEWAIT_EXIT - happy day scenario
+ * next_event__success_TIMEWAIT_EXIT - happy day scenario
  */
 static void
-next_event_test_success_TIMEWAIT_EXIT(void **cstate_ptr)
+next_event__success_TIMEWAIT_EXIT(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -509,49 +510,55 @@ next_event_test_success_TIMEWAIT_EXIT(void **cstate_ptr)
 
 const struct CMUnitTest tests_next_event[] = {
 	/* rpma_conn_next_event() unit tests */
-	cmocka_unit_test(next_event_test_conn_NULL),
+	cmocka_unit_test(next_event__conn_NULL),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_event_NULL,
-		conn_setup, conn_teardown),
-	cmocka_unit_test(next_event_test_conn_NULL_event_NULL),
+		next_event__event_NULL,
+		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test(next_event__conn_NULL_event_NULL),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_get_cm_event_EAGAIN,
-		conn_setup, conn_teardown),
+		next_event__get_cm_event_EAGAIN,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_get_cm_event_ENODATA,
-		conn_setup, conn_teardown),
+		next_event__get_cm_event_ENODATA,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_event_REJECTED,
-		conn_setup, conn_teardown),
+		next_event__event_REJECTED,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_event_REJECTED_ack_EINVAL,
-		conn_setup, conn_teardown),
+		next_event__event_REJECTED_ack_EINVAL,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_data_store_ENOMEM,
-		conn_setup, conn_teardown),
+		next_event__data_store_ENOMEM,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_no_data_ESTABLISHED_no_data,
-		conn_setup, conn_teardown),
+		next_event__success_no_data_ESTABLISHED_no_data,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_no_data_ESTABLISHED_with_data,
-		conn_setup, conn_teardown),
+		next_event__success_no_data_ESTABLISHED_with_data,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_with_data_ESTABLISHED_no_data,
-		conn_setup, conn_teardown),
+		next_event__success_with_data_ESTABLISHED_no_data,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_with_data_ESTABLISHED_with_data,
-		conn_setup, conn_teardown),
+		next_event__success_with_data_ESTABLISHED_with_data,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_CONNECT_ERROR,
-		conn_setup, conn_teardown),
+		next_event__success_CONNECT_ERROR,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_DEVICE_REMOVAL,
-		conn_setup, conn_teardown),
+		next_event__success_DEVICE_REMOVAL,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_DISCONNECTED,
-		conn_setup, conn_teardown),
+		next_event__success_DISCONNECTED,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event_test_success_TIMEWAIT_EXIT,
-		conn_setup, conn_teardown),
+		next_event__success_TIMEWAIT_EXIT,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_next_event, NULL, NULL);
+}
