@@ -15,14 +15,15 @@
 #include "librpma.h"
 #include "rpma_err.h"
 
-#include "mr-test-common.h"
+#include "mr-common.h"
 #include "mocks-ibverbs.h"
+#include "test-common.h"
 
 /*
- * test_read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
+ * read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
  */
 static void
-test_read__failed_E_PROVIDER(void **mrs_ptr)
+read__failed_E_PROVIDER(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
@@ -47,10 +48,10 @@ test_read__failed_E_PROVIDER(void **mrs_ptr)
 }
 
 /*
- * test_read__success - happy day scenario
+ * read__success - happy day scenario
  */
 static void
-test_read__success(void **mrs_ptr)
+read__success(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
@@ -76,7 +77,7 @@ test_read__success(void **mrs_ptr)
 /*
  * group_setup_mr_read -- prepare resources for all tests in the group
  */
-int
+static int
 group_setup_mr_read(void **unused)
 {
 	/* configure global mocks */
@@ -99,11 +100,17 @@ group_setup_mr_read(void **unused)
 
 const struct CMUnitTest tests_mr_read[] = {
 	/* rpma_mr_read() unit tests */
-	cmocka_unit_test_setup_teardown(test_read__failed_E_PROVIDER,
+	cmocka_unit_test_setup_teardown(read__failed_E_PROVIDER,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
-	cmocka_unit_test_setup_teardown(test_read__success,
+	cmocka_unit_test_setup_teardown(read__success,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_mr_read, group_setup_mr_read, NULL);
+}
