@@ -8,8 +8,9 @@
  * - rpma_write_atomic()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 #include "mocks-ibverbs.h"
+#include "mocks-rdma_cm.h"
 
 /*
  * write_atomic__conn_NULL -- NULL conn is invalid
@@ -153,6 +154,13 @@ const struct CMUnitTest tests_write_atomic[] = {
 	cmocka_unit_test(
 		write_atomic__conn_dst_src_NULL_flags_0_dst_offset_unaligned),
 	cmocka_unit_test_setup_teardown(write_atomic__success,
-		conn_setup, conn_teardown),
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_write_atomic,
+			group_setup_write_atomic, NULL);
+}

@@ -10,14 +10,15 @@
  * - rpma_read()
  */
 
-#include "conn-test-common.h"
+#include "conn-common.h"
 #include "mocks-ibverbs.h"
+#include "mocks-rdma_cm.h"
 
 /*
- * test_read__conn_NULL - NULL conn is invalid
+ * read__conn_NULL - NULL conn is invalid
  */
 static void
-test_read__conn_NULL(void **unused)
+read__conn_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(NULL, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
@@ -29,10 +30,10 @@ test_read__conn_NULL(void **unused)
 }
 
 /*
- * test_read__dst_NULL - NULL dst is invalid
+ * read__dst_NULL - NULL dst is invalid
  */
 static void
-test_read__dst_NULL(void **unused)
+read__dst_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
@@ -44,10 +45,10 @@ test_read__dst_NULL(void **unused)
 }
 
 /*
- * test_read__src_NULL - NULL src is invalid
+ * read__src_NULL - NULL src is invalid
  */
 static void
-test_read__src_NULL(void **unused)
+read__src_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
@@ -59,10 +60,10 @@ test_read__src_NULL(void **unused)
 }
 
 /*
- * test_read__flags_0 - flags == 0 is invalid
+ * read__flags_0 - flags == 0 is invalid
  */
 static void
-test_read__flags_0(void **unused)
+read__flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
@@ -74,11 +75,11 @@ test_read__flags_0(void **unused)
 }
 
 /*
- * test_read__conn_dst_src_NULL_flags_0 - NULL conn, dst, src
+ * read__conn_dst_src_NULL_flags_0 - NULL conn, dst, src
  * and flags == 0 are invalid
  */
 static void
-test_read__conn_dst_src_NULL_flags_0(void **unused)
+read__conn_dst_src_NULL_flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(NULL, NULL, MOCK_LOCAL_OFFSET,
@@ -90,10 +91,10 @@ test_read__conn_dst_src_NULL_flags_0(void **unused)
 }
 
 /*
- * test_read__success - happy day scenario
+ * read__success - happy day scenario
  */
 static void
-test_read__success(void **cstate_ptr)
+read__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -120,7 +121,7 @@ test_read__success(void **cstate_ptr)
 /*
  * group_setup_read -- prepare resources for all tests in the group
  */
-int
+static int
 group_setup_read(void **unused)
 {
 	/* set value of QP in mock of CM ID */
@@ -131,12 +132,18 @@ group_setup_read(void **unused)
 
 const struct CMUnitTest tests_read[] = {
 	/* rpma_read() unit tests */
-	cmocka_unit_test(test_read__conn_NULL),
-	cmocka_unit_test(test_read__dst_NULL),
-	cmocka_unit_test(test_read__src_NULL),
-	cmocka_unit_test(test_read__flags_0),
-	cmocka_unit_test(test_read__conn_dst_src_NULL_flags_0),
-	cmocka_unit_test_setup_teardown(test_read__success,
-		conn_setup, conn_teardown),
+	cmocka_unit_test(read__conn_NULL),
+	cmocka_unit_test(read__dst_NULL),
+	cmocka_unit_test(read__src_NULL),
+	cmocka_unit_test(read__flags_0),
+	cmocka_unit_test(read__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test_setup_teardown(read__success,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_read, group_setup_read, NULL);
+}
