@@ -4,7 +4,7 @@
  */
 
 /*
- * mr-test-write.c -- rpma_mr_write() unit tests
+ * mr-test-read.c -- rpma_mr_read() unit tests
  */
 
 #include <infiniband/verbs.h>
@@ -15,29 +15,30 @@
 #include "librpma.h"
 #include "rpma_err.h"
 
+#include "mr-common.h"
 #include "mocks-ibverbs.h"
-#include "mr-test-common.h"
+#include "test-common.h"
 
 /*
- * test_write__failed_E_PROVIDER - rpma_mr_write failed with RPMA_E_PROVIDER
+ * read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
  */
 static void
-test_write__failed_E_PROVIDER(void **mrs_ptr)
+read__failed_E_PROVIDER(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
 	struct ibv_post_send_mock_args args;
 	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
+	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = 0; /* for RPMA_F_COMPLETION_ON_ERROR */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
 	/* run test */
-	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
+				mrs->remote, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
 				MOCK_OP_CONTEXT);
 
@@ -47,25 +48,25 @@ test_write__failed_E_PROVIDER(void **mrs_ptr)
 }
 
 /*
- * test_write__success - happy day scenario
+ * read__success - happy day scenario
  */
 static void
-test_write__success(void **mrs_ptr)
+read__success(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
 	struct ibv_post_send_mock_args args;
 	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
+	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 	args.ret = MOCK_OK;
 	will_return(ibv_post_send_mock, &args);
 
 	/* run test */
-	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
+				mrs->remote, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
 				MOCK_OP_CONTEXT);
 
@@ -74,10 +75,10 @@ test_write__success(void **mrs_ptr)
 }
 
 /*
- * group_setup_mr_write -- prepare resources for all tests in the group
+ * group_setup_mr_read -- prepare resources for all tests in the group
  */
-int
-group_setup_mr_write(void **unused)
+static int
+group_setup_mr_read(void)
 {
 	/* configure global mocks */
 
@@ -97,13 +98,22 @@ group_setup_mr_write(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_mr_write[] = {
-	/* rpma_mr_write() unit tests */
-	cmocka_unit_test_setup_teardown(test_write__failed_E_PROVIDER,
+const struct CMUnitTest tests_mr_read[] = {
+	/* rpma_mr_read() unit tests */
+	cmocka_unit_test_setup_teardown(read__failed_E_PROVIDER,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
-	cmocka_unit_test_setup_teardown(test_write__success,
+	cmocka_unit_test_setup_teardown(read__success,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_mr_read();
+
+	return cmocka_run_group_tests(tests_mr_read, NULL, NULL);
+}
