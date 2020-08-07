@@ -16,13 +16,14 @@
 #include "rpma_err.h"
 
 #include "mocks-ibverbs.h"
-#include "mr-test-common.h"
+#include "mr-common.h"
+#include "test-common.h"
 
 /*
- * test_write__failed_E_PROVIDER - rpma_mr_write failed with RPMA_E_PROVIDER
+ * write__failed_E_PROVIDER - rpma_mr_write failed with RPMA_E_PROVIDER
  */
 static void
-test_write__failed_E_PROVIDER(void **mrs_ptr)
+write__failed_E_PROVIDER(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
@@ -47,10 +48,10 @@ test_write__failed_E_PROVIDER(void **mrs_ptr)
 }
 
 /*
- * test_write__success - happy day scenario
+ * write__success - happy day scenario
  */
 static void
-test_write__success(void **mrs_ptr)
+write__success(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
@@ -76,8 +77,8 @@ test_write__success(void **mrs_ptr)
 /*
  * group_setup_mr_write -- prepare resources for all tests in the group
  */
-int
-group_setup_mr_write(void **unused)
+static int
+group_setup_mr_write(void)
 {
 	/* configure global mocks */
 
@@ -99,11 +100,20 @@ group_setup_mr_write(void **unused)
 
 const struct CMUnitTest tests_mr_write[] = {
 	/* rpma_mr_write() unit tests */
-	cmocka_unit_test_setup_teardown(test_write__failed_E_PROVIDER,
+	cmocka_unit_test_setup_teardown(write__failed_E_PROVIDER,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
-	cmocka_unit_test_setup_teardown(test_write__success,
+	cmocka_unit_test_setup_teardown(write__success,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	/* prepare resources for all tests in the group */
+	group_setup_mr_write();
+
+	return cmocka_run_group_tests(tests_mr_write, NULL, NULL);
+}

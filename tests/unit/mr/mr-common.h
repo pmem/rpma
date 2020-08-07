@@ -4,7 +4,7 @@
  */
 
 /*
- * mr-test-common.h -- the memory region unit tests's common definitions
+ * mr-common.h -- the memory region unit tests's common definitions
  */
 
 #ifndef MR_COMMON_H
@@ -18,10 +18,6 @@
 #include "librpma.h"
 #include "rpma_err.h"
 
-#define MOCK_PEER	(struct rpma_peer *)0x0AD0
-#define MOCK_PTR	(void *)0x0001020304050607
-#define MOCK_SIZE	(size_t)0x08090a0b0c0d0e0f
-#define MOCK_RKEY	(uint32_t)0x10111213
 #define MOCK_USAGE \
 	((int)(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
 	RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST))
@@ -29,8 +25,6 @@
 	((int)(IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE |\
 	IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE))
 #define MOCK_PLT	RPMA_MR_PLT_PERSISTENT
-#define MOCK_ERRNO	(int)(123)
-#define MOCK_OK		(int)0
 
 #define DESC_EXP	{{0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, \
 			0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08, \
@@ -56,14 +50,6 @@ struct prestate {
 	struct rpma_mr_local *mr;
 };
 
-/* structure of arguments used in rpma_peer_mr_reg() */
-struct rpma_peer_mr_reg_args {
-	int usage;
-	int access;
-	struct ibv_mr *mr;
-	int verrno;
-};
-
 extern const rpma_mr_descriptor Desc_exp;
 
 /* setups & teardowns */
@@ -76,8 +62,5 @@ int teardown__mr_local_and_remote(void **mrs_ptr);
 
 int setup__mr_remote(void **mr_ptr);
 int teardown__mr_remote(void **mr_ptr);
-
-int group_setup_mr_read(void **unused);
-int group_setup_mr_write(void **unused);
 
 #endif /* MR_COMMON_H */
