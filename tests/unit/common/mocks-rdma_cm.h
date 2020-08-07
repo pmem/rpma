@@ -29,4 +29,11 @@
  */
 extern int Mock_ctrl_defer_destruction;
 
+struct rdma_addrinfo_args {
+	int validate_params;
+	struct rdma_addrinfo *res;
+};
+
+extern const struct rdma_cm_id Cmid_zero;
+
 #endif /* MOCKS_RDMA_CM_H */
