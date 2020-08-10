@@ -259,20 +259,17 @@ int
 ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 			struct ibv_send_wr **bad_wr)
 {
-	struct ibv_post_send_mock_args *args =
-		mock_type(struct ibv_post_send_mock_args *);
-
 	assert_non_null(qp);
 	assert_non_null(wr);
 	assert_non_null(bad_wr);
 
-	assert_int_equal(qp, args->qp);
-	assert_int_equal(wr->opcode, args->opcode);
-	assert_int_equal(wr->send_flags, args->send_flags);
-	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_ptr_equal(qp, MOCK_QP);
+	check_expected(wr->opcode);
+	check_expected(wr->send_flags);
+	assert_int_equal(wr->wr_id, MOCK_OP_CONTEXT);
 	assert_null(wr->next);
 
-	return args->ret;
+	return mock_type(int);
 }
 
 /*
@@ -281,13 +278,11 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 struct ibv_pd *
 ibv_alloc_pd(struct ibv_context *ibv_ctx)
 {
-	struct ibv_alloc_pd_mock_args *args =
-			mock_type(struct ibv_alloc_pd_mock_args *);
-	if (args->validate_params == MOCK_VALIDATE)
-		check_expected_ptr(ibv_ctx);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 
-	if (args->pd != NULL)
-		return args->pd;
+	struct ibv_pd *pd = mock_type(struct ibv_pd *);
+	if (pd != NULL)
+		return pd;
 
 	/*
 	 * The ibv_alloc_pd(3) manual page does not document that this function
@@ -306,10 +301,7 @@ ibv_alloc_pd(struct ibv_context *ibv_ctx)
 int
 ibv_dealloc_pd(struct ibv_pd *pd)
 {
-	struct ibv_dealloc_pd_mock_args *args =
-			mock_type(struct ibv_dealloc_pd_mock_args *);
-	if (args->validate_params == MOCK_VALIDATE)
-		check_expected_ptr(pd);
+	assert_ptr_equal(pd, MOCK_IBV_PD);
 
-	return args->ret;
+	return mock_type(int);
 }

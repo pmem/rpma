@@ -25,7 +25,6 @@ extern struct rdma_event_channel Evch; /* mock event channel */
 #define MOCK_REMOTE_OFFSET	(size_t)0xC414
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
-#define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_WC_STATUS		(int)0x51A5
 #define MOCK_FD			0x00FD
 #define MOCK_COMPLETION_FD	0x00FE

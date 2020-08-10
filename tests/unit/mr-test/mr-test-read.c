@@ -27,13 +27,10 @@ test_read__failed_E_PROVIDER(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_READ;
-	args.send_flags = 0; /* for RPMA_F_COMPLETION_ON_ERROR */
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.ret = MOCK_ERRNO;
-	will_return(ibv_post_send_mock, &args);
+	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_READ);
+	/* for RPMA_F_COMPLETION_ON_ERROR */
+	expect_value(ibv_post_send_mock, wr->send_flags, 0);
+	will_return(ibv_post_send_mock, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
@@ -55,13 +52,10 @@ test_read__success(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_READ;
-	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.ret = MOCK_OK;
-	will_return(ibv_post_send_mock, &args);
+	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_READ);
+	/* for RPMA_F_COMPLETION_ALWAYS */
+	expect_value(ibv_post_send_mock, wr->send_flags, IBV_SEND_SIGNALED);
+	will_return(ibv_post_send_mock, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,

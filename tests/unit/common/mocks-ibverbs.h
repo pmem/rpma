@@ -30,24 +30,7 @@ extern struct ibv_odp_caps Ibv_odp_incapable_caps;
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
-
-struct ibv_alloc_pd_mock_args {
-	int validate_params;
-	struct ibv_pd *pd;
-};
-
-struct ibv_dealloc_pd_mock_args {
-	int validate_params;
-	int ret;
-};
-
-struct ibv_post_send_mock_args {
-	struct ibv_qp *qp;
-	enum ibv_wr_opcode opcode;
-	unsigned send_flags;
-	uint64_t wr_id;
-	int ret;
-};
+#define MOCK_OP_CONTEXT		(void *)0xC417
 
 int ibv_query_device_ex_mock(struct ibv_context *context,
 		const struct ibv_query_device_ex_input *input,
