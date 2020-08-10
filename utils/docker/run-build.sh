@@ -94,6 +94,12 @@ if [ "$COVERAGE" == "1" ]; then
 	upload_codecov tests
 fi
 
+# Create a PR with generated docs
+if [ "$AUTO_DOC_UPDATE" == "1" ]; then
+	echo "Running auto doc update"
+	../utils/docker/run-doc-update.sh
+fi
+
 # Test standalone compilation of all examples
 EXAMPLES=$(ls -1 $WORKDIR/examples/)
 for e in $EXAMPLES; do
