@@ -17,7 +17,7 @@
 #define MOCK_RAW_SIZE		8 /* memory region size */
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
 #define MOCK_CQ			(&Ibv_cq)
-#define MOCK_VERBS		(&Ibv_context)
+#define MOCK_VERBS		(&Verbs_context.context)
 #define MOCK_EVCH		((struct rdma_event_channel *)0xE4C4)
 #define MOCK_SRC_ADDR		((struct sockaddr *)0x0ADD)
 #define MOCK_DST_ADDR		((struct sockaddr *)0x0ADE)
@@ -32,16 +32,25 @@
 #define MOCK_SIZE		1024
 #define MOCK_OK			0
 
+extern struct verbs_context Verbs_context;
 /* mock IBV completion channel */
 extern struct ibv_comp_channel Ibv_comp_channel;
-extern struct ibv_context Ibv_context;	/* mock IBV context */
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
 
+/* predefined IBV On-demand Paging caps */
+extern struct ibv_odp_caps Ibv_odp_capable_caps;
+extern struct ibv_odp_caps Ibv_odp_incapable_caps;
+
 struct posix_memalign_args {
 	void *ptr;
 };
+
+int ibv_query_device_ex_mock(struct ibv_context *context,
+		const struct ibv_query_device_ex_input *input,
+		struct ibv_device_attr_ex *attr,
+		size_t attr_size);
 
 int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 			struct ibv_send_wr **bad_wr);

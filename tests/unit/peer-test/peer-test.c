@@ -139,6 +139,7 @@ peer_new_test_alloc_pd_fail_ENOMEM(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, ENOMEM);
+	will_return_maybe(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -166,6 +167,7 @@ peer_new_test_alloc_pd_fail_EAGAIN(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, EAGAIN);
+	will_return_maybe(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -193,6 +195,7 @@ peer_new_test_alloc_pd_fail_no_error(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_OK);
+	will_return_maybe(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -211,13 +214,14 @@ static void
 peer_new_test_malloc_fail(void **unused)
 {
 	/* configure mocks */
+	will_return(__wrap__test_malloc, ENOMEM);
 	struct ibv_alloc_pd_mock_args alloc_args =
 		{MOCK_PASSTHROUGH, MOCK_IBV_PD};
 	will_return_maybe(ibv_alloc_pd, &alloc_args);
 	struct ibv_dealloc_pd_mock_args dealloc_args =
 		{MOCK_PASSTHROUGH, MOCK_OK};
 	will_return_maybe(ibv_dealloc_pd, &dealloc_args);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return_maybe(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
@@ -239,6 +243,7 @@ peer_new_test_success(void **unused)
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
+	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
@@ -320,6 +325,7 @@ peer_setup(void **peer_ptr)
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
+	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
@@ -555,6 +561,10 @@ mr_reg_test_success(void **peer_ptr)
 int
 main(int argc, char *argv[])
 {
+	MOCK_VERBS->abi_compat = __VERBS_ABI_IS_EXTENDED;
+	Verbs_context.query_device_ex = ibv_query_device_ex_mock;
+	Verbs_context.sz = sizeof(struct verbs_context);
+
 	const struct CMUnitTest tests[] = {
 		/* rpma_peer_new() unit tests */
 		cmocka_unit_test(peer_new_test_ibv_ctx_eq_NULL),
