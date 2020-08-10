@@ -38,11 +38,16 @@ ENV RPMA_DEPS "\
 	rdma-core-devel"
 #	txt2man is installed from git repo now
 
+# doc update deps
+ENV DOC_UPDATE_DEPS "\
+	hub"
+
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
 	$RPMA_DEPS \
+	$DOC_UPDATE_DEPS \
 && dnf clean all
 
 # Install cmocka
