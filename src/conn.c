@@ -322,7 +322,16 @@ rpma_write_atomic(struct rpma_conn *conn,
 	struct rpma_mr_local *src,  size_t src_offset,
 	int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	if (dst_offset % ALIGNMENT != 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_write(conn->id->qp,
+			dst, dst_offset,
+			src, src_offset,
+			ALIGNMENT, flags, op_context);
 }
 
 /*

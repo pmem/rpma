@@ -19,6 +19,7 @@ build_test_src(UNIT NAME conn-test SRCS
 	conn-test-private-data.c
 	conn-test-read.c
 	conn-test-write.c
+	conn-test-write_atomic.c
 	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c

@@ -1,0 +1,157 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
+
+/*
+ * conn-test-write_atomic.c -- the rpma_write_atomic() unit tests
+ *
+ * APIs covered:
+ * - rpma_write_atomic()
+ */
+
+#include "conn-test-common.h"
+#include "mocks-ibverbs.h"
+
+/*
+ * test_write_atomic__conn_NULL -- NULL conn is invalid
+ */
+static void
+test_write_atomic__conn_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(NULL, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_RPMA_MR_LOCAL,
+			MOCK_LOCAL_OFFSET, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__dst_NULL -- NULL dst is invalid
+ */
+static void
+test_write_atomic__dst_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(MOCK_CONN, NULL, MOCK_REMOTE_OFFSET,
+			MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__src_NULL -- NULL src is invalid
+ */
+static void
+test_write_atomic__src_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(MOCK_CONN, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, NULL, MOCK_LOCAL_OFFSET,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__flags_0 -- flags == 0 is invalid
+ */
+static void
+test_write_atomic__flags_0(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(MOCK_CONN, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_RPMA_MR_LOCAL,
+			MOCK_LOCAL_OFFSET, 0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__conn_dst_src_NULL_flags_0 -- NULL conn, dst, src
+ * and flags == 0 are invalid
+ */
+static void
+test_write_atomic__conn_dst_src_NULL_flags_0(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(NULL, NULL, MOCK_REMOTE_OFFSET,
+			NULL, MOCK_LOCAL_OFFSET,
+			0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__dst_offset_unalignment -- the dst_offset is not aligned
+ */
+static void
+test_write_atomic__dst_offset_unalignment(void **unused)
+{
+	/* run test */
+	int ret = rpma_write_atomic(MOCK_CONN, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_RPMA_MR_LOCAL,
+			MOCK_LOCAL_OFFSET, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * test_write_atomic__success -- happy day scenario
+ */
+static void
+test_write_atomic__success(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/* configure mocks */
+	expect_value(rpma_mr_write, qp, MOCK_QP);
+	expect_value(rpma_mr_write, dst, MOCK_RPMA_MR_REMOTE);
+	expect_value(rpma_mr_write, dst_offset, 0);
+	expect_value(rpma_mr_write, src, MOCK_RPMA_MR_LOCAL);
+	expect_value(rpma_mr_write, src_offset, MOCK_LOCAL_OFFSET);
+	expect_value(rpma_mr_write, len, MOCK_ALIGNMENT);
+	expect_value(rpma_mr_write, flags, MOCK_FLAGS);
+	expect_value(rpma_mr_write, op_context, MOCK_OP_CONTEXT);
+	will_return(rpma_mr_write, MOCK_OK);
+
+	/* run test */
+	int ret = rpma_write_atomic(cstate->conn,
+			MOCK_RPMA_MR_REMOTE, 0,
+			MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+}
+
+/*
+ * group_setup_write_atomic -- prepare resources for all tests in the group
+ */
+int
+group_setup_write_atomic(void **unused)
+{
+	/* set value of QP in mock of CM ID */
+	Cm_id.qp = MOCK_QP;
+
+	return 0;
+}
+
+const struct CMUnitTest tests_write_atomic[] = {
+	/* rpma_read() unit tests */
+	cmocka_unit_test(test_write_atomic__conn_NULL),
+	cmocka_unit_test(test_write_atomic__dst_NULL),
+	cmocka_unit_test(test_write_atomic__src_NULL),
+	cmocka_unit_test(test_write_atomic__flags_0),
+	cmocka_unit_test(test_write_atomic__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test(test_write_atomic__dst_offset_unalignment),
+	cmocka_unit_test_setup_teardown(test_write_atomic__success,
+		conn_setup, conn_teardown),
+	cmocka_unit_test(NULL)
+};

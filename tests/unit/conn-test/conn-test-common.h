@@ -29,6 +29,7 @@ extern struct rdma_event_channel Evch; /* mock event channel */
 #define MOCK_WC_STATUS		(int)0x51A5
 #define MOCK_FD			0x00FD
 #define MOCK_COMPLETION_FD	0x00FE
+#define MOCK_ALIGNMENT		8
 
 extern int Rdma_migrate_id_counter;
 
@@ -52,5 +53,6 @@ int group_setup_next_completion(void **unused);
 int group_setup_prepare_completions(void **unused);
 int group_setup_read(void **unused);
 int group_setup_write(void **unused);
+int group_setup_write_atomic(void **unused);
 
 #endif /* CONN_COMMON */
