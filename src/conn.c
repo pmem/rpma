@@ -314,6 +314,18 @@ rpma_write(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_write_atomic -- initialize the atomic write operation
+ */
+int
+rpma_write_atomic(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
  * rpma_flush -- initialize the flush operation
  */
 int
