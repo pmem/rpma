@@ -10,6 +10,7 @@
 #ifndef CONN_COMMON
 #define CONN_COMMON
 
+#include "librpma.h"
 #include "cmocka_headers.h"
 #include "test-common.h"
 #include "conn.h"
@@ -23,6 +24,8 @@ extern struct rdma_event_channel Evch; /* mock event channel */
 #define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
 #define MOCK_LOCAL_OFFSET	(size_t)0xC413
 #define MOCK_REMOTE_OFFSET	(size_t)0xC414
+#define MOCK_OFFSET_ALIGNED	(size_t)((MOCK_REMOTE_OFFSET / \
+		RPMA_ATOMIC_WRITE_ALIGNMENT) * RPMA_ATOMIC_WRITE_ALIGNMENT)
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
@@ -52,5 +55,6 @@ int group_setup_next_completion(void **unused);
 int group_setup_prepare_completions(void **unused);
 int group_setup_read(void **unused);
 int group_setup_write(void **unused);
+int group_setup_write_atomic(void **unused);
 
 #endif /* CONN_COMMON */
