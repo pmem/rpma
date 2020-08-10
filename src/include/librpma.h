@@ -657,6 +657,37 @@ int rpma_write(struct rpma_conn *conn,
 	struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context);
 
+/** 3
+ * rpma_write_atomic - initialize the atomic write operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_write_atomic(struct rpma_conn *conn,
+ *		struct rpma_mr_remote *dst, size_t dst_offset,
+ *		struct rpma_mr_local *src,  size_t src_offset,
+ *		int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the atomic write operation (transferring data from
+ * the local memory to the remote memory). The atomic write operation allows
+ * transferring 8 bytes of data and storing them atomically in the remote
+ * memory.
+ *
+ * ERRORS
+ * rpma_write_atomic() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - dst_offset or src_offset is not aligned to 8 bytes
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_write_atomic(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_local *src,  size_t src_offset,
+	int flags, void *op_context);
+
 /*
  * possible types of rpma_flush() operation
  */
