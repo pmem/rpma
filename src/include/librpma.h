@@ -657,6 +657,8 @@ int rpma_write(struct rpma_conn *conn,
 	struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context);
 
+#define RPMA_ATOMIC_WRITE_ALIGNMENT 8
+
 /** 3
  * rpma_write_atomic - initialize the atomic write operation
  *
