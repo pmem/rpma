@@ -72,6 +72,43 @@ err_info_delete:
 }
 
 /*
+ * rpma_utils_ibv_context_is_odp_capable -- query the extended device context's
+ * capabilities and check if it supports On-Demand Paging
+ */
+int
+rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+		int *is_odp_capable)
+{
+	if (dev == NULL || is_odp_capable == NULL)
+		return RPMA_E_INVAL;
+
+	*is_odp_capable = 0;
+
+	/* query an RDMA device's attributes */
+	struct ibv_device_attr_ex attr = {0};
+	Rpma_provider_error = ibv_query_device_ex(dev, NULL /* input */,
+			&attr);
+	if (Rpma_provider_error)
+		return RPMA_E_PROVIDER;
+
+	/*
+	 * Check whether On-Demand Paging is supported for all required types
+	 * of operations.
+	 */
+	struct ibv_odp_caps *odp_caps = &attr.odp_caps;
+	if (odp_caps->general_caps & IBV_ODP_SUPPORT) {
+		/* flags for the Reliable Connected transport type */
+		uint32_t rc_odp_caps = odp_caps->per_transport_caps.rc_odp_caps;
+		if ((rc_odp_caps & IBV_ODP_SUPPORT_WRITE) &&
+				(rc_odp_caps & IBV_ODP_SUPPORT_READ)) {
+			*is_odp_capable = 1;
+		}
+	}
+
+	return 0;
+}
+
+/*
  * rpma_utils_conn_event_2str -- return const string representation of
  * RPMA_CONN_* enums
  */

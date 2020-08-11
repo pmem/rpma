@@ -192,8 +192,8 @@ int
 group_setup_next_completion(void **unused)
 {
 	/* set the poll_cq callback in mock of IBV CQ */
-	Ibv_context.ops.poll_cq = poll_cq;
-	Ibv_cq.context = &Ibv_context;
+	MOCK_VERBS->ops.poll_cq = poll_cq;
+	Ibv_cq.context = MOCK_VERBS;
 
 	return 0;
 }
