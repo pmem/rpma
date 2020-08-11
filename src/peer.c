@@ -20,6 +20,8 @@
 
 struct rpma_peer {
 	struct ibv_pd *pd; /* a protection domain */
+
+	int is_odp_supported; /* is On-Demand Paging supported */
 };
 
 /* internal librpma API */
@@ -88,6 +90,22 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	size_t length, int access)
 {
 	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
+	if (*ibv_mr != NULL)
+		return 0;
+
+	Rpma_provider_error = errno;
+
+	if (Rpma_provider_error != EOPNOTSUPP || (!peer->is_odp_supported))
+		return RPMA_E_PROVIDER;
+
+	/*
+	 * If the registration failed with EOPNOTSUPP and On-Demand Paging is
+	 * supported we can retry the memory registration with
+	 * the IBV_ACCESS_ON_DEMAND flag.
+	 */
+	access |= IBV_ACCESS_ON_DEMAND;
+
+	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr == NULL) {
 		Rpma_provider_error = errno;
 		return RPMA_E_PROVIDER;
@@ -105,10 +123,15 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 int
 rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 {
+	int is_odp_supported = 0;
 	int ret;
 
 	if (ibv_ctx == NULL || peer_ptr == NULL)
 		return RPMA_E_INVAL;
+
+	ret = rpma_utils_ibv_context_is_odp_capable(ibv_ctx, &is_odp_supported);
+	if (ret)
+		return ret;
 
 	/*
 	 * The ibv_alloc_pd(3) manual page does not document that this function
@@ -137,6 +160,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	}
 
 	peer->pd = pd;
+	peer->is_odp_supported = is_odp_supported;
 	*peer_ptr = peer;
 
 	return 0;

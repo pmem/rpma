@@ -39,6 +39,9 @@ extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
 
+/* predefined IBV On-demand Paging caps */
+extern struct ibv_odp_caps Ibv_odp_capable_caps;
+
 struct posix_memalign_args {
 	void *ptr;
 };

@@ -139,6 +139,7 @@ peer_new_test_alloc_pd_fail_ENOMEM(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, ENOMEM);
+	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -166,6 +167,7 @@ peer_new_test_alloc_pd_fail_EAGAIN(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, EAGAIN);
+	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -193,6 +195,7 @@ peer_new_test_alloc_pd_fail_no_error(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_OK);
+	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -211,13 +214,14 @@ static void
 peer_new_test_malloc_fail(void **unused)
 {
 	/* configure mocks */
+	will_return(__wrap__test_malloc, ENOMEM);
 	struct ibv_alloc_pd_mock_args alloc_args =
 		{MOCK_PASSTHROUGH, MOCK_IBV_PD};
 	will_return_maybe(ibv_alloc_pd, &alloc_args);
 	struct ibv_dealloc_pd_mock_args dealloc_args =
 		{MOCK_PASSTHROUGH, MOCK_OK};
 	will_return_maybe(ibv_dealloc_pd, &dealloc_args);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 
 	/* run test */
 	struct rpma_peer *peer = NULL;
@@ -239,6 +243,7 @@ peer_new_test_success(void **unused)
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
+	will_return(rpma_utils_ibv_context_is_odp_capable, 1);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
@@ -320,6 +325,7 @@ peer_setup(void **peer_ptr)
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
+	will_return(rpma_utils_ibv_context_is_odp_capable, 1);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
