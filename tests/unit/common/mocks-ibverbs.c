@@ -13,11 +13,53 @@
 #include "test-common.h"
 
 /* mocked IBV entities */
+struct verbs_context Verbs_context;
 struct ibv_comp_channel Ibv_comp_channel;
-struct ibv_context Ibv_context;
 struct ibv_cq Ibv_cq;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;
+
+/*
+ * ibv_query_device -- ibv_query_device() mock
+ */
+int
+ibv_query_device(struct ibv_context *context,
+		struct ibv_device_attr *device_attr)
+{
+	assert_ptr_equal(context, MOCK_VERBS);
+	assert_non_null(device_attr);
+
+	int ret = mock_type(int);
+	if (ret)
+		return ret;
+
+	memset(device_attr, 0, sizeof(struct ibv_device_attr));
+
+	return 0;
+}
+
+/*
+ * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
+ */
+int
+ibv_query_device_ex_mock(struct ibv_context *context,
+		const struct ibv_query_device_ex_input *input,
+		struct ibv_device_attr_ex *attr,
+		size_t attr_size)
+{
+	assert_ptr_equal(context, MOCK_VERBS);
+	assert_null(input);
+	assert_non_null(attr);
+	/* attr_size is provided by ibverbs - no validation needed */
+
+	struct ibv_odp_caps *caps = mock_type(struct ibv_odp_caps *);
+	if (caps == NULL)
+		return mock_type(int);
+
+	memcpy(&attr->odp_caps, caps, sizeof(struct ibv_odp_caps));
+
+	return 0;
+}
 
 /*
  * ibv_create_cq -- ibv_create_cq() mock

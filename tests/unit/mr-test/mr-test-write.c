@@ -91,8 +91,8 @@ group_setup_mr_write(void **unused)
 	 * so we can set the 'qp->context->ops.post_send' function pointer
 	 * to our mock function.
 	 */
-	Ibv_context.ops.post_send = ibv_post_send_mock;
-	Ibv_qp.context = &Ibv_context;
+	MOCK_VERBS->ops.post_send = ibv_post_send_mock;
+	Ibv_qp.context = MOCK_VERBS;
 
 	return 0;
 }

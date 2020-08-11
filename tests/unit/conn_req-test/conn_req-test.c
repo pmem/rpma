@@ -1805,8 +1805,8 @@ int
 group_setup_conn_req(void **unused)
 {
 	/* set the req_notify_cq callback in mock of IBV CQ */
-	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
-	Ibv_cq.context = &Ibv_context;
+	MOCK_VERBS->ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = MOCK_VERBS;
 
 	return 0;
 }

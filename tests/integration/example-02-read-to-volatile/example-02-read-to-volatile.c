@@ -375,11 +375,11 @@ test_server__success(void **unused)
 int
 main(int argc, char *argv[])
 {
-	Ibv_context.ops.post_send = ibv_post_send_mock;
-	Ibv_context.ops.poll_cq = ibv_poll_cq_mock;
-	Ibv_context.ops.req_notify_cq = ibv_req_notify_cq_mock;
-	Ibv_cq.context = &Ibv_context;
-	Ibv_qp.context = &Ibv_context;
+	MOCK_VERBS->ops.post_send = ibv_post_send_mock;
+	MOCK_VERBS->ops.poll_cq = ibv_poll_cq_mock;
+	MOCK_VERBS->ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = MOCK_VERBS;
+	Ibv_qp.context = MOCK_VERBS;
 
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_client__success),

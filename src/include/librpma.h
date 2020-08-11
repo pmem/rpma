@@ -73,6 +73,35 @@ enum rpma_util_ibv_context_type {
 int rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type, struct ibv_context **dev);
 
+/** 3
+ * rpma_utils_ibv_context_is_odp_capable - is On-Demand Paging supported
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+ *		int *is_odp_capable);
+ *
+ * DESCRIPTION
+ * rpma_utils_ibv_context_is_odp_capable() queries the RDMA device context's
+ * capabilities and check if it supports On-Demand Paging.
+ *
+ * RETURN VALUE
+ * The rpma_utils_ibv_context_is_odp_capable() function returns 0 on success or
+ * a negative error code on failure. The *is_odp_capable value on failure is
+ * undefined.
+ *
+ * ERRORS
+ * rpma_utils_ibv_context_is_odp_capable() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - dev or is_odp_capable is NULL
+ * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, errno can be checked using
+ *   rpma_err_get_provider_error()
+ */
+int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+		int *is_odp_capable);
+
 /* peer */
 
 struct rpma_peer;
