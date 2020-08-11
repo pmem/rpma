@@ -16,5 +16,4 @@ log_worker_is_doing_something(void)
 	RPMA_LOG_NOTICE("Just a notice");
 	RPMA_LOG_WARNING("Important warning about value: %d", 720401);
 	RPMA_LOG_ERROR("Error due to order %x", 102);
-	RPMA_PRINTF("PRINTF message requires explicit '\\n' at the end\n");
 }
