@@ -1,0 +1,247 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Aug 11 11:06:01 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_log_syslog_set_threshold</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_log_syslog_set_threshold</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+<a href="#ERRORS">ERRORS</a><br>
+<a href="#NOTES">NOTES</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_set_threshold</b>
+- set the threshold level for logging to syslog</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma_log.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">int
+<b>rpma_log_syslog_set_threshold</b>(rpma_log_level
+<i>level</i>);</p>
+
+<p style="margin-left:11%; margin-top: 1em">typedef
+<i>enum</i> { <i><br>
+RPMA_LOG_DISABLED</i>, <i><br>
+RPMA_LOG_LEVEL_FATAL</i>, <i><br>
+RPMA_LOG_LEVEL_ERROR</i>, <i><br>
+RPMA_LOG_LEVEL_WARNING</i>, <i><br>
+RPMA_LOG_LEVEL_NOTICE</i>, <i><br>
+RPMA_LOG_LEVEL_INFO</i>, <i><br>
+RPMA_LOG_LEVEL_DEBUG</i>, <br>
+} rpma_log_level;</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_set_threshold</b>()
+sets the threshold <i>level</i> for the default logging
+function for logging to <b>syslog</b>(3). Messages with a
+higher <i>level</i> than this are ignored.
+<i>RPMA_LOG_DISABLED</i> shall be used to completely
+suppress writing to <b>syslog</b>(3).</p>
+
+<p style="margin-left:11%; margin-top: 1em">The threshold
+for <b>stderr</b>(3) is controlled separately via
+<b>rpma_log_stderr_set_threshold</b>()</p>
+
+<p style="margin-left:11%; margin-top: 1em">Available
+threshold levels are defined by rpma_log_level:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_DISABLED</i> - all messages will be
+suppressed</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_FATAL</i> - an error that causes the
+library to stop working immediately</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_ERROR</i> - an error that causes the
+library to stop working properly</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_WARNING</i> - an error that could be
+handled in the upper <i>level</i></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_NOTICE</i> - non-massive info mainly
+related to public API function completions e.g. connection
+established</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_INFO</i> - massive info e.g. every
+write operation indication</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>RPMA_LOG_LEVEL_DEBUG</i> - debug info e.g. write
+operation dump</p></td></tr>
+</table>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_set_threshold</b>()
+function returns 0 on success or error code on failure.</p>
+
+<h2>ERRORS
+<a name="ERRORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_set_threshold</b>()
+can fail with the following error:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em">&bull;</p></td>
+<td width="3%"></td>
+<td width="36%">
+
+
+<p style="margin-top: 1em"><b>-1</b> - <i>level</i> out of
+scope</p> </td>
+<td width="49%">
+</td></tr>
+</table>
+
+<h2>NOTES
+<a name="NOTES"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em">&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+
+<p style="margin-top: 1em"><b>rpma_log_syslog_set_threshold</b>()
+is automatically called during loading of the library to set
+the default <b>syslog</b>(3) logging threshold to
+<i>RPMA_LOG_LEVEL_WARNING</i></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><b>rpma_log_syslog_set_threshold</b>() does not affect
+calling <b>user_defined_log_function</b>() in any way.</p></td></tr>
+ </table>
+<hr>
+</body>
+</html>
