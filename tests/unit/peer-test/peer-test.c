@@ -12,13 +12,20 @@
 #include "cmocka_headers.h"
 #include "conn_req.h"
 #include "mocks-ibverbs.h"
+#include "mocks-rpma-utils.h"
 #include "peer.h"
 #include "test-common.h"
 
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
 #define MOCK_ADDR		(void *)0x2B6A
 #define MOCK_LEN		(size_t)627
-#define MOCK_ACCESS		(unsigned)823
+/*
+ * The basic access value should be a combination of
+ * IBV_ACCESS_(LOCAL|REMOTE)_(READ|WRITE) because IBV_ACCESS_ON_DEMAND
+ * is added dynamically during the fall-back to using On-Demand Paging
+ * registration type.
+ */
+#define MOCK_ACCESS		(unsigned)7
 
 /*
  * rdma_create_qp -- rdma_create_qp() mock
@@ -208,6 +215,31 @@ peer_new_test_alloc_pd_fail_no_error(void **unused)
 }
 
 /*
+ * peer_new_test_odp_PROVIDER_EAGAIN -- rpma_utils_ibv_context_is_odp_capable()
+ * fails with RPAM
+ */
+static void
+peer_new_test_odp_PROVIDER_EAGAIN(void **unused)
+{
+	/* configure mocks */
+	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERR_PENDING);
+	will_return(rpma_utils_ibv_context_is_odp_capable, RPMA_E_PROVIDER);
+	will_return(rpma_utils_ibv_context_is_odp_capable, EAGAIN);
+	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+	will_return_maybe(ibv_alloc_pd, MOCK_IBV_PD);
+	will_return_maybe(ibv_dealloc_pd, MOCK_OK);
+
+	/* run test */
+	struct rpma_peer *peer = NULL;
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(peer);
+}
+
+/*
  * peer_new_test_malloc_fail -- malloc() fail
  */
 static void
@@ -316,25 +348,29 @@ peer_delete_test_null_peer(void **unused)
 /*
  * peer_setup -- prepare a valid rpma_peer object
  * (encapsulating the MOCK_IBV_PD)
+ *
+ * Note:
+ * - in - int **is_odp_capable
+ * - out - struct rpma_peer **
  */
 static int
-peer_setup(void **peer_ptr)
+peer_setup(void **in_out)
 {
 	/*
 	 * configure mocks for rpma_peer_new():
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
-	will_return(rpma_utils_ibv_context_is_odp_capable, 1);
+	will_return(rpma_utils_ibv_context_is_odp_capable, **(int **)in_out);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* setup */
-	int ret = rpma_peer_new(MOCK_VERBS, (struct rpma_peer **)peer_ptr);
+	int ret = rpma_peer_new(MOCK_VERBS, (struct rpma_peer **)in_out);
 	assert_int_equal(ret, 0);
-	assert_non_null(*peer_ptr);
+	assert_non_null(*in_out);
 
 	return 0;
 }
@@ -534,6 +570,68 @@ mr_reg_test_fail_ENOMEM(void **peer_ptr)
 }
 
 /*
+ * mr_reg_test_fail_EOPNOTSUPP_no_odp -- ibv_reg_mr() failed with EOPNOTSUPP
+ */
+static void
+mr_reg_test_fail_EOPNOTSUPP_no_odp(void **peer_ptr)
+{
+	struct rpma_peer *peer = *peer_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, EOPNOTSUPP);
+
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
+	assert_null(mr);
+}
+
+/*
+ * mr_reg_test_fail_EOPNOTSUPP_EAGAIN -- the first ibv_reg_mr() fails with
+ * EOPNOTSUPP whereas the second one fails with EAGAIN
+ */
+static void
+mr_reg_test_fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
+{
+	struct rpma_peer *peer = *peer_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, EOPNOTSUPP);
+
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, EAGAIN);
+
+	/* run test */
+	struct ibv_mr *mr = NULL;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(mr);
+}
+
+/*
  * mr_reg_test_success -- happy day scenario
  */
 static void
@@ -558,6 +656,41 @@ mr_reg_test_success(void **peer_ptr)
 	assert_ptr_equal(mr, MOCK_MR);
 }
 
+/*
+ * mr_reg_test_success_odp -- happy day scenario ODP style
+ */
+static void
+mr_reg_test_success_odp(void **peer_ptr)
+{
+	struct rpma_peer *peer = *peer_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	will_return(ibv_reg_mr, NULL);
+	will_return(ibv_reg_mr, EOPNOTSUPP);
+
+	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
+	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+	expect_value(ibv_reg_mr, length, MOCK_LEN);
+	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
+	will_return(ibv_reg_mr, MOCK_MR);
+
+	/* run test */
+	struct ibv_mr *mr;
+	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+				MOCK_LEN, MOCK_ACCESS);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_ptr_equal(mr, MOCK_MR);
+}
+
+static int OdpCapable = MOCK_ODP_CAPABLE;
+static int OdpIncapable = MOCK_ODP_INCAPABLE;
+
 int
 main(int argc, char *argv[])
 {
@@ -569,35 +702,46 @@ main(int argc, char *argv[])
 		cmocka_unit_test(peer_new_test_alloc_pd_fail_ENOMEM),
 		cmocka_unit_test(peer_new_test_alloc_pd_fail_EAGAIN),
 		cmocka_unit_test(peer_new_test_alloc_pd_fail_no_error),
+		cmocka_unit_test(peer_new_test_odp_PROVIDER_EAGAIN),
 		cmocka_unit_test(peer_new_test_malloc_fail),
 		cmocka_unit_test(peer_new_test_success),
 
 		/* rpma_peer_delete() unit tests */
 		cmocka_unit_test(peer_delete_test_invalid_peer_ptr),
 		cmocka_unit_test(peer_delete_test_null_peer),
-		cmocka_unit_test_setup_teardown(
+		cmocka_unit_test_prestate_setup_teardown(
 				peer_delete_test_dealloc_pd_fail,
-				peer_setup, peer_teardown),
+				peer_setup, peer_teardown, &OdpCapable),
 
 		/* rpma_peer_create_qp() unit tests */
 		cmocka_unit_test(create_qp_test_peer_NULL),
-		cmocka_unit_test_setup_teardown(create_qp_test_id_NULL,
-				peer_setup, peer_teardown),
-		cmocka_unit_test_setup_teardown(create_qp_test_cq_NULL,
-				peer_setup, peer_teardown),
-		cmocka_unit_test_setup_teardown(
+		cmocka_unit_test_prestate_setup_teardown(create_qp_test_id_NULL,
+				peer_setup, peer_teardown, &OdpCapable),
+		cmocka_unit_test_prestate_setup_teardown(create_qp_test_cq_NULL,
+				peer_setup, peer_teardown, &OdpCapable),
+		cmocka_unit_test_prestate_setup_teardown(
 				create_qp_test_rdma_create_qp_EAGAIN,
-				peer_setup, peer_teardown),
-		cmocka_unit_test_setup_teardown(create_qp_test_success,
-				peer_setup, peer_teardown),
+				peer_setup, peer_teardown, &OdpCapable),
+		cmocka_unit_test_prestate_setup_teardown(create_qp_test_success,
+				peer_setup, peer_teardown, &OdpCapable),
 
 		/* rpma_peer_mr_reg() unit tests */
-		cmocka_unit_test_setup_teardown(
-				mr_reg_test_fail_ENOMEM,
-				peer_setup, peer_teardown),
-		cmocka_unit_test_setup_teardown(
+		{ "mr_reg_test_fail_ENOMEM_no_odp", mr_reg_test_fail_ENOMEM,
+				peer_setup, peer_teardown, &OdpIncapable},
+		{ "mr_reg_test_fail_ENOMEM_odp", mr_reg_test_fail_ENOMEM,
+				peer_setup, peer_teardown, &OdpCapable},
+		cmocka_unit_test_prestate_setup_teardown(
+				mr_reg_test_fail_EOPNOTSUPP_no_odp,
+				peer_setup, peer_teardown, &OdpIncapable),
+		cmocka_unit_test_prestate_setup_teardown(
+				mr_reg_test_fail_EOPNOTSUPP_EAGAIN,
+				peer_setup, peer_teardown, &OdpCapable),
+		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg_test_success,
-				peer_setup, peer_teardown),
+				peer_setup, peer_teardown, &OdpCapable),
+		cmocka_unit_test_prestate_setup_teardown(
+				mr_reg_test_success_odp,
+				peer_setup, peer_teardown, &OdpCapable),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
