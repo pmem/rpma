@@ -1,0 +1,83 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Aug 11 09:52:10 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_log_syslog_get_threshold</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_log_syslog_get_threshold</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_get_threshold</b>
+- get the current threshold level for logging</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma_log.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">rpma_log_level
+<b>rpma_log_syslog_get_threshold</b>(<i>void</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">to syslog</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_get_threshold</b>()
+gets the current log level threshold for messages written to
+<b>syslog</b>(3).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">RPMA_LOG_DISABLED
+indicates that writing to <b>syslog</b>(3) is disabled.</p>
+
+<p style="margin-left:11%; margin-top: 1em">See
+<b>rpma_log_syslog_set_threshold</b>(3) for available
+thresholds.</p>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_syslog_get_threshold</b>()
+returns the actual threshold for logging to <b>syslog</b>(3)
+or RPMA_LOG_DISABLED if logging to <b>syslog</b>(3) is
+disabled.</p>
+<hr>
+</body>
+</html>

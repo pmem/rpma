@@ -1,0 +1,129 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Aug 11 09:52:08 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_utils_get_ibv_context</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_utils_get_ibv_context</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+<a href="#ERRORS">ERRORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_get_ibv_context</b>
+- obtain an RDMA device context by IP address</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">int
+<b>rpma_utils_get_ibv_context</b>(const char *<i>addr</i>,
+<br>
+enum rpma_util_ibv_context_type <i>type</i>, struct
+ibv_context **<i>dev</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_get_ibv_context</b>()
+obtains an RDMA device context by the given IPv4/IPv6
+address (either local or remote) using the TCP RDMA port
+space (RDMA_PS_TCP) - reliable, connection-oriented and
+message based QP communication.</p>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>rpma_utils_get_ibv_context</b>() function returns 0 on
+success or a negative error code on failure.
+<b>rpma_utils_get_ibv_context</b>() does not set *<i>dev</i>
+value on failure.</p>
+
+<h2>ERRORS
+<a name="ERRORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_get_ibv_context</b>()
+can fail with the following errors:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_INVAL - <i>addr</i> or <i>dev</i> is NULL or
+<i>type</i> is unknown</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_NOMEM - out of memory</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_PROVIDER - <b>rdma_getaddrinfo</b>(),
+<b>rdma_create_id</b>(), <b>rdma_bind_addr</b>() or
+<b>rdma_resolve_addr</b>() failed, errno can be checked
+using <b>rpma_err_get_provider_error</b>()</p></td></tr>
+ </table>
+<hr>
+</body>
+</html>

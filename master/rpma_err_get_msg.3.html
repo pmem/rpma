@@ -1,0 +1,90 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Aug 11 09:52:09 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_err_get_msg</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_err_get_msg</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_err_get_msg</b>
+- return the last error message</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">const char
+*<b>rpma_err_get_msg</b>(<i>void</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">If an error is
+detected during the call to a <b>librpma</b>(7) function,
+the application may retrieve an error message describing the
+reason of the failure from <b>rpma_err_get_msg</b>(). The
+error message buffer is thread-local; errors encountered in
+one thread do not affect its value in other threads. The
+buffer is never cleared by any library function; its content
+is significant only when the return value of the immediately
+preceding call to a <b>librpma</b>(7) function indicated an
+error. The application must not modify or free the error
+message string. Subsequent calls to other library functions
+may modify the previous message.</p>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>rpma_err_get_msg</b>() function returns a pointer to a
+static buffer containing the last error message logged for
+the current thread.</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>librpma</b>(7)
+and <b>&lt;https://pmem.io&gt;</b></p>
+<hr>
+</body>
+</html>
