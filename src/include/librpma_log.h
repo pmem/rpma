@@ -35,6 +35,12 @@ typedef enum {
 	RPMA_LOG_LEVEL_DEBUG,
 } rpma_log_level;
 
+typedef enum {
+	RPMA_LOG_THRESHOLD_PRIMARY,
+	RPMA_LOG_THRESHOLD_SECONDARY,
+	RPMA_LOG_THRESHOLD_MAX
+} rpma_threshold;
+
 /*
  * for passing user-defined log call
  */
@@ -50,10 +56,12 @@ typedef void log_function(
 	/* printf(3) like format string for the message */
 	const char *message_format,
 	/* additional arguments for format string */
-	va_list args);
+	...);
+
+#define RPMA_LOG_DEFAULT_FUNCTION (NULL)
 
 /** 3
- * rpma_log_init - initialize logging module of the librpma
+ * rpma_log_set_function - set the log function
  *
  * SYNOPSIS
  *
@@ -67,7 +75,7 @@ typedef void log_function(
  *	const char *message_format,
  *	va_list args);
  *
- * int rpma_log_init(log_function *user_defined_log_function);
+ * int rpma_log_set_function(log_function *user_defined_log_function);
  *
  * DESCRIPTION
  * rpma_log_init() initializes the logging module. Messages prior to this call
@@ -101,22 +109,7 @@ typedef void log_function(
  * * - -1 - logging has already been started. Call rpma_log_fini (3) to close
  * the currently active log.
  */
-int rpma_log_init(log_function *user_defined_log_function);
-
-/** 3
- * rpma_log_fini - closes the currently active log
- *
- * SYNOPSIS
- *
- * #include <librpma_log.h>
- *
- * void rpma_log_fini(void);
- *
- * DESCRIPTION
- * rpma_log_fini() closes the currently active log. All messages after this call
- * will be dropped.
- */
-void rpma_log_fini(void);
+void rpma_log_set_function(log_function *log_function);
 
 /** 3
  * rpma_log_syslog_set_threshold - set the threshold level for logging to syslog
@@ -173,7 +166,7 @@ void rpma_log_fini(void);
  * - rpma_log_syslog_set_threshold() does not affect calling
  * user_defined_log_function() in any way.
  */
-int rpma_log_syslog_set_threshold(rpma_log_level level);
+int rpma_log_set_threshold(rpma_threshold threshold, rpma_log_level level);
 
 /** 3
  * rpma_log_syslog_get_threshold - get the current threshold level for logging
@@ -198,64 +191,6 @@ int rpma_log_syslog_set_threshold(rpma_log_level level);
  * to syslog(3) or RPMA_LOG_DISABLED if logging to syslog(3) is disabled.
  *
  */
-rpma_log_level rpma_log_syslog_get_threshold(void);
-
-/** 3
- * rpma_log_stderr_set_threshold - set the threshold level for logging to
- * stderr
- *
- * SYNOPSIS
- *
- * #include <librpma_log.h>
- *
- * int rpma_log_stderr_set_threshold(rpma_log_level level);
- *
- * DESCRIPTION
- * rpma_log_stderr_set_threshold() sets the threshold level for the default
- * logging function for logging to stderr(3). Messages with a higher level
- * than this are not shown on stderr(3). RPMA_LOG_DISABLED shall be used
- * to completely suppress writing to stderr(3).
- *
- * See rpma_log_syslog_set_threshold(3) for available thresholds.
- *
- * RETURN VALUE
- * rpma_log_stderr_set_threshold() function returns 0 on success or error code
- * on failure.
- *
- * ERRORS
- * rpma_log_stderr_set_threshold() can fail with the following error:
- * - -1 - level out of scope
- *
- * NOTES
- * - rpma_log_stderr_set_threshold() is automatically called during loading of
- * the library to disable logging to stderr(3) (RPMA_LOG_DISABLED).
- * - rpma_log_stderr_set_threshold() does not affect calling
- * user_defined_log_function() in any way.
- *
- */
-int rpma_log_stderr_set_threshold(rpma_log_level level);
-
-/** 3
- * rpma_log_stderr_get_threshold - get the current log level to stderr threshold
- *
- * SYNOPSIS
- *
- * #include <librpma_log.h>
- *
- * rpma_log_level rpma_log_stderr_get_threshold(void);
- *
- * DESCRIPTION
- * rpma_log_stderr_get_threshold(3) gets the current log level to stderr(3)
- * threshold.
- *
- * RPMA_LOG_DISABLED indicates that writing to stderr(3) is disabled.
- *
- * See rpma_log_syslog_set_threshold(3) for available thresholds.
- *
- * RETURN VALUE
- * rpma_log_stderr_get_threshold() returns the actual threshold for logging
- * to stderr(3) or RPMA_LOG_DISABLED if logging to stderr(3) is disabled.
- */
-rpma_log_level rpma_log_stderr_get_threshold(void);
+int rpma_log_get_threshold(rpma_threshold threshold, rpma_log_level *level);
 
 #endif /* LIBRPMA_LOG_H */

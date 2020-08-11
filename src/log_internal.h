@@ -10,28 +10,38 @@
 
 #include "librpma_log.h"
 
+/* pointer to the logging function */
+extern log_function *Rpma_log_function;
+
+/* threshold levels */
+extern rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
+
+void rpma_log_init();
+
+void rpma_log_fini();
+
+#define RPMA_LOG(level, format, ...) \
+	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_PRIMARY] && \
+			NULL != Rpma_log_function) { \
+		Rpma_log_function(level, __FILE__, __LINE__, __func__, \
+				format, ##__VA_ARGS__); \
+	}
+
 /*
  * Set of macros that should be used as the primary API for logging.
  * Direct call to rpma_log shall be used only in exceptional, corner cases.
  */
 #define RPMA_LOG_NOTICE(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_NOTICE, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
+	RPMA_LOG(RPMA_LOG_LEVEL_NOTICE, format "\n", ##__VA_ARGS__)
 
 #define RPMA_LOG_WARNING(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_WARNING, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
+	RPMA_LOG(RPMA_LOG_LEVEL_WARNING, format "\n", ##__VA_ARGS__)
 
 #define RPMA_LOG_ERROR(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_ERROR, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
+	RPMA_LOG(RPMA_LOG_LEVEL_ERROR, format "\n", ##__VA_ARGS__)
 
 #define RPMA_LOG_FATAL(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_FATAL, __FILE__, __LINE__, __func__, \
-		format "\n", ##__VA_ARGS__)
-
-#define RPMA_PRINTF(format, ...) \
-	rpma_log(RPMA_LOG_LEVEL_INFO, NULL, -1, NULL, format, ##__VA_ARGS__)
+	RPMA_LOG(RPMA_LOG_LEVEL_FATAL, format "\n", ##__VA_ARGS__)
 
 /*
  * rpma_log - call either the default or a custom log function.
@@ -68,11 +78,11 @@ void rpma_log(rpma_log_level level, const char *file_name, const int line_no,
  * Default thresholds for logging levels
  */
 #ifdef DEBUG
-#define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_DEBUG
-#define RPMA_LOG_LEVEL_STDERR_DEFAULT RPMA_LOG_LEVEL_WARNING
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_DEBUG
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_LEVEL_WARNING
 #else
-#define RPMA_LOG_LEVEL_SYSLOG_DEFAULT RPMA_LOG_LEVEL_WARNING
-#define RPMA_LOG_LEVEL_STDERR_DEFAULT RPMA_LOG_DISABLED
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_WARNING
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_DISABLED
 #endif
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */
