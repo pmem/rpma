@@ -71,3 +71,19 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 
 	return ret;
 }
+
+/*
+ * rpma_info_bind_addr -- mock of rpma_info_bind_addr
+ */
+int
+rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+{
+	check_expected(info);
+	check_expected(id);
+
+	int ret = mock_type(int);
+	if (ret)
+		Rpma_provider_error = mock_type(int);
+
+	return ret;
+}
