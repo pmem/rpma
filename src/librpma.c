@@ -8,6 +8,7 @@
  */
 
 #include "librpma.h"
+#include "log_internal.h"
 
 /*
  * librpma_init -- load-time initialization for librpma
@@ -17,6 +18,7 @@
 __attribute__((constructor)) static void
 librpma_init(void)
 {
+	rpma_log_init();
 }
 
 /*
@@ -27,4 +29,5 @@ librpma_init(void)
 __attribute__((destructor)) static void
 librpma_fini(void)
 {
+	rpma_log_fini();
 }
