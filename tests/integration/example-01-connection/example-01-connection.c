@@ -48,6 +48,7 @@ test_client__success(void **unused)
 	expect_value(rdma_freeaddrinfo, res, &res1);
 
 	/* configure mocks for rpma_peer_new */
+	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_IBV_PD);
 
@@ -181,6 +182,7 @@ test_server__success(void **unused)
 	expect_value(rdma_freeaddrinfo, res, &res1);
 
 	/* configure mocks for rpma_peer_new */
+	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_IBV_PD);
 
@@ -311,6 +313,9 @@ test_server__success(void **unused)
 int
 main(int argc, char *argv[])
 {
+	MOCK_VERBS->abi_compat = __VERBS_ABI_IS_EXTENDED;
+	Verbs_context.query_device_ex = ibv_query_device_ex_mock;
+	Verbs_context.sz = sizeof(struct verbs_context);
 	MOCK_VERBS->ops.req_notify_cq = ibv_req_notify_cq_mock;
 	Ibv_cq.context = MOCK_VERBS;
 

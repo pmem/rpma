@@ -16,6 +16,16 @@ struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
 struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
 
+/* predefined IBV On-demand Paging caps */
+struct ibv_odp_caps Ibv_odp_capable_caps = {
+	.general_caps = IBV_ODP_SUPPORT,
+	.per_transport_caps = {
+			IBV_ODP_SUPPORT_WRITE | IBV_ODP_SUPPORT_READ,
+			0,
+			0
+	},
+};
+
 /*
  * ibv_query_device -- ibv_query_device() mock
  */

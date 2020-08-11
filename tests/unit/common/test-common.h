@@ -27,5 +27,6 @@
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
+#define MOCK_ERR_PENDING	(-1)
 
 #endif /* TEST_COMMON_H */
