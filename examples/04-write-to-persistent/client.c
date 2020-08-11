@@ -243,6 +243,12 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_disconnect;
 
+	ret = rpma_conn_prepare_completions(conn);
+	if (ret && ret != RPMA_E_NO_COMPLETION) {
+		print_error_ex("rpma_conn_prepare_completions", ret);
+		goto err_conn_disconnect;
+	}
+
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret) {
 		print_error_ex("rpma_conn_next_completion", ret);
