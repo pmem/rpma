@@ -92,6 +92,10 @@ add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
 add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/client.c common/common.c)
 
-add_example(NAME log BIN log SRCS log/log-example.c log/log-worker.c)
+add_example(NAME log BIN log SRCS
+	log/log-example.c
+	log/log-worker.c
+	${LIBRPMA_SOURCE_DIR}/log.c
+	${LIBRPMA_SOURCE_DIR}/log_default.c)
 
 add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
