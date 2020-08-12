@@ -1,0 +1,138 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Wed Aug 12 11:56:43 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_conn_req_delete</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_conn_req_delete</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#ERRORS">ERRORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_conn_req_delete</b>
+- delete the connection request</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">int
+<b>rpma_conn_req_delete</b>(struct rpma_conn_req
+**<i>req_ptr</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Delete the
+connection request both incoming and outgoing.</p>
+
+<h2>ERRORS
+<a name="ERRORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_conn_req_delete</b>()
+can fail with the following errors:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="47%">
+
+
+<p>RPMA_E_INVAL - <i>req_ptr</i> is NULL</p></td>
+<td width="38%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="47%">
+
+
+<p>RPMA_E_PROVIDER</p></td>
+<td width="38%">
+</td></tr>
+</table>
+
+<p style="margin-left:15%;">&bull;</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="15%"></td>
+<td width="2%"></td>
+<td width="3%"></td>
+<td width="80%">
+
+
+<p style="margin-top: 1em"><b>rdma_destroy_qp</b>(3) or
+<b>ibv_destroy_cq</b>(3) failed</p></td></tr>
+<tr valign="top" align="left">
+<td width="15%"></td>
+<td width="2%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="80%">
+
+
+<p><b>rdma_reject</b>(3) or <b>rdma_ack_cm_event</b>(3)
+failed (passive side only)</p></td></tr>
+<tr valign="top" align="left">
+<td width="15%"></td>
+<td width="2%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="80%">
+
+
+<p><b>rdma_destroy_id</b>(3) failed (active side only)</p></td></tr>
+ </table>
+<hr>
+</body>
+</html>
