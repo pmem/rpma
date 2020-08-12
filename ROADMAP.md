@@ -1,6 +1,6 @@
-# **librpma roadmap [23/07/2020]**
+# **librpma roadmap [08/10/2020]**
 
-This document presents the librpma library roadmap as it shaped on 07/23/2020. It lists high-level features that are going to be released with the library release 1.0.
+This document presents the librpma library roadmap as it shaped on 08/10/2020. It lists high-level features that are going to be released with the library release 1.0.
 This roadmap is for informational purposes only, so you should not rely on this information for purchasing or planning decisions. Just like all projects, the items in the roadmap are subject to change or delay, and the continued development or release of a feature on the roadmap is at the sole discretion of the librpma development team.
 
 Status|Title|Description|Expected
@@ -13,11 +13,11 @@ Status|Title|Description|Expected
 [x]|Extended read example|An example that demonstrates the use of PMem in the librpma application which performs a read operation.|07/10/2020
 [x]|Remote write|Be able to write to remote persistent memory.|07/24/2020
 [x]|Write example|An example that demonstrates how to write data to remote persistent memory and ensure persistence by RDMA.Read.|07/24/2020
-[ ]|Remote flush|Be able to ensure data placement within the memory subsystem of a remote node.|08/07/2020
-[ ]|Write-flush example|An example that demonstrates how to write and flush data to remote persistent memory.|08/07/2020
-[ ]|Non-blocking completion acquisition|Be able to poll, in a non-blocking way, for RDMA operations completions.|08/07/2020
-[ ]|Non-blocking connection monitoring|Be able to poll for connection status changes in a non-blocking mode.|08/07/2020
-[ ]|Scalable read/write example|An example(s) that demonstrates how to use non-blocking features of the librpma API.|08/07/2020
+[x]|Remote flush|Be able to ensure data placement within the memory subsystem of a remote node.|08/07/2020
+[x]|Write-flush example|An example that demonstrates how to write and flush data to remote persistent memory.|08/07/2020
+[x]|Non-blocking completion acquisition|Be able to poll, in a non-blocking way, for RDMA operations completions.|08/07/2020
+[x]|Non-blocking connection monitoring|Be able to poll for connection status changes in a non-blocking mode.|08/07/2020
+[x]|Scalable read/write example|An example(s) that demonstrates how to use non-blocking features of the librpma API.|08/07/2020
 [ ]|Atomic write|Be able to execute an atomic write via standard aligned RDMA Write.|08/21/2020
 [ ]|Atomic write example|An example that demonstrates how to use atomic write (with a flush) for remote atomic write operations.|08/21/2020
 [ ]|logging support|Be able to have all diagnostic/status information logged into syslog and/or on stderr.|08/21/2020
