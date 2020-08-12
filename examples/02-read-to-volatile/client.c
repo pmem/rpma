@@ -118,6 +118,13 @@ main(int argc, char *argv[])
 	ret = rpma_read(conn, dst_mr, 0, src_mr, 0, src_size,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 
+	/* wait for the completion to be ready */
+	ret = rpma_conn_prepare_completions(conn);
+	if (ret) {
+		print_error_ex("rpma_conn_prepare_completions", ret);
+		goto err_conn_disconnect;
+	}
+
 	/* wait for a completion of the RDMA read */
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret) {
