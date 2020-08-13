@@ -5,8 +5,8 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_src(UNIT NAME error-test SRCS
-	error-test.c
+build_test_src(UNIT NAME error SRCS
+	error.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
-add_test_generic(NAME error-test TRACERS none)
+add_test_generic(NAME error TRACERS none)

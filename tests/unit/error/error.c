@@ -4,7 +4,12 @@
  */
 
 /*
- * error-test.c -- unit tests for error-handling rpma-err module
+ * error.c -- unit tests for error-handling rpma-err module
+ *
+ * APIs covered:
+ * - rpma_err_get_msg()
+ * - rpma_err_get_provider_error()
+ * - rpma_err_2str()
  */
 
 #include "cmocka_headers.h"
@@ -14,19 +19,19 @@
 #define EMPTY_STRING	""
 
 /*
- * err_get_msg_test - sanity test for rpma_err_get_msg()
+ * err_get_msg - sanity test for rpma_err_get_msg()
  */
 static void
-err_get_msg_test(void **unused)
+err_get_msg(void **unused)
 {
 	assert_string_equal(rpma_err_get_msg(), EMPTY_STRING);
 }
 
 /*
- * err_get_provider_error_test - sanity test for rpma_err_get_provider_error()
+ * err_get_provider_error - sanity test for rpma_err_get_provider_error()
  */
 static void
-err_get_provider_error_test(void **unused)
+err_get_provider_error(void **unused)
 {
 	Rpma_provider_error = 1234; /* any random value */
 	assert_int_equal(rpma_err_get_provider_error(), Rpma_provider_error);
@@ -35,47 +40,47 @@ err_get_provider_error_test(void **unused)
 }
 
 /*
- * err_2str_test_E_NOSUPP - sanity test for rpma_err_2str()
+ * err_2str__E_NOSUPP - sanity test for rpma_err_2str()
  */
 static void
-err_2str_test_E_NOSUPP(void **unused)
+err_2str__E_NOSUPP(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_NOSUPP), "Not supported");
 }
 
 /*
- * err_2str_test_E_PROVIDER - sanity test for rpma_err_2str()
+ * err_2str__E_PROVIDER - sanity test for rpma_err_2str()
  */
 static void
-err_2str_test_E_PROVIDER(void **unused)
+err_2str__E_PROVIDER(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_PROVIDER),
 	"Provider error occurred");
 }
 
 /*
- * err_2str_test_E_NOMEM - sanity test for rpma_err_2str()
+ * err_2str__E_NOMEM - sanity test for rpma_err_2str()
  */
 static void
-err_2str_test_E_NOMEM(void **unused)
+err_2str__E_NOMEM(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_NOMEM), "Out of memory");
 }
 
 /*
- * err_2str_test_E_INVAL - sanity test for rpma_err_2str()
+ * err_2str__E_INVAL - sanity test for rpma_err_2str()
  */
 static void
-err_2str_test_E_INVAL(void **unused)
+err_2str__E_INVAL(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_INVAL), "Invalid argument");
 }
 
 /*
- * err_2str_test_E_UNKOWN - sanity test for rpma_err_2str()
+ * err_2str__E_UNKOWN - sanity test for rpma_err_2str()
  */
 static void
-err_2str_test_E_UNKNOWN(void **unused)
+err_2str__E_UNKNOWN(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_UNKNOWN), "Unknown error");
 }
@@ -84,13 +89,13 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(err_get_msg_test),
-		cmocka_unit_test(err_get_provider_error_test),
-		cmocka_unit_test(err_2str_test_E_NOSUPP),
-		cmocka_unit_test(err_2str_test_E_PROVIDER),
-		cmocka_unit_test(err_2str_test_E_NOMEM),
-		cmocka_unit_test(err_2str_test_E_INVAL),
-		cmocka_unit_test(err_2str_test_E_UNKNOWN),
+		cmocka_unit_test(err_get_msg),
+		cmocka_unit_test(err_get_provider_error),
+		cmocka_unit_test(err_2str__E_NOSUPP),
+		cmocka_unit_test(err_2str__E_PROVIDER),
+		cmocka_unit_test(err_2str__E_NOMEM),
+		cmocka_unit_test(err_2str__E_INVAL),
+		cmocka_unit_test(err_2str__E_UNKNOWN),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
