@@ -8,58 +8,11 @@
  */
 
 #include "mocks-ibverbs.h"
-#include "mr-test-common.h"
+#include "mocks-rpma-peer.h"
+#include "mr-common.h"
+#include "test-common.h"
 
 const rpma_mr_descriptor Desc_exp = DESC_EXP;
-
-/*
- * rpma_peer_mr_reg -- a mock of rpma_peer_mr_reg()
- */
-int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
-	size_t length, int access)
-{
-	/*
-	 * rpma_peer_mr_reg() and malloc() may be called in any order.
-	 * If the first one fails, then the second one won't be called,
-	 * so we cannot add cmocka's expects here.
-	 * Otherwise, unconsumed expects would cause a test failure.
-	 */
-	struct rpma_peer_mr_reg_args *args =
-				mock_type(struct rpma_peer_mr_reg_args *);
-	assert_ptr_equal(peer, MOCK_PEER);
-	assert_ptr_equal(addr, MOCK_PTR);
-	assert_int_equal(length, MOCK_SIZE);
-	assert_int_equal(access, args->access);
-
-	*ibv_mr = args->mr;
-	if (*ibv_mr == NULL) {
-		Rpma_provider_error = args->verrno;
-		return RPMA_E_PROVIDER;
-	}
-
-	(*ibv_mr)->addr = addr;
-	(*ibv_mr)->length = length;
-	(*ibv_mr)->rkey = MOCK_RKEY;
-
-	return 0;
-}
-
-void *__real__test_malloc(size_t size);
-
-/*
- * __wrap__test_malloc -- malloc() mock
- */
-void *
-__wrap__test_malloc(size_t size)
-{
-	errno = mock_type(int);
-
-	if (errno)
-		return NULL;
-
-	return __real__test_malloc(size);
-}
 
 /* common setups & teardowns */
 

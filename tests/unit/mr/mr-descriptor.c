@@ -16,17 +16,19 @@
 #include <stdlib.h>
 #include <infiniband/verbs.h>
 
-#include "mr-test-common.h"
+#include "mocks-rpma-peer.h"
+#include "mr-common.h"
+#include "test-common.h"
 
 #define MR_DESC_SIZE sizeof(rpma_mr_descriptor)
 
 /* rpma_mr_get_descriptor() unit test */
 
 /*
- * test_get_descriptor__mr_NULL - NULL mr is invalid
+ * get_descriptor__mr_NULL - NULL mr is invalid
  */
 static void
-test_get_descriptor__mr_NULL(void **unused)
+get_descriptor__mr_NULL(void **unused)
 {
 	rpma_mr_descriptor desc = {{0}};
 
@@ -38,10 +40,10 @@ test_get_descriptor__mr_NULL(void **unused)
 }
 
 /*
- * test_get_descriptor__desc_NULL - NULL desc is invalid
+ * get_descriptor__desc_NULL - NULL desc is invalid
  */
 static void
-test_get_descriptor__desc_NULL(void **mr_ptr)
+get_descriptor__desc_NULL(void **mr_ptr)
 {
 	struct rpma_mr_local *mr = *mr_ptr;
 
@@ -53,10 +55,10 @@ test_get_descriptor__desc_NULL(void **mr_ptr)
 }
 
 /*
- * test_get_descriptor__mr_NULL_desc_NULL - NULL mr and NULL desc are invalid
+ * get_descriptor__mr_NULL_desc_NULL - NULL mr and NULL desc are invalid
  */
 static void
-test_get_descriptor__mr_NULL_desc_NULL(void **unused)
+get_descriptor__mr_NULL_desc_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_get_descriptor(NULL, NULL);
@@ -68,10 +70,10 @@ test_get_descriptor__mr_NULL_desc_NULL(void **unused)
 /* rpma_mr_remote_from_descriptor() unit test */
 
 /*
- * test_remote_from_descriptor__desc_NULL - NULL desc is invalid
+ * remote_from_descriptor__desc_NULL - NULL desc is invalid
  */
 static void
-test_remote_from_descriptor__desc_NULL(void **unused)
+remote_from_descriptor__desc_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
@@ -83,10 +85,10 @@ test_remote_from_descriptor__desc_NULL(void **unused)
 }
 
 /*
- * test_remote_from_descriptor__mr_ptr_NULL - NULL mr_ptr is invalid
+ * remote_from_descriptor__mr_ptr_NULL - NULL mr_ptr is invalid
  */
 static void
-test_remote_from_descriptor__mr_ptr_NULL(void **unused)
+remote_from_descriptor__mr_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, NULL);
@@ -96,11 +98,11 @@ test_remote_from_descriptor__mr_ptr_NULL(void **unused)
 }
 
 /*
- * test_remote_from_descriptor__mr_ptr_NULL_desc_NULL - NULL mr_ptr and NULL
+ * remote_from_descriptor__mr_ptr_NULL_desc_NULL - NULL mr_ptr and NULL
  * desc are invalid
  */
 static void
-test_remote_from_descriptor__mr_ptr_NULL_desc_NULL(void **unused)
+remote_from_descriptor__mr_ptr_NULL_desc_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_remote_from_descriptor(NULL, NULL);
@@ -110,10 +112,10 @@ test_remote_from_descriptor__mr_ptr_NULL_desc_NULL(void **unused)
 }
 
 /*
- * test_remote_from_descriptor__malloc_ENOMEM - malloc() fail with ENOMEM
+ * remote_from_descriptor__malloc_ENOMEM - malloc() fail with ENOMEM
  */
 static void
-test_remote_from_descriptor__malloc_ENOMEM(void **unused)
+remote_from_descriptor__malloc_ENOMEM(void **unused)
 {
 	/* configure mock */
 	will_return_maybe(__wrap__test_malloc, ENOMEM);
@@ -127,11 +129,11 @@ test_remote_from_descriptor__malloc_ENOMEM(void **unused)
 }
 
 /*
- * test_remote_from_descriptor__desc_plt_invalid - buff with invalid contents
+ * remote_from_descriptor__desc_plt_invalid - buff with invalid contents
  * should be detected as long as it breaks placement value
  */
 static void
-test_remote_from_descriptor__buff_plt_invalid(void **unused)
+remote_from_descriptor__buff_plt_invalid(void **unused)
 {
 	rpma_mr_descriptor desc_invalid = {{0}};
 	memset(&desc_invalid, 0xff, sizeof(rpma_mr_descriptor));
@@ -151,10 +153,10 @@ test_remote_from_descriptor__buff_plt_invalid(void **unused)
 /* rpma_mr_remote_delete() unit test */
 
 /*
- * test_remote_delete__mr_ptr_NULL - NULL mr_ptr is invalid
+ * remote_delete__mr_ptr_NULL - NULL mr_ptr is invalid
  */
 static void
-test_remote_delete__mr_ptr_NULL(void **unused)
+remote_delete__mr_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_remote_delete(NULL);
@@ -164,10 +166,10 @@ test_remote_delete__mr_ptr_NULL(void **unused)
 }
 
 /*
- * test_remote_delete__mr_NULL - NULL mr should exit quickly
+ * remote_delete__mr_NULL - NULL mr should exit quickly
  */
 static void
-test_remote_delete__mr_NULL(void **unused)
+remote_delete__mr_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
@@ -181,10 +183,10 @@ test_remote_delete__mr_NULL(void **unused)
 /* rpma_mr_remote_get_size() unit test */
 
 /*
- * test_remote_get_size__mr_ptr_NULL - NULL mr_ptr is invalid
+ * remote_get_size__mr_ptr_NULL - NULL mr_ptr is invalid
  */
 static void
-test_remote_get_size__mr_ptr_NULL(void **unused)
+remote_get_size__mr_ptr_NULL(void **unused)
 {
 	/* run test */
 	size_t size = 0;
@@ -196,10 +198,10 @@ test_remote_get_size__mr_ptr_NULL(void **unused)
 }
 
 /*
- * test_remote_get_size__size_NULL - NULL size pointer is invalid
+ * remote_get_size__size_NULL - NULL size pointer is invalid
  */
 static void
-test_remote_get_size__size_NULL(void **mr_ptr)
+remote_get_size__size_NULL(void **mr_ptr)
 {
 	struct rpma_mr_remote *mr = *mr_ptr;
 
@@ -211,11 +213,11 @@ test_remote_get_size__size_NULL(void **mr_ptr)
 }
 
 /*
- * test_remote_get_size__mr_ptr_NULL_size_NULL - NULL mr_ptr and NULL size
+ * remote_get_size__mr_ptr_NULL_size_NULL - NULL mr_ptr and NULL size
  * pointer are invalid
  */
 static void
-test_remote_get_size__mr_ptr_NULL_size_NULL(void **unused)
+remote_get_size__mr_ptr_NULL_size_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_remote_get_size(NULL, NULL);
@@ -225,10 +227,10 @@ test_remote_get_size__mr_ptr_NULL_size_NULL(void **unused)
 }
 
 /*
- * test_remote_get_size__success - rpma_mr_remote_get_size() success
+ * remote_get_size__success - rpma_mr_remote_get_size() success
  */
 static void
-test_remote_get_size__success(void **mr_ptr)
+remote_get_size__success(void **mr_ptr)
 {
 	struct rpma_mr_remote *mr = *mr_ptr;
 
@@ -242,12 +244,12 @@ test_remote_get_size__success(void **mr_ptr)
 /* rpma_mr_serialiaze()/_remote_from_descriptor() buffer alignment */
 
 /*
- * test_get_descriptor__desc_alignment - try rpma_mr_get_descriptor() with
+ * get_descriptor__desc_alignment - try rpma_mr_get_descriptor() with
  * a miscellaneous input descriptor alignment just to be sure the implementation
  * does not prefer certain alignments.
  */
 static void
-test_get_descriptor__desc_alignment(void **pprestate)
+get_descriptor__desc_alignment(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
 	struct rpma_mr_local *mr = prestate->mr;
@@ -281,13 +283,13 @@ test_get_descriptor__desc_alignment(void **pprestate)
 }
 
 /*
- * test_remote_from_descriptor__desc_alignment -- try
+ * remote_from_descriptor__desc_alignment -- try
  * rpma_mr_remote_from_descriptor() with a miscellaneous output descriptor
  * alignment just to be sure the implementation does not prefer certain
  * alignments.
  */
 static void
-test_remote_from_descriptor__desc_alignment(void **unused)
+remote_from_descriptor__desc_alignment(void **unused)
 {
 	char buff_base[MR_DESC_SIZE * 2];
 	char pattern[MR_DESC_SIZE * 2];
@@ -338,45 +340,48 @@ static struct prestate prestate =
 
 const struct CMUnitTest tests_descriptor[] = {
 	/* rpma_mr_get_descriptor() unit test */
-	cmocka_unit_test(test_get_descriptor__mr_NULL),
+	cmocka_unit_test(get_descriptor__mr_NULL),
 	cmocka_unit_test_prestate_setup_teardown(
-		test_get_descriptor__desc_NULL,
+		get_descriptor__desc_NULL,
 		setup__reg_success,
 		teardown__dereg_success,
 		&prestate),
-	cmocka_unit_test(test_get_descriptor__mr_NULL_desc_NULL),
+	cmocka_unit_test(get_descriptor__mr_NULL_desc_NULL),
 
 	/* rpma_mr_remote_from_descriptor() unit test */
-	cmocka_unit_test(test_remote_from_descriptor__desc_NULL),
-	cmocka_unit_test(test_remote_from_descriptor__mr_ptr_NULL),
+	cmocka_unit_test(remote_from_descriptor__desc_NULL),
+	cmocka_unit_test(remote_from_descriptor__mr_ptr_NULL),
 	cmocka_unit_test(
-		test_remote_from_descriptor__mr_ptr_NULL_desc_NULL),
-	cmocka_unit_test(test_remote_from_descriptor__malloc_ENOMEM),
-	cmocka_unit_test(test_remote_from_descriptor__buff_plt_invalid),
+		remote_from_descriptor__mr_ptr_NULL_desc_NULL),
+	cmocka_unit_test(remote_from_descriptor__malloc_ENOMEM),
+	cmocka_unit_test(remote_from_descriptor__buff_plt_invalid),
 
 	/* rpma_mr_remote_delete() unit test */
-	cmocka_unit_test(test_remote_delete__mr_ptr_NULL),
-	cmocka_unit_test(test_remote_delete__mr_NULL),
+	cmocka_unit_test(remote_delete__mr_ptr_NULL),
+	cmocka_unit_test(remote_delete__mr_NULL),
 
 	/* rpma_mr_remote_get_size() unit test */
-	cmocka_unit_test(test_remote_get_size__mr_ptr_NULL),
-	cmocka_unit_test_setup_teardown(test_remote_get_size__size_NULL,
-		setup__mr_remote,
-		teardown__mr_remote),
-	cmocka_unit_test(test_remote_get_size__mr_ptr_NULL_size_NULL),
-	cmocka_unit_test_setup_teardown(test_remote_get_size__success,
-		setup__mr_remote,
-		teardown__mr_remote),
+	cmocka_unit_test(remote_get_size__mr_ptr_NULL),
+	cmocka_unit_test_setup_teardown(remote_get_size__size_NULL,
+		setup__mr_remote, teardown__mr_remote),
+	cmocka_unit_test(remote_get_size__mr_ptr_NULL_size_NULL),
+	cmocka_unit_test_setup_teardown(remote_get_size__success,
+		setup__mr_remote, teardown__mr_remote),
 
 	/*
 	 * rpma_mr_get_descriptor()/rpma_mr_remote_from_descriptor()
 	 * buffer alignment
 	 */
 	cmocka_unit_test_prestate_setup_teardown(
-		test_get_descriptor__desc_alignment,
-		setup__reg_success,
-		teardown__dereg_success,
+		get_descriptor__desc_alignment,
+		setup__reg_success, teardown__dereg_success,
 		&prestate),
-	cmocka_unit_test(test_remote_from_descriptor__desc_alignment),
+	cmocka_unit_test(remote_from_descriptor__desc_alignment),
 	cmocka_unit_test(NULL)
 };
+
+int
+main(int argc, char *argv[])
+{
+	return cmocka_run_group_tests(tests_descriptor, NULL, NULL);
+}
