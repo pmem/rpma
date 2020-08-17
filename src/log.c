@@ -16,6 +16,17 @@
 #include "log_internal.h"
 
 /*
+ * Default levels of the logging thresholds
+ */
+#ifdef DEBUG
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_DEBUG
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_LEVEL_WARNING
+#else
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_WARNING
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_DISABLED
+#endif
+
+/*
  * Rpma_log_function -- pointer to the logging function.
  * By default it is rpma_log_default_function() but could be a user logging
  * function provided via rpma_log_set().
@@ -36,7 +47,7 @@ rpma_log_init()
 {
 	/* enable the default logging function */
 	rpma_log_default_init();
-	rpma_log_set_function(RPMA_LOG_DEFAULT_FUNCTION);
+	rpma_log_set_function(RPMA_LOG_USE_DEFAULT_FUNCTION);
 }
 
 /*
@@ -45,6 +56,11 @@ rpma_log_init()
 void
 rpma_log_fini()
 {
+	/*
+	 * NULL-ed function pointer turns off the logging. No matter if
+	 * the previous value was the default logging function or a user
+	 * logging function.
+	 */
 	Rpma_log_function = NULL;
 
 	/* cleanup the default logging function */
@@ -60,7 +76,7 @@ rpma_log_fini()
 void
 rpma_log_set_function(log_function *log_function)
 {
-	if (log_function == RPMA_LOG_DEFAULT_FUNCTION)
+	if (log_function == RPMA_LOG_USE_DEFAULT_FUNCTION)
 		Rpma_log_function = rpma_log_default_function;
 	else
 		Rpma_log_function = log_function;
