@@ -1,0 +1,162 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Mon Aug 17 10:10:48 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_conn_req_connect</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_conn_req_connect</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+<a href="#ERRORS">ERRORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_conn_req_connect</b>
+- connect the connection request</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">int
+<b>rpma_conn_req_connect</b>(struct rpma_conn_req
+*<i>req_ptr</i>, <br>
+struct rpma_conn_private_data *<i>pdata</i>, <br>
+struct rpma_conn **<i>conn_ptr</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Connect the
+connection requests both incoming and outgoing.</p>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>rpma_conn_req_connect</b>() function returns 0 on success
+or a negative error code on failure. On success, the newly
+created connection object is stored in *<i>conn_ptr</i>
+whereas *<i>req_ptr</i> is consumed and set to NULL. On
+failure, <b>rpma_conn_req_connect</b>() does not set
+*<i>conn_ptr</i> whereas *<i>req_ptr</i> is consumed and set
+to NULL.</p>
+
+<h2>ERRORS
+<a name="ERRORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_conn_req_connect</b>()
+can fail with the following errors:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_INVAL - <i>req_ptr</i>, *<i>req_ptr</i> or
+<i>conn_ptr</i> is NULL</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_INVAL - <i>pdata</i> is not NULL whereas
+<i>pdata</i>-&gt;len == 0</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_NOMEM - out of memory</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_PROVIDER - initiating a connection request failed
+(active side only)</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_PROVIDER - accepting the connection request
+failed (passive side only)</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_PROVIDER - freeing a communication event failed
+(passive side only)</p></td></tr>
+ </table>
+<hr>
+</body>
+</html>
