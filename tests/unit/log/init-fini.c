@@ -12,6 +12,17 @@
 #include "log_default.h"
 
 /*
+ * Default levels of the logging thresholds
+ */
+#ifdef DEBUG
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_DEBUG
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_LEVEL_WARNING
+#else
+#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_WARNING
+#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_DISABLED
+#endif
+
+/*
  * init_fini__lifecycle -- happy day scenario
  */
 static void
