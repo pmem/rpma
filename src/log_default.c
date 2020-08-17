@@ -77,7 +77,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  *
  * ASSUMPTIONS:
  * - level >= RPMA_LOG_LEVEL_FATAL && level <= RPMA_LOG_LEVEL_DEBUG
- * - level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_PRIMARY]
+ * - level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD]
  * - file == NULL || (file != NULL && function != NULL)
  */
 void
@@ -114,11 +114,11 @@ rpma_log_default_function(rpma_log_level level, const char *file_name,
 		}
 	}
 
-	/* assumed: level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_PRIMARY] */
+	/* assumed: level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] */
 	syslog(rpma_log_level_syslog_severity[level], "%s*%s*: %s",
 		file_info, rpma_log_level_names[level], message);
 
-	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_SECONDARY]) {
+	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX]) {
 		char times_tamp[45] = "";
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp, file_info,
