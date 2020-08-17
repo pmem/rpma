@@ -3,8 +3,8 @@
 # Copyright 2020, Intel Corporation
 #
 
+add_subdirectory(conn)
 add_subdirectory(conn_req)
-add_subdirectory(conn-test)
 add_subdirectory(ep-test)
 add_subdirectory(error)
 add_subdirectory(flush-test)
