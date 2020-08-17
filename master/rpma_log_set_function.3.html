@@ -1,0 +1,169 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Mon Aug 17 09:25:38 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_log_set_function</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_log_set_function</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#NOTE">NOTE</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_set_function</b>
+- set the log function</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma_log.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">typedef
+<i>void</i> <b>log_function</b>( <br>
+rpma_log_level <i>level</i>, <br>
+const char *<i>file_name</i>, <br>
+const int <i>line_no</i>, <br>
+const char *<i>function_name</i>, <br>
+const char *<i>message_format</i>, <br>
+...);</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>void</i>
+<b>rpma_log_set_function</b>(<i>log_function</i>
+*<i>log_function</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_log_set_function</b>()
+allows choosing the function which will get all the
+generated logging messages. The <i>log_function</i> can be
+either RPMA_LOG_DEFAULT_FUNCTION which will use the default
+logging function (built into the library) or a pointer to
+user-defined function.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The initial
+value of the logging function is RPMA_LOG_DEFAULT_FUNCTION.
+This function writes messages to <b>syslog</b>(3) and to
+<b>stderr</b>(3). Where <b>syslog</b>(3) is the primary
+destination (RPMA_LOG_THRESHOLD_PRIMARY applies) whereas
+<b>stderr</b>(3) is the secondary destination
+(RPMA_LOG_THRESHOLD_SECONDARY applies).</p>
+
+<p style="margin-left:11%; margin-top: 1em">Parameters of a
+user-defined log function are as follow:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>level</i> - the log <i>level</i> of the message</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>file_name</i> - name of the source file where the
+message coming from. It could be set to NULL and in such
+case neither <i>line_no</i> nor <i>function_name</i> are
+provided.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>line_no</i> - the source file line where the message
+coming from</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>function_name</i> - the function name where the
+message coming from</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p><i>message_format</i> - <b>printf</b>(3)<b>-like</b>
+format string of the message</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+</td></tr>
+</table>
+
+<h2>NOTE
+<a name="NOTE"></a>
+</h2>
+
+
+<p style="margin-left:11%;">The logging messages on the
+levels above the RPMA_LOG_THRESHOLD_PRIMARY <i>level</i>
+won&rsquo;t trigger the logging function.</p>
+<hr>
+</body>
+</html>
