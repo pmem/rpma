@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 	printf(
 		"Let's use custom log function to write messages to stderr\nNo message should be written to syslog\n");
 	log_worker_is_doing_something();
-	rpma_log_set_function(RPMA_LOG_DEFAULT_FUNCTION);
+	rpma_log_set_function(RPMA_LOG_USE_DEFAULT_FUNCTION);
 
 	return 0;
 }

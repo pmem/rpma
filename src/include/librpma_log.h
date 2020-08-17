@@ -49,70 +49,6 @@ typedef enum {
 	RPMA_LOG_THRESHOLD_MAX
 } rpma_threshold;
 
-/*
- * the type used for defining logging functions
- */
-typedef void log_function(
-	/* the log level of the message */
-	rpma_log_level level,
-	/* name of the source file where the message coming from */
-	const char *file_name,
-	/* the source file line where the message coming from */
-	const int line_no,
-	/* the function name where the message coming from */
-	const char *function_name,
-	/* printf(3)-like format string of the message */
-	const char *message_format,
-	/* additional arguments of the message format string */
-	...);
-
-#define RPMA_LOG_DEFAULT_FUNCTION (NULL)
-
-/** 3
- * rpma_log_set_function - set the log function
- *
- * SYNOPSIS
- *
- * #include <librpma_log.h>
- *
- * typedef void log_function(
- *	rpma_log_level level,
- *	const char *file_name,
- *	const int line_no,
- *	const char *function_name,
- *	const char *message_format,
- *	...);
- *
- * void rpma_log_set_function(log_function *log_function);
- *
- * DESCRIPTION
- * rpma_log_set_function() allows choosing the function which will get all
- * the generated logging messages. The log_function can be either
- * RPMA_LOG_DEFAULT_FUNCTION which will use the default logging function
- * (built into the library) or a pointer to user-defined function.
- *
- * The initial value of the logging function is RPMA_LOG_DEFAULT_FUNCTION.
- * This function writes messages to syslog(3) and to stderr(3). Where syslog(3)
- * is the primary destination (RPMA_LOG_THRESHOLD_PRIMARY applies) whereas
- * stderr(3) is the secondary destination (RPMA_LOG_THRESHOLD_SECONDARY
- * applies).
- *
- * Parameters of a user-defined log function are as follow:
- * - level - the log level of the message
- * - file_name - name of the source file where the message coming from.
- * It could be set to NULL and in such case neither line_no nor function_name
- * are provided.
- * - line_no - the source file line where the message coming from
- * - function_name - the function name where the message coming from
- * - message_format - printf(3)-like format string of the message
- * - ... - additional arguments of the message format string
- *
- * NOTE
- * The logging messages on the levels above the RPMA_LOG_THRESHOLD_PRIMARY
- * level won't trigger the logging function.
- */
-void rpma_log_set_function(log_function *log_function);
-
 /** 3
  * rpma_log_set_threshold - set the logging threshold level
  *
@@ -163,6 +99,12 @@ void rpma_log_set_function(log_function *log_function);
  * - RPMA_LOG_LEVEL_INFO - massive info e.g. every write operation indication
  * - RPMA_LOG_LEVEL_DEBUG - debug info e.g. write operation dump
  *
+ * THE DEFAULT LOGGING FUNCTION
+ * The default logging function writes messages to syslog(3) and to stderr(3).
+ * Where syslog(3) is the primary destination
+ * (RPMA_LOG_THRESHOLD_PRIMARY applies) whereas stderr(3) is the secondary
+ * destination (RPMA_LOG_THRESHOLD_SECONDARY applies).
+ *
  * RETURN VALUE
  * rpma_log_syslog_set_threshold() function returns 0 on success or error code
  * on failure.
@@ -199,5 +141,68 @@ int rpma_log_set_threshold(rpma_threshold threshold, rpma_log_level level);
  * - RPMA_E_INVAL - level is NULL
  */
 int rpma_log_get_threshold(rpma_threshold threshold, rpma_log_level *level);
+
+/*
+ * the type used for defining logging functions
+ */
+typedef void log_function(
+	/* the log level of the message */
+	rpma_log_level level,
+	/* name of the source file where the message coming from */
+	const char *file_name,
+	/* the source file line where the message coming from */
+	const int line_no,
+	/* the function name where the message coming from */
+	const char *function_name,
+	/* printf(3)-like format string of the message */
+	const char *message_format,
+	/* additional arguments of the message format string */
+	...);
+
+#define RPMA_LOG_USE_DEFAULT_FUNCTION (NULL)
+
+/** 3
+ * rpma_log_set_function - set the log function
+ *
+ * SYNOPSIS
+ *
+ * #include <librpma_log.h>
+ *
+ * typedef void log_function(
+ *	rpma_log_level level,
+ *	const char *file_name,
+ *	const int line_no,
+ *	const char *function_name,
+ *	const char *message_format,
+ *	...);
+ *
+ * void rpma_log_set_function(log_function *log_function);
+ *
+ * DESCRIPTION
+ * rpma_log_set_function() allows choosing the function which will get all
+ * the generated logging messages. The log_function can be either
+ * RPMA_LOG_USE_DEFAULT_FUNCTION which will use the default logging function
+ * (built into the library) or a pointer to user-defined function.
+ *
+ * Parameters of a user-defined log function are as follow:
+ * - level - the log level of the message
+ * - file_name - name of the source file where the message coming from.
+ * It could be set to NULL and in such case neither line_no nor function_name
+ * are provided.
+ * - line_no - the source file line where the message coming from
+ * - function_name - the function name where the message coming from
+ * - message_format - printf(3)-like format string of the message
+ * - ... - additional arguments of the message format string
+ *
+ * THE DEFAULT LOGGING FUNCTION
+ * The initial value of the logging function is RPMA_LOG_USE_DEFAULT_FUNCTION.
+ * This function writes messages to syslog(3) (the primary destination) and to
+ * stderr(3) (the secondary destination).
+ *
+ * NOTE
+ * The logging messages on the levels above the RPMA_LOG_THRESHOLD_PRIMARY
+ * level won't trigger the logging function.
+ */
+void rpma_log_set_function(log_function *log_function);
 
 #endif /* LIBRPMA_LOG_H */
