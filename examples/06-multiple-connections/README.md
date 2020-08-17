@@ -29,5 +29,5 @@ an out-of-band or the in-band channel.
 ```
 
 ```bash
-[user@client]$ ./client $server_address $service
+[user@client]$ ./client $server_address $service $seed
 ```
