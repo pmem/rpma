@@ -1,0 +1,114 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Tue Aug 18 14:53:14 2020 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rpma_utils_ibv_context_is_odp_capable</title>
+
+</head>
+<body>
+
+<h1 align="center">rpma_utils_ibv_context_is_odp_capable</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#RETURN VALUE">RETURN VALUE</a><br>
+<a href="#ERRORS">ERRORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_ibv_context_is_odp_capable</b>
+- is On-Demand Paging supported</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">#include
+&lt;librpma.h&gt;</p>
+
+<p style="margin-left:11%; margin-top: 1em">int
+<b>rpma_utils_ibv_context_is_odp_capable</b>(struct
+ibv_context *<i>dev</i>, <br>
+int *<i>is_odp_capable</i>);</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_ibv_context_is_odp_capable</b>()
+queries the RDMA device context&rsquo;s capabilities and
+check if it supports On-Demand Paging.</p>
+
+<h2>RETURN VALUE
+<a name="RETURN VALUE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The
+<b>rpma_utils_ibv_context_is_odp_capable</b>() function
+returns 0 on success or a negative error code on failure.
+The *<i>is_odp_capable</i> value on failure is
+undefined.</p>
+
+<h2>ERRORS
+<a name="ERRORS"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rpma_utils_ibv_context_is_odp_capable</b>()
+can fail with the following errors:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_INVAL - <i>dev</i> or <i>is_odp_capable</i> is
+NULL</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+
+<p>&bull;</p></td>
+<td width="3%"></td>
+<td width="85%">
+
+
+<p>RPMA_E_PROVIDER - <b>ibv_query_device_ex</b>() failed,
+errno can be checked using
+<b>rpma_err_get_provider_error</b>()</p> </td></tr>
+ </table>
+<hr>
+</body>
+</html>
