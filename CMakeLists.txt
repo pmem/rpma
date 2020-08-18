@@ -221,3 +221,6 @@ endif()
 if(NOT "${CPACK_GENERATOR}" STREQUAL "")
 	include(${CMAKE_SOURCE_DIR}/cmake/packages.cmake)
 endif()
+
+add_custom_target(config_rxe
+	COMMAND ${CMAKE_SOURCE_DIR}/utils/rxe_config.sh)
