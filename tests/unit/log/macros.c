@@ -54,13 +54,11 @@ setup_threshold(void **level_ptr)
  * MOCK_CONFIGURE_LOG_FUNC -- configure the set of expects needed for
  * the mock_log_function function
  *
- * - The {72, 104} range is good enough estimation of possible line numbers of
- * the log messages called from the log__all function.
  */
 #define MOCK_CONFIGURE_LOG_FUNC(l) \
 	expect_value(mock_log_function, level, (l)); \
 	expect_string(mock_log_function, file_name, MOCK_FILE_NAME); \
-	expect_in_range(mock_log_function, line_no, 72, 104); \
+	expect_value(mock_log_function, line_no, __LINE__ + 2); \
 	expect_string(mock_log_function, function_name, "log__all"); \
 	expect_string(mock_log_function, output, MOCK_MESSAGE "\n") \
 
