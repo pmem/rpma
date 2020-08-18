@@ -40,6 +40,7 @@ ENV RPMA_DEPS "\
 
 # doc update deps
 ENV DOC_UPDATE_DEPS "\
+	pandoc \
 	hub"
 
 # Install all required packages
