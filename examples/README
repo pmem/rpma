@@ -8,4 +8,7 @@ to examples and man pages.
 
 This directory contains also the 'config_rxe.sh' script
 dedicated to configuring SoftRoCE
-(it can be run using 'make config_rxe').
+(it can be run using 'make config_rxe')
+and the 'examples/run-all-on-SoftRoCE.sh' script
+for running all examples on SoftRoCE
+(it can be run using 'make test_softroce').
