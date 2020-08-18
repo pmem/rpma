@@ -16,6 +16,7 @@ if [ "$DIR" == "" ]; then
 fi
 
 mkdir -p html
+mkdir -p md
 
 find $DIR -name '*.h' -print0 | while read -d $'\0' MAN
 do
@@ -39,6 +40,10 @@ do
 		head -n -2 $f.tmp > $f
 		rm $f.tmp
 		cat $f | groff -mandoc -Thtml > html/$f.html
+		
+		# generate a md file
+		cat mans_header.md > md/$f.md
+		mandoc -mdoc -T markdown $f >> md/$f.md
 	done
 	rm $MANUALS $ERRORS
 done
