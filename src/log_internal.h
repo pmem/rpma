@@ -21,7 +21,7 @@ void rpma_log_init();
 void rpma_log_fini();
 
 #define RPMA_LOG(level, format, ...) \
-	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_PRIMARY] && \
+	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] && \
 			NULL != Rpma_log_function) { \
 		Rpma_log_function(level, __FILE__, __LINE__, __func__, \
 				format, ##__VA_ARGS__); \
@@ -42,16 +42,5 @@ void rpma_log_fini();
 
 #define RPMA_LOG_FATAL(format, ...) \
 	RPMA_LOG(RPMA_LOG_LEVEL_FATAL, format "\n", ##__VA_ARGS__)
-
-/*
- * Default levels of the logging thresholds
- */
-#ifdef DEBUG
-#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_DEBUG
-#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_LEVEL_WARNING
-#else
-#define RPMA_LOG_THRESHOLD_PRIMARY_DEFAULT RPMA_LOG_LEVEL_WARNING
-#define RPMA_LOG_THRESHOLD_SECONDARY_DEFAULT RPMA_LOG_DISABLED
-#endif
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

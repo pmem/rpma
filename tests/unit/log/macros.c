@@ -45,7 +45,7 @@ int
 setup_threshold(void **level_ptr)
 {
 	rpma_log_level level = **(rpma_log_level **)level_ptr;
-	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_PRIMARY, level);
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, level);
 
 	return 0;
 }
@@ -77,7 +77,7 @@ log__all(void **level_ptr)
 		 * The secondary threshold should not affect the macros
 		 * behaviour.
 		 */
-		rpma_log_set_threshold(RPMA_LOG_THRESHOLD_SECONDARY, secondary);
+		rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, secondary);
 
 		if (RPMA_LOG_LEVEL_NOTICE <= primary) {
 			MOCK_CONFIGURE_LOG_FUNC(RPMA_LOG_LEVEL_NOTICE);
