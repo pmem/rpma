@@ -5,5 +5,5 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
-build_test_lib(template-test template-test.c)
-add_test_generic(NAME template-test TRACERS none)
+build_test_lib(template template.c)
+add_test_generic(NAME template TRACERS none)
