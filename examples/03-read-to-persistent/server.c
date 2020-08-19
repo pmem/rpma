@@ -127,7 +127,7 @@ main(int argc, char *argv[])
 		goto err_free;
 
 	/* start a listening endpoint at addr:service */
-	ret = server_listen(peer, addr, service, &ep);
+	ret = rpma_ep_listen(peer, addr, service, &ep);
 	if (ret)
 		goto err_peer_delete;
 

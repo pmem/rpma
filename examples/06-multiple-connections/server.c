@@ -439,7 +439,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* start a listening endpoint at addr:service */
-	ret = server_listen(peer, addr, service, &svr.ep);
+	ret = rpma_ep_listen(peer, addr, service, &svr.ep);
 	if (ret)
 		goto err_server_fini;
 
