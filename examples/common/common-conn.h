@@ -47,9 +47,6 @@ int client_connect(struct rpma_peer *peer, const char *addr,
 		const char *service, struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 
-int server_listen(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_ep **ep_ptr);
-
 int server_accept_connection(struct rpma_ep *ep,
 		struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
