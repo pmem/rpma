@@ -12,7 +12,14 @@ date: rpma API version 0.0
 NAME
 ====
 
-**librpma** - remote persistent memory support library
+**rpma\_err\_get\_provider\_error** - return the last provider error
+
+SYNOPSIS
+========
+
+          #include <librpma.h>
+
+          int rpma_err_get_provider_error(void);
 
 DESCRIPTION
 ===========
