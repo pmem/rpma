@@ -8,6 +8,7 @@
  */
 
 #include <librpma.h>
+#include <librpma_log.h>
 #include <limits.h>
 #include <inttypes.h>
 #include <stdlib.h>
@@ -46,6 +47,10 @@ main(int argc, char *argv[])
 		exit(-1);
 	}
 
+	/* configure logging thresholds to see more details */
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
+
 	/* read common parameters */
 	char *addr = argv[1];
 	char *service = argv[2];
@@ -55,7 +60,7 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	int ret, ret2;
+	int ret;
 
 	/* RPMA resources - general */
 	struct rpma_peer *peer = NULL;
@@ -88,10 +93,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, MAX_NAME_SIZE, RPMA_MR_USAGE_READ_SRC,
 			RPMA_MR_PLT_VOLATILE, &mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_mr_free;
-	}
 
 	struct rpma_conn_private_data pdata;
 	rpma_mr_descriptor desc;
@@ -100,10 +103,8 @@ main(int argc, char *argv[])
 
 	/* receive the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &desc);
-	if (ret) {
-		print_error_ex("rpma_mr_get_descriptor", ret);
+	if (ret)
 		goto err_mr_dereg;
-	}
 
 	/* establish a new connection to a server listening at addr:service */
 	ret = client_connect(peer, addr, service, &pdata, &conn);
@@ -115,11 +116,7 @@ main(int argc, char *argv[])
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret2 = rpma_mr_dereg(&mr);
-	if (!ret && ret2) {
-		print_error_ex("rpma_mr_dereg", ret2);
-		ret = ret2;
-	}
+	(void) rpma_mr_dereg(&mr);
 
 err_mr_free:
 	/* free the memory */
@@ -127,11 +124,7 @@ err_mr_free:
 
 err_peer_delete:
 	/* delete the peer */
-	ret2 = rpma_peer_delete(&peer);
-	if (!ret && ret2) {
-		print_error_ex("rpma_peer_delete", ret2);
-		ret = ret2;
-	}
+	(void) rpma_peer_delete(&peer);
 
 	return ret;
 }
