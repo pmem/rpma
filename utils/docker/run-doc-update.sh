@@ -53,7 +53,7 @@ git clean -dfx
 rm -r ./$VERSION
 mkdir ./$VERSION
 
-cp -r ../html/* ./$VERSION/
+cp -r ../md/* ./$VERSION/
 
 # Add and push changes.
 # git commit command may fail if there is nothing to commit.
