@@ -1,7 +1,5 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
 
 /*
  * flush.c -- librpma flush-related implementations

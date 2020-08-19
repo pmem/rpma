@@ -1,7 +1,5 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* Copyright 2020, Intel Corporation */
 
 /*
  * test-common.h -- a test's common header
