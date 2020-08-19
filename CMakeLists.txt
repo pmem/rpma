@@ -221,3 +221,6 @@ endif()
 if(NOT "${CPACK_GENERATOR}" STREQUAL "")
 	include(${CMAKE_SOURCE_DIR}/cmake/packages.cmake)
 endif()
+
+add_custom_target(config_softroce
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/config_softroce.sh)
