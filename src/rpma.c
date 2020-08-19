@@ -8,6 +8,7 @@
 #include <rdma/rdma_cma.h>
 
 #include "librpma.h"
+#include "log_internal.h"
 #include "rpma_err.h"
 #include "info.h"
 
@@ -44,6 +45,8 @@ rpma_utils_get_ibv_context(const char *addr,
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_id",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
 	}
@@ -86,8 +89,11 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 	struct ibv_device_attr_ex attr = {{{0}}};
 	Rpma_provider_error = ibv_query_device_ex(dev, NULL /* input */,
 			&attr);
-	if (Rpma_provider_error)
+	if (Rpma_provider_error) {
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_query_device_ex",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
+	}
 
 	/*
 	 * Check whether On-Demand Paging is supported for all required types

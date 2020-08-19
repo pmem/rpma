@@ -15,6 +15,7 @@
 #endif
 
 #include "flush.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "rpma_err.h"
 
@@ -54,6 +55,7 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("sysconf", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 

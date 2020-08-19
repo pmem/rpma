@@ -5,10 +5,13 @@
  * conn.c -- librpma connection-related implementations
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 
+#include "common.h"
 #include "conn.h"
 #include "flush.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "private_data.h"
 #include "rpma_err.h"
@@ -48,11 +51,15 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	struct rdma_event_channel *evch = rdma_create_event_channel();
 	if (!evch) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_event_channel",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_migrate_id(id, evch)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_migrate_id",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_evch;
 	}
@@ -137,6 +144,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 			return RPMA_E_NO_NEXT;
 
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_get_cm_event",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -152,6 +161,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	enum rdma_cm_event_type cm_event = edata->event;
 	if (rdma_ack_cm_event(edata)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_ack_cm_event",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_private_data_discard;
 	}
@@ -171,6 +182,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		default:
 			return RPMA_E_UNKNOWN;
 	}
+
+	RPMA_LOG_NOTICE("%s", rpma_utils_conn_event_2str(*event));
 
 	return 0;
 
@@ -207,8 +220,12 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 
 	if (rdma_disconnect(conn->id)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_disconnect",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
+
+	RPMA_LOG_NOTICE("Requesting a disconnection");
 
 	return 0;
 }
@@ -236,18 +253,24 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	Rpma_provider_error = ibv_destroy_cq(conn->cq);
 	if (Rpma_provider_error) {
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_destroy_cq",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
 
 	Rpma_provider_error = ibv_destroy_comp_channel(conn->channel);
 	if (Rpma_provider_error) {
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_destroy_comp_channel",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
 
 	if (rdma_destroy_id(conn->id)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_destroy_id",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_event_channel;
 	}
@@ -389,8 +412,11 @@ rpma_conn_prepare_completions(struct rpma_conn *conn)
 	/* request for the next event on the CQ channel */
 	Rpma_provider_error = ibv_req_notify_cq(conn->cq,
 			0 /* all completions */);
-	if (Rpma_provider_error)
+	if (Rpma_provider_error) {
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_req_notify_cq",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
+	}
 
 	return 0;
 }
@@ -410,11 +436,17 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 		/*
 		 * There may be an extra CQ event with no completion in the CQ.
 		 */
+		RPMA_LOG_DEBUG("No completion in the CQ");
 		return RPMA_E_NO_COMPLETION;
 	} else if (result < 0) {
+		/* XXX ibv_poll_cq() may return only -1; no errno provided */
 		Rpma_provider_error = result;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_poll_cq", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	} else if (result > 1) {
+		RPMA_LOG_ERROR(
+				"ibv_poll_cq() returned %d where 0 or 1 is expected",
+				result);
 		return RPMA_E_UNKNOWN;
 	}
 
@@ -426,11 +458,20 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 		cmpl->op = RPMA_OP_WRITE;
 		break;
 	default:
+		RPMA_LOG_ERROR(
+				"unsupported wc.opcode == %d", wc.opcode);
 		return RPMA_E_NOSUPP;
 	}
 
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->op_status = wc.status;
+
+	if (unlikely(wc.status != IBV_WC_SUCCESS)) {
+		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64
+				", op_status=%s)",
+				cmpl->op_context,
+				ibv_wc_status_str(cmpl->op_status));
+	}
 
 	return 0;
 }
