@@ -1,0 +1,33 @@
+---
+layout: manual
+Content-Style: 'text/css'
+title: LIBRPMA
+collection: librpma
+date: rpma API version 0.0
+...
+
+[comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
+[comment]: <> (Copyright 2020, Intel Corporation)
+
+NAME
+====
+
+**rpma\_utils\_conn\_event\_2str** - convert RPMA\_CONN\_\* enum to a
+string
+
+SYNOPSIS
+========
+
+          #include <librpma.h>
+
+          const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
+
+DESCRIPTION
+===========
+
+Return const string representation of RPMA\_CONN\_\* enums.
+
+ERRORS
+======
+
+**rpma\_utils\_conn\_event\_2str**() can not fail.
