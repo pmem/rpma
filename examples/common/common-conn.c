@@ -12,26 +12,6 @@
 #include "common-conn.h"
 
 /*
- * print_error_ex -- print RPMA error to stderr
- *
- * The name is "print_error_ex" to distinguish
- * from the cmocka's "print_error" function.
- */
-void
-print_error_ex(const char *fname, int ret)
-{
-	if (ret == RPMA_E_PROVIDER) {
-		int errnum = rpma_err_get_provider_error();
-		const char *errstr = strerror(errnum);
-		(void) fprintf(stderr, "%s failed: %s (%s)\n", fname,
-				rpma_err_2str(ret), errstr);
-	} else {
-		(void) fprintf(stderr, "%s failed: %s\n", fname,
-				rpma_err_2str(ret));
-	}
-}
-
-/*
  * malloc_aligned -- allocate an aligned chunk of memory
  */
 void *
@@ -64,19 +44,11 @@ common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
 	struct ibv_context *dev = NULL;
 
 	int ret = rpma_utils_get_ibv_context(addr, type, &dev);
-	if (ret) {
-		print_error_ex("rpma_utils_get_ibv_context", ret);
-		return -1;
-	}
+	if (ret)
+		return ret;
 
 	/* create a new peer object */
-	ret = rpma_peer_new(dev, peer_ptr);
-	if (ret) {
-		print_error_ex("rpma_peer_new", ret);
-		return -1;
-	}
-
-	return 0;
+	return rpma_peer_new(dev, peer_ptr);
 }
 
 /*
@@ -93,32 +65,24 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *service,
 
 	/* create a connection request */
 	int ret = rpma_conn_req_new(peer, addr, service, &req);
-	if (ret) {
-		print_error_ex("rpma_conn_req_new", ret);
-		return -1;
-	}
+	if (ret)
+		return ret;
 
 	/* connect the connection request and obtain the connection object */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
 	if (ret) {
-		print_error_ex("rpma_conn_req_connect", ret);
 		(void) rpma_conn_req_delete(&req);
-		return -1;
+		return ret;
 	}
 
 	/* wait for the connection to establish */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
 	if (ret) {
-		print_error_ex("rpma_conn_next_event", ret);
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
+				"rpma_conn_next_event returned an unexptected event\n");
 		goto err_conn_delete;
-	} else {
-		fprintf(stderr, "rpma_conn_next_event returned an event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
 	}
 
 	return 0;
@@ -127,24 +91,6 @@ err_conn_delete:
 	(void) rpma_conn_delete(conn_ptr);
 
 	return ret;
-}
-
-/*
- * server_listen -- start a listening endpoint at addr:service
- */
-int
-server_listen(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_ep **ep_ptr)
-{
-	/* create a new endpoint object */
-	int ret = rpma_ep_listen(peer, addr, service, ep_ptr);
-	if (ret) {
-		print_error_ex("rpma_ep_listen", ret);
-		return ret;
-	}
-	fprintf(stdout, "Waiting for incoming connections...\n");
-
-	return 0;
 }
 
 /*
@@ -161,10 +107,8 @@ server_accept_connection(struct rpma_ep *ep,
 
 	/* receive an incoming connection request */
 	int ret = rpma_ep_next_conn_req(ep, &req);
-	if (ret) {
-		print_error_ex("rpma_ep_next_conn_req", ret);
+	if (ret)
 		return ret;
-	}
 
 	/*
 	 * connect / accept the connection request and obtain the connection
@@ -172,42 +116,20 @@ server_accept_connection(struct rpma_ep *ep,
 	 */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
 	if (ret) {
-		print_error_ex("rpma_conn_req_connect", ret);
 		(void) rpma_conn_req_delete(&req);
 		return ret;
 	}
 
 	/* wait for the connection to be established */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
-	if (ret) {
-		print_error_ex("rpma_conn_next_event", ret);
-	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
+	if (!ret && conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
+				"rpma_conn_next_event returned an unexptected event\n");
 		ret = -1;
-	} else {
-		fprintf(stdout, "rpma_conn_next_event returned an event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
 	}
 
 	if (ret)
 		(void) rpma_conn_delete(conn_ptr);
-
-	return ret;
-}
-
-/*
- * common_disconnect_verbose -- call rpma_conn_disconnect() and print an error
- * message on error
- */
-static inline int
-common_disconnect_verbose(struct rpma_conn *conn)
-{
-	/* disconnect the connection */
-	int ret = rpma_conn_disconnect(conn);
-	if (ret)
-		print_error_ex("rpma_conn_disconnect", ret);
 
 	return ret;
 }
@@ -223,32 +145,10 @@ common_wait_for_conn_close_verbose(struct rpma_conn *conn)
 
 	/* wait for the connection to be closed */
 	int ret = rpma_conn_next_event(conn, &conn_event);
-	if (ret) {
-		print_error_ex("rpma_conn_next_event", ret);
-	} else if (conn_event != RPMA_CONN_CLOSED) {
+	if (!ret && conn_event != RPMA_CONN_CLOSED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
-	} else {
-		fprintf(stderr,
-				"rpma_conn_next_event returned an event: %s\n",
-				rpma_utils_conn_event_2str(conn_event));
+				"rpma_conn_next_event returned an unexptected event\n");
 	}
-
-	return ret;
-}
-
-/*
- * common_conn_delete_verbose -- call rpma_conn_delete() and print an error
- * message on error
- */
-static inline int
-common_conn_delete_verbose(struct rpma_conn **conn_ptr)
-{
-	/* delete the connection object */
-	int ret = rpma_conn_delete(conn_ptr);
-	if (ret)
-		print_error_ex("rpma_conn_delete", ret);
 
 	return ret;
 }
@@ -262,8 +162,8 @@ common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
 	ret |= common_wait_for_conn_close_verbose(*conn_ptr);
-	ret |= common_disconnect_verbose(*conn_ptr);
-	ret |= common_conn_delete_verbose(conn_ptr);
+	ret |= rpma_conn_disconnect(*conn_ptr);
+	ret |= rpma_conn_delete(conn_ptr);
 
 	return ret;
 }
@@ -277,11 +177,11 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
 
-	ret |= common_disconnect_verbose(*conn_ptr);
+	ret |= rpma_conn_disconnect(*conn_ptr);
 	if (ret == 0)
 		ret |= common_wait_for_conn_close_verbose(*conn_ptr);
 
-	ret |= common_conn_delete_verbose(conn_ptr);
+	ret |= rpma_conn_delete(conn_ptr);
 
 	return ret;
 }
