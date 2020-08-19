@@ -224,3 +224,6 @@ endif()
 
 add_custom_target(config_softroce
 	COMMAND ${CMAKE_SOURCE_DIR}/examples/config_softroce.sh)
+
+add_custom_target(test_softroce
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-on-SoftRoCE.sh ${CMAKE_BINARY_DIR}/examples)
