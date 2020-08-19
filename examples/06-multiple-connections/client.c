@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "common.h"
+#include "common-conn.h"
 #include "multiple-connections-common.h"
 
 static char *Names[] = {

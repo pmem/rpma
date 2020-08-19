@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "common.h"
+#include "common-conn.h"
 
 #define HELLO_STR "Hello client!"
 
