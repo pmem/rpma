@@ -15,6 +15,7 @@ build_test_src(UNIT NAME utils-conn_event_2str SRCS
 
 build_test_src(UNIT NAME utils-get_ibv_context SRCS
 	utils-get_ibv_context.c
+	utils-common.c
 	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/rpma.c)
