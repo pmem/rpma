@@ -40,7 +40,7 @@ cd build
 
 cmake -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_BENCHMARKS=OFF ..
 make -j$(nproc) doc
-cp -R doc/html ../..
+cp -R doc/md ../..
 
 cd ..
 
