@@ -534,6 +534,15 @@ ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
 }
 
 /*
+ * ibv_wc_status_str -- ibv_wc_status_str() mock
+ */
+const char *
+ibv_wc_status_str(enum ibv_wc_status status)
+{
+	return "";
+}
+
+/*
  * rdma_migrate_id -- rdma_migrate_id() mock
  */
 int
@@ -648,6 +657,15 @@ rdma_bind_addr(struct rdma_cm_id *id, struct sockaddr *addr)
 		return -1;
 
 	return 0;
+}
+
+/*
+ * rdma_event_str -- rdma_event_str() mock
+ */
+const char *
+rdma_event_str(enum rdma_cm_event_type event)
+{
+	return "";
 }
 
 /*

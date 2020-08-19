@@ -296,3 +296,12 @@ ibv_dealloc_pd(struct ibv_pd *pd)
 
 	return args->ret;
 }
+
+/*
+ * ibv_wc_status_str -- ibv_wc_status_str() mock
+ */
+const char *
+ibv_wc_status_str(enum ibv_wc_status status)
+{
+	return "";
+}
