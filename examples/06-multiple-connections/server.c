@@ -16,7 +16,7 @@
 
 #define USAGE_STR "usage: %s <server_address> <service>\n"
 
-#include "common.h"
+#include "common-conn.h"
 #include "common-epoll.h"
 #include "multiple-connections-common.h"
 

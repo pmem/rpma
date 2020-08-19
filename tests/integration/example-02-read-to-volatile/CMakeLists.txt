@@ -12,7 +12,7 @@ build_test_src(NAME ${TARGET} SRCS
 	../common/mocks.c
 	${CMAKE_SOURCE_DIR}/examples/02-read-to-volatile/client.c
 	${CMAKE_SOURCE_DIR}/examples/02-read-to-volatile/server.c
-	${CMAKE_SOURCE_DIR}/examples/common/common.c
+	${CMAKE_SOURCE_DIR}/examples/common/common-conn.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/flush.c

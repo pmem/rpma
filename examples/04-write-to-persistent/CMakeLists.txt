@@ -38,5 +38,5 @@ function(add_example name)
 	endif()
 endfunction()
 
-add_example(server server.c ../common/common.c)
-add_example(client client.c ../common/common.c)
+add_example(server server.c ../common/common-conn.c)
+add_example(client client.c ../common/common-conn.c)

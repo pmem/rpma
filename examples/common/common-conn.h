@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * common.h -- a common functions declarations for examples
+ * common-conn.h -- a common connection functions declarations for examples
  */
 
 #ifndef EXAMPLES_COMMON

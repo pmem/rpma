@@ -2,14 +2,14 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * common.c -- a common functions used by examples
+ * common-conn.c -- a common connection functions used by examples
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 
-#include "common.h"
+#include "common-conn.h"
 
 /*
  * print_error_ex -- print RPMA error to stderr

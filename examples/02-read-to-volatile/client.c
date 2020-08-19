@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "common.h"
+#include "common-conn.h"
 
 #ifdef TEST_MOCK_MAIN
 #include "cmocka_headers.h"
