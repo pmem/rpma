@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "conn_req.h"
+#include "log_internal.h"
 #include "peer.h"
 #include "rpma_err.h"
 
@@ -60,6 +61,8 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_qp",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -95,8 +98,10 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 
 	Rpma_provider_error = errno;
 
-	if (Rpma_provider_error != EOPNOTSUPP || (!peer->is_odp_supported))
+	if (Rpma_provider_error != EOPNOTSUPP || (!peer->is_odp_supported)) {
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_reg_mr", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
+	}
 
 	/*
 	 * If the registration failed with EOPNOTSUPP and On-Demand Paging is
@@ -108,6 +113,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr == NULL) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_reg_mr", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -147,6 +153,8 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 			return RPMA_E_NOMEM;
 		} else if (errno != 0) {
 			Rpma_provider_error = errno;
+			RPMA_LOG_ERROR_WITH_ERRNO("ibv_alloc_pd",
+					Rpma_provider_error);
 			return RPMA_E_PROVIDER;
 		} else {
 			return RPMA_E_UNKNOWN;
@@ -187,6 +195,8 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	int ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
 		Rpma_provider_error = ret;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_dealloc_pd",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 

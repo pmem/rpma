@@ -36,3 +36,12 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 
 	return 0;
 }
+
+/*
+ * rpma_utils_conn_event_2str -- rpma_utils_conn_event_2str() mock
+ */
+const char *
+rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)
+{
+	return "";
+}

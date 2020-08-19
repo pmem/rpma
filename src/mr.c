@@ -6,9 +6,11 @@
  */
 
 #include <endian.h>
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "librpma.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "peer.h"
 #include "rpma_err.h"
@@ -273,6 +275,12 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	mr->rkey = rkey;
 	mr->plt = plt;
 	*mr_ptr = mr;
+
+	RPMA_LOG_INFO("new rpma_mr_remote(raddr=0x%" PRIx64 ", size=%" PRIu64
+			", rkey=0x%" PRIx32 ", plt=%s)",
+			raddr, size, rkey,
+			((plt == RPMA_MR_PLT_VOLATILE) ?
+					"volatile" : "persistent"));
 
 	return 0;
 }

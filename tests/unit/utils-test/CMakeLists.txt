@@ -10,12 +10,14 @@ build_test_src(UNIT NAME utils-conn_event_2str SRCS
 	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
 	${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/rpma.c)
 
 build_test_src(UNIT NAME utils-get_ibv_context SRCS
 	utils-get_ibv_context.c
 	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/rpma.c)
 
@@ -24,6 +26,7 @@ build_test_src(UNIT NAME utils-ibv_context_is_odp_capable SRCS
 	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 	${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
 	${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/rpma.c)
 

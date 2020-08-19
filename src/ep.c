@@ -13,6 +13,7 @@
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
+#include "log_internal.h"
 #include "rpma_err.h"
 
 struct rpma_ep {
@@ -52,11 +53,15 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 	evch = rdma_create_event_channel();
 	if (evch == NULL) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_event_channel",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_id",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_event_channel;
 	}
@@ -71,6 +76,8 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_listen",
+				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
 	}
@@ -89,6 +96,9 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 
 	/* an error at this step should not affect the final result */
 	(void) rpma_info_delete(&info);
+
+	RPMA_LOG_NOTICE("Waiting for incoming connection on %s:%s", addr,
+			service);
 
 	return ret;
 
@@ -117,6 +127,8 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	if (rdma_destroy_id(ep->id)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_destroy_id",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -164,6 +176,8 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 			return RPMA_E_NO_NEXT;
 
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_get_cm_event",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
