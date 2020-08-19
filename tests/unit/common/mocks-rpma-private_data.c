@@ -1,7 +1,5 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2020, Intel Corporation */
 
 /*
  * mocks-rpma-private_data.c -- librpma private_data.c module mocks

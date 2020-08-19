@@ -1,7 +1,5 @@
-/*
- * SPDX-License-Identifier: BSD-3-Clause
- * Copyright 2020, Intel Corporation
- */
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* Copyright 2020, Intel Corporation */
 
 /*
  * cmocka_headers.h -- include all headers required by cmocka
