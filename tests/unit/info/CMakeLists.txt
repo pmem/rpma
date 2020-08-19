@@ -12,6 +12,7 @@ function(add_test_info name)
 		info-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/info.c)

@@ -10,6 +10,7 @@
 
 #include "conn_req.h"
 #include "info.h"
+#include "log_internal.h"
 #include "rpma_err.h"
 
 #include "librpma.h"
@@ -50,6 +51,8 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 	int ret = rdma_getaddrinfo(addr, service, &hints, &rai);
 	if (ret) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_getaddrinfo",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -105,6 +108,8 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
 	if (ret) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_resolve_addr",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -123,6 +128,8 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 	if (ret) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("rdma_bind_addr",
+				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 

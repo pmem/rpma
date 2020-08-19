@@ -31,6 +31,12 @@ void rpma_log_fini();
  * Set of macros that should be used as the primary API for logging.
  * Direct call to rpma_log shall be used only in exceptional, corner cases.
  */
+#define RPMA_LOG_DEBUG(format, ...) \
+	RPMA_LOG(RPMA_LOG_LEVEL_DEBUG, format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_INFO(format, ...) \
+	RPMA_LOG(RPMA_LOG_LEVEL_INFO, format "\n", ##__VA_ARGS__)
+
 #define RPMA_LOG_NOTICE(format, ...) \
 	RPMA_LOG(RPMA_LOG_LEVEL_NOTICE, format "\n", ##__VA_ARGS__)
 
@@ -42,5 +48,10 @@ void rpma_log_fini();
 
 #define RPMA_LOG_FATAL(format, ...) \
 	RPMA_LOG(RPMA_LOG_LEVEL_FATAL, format "\n", ##__VA_ARGS__)
+
+#define RPMA_LOG_ERRNO_FMT "%s failed: %s"
+
+#define RPMA_LOG_ERROR_WITH_ERRNO(func, e) \
+	RPMA_LOG_ERROR(RPMA_LOG_ERRNO_FMT, func, strerror(e))
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

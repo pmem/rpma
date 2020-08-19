@@ -297,6 +297,15 @@ rdma_ack_cm_event(struct rdma_cm_event *event)
 	return mock_type(int);
 }
 
+/*
+ * rdma_event_str -- rdma_event_str() mock
+ */
+const char *
+rdma_event_str(enum rdma_cm_event_type event)
+{
+	return "";
+}
+
 /* setups and teardowns */
 
 /*

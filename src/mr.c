@@ -6,9 +6,11 @@
  */
 
 #include <endian.h>
+#include <inttypes.h>
 #include <stdlib.h>
 
 #include "librpma.h"
+#include "log_internal.h"
 #include "mr.h"
 #include "peer.h"
 #include "rpma_err.h"
@@ -112,6 +114,7 @@ rpma_mr_read(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -151,6 +154,7 @@ rpma_mr_write(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -209,6 +213,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	errno = ibv_dereg_mr(mr->ibv_mr);
 	if (errno) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_dereg_mr", Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 	}
 
@@ -273,6 +278,12 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	mr->rkey = rkey;
 	mr->plt = plt;
 	*mr_ptr = mr;
+
+	RPMA_LOG_INFO("new rpma_mr_remote(raddr=0x%" PRIx64 ", size=%" PRIu64
+			", rkey=0x%" PRIx32 ", plt=%s)",
+			raddr, size, rkey,
+			((plt == RPMA_MR_PLT_VOLATILE) ?
+					"volatile" : "persistent"));
 
 	return 0;
 }
