@@ -5,13 +5,22 @@
 #
 # config_softroce.sh - configure SoftRoCE
 #
-# Usage: config_softroce.sh [network_interface]
+# Usage: config_softroce.sh [<network_interface>|verify]
 #
-# Configure SoftRoCE for the given network interface
-# or for the first active and up one if none is given.
+# Options:
+# <network_interface> - configure SoftRoCE for the given <network_interface>
+#                       or for the first active and up one if no argument
+#                       is given
+# verify              - verify if SoftRoCE is already configured
 #
 
-LINK=$1
+if [ "$1" == "verify" ]; then
+	VERIFY=1
+	LINK=""
+else
+	VERIFY=0
+	LINK=$1
+fi
 
 MODULE="rdma_rxe"
 DIR="/lib/modules/$(uname -r)"
@@ -50,9 +59,14 @@ STATE_OK="state ACTIVE physical_state LINK_UP"
 if [ "$LINK" == "" ]; then
 	RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | wc -l)
 	if [ $RDMA_LINKS -gt 0 ]; then
-		echo "SoftRoCE has been already configured:"
-		rdma link show
+		if [ $VERIFY -eq 0 ]; then
+			echo "SoftRoCE has been already configured:"
+			rdma link show
+		fi
 		exit 0
+	elif [ $VERIFY -eq 1 ]; then
+		echo "Error: SoftRoCE has not been configured yet!"
+		exit 1
 	fi
 
 	# pick up the first 'up' one
@@ -61,7 +75,6 @@ if [ "$LINK" == "" ]; then
 		echo "Error: cannot find an active and up network interface"
 		exit 1
 	fi
-
 fi
 
 echo "Configuring SoftRoCE for the '$LINK' network interface:"
