@@ -8,6 +8,7 @@
  */
 
 #include <librpma.h>
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -57,6 +58,10 @@ main(int argc, char *argv[])
 		fprintf(stderr, USAGE_STR, argv[0]);
 		exit(-1);
 	}
+
+	/* configure logging thresholds to see more details */
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	/* read common parameters */
 	char *addr = argv[1];
@@ -184,19 +189,15 @@ main(int argc, char *argv[])
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_SRC,
 			mr_plt, &src_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_mr_dereg;
-	}
 
 	/* register the RAW buffer */
 	ret = rpma_mr_reg(peer, raw, 8,
 			RPMA_MR_USAGE_READ_DST,
 			mr_plt, &raw_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
+	if (ret)
 		goto err_mr_dereg;
-	}
 
 	/* obtain the remote memory description */
 	struct rpma_conn_private_data pdata;
@@ -211,24 +212,18 @@ main(int argc, char *argv[])
 	struct common_data *dst_data = pdata.ptr;
 	dst_offset = dst_data->data_offset;
 	ret = rpma_mr_remote_from_descriptor(&dst_data->desc, &dst_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_remote_from_descriptor", ret);
+	if (ret)
 		goto err_conn_disconnect;
-	}
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
 	if (ret) {
-		print_error_ex("rpma_mr_remote_size", ret);
 		goto err_mr_remote_delete;
 	} else if (dst_size < KILOBYTE) {
 		fprintf(stderr,
 				"Remote memory region size too small for writing the data of the assumed size (%zu < %d)\n",
 				dst_size, KILOBYTE);
 		goto err_mr_remote_delete;
-	} else {
-		fprintf(stdout, "Remote memory region size: %zu\n",
-				dst_size);
 	}
 
 	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
@@ -245,16 +240,12 @@ main(int argc, char *argv[])
 
 	/* wait for the completion to be ready */
 	ret = rpma_conn_prepare_completions(conn);
-	if (ret) {
-		print_error_ex("rpma_conn_prepare_completions", ret);
+	if (ret)
 		goto err_conn_disconnect;
-	}
 
 	ret = rpma_conn_next_completion(conn, &cmpl);
-	if (ret) {
-		print_error_ex("rpma_conn_next_completion", ret);
+	if (ret)
 		goto err_conn_disconnect;
-	}
 
 	if (cmpl.op != RPMA_OP_READ) {
 		(void) fprintf(stderr,
@@ -286,25 +277,16 @@ err_conn_disconnect:
 
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
-	ret = rpma_mr_remote_delete(&dst_mr);
-	if (ret)
-		print_error_ex("rpma_mr_remote_delete", ret);
+	(void) rpma_mr_remote_delete(&dst_mr);
 
 err_mr_dereg:
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&src_mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
-
-	ret = rpma_mr_dereg(&raw_mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
+	(void) rpma_mr_dereg(&src_mr);
+	(void) rpma_mr_dereg(&raw_mr);
 
 err_peer_delete:
 	/* delete the peer */
-	ret = rpma_peer_delete(&peer);
-	if (ret)
-		print_error_ex("rpma_peer_delete", ret);
+	(void) rpma_peer_delete(&peer);
 
 err_free:
 #ifdef USE_LIBPMEM

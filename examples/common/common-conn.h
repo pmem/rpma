@@ -27,8 +27,6 @@ struct common_data {
 
 #define TIMEOUT_15S (15000) /* [msec] == 15s */
 
-void print_error_ex(const char *fname, int ret);
-
 void *malloc_aligned(size_t size);
 
 int common_peer_via_address(const char *addr,
@@ -46,9 +44,6 @@ int common_peer_via_address(const char *addr,
 int client_connect(struct rpma_peer *peer, const char *addr,
 		const char *service, struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
-
-int server_listen(struct rpma_peer *peer, const char *addr, const char *service,
-		struct rpma_ep **ep_ptr);
 
 int server_accept_connection(struct rpma_ep *ep,
 		struct rpma_conn_private_data *pdata,

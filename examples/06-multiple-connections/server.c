@@ -9,6 +9,7 @@
 
 #include <inttypes.h>
 #include <librpma.h>
+#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/epoll.h>
@@ -78,7 +79,6 @@ server_init(struct server_res *svr, struct rpma_peer *peer)
 	ret = rpma_mr_reg(peer, svr->dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
 			RPMA_MR_PLT_VOLATILE, &svr->dst_mr);
 	if (ret) {
-		print_error_ex("rpma_mr_reg", ret);
 		free(svr->dst_ptr);
 		close(svr->epoll);
 	}
@@ -94,8 +94,6 @@ server_fini(struct server_res *svr)
 {
 	/* deregister the memory region */
 	int ret = rpma_mr_dereg(&svr->dst_mr);
-	if (ret)
-		print_error_ex("rpma_mr_dereg", ret);
 
 	/* free the memory */
 	free(svr->dst_ptr);
@@ -145,10 +143,8 @@ client_add_to_epoll(struct client_res *clnt, int epoll)
 	/* get the connection's event fd and add it to epoll */
 	int fd;
 	int ret = rpma_conn_get_event_fd(clnt->conn, &fd);
-	if (ret) {
-		print_error_ex("rpma_conn_get_event_fd", ret);
+	if (ret)
 		return ret;
-	}
 	ret = epoll_add(epoll, fd, clnt, client_handle_connection_event,
 			&clnt->ev_conn_event);
 	if (ret)
@@ -157,7 +153,6 @@ client_add_to_epoll(struct client_res *clnt, int epoll)
 	/* get the connection's completion fd and add it to epoll */
 	ret = rpma_conn_get_completion_fd(clnt->conn, &fd);
 	if (ret) {
-		print_error_ex("rpma_conn_get_completion_fd", ret);
 		epoll_delete(epoll, &clnt->ev_conn_event);
 		return ret;
 	}
@@ -184,9 +179,7 @@ client_delete(struct client_res *clnt)
 		epoll_delete(svr->epoll, &clnt->ev_conn_event);
 
 	/* delete the connection and set conn to NULL */
-	int ret = rpma_conn_delete(&clnt->conn);
-	if (ret)
-		print_error_ex("rpma_conn_delete", ret);
+	(void) rpma_conn_delete(&clnt->conn);
 }
 
 /*
@@ -221,7 +214,6 @@ client_handle_completion(struct custom_event *ce)
 			return;
 
 		/* another error occured - disconnect */
-		print_error_ex("rpma_conn_prepare_completions", ret);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
@@ -235,7 +227,6 @@ client_handle_completion(struct custom_event *ce)
 			return;
 
 		/* another error occured - disconnect */
-		print_error_ex("rpma_conn_next_completion", ret);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
@@ -256,9 +247,7 @@ client_handle_completion(struct custom_event *ce)
 	client_handle_name(clnt, svr->dst_ptr);
 
 	/* initialize disconnection process */
-	ret = rpma_conn_disconnect(clnt->conn);
-	if (ret)
-		print_error_ex("rpma_conn_disconnect", ret);
+	(void) rpma_conn_disconnect(clnt->conn);
 }
 
 /*
@@ -283,25 +272,20 @@ client_fetch_name(struct client_res *clnt, struct rpma_mr_local *dst)
 	/* prepare a remote memory region */
 	struct rpma_mr_remote *src_mr;
 	int ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
-	if (ret) {
-		print_error_ex("rpma_mr_remote_from_descriptor", ret);
-		return -1;
-	}
+	if (ret)
+		return ret;
 
 	/* read client's name from the remote memory region */
 	ret = rpma_read(clnt->conn, dst, clnt->offset,
 			src_mr, 0, MAX_NAME_SIZE,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret) {
-		print_error_ex("rpma_read", ret);
 		(void) rpma_mr_remote_delete(&src_mr);
-		return -1;
+		return ret;
 	}
 
 	/* delete the remote memory region's object */
-	ret = rpma_mr_remote_delete(&src_mr);
-	if (ret)
-		print_error_ex("rpma_read", ret);
+	(void) rpma_mr_remote_delete(&src_mr);
 
 	return 0;
 }
@@ -337,7 +321,6 @@ client_handle_connection_event(struct custom_event *ce)
 		if (ret == RPMA_E_NO_NEXT)
 			return;
 
-		print_error_ex("rpma_conn_next_event", ret);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
@@ -371,14 +354,8 @@ server_handle_incoming_client(struct custom_event *ce)
 
 	/* receive an incoming connection request */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(svr->ep, &req);
-	if (ret) {
-		if (ret == RPMA_E_NO_NEXT)
-			return;
-
-		print_error_ex("rpma_ep_next_conn_req", ret);
+	if (rpma_ep_next_conn_req(svr->ep, &req))
 		return;
-	}
 
 	/* if no free slot is available */
 	struct client_res *clnt = NULL;
@@ -388,9 +365,7 @@ server_handle_incoming_client(struct custom_event *ce)
 	}
 
 	/* accept the connection request and obtain the connection object */
-	ret = rpma_conn_req_connect(&req, NULL, &clnt->conn);
-	if (ret) {
-		print_error_ex("rpma_conn_req_connect", ret);
+	if (rpma_conn_req_connect(&req, NULL, &clnt->conn)) {
 		(void) rpma_conn_req_delete(&req);
 		/*
 		 * When rpma_conn_req_connect() fails the connection pointer
@@ -401,8 +376,7 @@ server_handle_incoming_client(struct custom_event *ce)
 		return;
 	}
 
-	ret = client_add_to_epoll(clnt, svr->epoll);
-	if (ret)
+	if (client_add_to_epoll(clnt, svr->epoll))
 		(void) rpma_conn_disconnect(clnt->conn);
 }
 
@@ -414,6 +388,10 @@ main(int argc, char *argv[])
 		fprintf(stderr, USAGE_STR, argv[0]);
 		exit(-1);
 	}
+
+	/* configure logging thresholds to see more details */
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
+	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	/* read common parameters */
 	char *addr = argv[1];
@@ -439,17 +417,15 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* start a listening endpoint at addr:service */
-	ret = server_listen(peer, addr, service, &svr.ep);
+	ret = rpma_ep_listen(peer, addr, service, &svr.ep);
 	if (ret)
 		goto err_server_fini;
 
 	/* get the endpoint's event file descriptor and add it to epoll */
 	int ep_fd;
 	ret = rpma_ep_get_fd(svr.ep, &ep_fd);
-	if (ret) {
-		print_error_ex("rpma_ep_get_fd", ret);
+	if (ret)
 		goto err_ep_shutdown;
-	}
 	ret = epoll_add(svr.epoll, ep_fd, &svr, server_handle_incoming_client,
 			&svr.ev_incoming);
 	if (ret)
@@ -480,10 +456,8 @@ main(int argc, char *argv[])
 err_ep_shutdown:
 	/* shutdown the endpoint */
 	ret2 = rpma_ep_shutdown(&svr.ep);
-	if (!ret && ret2) {
-		print_error_ex("rpma_ep_shutdown", ret2);
+	if (!ret && ret2)
 		ret = ret2;
-	}
 
 err_server_fini:
 	/* release the server's resources */
@@ -494,10 +468,8 @@ err_server_fini:
 err_peer_delete:
 	/* delete the peer object */
 	ret2 = rpma_peer_delete(&peer);
-	if (!ret && ret2) {
-		print_error_ex("rpma_peer_delete", ret2);
+	if (!ret && ret2)
 		ret = ret2;
-	}
 
 	return ret;
 }
