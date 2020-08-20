@@ -13,7 +13,9 @@ function(add_test_conn name)
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-mr.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-utils.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/conn.c)
