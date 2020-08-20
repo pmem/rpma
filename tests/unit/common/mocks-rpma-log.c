@@ -8,7 +8,8 @@
 #include "log_internal.h"
 
 rpma_log_level Rpma_log_threshold[] = {
-		RPMA_LOG_DISABLED,	/* RPMA_LOG_THRESHOLD */
+		/* all logs have to be triggered */
+		RPMA_LOG_LEVEL_DEBUG,	/* RPMA_LOG_THRESHOLD */
 		RPMA_LOG_DISABLED	/* RPMA_LOG_THRESHOLD_AUX */
 };
 
