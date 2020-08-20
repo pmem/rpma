@@ -106,17 +106,17 @@ for file in $FILES ; do
 	if ! grep -q "SPDX-License-Identifier: $LICENSE" $src_path; then
 		echo "error: no $LICENSE SPDX tag in file: $src_path" >&2
 		RV=1
-	elif [[ $(echo $file) =~ ".cmake" ]] || [[ $(echo $file) =~ ".sh" ]]; then
+	elif [[ $file == *.cmake ]] || [[ $file == *.sh ]]; then
 		if ! grep -q -e "# SPDX-License-Identifier: $LICENSE" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
-	elif [[ $(echo $file) =~ ".c" ]]; then
+	elif [[ $file == *.c ]]; then
 		if ! grep -q -e "\/\/ SPDX-License-Identifier: $LICENSE" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
-	elif [[ $(echo $file) =~ ".h" ]]; then
+	elif [[ $file == *.h ]]; then
 		if ! grep -q -e "\/\* SPDX-License-Identifier: $LICENSE \*\/" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
