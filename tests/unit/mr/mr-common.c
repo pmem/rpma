@@ -10,7 +10,8 @@
 #include "mr-common.h"
 #include "test-common.h"
 
-const rpma_mr_descriptor Desc_exp = DESC_EXP;
+const rpma_mr_descriptor Desc_exp_pmem = DESC_EXP_PMEM;
+const rpma_mr_descriptor Desc_exp_dram = DESC_EXP_DRAM;
 
 /* common setups & teardowns */
 
@@ -141,7 +142,7 @@ setup__mr_remote(void **mr_ptr)
 	 * create a remote memory structure based on a pre-prepared descriptor
 	 */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, &mr);
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);

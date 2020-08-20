@@ -89,7 +89,7 @@ static void
 remote_from_descriptor__mr_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, NULL);
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -120,7 +120,7 @@ remote_from_descriptor__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp, &mr);
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -271,7 +271,7 @@ get_descriptor__desc_alignment(void **pprestate)
 
 		/* verify the results */
 		assert_int_equal(ret, 0);
-		assert_memory_equal(desc, &Desc_exp, MR_DESC_SIZE);
+		assert_memory_equal(desc, &Desc_exp_pmem, MR_DESC_SIZE);
 		assert_memory_equal(buff_base, pattern, i);
 		assert_memory_equal(
 				buff_base + i + MR_DESC_SIZE,
@@ -310,7 +310,9 @@ remote_from_descriptor__desc_alignment(void **unused)
 
 		/* prepare a buffer contents */
 		desc = (rpma_mr_descriptor *)(buff_base + i);
-		memcpy(desc, &Desc_exp, MR_DESC_SIZE);
+		const rpma_mr_descriptor *desc_src = (i % 2) ?
+				&Desc_exp_pmem : &Desc_exp_dram;
+		memcpy(desc, desc_src, MR_DESC_SIZE);
 
 		/* run test */
 		ret = rpma_mr_remote_from_descriptor(desc, &mr);
