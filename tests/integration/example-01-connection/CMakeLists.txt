@@ -12,7 +12,6 @@ build_test_src(NAME ${TARGET} SRCS
 	../common/mocks.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
-	${CMAKE_SOURCE_DIR}/examples/common/common.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/flush.c

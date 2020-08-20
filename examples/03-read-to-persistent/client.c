@@ -18,7 +18,7 @@
 #define USAGE_STR "usage: %s <server_address> <service>\n"
 #endif /* USE_LIBPMEM */
 
-#include "common.h"
+#include "common-conn.h"
 
 enum lang_t {en, es};
 
