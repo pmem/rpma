@@ -53,10 +53,10 @@ common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
 
 /*
  * client_connect -- establish a new connection to a server listening at
- * addr:service
+ * addr:port
  */
 int
-client_connect(struct rpma_peer *peer, const char *addr, const char *service,
+client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr)
 {
@@ -64,7 +64,7 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *service,
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 
 	/* create a connection request */
-	int ret = rpma_conn_req_new(peer, addr, service, &req);
+	int ret = rpma_conn_req_new(peer, addr, port, &req);
 	if (ret)
 		return ret;
 

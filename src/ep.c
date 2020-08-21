@@ -31,15 +31,15 @@ struct rpma_ep {
 
 /*
  * rpma_ep_listen -- create a new event channel and a new CM ID attached to
- * the event channel. Bind the CM ID to the provided addr:service pair.
+ * the event channel. Bind the CM ID to the provided addr:port pair.
  * If everything succeeds a new endpoint is created encapsulating the event
  * channel and the CM ID.
  */
 int
-rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
+rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_ep **ep_ptr)
 {
-	if (peer == NULL || addr == NULL || service == NULL || ep_ptr == NULL)
+	if (peer == NULL || addr == NULL || port == NULL || ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	struct rdma_event_channel *evch = NULL;
@@ -64,7 +64,7 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 		goto err_destroy_event_channel;
 	}
 
-	ret = rpma_info_new(addr, service, RPMA_INFO_PASSIVE, &info);
+	ret = rpma_info_new(addr, port, RPMA_INFO_PASSIVE, &info);
 	if (ret)
 		goto err_destroy_id;
 
@@ -96,7 +96,7 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *service,
 	(void) rpma_info_delete(&info);
 
 	RPMA_LOG_NOTICE("Waiting for incoming connection on %s:%s", addr,
-			service);
+			port);
 
 	return ret;
 

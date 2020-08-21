@@ -15,9 +15,9 @@
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <service> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
 #else
-#define USAGE_STR "usage: %s <server_address> <service>\n"
+#define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
 #include "common-conn.h"
@@ -37,7 +37,7 @@ main(int argc, char *argv[])
 
 	/* read common parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 	int ret;
 
 	/* resources - memory region */
@@ -131,8 +131,8 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_free;
 
-	/* start a listening endpoint at addr:service */
-	ret = rpma_ep_listen(peer, addr, service, &ep);
+	/* start a listening endpoint at addr:port */
+	ret = rpma_ep_listen(peer, addr, port, &ep);
 	if (ret)
 		goto err_peer_delete;
 

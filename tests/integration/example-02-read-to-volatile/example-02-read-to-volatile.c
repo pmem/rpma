@@ -206,7 +206,7 @@ test_client__success(void **unused)
 	will_return(ibv_dealloc_pd, MOCK_OK);
 
 	/* run test */
-	char *argv[] = {"client", MOCK_ADDR, MOCK_SERVICE};
+	char *argv[] = {"client", MOCK_ADDR, MOCK_PORT};
 	int ret = client_main(3, argv);
 
 	assert_int_equal(ret, MOCK_OK);
@@ -373,7 +373,7 @@ test_server__success(void **unused)
 	will_return(ibv_dealloc_pd, MOCK_OK);
 
 	/* run test */
-	char *argv[] = {"server", MOCK_ADDR, MOCK_SERVICE};
+	char *argv[] = {"server", MOCK_ADDR, MOCK_PORT};
 	int ret = server_main(3, argv);
 
 	assert_int_equal(ret, MOCK_OK);

@@ -101,7 +101,7 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&cstate.req);
 
 	/* verify the results */

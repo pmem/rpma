@@ -14,9 +14,9 @@
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <service> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
 #else
-#define USAGE_STR "usage: %s <server_address> <service>\n"
+#define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
 #include "common-conn.h"
@@ -65,7 +65,7 @@ main(int argc, char *argv[])
 
 	/* read common parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 	int ret;
 
 	/* resources - memory region */
@@ -181,11 +181,11 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_peer_delete;
 
-	/* establish a new connection to a server listening at addr:service */
+	/* establish a new connection to a server listening at addr:port */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
 	pdata.len = sizeof(struct common_data);
-	ret = client_connect(peer, addr, service, &pdata, &conn);
+	ret = client_connect(peer, addr, port, &pdata, &conn);
 	if (ret)
 		goto err_mr_dereg;
 

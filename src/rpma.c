@@ -37,7 +37,7 @@ rpma_utils_get_ibv_context(const char *addr,
 	}
 
 	struct rpma_info *info;
-	int ret = rpma_info_new(addr, NULL /* service */, side, &info);
+	int ret = rpma_info_new(addr, NULL /* port */, side, &info);
 	if (ret)
 		return ret;
 

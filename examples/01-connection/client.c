@@ -20,7 +20,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <addr> <service>\n",
+		fprintf(stderr, "usage: %s <addr> <port>\n",
 			argv[0]);
 		exit(-1);
 	}
@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 
 	/* parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 
 	/* resources */
 	struct ibv_context *dev = NULL;
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 		return ret;
 
 	/* create a connection request */
-	ret = rpma_conn_req_new(peer, addr, service, &req);
+	ret = rpma_conn_req_new(peer, addr, port, &req);
 	if (ret)
 		goto err_peer_delete;
 

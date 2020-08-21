@@ -589,7 +589,7 @@ rdma_listen(struct rdma_cm_id *id, int backlog)
  * rdma_getaddrinfo -- rdma_getaddrinfo() mock
  */
 int
-rdma_getaddrinfo(const char *node, const char *service,
+rdma_getaddrinfo(const char *node, const char *port,
 		const struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
 {
 	assert_string_equal(node, MOCK_ADDR);
@@ -599,11 +599,11 @@ rdma_getaddrinfo(const char *node, const char *service,
 		return -1;
 
 	struct rdma_addrinfo *buf = mock_type(struct rdma_addrinfo *);
-	if (service == NULL) {
+	if (port == NULL) {
 		buf->ai_src_addr = NULL;
 		buf->ai_dst_addr = NULL;
 	} else {
-		assert_string_equal(service, MOCK_SERVICE);
+		assert_string_equal(port, MOCK_PORT);
 		buf->ai_src_addr = mock_type(struct sockaddr *);
 		buf->ai_dst_addr = mock_type(struct sockaddr *);
 	}

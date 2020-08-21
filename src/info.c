@@ -32,7 +32,7 @@ struct rpma_info {
  * rpma_info_new -- create an address translation cache aka the info object
  */
 int
-rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
+rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 		struct rpma_info **info_ptr)
 {
 	if (addr == NULL || info_ptr == NULL)
@@ -48,7 +48,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 
 	/* query */
 	struct rdma_addrinfo *rai = NULL;
-	int ret = rdma_getaddrinfo(addr, service, &hints, &rai);
+	int ret = rdma_getaddrinfo(addr, port, &hints, &rai);
 	if (ret) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO("rdma_getaddrinfo",

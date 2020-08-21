@@ -20,7 +20,7 @@
  * rpma_info_new -- mock of rpma_info_new
  */
 int
-rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
+rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 		struct rpma_info **info_ptr)
 {
 	/*
@@ -30,7 +30,7 @@ rpma_info_new(const char *addr, const char *service, enum rpma_info_side side,
 	 * Otherwise, unconsumed expects would cause a test failure.
 	 */
 	assert_string_equal(addr, MOCK_IP_ADDRESS);
-	assert_null(service);
+	assert_null(port);
 	assert_true(side == RPMA_INFO_PASSIVE || side == RPMA_INFO_ACTIVE);
 
 	*info_ptr = mock_type(struct rpma_info *);

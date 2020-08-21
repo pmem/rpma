@@ -22,9 +22,9 @@ an out-of-band or the in-band channel.
 ## Usage
 
 ```bash
-[user@server]$ ./server $server_address $service [<pmem-path>]
+[user@server]$ ./server $server_address $port [<pmem-path>]
 ```
 
 ```bash
-[user@client]$ ./client $server_address $service [<pmem-path>]
+[user@client]$ ./client $server_address $port [<pmem-path>]
 ```

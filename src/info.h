@@ -26,7 +26,7 @@ struct rpma_info;
  * - RPMA_E_PROVIDER - address translation failed with error
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_info_new(const char *addr, const char *service,
+int rpma_info_new(const char *addr, const char *port,
 		enum rpma_info_side side, struct rpma_info **info_ptr);
 
 /*

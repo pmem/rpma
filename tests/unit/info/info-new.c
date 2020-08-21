@@ -59,11 +59,11 @@ new__info_ptr_NULL(void **unused)
 }
 
 /*
- * new__addr_service_info_ptr_NULL -- NULL addr, NULL service
+ * new__addr_port_info_ptr_NULL -- NULL addr, NULL port
  * and NULL info_ptr are not valid
  */
 static void
-new__addr_service_info_ptr_NULL(void **unused)
+new__addr_port_info_ptr_NULL(void **unused)
 {
 	/*
 	 * NOTE: it is not allowed for info to allocate any resource before
@@ -97,7 +97,7 @@ new__getaddrinfo_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
@@ -121,7 +121,7 @@ new__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
@@ -148,7 +148,7 @@ new__lifecycle(void **unused)
 
 	/* run test - step 1 */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 		/* rpma_info_new() unit tests */
 		cmocka_unit_test(new__addr_NULL),
 		cmocka_unit_test(new__info_ptr_NULL),
-		cmocka_unit_test(new__addr_service_info_ptr_NULL),
+		cmocka_unit_test(new__addr_port_info_ptr_NULL),
 		cmocka_unit_test(new__getaddrinfo_EAGAIN),
 		cmocka_unit_test(new__malloc_ENOMEM),
 
