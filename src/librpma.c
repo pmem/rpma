@@ -13,7 +13,11 @@
  *
  * Called automatically by the run-time loader.
  */
+#ifdef MOCK_CONSTRUCTOR
+void
+#else
 __attribute__((constructor)) static void
+#endif
 librpma_init(void)
 {
 	rpma_log_init();
@@ -24,7 +28,11 @@ librpma_init(void)
  *
  * Called automatically when the process terminates.
  */
+#ifdef MOCK_CONSTRUCTOR
+void
+#else
 __attribute__((destructor)) static void
+#endif
 librpma_fini(void)
 {
 	rpma_log_fini();

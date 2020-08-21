@@ -5,6 +5,7 @@
 
 add_subdirectory(conn)
 add_subdirectory(conn_req)
+add_subdirectory(constructor)
 add_subdirectory(ep)
 add_subdirectory(error)
 add_subdirectory(flush)

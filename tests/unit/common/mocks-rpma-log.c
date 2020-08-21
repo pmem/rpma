@@ -5,6 +5,7 @@
  * mocks-rpma-log.c -- librpma log.c module mocks
  */
 
+#include "cmocka_headers.h"
 #include "log_internal.h"
 
 rpma_log_level Rpma_log_threshold[] = {
@@ -24,3 +25,21 @@ mock_function(rpma_log_level level, const char *file_name,
 }
 
 log_function *Rpma_log_function = mock_function;
+
+/*
+ * rpma_log_init -- rpma_log_init() mock
+ */
+void
+rpma_log_init()
+{
+	function_called();
+}
+
+/*
+ * rpma_log_fini -- rpma_log_fini() mock
+ */
+void
+rpma_log_fini()
+{
+	function_called();
+}
