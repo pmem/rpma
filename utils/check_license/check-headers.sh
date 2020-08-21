@@ -116,7 +116,7 @@ for file in $FILES ; do
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
-	elif [[ $file == *.cmake ]] || [[ $file == *.sh ]]; then
+	elif [[ $file != LICENSE ]]; then
 		if ! grep -q -e "# SPDX-License-Identifier: $LICENSE" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
