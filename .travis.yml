@@ -12,10 +12,10 @@ env:
     - GITHUB_REPO=pmem/rpma
     - DOCKERHUB_REPO=pmem/rpma
   matrix:
-    - OS=ubuntu OS_VER=19.10 TYPE=normal
-    - OS=fedora OS_VER=31    TYPE=normal
-    - OS=ubuntu OS_VER=19.10 TYPE=normal COVERAGE=1
-    - OS=ubuntu OS_VER=19.10 TYPE=coverity
+    - OS=ubuntu OS_VER=latest TYPE=normal
+    - OS=fedora OS_VER=latest TYPE=normal
+    - OS=ubuntu OS_VER=latest TYPE=normal COVERAGE=1
+    - OS=ubuntu OS_VER=latest TYPE=coverity
 
 before_install:
   - echo $TRAVIS_COMMIT_RANGE
