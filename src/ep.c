@@ -58,6 +58,8 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_DEBUG(
+			"rdma_create_id(channel!=NULL, context=NULL, ps=RDMA_PS_TCP)");
 		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_id",
 				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
@@ -74,6 +76,7 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		Rpma_provider_error = errno;
+		RPMA_LOG_DEBUG("rdma_listen(backlog=0)");
 		RPMA_LOG_ERROR_WITH_ERRNO("rdma_listen",
 				Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;

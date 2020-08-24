@@ -413,6 +413,7 @@ rpma_conn_prepare_completions(struct rpma_conn *conn)
 	Rpma_provider_error = ibv_req_notify_cq(conn->cq,
 			0 /* all completions */);
 	if (Rpma_provider_error) {
+		RPMA_LOG_DEBUG("ibv_req_notify_cq(solicited_only=0");
 		RPMA_LOG_ERROR_WITH_ERRNO("ibv_req_notify_cq",
 				Rpma_provider_error);
 		return RPMA_E_PROVIDER;
@@ -441,6 +442,7 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	} else if (result < 0) {
 		/* XXX ibv_poll_cq() may return only -1; no errno provided */
 		Rpma_provider_error = result;
+		RPMA_LOG_DEBUG("ibv_poll_cq(num_entries=1");
 		RPMA_LOG_ERROR_WITH_ERRNO("ibv_poll_cq", Rpma_provider_error);
 		return RPMA_E_PROVIDER;
 	} else if (result > 1) {
