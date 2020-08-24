@@ -10,19 +10,19 @@ name: RPMA
 on: [push, pull_request]
 
 env:
-    GITHUB_REPO:    pmem/rpma
-    DOCKERHUB_REPO: pmem/rpma
+    GITHUB_REPO:             pmem/rpma
+    DOCKERHUB_REPO:          pmem/rpma
+    DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
+    DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
+    DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
+    HOST_WORKDIR:            /home/runner/work/rpma/rpma
+    WORKDIR:                 utils/docker
+    PUSH_IMAGE:              1
 
 jobs:
-  linux:
-    name: Linux
+  current:
+    name: Current
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
-      DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
-      DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
-      HOST_WORKDIR:   /home/runner/work/rpma/rpma
-      WORKDIR:        utils/docker
     strategy:
       matrix:
         CONFIG: ["N=1 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc PUSH_IMAGE=1",
@@ -30,6 +30,38 @@ jobs:
                  "N=3 OS=fedora OS_VER=31    TYPE=normal CC=clang",
                  "N=4 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc XXX_DISABLE_COVERAGE=1",
                  "N=5 OS=ubuntu OS_VER=19.10 TYPE=coverity CC=gcc"]
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v1
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./build.sh
+
+       - name: Push the image
+         run: cd $WORKDIR && source ./set-vars.sh && ${{ matrix.CONFIG }} /bin/bash -c "if [[ -f ${CI_FILE_PUSH_IMAGE_TO_REPO} ]]; then images/push-image.sh; fi"
+
+# The following jobs cannot fail the build:
+  older:
+    name: Older
+    runs-on: ubuntu-latest
+    env:
+      TYPE:       normal
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        CONFIG: ["N=6 OS=fedora OS_VER=30",
+                 "N=7 OS=fedora OS_VER=29",
+                 "N=8 OS=fedora OS_VER=28",
+                 "N=9 OS=fedora OS_VER=27",
+                 "N=10 OS=ubuntu OS_VER=18.04",
+                 "N=11 OS=centos OS_VER=8",
+                 "N=12 OS=centos OS_VER=7",
+                 "N=13 OS=debian OS_VER=stable",
+                 "N=14 OS=debian OS_VER=10"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1

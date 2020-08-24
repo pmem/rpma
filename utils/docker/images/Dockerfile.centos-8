@@ -1,0 +1,69 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2020, Intel Corporation
+#
+
+#
+# Dockerfile - a 'recipe' for Docker to build an image of fedora-based
+#              environment prepared for running libpmemobj-cpp tests.
+#
+
+# Pull base image
+FROM centos:8
+MAINTAINER tomasz.gromadzki@intel.com
+
+RUN dnf update -y
+RUN dnf install -y epel-release
+RUN dnf install -y 'dnf-command(config-manager)'
+RUN dnf config-manager --set-enabled PowerTools
+
+# base deps
+ENV BASE_DEPS "\
+	gcc \
+	git \
+	make \
+	passwd \
+	pkg-config \
+	rpm-build \
+	sudo \
+	which"
+
+# RPMA deps
+ENV RPMA_DEPS "\
+	cmake \
+	diffutils \
+	file \
+	gawk \
+	groff \
+	graphviz \
+	libunwind-devel \
+	pandoc \
+	rdma-core-devel"
+
+# Install all required packages
+RUN dnf install -y \
+	$BASE_DEPS \
+	$RPMA_DEPS \
+&& dnf clean all
+
+# Install cmocka
+COPY install-cmocka.sh install-cmocka.sh
+RUN ./install-cmocka.sh
+
+# Install txt2man
+COPY install-txt2man.sh install-txt2man.sh
+RUN ./install-txt2man.sh
+
+# Add user
+ENV USER user
+ENV USERPASS p1a2s3s4
+RUN useradd -m $USER
+RUN echo $USERPASS | passwd $USER --stdin
+RUN gpasswd wheel -a $USER
+USER $USER
+
+# Set required environment variables
+ENV OS centos
+ENV OS_VER 8
+ENV PACKAGE_MANAGER rpm
+ENV NOTTY 1
