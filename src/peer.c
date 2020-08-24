@@ -59,8 +59,10 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_qp",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"rdma_create_qp(max_send/recv_wr=%i, max_send/recv_sge=%i, max_inline_data=%i, qp_type=IBV_QPT_RC, sq_sig_all=0)",
+			RPMA_DEFAULT_Q_SIZE, RPMA_MAX_SGE,
+			RPMA_MAX_INLINE_DATA);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -97,7 +99,9 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	Rpma_provider_error = errno;
 
 	if (Rpma_provider_error != EOPNOTSUPP || (!peer->is_odp_supported)) {
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_reg_mr", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"ibv_reg_mr: address requires ODP but %s does not support it",
+			(!peer->is_odp_supported) ? "peer" : "RNIC");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -111,7 +115,9 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr == NULL) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_reg_mr", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"Error: FSDAX memory registration failed (ibv_reg_mr(addr=%p, length=%zu, access=%i))",
+			addr, length, access);
 		return RPMA_E_PROVIDER;
 	}
 
