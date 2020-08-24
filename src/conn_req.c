@@ -370,8 +370,9 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 	/* resolve route */
 	if (rdma_resolve_route(id, RPMA_DEFAULT_TIMEOUT)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_resolve_route",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(
+			"rdma_resolve_route(timeout_ms=RPMA_DEFAULT_TIMEOUT)",
+			Rpma_provider_error);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}

@@ -459,7 +459,8 @@ struct rpma_conn_req;
  *		const char *port, struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
- * Create a new outgoing connection request object.
+ * Create a new outgoing connection request object using reliable,
+ * connection-oriented and message-based (RDMA_PS_TCP) QP communication.
  *
  * ERRORS
  * rpma_conn_req_new() can fail with the following errors:

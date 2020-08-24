@@ -54,4 +54,7 @@ void rpma_log_fini();
 #define RPMA_LOG_ERROR_WITH_ERRNO(func, e) \
 	RPMA_LOG_ERROR(RPMA_LOG_ERRNO_FMT, func, strerror(e))
 
+#define RPMA_LOG_ERROR_WITH_ERRNO_EXT(e, format, ...) \
+	RPMA_LOG_ERROR(format "\nError: %s", ##__VA_ARGS__, strerror(e))
+
 #endif /* LIBRPMA_LOG_INTERNAL_H */
