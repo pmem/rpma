@@ -18,10 +18,40 @@
 #include "test-common.h"
 
 /*
- * read__failed_E_PROVIDER - rpma_mr_read failed with RPMA_E_PROVIDER
+ * read__failed_E_PROVIDER_COMPL_ALWAYS - rpma_mr_read failed
+ * with RPMA_E_PROVIDER when send_flags == RPMA_F_COMPLETION_ON_SUCCESS
  */
 static void
-read__failed_E_PROVIDER(void **mrs_ptr)
+read__failed_E_PROVIDER_COMPL_ALWAYS(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* configure mocks */
+	struct ibv_post_send_mock_args args;
+	args.qp = MOCK_QP;
+	args.opcode = IBV_WR_RDMA_READ;
+	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.ret = MOCK_ERRNO;
+	will_return(ibv_post_send_mock, &args);
+
+	/* run test */
+	int ret = rpma_mr_read(MOCK_QP, mrs->local, MOCK_DST_OFFSET,
+				mrs->remote, MOCK_SRC_OFFSET,
+				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
+				MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
+}
+
+/*
+ * read__failed_E_PROVIDER_COMPL_ON_ERROR - rpma_mr_read failed
+ * with RPMA_E_PROVIDER when send_flags == 0 for RPMA_F_COMPLETION_ON_ERROR
+ */
+static void
+read__failed_E_PROVIDER_COMPL_ON_ERROR(void **mrs_ptr)
 {
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
@@ -98,7 +128,12 @@ group_setup_mr_read(void **unused)
 
 const struct CMUnitTest tests_mr_read[] = {
 	/* rpma_mr_read() unit tests */
-	cmocka_unit_test_setup_teardown(read__failed_E_PROVIDER,
+	cmocka_unit_test_setup_teardown(
+			read__failed_E_PROVIDER_COMPL_ALWAYS,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(
+			read__failed_E_PROVIDER_COMPL_ON_ERROR,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(read__success,
