@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_ep_listen(const char *addr, const char *service,
+          int rpma_ep_listen(const char *addr, const char *port,
               struct rpma_ep **ep);
 
 DESCRIPTION
@@ -32,7 +32,7 @@ ERRORS
 
 **rpma\_ep\_listen**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - peer, *addr*, *service* or *ep* is NULL
+-   RPMA\_E\_INVAL - peer, *addr*, *port* or *ep* is NULL
 
 -   RPMA\_E\_PROVIDER - **rdma\_create\_event\_channel**(3),
     **rdma\_create\_id**(3), **rdma\_getaddrinfo**(3),

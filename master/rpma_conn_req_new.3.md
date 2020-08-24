@@ -21,7 +21,7 @@ SYNOPSIS
           #include <librpma.h>
 
           int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-                  const char *service, struct rpma_conn_req **req_ptr);
+                  const char *port, struct rpma_conn_req **req_ptr);
 
 DESCRIPTION
 ===========
@@ -33,7 +33,7 @@ ERRORS
 
 **rpma\_conn\_req\_new**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *peer*, *addr*, *service* or *req\_ptr* is NULL
+-   RPMA\_E\_INVAL - *peer*, *addr*, *port* or *req\_ptr* is NULL
 
 -   RPMA\_E\_NOMEM - out of memory
 
