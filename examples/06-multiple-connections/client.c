@@ -36,7 +36,7 @@ static char *Names[] = {
 
 #define NAMES_NUM (sizeof(Names) / sizeof(Names[0]))
 
-#define USAGE_STR "usage: %s <server_address> <service> <seed>\n"
+#define USAGE_STR "usage: %s <server_address> <port> <seed>\n"
 
 int
 main(int argc, char *argv[])
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 
 	/* read common parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 	long unsigned seed = strtoul(argv[3], NULL, 10);
 	if (seed == ULONG_MAX && errno == ERANGE) {
 		(void) fprintf(stderr, "strtoul(seed) overflowed\n");
@@ -106,8 +106,8 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_dereg;
 
-	/* establish a new connection to a server listening at addr:service */
-	ret = client_connect(peer, addr, service, &pdata, &conn);
+	/* establish a new connection to a server listening at addr:port */
+	ret = client_connect(peer, addr, port, &pdata, &conn);
 	if (ret)
 		goto err_mr_dereg;
 

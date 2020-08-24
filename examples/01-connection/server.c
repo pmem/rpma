@@ -20,7 +20,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <addr> <service>\n", argv[0]);
+		fprintf(stderr, "usage: %s <addr> <port>\n", argv[0]);
 		abort();
 	}
 
@@ -30,7 +30,7 @@ main(int argc, char *argv[])
 
 	/* parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 
 	/* resources */
 	struct ibv_context *dev = NULL;
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 		return ret;
 
 	/* create a new endpoint object */
-	ret = rpma_ep_listen(peer, addr, service, &ep);
+	ret = rpma_ep_listen(peer, addr, port, &ep);
 	if (ret)
 		goto err_peer_delete;
 

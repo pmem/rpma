@@ -22,7 +22,7 @@ listen__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(NULL, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(NULL, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -37,7 +37,7 @@ listen__addr_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, NULL, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, NULL, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -45,10 +45,10 @@ listen__addr_NULL(void **unused)
 }
 
 /*
- * listen__service_NULL - NULL service is invalid
+ * listen__port_NULL - NULL port is invalid
  */
 static void
-listen__service_NULL(void **unused)
+listen__port_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -66,18 +66,18 @@ static void
 listen__ep_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, NULL);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * listen__peer_addr_service_ep_ptr_NULL - peer, addr, service
+ * listen__peer_addr_port_ep_ptr_NULL - peer, addr, port
  * and ep_ptr == NULL are invalid
  */
 static void
-listen__peer_addr_service_ep_ptr_NULL(void **unused)
+listen__peer_addr_port_ep_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_ep_listen(NULL, NULL, NULL, NULL);
@@ -105,7 +105,7 @@ listen__create_evch_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -133,7 +133,7 @@ listen__create_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -163,7 +163,7 @@ listen__info_new_E_NOMEM(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -192,7 +192,7 @@ listen__info_bind_addr_E_PROVIDER(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -222,7 +222,7 @@ listen__listen_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -253,7 +253,7 @@ listen__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -287,7 +287,7 @@ listen__malloc_ENOMEM_destroy_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_SERVICE, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -366,9 +366,9 @@ main(int argc, char *argv[])
 		/* rpma_ep_listen() unit tests */
 		cmocka_unit_test(listen__peer_NULL),
 		cmocka_unit_test(listen__addr_NULL),
-		cmocka_unit_test(listen__service_NULL),
+		cmocka_unit_test(listen__port_NULL),
 		cmocka_unit_test(listen__ep_ptr_NULL),
-		cmocka_unit_test(listen__peer_addr_service_ep_ptr_NULL),
+		cmocka_unit_test(listen__peer_addr_port_ep_ptr_NULL),
 		cmocka_unit_test(listen__create_evch_EAGAIN),
 		cmocka_unit_test(listen__create_id_EAGAIN),
 		cmocka_unit_test(listen__info_new_E_NOMEM),

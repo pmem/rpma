@@ -25,7 +25,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <server_address> <service>\n",
+		fprintf(stderr, "usage: %s <server_address> <port>\n",
 			argv[0]);
 		exit(-1);
 	}
@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 
 	/* parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 
 	/* resources - general */
 	struct rpma_peer *peer = NULL;
@@ -73,8 +73,8 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_free;
 
-	/* establish a new connection to a server listening at addr:service */
-	ret = client_connect(peer, addr, service, NULL, &conn);
+	/* establish a new connection to a server listening at addr:port */
+	ret = client_connect(peer, addr, port, NULL, &conn);
 	if (ret)
 		goto err_mr_dereg;
 

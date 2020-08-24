@@ -42,7 +42,7 @@ int common_peer_via_address(const char *addr,
 				peer_ptr)
 
 int client_connect(struct rpma_peer *peer, const char *addr,
-		const char *service, struct rpma_conn_private_data *pdata,
+		const char *port, struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 
 int server_accept_connection(struct rpma_ep *ep,

@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #define MOCK_ADDR		"127.0.0.1"
-#define MOCK_SERVICE		"1234"
+#define MOCK_PORT		"1234"
 #define MOCK_MR			(&Ibv_mr)
 #define MOCK_MR_RAW		(&Ibv_mr_raw)
 #define MOCK_RAW_SIZE		8 /* memory region size */

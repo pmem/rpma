@@ -15,7 +15,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
-#define USAGE_STR "usage: %s <server_address> <service>\n"
+#define USAGE_STR "usage: %s <server_address> <port>\n"
 
 #include "common-conn.h"
 #include "common-epoll.h"
@@ -395,7 +395,7 @@ main(int argc, char *argv[])
 
 	/* read common parameters */
 	char *addr = argv[1];
-	char *service = argv[2];
+	char *port = argv[2];
 	int ret, ret2;
 
 	/* RPMA resources - general */
@@ -416,8 +416,8 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_peer_delete;
 
-	/* start a listening endpoint at addr:service */
-	ret = rpma_ep_listen(peer, addr, service, &svr.ep);
+	/* start a listening endpoint at addr:port */
+	ret = rpma_ep_listen(peer, addr, port, &svr.ep);
 	if (ret)
 		goto err_server_fini;
 

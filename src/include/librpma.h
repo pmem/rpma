@@ -456,7 +456,7 @@ struct rpma_conn_req;
  *	#include <librpma.h>
  *
  *	int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
- *		const char *service, struct rpma_conn_req **req_ptr);
+ *		const char *port, struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
  * Create a new outgoing connection request object.
@@ -464,13 +464,13 @@ struct rpma_conn_req;
  * ERRORS
  * rpma_conn_req_new() can fail with the following errors:
  *
- * - RPMA_E_INVAL - peer, addr, service or req_ptr is NULL
+ * - RPMA_E_INVAL - peer, addr, port or req_ptr is NULL
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_create_id(3), rdma_resolve_addr(3),
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-	const char *service, struct rpma_conn_req **req_ptr);
+	const char *port, struct rpma_conn_req **req_ptr);
 
 /** 3
  * rpma_conn_req_delete - delete the connection request
@@ -541,7 +541,7 @@ struct rpma_ep;
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_listen(const char *addr, const char *service,
+ *	int rpma_ep_listen(const char *addr, const char *port,
  *	    struct rpma_ep **ep);
  *
  * DESCRIPTION
@@ -550,13 +550,13 @@ struct rpma_ep;
  * ERRORS
  * rpma_ep_listen() can fail with the following errors:
  *
- * - RPMA_E_INVAL - peer, addr, service or ep is NULL
+ * - RPMA_E_INVAL - peer, addr, port or ep is NULL
  * - RPMA_E_PROVIDER - rdma_create_event_channel(3), rdma_create_id(3),
  *   rdma_getaddrinfo(3), rdma_listen(3) failed
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
-	const char *service, struct rpma_ep **ep);
+	const char *port, struct rpma_ep **ep);
 
 /** 3
  * rpma_ep_shutdown - stop listening and delete the endpoint

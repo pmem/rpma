@@ -295,14 +295,14 @@ rdma_get_cm_event(struct rdma_event_channel *channel,
  * rdma_getaddrinfo -- rdma_getaddrinfo() mock
  */
 int
-rdma_getaddrinfo(const char *node, const char *service,
+rdma_getaddrinfo(const char *node, const char *port,
 		const struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
 {
 	struct rdma_addrinfo_args *args =
 				mock_type(struct rdma_addrinfo_args *);
 	if (args->validate_params == MOCK_VALIDATE) {
 		assert_string_equal(node, MOCK_IP_ADDRESS);
-		assert_string_equal(service, MOCK_SERVICE);
+		assert_string_equal(port, MOCK_PORT);
 		check_expected(hints->ai_flags);
 	}
 

@@ -9,7 +9,7 @@
 #define TEST_COMMON_H
 
 #define MOCK_IP_ADDRESS		"127.0.0.1"
-#define MOCK_SERVICE		"1234" /* a random port number */
+#define MOCK_PORT		"1234" /* a random port number */
 
 /* random values */
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF

@@ -342,14 +342,14 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
  * the prepared ID into rpma_conn_req_from_id.
  */
 int
-rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
+rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_conn_req **req_ptr)
 {
-	if (peer == NULL || addr == NULL || service == NULL || req_ptr == NULL)
+	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	struct rpma_info *info;
-	int ret = rpma_info_new(addr, service, RPMA_INFO_ACTIVE, &info);
+	int ret = rpma_info_new(addr, port, RPMA_INFO_ACTIVE, &info);
 	if (ret)
 		return ret;
 
@@ -386,7 +386,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *service,
 	(void) rpma_info_delete(&info);
 
 	RPMA_LOG_NOTICE("Requesting a connection to %s:%s", addr,
-				service);
+				port);
 
 	return 0;
 

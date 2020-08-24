@@ -36,7 +36,7 @@ setup__new_passive(void **info_state_ptr)
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&istate.info);
 	assert_int_equal(ret, 0);
 	assert_non_null(istate.info);
@@ -66,7 +66,7 @@ setup__new_active(void **info_state_ptr)
 	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_SERVICE, RPMA_INFO_ACTIVE,
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_ACTIVE,
 			&istate.info);
 	assert_int_equal(ret, 0);
 	assert_non_null(istate.info);

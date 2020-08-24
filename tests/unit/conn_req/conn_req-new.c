@@ -19,7 +19,7 @@ new__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(NULL, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(NULL, MOCK_IP_ADDRESS, MOCK_PORT,
 					&req);
 
 	/* verify the results */
@@ -35,7 +35,7 @@ new__addr_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, NULL, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, NULL, MOCK_PORT,
 					&req);
 
 	/* verify the results */
@@ -44,10 +44,10 @@ new__addr_NULL(void **unused)
 }
 
 /*
- * new__service_NULL -- NULL service is invalid
+ * new__port_NULL -- NULL port is invalid
  */
 static void
-new__service_NULL(void **unused)
+new__port_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -66,7 +66,7 @@ static void
 new__req_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 					NULL);
 
 	/* verify the results */
@@ -104,7 +104,7 @@ new__info_new_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -126,7 +126,7 @@ new__create_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -155,7 +155,7 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -183,7 +183,7 @@ new__resolve_route_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -214,7 +214,7 @@ new__create_comp_channel_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -246,7 +246,7 @@ new__create_cq_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -283,7 +283,7 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -320,7 +320,7 @@ new__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -357,7 +357,7 @@ new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_SERVICE,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 			&req);
 
 	/* verify the results */
@@ -381,7 +381,7 @@ const struct CMUnitTest test_new[] = {
 	/* rpma_conn_req_new() unit tests */
 	cmocka_unit_test(new__peer_NULL),
 	cmocka_unit_test(new__addr_NULL),
-	cmocka_unit_test(new__service_NULL),
+	cmocka_unit_test(new__port_NULL),
 	cmocka_unit_test(new__req_ptr_NULL),
 	cmocka_unit_test(new__all_NULL),
 	cmocka_unit_test(new__info_new_E_PROVIDER_EAGAIN),
