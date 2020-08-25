@@ -163,6 +163,8 @@ struct rpma_mr_remote;
 #define RPMA_MR_USAGE_WRITE_SRC	(1 << 2)
 #define RPMA_MR_USAGE_WRITE_DST	(1 << 3)
 #define RPMA_MR_USAGE_FLUSHABLE	(1 << 4)
+#define RPMA_MR_USAGE_SEND	(1 << 5)
+#define RPMA_MR_USAGE_RECV	(1 << 6)
 
 enum rpma_mr_plt {
 	RPMA_MR_PLT_VOLATILE, /* the region comes from volatile memory */
@@ -754,6 +756,67 @@ int rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context);
 
+/** 3
+ * rpma_send - initialize the send operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_send(struct rpma_conn *conn,
+ *		struct rpma_mr_local *src, size_t offset, size_t len,
+ *		int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the send operation which transfers a message from the local
+ * memory to other side of the connection.
+ *
+ * ERRORS
+ * rpma_send() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or src is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_send(struct rpma_conn *conn,
+    struct rpma_mr_local *src, size_t offset, size_t len,
+    int flags, void *op_context);
+
+/** 3
+ * rpma_recv - initialize the receive operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_recv(struct rpma_conn *conn,
+ *		struct rpma_mr_local *dst, size_t offset, size_t len,
+ *		int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the receive operation which prepares a buffer for a message
+ * send from other side of the connection. Please see rpma_send(3).
+ *
+ * All buffers prepared via rpma_recv(3) form a set. When a message arrives
+ * it is placed in one of the buffers awaitaning and a completion for
+ * the receive operation is generated.
+ *
+ * A buffer for an incoming message have to be prepared beforehand.
+ *
+ * The order of buffers in the set does not affect the order of completions of
+ * receive operations get via rpma_conn_next_completion(3).
+ *
+ * ERRORS
+ * rpma_recv() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or src or op_context is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
+ */
+int rpma_recv(struct rpma_conn *conn,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
+    int flags, void *op_context);
+
 /* completion handling */
 
 /** 3
@@ -779,6 +842,8 @@ enum rpma_op {
 	RPMA_OP_READ,
 	RPMA_OP_WRITE,
 	RPMA_OP_FLUSH,
+	RPMA_OP_SEND,
+	RPMA_OP_RECV,
 };
 
 struct rpma_completion {
