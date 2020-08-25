@@ -372,6 +372,28 @@ rpma_flush(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_send -- initialize the send operation
+ */
+int
+rpma_send(struct rpma_conn *conn,
+    struct rpma_mr_local *src, size_t offset, size_t len,
+    int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_recv -- initialize the receive operation
+ */
+int
+rpma_recv(struct rpma_conn *conn,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
+    int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
  * rpma_conn_get_completion_fd -- get a file descriptor of the completion event
  * channel associated with the connection
  */

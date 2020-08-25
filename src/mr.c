@@ -22,6 +22,7 @@
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
 		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
+		RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |\
 		RPMA_MR_USAGE_FLUSHABLE)
 
 /* generate operation completion on success */
@@ -159,6 +160,32 @@ rpma_mr_write(struct ibv_qp *qp,
 	}
 
 	return 0;
+}
+
+/*
+ * rpma_mr_send -- post an RDMA send from src
+ *
+ * XXX uses ibv_post_send(3) to post and RDMA.send operation.
+ */
+int
+rpma_mr_send(struct ibv_qp *qp,
+	struct rpma_mr_local *src,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
+
+/*
+ * rpma_mr_recv -- post an RDMA recv from dst
+ *
+ * XXX uses ibv_post_recv(3) to post and RDMA.recv operation.
+ */
+int
+rpma_mr_recv(struct ibv_qp *qp,
+	struct rpma_mr_local *dst,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
 }
 
 /* public librpma API */

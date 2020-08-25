@@ -36,6 +36,8 @@ LIBRPMA_1.0 {
 		rpma_peer_delete;
 		rpma_peer_new;
 		rpma_read;
+		rpma_recv;
+		rpma_send;
 		rpma_utils_conn_event_2str;
 		rpma_utils_ibv_context_is_odp_capable;
 		rpma_utils_get_ibv_context;
