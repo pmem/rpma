@@ -32,7 +32,7 @@ static const char *hello_str[] = {
 
 struct hello_t {
 	enum lang_t lang;
-	char str[KILOBYTE];
+	char str[KILOBYTE + 1];
 };
 
 static inline void
