@@ -45,8 +45,8 @@ rpma_utils_get_ibv_context(const char *addr,
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_id",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"rdma_create_id");
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
 	}
@@ -90,8 +90,8 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 	Rpma_provider_error = ibv_query_device_ex(dev, NULL /* input */,
 			&attr);
 	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_query_device_ex",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"ibv_query_device_ex(attr={0})");
 		return RPMA_E_PROVIDER;
 	}
 
