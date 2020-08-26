@@ -137,7 +137,7 @@ add_flag(-fno-common)
 add_flag(-std=gnu99)
 add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
-add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
+add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -O" RELEASE)
 
 if(DEVELOPER_MODE)
 	add_flag(-Wall)
