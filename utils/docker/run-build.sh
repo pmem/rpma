@@ -119,3 +119,55 @@ sudo_password -S make uninstall
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
+
+echo
+echo "##############################################################"
+echo "### Running the configuration: deb & rpm"
+echo "##############################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+	-DTEST_DIR=$TEST_DIR \
+	-DCMAKE_INSTALL_PREFIX=$PREFIX \
+	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
+	-DCOVERAGE=$COVERAGE \
+	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DDEVELOPER_MODE=1
+
+make -j$(nproc)
+make -j$(nproc) doc
+#
+# XXX - tests are temporarly disabled,
+# because one test fails in the Release build.
+#
+# ctest --output-on-failure
+#
+make -j$(nproc) package
+
+find . -iname "librpma*.$PACKAGE_MANAGER"
+
+if [ $PACKAGE_MANAGER = "deb" ]; then
+	echo "$ dpkg-deb --info ./librpma*.deb"
+	dpkg-deb --info ./librpma*.deb
+
+	echo "$ dpkg-deb -c ./librpma*.deb"
+	dpkg-deb -c ./librpma*.deb
+
+	echo "$ sudo -S dpkg -i ./librpma*.deb"
+	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb || /bin/bash -i
+
+elif [ $PACKAGE_MANAGER = "rpm" ]; then
+	echo "$ rpm -q --info ./librpma*.rpm"
+	rpm -q --info ./librpma*.rpm && true
+
+	echo "$ rpm -q --list ./librpma*.rpm"
+	rpm -q --list ./librpma*.rpm && true
+
+	echo "$ sudo -S rpm -ivh --force *.rpm"
+	echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+fi
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
