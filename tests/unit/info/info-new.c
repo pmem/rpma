@@ -78,11 +78,40 @@ new__addr_port_info_ptr_NULL(void **unused)
 }
 
 /*
- * new__getaddrinfo_EAGAIN -- rdma_getaddrinfo() fails with
- * EAGAIN
+ * new__getaddrinfo_EAGAIN_ACTIVE -- rdma_getaddrinfo() fails with
+ * EAGAIN when side == RPMA_INFO_ACTIVE
  */
 static void
-new__getaddrinfo_EAGAIN(void **unused)
+new__getaddrinfo_EAGAIN_ACTIVE(void **unused)
+{
+	/*
+	 * configure mocks:
+	 * - NOTE: it is not allowed to call rdma_freeaddrinfo() if
+	 * rdma_getaddrinfo() has failed.
+	 */
+	struct rdma_addrinfo_args get_args = {MOCK_VALIDATE, NULL};
+	will_return(rdma_getaddrinfo, &get_args);
+	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
+	will_return(rdma_getaddrinfo, EAGAIN);
+	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+
+	/* run test */
+	struct rpma_info *info = NULL;
+	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_ACTIVE,
+			&info);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+	assert_null(info);
+}
+
+/*
+ * new__getaddrinfo_EAGAIN_PASSIVE -- rdma_getaddrinfo() fails with
+ * EAGAIN when side == RPMA_INFO_PASSIVE
+ */
+static void
+new__getaddrinfo_EAGAIN_PASSIVE(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -216,7 +245,8 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__addr_NULL),
 		cmocka_unit_test(new__info_ptr_NULL),
 		cmocka_unit_test(new__addr_port_info_ptr_NULL),
-		cmocka_unit_test(new__getaddrinfo_EAGAIN),
+		cmocka_unit_test(new__getaddrinfo_EAGAIN_ACTIVE),
+		cmocka_unit_test(new__getaddrinfo_EAGAIN_PASSIVE),
 		cmocka_unit_test(new__malloc_ENOMEM),
 
 		/* rpma_info_delete() unit tests */
