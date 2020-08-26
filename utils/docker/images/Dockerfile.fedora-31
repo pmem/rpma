@@ -24,6 +24,7 @@ ENV BASE_DEPS "\
 	make \
 	patch \
 	pkg-config \
+	rpm-build \
 	which"
 
 ENV EXAMPLES_DEPS "\
