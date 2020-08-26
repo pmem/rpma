@@ -52,7 +52,7 @@ enum rpma_util_ibv_context_type {
  * rpma_utils_get_ibv_context() obtains an RDMA device context
  * by the given IPv4/IPv6 address (either local or remote) using
  * the TCP RDMA port space (RDMA_PS_TCP) - reliable, connection-oriented
- * and message based QP communication.
+ * and message-based QP communication.
  *
  * RETURN VALUE
  * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
@@ -461,7 +461,8 @@ struct rpma_conn_req;
  *		const char *port, struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
- * Create a new outgoing connection request object.
+ * Create a new outgoing connection request object using reliable,
+ * connection-oriented and message-based (RDMA_PS_TCP) QP communication.
  *
  * ERRORS
  * rpma_conn_req_new() can fail with the following errors:
@@ -547,7 +548,9 @@ struct rpma_ep;
  *	    struct rpma_ep **ep);
  *
  * DESCRIPTION
- * Create an endpoint and initialize listening for incoming connections.
+ * Create an endpoint and initialize listening for incoming connections
+ * using reliable, connection-oriented and message-based (RDMA_PS_TCP)
+ * QP communication.
  *
  * ERRORS
  * rpma_ep_listen() can fail with the following errors:

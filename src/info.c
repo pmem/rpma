@@ -51,8 +51,10 @@ rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 	int ret = rdma_getaddrinfo(addr, port, &hints, &rai);
 	if (ret) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_getaddrinfo",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"rdma_getaddrinfo(node=%s, service=%s, ai_flags=%s, ai_qp_type=IBV_QPT_RC, ai_port_space=RDMA_PS_TCP)",
+			addr, port,
+			(hints.ai_flags & RAI_PASSIVE) ? "passive" : "active");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -108,8 +110,11 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
 	if (ret) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_resolve_addr",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+			"rdma_resolve_addr(src_addr=%s, dst_addr=%s, timeout_ms=%u)",
+			info->rai->ai_src_canonname,
+			info->rai->ai_dst_canonname,
+			RPMA_DEFAULT_TIMEOUT);
 		return RPMA_E_PROVIDER;
 	}
 
@@ -128,8 +133,9 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 	int ret = rdma_bind_addr(id, info->rai->ai_src_addr);
 	if (ret) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_bind_addr",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO_EXT(Rpma_provider_error,
+				"rdma_bind_addr(addr=%s)",
+				info->rai->ai_src_canonname);
 		return RPMA_E_PROVIDER;
 	}
 
