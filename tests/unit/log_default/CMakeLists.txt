@@ -5,6 +5,13 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
+#
+# Undefine _FORTIFY_SOURCE in the Release build.
+# _FORTIFY_SOURCE replaces original '*printf' functions
+# and causes cmocka mocks of those functions to not work.
+#
+add_flag("-U_FORTIFY_SOURCE" RELEASE)
+
 function(build_log_default name)
 	build_test_src(UNIT NAME log_default-${name} SRCS
 		${name}.c
