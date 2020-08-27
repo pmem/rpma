@@ -18,4 +18,6 @@ void rpma_log_default_init(void);
 
 void rpma_log_default_fini(void);
 
+void get_timestamp_prefix(char *buf, size_t buf_size);
+
 #endif /* LIBRPMA_LOG_DEFAULT_H */
