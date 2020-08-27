@@ -109,6 +109,7 @@ for e in $EXAMPLES; do
 	echo
 	echo "###########################################################"
 	echo "### Testing standalone compilation of example: $e"
+	echo "### (with librpma installed from DEBUG sources)"
 	echo "###########################################################"
 	compile_example_standalone $DIR
 done
@@ -131,13 +132,44 @@ cd $WORKDIR/build
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
+	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
 	-DDEVELOPER_MODE=1
 
 make -j$(nproc)
 make -j$(nproc) doc
 ctest --output-on-failure
-sudo_password -S make -j$(nproc) install
+# Do not install the library from sources here,
+# because it will be installed from the packages below.
+
+echo "##############################################################"
+echo "### Making and testing packages (RELEASE version) ..."
+echo "##############################################################"
+
+make -j$(nproc) package
+
+find . -iname "librpma*.$PACKAGE_MANAGER"
+
+if [ $PACKAGE_MANAGER = "deb" ]; then
+	echo "$ dpkg-deb --info ./librpma*.deb"
+	dpkg-deb --info ./librpma*.deb
+
+	echo "$ dpkg-deb -c ./librpma*.deb"
+	dpkg-deb -c ./librpma*.deb
+
+	echo "$ sudo -S dpkg -i ./librpma*.deb"
+	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb || /bin/bash -i
+
+elif [ $PACKAGE_MANAGER = "rpm" ]; then
+	echo "$ rpm -q --info ./librpma*.rpm"
+	rpm -q --info ./librpma*.rpm && true
+
+	echo "$ rpm -q --list ./librpma*.rpm"
+	rpm -q --list ./librpma*.rpm && true
+
+	echo "$ sudo -S rpm -ivh --force *.rpm"
+	echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+fi
 
 # Test standalone compilation of all examples
 EXAMPLES=$(ls -1 $WORKDIR/examples/)
@@ -148,13 +180,10 @@ for e in $EXAMPLES; do
 	echo
 	echo "###########################################################"
 	echo "### Testing standalone compilation of example: $e"
+	echo "### (with librpma installed from RELEASE packages)"
 	echo "###########################################################"
 	compile_example_standalone $DIR
 done
-
-# Uninstall libraries
-cd $WORKDIR/build
-sudo_password -S make uninstall
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
