@@ -81,7 +81,7 @@ group_setup_get_event_fd(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_get_event_fd[] = {
+const static struct CMUnitTest tests_get_event_fd[] = {
 	/* rpma_conn_get_event_fd() unit tests */
 	cmocka_unit_test(get_event_fd__conn_NULL),
 	cmocka_unit_test_setup_teardown(

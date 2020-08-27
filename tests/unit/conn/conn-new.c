@@ -432,7 +432,7 @@ delete__destroy_id_EAGAIN(void **unused)
 	assert_null(cstate->conn);
 }
 
-const struct CMUnitTest tests_new[] = {
+const static struct CMUnitTest tests_new[] = {
 	/* rpma_conn_new() unit tests */
 	cmocka_unit_test(new__peer_NULL),
 	cmocka_unit_test(new__id_NULL),

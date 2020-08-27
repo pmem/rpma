@@ -107,7 +107,7 @@ test_lifecycle(void **unused)
 	 */
 }
 
-const struct CMUnitTest test_store[] = {
+const static struct CMUnitTest test_store[] = {
 	/* rpma_private_data_store() unit tests */
 	cmocka_unit_test_setup_teardown(store__data_NULL,
 		setup__cm_event, NULL),

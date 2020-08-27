@@ -129,7 +129,7 @@ group_setup_write(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_write[] = {
+const static struct CMUnitTest tests_write[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(write__conn_NULL),
 	cmocka_unit_test(write__dst_NULL),

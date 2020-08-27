@@ -62,7 +62,7 @@ disconnect__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
-const struct CMUnitTest tests_disconnect[] = {
+const static struct CMUnitTest tests_disconnect[] = {
 	/* rpma_conn_disconnect() unit tests */
 	cmocka_unit_test(disconnect__conn_NULL),
 	cmocka_unit_test_setup_teardown(
