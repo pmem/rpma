@@ -51,15 +51,15 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 	evch = rdma_create_event_channel();
 	if (evch == NULL) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_event_channel",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_create_event_channel()");
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_id",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_event_channel;
 	}
@@ -74,8 +74,8 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_listen",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_listen()");
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
 	}
@@ -125,8 +125,8 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	if (rdma_destroy_id(ep->id)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_destroy_id",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_destroy_id()");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -174,8 +174,8 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 			return RPMA_E_NO_NEXT;
 
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_get_cm_event",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_get_cm_event()");
 		return RPMA_E_PROVIDER;
 	}
 

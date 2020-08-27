@@ -49,9 +49,11 @@ void rpma_log_fini();
 #define RPMA_LOG_FATAL(format, ...) \
 	RPMA_LOG(RPMA_LOG_LEVEL_FATAL, format "\n", ##__VA_ARGS__)
 
-#define RPMA_LOG_ERRNO_FMT "%s failed: %s"
-
-#define RPMA_LOG_ERROR_WITH_ERRNO(func, e) \
-	RPMA_LOG_ERROR(RPMA_LOG_ERRNO_FMT, func, strerror(e))
+/*
+ * 'f' stands here for 'function' or 'format' where the latter may accept
+ * additional arguments.
+ */
+#define RPMA_LOG_ERROR_WITH_ERRNO(e, f, ...) \
+	RPMA_LOG_ERROR(f " failed: %s", ##__VA_ARGS__, strerror(e));
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */

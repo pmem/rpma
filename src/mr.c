@@ -115,7 +115,12 @@ rpma_mr_read(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+			"ibv_post_send(src_addr=0x%x, rkey=0x%x, dst_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_READ, send_flags=%s)",
+			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
+			sge.addr, sge.length, sge.lkey, wr.wr_id,
+			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+				"IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -155,7 +160,12 @@ rpma_mr_write(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+			"ibv_post_send(src_addr=0x%x, rkey=0x%x, dst_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_WRITE, send_flags=%s)",
+			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
+			sge.addr, sge.length, sge.lkey, wr.wr_id,
+			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+				"IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -240,7 +250,8 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	errno = ibv_dereg_mr(mr->ibv_mr);
 	if (errno) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_dereg_mr", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"ibv_dereg_mr()");
 		ret = RPMA_E_PROVIDER;
 	}
 
