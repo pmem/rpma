@@ -96,7 +96,7 @@ group_setup_mr_read(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_mr_read[] = {
+const static struct CMUnitTest tests_mr_read[] = {
 	/* rpma_mr_read() unit tests */
 	cmocka_unit_test_setup_teardown(read__failed_E_PROVIDER,
 			setup__mr_local_and_remote,

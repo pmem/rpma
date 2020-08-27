@@ -91,7 +91,7 @@ copy__success(void **pdata_ptr)
 	assert_int_equal(dst.len, 0);
 }
 
-const struct CMUnitTest test_copy[] = {
+const static struct CMUnitTest test_copy[] = {
 	/* rpma_private_data_copy() unit tests */
 	cmocka_unit_test(copy__ptr_NULL_len_0),
 	cmocka_unit_test_setup_teardown(copy__malloc_ENOMEM,

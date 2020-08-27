@@ -338,7 +338,7 @@ remote_from_descriptor__desc_alignment(void **unused)
 static struct prestate prestate =
 		{RPMA_MR_USAGE_READ_SRC, IBV_ACCESS_REMOTE_READ, NULL};
 
-const struct CMUnitTest tests_descriptor[] = {
+const static struct CMUnitTest tests_descriptor[] = {
 	/* rpma_mr_get_descriptor() unit test */
 	cmocka_unit_test(get_descriptor__mr_NULL),
 	cmocka_unit_test_prestate_setup_teardown(
