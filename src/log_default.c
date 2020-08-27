@@ -35,6 +35,10 @@ static const int rpma_log_level_syslog_severity[] = {
 /*
  * get_timestamp_prefix -- provide actual time in a readable string
  *
+ * NOTE
+ * This function is static now, so we know all possible calls of snprintf()
+ * and we conclude it can not fail.
+ *
  * ASSUMPTIONS:
  * - buf != NULL && buf_size >= 16
  */
@@ -60,10 +64,10 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 		return;
 	}
 
-	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
+	/* it cannot fail - please see the note above */
+	(void) snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
+	if (strlen(buf) == buf_size)
 		memcpy(buf, error_message, sizeof(error_message));
-		return;
-	}
 }
 
 /*
