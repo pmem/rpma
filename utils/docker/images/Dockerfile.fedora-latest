@@ -11,7 +11,7 @@
 # Add or remove this comment just to force the image rebuild
 
 # Pull base image
-FROM fedora:31
+FROM fedora:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -25,6 +25,7 @@ ENV BASE_DEPS "\
 	patch \
 	pkg-config \
 	rpm-build \
+	sudo \
 	which"
 
 ENV EXAMPLES_DEPS "\
@@ -64,7 +65,7 @@ RUN ./install-txt2man.sh
 
 # Add user
 ENV USER user
-ENV USERPASS pass
+ENV USERPASS p1a2s3s4
 RUN useradd -m $USER
 RUN echo "$USER:$USERPASS" | chpasswd
 RUN gpasswd wheel -a $USER
@@ -72,7 +73,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 31
+ENV OS_VER latest
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 

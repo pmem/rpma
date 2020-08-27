@@ -11,7 +11,7 @@ In case of any problem, patches and github issues are welcome.
 # How to build docker image
 
 ```sh
-docker build --build-arg https_proxy=https://proxy.com:port --build-arg http_proxy=http://proxy.com:port -t rpma:debian-unstable -f ./Dockerfile.debian-unstable .
+docker build --build-arg https_proxy=https://proxy.com:port --build-arg http_proxy=http://proxy.com:port -t rpma:ubuntu-latest -f ./Dockerfile.ubuntu-latest .
 ```
 
 # How to use docker image
@@ -19,7 +19,7 @@ docker build --build-arg https_proxy=https://proxy.com:port --build-arg http_pro
 To run build and tests on local machine on docker:
 
 ```sh
-docker run --network=bridge --shm-size=4G -v /your/workspace/path/:/opt/workspace:z -w /opt/workspace/ -e PKG_CONFIG_PATH=/opt/pmdk/lib/pkgconfig -it rpma:debian-unstable /bin/bash
+docker run --network=bridge --shm-size=4G -v /your/workspace/path/:/opt/workspace:z -w /opt/workspace/ -e PKG_CONFIG_PATH=/opt/rpma/lib/pkgconfig -it rpma:ubuntu-latest /bin/bash
 ```
 
 To get strace working, add to docker commandline
