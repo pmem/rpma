@@ -338,7 +338,7 @@ conn_req_from_cm__lifecycle(void **unused)
 	 */
 }
 
-const struct CMUnitTest test_from_cm_event[] = {
+const static struct CMUnitTest test_from_cm_event[] = {
 	/* rpma_conn_req_from_cm_event() unit tests */
 	cmocka_unit_test(from_cm_event__peer_NULL),
 	cmocka_unit_test(from_cm_event__edata_NULL),

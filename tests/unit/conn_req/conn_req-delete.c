@@ -386,7 +386,7 @@ delete_via_destroy__destroy_id_EAGAIN(void **unused)
 	assert_null(cstate->req);
 }
 
-const struct CMUnitTest test_delete[] = {
+const static struct CMUnitTest test_delete[] = {
 	/* rpma_conn_req_delete() unit tests */
 	cmocka_unit_test(delete__req_ptr_NULL),
 	cmocka_unit_test(delete__req_NULL),
