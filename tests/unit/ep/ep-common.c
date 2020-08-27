@@ -13,7 +13,7 @@
 #include "test-common.h"
 
 const struct rdma_cm_id Cmid_zero = {0};
-const struct rdma_event_channel Evch_zero = {fd: MOCK_FD};
+const struct rdma_event_channel Evch_zero = {.fd = MOCK_FD};
 
 /*
  * The following graph depicts the relationships between mocked function
