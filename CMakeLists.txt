@@ -139,6 +139,14 @@ add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
+if(USE_ASAN)
+	add_sanitizer_flag(address)
+endif()
+
+if(USE_UBSAN)
+	add_sanitizer_flag(undefined)
+endif()
+
 if(DEVELOPER_MODE)
 	add_flag(-Wall)
 	add_flag(-Werror)
