@@ -55,7 +55,8 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("sysconf", Rpma_provider_error);
+		RPMA_LOG_FATAL("sysconf(_SC_PAGESIZE) failed: %s",
+				strerror(errno));
 		return RPMA_E_PROVIDER;
 	}
 
