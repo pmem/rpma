@@ -278,7 +278,7 @@ dereg__failed_E_PROVIDER(void **pprestate)
 	assert_null(mr);
 }
 
-const static struct CMUnitTest tests_reg[] = {
+static const struct CMUnitTest tests_reg[] = {
 	/* rpma_mr_reg() unit tests */
 	cmocka_unit_test(reg__NULL_peer),
 	cmocka_unit_test(reg__NULL_ptr),

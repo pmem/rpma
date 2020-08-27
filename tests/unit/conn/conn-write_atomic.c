@@ -144,7 +144,7 @@ group_setup_write_atomic(void **unused)
 	return 0;
 }
 
-const static struct CMUnitTest tests_write_atomic[] = {
+static const struct CMUnitTest tests_write_atomic[] = {
 	/* rpma_write_atomic() unit tests */
 	cmocka_unit_test(write_atomic__conn_NULL),
 	cmocka_unit_test(write_atomic__dst_NULL),

@@ -102,7 +102,7 @@ group_setup_prepare_completions(void **unused)
 	return 0;
 }
 
-const static struct CMUnitTest tests_prepare_completions[] = {
+static const struct CMUnitTest tests_prepare_completions[] = {
 	/* rpma_conn_prepare_completions() unit tests */
 	cmocka_unit_test(prepare_completions__conn_NULL),
 	cmocka_unit_test_setup_teardown(

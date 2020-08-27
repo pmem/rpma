@@ -572,7 +572,7 @@ connect_via_connect__success_outgoing(void **unused)
 	assert_int_equal(conn, MOCK_CONN);
 }
 
-const static struct CMUnitTest test_connect[] = {
+static const struct CMUnitTest test_connect[] = {
 	/* rpma_conn_req_connect() unit tests */
 	cmocka_unit_test(connect__req_ptr_NULL),
 	cmocka_unit_test_setup_teardown(connect__conn_ptr_NULL,

@@ -100,7 +100,7 @@ flush__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
-const static struct CMUnitTest tests_flush[] = {
+static const struct CMUnitTest tests_flush[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(flush__conn_NULL),
 	cmocka_unit_test(flush__dst_NULL),

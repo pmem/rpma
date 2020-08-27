@@ -506,7 +506,7 @@ next_event__success_TIMEWAIT_EXIT(void **cstate_ptr)
 	assert_int_equal(c_event, RPMA_CONN_CLOSED);
 }
 
-const static struct CMUnitTest tests_next_event[] = {
+static const struct CMUnitTest tests_next_event[] = {
 	/* rpma_conn_next_event() unit tests */
 	cmocka_unit_test(next_event__conn_NULL),
 	cmocka_unit_test_setup_teardown(
