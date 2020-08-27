@@ -12,8 +12,8 @@
 #include "log_default.h"
 #include "librpma.h"
 
-#define INVALID_THRESHOLD_MOCK	- 1
-#define INVALID_LEVEL_MOCK	- 2
+#define INVALID_THRESHOLD_MOCK	((rpma_log_threshold)(-1))
+#define INVALID_LEVEL_MOCK	(-2)
 
 /*
  * set_threshold__threshold_invalid -- use an invalid threshold
@@ -33,7 +33,8 @@ set_threshold__threshold_invalid(void **unused)
 void
 set_threshold__level_invalid(void **unused)
 {
-	int ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD,
+	int ret = rpma_log_set_threshold(
+			(rpma_log_threshold)RPMA_LOG_THRESHOLD,
 			INVALID_LEVEL_MOCK);
 
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -58,7 +59,8 @@ void
 get_threshold__threshold_invalid(void **unused)
 {
 	rpma_log_level level;
-	int ret = rpma_log_get_threshold(INVALID_THRESHOLD_MOCK, &level);
+	int ret = rpma_log_get_threshold(INVALID_THRESHOLD_MOCK,
+			&level);
 
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
@@ -69,7 +71,9 @@ get_threshold__threshold_invalid(void **unused)
 void
 get_threshold__level_invalid(void **unused)
 {
-	int ret = rpma_log_get_threshold(RPMA_LOG_THRESHOLD, NULL);
+	int ret = rpma_log_get_threshold(
+			(rpma_log_threshold)RPMA_LOG_THRESHOLD,
+			NULL);
 
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
@@ -80,7 +84,8 @@ get_threshold__level_invalid(void **unused)
 void
 get_threshold__threshold_level_invalid(void **unused)
 {
-	int ret = rpma_log_get_threshold(INVALID_THRESHOLD_MOCK, NULL);
+	int ret = rpma_log_get_threshold(INVALID_THRESHOLD_MOCK,
+			NULL);
 
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
@@ -95,10 +100,12 @@ threshold_lifecycle(void **unused)
 	for (int i = RPMA_LOG_THRESHOLD; i <= RPMA_LOG_THRESHOLD_AUX; i++) {
 		for (int j = RPMA_LOG_DISABLED; j <= RPMA_LOG_LEVEL_DEBUG;
 				j++) {
-			int ret = rpma_log_set_threshold(i, j);
+			int ret = rpma_log_set_threshold(
+					(rpma_log_threshold)i, j);
 			assert_int_equal(ret, 0);
 
-			ret = rpma_log_get_threshold(i, &level);
+			ret = rpma_log_get_threshold(
+					(rpma_log_threshold)i, &level);
 			assert_int_equal(level, j);
 			assert_int_equal(ret, 0);
 		}
