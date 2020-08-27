@@ -35,6 +35,14 @@ static const int rpma_log_level_syslog_severity[] = {
 /*
  * get_timestamp_prefix -- provide actual time in a readable string
  *
+ * ATTENTION
+ * This function is static now, so the compiler knows the arguments
+ * of the snprintf() function and if it detects they are correct,
+ * it can optimize out the error handling path of the snprintf() function
+ * (since it never fails), so the unit tests cannot test this path.
+ * When this function stops being static, the unit tests
+ * for the failing path of the snprintf() function should be added.
+ *
  * ASSUMPTIONS:
  * - buf != NULL && buf_size >= 16
  */

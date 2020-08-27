@@ -317,9 +317,15 @@ static mock_config config_strftime_error = {
 	0, 0, 1, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
-static mock_config config_snprintf_error = {
-	0, 0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
-};
+/*
+ * snprintf() called in get_timestamp_prefix()
+ * in rpma_log_default_function() cannot fail
+ * if arguments of snprintf() are correct,
+ * so as long as get_timestamp_prefix() is static,
+ * the arguments of snprintf() are known and
+ * the failing path of of snprintf() can be optimized out
+ * by a compiler, so we cannot test this case.
+ */
 
 int
 main(int argc, char *argv[])
@@ -354,9 +360,6 @@ main(int argc, char *argv[])
 		{"function__stderr_path_strftime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_strftime_error},
-		{"function__stderr_path_snprintf_error",
-			function__stderr_path,
-			setup_thresholds, NULL, &config_snprintf_error},
 
 		/* stderr tests - positive */
 		cmocka_unit_test_prestate_setup_teardown(
