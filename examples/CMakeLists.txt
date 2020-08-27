@@ -91,6 +91,10 @@ add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/client.c common/common-conn.c)
+add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
+	SRCS 07-atomic-write/server.c common/common-conn.c)
+add_example(NAME 07-atomic-write BIN client USE_LIBPMEM_IF_FOUND
+	SRCS 07-atomic-write/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
