@@ -11,7 +11,7 @@ In order to build librpma, you need to have installed several components:
 - libibverbs-dev(el)
 - librdmacm-dev(el)
 - groff
-- cmocka-dev(el) == 1.1.5-26-g672c5ce (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-cmocka.sh to install the verified revision)
+- libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-cmocka.sh to install the verified revision)
 - txt2man == 1.7.0 (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-txt2man.sh to install the verified revision)
 
 ### For some examples you also need:
