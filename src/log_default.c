@@ -33,13 +33,16 @@ static const int rpma_log_level_syslog_severity[] = {
 };
 
 /*
- * get_timestamp_prefix -- provide actual time in a readable string
+ * rpma_log_get_timestamp_prefix -- provide actual time in a readable string
+ *
+ * This function is not static, because a compiler
+ * incorrectly optimizes this function and unit tests fail.
  *
  * ASSUMPTIONS:
  * - buf != NULL && buf_size >= 16
  */
-static void
-get_timestamp_prefix(char *buf, size_t buf_size)
+void
+rpma_log_get_timestamp_prefix(char *buf, size_t buf_size)
 {
 	struct tm *info;
 	char date[24];
@@ -120,7 +123,7 @@ rpma_log_default_function(rpma_log_level level, const char *file_name,
 
 	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX]) {
 		char times_tamp[45] = "";
-		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
+		rpma_log_get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp, file_info,
 			rpma_log_level_names[level], message);
 	}
