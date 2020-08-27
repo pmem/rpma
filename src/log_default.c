@@ -35,10 +35,13 @@ static const int rpma_log_level_syslog_severity[] = {
 /*
  * get_timestamp_prefix -- provide actual time in a readable string
  *
+ * ATTENTION: this function CANNOT be static, because a compiler
+ * can incorrectly optimize this function and the tests will fail.
+ *
  * ASSUMPTIONS:
  * - buf != NULL && buf_size >= 16
  */
-static void
+void
 get_timestamp_prefix(char *buf, size_t buf_size)
 {
 	struct tm *info;
