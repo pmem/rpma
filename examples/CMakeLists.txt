@@ -37,7 +37,7 @@ add_check_whitespace(examples-all
 	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
 
 function(add_example)
-	set(options USE_LIBPMEM_IF_FOUND)
+	set(options USE_LIBPMEM_IF_FOUND USE_LIBIBVERBS)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(EXAMPLE
@@ -62,6 +62,12 @@ function(add_example)
 		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
 		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM)
+	endif()
+	
+	if(EXAMPLE_USE_LIBIBVERBS)
+		target_include_directories(${target}
+			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 endfunction()
 
@@ -95,6 +101,10 @@ add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 07-atomic-write/server.c common/common-conn.c)
 add_example(NAME 07-atomic-write BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 07-atomic-write/client.c common/common-conn.c)
+add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
+	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
+add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
+	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
