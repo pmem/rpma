@@ -15,12 +15,12 @@
 #include "log_internal.h"
 
 static const char *const rpma_log_level_names[] = {
-	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
-	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
-	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
-	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
-	[RPMA_LOG_LEVEL_INFO]	= "INFO",
-	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
+	[RPMA_LOG_LEVEL_FATAL]	=  "*FATAL* ",
+	[RPMA_LOG_LEVEL_ERROR]	=  "*ERROR* ",
+	[RPMA_LOG_LEVEL_WARNING] = "*WARN*  ",
+	[RPMA_LOG_LEVEL_NOTICE]	=  "*NOTE*  ",
+	[RPMA_LOG_LEVEL_INFO]	=  "*INFO*  ",
+	[RPMA_LOG_LEVEL_DEBUG]	=  "*DEBUG* ",
 };
 
 static const int rpma_log_level_syslog_severity[] = {
@@ -112,21 +112,21 @@ rpma_log_default_function(rpma_log_level level, const char *file_name,
 			base_file_name++;
 
 		if (snprintf(file_info_buffer, sizeof(file_info_buffer),
-				"%s: %4d: %s: ", base_file_name, line_no,
+				"%s: %3d: %s: ", base_file_name, line_no,
 				function_name) < 0) {
 			file_info = file_info_error;
 		}
 	}
 
 	/* assumed: level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] */
-	syslog(rpma_log_level_syslog_severity[level], "%s*%s*: %s",
-		file_info, rpma_log_level_names[level], message);
+	syslog(rpma_log_level_syslog_severity[level], "%s%s%s",
+		rpma_log_level_names[level], file_info,  message);
 
 	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX]) {
 		char times_tamp[45] = "";
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
-		(void) fprintf(stderr, "%s%s*%s*: %s", times_tamp, file_info,
-			rpma_log_level_names[level], message);
+		(void) fprintf(stderr, "%s%s%s%s", times_tamp,
+			rpma_log_level_names[level],  file_info, message);
 	}
 }
 
