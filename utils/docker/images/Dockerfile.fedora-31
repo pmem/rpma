@@ -19,6 +19,7 @@ RUN dnf update -y
 
 # base deps
 ENV BASE_DEPS "\
+	clang \
 	gcc \
 	git \
 	make \
