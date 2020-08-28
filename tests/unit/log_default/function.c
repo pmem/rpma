@@ -72,7 +72,6 @@ typedef struct {
 	int clock_gettime_error;
 	int localtime_error;
 	int strftime_error;
-	int snprintf_error;
 
 	rpma_log_level secondary;
 
@@ -210,23 +209,16 @@ static struct tm Tm = MOCK_TIME_OF_DAY;
 		will_return(__wrap_localtime, &Timespec); \
 		will_return(__wrap_localtime, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_ERROR); \
-	} else if ((x)->snprintf_error) { \
-		will_return(__wrap_clock_gettime, &Timespec); \
-		will_return(__wrap_localtime, &Timespec); \
-		will_return(__wrap_localtime, &Tm); \
-		will_return(__wrap_strftime, MOCK_STRFTIME_SUCCESS); \
-		will_return(__wrap_snprintf, MOCK_STDIO_ERROR); \
 	} else { \
 		will_return(__wrap_clock_gettime, &Timespec); \
 		will_return(__wrap_localtime, &Timespec); \
 		will_return(__wrap_localtime, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_SUCCESS); \
-		will_return(__wrap_snprintf, MOCK_OK); \
 	}
 
 #define MOCK_TIME_STR_EXPECTED(x) \
 	(((x)->clock_gettime_error || (x)->localtime_error || \
-			(x)->strftime_error || (x)->snprintf_error) ? \
+			(x)->strftime_error) ? \
 			MOCK_TIME_ERROR_STR : MOCK_TIME_STR)
 
 /*
@@ -294,31 +286,27 @@ function__stderr_no_path(void **config_ptr)
  * test configurations
  */
 static mock_config config_no_stderr = {
-	0, 0, 0, 0, RPMA_LOG_DISABLED, MOCK_FILE_NAME
+	0, 0, 0, RPMA_LOG_DISABLED, MOCK_FILE_NAME
 };
 
 static mock_config config_no_stderr_path_absolute = {
-	0, 0, 0, 0, RPMA_LOG_DISABLED, MOCK_FILE_NAME_ABSOLUTE
+	0, 0, 0, RPMA_LOG_DISABLED, MOCK_FILE_NAME_ABSOLUTE
 };
 
 static mock_config config_no_error = {
-	0, 0, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
+	0, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
 static mock_config config_gettime_error = {
-	1, 0, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
+	1, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
 static mock_config config_localtime_error = {
-	0, 1, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
+	0, 1, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
 static mock_config config_strftime_error = {
-	0, 0, 1, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
-};
-
-static mock_config config_snprintf_error = {
-	0, 0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
+	0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
 int
@@ -354,10 +342,6 @@ main(int argc, char *argv[])
 		{"function__stderr_path_strftime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_strftime_error},
-		{"function__stderr_path_snprintf_error",
-			function__stderr_path,
-			setup_thresholds, NULL, &config_snprintf_error},
-
 		/* stderr tests - positive */
 		cmocka_unit_test_prestate_setup_teardown(
 			function__stderr_path,
