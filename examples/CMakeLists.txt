@@ -91,6 +91,10 @@ add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/client.c common/common-conn.c)
+add_example(NAME 08-messages-ping-pong BIN server
+	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
+add_example(NAME 08-messages-ping-pong BIN client
+	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
