@@ -24,6 +24,7 @@ RUN apt-get update && apt-get dist-upgrade -y
 ENV BASE_DEPS "\
 	apt-utils \
 	build-essential \
+	clang \
 	devscripts \
 	git \
 	pkg-config \
