@@ -73,6 +73,28 @@ function compile_example_standalone() {
 
 echo
 echo "##################################################################"
+echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
+echo "##################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=$CC \
+cmake .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DDEVELOPER_MODE=1 \
+	-DUSE_ASAN=ON \
+	-DUSE_UBSAN=ON
+
+make -j$(nproc)
+ctest --output-on-failure
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "##################################################################"
 echo "### Verify build and install (in dir: ${PREFIX}) ($CC, DEBUG)"
 echo "##################################################################"
 
