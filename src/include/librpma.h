@@ -813,7 +813,7 @@ int rpma_send(struct rpma_conn *conn,
  * ERRORS
  * rpma_recv() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn or src or op_context is NULL
+ * - RPMA_E_INVAL - conn or src is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
