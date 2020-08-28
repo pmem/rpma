@@ -33,10 +33,39 @@ static const int rpma_log_level_syslog_severity[] = {
 };
 
 /*
+ * ltoa:  convert n to characters in 6 digits string with base 10
+ */
+static void
+ltoa(long n, char *buf)
+{
+	char *tail = buf;
+	int i = 0;
+	do { /* generate digits in reverse order */
+		*tail++ = n % 10 + '0';   /* get next digit */
+		i++; /* count all digits */
+	} while ((n /= 10) > 0); /* delete it */
+
+	while (i < 6) {
+		*tail++ = '0'; /* update to 6 digits size */
+		i++;
+	}
+	*tail-- = '\0';
+
+	/* reverse string */
+	char *head = buf;
+	char tmp;
+	while (head < tail) {
+		tmp = *head;
+		*head++ = *tail;
+		*tail-- = tmp;
+	}
+}
+
+/*
  * get_timestamp_prefix -- provide actual time in a readable string
  *
  * ASSUMPTIONS:
- * - buf != NULL && buf_size >= 16
+ * - buf != NULL && buf_size >= 30
  */
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
@@ -47,7 +76,6 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	long usec;
 
 	const char error_message[] = "[time error] ";
-
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
 	    (NULL == (info = localtime(&ts.tv_sec)))) {
 		memcpy(buf, error_message, sizeof(error_message));
@@ -55,15 +83,30 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	}
 
 	usec = ts.tv_nsec / 1000;
-	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
-		memcpy(buf, error_message, sizeof(error_message));
+	*buf++ = '[';
+	if (!strftime(buf, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
+		memcpy(buf - 1, error_message, sizeof(error_message));
 		return;
 	}
 
-	if (snprintf(buf, buf_size, "[%s.%06ld] ", date, usec) < 0) {
-		memcpy(buf, error_message, sizeof(error_message));
-		return;
-	}
+	/*
+	 * 19 characters added by strftime
+	 * "1970-01-01 00:00:00"
+	 */
+	buf += 19;
+	*buf++ = '.';
+	ltoa(usec, buf);
+
+	/*
+	 * 6 characters added by ltoa
+	 * "004586"
+	 */
+	buf += 6;
+
+	*buf++ = ']';
+	*buf++ = ' ';
+
+	*buf = '\0';
 }
 
 /*
