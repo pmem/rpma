@@ -379,7 +379,12 @@ rpma_send(struct rpma_conn *conn,
     struct rpma_mr_local *src, size_t offset, size_t len,
     int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || src == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_send(conn->id->qp,
+			src, offset, len,
+			flags, op_context);
 }
 
 /*
@@ -390,7 +395,12 @@ rpma_recv(struct rpma_conn *conn,
     struct rpma_mr_local *dst, size_t offset, size_t len,
     int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || dst == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_recv(conn->id->qp,
+			dst, offset, len,
+			flags, op_context);
 }
 
 /*

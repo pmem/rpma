@@ -99,3 +99,25 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	*mr_ptr = NULL;
 	return 0;
 }
+
+/*
+ * rpma_mr_send -- mock of rpma_mr_send
+ */
+int
+rpma_mr_send(struct ibv_qp *qp,
+	struct rpma_mr_local *src,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	return 0;
+}
+
+/*
+ * rpma_mr_recv -- mock of rpma_mr_recv
+ */
+int
+rpma_mr_recv(struct ibv_qp *qp,
+	struct rpma_mr_local *dst,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	return 0;
+}
