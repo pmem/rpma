@@ -164,15 +164,38 @@ rpma_mr_write(struct ibv_qp *qp,
 
 /*
  * rpma_mr_send -- post an RDMA send from src
- *
- * XXX uses ibv_post_send(3) to post and RDMA.send operation.
  */
 int
 rpma_mr_send(struct ibv_qp *qp,
 	struct rpma_mr_local *src,  size_t offset,
 	size_t len, int flags, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	struct ibv_send_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + offset);
+	sge.length = (uint32_t)len;
+	sge.lkey = src->ibv_mr->lkey;
+
+	wr.sg_list = &sge;
+	wr.num_sge = 1;
+	wr.next = NULL;
+
+	wr.opcode = IBV_WR_SEND;
+	wr.wr_id = (uint64_t)op_context;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+		IBV_SEND_SIGNALED : 0;
+
+	struct ibv_send_wr *bad_wr;
+	int ret = ibv_post_send(qp, &wr, &bad_wr);
+	if (ret) {
+		Rpma_provider_error = ret;
+		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /*
