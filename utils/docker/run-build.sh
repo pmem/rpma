@@ -72,7 +72,7 @@ function compile_example_standalone() {
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (DEBUG version)"
+echo "### Verify build and install (in dir: ${PREFIX}) (DEBUG, gcc)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
@@ -123,7 +123,48 @@ rm -rf $WORKDIR/build
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (RELEASE version)"
+echo "### Verify build and install (in dir: ${PREFIX}) (DEBUG, clang)"
+echo "##################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=clang \
+cmake .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DCMAKE_INSTALL_PREFIX=$PREFIX \
+	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DDEVELOPER_MODE=1
+
+make -j$(nproc)
+make -j$(nproc) doc
+ctest --output-on-failure
+sudo_password -S make -j$(nproc) install
+
+# Test standalone compilation of all examples
+EXAMPLES=$(ls -1 $WORKDIR/examples/)
+for e in $EXAMPLES; do
+	DIR=$WORKDIR/examples/$e
+	[ ! -d $DIR ] && continue
+	[ ! -f $DIR/CMakeLists.txt ] && continue
+	echo
+	echo "###########################################################"
+	echo "### Testing standalone compilation of example: $e"
+	echo "### (with librpma installed from DEBUG sources)"
+	echo "###########################################################"
+	compile_example_standalone $DIR
+done
+
+# Uninstall libraries
+cd $WORKDIR/build
+sudo_password -S make uninstall
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "##################################################################"
+echo "### Verify build and install (in dir: ${PREFIX}) (RELEASE, gcc)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
@@ -184,6 +225,47 @@ for e in $EXAMPLES; do
 	echo "###########################################################"
 	compile_example_standalone $DIR
 done
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "##################################################################"
+echo "### Verify build and install (in dir: ${PREFIX}) (RELEASE, clang)"
+echo "##################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=clang \
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+	-DTEST_DIR=$TEST_DIR \
+	-DCMAKE_INSTALL_PREFIX=$PREFIX \
+	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DDEVELOPER_MODE=1
+
+make -j$(nproc)
+make -j$(nproc) doc
+ctest --output-on-failure
+sudo_password -S make -j$(nproc) install
+
+# Test standalone compilation of all examples
+EXAMPLES=$(ls -1 $WORKDIR/examples/)
+for e in $EXAMPLES; do
+	DIR=$WORKDIR/examples/$e
+	[ ! -d $DIR ] && continue
+	[ ! -f $DIR/CMakeLists.txt ] && continue
+	echo
+	echo "###########################################################"
+	echo "### Testing standalone compilation of example: $e"
+	echo "### (with librpma installed from DEBUG sources)"
+	echo "###########################################################"
+	compile_example_standalone $DIR
+done
+
+# Uninstall libraries
+cd $WORKDIR/build
+sudo_password -S make uninstall
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
