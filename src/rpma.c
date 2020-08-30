@@ -56,7 +56,8 @@ rpma_utils_get_ibv_context(const char *addr,
 		if (ret)
 			goto err_destroy_id;
 	} else {
-		ret = rpma_info_resolve_addr(info, temp_id);
+		ret = rpma_info_resolve_addr(info, temp_id,
+				RPMA_DEFAULT_TIMEOUT_MS);
 		if (ret)
 			goto err_destroy_id;
 	}

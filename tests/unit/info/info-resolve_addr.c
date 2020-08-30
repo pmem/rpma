@@ -28,7 +28,8 @@ resolve_addr__id_NULL(void **info_state_ptr)
 	struct info_state *istate = *info_state_ptr;
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, NULL);
+	int ret = rpma_info_resolve_addr(istate->info, NULL,
+			RPMA_DEFAULT_TIMEOUT_MS);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -42,7 +43,7 @@ resolve_addr__info_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_resolve_addr(NULL, &cmid);
+	int ret = rpma_info_resolve_addr(NULL, &cmid, RPMA_DEFAULT_TIMEOUT_MS);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -56,7 +57,7 @@ static void
 resolve_addr__id_info_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_info_resolve_addr(NULL, NULL);
+	int ret = rpma_info_resolve_addr(NULL, NULL, RPMA_DEFAULT_TIMEOUT_MS);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -76,11 +77,12 @@ resolve_addr__resolve_addr_EAGAIN(void **info_state_ptr)
 	expect_value(rdma_resolve_addr, id, &cmid);
 	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
 	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
-	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT);
+	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rdma_resolve_addr, EAGAIN);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_resolve_addr(istate->info, &cmid,
+			RPMA_DEFAULT_TIMEOUT_MS);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -101,11 +103,12 @@ resolve_addr__success(void **info_state_ptr)
 	expect_value(rdma_resolve_addr, id, &cmid);
 	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
 	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
-	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT);
+	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rdma_resolve_addr, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, &cmid);
+	int ret = rpma_info_resolve_addr(istate->info, &cmid,
+			RPMA_DEFAULT_TIMEOUT_MS);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);

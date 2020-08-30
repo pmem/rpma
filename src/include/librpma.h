@@ -32,6 +32,8 @@
 
 /* picking up an RDMA-capable device */
 
+#define RPMA_DEFAULT_TIMEOUT_MS 1000
+
 /* pick a type of an ibv_context to lookup for */
 enum rpma_util_ibv_context_type {
 	RPMA_UTIL_IBV_CONTEXT_LOCAL, /* lookup for a local device */

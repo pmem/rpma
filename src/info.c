@@ -98,16 +98,22 @@ rpma_info_delete(struct rpma_info **info_ptr)
 
 /*
  * rpma_info_resolve_addr -- resolve the CM ID's destination address
+ *
+ * XXX (id != NULL && info != NULL) conditions are unnecessarily checked in
+ * this function whereas this can be done via assumptions mechanism.
+ *
+ * ASSUMPTIONS
+ * - timeout_ms > 0
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
+		int timeout_ms)
 {
 	if (id == NULL || info == NULL)
 		return RPMA_E_INVAL;
 
-
 	int ret = rdma_resolve_addr(id, info->rai->ai_src_addr,
-			info->rai->ai_dst_addr, RPMA_DEFAULT_TIMEOUT);
+			info->rai->ai_dst_addr, timeout_ms);
 	if (ret) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,

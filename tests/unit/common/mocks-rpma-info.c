@@ -55,10 +55,12 @@ rpma_info_delete(struct rpma_info **info_ptr)
  * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
+		int timeout_ms)
 {
 	assert_int_equal(info, MOCK_INFO);
 	check_expected(id);
+	check_expected(timeout_ms);
 
 	int ret = mock_type(int);
 	if (ret == RPMA_E_PROVIDER)

@@ -91,6 +91,8 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &cstate.id);
 	expect_value(rpma_info_resolve_addr, id, &cstate.id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+			RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
