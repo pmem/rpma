@@ -49,7 +49,8 @@ int rpma_info_delete(struct rpma_info **info);
  * - RPMA_E_INVAL - id or info is NULL
  * - RPMA_E_PROVIDER - resolving the destination address failed
  */
-int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id);
+int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
+		int timeout_ms);
 
 /*
  * rpma_info_bind_addr -- bind the CM ID to the local address

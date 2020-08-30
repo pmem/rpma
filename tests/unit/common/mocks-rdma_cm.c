@@ -169,7 +169,7 @@ int
 rdma_resolve_route(struct rdma_cm_id *id, int timeout_ms)
 {
 	check_expected(id);
-	assert_int_equal(timeout_ms, RPMA_DEFAULT_TIMEOUT);
+	assert_int_equal(timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
 
 	errno = mock_type(int);
 	if (errno)

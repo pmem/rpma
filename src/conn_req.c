@@ -363,12 +363,12 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 	}
 
 	/* resolve address */
-	ret = rpma_info_resolve_addr(info, id);
+	ret = rpma_info_resolve_addr(info, id, RPMA_DEFAULT_TIMEOUT_MS);
 	if (ret)
 		goto err_destroy_id;
 
 	/* resolve route */
-	if (rdma_resolve_route(id, RPMA_DEFAULT_TIMEOUT)) {
+	if (rdma_resolve_route(id, RPMA_DEFAULT_TIMEOUT_MS)) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO("rdma_resolve_route",
 				Rpma_provider_error);
