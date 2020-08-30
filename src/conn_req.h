@@ -12,8 +12,6 @@
 
 #include <rdma/rdma_cma.h>
 
-#define RPMA_DEFAULT_TIMEOUT 1000 /* ms */
-
 /*
  * For the simplicity sake, it is assumed all CQ/SQ/RQ sizes are equal.
  * XXX Later on, it should be configurable on a per-connection basis.

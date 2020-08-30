@@ -149,6 +149,8 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+			RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, RPMA_E_PROVIDER);
 	will_return(rpma_info_resolve_addr, EAGAIN);
 	will_return(rdma_destroy_id, MOCK_OK);
@@ -177,6 +179,8 @@ new__resolve_route_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, EAGAIN);
 	will_return(rdma_destroy_id, MOCK_OK);
@@ -206,6 +210,8 @@ new__create_comp_channel_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, NULL);
@@ -236,6 +242,8 @@ new__create_cq_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
@@ -269,6 +277,8 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
@@ -305,6 +315,8 @@ new__malloc_ENOMEM(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
@@ -342,6 +354,8 @@ new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, &id);
 	expect_value(rpma_info_resolve_addr, id, &id);
+	expect_value(rpma_info_resolve_addr, timeout_ms,
+				RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
