@@ -201,7 +201,7 @@ rpma_mr_send(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		Rpma_provider_error = ret;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_post_send", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error, "ibv_post_send");
 		return RPMA_E_PROVIDER;
 	}
 
