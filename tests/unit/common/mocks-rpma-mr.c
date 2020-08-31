@@ -99,3 +99,47 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	*mr_ptr = NULL;
 	return 0;
 }
+
+/*
+ * rpma_mr_send -- mock of rpma_mr_send
+ */
+int
+rpma_mr_send(struct ibv_qp *qp,
+	struct rpma_mr_local *src,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	assert_non_null(qp);
+	assert_non_null(src);
+	assert_int_not_equal(flags, 0);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(src);
+	check_expected(offset);
+	check_expected(len);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
+
+/*
+ * rpma_mr_recv -- mock of rpma_mr_recv
+ */
+int
+rpma_mr_recv(struct ibv_qp *qp,
+	struct rpma_mr_local *dst,  size_t offset,
+	size_t len, int flags, void *op_context)
+{
+	assert_non_null(qp);
+	assert_non_null(dst);
+	assert_int_not_equal(flags, 0);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(offset);
+	check_expected(len);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
