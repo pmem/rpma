@@ -73,12 +73,13 @@ function compile_example_standalone() {
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (DEBUG version)"
+echo "### Verify build and install (in dir: ${PREFIX}) ($CC, DEBUG)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
+CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
@@ -124,12 +125,13 @@ rm -rf $WORKDIR/build
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (RELEASE version)"
+echo "### Verify build and install (in dir: ${PREFIX}) ($CC, RELEASE)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
+CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
