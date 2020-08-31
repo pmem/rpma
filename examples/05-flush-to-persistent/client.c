@@ -42,7 +42,7 @@ static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
 {
 	hello->lang = lang;
-	strncpy(hello->str, hello_str[hello->lang], KILOBYTE);
+	strncpy(hello->str, hello_str[hello->lang], KILOBYTE - 1);
 }
 
 static void
