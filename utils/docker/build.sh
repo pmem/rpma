@@ -109,6 +109,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
 	--env CHECK_CSTYLE=${CHECK_CSTYLE:-ON} \
 	--env FAULT_INJECTION=$FAULT_INJECTION \
+	--env CC=${CC:-gcc} \
 	--shm-size=4G \
 	-v $HOST_WORKDIR:$WORKDIR \
 	-v /etc/localtime:/etc/localtime \
