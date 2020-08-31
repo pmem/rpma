@@ -8,6 +8,9 @@
 #ifndef LIBRPMA_COMMON_H
 #define LIBRPMA_COMMON_H
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 #ifdef __GNUC__
 #define likely(x)	__builtin_expect(!!(x), 1)
 #define unlikely(x)	__builtin_expect(!!(x), 0)

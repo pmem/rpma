@@ -51,15 +51,15 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	struct rdma_event_channel *evch = rdma_create_event_channel();
 	if (!evch) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_create_event_channel",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_create_event_channel()");
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_migrate_id(id, evch)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_migrate_id",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_migrate_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_evch;
 	}
@@ -144,8 +144,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 			return RPMA_E_NO_NEXT;
 
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_get_cm_event",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_get_cm_event()");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -161,8 +161,8 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	enum rdma_cm_event_type cm_event = edata->event;
 	if (rdma_ack_cm_event(edata)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_ack_cm_event",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_ack_cm_event()");
 		ret = RPMA_E_PROVIDER;
 		goto err_private_data_discard;
 	}
@@ -220,8 +220,8 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 
 	if (rdma_disconnect(conn->id)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_disconnect",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_disconnect()");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -253,24 +253,24 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	Rpma_provider_error = ibv_destroy_cq(conn->cq);
 	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_destroy_cq",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"ibv_destroy_cq()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
 
 	Rpma_provider_error = ibv_destroy_comp_channel(conn->channel);
 	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_destroy_comp_channel",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"ibv_destroy_comp_channel()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
 
 	if (rdma_destroy_id(conn->id)) {
 		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO("rdma_destroy_id",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"rdma_destroy_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_event_channel;
 	}
@@ -435,8 +435,8 @@ rpma_conn_prepare_completions(struct rpma_conn *conn)
 	Rpma_provider_error = ibv_req_notify_cq(conn->cq,
 			0 /* all completions */);
 	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_req_notify_cq",
-				Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"ibv_req_notify_cq()");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -463,7 +463,8 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	} else if (result < 0) {
 		/* XXX ibv_poll_cq() may return only -1; no errno provided */
 		Rpma_provider_error = result;
-		RPMA_LOG_ERROR_WITH_ERRNO("ibv_poll_cq", Rpma_provider_error);
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+				"ibv_poll_cq()");
 		return RPMA_E_PROVIDER;
 	} else if (result > 1) {
 		RPMA_LOG_ERROR(
@@ -480,8 +481,7 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 		cmpl->op = RPMA_OP_WRITE;
 		break;
 	default:
-		RPMA_LOG_ERROR(
-				"unsupported wc.opcode == %d", wc.opcode);
+		RPMA_LOG_ERROR("unsupported wc.opcode == %d", wc.opcode);
 		return RPMA_E_NOSUPP;
 	}
 
