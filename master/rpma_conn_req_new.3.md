@@ -26,7 +26,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Create a new outgoing connection request object.
+Create a new outgoing connection request object using reliable,
+connection-oriented and message-based (RDMA\_PS\_TCP) QP communication.
 
 ERRORS
 ======

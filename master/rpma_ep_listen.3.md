@@ -25,7 +25,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Create an endpoint and initialize listening for incoming connections.
+Create an endpoint and initialize listening for incoming connections
+using reliable, connection-oriented and message-based (RDMA\_PS\_TCP) QP
+communication.
 
 ERRORS
 ======
