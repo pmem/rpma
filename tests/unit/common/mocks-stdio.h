@@ -9,9 +9,11 @@
 #define MOCKS_STDIO_H
 
 #include <stdio.h>
+#include <limits.h>
 
 #define MOCK_BUFF_LEN		1024
 #define MOCK_STDIO_ERROR	(-1)
+#define MOCK_SNPRINTF_NO_EOL	INT_MAX
 
 int __wrap_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 int __wrap_snprintf(char *str, size_t size, const char *format, ...);
