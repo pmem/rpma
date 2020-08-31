@@ -22,6 +22,7 @@ EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 PREFIX=/usr
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
+CC=${CC:-gcc}
 
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
