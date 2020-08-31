@@ -72,6 +72,19 @@ You can browse and edit CMake options using `cmake-gui` or `ccmake` e.g.:
 $ ccmake .
 ```
 
+### Building packages
+
+In order to build 'rpm' or 'deb' packages you should issue the following commands:
+
+```shell
+cmake .. -DCPACK_GENERATOR="$GEN" -DCMAKE_INSTALL_PREFIX=/usr
+make package
+```
+
+where $GEN is a type of package generator: RPM or DEB.
+
+CMAKE_INSTALL_PREFIX must be set to a destination were packages will be installed
+
 ## Installing
 
 After compiling the library, you can install it:
