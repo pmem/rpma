@@ -28,8 +28,8 @@ DESCRIPTION
 
 **rpma\_utils\_get\_ibv\_context**() obtains an RDMA device context by
 the given IPv4/IPv6 address (either local or remote) using the TCP RDMA
-port space (RDMA\_PS\_TCP) - reliable, connection-oriented and message
-based QP communication.
+port space (RDMA\_PS\_TCP) - reliable, connection-oriented and
+message-based QP communication.
 
 RETURN VALUE
 ============
