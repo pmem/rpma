@@ -317,10 +317,6 @@ static mock_config config_strftime_error = {
 	0, 0, 1, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
-static mock_config config_snprintf_error = {
-	0, 0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
-};
-
 int
 main(int argc, char *argv[])
 {
@@ -354,9 +350,6 @@ main(int argc, char *argv[])
 		{"function__stderr_path_strftime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_strftime_error},
-		{"function__stderr_path_snprintf_error",
-			function__stderr_path,
-			setup_thresholds, NULL, &config_snprintf_error},
 
 		/* stderr tests - positive */
 		cmocka_unit_test_prestate_setup_teardown(
