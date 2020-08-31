@@ -5,6 +5,8 @@
  * mocks-stdio.c -- stdio mocks
  */
 
+#include <string.h>
+
 #include "cmocka_headers.h"
 #include "mocks-stdio.h"
 #include "test-common.h"
@@ -34,6 +36,10 @@ __wrap_snprintf(char *str, size_t size, const char *format, ...)
 	int ret = mock_type(int);
 	if (ret < 0)
 		return ret;
+	if (ret > 0) {
+		memset(str, 'x', size);
+		return size;
+	}
 
 	va_list ap;
 	va_start(ap, format);

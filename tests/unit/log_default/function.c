@@ -72,7 +72,7 @@ typedef struct {
 	int clock_gettime_error;
 	int localtime_error;
 	int strftime_error;
-	int snprintf_error;
+	int snprintf_no_eol;
 
 	rpma_log_level secondary;
 
@@ -191,6 +191,7 @@ function__syslog(void **config_ptr)
 #define MOCK_TIME_OF_DAY_STR "1970-01-01 00:00:00"
 #define MOCK_TIME_STR "[" MOCK_TIME_OF_DAY_STR ".000000] "
 #define MOCK_TIME_ERROR_STR "[time error] "
+#define MOCK_SNPRINTF_NO_EOL 1 /* any >0 value */
 
 static struct timespec Timespec = {0};
 static struct tm Tm = MOCK_TIME_OF_DAY;
@@ -210,12 +211,12 @@ static struct tm Tm = MOCK_TIME_OF_DAY;
 		will_return(__wrap_localtime, &Timespec); \
 		will_return(__wrap_localtime, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_ERROR); \
-	} else if ((x)->snprintf_error) { \
+	} else if ((x)->snprintf_no_eol) { \
 		will_return(__wrap_clock_gettime, &Timespec); \
 		will_return(__wrap_localtime, &Timespec); \
 		will_return(__wrap_localtime, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_SUCCESS); \
-		will_return(__wrap_snprintf, MOCK_STDIO_ERROR); \
+		will_return(__wrap_snprintf, MOCK_SNPRINTF_NO_EOL); \
 	} else { \
 		will_return(__wrap_clock_gettime, &Timespec); \
 		will_return(__wrap_localtime, &Timespec); \
@@ -226,7 +227,7 @@ static struct tm Tm = MOCK_TIME_OF_DAY;
 
 #define MOCK_TIME_STR_EXPECTED(x) \
 	(((x)->clock_gettime_error || (x)->localtime_error || \
-			(x)->strftime_error || (x)->snprintf_error) ? \
+			(x)->strftime_error || (x)->snprintf_no_eol) ? \
 			MOCK_TIME_ERROR_STR : MOCK_TIME_STR)
 
 /*
@@ -317,7 +318,7 @@ static mock_config config_strftime_error = {
 	0, 0, 1, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
-static mock_config config_snprintf_error = {
+static mock_config config_snprintf_no_eol = {
 	0, 0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
@@ -354,9 +355,9 @@ main(int argc, char *argv[])
 		{"function__stderr_path_strftime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_strftime_error},
-		{"function__stderr_path_snprintf_error",
+		{"function__stderr_path_snprintf_no_eol",
 			function__stderr_path,
-			setup_thresholds, NULL, &config_snprintf_error},
+			setup_thresholds, NULL, &config_snprintf_no_eol},
 
 		/* stderr tests - positive */
 		cmocka_unit_test_prestate_setup_teardown(
