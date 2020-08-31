@@ -168,6 +168,7 @@ next_completion__success(void **cstate_ptr)
 		will_return(poll_cq, 1);
 		wc.opcode = opcodes[i];
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		wc.byte_len = MOCK_LEN;
 		wc.status = MOCK_WC_STATUS;
 		will_return(poll_cq, &wc);
 
@@ -179,6 +180,7 @@ next_completion__success(void **cstate_ptr)
 		assert_int_equal(ret, 0);
 		assert_int_equal(cmpl.op, ops[i]);
 		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
+		assert_int_equal(cmpl.byte_len, MOCK_LEN);
 		assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
 	}
 }

@@ -496,6 +496,7 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	}
 
 	cmpl->op_context = (void *)wc.wr_id;
+	cmpl->byte_len = wc.byte_len;
 	cmpl->op_status = wc.status;
 
 	if (unlikely(wc.status != IBV_WC_SUCCESS)) {

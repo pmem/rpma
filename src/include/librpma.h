@@ -884,6 +884,7 @@ enum rpma_op {
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
+	uint32_t byte_len;
 	enum ibv_wc_status op_status;
 };
 
