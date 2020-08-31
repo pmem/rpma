@@ -12,8 +12,8 @@
 #include "log_default.h"
 #include "librpma.h"
 
-#define INVALID_THRESHOLD_MOCK	- 1
-#define INVALID_LEVEL_MOCK	- 2
+#define INVALID_THRESHOLD_MOCK	((rpma_log_threshold)(-1))
+#define INVALID_LEVEL_MOCK	(-2)
 
 /*
  * set_threshold__threshold_invalid -- use an invalid threshold
@@ -95,10 +95,12 @@ threshold_lifecycle(void **unused)
 	for (int i = RPMA_LOG_THRESHOLD; i <= RPMA_LOG_THRESHOLD_AUX; i++) {
 		for (int j = RPMA_LOG_DISABLED; j <= RPMA_LOG_LEVEL_DEBUG;
 				j++) {
-			int ret = rpma_log_set_threshold(i, j);
+			int ret = rpma_log_set_threshold(
+					(rpma_log_threshold)i, j);
 			assert_int_equal(ret, 0);
 
-			ret = rpma_log_get_threshold(i, &level);
+			ret = rpma_log_get_threshold(
+					(rpma_log_threshold)i, &level);
 			assert_int_equal(level, j);
 			assert_int_equal(ret, 0);
 		}

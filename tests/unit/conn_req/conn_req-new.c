@@ -377,7 +377,7 @@ new__success(void **unused)
 	 */
 }
 
-const struct CMUnitTest test_new[] = {
+const static struct CMUnitTest test_new[] = {
 	/* rpma_conn_req_new() unit tests */
 	cmocka_unit_test(new__peer_NULL),
 	cmocka_unit_test(new__addr_NULL),

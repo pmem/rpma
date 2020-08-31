@@ -128,7 +128,7 @@ group_setup_read(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_read[] = {
+const static struct CMUnitTest tests_read[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(read__conn_NULL),
 	cmocka_unit_test(read__dst_NULL),
