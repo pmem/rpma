@@ -255,17 +255,17 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 	if (usage == 0 || (usage & ~USAGE_ALL_ALLOWED))
 		return RPMA_E_INVAL;
 
-	struct rpma_mr_local *mr;
-	mr = malloc(sizeof(struct rpma_mr_local));
-	if (mr == NULL)
-		return RPMA_E_NOMEM;
-
 	struct ibv_mr *ibv_mr;
 	int ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size,
 			usage_to_access(usage));
-	if (ret) {
-		free(mr);
+	if (ret)
 		return ret;
+
+	struct rpma_mr_local *mr;
+	mr = (struct rpma_mr_local *)malloc(sizeof(struct rpma_mr_local));
+	if (mr == NULL) {
+		ret = RPMA_E_NOMEM;
+		goto err_ibv_dereg_mr;
 	}
 
 	mr->ibv_mr = ibv_mr;
@@ -273,6 +273,11 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 	*mr_ptr = mr;
 
 	return 0;
+
+err_ibv_dereg_mr:
+	ibv_dereg_mr(ibv_mr);
+
+	return ret;
 }
 
 /*

@@ -36,40 +36,40 @@ rpma_utils_get_ibv_context(const char *addr,
 		return RPMA_E_INVAL;
 	}
 
-	struct rpma_info *info;
-	int ret = rpma_info_new(addr, NULL /* port */, side, &info);
-	if (ret)
-		return ret;
-
 	struct rdma_cm_id *temp_id;
-	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
+	int ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-			"rdma_create_id()");
-		ret = RPMA_E_PROVIDER;
-		goto err_info_delete;
+				"rdma_create_id");
+		return RPMA_E_PROVIDER;
 	}
+
+	struct rpma_info *info;
+	ret = rpma_info_new(addr, NULL /* port */, side, &info);
+	if (ret)
+		goto err_destroy_id;
 
 	if (side == RPMA_INFO_PASSIVE) {
 		ret = rpma_info_bind_addr(info, temp_id);
 		if (ret)
-			goto err_destroy_id;
+			goto err_info_delete;
 	} else {
 		ret = rpma_info_resolve_addr(info, temp_id,
 				RPMA_DEFAULT_TIMEOUT_MS);
 		if (ret)
-			goto err_destroy_id;
+			goto err_info_delete;
 	}
 
 	/* obtain the device */
 	*dev = temp_id->verbs;
 
+err_info_delete:
+	(void) rpma_info_delete(&info);
+
 err_destroy_id:
 	(void) rdma_destroy_id(temp_id);
 
-err_info_delete:
-	(void) rpma_info_delete(&info);
 	return ret;
 }
 
