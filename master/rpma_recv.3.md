@@ -49,7 +49,7 @@ ERRORS
 
 **rpma\_recv**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *conn* or src or *op\_context* is NULL
+-   RPMA\_E\_INVAL - *conn* or src is NULL
 
 -   RPMA\_E\_INVAL - *flags* are not set
 
