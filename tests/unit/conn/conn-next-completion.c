@@ -198,7 +198,7 @@ group_setup_next_completion(void **unused)
 	return 0;
 }
 
-const static struct CMUnitTest tests_next_completion[] = {
+static const struct CMUnitTest tests_next_completion[] = {
 	/* rpma_conn_next_completion() unit tests */
 	cmocka_unit_test(next_completion__conn_NULL),
 	cmocka_unit_test_setup_teardown(

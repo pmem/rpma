@@ -124,7 +124,7 @@ set_private_data__success(void **cstate_ptr)
 	assert_int_equal(check_data.len, cstate->data.len);
 }
 
-const static struct CMUnitTest tests_private_data[] = {
+static const struct CMUnitTest tests_private_data[] = {
 	/* rpma_conn_set_private_data() unit tests */
 	cmocka_unit_test_setup_teardown(
 		set_private_data__failed_ENOMEM,

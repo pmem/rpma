@@ -94,7 +94,7 @@ group_setup_mr_send(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_mr_send[] = {
+static const struct CMUnitTest tests_mr_send[] = {
 	/* rpma_mr_send() unit tests */
 	cmocka_unit_test_setup_teardown(send__failed_E_PROVIDER,
 			setup__mr_local_and_remote,

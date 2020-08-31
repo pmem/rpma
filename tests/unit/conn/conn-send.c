@@ -107,7 +107,7 @@ group_setup_send(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_send[] = {
+static const struct CMUnitTest tests_send[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(send__conn_NULL),
 	cmocka_unit_test(send__src_NULL),

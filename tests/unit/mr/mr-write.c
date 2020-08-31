@@ -126,7 +126,7 @@ group_setup_mr_write(void **unused)
 	return 0;
 }
 
-const static struct CMUnitTest tests_mr_write[] = {
+static const struct CMUnitTest tests_mr_write[] = {
 	/* rpma_mr_write() unit tests */
 	cmocka_unit_test_setup_teardown(
 			write__COMPL_ALWAYS_failed_E_PROVIDER,

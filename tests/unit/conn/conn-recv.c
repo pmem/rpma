@@ -106,7 +106,7 @@ group_setup_recv(void **unused)
 	return 0;
 }
 
-const struct CMUnitTest tests_recv[] = {
+static const struct CMUnitTest tests_recv[] = {
 	/* rpma_recv() unit tests */
 	cmocka_unit_test(recv__conn_NULL),
 	cmocka_unit_test(recv__dst_NULL),

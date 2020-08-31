@@ -81,7 +81,7 @@ group_setup_get_completion_fd(void **unused)
 	return 0;
 }
 
-const static struct CMUnitTest tests_get_completion_fd[] = {
+static const struct CMUnitTest tests_get_completion_fd[] = {
 	/* rpma_conn_get_completion_fd() unit tests */
 	cmocka_unit_test(get_completion_fd__conn_NULL),
 	cmocka_unit_test_setup_teardown(
