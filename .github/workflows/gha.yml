@@ -25,10 +25,11 @@ jobs:
       WORKDIR:        utils/docker
     strategy:
       matrix:
-        CONFIG: ["N=1 OS=ubuntu OS_VER=19.10 TYPE=normal PUSH_IMAGE=1",
-                 "N=2 OS=fedora OS_VER=31    TYPE=normal PUSH_IMAGE=1 AUTO_DOC_UPDATE=1",
-                 "N=3 OS=ubuntu OS_VER=19.10 TYPE=normal XXX_DISABLE_COVERAGE=1",
-                 "N=4 OS=ubuntu OS_VER=19.10 TYPE=coverity"]
+        CONFIG: ["N=1 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc PUSH_IMAGE=1",
+                 "N=2 OS=fedora OS_VER=31    TYPE=normal CC=gcc PUSH_IMAGE=1 AUTO_DOC_UPDATE=1",
+                 "N=3 OS=fedora OS_VER=31    TYPE=normal CC=clang",
+                 "N=4 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc XXX_DISABLE_COVERAGE=1",
+                 "N=5 OS=ubuntu OS_VER=19.10 TYPE=coverity CC=gcc"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
