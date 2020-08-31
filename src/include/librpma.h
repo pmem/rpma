@@ -533,6 +533,34 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr);
 
+/** 3
+ * rpma_conn_req_recv - initialize the receive operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_req_recv(struct rpma_conn_req *req,
+ *		struct rpma_mr_local *dst, size_t offset, size_t len,
+ *		int flags, void *op_context);
+ *
+ * DESCRIPTION
+ * Initialize the receive operation which prepares a buffer for a message
+ * send from other side of the connection. Please see rpma_send(3). This is
+ * a variant of rpma_recv(3) which may be used before the connection is
+ * established.
+ *
+ * ERRORS
+ * rpma_conn_req_recv() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - req or src or op_context is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
+ */
+int rpma_conn_req_recv(struct rpma_conn_req *req,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
+    int flags, void *op_context);
+
 /* server-side setup */
 
 struct rpma_ep;

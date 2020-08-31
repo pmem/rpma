@@ -476,3 +476,14 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	return ret;
 }
+
+/*
+ * rpma_conn_req_recv -- initialize the receive operation
+ */
+int
+rpma_conn_req_recv(struct rpma_conn_req *req,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
+    int flags, void *op_context)
+{
+	return RPMA_E_NOSUPP;
+}
