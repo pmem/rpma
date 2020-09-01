@@ -85,6 +85,7 @@ setup__conn_req_new(void **cstate_ptr)
 	static struct conn_req_new_test_state cstate = {{0}};
 	memset(&cstate, 0, sizeof(cstate));
 	cstate.id.verbs = MOCK_VERBS;
+	cstate.id.qp = MOCK_QP;
 
 	/* configure mocks for rpma_conn_req_new() */
 	Mock_ctrl_defer_destruction = MOCK_CTRL_DEFER;

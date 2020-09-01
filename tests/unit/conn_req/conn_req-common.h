@@ -12,6 +12,8 @@
 #include "test-common.h"
 #include "conn_req.h"
 
+#define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
+
 /*
  * All the resources used between setup__conn_req_from_cm_event and
  * teardown__conn_req_from_cm_event

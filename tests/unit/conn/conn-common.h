@@ -12,15 +12,10 @@
 #include "test-common.h"
 #include "conn.h"
 
-#define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
 #define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
-#define MOCK_LOCAL_OFFSET	(size_t)0xC413
 #define MOCK_REMOTE_OFFSET	(size_t)0xC414
 #define MOCK_OFFSET_ALIGNED	(size_t)((MOCK_REMOTE_OFFSET / \
 		RPMA_ATOMIC_WRITE_ALIGNMENT) * RPMA_ATOMIC_WRITE_ALIGNMENT)
-#define MOCK_LEN		(size_t)0xC415
-#define MOCK_FLAGS		(int)0xC416
-#define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_WC_STATUS		(int)0x51A5
 #define MOCK_FD			0x00FD
 #define MOCK_COMPLETION_FD	0x00FE
