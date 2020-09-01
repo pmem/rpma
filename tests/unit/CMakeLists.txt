@@ -4,6 +4,7 @@
 #
 
 add_subdirectory(conn)
+add_subdirectory(conn_cfg)
 add_subdirectory(conn_req)
 add_subdirectory(ep)
 add_subdirectory(error)
