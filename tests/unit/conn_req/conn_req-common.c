@@ -34,7 +34,7 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate.event,
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate.event, NULL,
 		&cstate.req);
 
 	/* verify the results */
@@ -103,7 +103,7 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&cstate.req);
 
 	/* verify the results */

@@ -158,9 +158,12 @@ rpma_ep_get_fd(struct rpma_ep *ep, int *fd)
  * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation
  * of a connection request object based on the obtained request.
  * If succeeds it returns a newly created object.
+ *
+ * XXX if cfg is NULL use rpma_conn_cfg_default()
  */
 int
-rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
+rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req)
 {
 	if (ep == NULL || req == NULL)
 		return RPMA_E_INVAL;
@@ -187,7 +190,7 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req)
 		goto err_ack;
 	}
 
-	ret = rpma_conn_req_from_cm_event(ep->peer, event, req);
+	ret = rpma_conn_req_from_cm_event(ep->peer, event, NULL, req);
 	if (ret)
 		goto err_ack;
 
