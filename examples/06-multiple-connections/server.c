@@ -354,7 +354,7 @@ server_handle_incoming_client(struct custom_event *ce)
 
 	/* receive an incoming connection request */
 	struct rpma_conn_req *req = NULL;
-	if (rpma_ep_next_conn_req(svr->ep, &req))
+	if (rpma_ep_next_conn_req(svr->ep, NULL, &req))
 		return;
 
 	/* if no free slot is available */

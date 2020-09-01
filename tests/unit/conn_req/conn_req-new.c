@@ -19,8 +19,8 @@ new__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(NULL, MOCK_IP_ADDRESS, MOCK_PORT,
-					&req);
+	int ret = rpma_conn_req_new(NULL, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
+			&req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -35,8 +35,7 @@ new__addr_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, NULL, MOCK_PORT,
-					&req);
+	int ret = rpma_conn_req_new(MOCK_PEER, NULL, MOCK_PORT, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -51,8 +50,8 @@ new__port_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, NULL,
-					&req);
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, NULL, NULL,
+			&req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -66,7 +65,7 @@ static void
 new__req_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 					NULL);
 
 	/* verify the results */
@@ -80,7 +79,7 @@ static void
 new__all_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_new(NULL, NULL, NULL, NULL);
+	int ret = rpma_conn_req_new(NULL, NULL, NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -104,7 +103,7 @@ new__info_new_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -126,7 +125,7 @@ new__create_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -157,7 +156,7 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -187,7 +186,7 @@ new__resolve_route_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -220,7 +219,7 @@ new__create_comp_channel_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -254,7 +253,7 @@ new__create_cq_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -293,7 +292,7 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -332,7 +331,7 @@ new__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */
@@ -371,7 +370,7 @@ new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
 			&req);
 
 	/* verify the results */

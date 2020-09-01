@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* obtain an incoming connection request */
-	ret = rpma_ep_next_conn_req(ep, &req);
+	ret = rpma_ep_next_conn_req(ep, NULL, &req);
 	if (ret)
 		goto err_ep_shutdown;
 

@@ -34,6 +34,7 @@
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_conn_req_from_cm_event(struct rpma_peer *peer,
-		struct rdma_cm_event *event, struct rpma_conn_req **req_ptr);
+		struct rdma_cm_event *event, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req_ptr);
 
 #endif /* LIBRPMA_CONN_REQ_H */
