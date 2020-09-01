@@ -13,6 +13,7 @@ add_check_whitespace(src
 
 set(SOURCES
 	conn.c
+	conn_cfg.c
 	conn_req.c
 	ep.c
 	flush.c

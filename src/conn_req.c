@@ -44,11 +44,11 @@ struct rpma_conn_req {
  * the latter with QP and CQ
  *
  * ASSUMPTIONS
- * - peer != NULL && id != NULL && req != NULL
+ * - peer != NULL && id != NULL && cfg != NULL && req != NULL
  */
 static int
 rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_conn_req **req)
+		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
 {
 	int ret = 0;
 
@@ -310,10 +310,13 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 /*
  * rpma_conn_req_from_cm_event -- XXX feeds an ID from cm event into
  * rpma_conn_req_from_id and add the event to conn_req
+ *
+ * ASSUMPTIONS
+ * cfg != NULL
  */
 int
 rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
-		struct rpma_conn_req **req_ptr)
+		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || edata == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -322,7 +325,8 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 		return RPMA_E_INVAL;
 
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_id(peer, edata->id, &req);
+	/* XXX provided cfg or default instead of NULL */
+	int ret = rpma_conn_req_from_id(peer, edata->id, NULL, &req);
 	if (ret)
 		return ret;
 
@@ -343,10 +347,12 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
  * rpma_conn_req_new -- create a new outgoing connection request object. It uses
  * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds
  * the prepared ID into rpma_conn_req_from_id.
+ *
+ * XXX if cfg is NULL get rpma_conn_cfg defaults get from rpma_conn_cfg_default
  */
 int
 rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
-		struct rpma_conn_req **req_ptr)
+		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -381,7 +387,8 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 	}
 
 	struct rpma_conn_req *req;
-	ret = rpma_conn_req_from_id(peer, id, &req);
+	/* XXX provided cfg or default instead of NULL */
+	ret = rpma_conn_req_from_id(peer, id, NULL, &req);
 	if (ret)
 		goto err_destroy_id;
 

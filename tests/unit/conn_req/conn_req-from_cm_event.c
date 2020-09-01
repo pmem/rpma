@@ -21,7 +21,7 @@ from_cm_event__peer_NULL(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(NULL, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(NULL, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -36,7 +36,7 @@ from_cm_event__edata_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, NULL, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -51,7 +51,7 @@ from_cm_event__req_ptr_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -65,7 +65,7 @@ static void
 from_cm_event__peer_NULL_edata_NULL_req_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(NULL, NULL, NULL);
+	int ret = rpma_conn_req_from_cm_event(NULL, NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -81,7 +81,7 @@ from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECT_ERROR_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -105,7 +105,7 @@ from_cm_event__create_comp_channel_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -131,7 +131,7 @@ from_cm_event__create_cq_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -158,7 +158,7 @@ from_cm_event__req_notify_cq_fail(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -189,7 +189,7 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -222,7 +222,7 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -253,7 +253,7 @@ from_cm_event__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -285,7 +285,7 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -319,7 +319,7 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);

@@ -21,7 +21,7 @@ next_conn_req__ep_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(NULL, &req);
+	int ret = rpma_ep_next_conn_req(NULL, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -37,7 +37,7 @@ next_conn_req__req_NULL(void **estate_ptr)
 	struct ep_test_state *estate = *estate_ptr;
 
 	/* run test */
-	int ret = rpma_ep_next_conn_req(estate->ep, NULL);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -50,7 +50,7 @@ static void
 next_conn_req__ep_NULL_req_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_ep_next_conn_req(NULL, NULL);
+	int ret = rpma_ep_next_conn_req(NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -71,7 +71,7 @@ next_conn_req__get_cm_event_EAGAIN(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -94,7 +94,7 @@ next_conn_req__get_cm_event_ENODATA(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NO_NEXT);
@@ -120,7 +120,7 @@ next_conn_req__event_REJECTED(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -147,7 +147,7 @@ next_conn_req__event_REJECTED_ack_EINVAL(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -178,7 +178,7 @@ next_conn_req__conn_req_from_cm_event_ENOMEM(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -210,7 +210,7 @@ next_conn_req__from_cm_event_ENOMEM_ack_EINVAL(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -236,7 +236,7 @@ next_conn_req__success(void **estate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
 	assert_ptr_equal(req, MOCK_CONN_REQ);

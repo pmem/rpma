@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 		return ret;
 
 	/* create a connection request */
-	ret = rpma_conn_req_new(peer, addr, port, &req);
+	ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
 	if (ret)
 		goto err_peer_delete;
 

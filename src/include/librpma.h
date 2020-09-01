@@ -309,6 +309,172 @@ int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
  */
 int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
+/* connection configuration */
+
+struct rpma_conn_cfg;
+
+/** 3
+ * rpma_conn_cfg_new - create a new connection configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
+ *
+ * ERRORS
+ * rpma_conn_cfg_new() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
+
+/** 3
+ * rpma_conn_cfg_delete - delete the connection configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
+ *
+ * ERRORS
+ * rpma_conn_cfg_delete() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
+
+/** 3
+ * rpma_conn_cfg_set_timeout - set connection establishment timeout
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg,
+ *		int timeout_ms);
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_timeout() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
+
+/** 3
+ * rpma_conn_cfg_get_timeout - get connection establishment timeout
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg,
+ *		int *timeout_ms);
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_timeout() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms);
+
+/** 3
+ * rpma_conn_cfg_set_cq_size - set CQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_cq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
+
+/** 3
+ * rpma_conn_cfg_get_cq_size - get CQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_cq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size);
+
+/** 3
+ * rpma_conn_cfg_set_sq_size - set SQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_sq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size);
+
+/** 3
+ * rpma_conn_cfg_get_sq_size - get SQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_sq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size);
+
+/** 3
+ * rpma_conn_cfg_set_rq_size - set RQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_rq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size);
+
+/** 3
+ * rpma_conn_cfg_get_rq_size - get RQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size);
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_rq_size() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size);
+
 /* connection */
 
 struct rpma_conn;
@@ -475,7 +641,8 @@ struct rpma_conn_req;
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-	const char *port, struct rpma_conn_req **req_ptr);
+	const char *port, struct rpma_conn_cfg *cfg,
+	struct rpma_conn_req **req_ptr);
 
 /** 3
  * rpma_conn_req_delete - delete the connection request
@@ -654,7 +821,8 @@ int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_NO_NEXT - no next connection request available
  */
-int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_req **req);
+int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req);
 
 /* remote memory access functions */
 

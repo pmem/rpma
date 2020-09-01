@@ -64,7 +64,7 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 
 	/* create a connection request */
-	int ret = rpma_conn_req_new(peer, addr, port, &req);
+	int ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
 	if (ret)
 		return ret;
 
@@ -106,7 +106,7 @@ server_accept_connection(struct rpma_ep *ep,
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 
 	/* receive an incoming connection request */
-	int ret = rpma_ep_next_conn_req(ep, &req);
+	int ret = rpma_ep_next_conn_req(ep, NULL, &req);
 	if (ret)
 		return ret;
 
