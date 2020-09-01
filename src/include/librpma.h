@@ -325,7 +325,8 @@ struct rpma_conn_cfg;
  * ERRORS
  * rpma_conn_cfg_new() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg_ptr is NULL
+ * - RPMA_E_NOMEM - out of memory
  */
 int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
 
@@ -341,7 +342,7 @@ int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
  * ERRORS
  * rpma_conn_cfg_delete() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg_ptr is NULL
  */
 int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
 
@@ -358,7 +359,7 @@ int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
  * ERRORS
  * rpma_conn_cfg_set_timeout() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg is NULL or timeout_ms < 0
  */
 int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
 
@@ -375,7 +376,7 @@ int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
  * ERRORS
  * rpma_conn_cfg_get_timeout() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg or timeout_ms is NULL
  */
 int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms);
 
@@ -386,14 +387,15 @@ int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
+ *	int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t cq_size);
  *
  * ERRORS
  * rpma_conn_cfg_set_cq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg is NULL
  */
-int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
+int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
 /** 3
  * rpma_conn_cfg_get_cq_size - get CQ size for the connection
@@ -402,14 +404,15 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size);
+ *	int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t *cq_size);
  *
  * ERRORS
  * rpma_conn_cfg_get_cq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg or cq_size is NULL
  */
-int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size);
+int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size);
 
 /** 3
  * rpma_conn_cfg_set_sq_size - set SQ size for the connection
@@ -418,14 +421,15 @@ int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size);
+ *	int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t sq_size);
  *
  * ERRORS
  * rpma_conn_cfg_set_sq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg is NULL
  */
-int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size);
+int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
 
 /** 3
  * rpma_conn_cfg_get_sq_size - get SQ size for the connection
@@ -434,14 +438,15 @@ int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size);
+ *	int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t *sq_size);
  *
  * ERRORS
  * rpma_conn_cfg_get_sq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg or sq_size is NULL
  */
-int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size);
+int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size);
 
 /** 3
  * rpma_conn_cfg_set_rq_size - set RQ size for the connection
@@ -450,14 +455,15 @@ int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size);
+ *	int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t rq_size);
  *
  * ERRORS
  * rpma_conn_cfg_set_rq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg is NULL
  */
-int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size);
+int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 
 /** 3
  * rpma_conn_cfg_get_rq_size - get RQ size for the connection
@@ -466,14 +472,15 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size);
+ *	int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg,
+ *		uint32_t *rq_size);
  *
  * ERRORS
  * rpma_conn_cfg_get_rq_size() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - cfg or rq_size is NULL
  */
-int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size);
+int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size);
 
 /* connection */
 

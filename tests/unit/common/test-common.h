@@ -11,8 +11,10 @@
 #define MOCK_IP_ADDRESS		"127.0.0.1"
 #define MOCK_PORT		"1234" /* a random port number */
 #define MOCK_TIMEOUT_MS		5678
+#define MOCK_Q_SIZE		123
 
 /* random values */
+#define MOCK_CONN_CFG		(struct rpma_conn_cfg *)0xCEF6
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF
 #define MOCK_INFO		(struct rpma_info *)0xE6B2
 #define MOCK_CONN		(struct rpma_conn *)0xC004
