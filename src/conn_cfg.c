@@ -5,6 +5,7 @@
  * conn_cfg.c -- librpma connection-configuration-related implementations
  */
 
+#include <limits.h>
 #include <stdlib.h>
 #include <rdma/rdma_cma.h>
 
@@ -18,11 +19,16 @@
 #include "cmocka_alloc.h"
 #endif
 
+/*
+ * For the simplicity sake, it is assumed all CQ/SQ/RQ default sizes are equal.
+ */
+#define RPMA_DEFAULT_Q_SIZE 10
+
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
-	int cq_size;	/* CQ size */
-	int sq_size;	/* SQ size */
-	int rq_size;	/* RQ size */
+	uint32_t cq_size;	/* CQ size */
+	uint32_t sq_size;	/* SQ size */
+	uint32_t rq_size;	/* RQ size */
 };
 
 static struct rpma_conn_cfg Conn_cfg_default  = {
@@ -44,28 +50,66 @@ rpma_conn_cfg_default()
 	return &Conn_cfg_default;
 }
 
+/*
+ * rpma_conn_cfg_get_cqe -- ibv_create_cq() compatible variant of
+ * rpma_conn_cfg_get_cq_size(). Round down the cq_size when it is too big
+ * for storing into an int type of value. Convert otherwise.
+ */
+int
+rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
+{
+	if (cqe == NULL)
+		return RPMA_E_INVAL;
+
+	uint32_t cq_size;
+	int ret = rpma_conn_cfg_get_cq_size(cfg, &cq_size);
+	if (ret)
+		return ret;
+
+	if (cq_size > INT_MAX)
+		*cqe = INT_MAX;
+	else
+		*cqe = (int)cq_size;
+
+	return 0;
+}
+
 /* public librpma API */
 
 /*
  * rpma_conn_cfg_new -- create a new connection configuration object
- *
- * XXX allocate, initialize to defaults and return
  */
 int
 rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*cfg_ptr = malloc(sizeof(struct rpma_conn_cfg));
+	if (*cfg_ptr == NULL)
+		return RPMA_E_NOMEM;
+
+	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_delete -- delete the connection configuration object
- *
- * XXX free and set user's pointer to NULL
  */
 int
 rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	if (*cfg_ptr == NULL)
+		return 0;
+
+	free(*cfg_ptr);
+	*cfg_ptr = NULL;
+
+	return 0;
 }
 
 /*
@@ -74,7 +118,12 @@ rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 int
 rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || timeout_ms < 0)
+		return RPMA_E_INVAL;
+
+	cfg->timeout_ms = timeout_ms;
+
+	return 0;
 }
 
 /*
@@ -83,59 +132,94 @@ rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 int
 rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || timeout_ms == NULL)
+		return RPMA_E_INVAL;
+
+	*timeout_ms = cfg->timeout_ms;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_set_cq_size -- set CQ size for the connection
  */
 int
-rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size)
+rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+
+	cfg->cq_size = cq_size;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_get_cq_size -- get CQ size for the connection
  */
 int
-rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size)
+rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || cq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*cq_size = cfg->cq_size;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_set_sq_size -- set SQ size for the connection
  */
 int
-rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size)
+rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+
+	cfg->sq_size = sq_size;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_get_sq_size -- get SQ size for the connection
  */
 int
-rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size)
+rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || sq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*sq_size = cfg->sq_size;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_set_rq_size -- set RQ size for the connection
  */
 int
-rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size)
+rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+
+	cfg->rq_size = rq_size;
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_get_rq_size -- get RQ size for the connection
  */
 int
-rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size)
+rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || rq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*rq_size = cfg->rq_size;
+
+	return 0;
 }
