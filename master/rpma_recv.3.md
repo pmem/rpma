@@ -21,7 +21,7 @@ SYNOPSIS
 
           int rpma_recv(struct rpma_conn *conn,
                   struct rpma_mr_local *dst, size_t offset, size_t len,
-                  int flags, void *op_context);
+                  void *op_context);
 
 DESCRIPTION
 ===========
@@ -50,7 +50,5 @@ ERRORS
 **rpma\_recv**() can fail with the following errors:
 
 -   RPMA\_E\_INVAL - *conn* or src is NULL
-
--   RPMA\_E\_INVAL - *flags* are not set
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_recv**(3) failed
