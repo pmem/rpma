@@ -259,6 +259,27 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 }
 
 /*
+ * ibv_post_recv_mock -- mock of ibv_post_recv()
+ */
+int
+ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
+			struct ibv_recv_wr **bad_wr)
+{
+	struct ibv_post_recv_mock_args *args =
+		mock_type(struct ibv_post_recv_mock_args *);
+
+	assert_non_null(qp);
+	assert_non_null(wr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_null(wr->next);
+
+	return args->ret;
+}
+
+/*
  * ibv_alloc_pd -- ibv_alloc_pd() mock
  */
 struct ibv_pd *
