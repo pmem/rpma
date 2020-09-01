@@ -393,14 +393,14 @@ rpma_send(struct rpma_conn *conn,
 int
 rpma_recv(struct rpma_conn *conn,
     struct rpma_mr_local *dst, size_t offset, size_t len,
-    int flags, void *op_context)
+    void *op_context)
 {
-	if (conn == NULL || dst == NULL || flags == 0)
+	if (conn == NULL || dst == NULL)
 		return RPMA_E_INVAL;
 
 	return rpma_mr_recv(conn->id->qp,
 			dst, offset, len,
-			flags, op_context);
+			op_context);
 }
 
 /*

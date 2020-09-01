@@ -711,7 +711,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	int rpma_conn_req_recv(struct rpma_conn_req *req,
  *		struct rpma_mr_local *dst, size_t offset, size_t len,
- *		int flags, void *op_context);
+ *		void *op_context);
  *
  * DESCRIPTION
  * Initialize the receive operation. It prepares a buffer for a message
@@ -723,12 +723,11 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * rpma_conn_req_recv() can fail with the following errors:
  *
  * - RPMA_E_INVAL - req or src or op_context is NULL
- * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
 int rpma_conn_req_recv(struct rpma_conn_req *req,
     struct rpma_mr_local *dst, size_t offset, size_t len,
-    int flags, void *op_context);
+    void *op_context);
 
 /* server-side setup */
 
@@ -992,7 +991,7 @@ int rpma_send(struct rpma_conn *conn,
  *
  *	int rpma_recv(struct rpma_conn *conn,
  *		struct rpma_mr_local *dst, size_t offset, size_t len,
- *		int flags, void *op_context);
+ *		void *op_context);
  *
  * DESCRIPTION
  * Initialize the receive operation which prepares a buffer for a message
@@ -1015,12 +1014,11 @@ int rpma_send(struct rpma_conn *conn,
  * rpma_recv() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn or src is NULL
- * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
 int rpma_recv(struct rpma_conn *conn,
     struct rpma_mr_local *dst, size_t offset, size_t len,
-    int flags, void *op_context);
+    void *op_context);
 
 /* completion handling */
 
