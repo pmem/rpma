@@ -48,24 +48,38 @@ rpma_conn_cfg_default()
 
 /*
  * rpma_conn_cfg_new -- create a new connection configuration object
- *
- * XXX allocate, initialize to defaults and return
  */
 int
 rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*cfg_ptr = malloc(sizeof(struct rpma_conn_cfg));
+	if (*cfg_ptr == NULL)
+		return RPMA_E_NOMEM;
+
+	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
+
+	return 0;
 }
 
 /*
  * rpma_conn_cfg_delete -- delete the connection configuration object
- *
- * XXX free and set user's pointer to NULL
  */
 int
 rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	if (*cfg_ptr == NULL)
+		return 0;
+
+	free(*cfg_ptr);
+	*cfg_ptr = NULL;
+
+	return 0;
 }
 
 /*
@@ -74,7 +88,12 @@ rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 int
 rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || timeout_ms < 0)
+		return RPMA_E_INVAL;
+
+	cfg->timeout_ms = timeout_ms;
+
+	return 0;
 }
 
 /*
@@ -83,7 +102,12 @@ rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 int
 rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || timeout_ms == NULL)
+		return RPMA_E_INVAL;
+
+	*timeout_ms = cfg->timeout_ms;
+
+	return 0;
 }
 
 /*
@@ -92,7 +116,12 @@ rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
 int
 rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || cq_size < 0)
+		return RPMA_E_INVAL;
+
+	cfg->cq_size = cq_size;
+
+	return 0;
 }
 
 /*
@@ -101,7 +130,12 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size)
 int
 rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || cq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*cq_size = cfg->cq_size;
+
+	return 0;
 }
 
 /*
@@ -110,7 +144,12 @@ rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, int *cq_size)
 int
 rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || sq_size < 0)
+		return RPMA_E_INVAL;
+
+	cfg->sq_size = sq_size;
+
+	return 0;
 }
 
 /*
@@ -119,7 +158,12 @@ rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, int sq_size)
 int
 rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || sq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*sq_size = cfg->sq_size;
+
+	return 0;
 }
 
 /*
@@ -128,7 +172,12 @@ rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, int *sq_size)
 int
 rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || rq_size < 0)
+		return RPMA_E_INVAL;
+
+	cfg->rq_size = rq_size;
+
+	return 0;
 }
 
 /*
@@ -137,5 +186,10 @@ rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, int rq_size)
 int
 rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, int *rq_size)
 {
-	return RPMA_E_NOSUPP;
+	if (cfg == NULL || rq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*rq_size = cfg->rq_size;
+
+	return 0;
 }
