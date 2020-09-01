@@ -15,6 +15,7 @@ function(add_test_conn_req name)
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
+              ${TEST_UNIT_COMMON_DIR}/mocks-rpma-mr.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-peer.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-private_data.c
               ${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
