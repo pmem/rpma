@@ -43,6 +43,12 @@ struct ibv_post_send_mock_args {
 	int ret;
 };
 
+struct ibv_post_recv_mock_args {
+	struct ibv_qp *qp;
+	uint64_t wr_id;
+	int ret;
+};
+
 int ibv_query_device_ex_mock(struct ibv_context *context,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
@@ -50,6 +56,9 @@ int ibv_query_device_ex_mock(struct ibv_context *context,
 
 int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 		struct ibv_send_wr **bad_wr);
+
+int ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
+			struct ibv_recv_wr **bad_wr);
 
 int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 
