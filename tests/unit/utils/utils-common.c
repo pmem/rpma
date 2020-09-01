@@ -97,10 +97,12 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
  * rpma_info_resolve_addr -- mock of rpma_info_resolve_addr
  */
 int
-rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id)
+rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
+		int timeout_ms)
 {
 	check_expected(info);
 	check_expected(id);
+	assert_int_equal(timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
 
 	int ret = mock_type(int);
 	if (ret)
