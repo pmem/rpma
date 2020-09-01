@@ -210,15 +210,34 @@ rpma_mr_send(struct ibv_qp *qp,
 
 /*
  * rpma_mr_recv -- post an RDMA recv from dst
- *
- * XXX uses ibv_post_recv(3) to post and RDMA.recv operation.
  */
 int
 rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	struct ibv_recv_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + offset);
+	sge.length = (uint32_t)len;
+	sge.lkey = dst->ibv_mr->lkey;
+
+	wr.sg_list = &sge;
+	wr.num_sge = 1;
+	wr.next = NULL;
+	wr.wr_id = (uint64_t)op_context;
+
+	struct ibv_recv_wr *bad_wr;
+	int ret = ibv_post_recv(qp, &wr, &bad_wr);
+	if (ret) {
+		Rpma_provider_error = ret;
+		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error, "ibv_post_recv");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
 }
 
 /* public librpma API */
