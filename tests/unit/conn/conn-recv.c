@@ -20,7 +20,7 @@ recv__conn_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_recv(NULL, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -34,36 +34,21 @@ recv__dst_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_recv(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * recv__flags_0 - flags == 0 is invalid
+ * recv__conn_dst_src_NULL - NULL conn and dst are invalid
  */
 static void
-recv__flags_0(void **unused)
-{
-	/* run test */
-	int ret = rpma_recv(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, 0, MOCK_OP_CONTEXT);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-}
-
-/*
- * recv__conn_dst_src_NULL_flags_0 - NULL conn, dst
- * and flags == 0 are invalid
- */
-static void
-recv__conn_dst_src_NULL_flags_0(void **unused)
+recv__conn_dst_src_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_recv(NULL, NULL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, 0, MOCK_OP_CONTEXT);
+			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -82,13 +67,12 @@ recv__success(void **cstate_ptr)
 	expect_value(rpma_mr_recv, dst, MOCK_RPMA_MR_LOCAL);
 	expect_value(rpma_mr_recv, offset, MOCK_LOCAL_OFFSET);
 	expect_value(rpma_mr_recv, len, MOCK_LEN);
-	expect_value(rpma_mr_recv, flags, MOCK_FLAGS);
 	expect_value(rpma_mr_recv, op_context, MOCK_OP_CONTEXT);
 	will_return(rpma_mr_recv, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_recv(cstate->conn, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
+			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -110,8 +94,7 @@ static const struct CMUnitTest tests_recv[] = {
 	/* rpma_recv() unit tests */
 	cmocka_unit_test(recv__conn_NULL),
 	cmocka_unit_test(recv__dst_NULL),
-	cmocka_unit_test(recv__flags_0),
-	cmocka_unit_test(recv__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test(recv__conn_dst_src_NULL),
 	cmocka_unit_test_setup_teardown(recv__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)

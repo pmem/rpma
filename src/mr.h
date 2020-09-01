@@ -55,7 +55,7 @@ int rpma_mr_send(struct ibv_qp *qp,
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && dst != NULL && flags != 0
+ * - qp != NULL && dst != NULL
  *
  * ERRORS
  * rpma_mr_recv() can fail with the following error:
@@ -64,6 +64,6 @@ int rpma_mr_send(struct ibv_qp *qp,
  */
 int rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
-	size_t len, int flags, void *op_context);
+	size_t len, void *op_context);
 
 #endif /* LIBRPMA_MR_H */
