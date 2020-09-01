@@ -12,6 +12,13 @@
 #include "test-common.h"
 #include "conn_req.h"
 
+#define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
+#define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
+#define MOCK_LOCAL_OFFSET	(size_t)0xC413
+#define MOCK_LEN		(size_t)0xC415
+#define MOCK_FLAGS		(int)0xC416
+#define MOCK_OP_CONTEXT		(void *)0xC417
+
 /*
  * All the resources used between setup__conn_req_from_cm_event and
  * teardown__conn_req_from_cm_event
