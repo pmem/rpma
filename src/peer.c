@@ -27,10 +27,13 @@ struct rpma_peer {
 
 /*
  * rpma_peer_create_qp -- allocate a QP associated with the CM ID
+ *
+ * ASSUMPTIONS
+ * - cfg != NULL
  */
 int
 rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq)
+		struct ibv_cq *cq, struct rpma_conn_cfg *cfg)
 {
 	if (peer == NULL || id == NULL || cq == NULL)
 		return RPMA_E_INVAL;
