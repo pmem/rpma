@@ -13,6 +13,7 @@ function(add_test_conn_req name)
               ${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn.c
+              ${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn_cfg.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-mr.c

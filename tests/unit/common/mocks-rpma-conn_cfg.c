@@ -27,24 +27,13 @@ rpma_conn_cfg_default()
 int
 rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
-	check_expected_ptr(cfg);
+	struct conn_cfg_get_timeout_mock_args *args =
+			mock_type(struct conn_cfg_get_timeout_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(timeout_ms);
 
-	*timeout_ms = RPMA_DEFAULT_TIMEOUT_MS;
-
-	return 0;
-}
-
-/*
- * rpma_conn_cfg_get_cq_size -- rpma_conn_cfg_get_cq_size() mock
- */
-int
-rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size)
-{
-	check_expected_ptr(cfg);
-	assert_non_null(cq_size);
-
-	*cq_size = MOCK_CQ_SIZE;
+	*timeout_ms = args->timeout_ms;
 
 	return 0;
 }
@@ -55,10 +44,13 @@ rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 int
 rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
 {
-	check_expected_ptr(cfg);
+	struct conn_cfg_get_q_size_mock_args *args =
+			mock_type(struct conn_cfg_get_q_size_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(cqe);
 
-	*cqe = MOCK_CQ_SIZE;
+	*cqe = (int)args->q_size;
 
 	return 0;
 }
@@ -72,7 +64,7 @@ rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 	check_expected_ptr(cfg);
 	assert_non_null(sq_size);
 
-	*sq_size = MOCK_SQ_SIZE;
+	*sq_size = MOCK_SQ_SIZE_DEFAULT;
 
 	return 0;
 }
@@ -86,7 +78,7 @@ rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 	check_expected_ptr(cfg);
 	assert_non_null(rq_size);
 
-	*rq_size = MOCK_RQ_SIZE;
+	*rq_size = MOCK_RQ_SIZE_DEFAULT;
 
 	return 0;
 }

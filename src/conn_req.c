@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "conn.h"
+#include "conn_cfg.h"
 #include "conn_req.h"
 #include "info.h"
 #include "log_internal.h"
@@ -62,8 +63,12 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		return RPMA_E_PROVIDER;
 	}
 
+	/* read CQ size from the configuration */
+	int cqe;
+	(void) rpma_conn_cfg_get_cqe(cfg, &cqe);
+
 	/* create a CQ */
-	struct ibv_cq *cq = ibv_create_cq(id->verbs, RPMA_DEFAULT_Q_SIZE,
+	struct ibv_cq *cq = ibv_create_cq(id->verbs, cqe,
 				NULL /* cq_context */,
 				channel /* channel */,
 				0 /* comp_vector */);
@@ -326,8 +331,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 		return RPMA_E_INVAL;
 
 	struct rpma_conn_req *req = NULL;
-	/* XXX provided cfg or default instead of NULL */
-	int ret = rpma_conn_req_from_id(peer, edata->id, NULL, &req);
+	int ret = rpma_conn_req_from_id(peer, edata->id, cfg, &req);
 	if (ret)
 		return ret;
 
@@ -348,8 +352,6 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
  * rpma_conn_req_new -- create a new outgoing connection request object. It uses
  * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds
  * the prepared ID into rpma_conn_req_from_id.
- *
- * XXX if cfg is NULL use rpma_conn_cfg_default()
  */
 int
 rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
@@ -357,6 +359,12 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 {
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
+
+	if (cfg == NULL)
+		cfg = rpma_conn_cfg_default();
+
+	int timeout_ms;
+	(void) rpma_conn_cfg_get_timeout(cfg, &timeout_ms);
 
 	struct rpma_info *info;
 	int ret = rpma_info_new(addr, port, RPMA_INFO_ACTIVE, &info);
@@ -373,23 +381,21 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
 	}
 
 	/* resolve address */
-	ret = rpma_info_resolve_addr(info, id, RPMA_DEFAULT_TIMEOUT_MS);
+	ret = rpma_info_resolve_addr(info, id, timeout_ms);
 	if (ret)
 		goto err_destroy_id;
 
 	/* resolve route */
-	if (rdma_resolve_route(id, RPMA_DEFAULT_TIMEOUT_MS)) {
+	if (rdma_resolve_route(id, timeout_ms)) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-			"rdma_resolve_route(timeout_ms="
-			STR(RPMA_DEFAULT_TIMEOUT) ")");
+			"rdma_resolve_route(timeout_ms=%i)", timeout_ms);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
 
 	struct rpma_conn_req *req;
-	/* XXX provided cfg or default instead of NULL */
-	ret = rpma_conn_req_from_id(peer, id, NULL, &req);
+	ret = rpma_conn_req_from_id(peer, id, cfg, &req);
 	if (ret)
 		goto err_destroy_id;
 
