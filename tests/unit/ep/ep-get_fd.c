@@ -76,16 +76,22 @@ get_fd__success(void **estate_ptr)
 int
 main(int argc, char *argv[])
 {
+	/* prepare prestates */
+	struct ep_test_state prestate_conn_cfg_default;
+	prestate_init(&prestate_conn_cfg_default, NULL);
+
 	const struct CMUnitTest tests[] = {
 		/* rpma_ep_get_fd() unit tests */
 		cmocka_unit_test(get_fd__ep_NULL),
-		cmocka_unit_test_setup_teardown(
+		cmocka_unit_test_prestate_setup_teardown(
 			get_fd__fd_NULL,
-			setup__ep_listen, teardown__ep_shutdown),
+			setup__ep_listen, teardown__ep_shutdown,
+			&prestate_conn_cfg_default),
 		cmocka_unit_test(get_fd__ep_fd_NULL),
-		cmocka_unit_test_setup_teardown(
+		cmocka_unit_test_prestate_setup_teardown(
 			get_fd__success,
-			setup__ep_listen, teardown__ep_shutdown),
+			setup__ep_listen, teardown__ep_shutdown,
+			&prestate_conn_cfg_default),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

@@ -10,6 +10,7 @@ function(add_test_ep name)
 	build_test_src(UNIT NAME ${name} SRCS
 		${name}.c
 		ep-common.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/ep.c)

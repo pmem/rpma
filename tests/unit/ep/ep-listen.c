@@ -362,6 +362,10 @@ shutdown__destroy_id_EAGAIN(void **estate_ptr)
 int
 main(int argc, char *argv[])
 {
+	/* prepare prestates */
+	struct ep_test_state prestate_conn_cfg_default;
+	prestate_init(&prestate_conn_cfg_default, NULL);
+
 	const struct CMUnitTest tests[] = {
 		/* rpma_ep_listen() unit tests */
 		cmocka_unit_test(listen__peer_NULL),
@@ -379,16 +383,17 @@ main(int argc, char *argv[])
 			listen__malloc_ENOMEM_destroy_id_EAGAIN),
 
 		/* rpma_ep_listen()/_shutdown() lifecycle */
-		cmocka_unit_test_setup_teardown(ep__lifecycle,
-			setup__ep_listen, teardown__ep_shutdown),
+		cmocka_unit_test_prestate_setup_teardown(ep__lifecycle,
+			setup__ep_listen, teardown__ep_shutdown,
+			&prestate_conn_cfg_default),
 
 		/* rpma_ep_shutdown() unit tests */
 		cmocka_unit_test(shutdown__ep_ptr_NULL),
 		cmocka_unit_test(shutdown__ep_NULL),
-		cmocka_unit_test_setup_teardown(
+		cmocka_unit_test_prestate_setup_teardown(
 			shutdown__destroy_id_EAGAIN,
-			setup__ep_listen, teardown__ep_shutdown),
-
+			setup__ep_listen, teardown__ep_shutdown,
+			&prestate_conn_cfg_default),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
