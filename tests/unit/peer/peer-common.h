@@ -12,7 +12,7 @@
 
 #define MOCK_CM_ID		(struct rdma_cm_id *)0xC41D
 #define MOCK_ADDR		(void *)0x2B6A
-#define MOCK_LEN		(size_t)627
+
 /*
  * The basic access value should be a combination of
  * IBV_ACCESS_(LOCAL|REMOTE)_(READ|WRITE) because IBV_ACCESS_ON_DEMAND

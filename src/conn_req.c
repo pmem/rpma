@@ -13,6 +13,7 @@
 #include "conn_req.h"
 #include "info.h"
 #include "log_internal.h"
+#include "mr.h"
 #include "peer.h"
 #include "private_data.h"
 #include "rpma_err.h"
@@ -492,5 +493,10 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
     struct rpma_mr_local *dst, size_t offset, size_t len,
     void *op_context)
 {
-	return RPMA_E_NOSUPP;
+	if (req == NULL || dst == NULL)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_recv(req->id->qp,
+			dst, offset, len,
+			op_context);
 }

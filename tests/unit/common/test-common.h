@@ -13,6 +13,7 @@
 #define MOCK_TIMEOUT_MS		5678
 
 /* random values */
+#define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF
 #define MOCK_INFO		(struct rpma_info *)0xE6B2
 #define MOCK_CONN		(struct rpma_conn *)0xC004
@@ -20,9 +21,13 @@
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 #define MOCK_PRIVATE_DATA_2	((void *)Private_data_2)
 #define MOCK_PDATA_LEN_2	(strlen(MOCK_PRIVATE_DATA_2) + 1)
-#define MOCK_ERRNO		123456
+#define MOCK_LOCAL_OFFSET	(size_t)0xC413
+#define MOCK_LEN		(size_t)0xC415
+#define MOCK_FLAGS		(int)0xC416
+#define MOCK_OP_CONTEXT		(void *)0xC417
 
-#define MOCK_OK 0
+#define MOCK_OK			0
+#define MOCK_ERRNO		123456
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
