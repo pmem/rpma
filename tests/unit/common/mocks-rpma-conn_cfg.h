@@ -18,6 +18,8 @@
 
 #define MOCK_TIMEOUT_MS_CUSTOM	4034
 #define MOCK_CQ_SIZE_CUSTOM	13
+#define MOCK_SQ_SIZE_CUSTOM	14
+#define MOCK_RQ_SIZE_CUSTOM	15
 
 struct conn_cfg_get_timeout_mock_args {
 	struct rpma_conn_cfg *cfg;

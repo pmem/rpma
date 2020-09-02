@@ -61,10 +61,13 @@ rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
 int
 rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
-	check_expected_ptr(cfg);
+	struct conn_cfg_get_q_size_mock_args *args =
+			mock_type(struct conn_cfg_get_q_size_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(sq_size);
 
-	*sq_size = MOCK_SQ_SIZE_DEFAULT;
+	*sq_size = args->q_size;
 
 	return 0;
 }
@@ -75,10 +78,13 @@ rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 int
 rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
-	check_expected_ptr(cfg);
+	struct conn_cfg_get_q_size_mock_args *args =
+			mock_type(struct conn_cfg_get_q_size_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(rq_size);
 
-	*rq_size = MOCK_RQ_SIZE_DEFAULT;
+	*rq_size = args->q_size;
 
 	return 0;
 }
