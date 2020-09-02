@@ -10,6 +10,8 @@
 
 #include "conn_req-common.h"
 
+static struct conn_req_new_test_state prestate_conn_cfg_default;
+
 /*
  * delete__req_ptr_NULL -- NULL req_ptr is invalid
  */
@@ -253,7 +255,7 @@ static void
 delete_via_destroy__destroy_cq_EAGAIN(void **unused)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_new_test_state *cstate = NULL;
+	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
 	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
 	assert_non_null(cstate);
 
@@ -282,7 +284,7 @@ static void
 delete_via_destroy__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_new_test_state *cstate = NULL;
+	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
 	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
 	assert_non_null(cstate);
 
@@ -310,7 +312,7 @@ static void
 delete_via_destroy__destroy_comp_channel_EAGAIN(void **unused)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_new_test_state *cstate = NULL;
+	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
 	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
 	assert_non_null(cstate);
 
@@ -338,7 +340,7 @@ static void
 delete_via_destroy__destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_new_test_state *cstate = NULL;
+	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
 	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
 	assert_non_null(cstate);
 
@@ -366,7 +368,7 @@ static void
 delete_via_destroy__destroy_id_EAGAIN(void **unused)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_new_test_state *cstate = NULL;
+	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
 	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
 	assert_non_null(cstate);
 
@@ -416,5 +418,9 @@ static const struct CMUnitTest test_delete[] = {
 int
 main(int argc, char *argv[])
 {
+	/* prepare prestate - default conn_cfg */
+	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
+			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
+
 	return cmocka_run_group_tests(test_delete, group_setup_conn_req, NULL);
 }
