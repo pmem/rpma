@@ -7,17 +7,47 @@
 #
 
 DIR=$1
+MAN_3=$2
+MAN_7=$3
+[ "$4" == "fix" ] && FIX=1 || FIX=0
 
-if [ "$DIR" == "" ]; then
-	echo "Error: missing directory parameter"
+if [ $# -lt 3 ] || [ ! -d $DIR ] || [ ! -f $MAN_3 ] || [ ! -f $MAN_7 ]; then
+	echo "$ $0 $*"
+	echo "Error: missing or wrong argument"
 	echo
-	echo "Usage: $0 <directory-to-search>"
+	echo "Usage: $(basename $0) <directory> <man3-file> <man7-file> [fix]"
+	echo "   <directory> - directory to be searched for *.h files"
+	echo "   <man3-file> - file containing list of section #3 manuals"
+	echo "   <man7-file> - file containing list of section #7 manuals"
+	echo "   fix         - fix files containing list of manuals"
+	echo
+	[ ! -d $DIR ] && echo "Error: $DIR does not exist or is not a directory"
+	[ ! -f $MAN_3 ] && echo "Error: $MAN_3 does not exist or is not a regular file"
+	[ ! -f $MAN_7 ] && echo "Error: $MAN_7 does not exist or is not a regular file"
 	exit 1
 fi
+
+function check_manuals_list() {
+	N=$1
+	LIST=$2
+	CURRENT=$3
+	FIX=$4
+	if ! diff $LIST $CURRENT; then
+		if [ $FIX -eq 1 ]; then
+			mv $CURRENT $LIST
+			echo "Updated the file: $LIST"
+		else
+			echo "Error: current list of manuals($N) does match the file: $LIST"
+			RV=1
+		fi
+	fi
+}
 
 if which pandoc > /dev/null; then
 	mkdir -p md
 fi
+
+ALL_MANUALS="$(mktemp)"
 
 find $DIR -name '*.h' -print0 | while read -d $'\0' MAN
 do
@@ -54,5 +84,26 @@ do
 			rm $f.tmp1 $f.tmp2
 		done
 	fi
+
+	# save all manuals
+	cat $MANUALS >> $ALL_MANUALS
+
 	rm $MANUALS $ERRORS
 done
+
+NEW_MAN_3="$(mktemp)"
+NEW_MAN_7="$(mktemp)"
+cat $ALL_MANUALS | grep -e '\.3' | sort > $NEW_MAN_3
+cat $ALL_MANUALS | grep -e '\.7' | sort > $NEW_MAN_7
+
+# check if all generated manuals are listed in the manuals' files
+RV=0
+check_manuals_list 3 $MAN_3 $NEW_MAN_3 $FIX
+check_manuals_list 7 $MAN_7 $NEW_MAN_7 $FIX
+if [ $RV -eq 1 -a $FIX -eq 0 ]; then
+	echo "In order to fix it, run 'make doc-fix'"
+	echo
+fi
+
+rm -f $ALL_MANUALS $NEW_MAN_3 $NEW_MAN_7
+exit $RV
