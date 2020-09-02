@@ -13,6 +13,7 @@ build_test_src(NAME ${TARGET} SRCS
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
+	${LIBRPMA_SOURCE_DIR}/conn_cfg.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
 	${LIBRPMA_SOURCE_DIR}/flush.c
 	${LIBRPMA_SOURCE_DIR}/ep.c

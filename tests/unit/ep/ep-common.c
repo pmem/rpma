@@ -270,8 +270,6 @@ rdma_get_cm_event(struct rdma_event_channel *channel,
 
 /*
  * rpma_conn_req_from_cm_event -- rpma_conn_req_from_cm_event() mock
- *
- * XXX cfg validation
  */
 int
 rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
@@ -279,6 +277,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 {
 	check_expected_ptr(peer);
 	check_expected_ptr(edata);
+	check_expected_ptr(cfg);
 	assert_non_null(req_ptr);
 
 	struct rpma_conn_req *req = mock_type(struct rpma_conn_req *);

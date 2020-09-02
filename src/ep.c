@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include "conn_cfg.h"
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
@@ -158,8 +159,6 @@ rpma_ep_get_fd(struct rpma_ep *ep, int *fd)
  * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation
  * of a connection request object based on the obtained request.
  * If succeeds it returns a newly created object.
- *
- * XXX if cfg is NULL use rpma_conn_cfg_default()
  */
 int
 rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
@@ -167,6 +166,9 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 {
 	if (ep == NULL || req == NULL)
 		return RPMA_E_INVAL;
+
+	if (cfg == NULL)
+		cfg = rpma_conn_cfg_default();
 
 	int ret = 0;
 	struct rdma_cm_event *event = NULL;
@@ -190,7 +192,7 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 		goto err_ack;
 	}
 
-	ret = rpma_conn_req_from_cm_event(ep->peer, event, NULL, req);
+	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req);
 	if (ret)
 		goto err_ack;
 

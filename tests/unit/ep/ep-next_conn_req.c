@@ -11,6 +11,7 @@
 #include "librpma.h"
 #include "ep-common.h"
 #include "cmocka_headers.h"
+#include "mocks-rpma-conn_cfg.h"
 #include "test-common.h"
 
 /*
@@ -170,6 +171,7 @@ next_conn_req__conn_req_from_cm_event_ENOMEM(void **estate_ptr)
 
 	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
 	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	expect_value(rpma_conn_req_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_conn_req_from_cm_event, NULL);
 	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
 
@@ -202,6 +204,7 @@ next_conn_req__from_cm_event_ENOMEM_ack_EINVAL(void **estate_ptr)
 
 	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
 	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	expect_value(rpma_conn_req_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_conn_req_from_cm_event, NULL);
 	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
 
@@ -232,11 +235,12 @@ next_conn_req__success(void **estate_ptr)
 
 	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
 	expect_value(rpma_conn_req_from_cm_event, edata, &event);
+	expect_value(rpma_conn_req_from_cm_event, cfg, MOCK_CONN_CFG_CUSTOM);
 	will_return(rpma_conn_req_from_cm_event, MOCK_CONN_REQ);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
+	int ret = rpma_ep_next_conn_req(estate->ep, MOCK_CONN_CFG_CUSTOM, &req);
 
 	/* verify the results */
 	assert_ptr_equal(req, MOCK_CONN_REQ);
