@@ -24,6 +24,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
 	assert_ptr_equal(cq, MOCK_IBV_CQ);
+	check_expected_ptr(cfg);
 
 	int result = mock_type(int);
 	if (result == RPMA_E_PROVIDER)

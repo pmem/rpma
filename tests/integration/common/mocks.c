@@ -5,8 +5,11 @@
  * mocks.c -- common mocks for integration tests
  */
 
-#include "mocks.h"
+#include <librpma.h>
+
 #include "cmocka_headers.h"
+#include "conn_cfg.h"
+#include "mocks.h"
 
 struct verbs_context Verbs_context;
 struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
@@ -253,8 +256,11 @@ struct ibv_cq *
 ibv_create_cq(struct ibv_context *context, int cqe, void *cq_context,
 		struct ibv_comp_channel *channel, int comp_vector)
 {
+	int cqe_default;
+	(void) rpma_conn_cfg_get_cqe(rpma_conn_cfg_default(), &cqe_default);
+
 	assert_ptr_equal(context, MOCK_VERBS);
-	assert_int_equal(cqe, MOCK_DEFAULT_Q_SIZE);
+	assert_int_equal(cqe, cqe_default);
 	assert_ptr_equal(channel, MOCK_COMP_CHANNEL);
 	assert_int_equal(comp_vector, 0);
 
