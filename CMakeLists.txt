@@ -162,9 +162,6 @@ endif()
 add_check_whitespace(cmake-main ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 add_check_whitespace(cmake-helpers ${CMAKE_CURRENT_SOURCE_DIR}/cmake/*.cmake)
 
-install(DIRECTORY examples/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples
-	FILES_MATCHING PATTERN "*.[ch]")
-
 configure_file(${CMAKE_SOURCE_DIR}/cmake/librpma.pc.in
 	${CMAKE_CURRENT_BINARY_DIR}/librpma.pc @ONLY)
 
