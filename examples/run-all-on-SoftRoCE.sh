@@ -63,6 +63,16 @@ function run_example() {
 		N_FAILED=$(($N_FAILED + 1))
 		FAILED="$FAILED$EXAMPLE\n"
 	fi
+
+	# make sure the server's process is finished
+	ARGS="server $IP_ADDRESS $PORT"
+	PID=$(ps aux | grep -e "$ARGS" | grep -v -e "grep -e $ARGS" | awk '{print $2}')
+	if [ "$PID" != "" ]; then
+		kill $PID
+		sleep 1
+		kill -9 $PID 2>/dev/null
+	fi
+
 	echo
 }
 
