@@ -38,11 +38,11 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE"
 
-	# start the server
+	echo "Starting the server ..."
 	$DIR/server $IP_ADDRESS $PORT &
 	sleep 1
 
-	# start the client(s)
+	echo "Starting the client ..."
 	RV=0
 	case $EXAMPLE in
 	06-multiple-connections)
@@ -51,6 +51,10 @@ function run_example() {
 			RV=$?
 			[ $RV -ne 0 ] && break
 		done
+		;;
+	07-atomic-write)
+		$DIR/client $IP_ADDRESS $PORT "WORD"
+		RV=$?
 		;;
 	*)
 		$DIR/client $IP_ADDRESS $PORT
