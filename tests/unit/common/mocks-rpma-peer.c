@@ -19,7 +19,7 @@
  */
 int
 rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq)
+		struct ibv_cq *cq, struct rpma_conn_cfg *cfg)
 {
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
