@@ -37,26 +37,24 @@ $ make -j
 Here is a list of the most interesting options
 provided out of the box by CMake.
 
-| Name | Description | Values |
-| - | - | - |
-| BUILD_DOC | Build the documentation | ON/OFF |
-| BUILD_EXAMPLES | Build the examples | ON/OFF |
-| BUILD_TESTS | Build the tests | ON/OFF |
-| CHECK_CSTYLE | Check code style of C sources | ON/OFF |
-| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo |
-| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | /usr/local |
-| COVERAGE | Run coverage test | ON/OFF |
-| DEVELOPER_MODE | Enable developer checks | ON/OFF |
-| GROFF | Path to a program | /usr/bin/groff |
-| TESTS_LONG | Enable long running tests | ON/OFF |
-| TESTS_USE_FAULT_INJECTION | Run tests with fault injection | ON/OFF |
-| TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF |
-| TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF |
-| TEST_DIR | Working directory for tests | /rpma/build/test |
-| TRACE_TESTS | More verbose test outputs | ON/OFF |
-| TXT2MAN | Path to a program | /usr/local/bin/txt2man |
-| USE_ASAN | Enable AddressSanitizer | ON/OFF |
-| USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF |
+| Name | Description | Values | Default |
+| - | - | - | - |
+| BUILD_DOC | Build the documentation | ON/OFF | ON |
+| BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
+| BUILD_TESTS | Build the tests | ON/OFF | ON |
+| CHECK_CSTYLE | Check code style of C sources | ON/OFF | OFF |
+| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo | Debug |
+| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
+| COVERAGE | Run coverage test | ON/OFF | OFF |
+| DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
+| TESTS_LONG | Enable long running tests | ON/OFF | OFF |
+| TESTS_USE_FAULT_INJECTION | Run tests with fault injection | ON/OFF | OFF |
+| TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
+| TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
+| TEST_DIR | Working directory for tests | *dir path* | ./build/test |
+| TRACE_TESTS | More verbose test outputs | ON/OFF | OFF |
+| USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
+| USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
 
 ### Configuring CMake options
 
