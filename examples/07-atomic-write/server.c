@@ -25,7 +25,7 @@
 
 #define LOG_HDR_SIGNATURE "LOG"
 #define LOG_SIGNATURE_SIZE 8
-#define LOG_DATA_SIZE 100000 /* 100k */
+#define LOG_DATA_SIZE 1024
 
 /* defined log structure */
 struct log {
