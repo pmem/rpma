@@ -156,8 +156,18 @@ next_completion__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
-	enum ibv_wc_opcode opcodes[] = {IBV_WC_RDMA_READ, IBV_WC_RDMA_WRITE};
-	enum rpma_op ops[] = {RPMA_OP_READ, RPMA_OP_WRITE};
+	enum ibv_wc_opcode opcodes[] = {
+			IBV_WC_RDMA_READ,
+			IBV_WC_RDMA_WRITE,
+			IBV_WC_SEND,
+			IBV_WC_RECV
+	};
+	enum rpma_op ops[] = {
+			RPMA_OP_READ,
+			RPMA_OP_WRITE,
+			RPMA_OP_SEND,
+			RPMA_OP_RECV
+	};
 	int n_values = sizeof(opcodes) / sizeof(opcodes[0]);
 
 	for (int i = 0; i < n_values; i++) {

@@ -490,6 +490,12 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 	case IBV_WC_RDMA_WRITE:
 		cmpl->op = RPMA_OP_WRITE;
 		break;
+	case IBV_WC_SEND:
+		cmpl->op = RPMA_OP_SEND;
+		break;
+	case IBV_WC_RECV:
+		cmpl->op = RPMA_OP_RECV;
+		break;
 	default:
 		RPMA_LOG_ERROR("unsupported wc.opcode == %d", wc.opcode);
 		return RPMA_E_NOSUPP;
