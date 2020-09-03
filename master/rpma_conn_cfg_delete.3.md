@@ -29,4 +29,4 @@ ERRORS
 
 **rpma\_conn\_cfg\_delete**() can fail with the following error:
 
--   XXX
+-   RPMA\_E\_INVAL - *cfg\_ptr* is NULL

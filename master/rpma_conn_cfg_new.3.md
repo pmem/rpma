@@ -29,4 +29,6 @@ ERRORS
 
 **rpma\_conn\_cfg\_new**() can fail with the following error:
 
--   XXX
+-   RPMA\_E\_INVAL - *cfg\_ptr* is NULL
+
+-   RPMA\_E\_NOMEM - out of memory
