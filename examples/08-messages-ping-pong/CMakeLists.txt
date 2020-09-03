@@ -6,13 +6,20 @@
 cmake_minimum_required(VERSION 3.3)
 project(messages-ping-pong C)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+	${CMAKE_SOURCE_DIR}/../cmake
+	${CMAKE_SOURCE_DIR}/../../cmake)
+
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(LIBRPMA REQUIRED librpma)
-	pkg_check_modules(LIBIBVERBS REQUIRED libibverbs)
-else()
+	pkg_check_modules(LIBRPMA librpma)
+	pkg_check_modules(LIBIBVERBS libibverbs)
+endif()
+if(NOT LIBRPMA_FOUND)
 	find_package(LIBRPMA REQUIRED librpma)
+endif()
+if(NOT LIBIBVERBS_FOUND)
 	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
 

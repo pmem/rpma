@@ -6,15 +6,22 @@
 cmake_minimum_required(VERSION 3.3)
 project(atomic-write C)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+	${CMAKE_SOURCE_DIR}/../cmake
+	${CMAKE_SOURCE_DIR}/../../cmake)
+
 set(LIBPMEM_REQUIRED_VERSION 1.6)
 
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(LIBRPMA REQUIRED librpma)
+	pkg_check_modules(LIBRPMA librpma)
 	pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
-else()
-	find_package(LIBRPMA REQUIRED)
+endif()
+if(NOT LIBRPMA_FOUND)
+	find_package(LIBRPMA REQUIRED librpma)
+endif()
+if(NOT LIBPMEM_FOUND)
 	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION} QUIET)
 endif()
 
