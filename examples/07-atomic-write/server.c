@@ -23,7 +23,9 @@
 
 #include "common-conn.h"
 
+#ifdef USE_LIBPMEM
 #define LOG_HDR_SIGNATURE "LOG"
+#endif
 #define LOG_SIGNATURE_SIZE 8
 #define LOG_DATA_SIZE 1024
 
