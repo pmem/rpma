@@ -42,21 +42,32 @@ function run_example() {
 	$DIR/server $IP_ADDRESS $PORT &
 	sleep 1
 
-	echo "Starting the client ..."
 	RV=0
 	case $EXAMPLE in
 	06-multiple-connections)
 		for SEED in 8 9 11 12; do
+			echo "Starting the client ..."
 			$DIR/client $IP_ADDRESS $PORT $SEED
 			RV=$?
 			[ $RV -ne 0 ] && break
 		done
 		;;
 	07-atomic-write)
+		echo "Starting the client ..."
 		$DIR/client $IP_ADDRESS $PORT "1st_word" "2nd_word" "3rd_word"
 		RV=$?
 		;;
+	08-messages-ping-pong)
+		ROUNDS=3
+		for SEED in 8 9 11 12; do
+			echo "Starting the client ..."
+			$DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
+			RV=$?
+			[ $RV -ne 0 ] && break
+		done
+		;;
 	*)
+		echo "Starting the client ..."
 		$DIR/client $IP_ADDRESS $PORT
 		RV=$?
 		;;
