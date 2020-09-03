@@ -22,14 +22,26 @@ if(TXT2MAN AND GROFF)
 	file(STRINGS ${man3_list} man3)
 	file(STRINGS ${man7_list} man7)
 
-	list(TRANSFORM man3 PREPEND "${CMAKE_CURRENT_BINARY_DIR}/")
-	list(TRANSFORM man7 PREPEND "${CMAKE_CURRENT_BINARY_DIR}/")
+	#
+	# It is just:
+	#    list(TRANSFORM man3 PREPEND "${CMAKE_CURRENT_BINARY_DIR}/")
+	# but 'list(TRANSFORM' requires CMake>=v3.12
+	#
+	set(new_man3 "")
+	foreach(item IN LISTS man3)
+		set(new_man3 "${CMAKE_CURRENT_BINARY_DIR}/${item};${new_man3}")
+	endforeach()
+
+	set(new_man7 "")
+	foreach(item IN LISTS man7)
+		set(new_man7 "${CMAKE_CURRENT_BINARY_DIR}/${item};${new_man7}")
+	endforeach()
 
 	# install manpages
-	install(FILES ${man7}
-		DESTINATION ${CMAKE_INSTALL_MANDIR}/man7)
-	install(FILES ${man3}
+	install(FILES ${new_man3}
 		DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
+	install(FILES ${new_man7}
+		DESTINATION ${CMAKE_INSTALL_MANDIR}/man7)
 else()
 	if(NOT TXT2MAN)
 		message(WARNING "txt2man not found - man pages will not be generated")
