@@ -92,18 +92,22 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(PkgConfig QUIET)
-
-if(NOT PKG_CONFIG_FOUND)
-	message(FATAL_ERROR "Pkgconfig not found")
-endif()
+find_package(PkgConfig REQUIRED)
 
 if(NOT PERL_FOUND)
 	message(FATAL_ERROR "Perl not found")
 endif()
 
-pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
-pkg_check_modules(LIBRDMACM REQUIRED librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
+pkg_check_modules(LIBIBVERBS QUIET libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
+if(NOT LIBIBVERBS_FOUND)
+	find_package(LIBIBVERBS ${LIBIBVERBS_REQUIRED_VERSION} REQUIRED libibverbs)
+endif()
+
+pkg_check_modules(LIBRDMACM QUIET librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
+if(NOT LIBRDMACM_FOUND)
+	find_package(LIBRDMACM ${LIBRDMACM_REQUIRED_VERSION} REQUIRED librdmacm)
+endif()
+
 pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 
 add_custom_target(checkers ALL)
