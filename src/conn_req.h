@@ -13,18 +13,6 @@
 #include <rdma/rdma_cma.h>
 
 /*
- * For the simplicity sake, it is assumed all CQ/SQ/RQ sizes are equal.
- * XXX Later on, it should be configurable on a per-connection basis.
- */
-#define RPMA_DEFAULT_Q_SIZE 10
-
-/* the maximum number of scatter/gather elements in any Work Request */
-#define RPMA_MAX_SGE 1
-
-/* the maximum message size (in bytes) that can be posted inline */
-#define RPMA_MAX_INLINE_DATA 0
-
-/*
  * ERRORS
  * rpma_conn_req_from_cm_event() can fail with the following errors:
  *
