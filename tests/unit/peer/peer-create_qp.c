@@ -26,7 +26,7 @@ create_qp__peer_NULL(void **unused)
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
 	struct ibv_cq *cq = MOCK_IBV_CQ;
-	int ret = rpma_peer_create_qp(NULL, id, cq);
+	int ret = rpma_peer_create_qp(NULL, id, cq, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -42,7 +42,7 @@ create_qp__id_NULL(void **peer_ptr)
 
 	/* run test */
 	struct ibv_cq *cq = MOCK_IBV_CQ;
-	int ret = rpma_peer_create_qp(peer, NULL, cq);
+	int ret = rpma_peer_create_qp(peer, NULL, cq, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -58,7 +58,7 @@ create_qp__cq_NULL(void **peer_ptr)
 
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
-	int ret = rpma_peer_create_qp(peer, id, NULL);
+	int ret = rpma_peer_create_qp(peer, id, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -93,7 +93,7 @@ create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
 	struct ibv_cq *cq = MOCK_IBV_CQ;
-	int ret = rpma_peer_create_qp(peer, id, cq);
+	int ret = rpma_peer_create_qp(peer, id, cq, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -129,7 +129,7 @@ create_qp__success(void **peer_ptr)
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
 	struct ibv_cq *cq = MOCK_IBV_CQ;
-	int ret = rpma_peer_create_qp(peer, id, cq);
+	int ret = rpma_peer_create_qp(peer, id, cq, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);

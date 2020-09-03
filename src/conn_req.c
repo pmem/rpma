@@ -85,7 +85,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	}
 
 	/* create a QP */
-	ret = rpma_peer_create_qp(peer, id, cq);
+	ret = rpma_peer_create_qp(peer, id, cq, cfg);
 	if (ret)
 		goto err_destroy_cq;
 
