@@ -11,6 +11,12 @@
 #include "conn_req-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
+#include "mocks-rpma-conn_cfg.h"
+
+static struct conn_cfg_get_q_size_mock_args Get_cqe = {
+		.cfg = MOCK_CONN_CFG_DEFAULT,
+		.q_size = MOCK_CQ_SIZE_DEFAULT
+};
 
 /*
  * from_cm_event__peer_NULL -- NULL peer is invalid
@@ -21,7 +27,8 @@ from_cm_event__peer_NULL(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(NULL, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(NULL, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -36,7 +43,8 @@ from_cm_event__edata_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, NULL, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, NULL,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -51,7 +59,8 @@ from_cm_event__req_ptr_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, NULL);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -65,7 +74,8 @@ static void
 from_cm_event__peer_NULL_edata_NULL_req_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(NULL, NULL, NULL, NULL);
+	int ret = rpma_conn_req_from_cm_event(NULL, NULL,
+			MOCK_CONN_CFG_DEFAULT, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -81,7 +91,8 @@ from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECT_ERROR_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -102,10 +113,12 @@ from_cm_event__create_comp_channel_EAGAIN(void **unused)
 	event.id = &id;
 	will_return(ibv_create_comp_channel, NULL);
 	will_return(ibv_create_comp_channel, EAGAIN);
+	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -125,13 +138,16 @@ from_cm_event__create_cq_EAGAIN(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, NULL);
 	will_return(ibv_create_cq, EAGAIN);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -151,6 +167,8 @@ from_cm_event__req_notify_cq_fail(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 	will_return(ibv_destroy_cq, MOCK_OK);
@@ -158,7 +176,8 @@ from_cm_event__req_notify_cq_fail(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -179,9 +198,12 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
+	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
 	will_return(ibv_destroy_cq, MOCK_OK);
@@ -189,7 +211,8 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -212,9 +235,12 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
+	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
 	will_return(rpma_peer_create_qp, EAGAIN);
 	will_return(ibv_destroy_cq, EIO); /* second error */
@@ -222,7 +248,8 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -242,9 +269,12 @@ from_cm_event__malloc_ENOMEM(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
+	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM);
 	expect_value(rdma_destroy_qp, id, &id);
@@ -253,7 +283,8 @@ from_cm_event__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -274,9 +305,12 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
+	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
@@ -285,7 +319,8 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -305,9 +340,12 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
+	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	expect_value(rpma_peer_create_qp, id, &id);
+	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return(rpma_private_data_store, NULL);
@@ -319,7 +357,8 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event, NULL, &req);
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);

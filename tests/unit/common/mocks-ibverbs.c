@@ -5,9 +5,9 @@
  * mock-ibverbs.c -- libibverbs mocks
  */
 
-#include "conn_req.h"
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
+#include "mocks-rpma-conn_cfg.h"
 #include "test-common.h"
 
 /* mocked IBV entities */
@@ -67,7 +67,7 @@ ibv_create_cq(struct ibv_context *context, int cqe, void *cq_context,
 		struct ibv_comp_channel *channel, int comp_vector)
 {
 	assert_ptr_equal(context, MOCK_VERBS);
-	assert_int_equal(cqe, RPMA_DEFAULT_Q_SIZE);
+	check_expected(cqe);
 	assert_ptr_equal(channel, MOCK_COMP_CHANNEL);
 	assert_int_equal(comp_vector, 0);
 
