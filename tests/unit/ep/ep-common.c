@@ -270,8 +270,6 @@ rdma_get_cm_event(struct rdma_event_channel *channel,
 
 /*
  * rpma_conn_req_from_cm_event -- rpma_conn_req_from_cm_event() mock
- *
- * XXX cfg validation
  */
 int
 rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
@@ -279,6 +277,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
 {
 	check_expected_ptr(peer);
 	check_expected_ptr(edata);
+	check_expected_ptr(cfg);
 	assert_non_null(req_ptr);
 
 	struct rpma_conn_req *req = mock_type(struct rpma_conn_req *);
@@ -308,6 +307,16 @@ rdma_event_str(enum rdma_cm_event_type event)
 	return "";
 }
 
+/*
+ * prestate_init -- initialize ep_listen prestate
+ */
+void
+prestate_init(struct ep_test_state *prestate, struct rpma_conn_cfg *cfg)
+{
+	memset(prestate, 0, sizeof(struct ep_test_state));
+	prestate->cfg = cfg;
+}
+
 /* setups and teardowns */
 
 /*
@@ -316,12 +325,14 @@ rdma_event_str(enum rdma_cm_event_type event)
 int
 setup__ep_listen(void **estate_ptr)
 {
+	struct ep_test_state *estate = *estate_ptr;
+	memset(&estate->cmid, 0, sizeof(struct rdma_cm_id));
+	estate->evch.fd = MOCK_FD;
+
 	/* configure mocks: */
 	Mock_ctrl_defer_destruction = MOCK_CTRL_DEFER;
-	static struct ep_test_state estate = {{0}};
-	estate.evch.fd = MOCK_FD;
-	will_return(rdma_create_event_channel, &estate.evch);
-	will_return(rdma_create_id, &estate.cmid);
+	will_return(rdma_create_event_channel, &estate->evch);
+	will_return(rdma_create_id, &estate->cmid);
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rpma_info_bind_addr, MOCK_OK);
 	will_return(rdma_listen, MOCK_OK);
@@ -330,17 +341,15 @@ setup__ep_listen(void **estate_ptr)
 
 	/* prepare an object */
 	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT,
-		&estate.ep);
+		&estate->ep);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
-	assert_non_null(estate.ep);
-	assert_int_equal(memcmp(&estate.cmid, &Cmid_zero, sizeof(estate.cmid)),
-		0);
-	assert_int_equal(memcmp(&estate.evch, &Evch_zero, sizeof(estate.evch)),
-		0);
-
-	*estate_ptr = &estate;
+	assert_non_null(estate->ep);
+	assert_int_equal(memcmp(&estate->cmid, &Cmid_zero,
+			sizeof(struct rdma_cm_id)), 0);
+	assert_int_equal(memcmp(&estate->evch, &Evch_zero,
+			sizeof(struct rdma_event_channel)), 0);
 
 	/* restore default mock configuration */
 	Mock_ctrl_defer_destruction = MOCK_CTRL_NO_DEFER;

@@ -35,6 +35,10 @@ struct ep_test_state {
 	struct rdma_event_channel evch;
 	struct rdma_cm_id cmid;
 	struct rpma_ep *ep;
+
+	struct rpma_conn_cfg *cfg;
 };
+
+void prestate_init(struct ep_test_state *prestate, struct rpma_conn_cfg *cfg);
 
 #endif /* EP_COMMON_H */

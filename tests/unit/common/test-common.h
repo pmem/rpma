@@ -14,7 +14,6 @@
 #define MOCK_Q_SIZE		123
 
 /* random values */
-#define MOCK_CONN_CFG		(struct rpma_conn_cfg *)0xCEF6
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF
 #define MOCK_INFO		(struct rpma_info *)0xE6B2
