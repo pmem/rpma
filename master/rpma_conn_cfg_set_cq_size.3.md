@@ -19,7 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, int cq_size);
+          int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg,
+                  uint32_t cq_size);
 
 DESCRIPTION
 ===========
@@ -29,4 +30,4 @@ ERRORS
 
 **rpma\_conn\_cfg\_set\_cq\_size**() can fail with the following error:
 
--   XXX
+-   RPMA\_E\_INVAL - *cfg* is NULL

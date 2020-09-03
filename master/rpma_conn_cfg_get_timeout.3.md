@@ -30,4 +30,4 @@ ERRORS
 
 **rpma\_conn\_cfg\_get\_timeout**() can fail with the following error:
 
--   XXX
+-   RPMA\_E\_INVAL - *cfg* or *timeout\_ms* is NULL
