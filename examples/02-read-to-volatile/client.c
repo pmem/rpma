@@ -113,11 +113,13 @@ main(int argc, char *argv[])
 	/* post an RDMA read operation */
 	ret = rpma_read(conn, dst_mr, 0, src_mr, 0, src_size,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
+	if (ret)
+		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
 	ret = rpma_conn_prepare_completions(conn);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	/* wait for a completion of the RDMA read */
 	ret = rpma_conn_next_completion(conn, &cmpl);
