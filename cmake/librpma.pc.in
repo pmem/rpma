@@ -1,9 +1,10 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 
 Name: librpma
 Description: librpma - library to simplify accessing persistent memory devices on remote hosts over RDMA
 Version: @VERSION@
 URL: https://github.com/pmem/rpma
-Requires: libibverbs >= @LIBIBVERBS_REQUIRED_VERSION@ librdmacm >= @LIBRDMACM_REQUIRED_VERSION@
 Cflags: -I${includedir}
+Libs: -L${libdir} -lrpma -libverbs -lrdmacm
