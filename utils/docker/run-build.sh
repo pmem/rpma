@@ -22,6 +22,7 @@ EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 PREFIX=/usr
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
+CC=${CC:-gcc}
 
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
@@ -72,12 +73,13 @@ function compile_example_standalone() {
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (DEBUG version)"
+echo "### Verify build and install (in dir: ${PREFIX}) ($CC, DEBUG)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
+CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
@@ -123,12 +125,13 @@ rm -rf $WORKDIR/build
 
 echo
 echo "##################################################################"
-echo "### Verify build and install (in dir: ${PREFIX}) (RELEASE version)"
+echo "### Verify build and install (in dir: ${PREFIX}) ($CC, RELEASE)"
 echo "##################################################################"
 
 mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
+CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
