@@ -169,28 +169,28 @@ main(int argc, char *argv[])
 	ret = rpma_read(conn, dst_mr, dst_offset, src_mr, src_data->data_offset,
 			KILOBYTE, RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
-		goto err_disconnect;
+		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
 	ret = rpma_conn_prepare_completions(conn);
 	if (ret)
-		goto err_disconnect;
+		goto err_mr_remote_delete;
 
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret)
-		goto err_disconnect;
+		goto err_mr_remote_delete;
 
 	if (cmpl.op != RPMA_OP_READ) {
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value (%d != %d)\n",
 				cmpl.op, RPMA_OP_READ);
-		goto err_disconnect;
+		goto err_mr_remote_delete;
 	}
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read failed with %d\n",
 				cmpl.op_status);
-		goto err_disconnect;
+		goto err_mr_remote_delete;
 	}
 
 #ifdef USE_LIBPMEM
@@ -200,6 +200,9 @@ main(int argc, char *argv[])
 #endif
 
 	(void) printf("New value: %s\n", (char *)dst_ptr + dst_offset);
+
+err_mr_remote_delete:
+	(void) rpma_mr_remote_delete(&src_mr);
 
 err_disconnect:
 	/*

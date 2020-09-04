@@ -185,13 +185,13 @@ main(int argc, char *argv[])
 			RPMA_MR_USAGE_WRITE_SRC,
 			mr_plt, &src_mr);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_conn_disconnect;
 
 	/* obtain the remote memory description */
 	struct rpma_conn_private_data pdata;
 	ret = rpma_conn_get_private_data(conn, &pdata);
 	if (ret != 0 || pdata.len < sizeof(struct common_data))
-		goto err_conn_disconnect;
+		goto err_mr_dereg;
 
 	/*
 	 * Create a remote memory registration structure from the received
@@ -201,7 +201,7 @@ main(int argc, char *argv[])
 	dst_offset = dst_data->data_offset;
 	ret = rpma_mr_remote_from_descriptor(&dst_data->desc, &dst_mr);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_dereg;
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
@@ -218,22 +218,22 @@ main(int argc, char *argv[])
 			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	ret = rpma_flush(conn, dst_mr, dst_offset, KILOBYTE,
 			RPMA_FLUSH_TYPE_PERSISTENT, RPMA_F_COMPLETION_ALWAYS,
 			FLUSH_ID);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
 	ret = rpma_conn_prepare_completions(conn);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	if (cmpl.op_context != FLUSH_ID) {
 		(void) fprintf(stderr,
@@ -241,10 +241,10 @@ main(int argc, char *argv[])
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
 				(uintptr_t)cmpl.op_context,
 				(uintptr_t)FLUSH_ID);
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 	}
 	if (cmpl.op_status != IBV_WC_SUCCESS)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	/*
 	 * Translate the message so the next time the greeting will be
@@ -259,9 +259,6 @@ main(int argc, char *argv[])
 
 	(void) printf("Translation: %s\n", hello->str);
 
-err_conn_disconnect:
-	(void) common_disconnect_and_wait_for_conn_close(&conn);
-
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
 	(void) rpma_mr_remote_delete(&dst_mr);
@@ -269,6 +266,9 @@ err_mr_remote_delete:
 err_mr_dereg:
 	/* deregister the memory region */
 	(void) rpma_mr_dereg(&src_mr);
+
+err_conn_disconnect:
+	(void) common_disconnect_and_wait_for_conn_close(&conn);
 
 err_peer_delete:
 	/* delete the peer */

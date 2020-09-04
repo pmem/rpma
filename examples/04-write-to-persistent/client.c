@@ -165,8 +165,10 @@ main(int argc, char *argv[])
 
 	/* alloc memory for the read-after-write buffer (RAW) */
 	raw = malloc_aligned(KILOBYTE);
-	if (raw == NULL)
-		return -1;
+	if (raw == NULL) {
+		ret = -1;
+		goto err_free;
+	}
 
 	(void) printf("Next value: %s\n", hello->str);
 
@@ -191,7 +193,7 @@ main(int argc, char *argv[])
 			RPMA_MR_USAGE_WRITE_SRC,
 			mr_plt, &src_mr);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_conn_disconnect;
 
 	/* register the RAW buffer */
 	ret = rpma_mr_reg(peer, raw, 8,
@@ -204,7 +206,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	ret = rpma_conn_get_private_data(conn, &pdata);
 	if (ret != 0 || pdata.len < sizeof(struct common_data))
-		goto err_conn_disconnect;
+		goto err_mr_dereg;
 
 	/*
 	 * Create a remote memory registration structure from the received
@@ -214,12 +216,12 @@ main(int argc, char *argv[])
 	dst_offset = dst_data->data_offset;
 	ret = rpma_mr_remote_from_descriptor(&dst_data->desc, &dst_mr);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_dereg;
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
 	if (ret) {
-		goto err_mr_remote_delete;
+		goto err_mr_dereg;
 	} else if (dst_size < KILOBYTE) {
 		fprintf(stderr,
 				"Remote memory region size too small for writing the data of the assumed size (%zu < %d)\n",
@@ -231,33 +233,33 @@ main(int argc, char *argv[])
 			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	/* the read serves here as flushing primitive */
 	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, 8,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
 	ret = rpma_conn_prepare_completions(conn);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	ret = rpma_conn_next_completion(conn, &cmpl);
 	if (ret)
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 
 	if (cmpl.op != RPMA_OP_READ) {
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value (%d != %d)\n",
 				cmpl.op, (RPMA_OP_READ | RPMA_OP_WRITE));
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 	}
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read failed with %d\n",
 				cmpl.op_status);
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 	}
 
 	/*
@@ -273,9 +275,6 @@ main(int argc, char *argv[])
 
 	(void) printf("Translation: %s\n", hello->str);
 
-err_conn_disconnect:
-	(void) common_disconnect_and_wait_for_conn_close(&conn);
-
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
 	(void) rpma_mr_remote_delete(&dst_mr);
@@ -284,6 +283,9 @@ err_mr_dereg:
 	/* deregister the memory region */
 	(void) rpma_mr_dereg(&src_mr);
 	(void) rpma_mr_dereg(&raw_mr);
+
+err_conn_disconnect:
+	(void) common_disconnect_and_wait_for_conn_close(&conn);
 
 err_peer_delete:
 	/* delete the peer */
