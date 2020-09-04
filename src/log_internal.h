@@ -8,6 +8,7 @@
 #ifndef LIBRPMA_LOG_INTERNAL_H
 #define LIBRPMA_LOG_INTERNAL_H
 
+#include <string.h>
 #include "librpma_log.h"
 
 /* pointer to the logging function */
