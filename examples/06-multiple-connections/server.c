@@ -36,7 +36,7 @@ struct client_res {
 
 	/* parent and identifier */
 	struct server_res *svr;
-	int client_id;
+	uint8_t client_id;
 };
 
 struct server_res {
@@ -115,14 +115,14 @@ client_new(struct server_res *svr, struct rpma_conn_req *req)
 {
 	/* find the first free slot */
 	struct client_res *clnt = NULL;
-	for (int i = 0; i < CLIENT_MAX; ++i) {
+	for (uint8_t i = 0; i < CLIENT_MAX; ++i) {
 		clnt = &svr->clients[i];
 		if (clnt->conn != NULL)
 			continue;
 
 		clnt->client_id = i;
 		clnt->svr = svr;
-		clnt->offset = (size_t)(MAX_NAME_SIZE * i);
+		clnt->offset = (size_t)(MAX_NAME_SIZE) * i;
 		clnt->ev_conn_cmpl.fd = -1;
 		clnt->ev_conn_event.fd = -1;
 		break;
