@@ -76,6 +76,11 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 	}
 
 	struct flush_apm *flush_apm = malloc(sizeof(struct flush_apm));
+	if (flush_apm == NULL) {
+		free(raw);
+		return RPMA_E_NOMEM;
+	}
+
 	flush_apm->raw = raw;
 	flush_apm->raw_mr = raw_mr;
 
