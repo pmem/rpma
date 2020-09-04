@@ -123,10 +123,10 @@ main(int argc, char *argv[])
 			} else if (cmpl.op_status != IBV_WC_SUCCESS) {
 
 				(void) fprintf(stderr,
-					"operation %d failed: %s\n",
-					cmpl.op,
-					ibv_wc_status_str(cmpl.op_status));
-
+					"Could not %s.\nClient will shutdown.",
+					cmpl.op == RPMA_OP_SEND ? "send msg":
+					cmpl.op == RPMA_OP_RECV ? "post recv":
+					"execute unknown operation");
 				ret = -1;
 				break;
 			}
