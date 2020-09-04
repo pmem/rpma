@@ -54,7 +54,7 @@
 use strict;
 use Getopt::Std;
 use Encode;
-use v5.16;
+use v5.10;
 
 select STDERR;
 binmode(STDOUT, ":utf8");

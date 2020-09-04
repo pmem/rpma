@@ -14,7 +14,7 @@ use warnings;
 use File::Basename;
 use File::Find;
 use Encode;
-use v5.16;
+use v5.10;
 
 my $Me = $0;
 $Me =~ s,.*/,,;
