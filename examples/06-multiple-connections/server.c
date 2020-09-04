@@ -122,7 +122,7 @@ client_new(struct server_res *svr, struct rpma_conn_req *req)
 
 		clnt->client_id = i;
 		clnt->svr = svr;
-		clnt->offset = (size_t)(MAX_NAME_SIZE * i);
+		clnt->offset = (size_t)MAX_NAME_SIZE * (size_t)i;
 		clnt->ev_conn_cmpl.fd = -1;
 		clnt->ev_conn_event.fd = -1;
 		break;
