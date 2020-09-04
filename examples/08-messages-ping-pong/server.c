@@ -81,18 +81,17 @@ main(int argc, char *argv[])
 	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
 		goto err_mr_dereg;
 
+	/* accept the connection request and obtain the connection object */
+	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
+		goto err_ep_shutdown;
+
 	/*
 	 * Put an initial receive to be prepared for the first message of
 	 * the client's ping-pong.
 	 */
-	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv))) {
-		(void) rpma_conn_req_delete(&req);
+	if ((ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv))) {
 		goto err_mr_dereg;
 	}
-
-	/* accept the connection request and obtain the connection object */
-	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
-		goto err_ep_shutdown;
 
 	/* wait for the connection to be established */
 	if ((ret = rpma_conn_next_event(conn, &conn_event)))
