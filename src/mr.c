@@ -77,6 +77,11 @@ usage_to_access(int usage)
 		usage &= ~RPMA_MR_USAGE_WRITE_DST;
 	}
 
+	if (usage & RPMA_MR_USAGE_RECV) {
+		access |= IBV_ACCESS_LOCAL_WRITE;
+		usage &= ~RPMA_MR_USAGE_RECV;
+	}
+
 	return access;
 }
 
