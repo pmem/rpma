@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 3.3)
 project(atomic-write C)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
+
 set(LIBPMEM_REQUIRED_VERSION 1.6)
 
 find_package(PkgConfig QUIET)
