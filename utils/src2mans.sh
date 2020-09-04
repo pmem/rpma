@@ -47,6 +47,13 @@ if which pandoc > /dev/null; then
 	mkdir -p md
 fi
 
+#
+# src2man is usually located in '/usr/local/bin'.
+# Add this directory to the PATH variable
+# to make sure src2man will be found.
+#
+export "PATH=$PATH:/usr/local/bin"
+
 ALL_MANUALS="$(mktemp)"
 
 find $DIR -name '*.h' -print0 | while read -d $'\0' MAN
