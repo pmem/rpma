@@ -92,15 +92,15 @@ main(int argc, char *argv[])
 
 	/* accept the connection request and obtain the connection object */
 	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
-		goto err_ep_shutdown;
+		goto err_mr_dereg;
 
 	/* wait for the connection to be established */
 	if ((ret = rpma_conn_next_event(conn, &conn_event)))
-		goto err_ep_shutdown;
+		goto err_mr_dereg;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
 				"rpma_conn_next_event returned an unexptected event\n");
-		goto err_ep_shutdown;
+		goto err_mr_dereg;
 	}
 
 	/* RPMA_OP_SEND completion in the first round is not present */
