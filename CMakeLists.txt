@@ -30,8 +30,6 @@ set(LIBRPMA_LIBRARY_DIRS ${CMAKE_BINARY_DIR}/src/)
 set(LIBRPMA_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/src/include/)
 set(LIBRPMA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
-set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
-set(LIBRDMACM_REQUIRED_VERSION 1.0)  # XXX set the required value
 # required only for some examples
 set(LIBPMEM_REQUIRED_VERSION 1.6)
 
@@ -102,8 +100,8 @@ if(NOT PERL_FOUND)
 	message(FATAL_ERROR "Perl not found")
 endif()
 
-pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
-pkg_check_modules(LIBRDMACM REQUIRED librdmacm>=${LIBRDMACM_REQUIRED_VERSION})
+pkg_check_modules(LIBIBVERBS REQUIRED libibverbs)
+pkg_check_modules(LIBRDMACM REQUIRED librdmacm)
 pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 
 add_custom_target(checkers ALL)

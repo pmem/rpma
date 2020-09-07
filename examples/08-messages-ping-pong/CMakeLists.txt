@@ -6,16 +6,14 @@
 cmake_minimum_required(VERSION 3.3)
 project(messages-ping-pong C)
 
-set(LIBIBVERBS_REQUIRED_VERSION 1.0) # XXX set the required value
-
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBRPMA REQUIRED librpma)
-	pkg_check_modules(LIBIBVERBS REQUIRED libibverbs>=${LIBIBVERBS_REQUIRED_VERSION})
+	pkg_check_modules(LIBIBVERBS REQUIRED libibverbs)
 else()
-	find_package(LIBRPMA REQUIRED)
-	find_package(LIBIBVERBS ${LIBIBVERBS_REQUIRED_VERSION} REQUIRED)
+	find_package(LIBRPMA REQUIRED librpma)
+	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS} ${LIBIBVERBS_LIBRARY_DIRS})
