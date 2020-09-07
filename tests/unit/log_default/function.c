@@ -51,12 +51,12 @@
  * contents other than your cautiousness during editing these.
  */
 static const char *const rpma_log_level_names[] = {
-	[RPMA_LOG_LEVEL_FATAL]	= "FATAL",
-	[RPMA_LOG_LEVEL_ERROR]	= "ERROR",
-	[RPMA_LOG_LEVEL_WARNING] = "WARNING",
-	[RPMA_LOG_LEVEL_NOTICE]	= "NOTICE",
-	[RPMA_LOG_LEVEL_INFO]	= "INFO",
-	[RPMA_LOG_LEVEL_DEBUG]	= "DEBUG",
+	[RPMA_LOG_LEVEL_FATAL]	=  "*FATAL*",
+	[RPMA_LOG_LEVEL_ERROR]	=  "*ERROR*",
+	[RPMA_LOG_LEVEL_WARNING] = "*WARN* ",
+	[RPMA_LOG_LEVEL_NOTICE]	=  "*NOTE* ",
+	[RPMA_LOG_LEVEL_INFO]	=  "*INFO* ",
+	[RPMA_LOG_LEVEL_DEBUG]	=  "*DEBUG*",
 };
 
 static const int rpma_log_level_syslog_severity[] = {
@@ -126,9 +126,8 @@ function__snprintf_fail(void **unused)
 
 	/* construct the resulting syslog message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg, MOCK_FILE_ERROR_STR "*");
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, "*: " MOCK_MESSAGE);
+	strcat(msg, " " MOCK_FILE_ERROR_STR MOCK_MESSAGE);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -149,9 +148,9 @@ function__syslog_no_path(void **unused)
 			rpma_log_level_syslog_severity[MOCK_LOG_LEVEL]);
 
 	/* construct the resulting syslog message */
-	char msg[MOCK_BUFF_LEN] = "*";
+	char msg[MOCK_BUFF_LEN] = "";
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, "*: " MOCK_MESSAGE);
+	strcat(msg, " " MOCK_MESSAGE);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -175,11 +174,9 @@ function__syslog(void **config_ptr)
 
 	/* construct the resulting syslog message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg,
-		MOCK_FILE_NAME ":  " STR(MOCK_LINE_NUMBER) ": "
-		MOCK_FUNCTION_NAME ": *");
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, "*: " MOCK_MESSAGE);
+	strcat(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
+		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -246,10 +243,9 @@ function__stderr_path(void **config_ptr)
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
 	strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-	strcat(msg, MOCK_FILE_NAME ":  " STR(MOCK_LINE_NUMBER) ": "
-		MOCK_FUNCTION_NAME ": *");
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, "*: " MOCK_MESSAGE);
+	strcat(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
+		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
 	will_return(__wrap_fprintf, MOCK_VALIDATE);
 	expect_string(__wrap_fprintf, fprintf_output, msg);
 
@@ -278,9 +274,8 @@ function__stderr_no_path(void **config_ptr)
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
 		strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-		strcat(msg, "*");
 		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-		strcat(msg, "*: " MOCK_MESSAGE);
+		strcat(msg, " " MOCK_MESSAGE);
 		will_return(__wrap_fprintf, MOCK_VALIDATE);
 		expect_string(__wrap_fprintf, fprintf_output, msg);
 
