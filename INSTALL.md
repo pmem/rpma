@@ -1,5 +1,22 @@
 # How to build the librpma library from source
 
+## Supported OSes
+
+Known supported OSes:
+- CentOS >=7
+- Debian >=10
+- Fedora >=27
+- Ubuntu >=18.04
+
+Known not-yet-supported OSes (support will be added in the future):
+- CentOS-6:     too old version of libibverbs (v1.1.8-4): no ODP support
+- Debian 9:     too old version of librdmacm (v1.1.0-2): wrong signature of rdma_getaddrinfo()
+- Ubuntu 16.04: too old version of libibverbs (v1.1.8-1): no ODP support
+
+Known unsupported OSes:
+- Debian 8:     too old version of CMake (v3.0.2)
+- Ubuntu 14.04: too old version of CMake (v2.8.12.2)
+
 ## Requirements
 
 ### Common requirements
