@@ -23,6 +23,7 @@ set(SOURCES
 	log_default.c
 	mr.c
 	peer.c
+	peer_cfg.c
 	private_data.c
 	rpma_err.c
 	rpma.c)
