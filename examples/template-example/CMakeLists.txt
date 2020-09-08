@@ -6,14 +6,17 @@
 cmake_minimum_required(VERSION 3.3)
 project(template-example C)
 
-include(FindThreads)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+	${CMAKE_SOURCE_DIR}/../cmake
+	${CMAKE_SOURCE_DIR}/../../cmake)
 
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
-	pkg_check_modules(LIBRPMA REQUIRED librpma)
-else()
-	find_package(LIBRPMA REQUIRED)
+	pkg_check_modules(LIBRPMA librpma)
+endif()
+if(NOT LIBRPMA_FOUND)
+	find_package(LIBRPMA REQUIRED librpma)
 endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
