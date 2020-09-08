@@ -142,3 +142,17 @@ function(find_pmemcheck)
 		message(WARNING "Valgrind pmemcheck NOT found. Pmemcheck tests will not be performed.")
 	endif()
 endfunction()
+
+# check if libibverbs has ODP support
+function(is_ODP_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if 'IBV_ACCESS_ON_DEMAND is defined */
+		int main() {
+			if (!IBV_ACCESS_ON_DEMAND)
+				return -1;
+			return 0;
+		}"
+		ON_DEMAND_PAGING_SUPPORTED)
+	set(var ${ON_DEMAND_PAGING_SUPPORTED} PARENT_SCOPE)
+endfunction()

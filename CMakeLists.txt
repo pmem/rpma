@@ -108,6 +108,14 @@ endif()
 
 pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 
+# check if libibverbs has ODP support
+is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
+if(NOT ON_DEMAND_PAGING_SUPPORTED)
+	message(FATAL_ERROR "-- On-Demand Paging (ODP) is NOT supported, too old version of libibverbs!")
+else()
+	message(NOTICE "-- On-Demand Paging (ODP) in libibverbs supported - Success")
+endif()
+
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
 add_custom_target(check-whitespace)
