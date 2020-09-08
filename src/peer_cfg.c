@@ -61,7 +61,7 @@ rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
  */
 int
 rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
-		enum rpma_on_off_type state)
+		enum rpma_on_off_type *state)
 {
 	return RPMA_E_NOSUPP;
 }

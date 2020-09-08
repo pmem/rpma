@@ -188,7 +188,7 @@ int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
  *
  *	int rpma_peer_cfg_get_persistent_flush_supported(
  *			struct rpma_peer_cfg *pcfg,
- *			enum rpma_on_off_type state);
+ *			enum rpma_on_off_type *state);
  *
  * ERRORS
  * rpma_peer_cfg_get_persistent_flush_supported() can fail
@@ -197,7 +197,7 @@ int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
  * - XXX
  */
 int rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
-		enum rpma_on_off_type state);
+		enum rpma_on_off_type *state);
 
 /* The number of bytes required to store a peer descriptor */
 #define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
