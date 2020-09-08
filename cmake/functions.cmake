@@ -143,6 +143,16 @@ function(find_pmemcheck)
 	endif()
 endfunction()
 
+# check if CHECK_C_SOURCE_COMPILES works correctly
+function(if_check_c_source_compiles_works var)
+	CHECK_C_SOURCE_COMPILES("
+		int main() {
+			return 0;
+		}"
+		CHECK_C_SOURCE_COMPILES_WORKS_OK)
+	set(var ${CHECK_C_SOURCE_COMPILES_WORKS_OK} PARENT_SCOPE)
+endfunction()
+
 # check if libibverbs has ODP support
 function(is_ODP_supported var)
 	CHECK_C_SOURCE_COMPILES("

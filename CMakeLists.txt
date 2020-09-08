@@ -108,20 +108,26 @@ endif()
 
 pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 
-# check if libibverbs has ODP support
-is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
-if(NOT ON_DEMAND_PAGING_SUPPORTED)
-	message(FATAL_ERROR "-- On-Demand Paging (ODP) is NOT supported, too old version of libibverbs!")
-else()
-	message(NOTICE "-- On-Demand Paging (ODP) in libibverbs supported - Success")
-endif()
+# check if CHECK_C_SOURCE_COMPILES works correctly
+if_check_c_source_compiles_works(CHECK_C_SOURCE_COMPILES_WORKS_OK)
+if(CHECK_C_SOURCE_COMPILES_WORKS_OK)
+	# check if libibverbs has ODP support
+	is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
+	if(NOT ON_DEMAND_PAGING_SUPPORTED)
+		message(FATAL_ERROR "-- On-Demand Paging (ODP) is NOT supported, too old version of libibverbs!")
+	else()
+		message(NOTICE "-- On-Demand Paging (ODP) in libibverbs supported - Success")
+	endif()
 
-# check if librdmacm has correct signature of rdma_getaddrinfo()
-check_signature_rdma_getaddrinfo(SIGNATURE_OK_RDMA_GETADDRINFO)
-if(NOT SIGNATURE_OK_RDMA_GETADDRINFO)
-	message(FATAL_ERROR "-- Signature of rdma_getaddrinfo() is NOT correct, too old version of librdmacm!")
+	# check if librdmacm has correct signature of rdma_getaddrinfo()
+	check_signature_rdma_getaddrinfo(SIGNATURE_OK_RDMA_GETADDRINFO)
+	if(NOT SIGNATURE_OK_RDMA_GETADDRINFO)
+		message(FATAL_ERROR "-- Signature of rdma_getaddrinfo() is NOT correct, too old version of librdmacm!")
+	else()
+		message(NOTICE "-- Correct signature of rdma_getaddrinfo() - Success")
+	endif()
 else()
-	message(NOTICE "-- Correct signature of rdma_getaddrinfo() - Success")
+	message(WARNING "-- CHECK_C_SOURCE_COMPILES does not work as expected, skipping CHECK_C_SOURCE_COMPILES checks!")
 endif()
 
 add_custom_target(checkers ALL)
@@ -145,6 +151,9 @@ add_dependencies(check-whitespace check-whitespace-main)
 
 add_custom_target(tests)
 
+# 'std=gnu99' has to be set always, even if add_flag() does not work correctly
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
+
 add_flag(-Wpointer-arith)
 add_flag(-Wunused-macros)
 add_flag(-Wsign-conversion)
@@ -152,7 +161,6 @@ add_flag(-Wsign-compare)
 add_flag(-Wunreachable-code-return)
 add_flag(-Wmissing-variable-declarations)
 add_flag(-fno-common)
-add_flag(-std=gnu99)
 add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
