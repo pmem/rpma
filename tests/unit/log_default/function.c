@@ -45,6 +45,18 @@
 #define MOCK_MESSAGE		"Message"
 #define MOCK_FILE_ERROR_STR	"[file info error]: "
 
+size_t
+strcat_no_error(char *dst, const char *src, int left_buff)
+{
+	left_buff = left_buff - (int)strlen(src);
+	if (left_buff < 0)
+		assert_true(0);
+
+	strcat(dst, src);
+	return (size_t)left_buff;
+}
+
+
 /*
  * These two arrays should be the exact copy of the arrays you may find in
  * the log_default.c module. There is no another way of validating their
@@ -126,8 +138,10 @@ function__snprintf_fail(void **unused)
 
 	/* construct the resulting syslog message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, " " MOCK_FILE_ERROR_STR MOCK_MESSAGE);
+	size_t buff = MOCK_BUFF_LEN - 1;
+	buff = strcat_no_error(msg, rpma_log_level_names[MOCK_LOG_LEVEL],
+			buff);
+	strcat_no_error(msg, " " MOCK_FILE_ERROR_STR MOCK_MESSAGE, buff);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -149,8 +163,10 @@ function__syslog_no_path(void **unused)
 
 	/* construct the resulting syslog message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, " " MOCK_MESSAGE);
+	size_t buff = MOCK_BUFF_LEN - 1;
+	buff = strcat_no_error(msg, rpma_log_level_names[MOCK_LOG_LEVEL],
+			buff);
+	strcat_no_error(msg, " " MOCK_MESSAGE, buff);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -174,9 +190,11 @@ function__syslog(void **config_ptr)
 
 	/* construct the resulting syslog message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
-		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
+	size_t buff = MOCK_BUFF_LEN - 1;
+	buff = strcat_no_error(msg, rpma_log_level_names[MOCK_LOG_LEVEL],
+			buff);
+	strcat_no_error(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
+		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE, buff);
 	expect_string(syslog, syslog_output, msg);
 
 	/* run test */
@@ -242,10 +260,13 @@ function__stderr_path(void **config_ptr)
 
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
-	strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-	strcat(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
-		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
+	size_t buff = MOCK_BUFF_LEN - 1;
+	buff = strcat_no_error(msg, MOCK_TIME_STR_EXPECTED(config),
+			buff);
+	buff = strcat_no_error(msg, rpma_log_level_names[MOCK_LOG_LEVEL],
+			buff);
+	strcat_no_error(msg, " " MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
+		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE, buff);
 	will_return(__wrap_fprintf, MOCK_VALIDATE);
 	expect_string(__wrap_fprintf, fprintf_output, msg);
 
@@ -273,9 +294,12 @@ function__stderr_no_path(void **config_ptr)
 
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
-		strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
-		strcat(msg, " " MOCK_MESSAGE);
+		size_t buff = MOCK_BUFF_LEN - 1;
+		buff = strcat_no_error(msg, MOCK_TIME_STR_EXPECTED(config),
+				buff);
+		buff = strcat_no_error(msg,
+				rpma_log_level_names[MOCK_LOG_LEVEL], buff);
+		strcat_no_error(msg, " " MOCK_MESSAGE, buff);
 		will_return(__wrap_fprintf, MOCK_VALIDATE);
 		expect_string(__wrap_fprintf, fprintf_output, msg);
 
