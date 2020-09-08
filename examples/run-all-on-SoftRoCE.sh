@@ -58,13 +58,11 @@ function run_example() {
 		RV=$?
 		;;
 	08-messages-ping-pong)
+		SEED=7
 		ROUNDS=3
-		for SEED in 8 9 11 12; do
-			echo "Starting the client ..."
-			$DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
-			RV=$?
-			[ $RV -ne 0 ] && break
-		done
+		echo "Starting the client ..."
+		$DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
+		RV=$?
 		;;
 	*)
 		echo "Starting the client ..."
