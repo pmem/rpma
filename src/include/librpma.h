@@ -102,6 +102,145 @@ int rpma_utils_get_ibv_context(const char *addr,
 int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 		int *is_odp_capable);
 
+/* peer configuration */
+
+struct rpma_peer_cfg;
+
+enum rpma_on_off_type {
+	RPMA_OFF,
+	RPMA_ON
+};
+
+/** 3
+ * rpma_peer_cfg_new - create a new peer configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+ *
+ * ERRORS
+ * rpma_peer_cfg_new() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+
+/** 3
+ * rpma_peer_cfg_delete - delete the peer configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+ *
+ * ERRORS
+ * rpma_peer_cfg_delete() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+
+/** 3
+ * rpma_peer_cfg_set_ddio - declare the DDIO state
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_set_ddio(struct rpma_peer_cfg *pcfg,
+ *			enum rpma_on_off_type type);
+ *
+ * ERRORS
+ * rpma_peer_cfg_set_ddio() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_set_ddio(struct rpma_peer_cfg *pcfg,
+		enum rpma_on_off_type type);
+
+/** 3
+ * rpma_peer_cfg_set_auto_flush - declare the auto flush state
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
+ *			enum rpma_on_off_type type);
+ *
+ * ERRORS
+ * rpma_peer_cfg_set_auto_flush() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
+		enum rpma_on_off_type type);
+
+/** 3
+ * rpma_peer_cfg_get_persistent_flush_supported - XXX
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_get_persistent_flush_supported(
+ *			struct rpma_peer_cfg *pcfg, enum rpma_on_off_type type);
+ *
+ * ERRORS
+ * rpma_peer_cfg_get_persistent_flush_supported() can fail
+ * with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
+		enum rpma_on_off_type type);
+
+/* The number of bytes required to store a peer descriptor */
+#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
+
+typedef struct {
+	uint8_t data[RPMA_PEER_CFG_DESCRIPTOR_SIZE];
+} rpma_peer_cfg_descriptor;
+
+/** 3
+ * rpma_peer_cfg_get_descriptor - get a descriptor of a peer configuration
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
+ *			rpma_peer_cfg_descriptor *desc);
+ *
+ * ERRORS
+ * rpma_peer_cfg_get_descriptor() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
+		rpma_peer_cfg_descriptor *desc);
+
+/** 3
+ * rpma_peer_cfg_from_descriptor - create a peer configuration from a descriptor
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
+ *			struct rpma_peer_cfg **pcfg);
+ *
+ * ERRORS
+ * rpma_peer_cfg_from_descriptor() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
+		struct rpma_peer_cfg **pcfg);
+
 /* peer */
 
 struct rpma_peer;
@@ -579,6 +718,24 @@ struct rpma_conn_private_data {
  */
 int rpma_conn_get_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
+
+/** 3
+ * rpma_conn_apply_remote_peer_cfg - apply remote peer cfg for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
+ *			struct rpma_peer_cfg *pcfg);
+ *
+ * ERRORS
+ * rpma_conn_apply_remote_peer_cfg() can fail with the following error:
+ *
+ * - XXX
+ */
+int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
+		struct rpma_peer_cfg *pcfg);
 
 /** 3
  * rpma_conn_disconnect - initialize disconnection
