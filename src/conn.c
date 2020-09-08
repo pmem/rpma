@@ -514,3 +514,13 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
 
 	return 0;
 }
+
+/*
+ * rpma_conn_apply_remote_peer_cfg -- apply remote peer cfg for the connection
+ */
+int
+rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
+		struct rpma_peer_cfg *pcfg)
+{
+	return RPMA_E_NOSUPP;
+}
