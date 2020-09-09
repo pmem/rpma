@@ -200,7 +200,7 @@ int rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
 		enum rpma_on_off_type *state);
 
 /* The number of bytes required to store a peer descriptor */
-#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
+#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 2
 
 typedef struct {
 	uint8_t data[RPMA_PEER_CFG_DESCRIPTOR_SIZE];
