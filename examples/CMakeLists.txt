@@ -31,13 +31,13 @@ endif()
 include_directories(${LIBRPMA_INCLUDE_DIRS})
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-add_cstyle(examples-all
-	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
-add_check_whitespace(examples-all
-	${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
+file(GLOB style_files ${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
+list(FILTER style_files EXCLUDE REGEX ".*(pb-c).*")
+add_cstyle(examples-all ${style_files})
+add_check_whitespace(examples-all ${style_files})
 
 function(add_example)
-	set(options USE_LIBPMEM_IF_FOUND USE_LIBIBVERBS)
+	set(options USE_LIBPMEM_IF_FOUND USE_LIBIBVERBS USE_LIBPROTOBUF)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(EXAMPLE
@@ -45,8 +45,14 @@ function(add_example)
 		"${oneValueArgs}"
 		"${multiValueArgs}"
 		${ARGN})
-
+		
 	set(target example-${EXAMPLE_NAME}-${EXAMPLE_BIN})
+
+	if (EXAMPLE_USE_LIBPROTOBUF AND NOT LIBPROTOBUF_FOUND)
+		message(NOTICE "-- ${target} skipped - no libprotobuf-c found")
+		return()
+	endif()
+
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 	add_executable(${target} ${EXAMPLE_SRCS})
 	set_target_properties(${target} PROPERTIES
@@ -68,6 +74,12 @@ function(add_example)
 		target_include_directories(${target}
 			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
+	endif()
+	
+	if(EXAMPLE_USE_LIBPROTOBUF)
+		target_include_directories(${target}
+			PRIVATE ${LIBPROTOBUF_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBPROTOBUF_LIBRARIES})
 	endif()
 endfunction()
 
@@ -105,6 +117,12 @@ add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
 	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
 add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
 	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
+add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUF
+	SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUF
+	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
