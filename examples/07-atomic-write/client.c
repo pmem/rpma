@@ -85,7 +85,8 @@ main(int argc, char *argv[])
 	 */
 	struct common_data *dst_data = pdata.ptr;
 	used_offset = dst_data->data_offset;
-	if ((ret = rpma_mr_remote_from_descriptor(&dst_data->desc, &remote_mr)))
+	if ((ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc,
+			&remote_mr)))
 		goto err_mr_dereg;
 
 	/* get the remote memory region size */
