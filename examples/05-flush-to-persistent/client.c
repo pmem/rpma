@@ -165,8 +165,11 @@ main(int argc, char *argv[])
 	(void) printf("Next value: %s\n", hello->str);
 
 	/* RPMA resources */
+	struct rpma_peer_cfg *pcfg = NULL;
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
+	enum rpma_on_off_type persistent_flush_supported = RPMA_OFF;
+	enum rpma_flush_type flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -187,17 +190,32 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_disconnect;
 
-	/* obtain the remote memory description */
+	/* obtain the remote side resources description */
 	struct rpma_conn_private_data pdata;
 	ret = rpma_conn_get_private_data(conn, &pdata);
 	if (ret != 0 || pdata.len < sizeof(struct common_data))
 		goto err_mr_dereg;
 
 	/*
+	 * Create a remote peer configuration structure from the received
+	 * descriptor and apply it to the current connection.
+	 */
+	struct common_data *dst_data = pdata.ptr;
+	ret = rpma_peer_cfg_from_descriptor(&dst_data->pcfg_desc, &pcfg);
+	if (ret)
+		goto err_mr_dereg;
+	ret = rpma_peer_cfg_get_persistent_flush_supported(pcfg,
+			&persistent_flush_supported);
+	ret |= rpma_conn_apply_remote_peer_cfg(conn, pcfg);
+	(void) rpma_peer_cfg_delete(&pcfg);
+	/* either get or apply failed */
+	if (ret)
+		goto err_mr_dereg;
+
+	/*
 	 * Create a remote memory registration structure from the received
 	 * descriptor.
 	 */
-	struct common_data *dst_data = pdata.ptr;
 	dst_offset = dst_data->data_offset;
 	ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc, &dst_mr);
 	if (ret)
@@ -220,9 +238,17 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
-	ret = rpma_flush(conn, dst_mr, dst_offset, KILOBYTE,
-			RPMA_FLUSH_TYPE_PERSISTENT, RPMA_F_COMPLETION_ALWAYS,
-			FLUSH_ID);
+	/* determine the flush type */
+	if (persistent_flush_supported == RPMA_ON) {
+		printf("RPMA_FLUSH_TYPE_PERSISTENT is supported\n");
+		flush_type = RPMA_FLUSH_TYPE_PERSISTENT;
+	} else {
+		printf("RPMA_FLUSH_TYPE_PERSISTENT is NOT supported\n");
+		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
+	}
+
+	ret = rpma_flush(conn, dst_mr, dst_offset, KILOBYTE, flush_type,
+			RPMA_F_COMPLETION_ALWAYS, FLUSH_ID);
 	if (ret)
 		goto err_mr_remote_delete;
 
