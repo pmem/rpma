@@ -15,10 +15,13 @@
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>] [<ddio>] " \
+	"[<auto_flush>]\n"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
+
+#define ON_STR "on"
 
 #include "common-conn.h"
 
@@ -106,7 +109,8 @@ main(int argc, char *argv[])
 
 		mr_plt = RPMA_MR_PLT_PERSISTENT;
 	}
-#endif
+#endif /* USE_LIBPMEM */
+
 
 	/* if no pmem support or it is not provided */
 	if (mr_ptr == NULL) {
@@ -119,6 +123,7 @@ main(int argc, char *argv[])
 	}
 
 	/* RPMA resources */
+	struct rpma_peer_cfg *pcfg = NULL;
 	struct rpma_peer *peer = NULL;
 	struct rpma_ep *ep = NULL;
 	struct rpma_conn *conn = NULL;
@@ -128,12 +133,41 @@ main(int argc, char *argv[])
 		(void) printf("Old value: %s\n", (char *)mr_ptr + data_offset);
 	}
 
+	/* create a peer configuration structure */
+	ret = rpma_peer_cfg_new(&pcfg);
+	if (ret)
+		goto err_free;
+
+#ifdef USE_LIBPMEM
+	/* configure peer's DDIO state */
+	if (argc >= 5) {
+		ret = rpma_peer_cfg_set_ddio(pcfg,
+				((strcmp(argv[4], ON_STR) == 0) ?
+						RPMA_ON : RPMA_OFF));
+		if (ret) {
+			(void) rpma_peer_cfg_delete(&pcfg);
+			goto err_free;
+		}
+	}
+
+	/* configure peer's auto flush state */
+	if (argc >= 6) {
+		ret = rpma_peer_cfg_set_auto_flush(pcfg,
+				((strcmp(argv[5], ON_STR) == 0) ?
+						RPMA_ON : RPMA_OFF));
+		if (ret) {
+			(void) rpma_peer_cfg_delete(&pcfg);
+			goto err_free;
+		}
+	}
+#endif /* USE_LIBPMEM */
+
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
 	ret = server_peer_via_address(addr, &peer);
 	if (ret)
-		goto err_free;
+		goto err_pcfg_delete;
 
 	/* start a listening endpoint at addr:port */
 	ret = rpma_ep_listen(peer, addr, port, &ep);
@@ -150,6 +184,11 @@ main(int argc, char *argv[])
 	/* calculate data for the client write */
 	struct common_data data;
 	data.data_offset = data_offset;
+
+	/* get the peer's configuration descriptor */
+	ret = rpma_peer_cfg_get_descriptor(pcfg, &data.pcfg_desc);
+	if (ret)
+		goto err_mr_dereg;
 
 	/* get the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &data.desc);
@@ -188,6 +227,9 @@ err_ep_shutdown:
 err_peer_delete:
 	/* delete the peer object */
 	(void) rpma_peer_delete(&peer);
+
+err_pcfg_delete:
+	(void) rpma_peer_cfg_delete(&pcfg);
 
 err_free:
 #ifdef USE_LIBPMEM

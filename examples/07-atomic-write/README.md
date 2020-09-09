@@ -26,6 +26,9 @@ an atomic write of the new used value and flush it. The client has to wait
 for the last flush completion before appending another entry to the log.
 When the client is done it simply disconnects from the server.
 
+**Note**: For the sake of simplicity, the client assumes unilaterally that
+the server has the persistent flush support.
+
 **Note**: If server does not have a pmem path (or it is not
 capable to use pmem at all) it uses DRAM instead.
 
