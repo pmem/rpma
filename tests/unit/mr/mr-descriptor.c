@@ -144,7 +144,7 @@ remote_from_descriptor__buff_plt_invalid(void **unused)
 	int ret = rpma_mr_remote_from_descriptor(&desc_invalid, &mr);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_NOSUPP);
+	assert_int_equal(ret, RPMA_E_INVAL);
 	assert_null(mr);
 }
 
