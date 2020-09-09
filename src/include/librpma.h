@@ -118,14 +118,14 @@ enum rpma_on_off_type {
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+ *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
  * rpma_peer_cfg_new() can fail with the following error:
  *
  * - XXX
  */
-int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
 /** 3
  * rpma_peer_cfg_delete - delete the peer configuration object
@@ -134,14 +134,14 @@ int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+ *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
  * rpma_peer_cfg_delete() can fail with the following error:
  *
  * - XXX
  */
-int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
 /** 3
  * rpma_peer_cfg_set_ddio - declare the DDIO state
@@ -200,7 +200,7 @@ int rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
 		enum rpma_on_off_type *state);
 
 /* The number of bytes required to store a peer descriptor */
-#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
+#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 2
 
 typedef struct {
 	uint8_t data[RPMA_PEER_CFG_DESCRIPTOR_SIZE];
@@ -232,7 +232,7 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
  *	#include <librpma.h>
  *
  *	int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
- *			struct rpma_peer_cfg **pcfg);
+ *			struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
  * rpma_peer_cfg_from_descriptor() can fail with the following error:
@@ -240,7 +240,7 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
  * - XXX
  */
 int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
-		struct rpma_peer_cfg **pcfg);
+		struct rpma_peer_cfg **pcfg_ptr);
 
 /* peer */
 
