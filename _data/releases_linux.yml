@@ -4,6 +4,17 @@
 
   func:
     librpma:
+        rpma_conn_apply_remote_peer_cfg.3
+        rpma_conn_cfg_delete.3
+        rpma_conn_cfg_get_cq_size.3
+        rpma_conn_cfg_get_rq_size.3
+        rpma_conn_cfg_get_sq_size.3
+        rpma_conn_cfg_get_timeout.3
+        rpma_conn_cfg_new.3
+        rpma_conn_cfg_set_cq_size.3
+        rpma_conn_cfg_set_rq_size.3
+        rpma_conn_cfg_set_sq_size.3
+        rpma_conn_cfg_set_timeout.3
         rpma_conn_delete.3
         rpma_conn_disconnect.3
         rpma_conn_get_completion_fd.3
@@ -15,6 +26,7 @@
         rpma_conn_req_connect.3
         rpma_conn_req_delete.3
         rpma_conn_req_new.3
+        rpma_conn_req_recv.3
         rpma_ep_get_fd.3
         rpma_ep_listen.3
         rpma_ep_next_conn_req.3
@@ -23,22 +35,29 @@
         rpma_err_get_msg.3
         rpma_err_get_provider_error.3
         rpma_flush.3
+        rpma_log_get_threshold.3
+        rpma_log_set_function.3
+        rpma_log_set_threshold.3
         rpma_mr_dereg.3
         rpma_mr_get_descriptor.3
         rpma_mr_reg.3
         rpma_mr_remote_delete.3
         rpma_mr_remote_from_descriptor.3
         rpma_mr_remote_get_size.3
+        rpma_peer_cfg_delete.3
+        rpma_peer_cfg_from_descriptor.3
+        rpma_peer_cfg_get_descriptor.3
+        rpma_peer_cfg_get_persistent_flush_supported.3
+        rpma_peer_cfg_new.3
+        rpma_peer_cfg_set_auto_flush.3
+        rpma_peer_cfg_set_ddio.3
         rpma_peer_delete.3
         rpma_peer_new.3
         rpma_read.3
         rpma_recv.3
         rpma_send.3
         rpma_utils_conn_event_2str.3
-        rpma_utils_ibv_context_is_odp_capable.3
         rpma_utils_get_ibv_context.3
+        rpma_utils_ibv_context_is_odp_capable.3
         rpma_write.3
         rpma_write_atomic.3
-        rpma_log_set_function.3
-        rpma_log_set_threshold.3
-        rpma_log_get_threshold.3
