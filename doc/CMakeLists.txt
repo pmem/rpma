@@ -6,6 +6,11 @@
 find_program(TXT2MAN NAMES txt2man)
 find_program(GROFF NAMES groff)
 
+find_program(PANDOC NAMES pandoc)
+if(NOT PANDOC)
+	message(WARNING "pandoc not found - Markdown documentation will not be generated")
+endif()
+
 if(TXT2MAN AND GROFF)
 	# create man pages from sources
 	set(man3_list ${CMAKE_SOURCE_DIR}/doc/manuals_3.txt)
