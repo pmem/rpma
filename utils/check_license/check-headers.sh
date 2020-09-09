@@ -34,7 +34,13 @@ if [ "$1" == "-h" -o "$1" == "--help" ]; then
 	exit 0
 fi
 
-export GIT="git -C ${SOURCE_ROOT}"
+#
+# "git -C ${SOURCE_ROOT}" is not supported on CentOS-6 and CentOS-7,
+# so let's do it using the 'cd' command.
+# Leave 'export GIT="git"' for consistency with the PMDK's version.
+#
+cd ${SOURCE_ROOT}
+export GIT="git"
 $GIT rev-parse || exit 1
 
 if [ -f $SOURCE_ROOT/.git/shallow ]; then
