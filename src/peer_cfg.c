@@ -9,6 +9,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
+#include "librpma.h"
 #include "log_internal.h"
 #include "peer_cfg.h"
 #include "rpma_err.h"
@@ -16,6 +17,11 @@
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
 #endif
+
+struct rpma_peer_cfg {
+	enum rpma_on_off_type ddio;
+	enum rpma_on_off_type auto_flush;
+};
 
 /* internal librpma API */
 
@@ -25,7 +31,14 @@
 int
 rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg)
 {
-	return RPMA_E_NOSUPP;
+	struct rpma_peer_cfg *cfg = malloc(sizeof(*cfg));
+	if (cfg == NULL)
+		return RPMA_E_NOMEM;
+
+	cfg->ddio = RPMA_ON;
+	cfg->auto_flush = RPMA_OFF;
+	*pcfg = cfg;
+	return 0;
 }
 
 /*
@@ -34,7 +47,9 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg)
 int
 rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg)
 {
-	return RPMA_E_NOSUPP;
+	free(*pcfg);
+	*pcfg = NULL;
+	return 0;
 }
 
 /*
@@ -43,7 +58,8 @@ rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg)
 int
 rpma_peer_cfg_set_ddio(struct rpma_peer_cfg *pcfg, enum rpma_on_off_type state)
 {
-	return RPMA_E_NOSUPP;
+	pcfg->ddio = state;
+	return 0;
 }
 
 /*
@@ -53,7 +69,8 @@ int
 rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
 		enum rpma_on_off_type state)
 {
-	return RPMA_E_NOSUPP;
+	pcfg->auto_flush = state;
+	return 0;
 }
 
 /*
@@ -63,7 +80,12 @@ int
 rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
 		enum rpma_on_off_type *state)
 {
-	return RPMA_E_NOSUPP;
+	if (pcfg->ddio == RPMA_OFF || pcfg->auto_flush == RPMA_ON)
+		*state = RPMA_ON;
+	else
+		*state = RPMA_OFF;
+
+	return 0;
 }
 
 /*
