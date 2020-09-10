@@ -87,7 +87,8 @@ main(int argc, char *argv[])
 	/* pick a name */
 	srand(seed % UINT_MAX);
 	const char *name = Names[(long unsigned int)rand() % NAMES_NUM];
-	(void) strncpy((char *)mr_ptr, name, MAX_NAME_SIZE);
+	(void) strncpy((char *)mr_ptr, name, (MAX_NAME_SIZE - 1));
+	((char *)mr_ptr)[MAX_NAME_SIZE - 1] = '\0';
 	printf("My names is: %s\n", (char *)mr_ptr);
 
 	/* register the memory */
