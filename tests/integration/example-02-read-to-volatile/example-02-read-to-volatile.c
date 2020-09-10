@@ -32,6 +32,32 @@ static struct ibv_qp Ibv_qp;		/* mock IBV QP */
 int client_main(int argc, char *argv[]);
 int server_main(int argc, char *argv[]);
 
+/*
+ * create_descriptor -- create a descriptor from the private data
+ */
+static int
+create_descriptor(struct private_data_buffer *priv_data,
+			rpma_mr_descriptor *desc)
+{
+	char *buff = (char *)desc;
+
+	uint64_t addr = htole64(priv_data->raddr);
+	memcpy(buff, &addr, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint64_t length = htole64(priv_data->size);
+	memcpy(buff, &length, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint32_t rkey = htole32(priv_data->rkey);
+	memcpy(buff, &rkey, sizeof(uint32_t));
+	buff += sizeof(uint32_t);
+
+	*((uint8_t *)buff) = (uint8_t)priv_data->plt;
+
+	return 0;
+}
+
 /* tests */
 
 /*
@@ -133,10 +159,13 @@ test_client__success(void **unused)
 	buff.rkey = MOCK_RKEY;
 	buff.plt = RPMA_MR_PLT_VOLATILE;
 
+	rpma_mr_descriptor desc;
+	create_descriptor(&buff, &desc);
+
 	struct rdma_cm_event f_event = {0};
 	f_event.event = RDMA_CM_EVENT_ESTABLISHED;
-	f_event.param.conn.private_data = &buff;
-	f_event.param.conn.private_data_len = sizeof(buff);
+	f_event.param.conn.private_data = &desc;
+	f_event.param.conn.private_data_len = sizeof(desc);
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	will_return(rdma_get_cm_event, &f_event);
