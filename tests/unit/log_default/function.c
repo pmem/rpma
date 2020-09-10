@@ -50,7 +50,7 @@
  * the log_default.c module. There is no another way of validating their
  * contents other than your cautiousness during editing these.
  */
-static const char *const rpma_log_level_names[] = {
+static char const rpma_log_level_names[6][8] = {
 	[RPMA_LOG_LEVEL_FATAL]	=  "*FATAL*",
 	[RPMA_LOG_LEVEL_ERROR]	=  "*ERROR*",
 	[RPMA_LOG_LEVEL_WARNING] = "*WARN* ",
