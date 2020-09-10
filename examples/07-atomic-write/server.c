@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 	data.data_offset = offsetof(struct log, used);
 
 	/* get the memory region's descriptor */
-	if ((ret = rpma_mr_get_descriptor(mr, &data.desc)))
+	if ((ret = rpma_mr_get_descriptor(mr, &data.mr_desc)))
 		goto err_mr_dereg;
 
 	/*

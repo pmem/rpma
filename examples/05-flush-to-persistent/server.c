@@ -152,7 +152,7 @@ main(int argc, char *argv[])
 	data.data_offset = data_offset;
 
 	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &data.desc);
+	ret = rpma_mr_get_descriptor(mr, &data.mr_desc);
 	if (ret)
 		goto err_mr_dereg;
 
