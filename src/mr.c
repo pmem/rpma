@@ -351,8 +351,12 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	buff += sizeof(uint32_t);
 	uint8_t plt = *(uint8_t *)buff;
 
-	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT)
-		return RPMA_E_NOSUPP;
+	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT) {
+		RPMA_LOG_ERROR(
+			"incorrect value of the memory placement read from the descriptor: %i",
+			plt);
+		return RPMA_E_INVAL;
+	}
 
 	struct rpma_mr_remote *mr = malloc(sizeof(struct rpma_mr_remote));
 	if (mr == NULL)
