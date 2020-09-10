@@ -319,12 +319,18 @@ rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc)
 
 	char *buff = (char *)desc;
 
-	*((uint64_t *)buff) = htole64((uint64_t)mr->ibv_mr->addr);
+	uint64_t addr = htole64((uint64_t)mr->ibv_mr->addr);
+	memcpy(buff, &addr, sizeof(uint64_t));
 	buff += sizeof(uint64_t);
-	*((uint64_t *)buff) = htole64((uint64_t)mr->ibv_mr->length);
+
+	uint64_t length = htole64((uint64_t)mr->ibv_mr->length);
+	memcpy(buff, &length, sizeof(uint64_t));
 	buff += sizeof(uint64_t);
-	*((uint32_t *)buff) = htole32(mr->ibv_mr->rkey);
+
+	uint32_t rkey = htole32(mr->ibv_mr->rkey);
+	memcpy(buff, &rkey, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
+
 	*((uint8_t *)buff) = (uint8_t)mr->plt;
 
 	return 0;
@@ -343,12 +349,19 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 
 	char *buff = (char *)desc;
 
-	uint64_t raddr =  le64toh(*(uint64_t *)buff);
+	uint64_t raddr;
+	uint64_t size;
+	uint32_t rkey;
+
+	memcpy(&raddr, buff, sizeof(uint64_t));
 	buff += sizeof(uint64_t);
-	uint64_t size = le64toh(*(uint64_t *)buff);
+
+	memcpy(&size, buff, sizeof(uint64_t));
 	buff += sizeof(uint64_t);
-	uint32_t rkey = le32toh(*(uint32_t *)buff);
+
+	memcpy(&rkey, buff, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
+
 	uint8_t plt = *(uint8_t *)buff;
 
 	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT) {
@@ -362,9 +375,9 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	if (mr == NULL)
 		return RPMA_E_NOMEM;
 
-	mr->raddr = raddr;
-	mr->size = size;
-	mr->rkey = rkey;
+	mr->raddr = le64toh(raddr);
+	mr->size = le64toh(size);
+	mr->rkey = le32toh(rkey);
 	mr->plt = plt;
 	*mr_ptr = mr;
 
