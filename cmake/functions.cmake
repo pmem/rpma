@@ -156,3 +156,23 @@ function(is_ODP_supported var)
 		ON_DEMAND_PAGING_SUPPORTED)
 	set(var ${ON_DEMAND_PAGING_SUPPORTED} PARENT_SCOPE)
 endfunction()
+
+function(check_signature_rdma_getaddrinfo var)
+	# check if librdmacm has correct signature of rdma_getaddrinfo()
+	set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
+	set(CMAKE_REQUIRED_FLAGS "-Werror=discarded-qualifiers;${CMAKE_REQUIRED_FLAGS}")
+
+	CHECK_C_SOURCE_COMPILES("
+		#include <rdma/rdma_cma.h>
+		int main() {
+			const char *node;
+			const char *service;
+			const struct rdma_addrinfo *hints;
+			struct rdma_addrinfo **res;
+			if (rdma_getaddrinfo(node, service, hints, res))
+				return -1;
+			return 0;
+		}"
+		SIGNATURE_OK_RDMA_GETADDRINFO)
+	set(var ${SIGNATURE_OK_RDMA_GETADDRINFO} PARENT_SCOPE)
+endfunction()
