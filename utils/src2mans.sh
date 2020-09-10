@@ -43,8 +43,12 @@ function check_manuals_list() {
 	fi
 }
 
+PANDOC=0
 if which pandoc > /dev/null; then
+	PANDOC=1
 	mkdir -p md
+else
+	echo "Warning: pandoc not found, Markdown documentation will not be generated" >&2
 fi
 
 ALL_MANUALS="$(mktemp)"
@@ -65,7 +69,7 @@ do
 		cat $ERRORS
 	fi
 
-	if [ -d md ]; then
+	if [ $PANDOC -eq 1 ]; then
 		for f in $(cat $MANUALS | xargs); do
 			# get rid of a FILE section (last two lines of the file)
 			mv $f $f.tmp
