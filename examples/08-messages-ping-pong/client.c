@@ -123,10 +123,7 @@ main(int argc, char *argv[])
 			} else if (cmpl.op_status != IBV_WC_SUCCESS) {
 
 				(void) fprintf(stderr,
-					"operation %d failed: %s\n",
-					cmpl.op,
-					ibv_wc_status_str(cmpl.op_status));
-
+					"Shutting down the client due to the unsuccessful completion of an operation.\n");
 				ret = -1;
 				break;
 			}
