@@ -88,7 +88,6 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DDEVELOPER_MODE=1
 
 make -j$(nproc)
-make -j$(nproc) doc
 ctest --output-on-failure
 sudo_password -S make -j$(nproc) install
 
@@ -140,7 +139,6 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DDEVELOPER_MODE=1
 
 make -j$(nproc)
-make -j$(nproc) doc
 ctest --output-on-failure
 # Do not install the library from sources here,
 # because it will be installed from the packages below.
