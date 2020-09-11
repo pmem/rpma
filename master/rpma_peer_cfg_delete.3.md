@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+          int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
 DESCRIPTION
 ===========
@@ -29,4 +29,4 @@ ERRORS
 
 **rpma\_peer\_cfg\_delete**() can fail with the following error:
 
--   XXX
+-   RPMA\_E\_INVAL - *pcfg\_ptr* is NULL

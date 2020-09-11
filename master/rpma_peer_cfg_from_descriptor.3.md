@@ -21,7 +21,7 @@ SYNOPSIS
           #include <librpma.h>
 
           int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
-                          struct rpma_peer_cfg **pcfg);
+                          struct rpma_peer_cfg **pcfg_ptr);
 
 DESCRIPTION
 ===========
@@ -30,6 +30,8 @@ ERRORS
 ======
 
 **rpma\_peer\_cfg\_from\_descriptor**() can fail with the following
-error:
+errors:
 
--   XXX
+-   RPMA\_E\_INVAL - *desc* or *pcfg\_ptr* are NULL
+
+-   RPMA\_E\_NOMEM - out of memory

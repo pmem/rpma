@@ -32,4 +32,4 @@ ERRORS
 **rpma\_peer\_cfg\_get\_descriptor**() can fail with the following
 error:
 
--   XXX
+-   RPMA\_E\_INVAL - *pcfg* or *desc* are NULL
