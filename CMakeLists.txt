@@ -107,6 +107,7 @@ if(NOT LIBRDMACM_FOUND)
 endif()
 
 pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
+pkg_check_modules(LIBPROTOBUF QUIET libprotobuf-c)
 
 # check if libibverbs has ODP support
 is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
