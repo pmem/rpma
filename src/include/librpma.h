@@ -13,6 +13,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include <infiniband/verbs.h>
 
@@ -118,14 +119,15 @@ enum rpma_on_off_type {
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+ *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
- * rpma_peer_cfg_new() can fail with the following error:
+ * rpma_peer_cfg_new() can fail with the following errors:
  *
- * - XXX
+ * - RPMA_E_INVAL - pcfg_ptr is NULL
+ * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
 /** 3
  * rpma_peer_cfg_delete - delete the peer configuration object
@@ -134,70 +136,50 @@ int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+ *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
  * rpma_peer_cfg_delete() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - pcfg_ptr is NULL
  */
-int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg);
+int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
 /** 3
- * rpma_peer_cfg_set_ddio - declare the DDIO state
+ * rpma_peer_cfg_set_direct_write_to_pmem - declare direct write to PMEM support
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_set_ddio(struct rpma_peer_cfg *pcfg,
- *			enum rpma_on_off_type state);
+ *	int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+ *			bool supported);
  *
  * ERRORS
- * rpma_peer_cfg_set_ddio() can fail with the following error:
+ * rpma_peer_cfg_set_direct_write_to_pmem() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - pcfg is NULL
  */
-int rpma_peer_cfg_set_ddio(struct rpma_peer_cfg *pcfg,
-		enum rpma_on_off_type state);
+int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+		bool supported);
 
 /** 3
- * rpma_peer_cfg_set_auto_flush - declare the auto flush state
+ * rpma_peer_cfg_get_direct_write_to_pmem - check direct write to PMEM support
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
- *			enum rpma_on_off_type state);
+ *	int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+ *			bool *supported);
  *
  * ERRORS
- * rpma_peer_cfg_set_auto_flush() can fail with the following error:
+ * rpma_peer_cfg_get_direct_write_to_pmem() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - pcfg or supported are NULL
  */
-int rpma_peer_cfg_set_auto_flush(struct rpma_peer_cfg *pcfg,
-		enum rpma_on_off_type state);
-
-/** 3
- * rpma_peer_cfg_get_persistent_flush_supported - XXX
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	int rpma_peer_cfg_get_persistent_flush_supported(
- *			struct rpma_peer_cfg *pcfg,
- *			enum rpma_on_off_type *state);
- *
- * ERRORS
- * rpma_peer_cfg_get_persistent_flush_supported() can fail
- * with the following error:
- *
- * - XXX
- */
-int rpma_peer_cfg_get_persistent_flush_supported(struct rpma_peer_cfg *pcfg,
-		enum rpma_on_off_type *state);
+int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+		bool *supported);
 
 /* The number of bytes required to store a peer descriptor */
 #define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
@@ -219,7 +201,7 @@ typedef struct {
  * ERRORS
  * rpma_peer_cfg_get_descriptor() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - pcfg or desc are NULL
  */
 int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
 		rpma_peer_cfg_descriptor *desc);
@@ -232,15 +214,16 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
  *	#include <librpma.h>
  *
  *	int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
- *			struct rpma_peer_cfg **pcfg);
+ *			struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
- * rpma_peer_cfg_from_descriptor() can fail with the following error:
+ * rpma_peer_cfg_from_descriptor() can fail with the following errors:
  *
- * - XXX
+ * - RPMA_E_INVAL - desc or pcfg_ptr are NULL
+ * - RPMA_E_NOMEM - out of memory
  */
 int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
-		struct rpma_peer_cfg **pcfg);
+		struct rpma_peer_cfg **pcfg_ptr);
 
 /* peer */
 
