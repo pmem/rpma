@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg);
+          int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
 DESCRIPTION
 ===========
@@ -27,6 +27,8 @@ DESCRIPTION
 ERRORS
 ======
 
-**rpma\_peer\_cfg\_new**() can fail with the following error:
+**rpma\_peer\_cfg\_new**() can fail with the following errors:
 
--   XXX
+-   RPMA\_E\_INVAL - *pcfg\_ptr* is NULL
+
+-   RPMA\_E\_NOMEM - out of memory
