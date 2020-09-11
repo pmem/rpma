@@ -29,7 +29,8 @@ ENV BASE_DEPS "\
 	which"
 
 ENV EXAMPLES_DEPS "\
-	libpmem-devel"
+	libpmem-devel \
+	protobuf-c-devel"
 
 # RPMA deps
 ENV RPMA_DEPS "\
