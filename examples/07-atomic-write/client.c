@@ -54,6 +54,7 @@ main(int argc, char *argv[])
 		return -1;
 
 	/* RPMA resources */
+	struct rpma_peer_cfg *pcfg = NULL;
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
 
@@ -65,6 +66,17 @@ main(int argc, char *argv[])
 
 	/* establish a new connection to a server listening at addr:port */
 	if ((ret = client_connect(peer, addr, port, NULL, &conn)))
+		goto err_peer_delete;
+
+	/*
+	 * Create a remote peer's configuration structure, enable persistent
+	 * flush support, and apply it to the current connection. (unilaterally)
+	 */
+	if ((ret = rpma_peer_cfg_new(&pcfg)))
+		goto err_conn_disconnect;
+	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true)))
+		goto err_peer_cfg_delete;
+	if ((ret = rpma_conn_apply_remote_peer_cfg(conn, pcfg)))
 		goto err_peer_delete;
 
 	/* register the memory for the remote log manipulation */
@@ -168,6 +180,9 @@ err_mr_remote_delete:
 err_mr_dereg:
 	/* deregister the memory region */
 	(void) rpma_mr_dereg(&local_mr);
+
+err_peer_cfg_delete:
+	(void) rpma_peer_cfg_delete(&pcfg);
 
 err_conn_disconnect:
 	(void) common_disconnect_and_wait_for_conn_close(&conn);
