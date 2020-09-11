@@ -72,6 +72,8 @@ for file in $files; do echo $file; done
 images_dir_name=images
 base_dir=utils/docker/$images_dir_name
 
+files=utils/docker/images/build-image.sh
+
 # Check if committed file modifications require the Docker image to be rebuilt
 for file in $files; do
 	# Check if modified files are relevant to the current build
