@@ -14,6 +14,20 @@ if(NOT ("${CPACK_GENERATOR}" STREQUAL "DEB" OR
 	message(FATAL_ERROR "Wrong CPACK_GENERATOR value, valid generators are: DEB, RPM")
 endif()
 
+if("${CPACK_GENERATOR}" STREQUAL "RPM")
+	find_program(RPMBUILD NAMES rpmbuild)
+	if(NOT RPMBUILD)
+		message(FATAL_ERROR "rpmbuild not found - RPM packages will not be generated")
+	endif()
+endif()
+
+if("${CPACK_GENERATOR}" STREQUAL "DEB")
+	find_program(DEBBUILD NAMES dpkg-buildpackage)
+	if(NOT DEBBUILD)
+		message(FATAL_ERROR "dpkg-buildpackage not found - DEB packages will not be generated")
+	endif()
+endif()
+
 set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set(CMAKE_INSTALL_TMPDIR /tmp CACHE PATH "Output dir for tmp")
 set(CPACK_COMPONENTS_ALL_IN_ONE)
