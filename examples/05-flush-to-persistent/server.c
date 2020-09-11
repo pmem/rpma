@@ -21,7 +21,9 @@
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
+#ifdef USE_LIBPMEM
 #define ON_STR "on"
+#endif /* USE_LIBPMEM */
 
 #include "common-conn.h"
 
