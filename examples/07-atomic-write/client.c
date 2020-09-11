@@ -77,13 +77,13 @@ main(int argc, char *argv[])
 	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true)))
 		goto err_peer_cfg_delete;
 	if ((ret = rpma_conn_apply_remote_peer_cfg(conn, pcfg)))
-		goto err_peer_delete;
+		goto err_peer_cfg_delete;
 
 	/* register the memory for the remote log manipulation */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST,
 			mr_plt, &local_mr)))
-		goto err_conn_disconnect;
+		goto err_peer_cfg_delete;
 
 	/* obtain the remote memory description */
 	struct rpma_conn_private_data pdata;
