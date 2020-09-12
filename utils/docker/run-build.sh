@@ -181,7 +181,7 @@ if [ $PACKAGE_MANAGER = "deb" ]; then
 	dpkg-deb -c ./librpma*.deb
 
 	echo "$ sudo -S dpkg -i ./librpma*.deb"
-	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb || /bin/bash -i
+	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb
 
 elif [ $PACKAGE_MANAGER = "rpm" ]; then
 	echo "$ rpm -q --info ./librpma*.rpm"
