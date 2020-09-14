@@ -28,6 +28,8 @@ struct rpma_conn {
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
 	struct rpma_flush *flush; /* flushing object */
+
+	bool direct_write_to_pmem; /* direct write to pmem is supported */
 };
 
 /* internal librpma API */
@@ -366,6 +368,11 @@ rpma_flush(struct rpma_conn *conn,
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
 
+	if (type == RPMA_FLUSH_TYPE_PERSISTENT && !conn->direct_write_to_pmem) {
+		RPMA_LOG_ERROR("direct write to pmem is NOT supported");
+		return RPMA_E_NOSUPP;
+	}
+
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
 			len, type, flags, op_context);
@@ -522,5 +529,9 @@ int
 rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		struct rpma_peer_cfg *pcfg)
 {
-	return RPMA_E_NOSUPP;
+	if (conn == NULL || pcfg == NULL)
+		return RPMA_E_INVAL;
+
+	return rpma_peer_cfg_get_direct_write_to_pmem(pcfg,
+			&conn->direct_write_to_pmem);
 }
