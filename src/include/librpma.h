@@ -728,7 +728,7 @@ int rpma_conn_get_private_data(struct rpma_conn *conn,
  * ERRORS
  * rpma_conn_apply_remote_peer_cfg() can fail with the following error:
  *
- * - XXX
+ * - RPMA_E_INVAL - conn or pcfg are NULL
  */
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		struct rpma_peer_cfg *pcfg);
@@ -1111,6 +1111,8 @@ enum rpma_flush_type {
  * - RPMA_E_INVAL - unknown type value
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ * - RPMA_E_NOSUPP - type is RPMA_FLUSH_TYPE_PERSISTENT and
+ *                   the direct write to pmem is not supported
  */
 int rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
