@@ -27,6 +27,16 @@ if [ "$TEST_DIR" == "" ]; then
 	exit 1
 fi
 
+if [ "$PACKAGE_MANAGER" = "" ]; then
+	echo "Error: PACKAGE_MANAGER is not set"
+	exit 1
+elif [ "$PACKAGE_MANAGER" != "rpm" -a "$PACKAGE_MANAGER" != "deb" ]; then
+	# unsupported package manager
+	echo "Warning: unsupported PACKAGE_MANAGER: $PACKAGE_MANAGER"
+	echo "Warning: the librpma library will be installed from sources"
+	PACKAGE_MANAGER=""
+fi
+
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
 }
@@ -191,16 +201,21 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 
 make -j$(nproc)
 ctest --output-on-failure
-# Do not install the library from sources here,
-# because it will be installed from the packages below.
 
-echo "##############################################################"
-echo "### Making and testing packages (RELEASE version) ..."
-echo "##############################################################"
+if [ "$PACKAGE_MANAGER" = "" ]; then
+	# unsupported package manager
+	sudo_password -S make -j$(nproc) install
+else
+	# Do not install the library from sources here,
+	# because it will be installed from the packages below.
 
-make -j$(nproc) package
+	echo "##############################################################"
+	echo "### Making and testing packages (RELEASE version) ..."
+	echo "##############################################################"
 
-find . -iname "librpma*.$PACKAGE_MANAGER"
+	make -j$(nproc) package
+	find . -iname "librpma*.$PACKAGE_MANAGER"
+fi
 
 if [ $PACKAGE_MANAGER = "deb" ]; then
 	echo "$ dpkg-deb --info ./librpma*.deb"
@@ -224,6 +239,12 @@ elif [ $PACKAGE_MANAGER = "rpm" ]; then
 fi
 
 test_compile_all_examples_standalone
+
+if [ "$PACKAGE_MANAGER" = "" ]; then
+	# uninstall the library if it was installed from sources
+	cd $WORKDIR/build
+	sudo_password -S make uninstall
+fi
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
