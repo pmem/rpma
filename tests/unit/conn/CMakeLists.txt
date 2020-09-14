@@ -30,6 +30,7 @@ function(add_test_conn name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_conn(apply_remote_peer_cfg)
 add_test_conn(disconnect)
 add_test_conn(flush)
 add_test_conn(get_completion_fd)
