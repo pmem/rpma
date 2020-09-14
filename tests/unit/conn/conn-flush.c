@@ -74,6 +74,31 @@ flush__conn_dst_NULL_flags_0(void **unused)
 }
 
 /*
+ * flush__RPMA_E_NOSUPP - flush fails with RPMA_E_NOSUPP
+ */
+static void
+flush__RPMA_E_NOSUPP(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/*
+	 * Direct write to pmem is not supported by default
+	 * just after rpma_conn_new(), so calling
+	 * rpma_flush(RPMA_FLUSH_TYPE_PERSISTENT)
+	 * has to end with RPMA_E_NOSUPP.
+	 */
+
+	/* run test */
+	int ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_LEN,
+			RPMA_FLUSH_TYPE_PERSISTENT,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOSUPP);
+}
+
+/*
  * flush__success - happy day scenario
  */
 static void
@@ -106,9 +131,10 @@ static const struct CMUnitTest tests_flush[] = {
 	cmocka_unit_test(flush__dst_NULL),
 	cmocka_unit_test(flush__flags_0),
 	cmocka_unit_test(flush__conn_dst_NULL_flags_0),
+	cmocka_unit_test_setup_teardown(flush__RPMA_E_NOSUPP,
+		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(flush__success,
 		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
 };
 
 int
