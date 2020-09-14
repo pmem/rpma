@@ -157,22 +157,53 @@ function(is_ODP_supported var)
 	set(var ${ON_DEMAND_PAGING_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
+# check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
-	# check if librdmacm has correct signature of rdma_getaddrinfo()
-	set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
-	set(CMAKE_REQUIRED_FLAGS "-Werror=discarded-qualifiers;${CMAKE_REQUIRED_FLAGS}")
+	if(${CMAKE_C_COMPILER} MATCHES "gcc")
+		# check if the GCC compiler supports the '-Werror=discarded-qualifiers' flag
+		CHECK_C_COMPILER_FLAG("-Werror=discarded-qualifiers" C_HAS_Werror_discarded_qualifiers)
+		if(C_HAS_Werror_discarded_qualifiers)
+			set(RUN_CHECK_C_SOURCE_COMPILES 1)
+		endif()
+	else()
+		# the clang compiler ignores the '-Werror=discarded-qualifiers' flag
+		set(RUN_CHECK_C_SOURCE_COMPILES 1)
+	endif()
 
-	CHECK_C_SOURCE_COMPILES("
-		#include <rdma/rdma_cma.h>
-		int main() {
-			const char *node;
-			const char *service;
-			const struct rdma_addrinfo *hints;
-			struct rdma_addrinfo **res;
-			if (rdma_getaddrinfo(node, service, hints, res))
-				return -1;
-			return 0;
-		}"
-		SIGNATURE_OK_RDMA_GETADDRINFO)
-	set(var ${SIGNATURE_OK_RDMA_GETADDRINFO} PARENT_SCOPE)
+	if(RUN_CHECK_C_SOURCE_COMPILES)
+		set(CMAKE_REQUIRED_FLAGS "-Werror=discarded-qualifiers;${CMAKE_REQUIRED_FLAGS}")
+		set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
+
+		CHECK_C_SOURCE_COMPILES("
+			#include <rdma/rdma_cma.h>
+			int main() {
+				const char *node;
+				const char *service;
+				const struct rdma_addrinfo *hints;
+				struct rdma_addrinfo **res;
+				if (rdma_getaddrinfo(node, service, hints, res))
+					return -1;
+				return 0;
+			}"
+			SIGNATURE_OK_RDMA_GETADDRINFO)
+		set(var ${SIGNATURE_OK_RDMA_GETADDRINFO} PARENT_SCOPE)
+		return()
+	endif()
+
+	#
+	# We are running an old version of the GCC compiler
+	# that does not support the '-Werror=discarded-qualifiers' flag.
+	#
+	message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO")
+	find_file(RDMA_CMA_H rdma_cma.h PATHS /usr/include/rdma /usr/include)
+	if(NOT RDMA_CMA_H)
+		message(FATAL_ERROR "Cannot find the 'rdma_cma.h' header file!")
+	endif()
+	file(STRINGS ${RDMA_CMA_H} CORRECT_SIGNATURE_FOUND REGEX "int rdma_getaddrinfo[(]const char")
+	if(CORRECT_SIGNATURE_FOUND)
+		message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO - Success")
+		set(SIGNATURE_OK_RDMA_GETADDRINFO 1 PARENT_SCOPE)
+	else()
+		message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO - Failed")
+	endif()
 endfunction()
