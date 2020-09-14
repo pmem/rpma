@@ -10,9 +10,24 @@ In order to build librpma, you need to have installed several components:
 - [CMake](http://www.cmake.org) >= 3.3
 - libibverbs-dev(el)
 - librdmacm-dev(el)
-- groff
 - libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-cmocka.sh to install the verified revision)
+
+### In order to build the documentation you also need:
+
+- diff
+- find
+- groff
 - txt2man == 1.7.0 (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-txt2man.sh to install the verified revision)
+
+and optionally:
+
+- pandoc
+
+to generate the Markdown documentation.
+
+**Note**: building documentation can be turned off using the CMake 'BUILD_DOC' option
+(see [CMake standard options](INSTALL.md#cmake-standard-options) and
+[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
 
 ### For some examples you also need:
 
