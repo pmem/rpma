@@ -5,13 +5,15 @@
 
 find_program(SRC2MAN NAMES src2man)
 find_program(GROFF NAMES groff)
+find_program(FIND NAMES find)
+find_program(DIFF NAMES diff)
 
 find_program(PANDOC NAMES pandoc)
 if(NOT PANDOC)
 	message(WARNING "pandoc not found - Markdown documentation will not be generated")
 endif()
 
-if(SRC2MAN AND GROFF)
+if(SRC2MAN AND GROFF AND FIND AND DIFF)
 	# create man pages from sources
 	set(man3_list ${CMAKE_SOURCE_DIR}/doc/manuals_3.txt)
 	set(man7_list ${CMAKE_SOURCE_DIR}/doc/manuals_7.txt)
@@ -53,5 +55,11 @@ else()
 	endif()
 	if(NOT GROFF)
 		message(WARNING "groff not found - man pages will not be generated")
+	endif()
+	if(NOT FIND)
+		message(WARNING "find not found - man pages will not be generated")
+	endif()
+	if(NOT DIFF)
+		message(WARNING "diff not found - man pages will not be generated")
 	endif()
 endif()
