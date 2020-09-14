@@ -5,6 +5,7 @@
 # check-headers.sh - check copyright and license in source files
 
 SELF=$0
+DIR=$(pwd)/$(dirname $SELF)
 
 function usage() {
 	echo "Usage: $SELF <source_root_path> <license_tag> [-h|-v|-a]"
@@ -187,7 +188,7 @@ s/.*Copyright \([0-9]\+\),.*/\1-\1/' $src_path`
 done
 rm -f $TMP $TMP2 $TEMPFILE
 
-$(dirname $SELF)/check-ms-license.pl $FILES
+$DIR/check-ms-license.pl $FILES
 
 # check if error found
 if [ $RV -eq 0 ]; then
