@@ -181,13 +181,6 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool *supported);
 
-/* The number of bytes required to store a peer descriptor */
-#define RPMA_PEER_CFG_DESCRIPTOR_SIZE 1
-
-typedef struct {
-	uint8_t data[RPMA_PEER_CFG_DESCRIPTOR_SIZE];
-} rpma_peer_cfg_descriptor;
-
 /** 3
  * rpma_peer_cfg_get_descriptor - get a descriptor of a peer configuration
  *
@@ -203,8 +196,25 @@ typedef struct {
  *
  * - RPMA_E_INVAL - pcfg or desc are NULL
  */
-int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
-		rpma_peer_cfg_descriptor *desc);
+int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc);
+
+/** 3
+ * rpma_peer_cfg_get_descriptor_size -- get size of the peer configuration
+ * descriptor
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_peer_cfg_get_descriptor_size(size_t *desc_size);
+ *
+ * ERRORS
+ * rpma_peer_cfg_get_descriptor() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - desc_size is NULL
+ */
+int
+rpma_peer_cfg_get_descriptor_size(size_t *desc_size);
 
 /** 3
  * rpma_peer_cfg_from_descriptor - create a peer configuration from a descriptor
@@ -213,7 +223,7 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
- *	int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
+ *	int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
  *			struct rpma_peer_cfg **pcfg_ptr);
  *
  * ERRORS
@@ -222,7 +232,7 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
  * - RPMA_E_INVAL - desc or pcfg_ptr are NULL
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_cfg_from_descriptor(rpma_peer_cfg_descriptor *desc,
+int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
 
 /* peer */
