@@ -54,7 +54,7 @@ option(USE_ASAN "enable AddressSanitizer (debugging)" OFF)
 option(USE_UBSAN "enable UndefinedBehaviorSanitizer (debugging)" OFF)
 
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
-option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" ON)
+option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
 option(TESTS_LONG "enable long running tests" OFF)
 option(TESTS_USE_FAULT_INJECTION "run tests with fault injection" OFF)
 
