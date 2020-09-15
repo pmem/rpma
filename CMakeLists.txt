@@ -42,7 +42,7 @@ include(CheckCCompilerFlag)
 include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
-option(BUILD_EXAMPLES "build examples" ON)
+option(BUILD_EXAMPLES "build examples" OFF)
 option(BUILD_TESTS "build tests" ON)
 option(BUILD_DOC "build documentation" ON)
 
