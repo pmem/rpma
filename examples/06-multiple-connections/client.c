@@ -98,9 +98,16 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 
 	struct rpma_conn_private_data pdata;
-	rpma_mr_descriptor desc;
+	void *desc;
 	pdata.ptr = &desc;
-	pdata.len = sizeof(rpma_mr_descriptor);
+	size_t desc_size;
+
+	/* get descriptor size */
+	ret = rpma_mr_get_descriptor_size(mr, &desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
+	pdata.len = desc_size;
 
 	/* receive the memory region's descriptor */
 	ret = rpma_mr_get_descriptor(mr, &desc);

@@ -157,9 +157,15 @@ main(int argc, char *argv[])
 		goto err_disconnect;
 
 	struct common_data *src_data = pdata.ptr;
-	ret = rpma_mr_remote_from_descriptor(&src_data->mr_desc, &src_mr);
-	if (ret)
+
+	src_data->mr_desc = malloc(src_data->desc_size);
+	if (src_data->mr_desc == NULL)
 		goto err_disconnect;
+
+	ret = rpma_mr_remote_from_descriptor(&src_data->mr_desc,
+			src_data->desc_size, &src_mr);
+	if (ret)
+		goto err_free_mr_desc;
 
 	/* if the string content is not empty */
 	if (((char *)dst_ptr + dst_offset)[0] != '\0') {
@@ -203,6 +209,9 @@ main(int argc, char *argv[])
 
 err_mr_remote_delete:
 	(void) rpma_mr_remote_delete(&src_mr);
+
+err_free_mr_desc:
+	free(src_data->mr_desc);
 
 err_disconnect:
 	/*

@@ -97,9 +97,15 @@ main(int argc, char *argv[])
 	 */
 	struct common_data *dst_data = pdata.ptr;
 	used_offset = dst_data->data_offset;
-	if ((ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc,
-			&remote_mr)))
+
+	dst_data->mr_desc = malloc(dst_data->desc_size);
+	if (dst_data->mr_desc == NULL)
 		goto err_mr_dereg;
+
+	if ((ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc,
+			dst_data->desc_size,
+			&remote_mr)))
+		goto err_free_mr_desc;
 
 	/* get the remote memory region size */
 	if ((ret = rpma_mr_remote_get_size(remote_mr, &remote_size)))
@@ -176,6 +182,9 @@ main(int argc, char *argv[])
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
 	(void) rpma_mr_remote_delete(&remote_mr);
+
+err_free_mr_desc:
+	free(dst_data->mr_desc);
 
 err_mr_dereg:
 	/* deregister the memory region */

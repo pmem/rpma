@@ -182,6 +182,11 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_peer_delete;
 
+	/* get size */
+	ret = rpma_mr_get_descriptor_size(mr, &data.desc_size);
+	if (ret)
+		goto err_peer_delete;
+
 	/* establish a new connection to a server listening at addr:port */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;

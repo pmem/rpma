@@ -184,6 +184,11 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_dereg;
 
+	/* get size */
+	ret = rpma_mr_get_descriptor_size(mr, &data.desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.

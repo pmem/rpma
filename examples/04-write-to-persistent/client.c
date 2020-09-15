@@ -214,14 +214,20 @@ main(int argc, char *argv[])
 	 */
 	struct common_data *dst_data = pdata.ptr;
 	dst_offset = dst_data->data_offset;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc, &dst_mr);
-	if (ret)
+
+	dst_data->mr_desc = malloc(dst_data->desc_size);
+	if (dst_data->mr_desc == NULL)
 		goto err_mr_dereg;
+
+	ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc,
+			dst_data->desc_size, &dst_mr);
+	if (ret)
+		goto err_free_mr_desc;
 
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
 	if (ret) {
-		goto err_mr_dereg;
+		goto err_free_mr_desc;
 	} else if (dst_size < KILOBYTE) {
 		fprintf(stderr,
 				"Remote memory region size too small for writing the data of the assumed size (%zu < %d)\n",
@@ -278,6 +284,9 @@ main(int argc, char *argv[])
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
 	(void) rpma_mr_remote_delete(&dst_mr);
+
+err_free_mr_desc:
+	free(&dst_data->mr_desc);
 
 err_mr_dereg:
 	/* deregister the memory region */

@@ -20,7 +20,8 @@
 
 struct common_data {
 	rpma_peer_cfg_descriptor pcfg_desc;
-	rpma_mr_descriptor mr_desc;
+	void *mr_desc;
+	size_t desc_size;
 	size_t data_offset;
 };
 
