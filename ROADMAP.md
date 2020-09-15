@@ -1,6 +1,6 @@
 # **librpma roadmap [09/04/2020]**
 
-This document presents the librpma library roadmap as it shaped on 09/04/2020. It lists high-level features that are going to be released with the library release 0.9 and features that are planed to be developed later.
+This document presents the librpma library roadmap as it shaped on 09/04/2020. It lists high-level features that are going to be released with the library release 0.9 and features that are planned to be developed later.
 This roadmap is for informational purposes only, so you should not rely on this information for purchasing or planning decisions. Just like all projects, the items in the roadmap are subject to change or delay, and the continued development or release of a feature on the roadmap is at the sole discretion of the librpma development team.
 
 Status|Title|Description|Expected
@@ -27,9 +27,9 @@ Status|Title|Description|Expected
 :ballot_box_with_check:|Messaging|Be able to exchange simple messages based on RDMA Send/Receive mechanism.|09/04/2020
 :ballot_box_with_check:|Messaging example|An example that demonstrates how to use messaging API.|09/04/2020
 :black_square_button:|Peer configuration|Peer configuration support|09/18/2020
-:black_square_button:|Legacy OS support|Build system suport for legacy Linux distributions|09/18/2020
-:black_square_button:|GPSPM example|An example that demonstrate how to implement GPSPM Flushing method on the top of the librpma|09/18/2020
-:black_square_button:|Log prefix|Enable custom user define prefix in log messages|09/18/2020
+:black_square_button:|Legacy OS support|Build system support for legacy Linux distributions|09/18/2020
+:black_square_button:|GPSPM example|An example that demonstrates how to implement GPSPM Flushing method on the top of the librpma library|09/18/2020
+:black_square_button:|Log prefix|Enable custom, user-defined prefix in log messages|09/18/2020
 :black_square_button:|**librpma0.9 release**|**The first public stable librpma version.**|**10/02/2020**
 :black_square_button:|Immediate data|Be able to use immediate data for data exchange.|Q1'21
 :black_square_button:|Immediate data example| An example that demonstrates how to use immediate data with remote operations (e.g., write).|Q1'21
@@ -40,11 +40,11 @@ Status|Title|Description|Expected
 :black_square_button:|Performance tests|Extend tests setup/implementation to cover complex performance scenarios.|Q1'21
 :black_square_button:|librpma1.0 release|The librpma release 1.0.|Q1'21
 
-Fio engine support is now distinguish as a separate value build on the top of the librpma with own roadmap that will not affect the librpma release cycle.
+Fio engine support is distinguished now as a separate value built on the top of the librpma library with own roadmap that will not affect the librpma release cycle.
 Status|Title|Description|Expected
 ---|---|---|---
 :black_square_button:|Fio engine for writing|Introduce Fio engine example for librpma.|10/02/2020
-:black_square_button:|Fio engine for reading|Support for RPMem Read operation.|Q4'20
+:black_square_button:|Fio engine for reading|Support for RPMem read operation.|Q4'20
 :black_square_button:|Fio instruction|An instruction that demonstrates how to benchmark librpma using Fio|Q4'20
 :black_square_button:|Fio engine for pull replication method|Fio engine support for pull replication method|Q4'20
 :black_square_button:|Fio engine for GPSPM|Fio engine support for GPSPM flush.|Q4'20
