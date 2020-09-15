@@ -10,8 +10,8 @@
 #include "mr-common.h"
 #include "test-common.h"
 
-const rpma_mr_descriptor Desc_exp_pmem = DESC_EXP_PMEM;
-const rpma_mr_descriptor Desc_exp_dram = DESC_EXP_DRAM;
+const char Desc_exp_pmem[] = DESC_EXP_PMEM;
+const char Desc_exp_dram[] = DESC_EXP_DRAM;
 
 /* common setups & teardowns */
 
@@ -138,11 +138,18 @@ setup__mr_remote(void **mr_ptr)
 	/* configure mock */
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
+	/* get size */
+	size_t desc_size;
+	int ret = rpma_mr_get_descriptor_size(&desc_size);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+
 	/*
 	 * create a remote memory structure based on a pre-prepared descriptor
 	 */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, &mr);
+	ret = rpma_mr_remote_from_descriptor(Desc_exp_pmem, desc_size, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
