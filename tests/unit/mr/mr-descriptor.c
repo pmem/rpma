@@ -5,10 +5,10 @@
  * mr-descriptor.c -- the memory region serialization unit tests
  *
  * APIs covered:
+ * - rpma_mr_remote_get_size()
  * - rpma_mr_get_descriptor()
  * - rpma_mr_remote_from_descriptor()
  * - rpma_mr_remote_delete()
- * - rpma_mr_remote_get_size()
  */
 
 #include <stdlib.h>
@@ -18,7 +18,68 @@
 #include "mr-common.h"
 #include "test-common.h"
 
-#define MR_DESC_SIZE sizeof(rpma_mr_descriptor)
+/* rpma_mr_get_descriptor_size() unit test */
+
+/*
+ * get_descriptor_size__mr_NULL - NULL mr is invalid
+ */
+static void
+get_descriptor_size__mr_NULL(void **unused)
+{
+	size_t desc_size;
+
+	/* run test */
+	int ret = rpma_mr_get_descriptor_size(NULL, &desc_size);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_descriptor_size__desc_size_NULL - NULL desc_size is invalid
+ */
+static void
+get_descriptor_size__desc_size_NULL(void **mr_ptr)
+{
+	struct rpma_mr_local *mr = *mr_ptr;
+
+	/* run test */
+	int ret = rpma_mr_get_descriptor_size(mr, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_descriptor_size__mr_desc_size_NULL - NULL mr and NULL desc_size
+ * are invalid
+ */
+static void
+get_descriptor_size__mr_desc_size_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_mr_get_descriptor_size(NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_descriptor_size__success - happy day scenario
+ */
+static void
+get_descriptor_size__success(void **mr_ptr)
+{
+	struct rpma_mr_local *mr = *mr_ptr;
+	size_t desc_size;
+
+	/* run test */
+	int ret = rpma_mr_get_descriptor_size(mr, &desc_size);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_int_equal(desc_size, MR_DESC_SIZE);
+}
 
 /* rpma_mr_get_descriptor() unit test */
 
@@ -28,10 +89,8 @@
 static void
 get_descriptor__mr_NULL(void **unused)
 {
-	rpma_mr_descriptor desc = {{0}};
-
 	/* run test */
-	int ret = rpma_mr_get_descriptor(NULL, &desc);
+	int ret = rpma_mr_get_descriptor(NULL, MOCK_DESC);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -75,7 +134,7 @@ remote_from_descriptor__desc_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(NULL, &mr);
+	int ret = rpma_mr_remote_from_descriptor(NULL, MR_DESC_SIZE, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -89,7 +148,8 @@ static void
 remote_from_descriptor__mr_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, NULL);
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem,
+			MR_DESC_SIZE, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -103,7 +163,22 @@ static void
 remote_from_descriptor__mr_ptr_NULL_desc_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_mr_remote_from_descriptor(NULL, NULL);
+	int ret = rpma_mr_remote_from_descriptor(NULL, MR_DESC_SIZE, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * remote_from_descriptor__invalid_desc_size - invalid desc_size
+ */
+static void
+remote_from_descriptor__invalid_desc_size(void **unused)
+{
+	/* run test */
+	struct rpma_mr_remote *mr = NULL;
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem,
+			INVALID_MR_DESC_SIZE, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -120,7 +195,8 @@ remote_from_descriptor__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem, &mr);
+	int ret = rpma_mr_remote_from_descriptor(&Desc_exp_pmem,
+			MR_DESC_SIZE, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -133,15 +209,16 @@ remote_from_descriptor__malloc_ENOMEM(void **unused)
 static void
 remote_from_descriptor__buff_plt_invalid(void **unused)
 {
-	rpma_mr_descriptor desc_invalid = {{0}};
-	memset(&desc_invalid, 0xff, sizeof(rpma_mr_descriptor));
+	char desc_invalid[MR_DESC_SIZE];
+	memset(desc_invalid, 0xff, MR_DESC_SIZE);
 
 	/* configure mock */
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
-	int ret = rpma_mr_remote_from_descriptor(&desc_invalid, &mr);
+	int ret = rpma_mr_remote_from_descriptor(&desc_invalid,
+			MR_DESC_SIZE, &mr);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -255,7 +332,7 @@ get_descriptor__desc_alignment(void **pprestate)
 	char buff_base[MR_DESC_SIZE * 2];
 	char pattern[MR_DESC_SIZE * 2];
 	memset(pattern, 0xff, MR_DESC_SIZE * 2);
-	rpma_mr_descriptor *desc = NULL;
+	void *desc = NULL;
 	int ret = 0;
 
 	/*
@@ -266,7 +343,7 @@ get_descriptor__desc_alignment(void **pprestate)
 		memset(buff_base, 0xff, MR_DESC_SIZE * 2);
 
 		/* run test */
-		desc = (rpma_mr_descriptor *)(buff_base + i);
+		desc = buff_base + i;
 		ret = rpma_mr_get_descriptor(mr, desc);
 
 		/* verify the results */
@@ -293,7 +370,7 @@ remote_from_descriptor__desc_alignment(void **unused)
 	char pattern[MR_DESC_SIZE * 2];
 	memset(pattern, 0xff, MR_DESC_SIZE * 2);
 
-	rpma_mr_descriptor *desc = NULL;
+	void *desc = NULL;
 	struct rpma_mr_remote *mr = NULL;
 	size_t size = 0;
 	int ret = 0;
@@ -309,13 +386,13 @@ remote_from_descriptor__desc_alignment(void **unused)
 		memset(buff_base, 0xff, MR_DESC_SIZE * 2);
 
 		/* prepare a buffer contents */
-		desc = (rpma_mr_descriptor *)(buff_base + i);
-		const rpma_mr_descriptor *desc_src = (i % 2) ?
+		desc = buff_base + i;
+		const void *desc_src = (i % 2) ?
 				&Desc_exp_pmem : &Desc_exp_dram;
 		memcpy(desc, desc_src, MR_DESC_SIZE);
 
 		/* run test */
-		ret = rpma_mr_remote_from_descriptor(desc, &mr);
+		ret = rpma_mr_remote_from_descriptor(desc, MR_DESC_SIZE, &mr);
 
 		/* verify the results */
 		assert_int_equal(ret, MOCK_OK);
@@ -339,6 +416,20 @@ static struct prestate prestate =
 		{RPMA_MR_USAGE_READ_SRC, IBV_ACCESS_REMOTE_READ, NULL};
 
 static const struct CMUnitTest tests_descriptor[] = {
+	/* rpma_mr_get_descriptor_size() unit test */
+	cmocka_unit_test(get_descriptor_size__mr_NULL),
+	cmocka_unit_test_prestate_setup_teardown(
+		get_descriptor_size__desc_size_NULL,
+		setup__reg_success,
+		teardown__dereg_success,
+		&prestate),
+	cmocka_unit_test(get_descriptor_size__mr_desc_size_NULL),
+	cmocka_unit_test_prestate_setup_teardown(
+		get_descriptor_size__success,
+		setup__reg_success,
+		teardown__dereg_success,
+		&prestate),
+
 	/* rpma_mr_get_descriptor() unit test */
 	cmocka_unit_test(get_descriptor__mr_NULL),
 	cmocka_unit_test_prestate_setup_teardown(
@@ -353,6 +444,7 @@ static const struct CMUnitTest tests_descriptor[] = {
 	cmocka_unit_test(remote_from_descriptor__mr_ptr_NULL),
 	cmocka_unit_test(
 		remote_from_descriptor__mr_ptr_NULL_desc_NULL),
+	cmocka_unit_test(remote_from_descriptor__invalid_desc_size),
 	cmocka_unit_test(remote_from_descriptor__malloc_ENOMEM),
 	cmocka_unit_test(remote_from_descriptor__buff_plt_invalid),
 
