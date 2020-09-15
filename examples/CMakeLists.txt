@@ -77,34 +77,34 @@ add_example(NAME 01-connection BIN server
 	SRCS 01-connection/server.c)
 add_example(NAME 01-connection BIN client
 	SRCS 01-connection/client.c)
-add_example(NAME 02-read-to-volatile BIN server
-	SRCS 02-read-to-volatile/server.c common/common-conn.c)
-add_example(NAME 02-read-to-volatile BIN client
-	SRCS 02-read-to-volatile/client.c common/common-conn.c)
-add_example(NAME 03-read-to-persistent BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 03-read-to-persistent/server.c common/common-conn.c)
-add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 03-read-to-persistent/client.c common/common-conn.c)
-add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 04-write-to-persistent/server.c common/common-conn.c)
-add_example(NAME 04-write-to-persistent BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 04-write-to-persistent/client.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
-add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
-add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 06-multiple-connections/client.c common/common-conn.c)
-add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 07-atomic-write/server.c common/common-conn.c)
-add_example(NAME 07-atomic-write BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 07-atomic-write/client.c common/common-conn.c)
-add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
-add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
+#add_example(NAME 02-read-to-volatile BIN server
+#	SRCS 02-read-to-volatile/server.c common/common-conn.c)
+#add_example(NAME 02-read-to-volatile BIN client
+#	SRCS 02-read-to-volatile/client.c common/common-conn.c)
+#add_example(NAME 03-read-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+#	SRCS 03-read-to-persistent/server.c common/common-conn.c)
+#add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+#	SRCS 03-read-to-persistent/client.c common/common-conn.c)
+#add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+#	SRCS 04-write-to-persistent/server.c common/common-conn.c)
+#add_example(NAME 04-write-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+#	SRCS 04-write-to-persistent/client.c common/common-conn.c)
+#add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+#	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
+#add_example(NAME 05-flush-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+#	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
+#add_example(NAME 06-multiple-connections BIN server USE_LIBPMEM_IF_FOUND
+#	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
+#add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
+#	SRCS 06-multiple-connections/client.c common/common-conn.c)
+#add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
+#	SRCS 07-atomic-write/server.c common/common-conn.c)
+#add_example(NAME 07-atomic-write BIN client USE_LIBPMEM_IF_FOUND
+#	SRCS 07-atomic-write/client.c common/common-conn.c)
+#add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
+#	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
+#add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
+#	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
