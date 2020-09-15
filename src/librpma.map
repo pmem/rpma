@@ -44,6 +44,7 @@ LIBRPMA_1.0 {
 		rpma_log_set_threshold;
 		rpma_mr_dereg;
 		rpma_mr_get_descriptor;
+		rpma_mr_get_descriptor_size;
 		rpma_mr_reg;
 		rpma_mr_remote_delete;
 		rpma_mr_remote_from_descriptor;

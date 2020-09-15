@@ -19,6 +19,9 @@
 #include "cmocka_alloc.h"
 #endif
 
+#define RPMA_MR_DESC_SIZE (2 * sizeof(uint64_t) + sizeof(uint32_t) \
+			+ sizeof(uint8_t))
+
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
 		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
@@ -312,7 +315,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
  * rpma_mr_get_descriptor -- get a descriptor of memory region
  */
 int
-rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc)
+rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc)
 {
 	if (mr == NULL || desc == NULL)
 		return RPMA_E_INVAL;
@@ -341,8 +344,8 @@ rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc)
  * a descriptor
  */
 int
-rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
-		struct rpma_mr_remote **mr_ptr)
+rpma_mr_remote_from_descriptor(const void *desc,
+		size_t desc_size, struct rpma_mr_remote **mr_ptr)
 {
 	if (desc == NULL || mr_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -352,6 +355,15 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 	uint64_t raddr;
 	uint64_t size;
 	uint32_t rkey;
+
+	size_t full_size = RPMA_MR_DESC_SIZE;
+
+	if (desc_size < full_size) {
+		RPMA_LOG_ERROR(
+			"incorrect size of the descriptor: %i bytes (should be at least: %i bytes)",
+			desc_size, full_size);
+		return RPMA_E_INVAL;
+	}
 
 	memcpy(&raddr, buff, sizeof(uint64_t));
 	buff += sizeof(uint64_t);
@@ -386,6 +398,20 @@ rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
 			raddr, size, rkey,
 			((plt == RPMA_MR_PLT_VOLATILE) ?
 					"volatile" : "persistent"));
+
+	return 0;
+}
+
+/*
+ * rpma_mr_get_descriptor_size -- get size of a memory region descriptor
+ */
+int
+rpma_mr_get_descriptor_size(struct rpma_mr_local *mr, size_t *desc_size)
+{
+	if (mr == NULL || desc_size == NULL)
+		return RPMA_E_INVAL;
+
+	*desc_size = RPMA_MR_DESC_SIZE;
 
 	return 0;
 }
