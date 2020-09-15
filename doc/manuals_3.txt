@@ -34,6 +34,7 @@ rpma_log_set_function.3
 rpma_log_set_threshold.3
 rpma_mr_dereg.3
 rpma_mr_get_descriptor.3
+rpma_mr_get_descriptor_size.3
 rpma_mr_reg.3
 rpma_mr_remote_delete.3
 rpma_mr_remote_from_descriptor.3
