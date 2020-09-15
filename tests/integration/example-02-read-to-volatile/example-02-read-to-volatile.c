@@ -29,7 +29,7 @@ int server_main(int argc, char *argv[]);
  * create_descriptor -- create a descriptor from the given values
  */
 static int
-create_descriptor(rpma_mr_descriptor *desc,
+create_descriptor(void *desc,
 	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t plt)
 {
 	char *buff = (char *)desc;
@@ -146,16 +146,17 @@ test_client__success(void **unused)
 	will_return(rdma_connect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_next_event() */
-	rpma_mr_descriptor desc;
-	create_descriptor(&desc,
+	struct common_data data;
+	data.mr_desc_size = MAX_DESCRIPTORS_SPACE_SIZE;
+	create_descriptor(&data.descriptors[0],
 			(uintptr_t)MOCK_READ_ADDR,
 			MOCK_READ_LEN,
 			MOCK_RKEY,
 			RPMA_MR_PLT_VOLATILE);
 	struct rdma_cm_event f_event = {0};
 	f_event.event = RDMA_CM_EVENT_ESTABLISHED;
-	f_event.param.conn.private_data = &desc;
-	f_event.param.conn.private_data_len = sizeof(desc);
+	f_event.param.conn.private_data = &data;
+	f_event.param.conn.private_data_len = sizeof(data);
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	will_return(rdma_get_cm_event, &f_event);
