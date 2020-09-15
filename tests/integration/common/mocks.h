@@ -30,6 +30,20 @@
 #define MOCK_SIZE		1024
 #define MOCK_OK			0
 
+/*
+ * Limited by the maximum length of the private data
+ * for rdma_connect() in case of RDMA_PS_TCP (56 bytes).
+ */
+#define DESCRIPTORS_MAX_SIZE 24
+
+struct common_data {
+	uint16_t data_offset;	/* user data offset */
+	uint8_t mr_desc_size;	/* size of mr_desc in descriptors[] */
+	uint8_t pcfg_desc_size;	/* size of pcfg_desc in descriptors[] */
+	/* buffer containing mr_desc and pcfg_desc */
+	char descriptors[DESCRIPTORS_MAX_SIZE];
+};
+
 extern struct verbs_context Verbs_context;
 /* mock IBV completion channel */
 extern struct ibv_comp_channel Ibv_comp_channel;
