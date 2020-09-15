@@ -342,13 +342,6 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  */
 int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
-/* The number of bytes required to store a description of a memory region */
-#define RPMA_MR_DESCRIPTOR_SIZE 21
-
-typedef struct {
-	uint8_t data[RPMA_MR_DESCRIPTOR_SIZE];
-} rpma_mr_descriptor;
-
 /** 3
  * rpma_mr_get_descriptor - get a descriptor of a memory region
  *
@@ -356,8 +349,7 @@ typedef struct {
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_get_descriptor(struct rpma_mr_local *mr,
- *	    struct rpma_mr_descriptor *desc);
+ *	int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
  *
  * DESCRIPTION
  * rpma_mr_get_descriptor() writes a network-transferable description of
@@ -371,7 +363,7 @@ typedef struct {
  *
  * - RPMA_E_INVAL - mr or desc is NULL
  */
-int rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc);
+int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
 
 /** 3
  * rpma_mr_remote_from_descriptor - create a memory region from a descriptor
@@ -380,9 +372,8 @@ int rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc);
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_remote_from_descriptor(
- *          const struct rpma_mr_descriptor *desc,
- *          struct rpma_mr_remote **mr_ptr);
+ *	int rpma_mr_remote_from_descriptor(const void *desc,
+ *		size_t desc_size, struct rpma_mr_remote **mr_ptr);
  *
  * DESCRIPTION
  * Create a remote memory region's structure based on the provided descriptor
@@ -393,12 +384,29 @@ int rpma_mr_get_descriptor(struct rpma_mr_local *mr, rpma_mr_descriptor *desc);
  * rpma_mr_remote_from_descriptor() can fail with the following errors:
  *
  * - RPMA_E_INVAL - desc or mr_ptr is NULL
+ * - RPMA_E_INVAL - incompatible descriptor size
  * - RPMA_E_NOSUPP - deserialized information does not represent a valid memory
  *   region
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_mr_remote_from_descriptor(const rpma_mr_descriptor *desc,
-		struct rpma_mr_remote **mr_ptr);
+int rpma_mr_remote_from_descriptor(const void *desc,
+		size_t desc_size, struct rpma_mr_remote **mr_ptr);
+
+/** 3
+ * rpma_mr_get_descriptor_size - get size of a memory region descriptor
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	int rpma_mr_get_descriptor_size(size_t *desc_size);
+ *
+ * ERRORS
+ * rpma_mr_get_descriptor_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - desc_size is NULL
+ */
+int rpma_mr_get_descriptor_size(size_t *desc_size);
 
 /** 3
  * rpma_mr_remote_get_size - get a remote memory region size
