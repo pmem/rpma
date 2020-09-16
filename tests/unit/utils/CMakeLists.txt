@@ -31,6 +31,12 @@ build_test_src(UNIT NAME utils-ibv_context_is_odp_capable SRCS
 	${LIBRPMA_SOURCE_DIR}/rpma_err.c
 	${LIBRPMA_SOURCE_DIR}/rpma.c)
 
+if(NOT RDMA_GETADDRINFO_NEW_SIGNATURE)
+	target_compile_definitions(utils-conn_event_2str PRIVATE RDMA_GETADDRINFO_OLD_SIGNATURE=1)
+	target_compile_definitions(utils-get_ibv_context PRIVATE RDMA_GETADDRINFO_OLD_SIGNATURE=1)
+	target_compile_definitions(utils-ibv_context_is_odp_capable PRIVATE RDMA_GETADDRINFO_OLD_SIGNATURE=1)
+endif()
+
 add_test_generic(NAME utils-conn_event_2str TRACERS none)
 add_test_generic(NAME utils-get_ibv_context TRACERS none)
 add_test_generic(NAME utils-ibv_context_is_odp_capable TRACERS none)

@@ -594,9 +594,15 @@ rdma_listen(struct rdma_cm_id *id, int backlog)
 /*
  * rdma_getaddrinfo -- rdma_getaddrinfo() mock
  */
+#ifdef RDMA_GETADDRINFO_OLD_SIGNATURE
+int
+rdma_getaddrinfo(char *node, char *port,
+		struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
+#else
 int
 rdma_getaddrinfo(const char *node, const char *port,
 		const struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
+#endif
 {
 	assert_string_equal(node, MOCK_ADDR);
 

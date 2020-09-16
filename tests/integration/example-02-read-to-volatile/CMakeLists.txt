@@ -36,6 +36,10 @@ set_target_properties(${TARGET}
        PROPERTIES
        LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf")
 
+if(NOT RDMA_GETADDRINFO_NEW_SIGNATURE)
+	target_compile_definitions(${TARGET} PRIVATE RDMA_GETADDRINFO_OLD_SIGNATURE=1)
+endif()
+
 target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCK_MAIN
        PRIVATE TEST_MOCK_ALLOC
