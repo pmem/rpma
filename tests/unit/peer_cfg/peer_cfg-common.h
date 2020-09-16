@@ -13,7 +13,6 @@
 #include "conn_req.h"
 
 #define MOCK_PEER_PCFG_PTR	((struct rpma_peer_cfg **)0xA1D1)
-#define MOCK_PEER_PCFG		((struct rpma_peer_cfg *)0xA1D2)
 #define MOCK_SUPPORTED		false
 
 /*
