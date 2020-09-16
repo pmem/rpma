@@ -8,7 +8,6 @@
 #include <librpma.h>
 
 #include "cmocka_headers.h"
-#include "mocks-rpma-peer_cfg.h"
 #include "test-common.h"
 
 /*
@@ -18,7 +17,7 @@ int
 rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
-	assert_non_null(pcfg);
+	assert_ptr_equal(pcfg, MOCK_PEER_PCFG);
 	assert_non_null(supported);
 
 	return 0;

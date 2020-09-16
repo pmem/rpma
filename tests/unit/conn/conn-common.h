@@ -12,7 +12,7 @@
 #include "test-common.h"
 #include "conn.h"
 
-#define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
+#define MOCK_RPMA_MR_REMOTE	((struct rpma_mr_remote *)0xC412)
 #define MOCK_REMOTE_OFFSET	(size_t)0xC414
 #define MOCK_OFFSET_ALIGNED	(size_t)((MOCK_REMOTE_OFFSET / \
 		RPMA_ATOMIC_WRITE_ALIGNMENT) * RPMA_ATOMIC_WRITE_ALIGNMENT)
