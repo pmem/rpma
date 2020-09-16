@@ -36,6 +36,8 @@ to generate the Markdown documentation.
 
 **Note**: the above revisions are proven to work correctly.
 
+**Note**: see [the list of the supported OSes](INSTALL.md#supported-oses).
+
 ## Building
 
 First, you have to create a `build` directory.
@@ -122,3 +124,17 @@ $ cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
 $ make test
 $ ctest
 ```
+
+## Supported OSes
+
+Known supported OSes:
+
+- CentOS >= 6
+- Debian >= 9
+- Fedora >= 27
+- Ubuntu >= 16.04
+
+Known unsupported OSes:
+
+- Debian 8:     too old version of CMake (v3.0.2)
+- Ubuntu 14.04: too old version of CMake (v2.8.12.2)
