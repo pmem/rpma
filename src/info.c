@@ -48,7 +48,11 @@ rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 
 	/* query */
 	struct rdma_addrinfo *rai = NULL;
+#ifdef RDMA_GETADDRINFO_OLD_SIGNATURE
+	int ret = rdma_getaddrinfo((char *)addr, (char *)port, &hints, &rai);
+#else
 	int ret = rdma_getaddrinfo(addr, port, &hints, &rai);
+#endif
 	if (ret) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
