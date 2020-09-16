@@ -94,8 +94,13 @@ main(int argc, char *argv[])
 	 * Create a remote memory registration structure from the received
 	 * descriptor.
 	 */
-	rpma_mr_descriptor *desc = pdata.ptr;
-	ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
+	struct common_data *dst_data = pdata.ptr;
+	uint16_t mr_desc_offset = 0;
+
+	ret = rpma_mr_remote_from_descriptor(
+			&dst_data->descriptors[mr_desc_offset],
+			dst_data->mr_desc_size,
+			&src_mr);
 	if (ret)
 		goto err_conn_disconnect;
 
