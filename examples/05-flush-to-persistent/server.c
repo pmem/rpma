@@ -170,30 +170,41 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_ep_shutdown;
 
+	/* get size of the peer config descriptor */
+	size_t pcfg_desc_size;
+	ret = rpma_peer_cfg_get_descriptor_size(pcfg, &pcfg_desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
 	/* calculate data for the client write */
-	struct common_data data;
-	data.data_offset = data_offset;
+	size_t data_size = sizeof(struct common_data) + pcfg_desc_size;
+	struct common_data *data = malloc(data_size);
+	if (data == NULL)
+		goto err_mr_dereg;
+
+	data->data_offset = data_offset;
+	data->pcfg_desc_size = pcfg_desc_size;
 
 	/* get the peer's configuration descriptor */
-	ret = rpma_peer_cfg_get_descriptor(pcfg, &data.pcfg_desc);
+	ret = rpma_peer_cfg_get_descriptor(pcfg, data->pcfg_desc);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &data.mr_desc);
+	ret = rpma_mr_get_descriptor(mr, &data->mr_desc);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
 	 */
 	struct rpma_conn_private_data pdata;
-	pdata.ptr = &data;
-	pdata.len = sizeof(struct common_data);
+	pdata.ptr = data;
+	pdata.len = data_size;
 	ret = server_accept_connection(ep, &pdata, &conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	/*
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
@@ -201,9 +212,12 @@ main(int argc, char *argv[])
 	 */
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	(void) printf("New value: %s\n", (char *)mr_ptr + data_offset);
+
+err_free_data:
+	free(data);
 
 err_mr_dereg:
 	/* deregister the memory region */

@@ -14,6 +14,9 @@
 
 #define MOCK_PEER_PCFG_PTR	((struct rpma_peer_cfg **)0xA1D1)
 #define MOCK_PEER_PCFG		((struct rpma_peer_cfg *)0xA1D2)
+#define MOCK_DESC		((void *)0xA1D3)
+#define MOCK_DESC_SIZE		((size_t)1)
+#define MOCK_WRONG_DESC_SIZE	((size_t)0)
 #define MOCK_SUPPORTED		false
 
 /*
