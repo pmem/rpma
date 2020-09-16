@@ -201,7 +201,8 @@ main(int argc, char *argv[])
 	 * descriptor and apply it to the current connection.
 	 */
 	struct common_data *dst_data = pdata.ptr;
-	ret = rpma_peer_cfg_from_descriptor(&dst_data->pcfg_desc, &pcfg);
+	ret = rpma_peer_cfg_from_descriptor(dst_data->pcfg_desc,
+				dst_data->pcfg_desc_size, &pcfg);
 	if (ret)
 		goto err_mr_dereg;
 	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg,

@@ -19,9 +19,10 @@
 #endif
 
 struct common_data {
-	rpma_peer_cfg_descriptor pcfg_desc;
-	rpma_mr_descriptor mr_desc;
 	size_t data_offset;
+	rpma_mr_descriptor mr_desc;
+	size_t pcfg_desc_size;
+	char pcfg_desc[];
 };
 
 #define KILOBYTE 1024
