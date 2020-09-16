@@ -32,6 +32,10 @@ add_library(rpma SHARED ${SOURCES})
 
 target_include_directories(rpma PRIVATE . include)
 
+if(NOT SIGNATURE_OK_RDMA_GETADDRINFO)
+	target_compile_definitions(rpma PRIVATE OLD_SIGNATURE_RDMA_GETADDRINFO=1)
+endif()
+
 if(TESTS_USE_FAULT_INJECTION)
 	target_compile_definitions(rpma PUBLIC FAULT_INJECTION=1)
 endif()
