@@ -21,8 +21,9 @@ to provide remote PMem persistency. For the sake of simplicity, the client
 does not need to know server's peer configuration. For an example of peer's
 configuration exchange please see the 05 example.
 
-**Note**: The flush request and resonse are sent and received via the RPMA's
-messaging API (`rpma_send()` and `rpma_recv()`).
+**Note**: The flush request and response are sent and received via the RPMA's
+messaging API (`rpma_send()` and `rpma_recv()`). Both types of messages are
+serialized and deserialized using the protobuf-c library.
 
 **Note**: If either server or client does not have a PMem path (or it is not
 capable of using PMem at all) it uses DRAM instead.
