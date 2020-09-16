@@ -127,16 +127,14 @@ main(int argc, char *argv[])
 
 	/* if no pmem support or it is not provided */
 	if (mr_ptr == NULL) {
-		size_t log_size = (sizeof(struct log) +
-				(sizeof(char) * LOG_DATA_SIZE));
-		log = malloc_aligned(log_size);
+		log = malloc_aligned(sizeof(struct log));
 		if (log == NULL)
 			return -1;
 
 		log->used = offsetof(struct log, data);
 
 		mr_ptr = (void *)log;
-		mr_size = log_size;
+		mr_size = sizeof(struct log);
 		mr_plt = RPMA_MR_PLT_VOLATILE;
 	}
 
@@ -161,12 +159,20 @@ main(int argc, char *argv[])
 			mr_plt, &mr)))
 		goto err_ep_shutdown;
 
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
 	/* calculate data for the client write */
 	struct common_data data;
 	data.data_offset = offsetof(struct log, used);
+	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
-	if ((ret = rpma_mr_get_descriptor(mr, &data.mr_desc)))
+	ret = rpma_mr_get_descriptor(mr, &data.descriptors[0]);
+	if (ret)
 		goto err_mr_dereg;
 
 	/*

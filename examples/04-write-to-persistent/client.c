@@ -213,8 +213,9 @@ main(int argc, char *argv[])
 	 * descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
-	dst_offset = dst_data->data_offset;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc, &dst_mr);
+
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
+			dst_data->mr_desc_size, &dst_mr);
 	if (ret)
 		goto err_mr_dereg;
 
@@ -229,6 +230,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
+	dst_offset = dst_data->data_offset;
 	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
 			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL);

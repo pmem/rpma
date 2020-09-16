@@ -18,11 +18,14 @@
 
 #endif
 
+#define MAX_DESCRIPTORS_SPACE_SIZE 24	/* data limit on rdma_connect() */
+
 struct common_data {
-	size_t data_offset;
-	rpma_mr_descriptor mr_desc;
-	size_t pcfg_desc_size;
-	char pcfg_desc[];
+	uint16_t data_offset;	/* user data offset */
+	uint8_t mr_desc_size;	/* size of mr_desc in descriptors[] */
+	uint8_t pcfg_desc_size;	/* size of pcfg_desc in descriptors[] */
+	/* buffer containing mr_desc and pcfg_desc */
+	char descriptors[MAX_DESCRIPTORS_SPACE_SIZE];
 };
 
 #define KILOBYTE 1024
