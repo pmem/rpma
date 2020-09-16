@@ -161,12 +161,22 @@ main(int argc, char *argv[])
 			mr_plt, &mr)))
 		goto err_ep_shutdown;
 
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
 	/* calculate data for the client write */
 	struct common_data data;
-	data.data_offset = offsetof(struct log, used);
+
+	data.mr_desc_size = mr_desc_size;
+	size_t mr_desc_offset = 0;
 
 	/* get the memory region's descriptor */
-	if ((ret = rpma_mr_get_descriptor(mr, &data.mr_desc)))
+	ret = rpma_mr_get_descriptor(mr,
+			&data.descriptors[mr_desc_offset]);
+	if (ret)
 		goto err_mr_dereg;
 
 	/*

@@ -157,9 +157,15 @@ main(int argc, char *argv[])
 		goto err_disconnect;
 
 	struct common_data *src_data = pdata.ptr;
-	ret = rpma_mr_remote_from_descriptor(&src_data->mr_desc, &src_mr);
-	if (ret)
-		goto err_disconnect;
+	if (src_data->mr_desc_size > 0) {
+		size_t mr_desc_offset = 0;
+		ret = rpma_mr_remote_from_descriptor(
+				&src_data->descriptors[mr_desc_offset],
+				src_data->mr_desc_size,
+				&src_mr);
+		if (ret)
+			goto err_disconnect;
+	}
 
 	/* if the string content is not empty */
 	if (((char *)dst_ptr + dst_offset)[0] != '\0') {
