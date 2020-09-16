@@ -147,25 +147,38 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_ep_shutdown;
 
-	/* calculate data for the client write */
-	struct common_data data;
-	data.data_offset = data_offset;
-
-	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &data.mr_desc);
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
 	if (ret)
 		goto err_mr_dereg;
+
+	/* calculate data for the client write */
+	size_t data_size = sizeof(struct common_data) + mr_desc_size;
+	struct common_data *data = malloc(data_size);
+	if (data == NULL)
+		goto err_mr_dereg;
+
+	data->data_offset = data_offset;
+	data->mr_desc_offset = 0;
+	data->mr_desc_size = mr_desc_size;
+
+	/* get the memory region's descriptor */
+	ret = rpma_mr_get_descriptor(mr,
+			&data->descriptors[data->mr_desc_offset]);
+	if (ret)
+		goto err_free_data;
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
 	 */
 	struct rpma_conn_private_data pdata;
-	pdata.ptr = &data;
-	pdata.len = sizeof(struct common_data);
+	pdata.ptr = data;
+	pdata.len = data_size;
 	ret = server_accept_connection(ep, &pdata, &conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	/*
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
@@ -173,9 +186,12 @@ main(int argc, char *argv[])
 	 */
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	(void) printf("New value: %s\n", (char *)mr_ptr + data_offset);
+
+err_free_data:
+	free(data);
 
 err_mr_dereg:
 	/* deregister the memory region */

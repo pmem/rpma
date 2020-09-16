@@ -258,20 +258,23 @@ client_fetch_name(struct client_res *clnt, struct rpma_mr_local *dst)
 {
 	/* get connection's private data */
 	struct rpma_conn_private_data pdata;
-	rpma_mr_descriptor *desc;
-	rpma_conn_get_private_data(clnt->conn, &pdata);
-	if (pdata.len < sizeof(rpma_mr_descriptor)) {
+	int ret = rpma_conn_get_private_data(clnt->conn, &pdata);
+	if (ret != 0 || pdata.len < sizeof(struct common_data)) {
 		(void) fprintf(stderr,
 				"[%d] received connection's private data is too small (%d < %zu)\n",
 				clnt->client_id,
-				pdata.len, sizeof(rpma_mr_descriptor));
+				pdata.len, sizeof(struct common_data));
 		return -1;
 	}
-	desc = (rpma_mr_descriptor *)pdata.ptr;
 
 	/* prepare a remote memory region */
 	struct rpma_mr_remote *src_mr;
-	int ret = rpma_mr_remote_from_descriptor(desc, &src_mr);
+
+	struct common_data *dst_data = pdata.ptr;
+	ret = rpma_mr_remote_from_descriptor(
+			&dst_data->descriptors[dst_data->mr_desc_offset],
+			dst_data->mr_desc_size,
+			&src_mr);
 	if (ret)
 		return ret;
 

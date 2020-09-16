@@ -170,6 +170,12 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_ep_shutdown;
 
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
+	if (ret)
+		goto err_mr_dereg;
+
 	/* get size of the peer config descriptor */
 	size_t pcfg_desc_size;
 	ret = rpma_peer_cfg_get_descriptor_size(pcfg, &pcfg_desc_size);
@@ -177,21 +183,27 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* calculate data for the client write */
-	size_t data_size = sizeof(struct common_data) + pcfg_desc_size;
+	size_t data_size = sizeof(struct common_data)
+				+ mr_desc_size + pcfg_desc_size;
 	struct common_data *data = malloc(data_size);
 	if (data == NULL)
 		goto err_mr_dereg;
 
 	data->data_offset = data_offset;
+	data->mr_desc_offset = 0;		/* the first is mr_desc */
+	data->mr_desc_size = mr_desc_size;
+	data->pcfg_desc_offset = mr_desc_size;	/* the second is pcfg_desc */
 	data->pcfg_desc_size = pcfg_desc_size;
 
-	/* get the peer's configuration descriptor */
-	ret = rpma_peer_cfg_get_descriptor(pcfg, data->pcfg_desc);
+	/* get the memory region's descriptor */
+	ret = rpma_mr_get_descriptor(mr,
+			&data->descriptors[data->mr_desc_offset]);
 	if (ret)
 		goto err_free_data;
 
-	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &data->mr_desc);
+	/* get the peer's configuration descriptor */
+	ret = rpma_peer_cfg_get_descriptor(pcfg,
+			&data->descriptors[data->pcfg_desc_offset]);
 	if (ret)
 		goto err_free_data;
 

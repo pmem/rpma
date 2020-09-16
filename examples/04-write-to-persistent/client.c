@@ -214,7 +214,10 @@ main(int argc, char *argv[])
 	 */
 	struct common_data *dst_data = pdata.ptr;
 	dst_offset = dst_data->data_offset;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->mr_desc, &dst_mr);
+	ret = rpma_mr_remote_from_descriptor(
+			&dst_data->descriptors[dst_data->mr_desc_offset],
+			dst_data->mr_desc_size,
+			&dst_mr);
 	if (ret)
 		goto err_mr_dereg;
 

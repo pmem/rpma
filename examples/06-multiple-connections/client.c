@@ -97,23 +97,40 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_free;
 
-	struct rpma_conn_private_data pdata;
-	rpma_mr_descriptor desc;
-	pdata.ptr = &desc;
-	pdata.len = sizeof(rpma_mr_descriptor);
-
-	/* receive the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &desc);
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
 	if (ret)
 		goto err_mr_dereg;
+
+	/* calculate data for the client write */
+	size_t data_size = sizeof(struct common_data) + mr_desc_size;
+	struct common_data *data = malloc(data_size);
+	if (data == NULL)
+		goto err_mr_dereg;
+
+	data->mr_desc_offset = 0;
+	data->mr_desc_size = mr_desc_size;
+
+	/* get the memory region's descriptor */
+	ret = rpma_mr_get_descriptor(mr,
+			&data->descriptors[data->mr_desc_offset]);
+	if (ret)
+		goto err_free_data;
+
+	struct rpma_conn_private_data pdata;
+	pdata.ptr = data;
+	pdata.len = data_size;
 
 	/* establish a new connection to a server listening at addr:port */
 	ret = client_connect(peer, addr, port, &pdata, &conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 
+err_free_data:
+	free(data);
 
 err_mr_dereg:
 	/* deregister the memory region */

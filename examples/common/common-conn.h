@@ -20,9 +20,11 @@
 
 struct common_data {
 	size_t data_offset;
-	rpma_mr_descriptor mr_desc;
-	size_t pcfg_desc_size;
-	char pcfg_desc[];
+	size_t mr_desc_offset;	/* offset of mr_desc in descriptors[] */
+	size_t mr_desc_size;	/* size of mr_desc in descriptors[] */
+	size_t pcfg_desc_offset; /* offset of pcfg_desc in descriptors[] */
+	size_t pcfg_desc_size;	/* size of pcfg_desc in descriptors[] */
+	char descriptors[];	/* buffer containing mr_desc and pcfg_desc */
 };
 
 #define KILOBYTE 1024

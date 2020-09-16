@@ -157,7 +157,10 @@ main(int argc, char *argv[])
 		goto err_disconnect;
 
 	struct common_data *src_data = pdata.ptr;
-	ret = rpma_mr_remote_from_descriptor(&src_data->mr_desc, &src_mr);
+	ret = rpma_mr_remote_from_descriptor(
+			&src_data->descriptors[src_data->mr_desc_offset],
+			src_data->mr_desc_size,
+			&src_mr);
 	if (ret)
 		goto err_disconnect;
 

@@ -156,10 +156,6 @@ main(int argc, char *argv[])
 
 	(void) printf("Next value: %s\n", hello->str);
 
-	/* calculate data for the server read */
-	struct common_data data;
-	data.data_offset = data_offset + offsetof(struct hello_t, str);
-
 	/* RPMA resources */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
@@ -177,18 +173,36 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_peer_delete;
 
-	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(mr, &data.mr_desc);
+	/* get size of the memory region's descriptor */
+	size_t mr_desc_size;
+	ret = rpma_mr_get_descriptor_size(mr, &mr_desc_size);
 	if (ret)
-		goto err_peer_delete;
+		goto err_mr_dereg;
+
+	/* calculate data for the server read */
+	size_t data_size = sizeof(struct common_data) + mr_desc_size;
+	struct common_data *data = malloc(data_size);
+	if (data == NULL)
+		goto err_mr_dereg;
+
+	memset(data, 0, data_size);
+	data->data_offset = data_offset + offsetof(struct hello_t, str);
+	data->mr_desc_offset = 0;
+	data->mr_desc_size = mr_desc_size;
+
+	/* get the memory region's descriptor */
+	ret = rpma_mr_get_descriptor(mr,
+			&data->descriptors[data->mr_desc_offset]);
+	if (ret)
+		goto err_free_data;
 
 	/* establish a new connection to a server listening at addr:port */
 	struct rpma_conn_private_data pdata;
-	pdata.ptr = &data;
-	pdata.len = sizeof(struct common_data);
+	pdata.ptr = data;
+	pdata.len = data_size;
 	ret = client_connect(peer, addr, port, &pdata, &conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_free_data;
 
 	/*
 	 * Between the connection being established and the connection being
@@ -209,6 +223,9 @@ main(int argc, char *argv[])
 #endif
 
 	(void) printf("Translation: %s\n", hello->str);
+
+err_free_data:
+	free(data);
 
 err_mr_dereg:
 	/* deregister the memory region */
