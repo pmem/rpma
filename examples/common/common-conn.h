@@ -18,11 +18,18 @@
 
 #endif
 
+/*
+ * Limited by the maximum length of the private data
+ * for rdma_connect() in case of RDMA_PS_TCP (56 bytes).
+ */
+#define DESCRIPTORS_MAX_SIZE 24
+
 struct common_data {
-	size_t data_offset;
-	rpma_mr_descriptor mr_desc;
-	size_t pcfg_desc_size;
-	char pcfg_desc[];
+	uint16_t data_offset;	/* user data offset */
+	uint8_t mr_desc_size;	/* size of mr_desc in descriptors[] */
+	uint8_t pcfg_desc_size;	/* size of pcfg_desc in descriptors[] */
+	/* buffer containing mr_desc and pcfg_desc */
+	char descriptors[DESCRIPTORS_MAX_SIZE];
 };
 
 #define KILOBYTE 1024
