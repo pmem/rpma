@@ -21,6 +21,10 @@ function(add_test_conn name)
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/conn.c)
 
+	if(RDMA_GETADDRINFO_NEW_SIGNATURE)
+		target_compile_definitions(${name} PRIVATE RDMA_GETADDRINFO_NEW_SIGNATURE=1)
+	endif()
+
 	target_compile_definitions(${name} PRIVATE TEST_MOCK_ALLOC)
 
 	set_target_properties(${name}

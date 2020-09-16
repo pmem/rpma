@@ -173,6 +173,6 @@ function(check_signature_rdma_getaddrinfo var)
 				return -1;
 			return 0;
 		}"
-		SIGNATURE_OK_RDMA_GETADDRINFO)
-	set(var ${SIGNATURE_OK_RDMA_GETADDRINFO} PARENT_SCOPE)
+		RDMA_GETADDRINFO_NEW_SIGNATURE)
+	set(var ${RDMA_GETADDRINFO_NEW_SIGNATURE} PARENT_SCOPE)
 endfunction()
