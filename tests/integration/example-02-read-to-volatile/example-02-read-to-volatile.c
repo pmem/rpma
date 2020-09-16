@@ -18,19 +18,38 @@
 
 static const char msg[] = "Hello client!";
 
-struct private_data_buffer {
-	uint64_t raddr;
-	uint64_t size;
-	uint32_t rkey;
-	enum rpma_mr_plt plt;
-};
-
 /* global mocks */
 static struct rdma_cm_id Cm_id;		/* mock CM ID */
 static struct ibv_qp Ibv_qp;		/* mock IBV QP */
 
 int client_main(int argc, char *argv[]);
 int server_main(int argc, char *argv[]);
+
+/*
+ * create_descriptor -- create a descriptor from the given values
+ */
+static int
+create_descriptor(rpma_mr_descriptor *desc,
+	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t plt)
+{
+	char *buff = (char *)desc;
+
+	uint64_t addr = htole64(raddr);
+	memcpy(buff, &addr, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint64_t length = htole64(size);
+	memcpy(buff, &length, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint32_t key = htole32(rkey);
+	memcpy(buff, &key, sizeof(uint32_t));
+	buff += sizeof(uint32_t);
+
+	*((uint8_t *)buff) = plt;
+
+	return 0;
+}
 
 /* tests */
 
@@ -127,16 +146,16 @@ test_client__success(void **unused)
 	will_return(rdma_connect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_next_event() */
-	struct private_data_buffer buff;
-	buff.raddr = (uintptr_t)MOCK_READ_ADDR;
-	buff.size = MOCK_READ_LEN;
-	buff.rkey = MOCK_RKEY;
-	buff.plt = RPMA_MR_PLT_VOLATILE;
-
+	rpma_mr_descriptor desc;
+	create_descriptor(&desc,
+			(uintptr_t)MOCK_READ_ADDR,
+			MOCK_READ_LEN,
+			MOCK_RKEY,
+			RPMA_MR_PLT_VOLATILE);
 	struct rdma_cm_event f_event = {0};
 	f_event.event = RDMA_CM_EVENT_ESTABLISHED;
-	f_event.param.conn.private_data = &buff;
-	f_event.param.conn.private_data_len = sizeof(buff);
+	f_event.param.conn.private_data = &desc;
+	f_event.param.conn.private_data_len = sizeof(desc);
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	will_return(rdma_get_cm_event, &f_event);
