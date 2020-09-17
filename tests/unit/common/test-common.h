@@ -18,6 +18,7 @@
 #define MOCK_PEER		(struct rpma_peer *)0xFEEF
 #define MOCK_INFO		(struct rpma_info *)0xE6B2
 #define MOCK_CONN		(struct rpma_conn *)0xC004
+#define MOCK_PEER_PCFG		(struct rpma_peer_cfg *)0xA1D2
 #define MOCK_PRIVATE_DATA	((void *)Private_data)
 #define MOCK_PDATA_LEN		(strlen(MOCK_PRIVATE_DATA) + 1)
 #define MOCK_PRIVATE_DATA_2	((void *)Private_data_2)

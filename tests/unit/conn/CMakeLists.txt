@@ -12,6 +12,7 @@ function(add_test_conn name)
 		conn-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-peer_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-mr.c
@@ -29,6 +30,7 @@ function(add_test_conn name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_conn(apply_remote_peer_cfg)
 add_test_conn(disconnect)
 add_test_conn(flush)
 add_test_conn(get_completion_fd)
