@@ -32,4 +32,4 @@ ERRORS
 **rpma\_conn\_apply\_remote\_peer\_cfg**() can fail with the following
 error:
 
--   XXX
+-   RPMA\_E\_INVAL - *conn* or *pcfg* are NULL
