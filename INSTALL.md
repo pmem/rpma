@@ -32,6 +32,7 @@ to generate the Markdown documentation.
 ### For some examples you also need:
 
 - libpmem-dev(el) >= 1.6
+- libprotobuf-c-dev(el) >= 1.0
 
 **Note**: the above revisions are proven to work correctly.
 
