@@ -41,3 +41,6 @@ ERRORS
 -   RPMA\_E\_INVAL - *flags* are not set
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
+
+-   RPMA\_E\_NOSUPP - *type* is RPMA\_FLUSH\_TYPE\_PERSISTENT and the
+    direct write to pmem is not supported
