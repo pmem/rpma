@@ -3,15 +3,17 @@
 # Copyright 2019-2020, Intel Corporation
 #
 
-find_program(TXT2MAN NAMES txt2man)
+find_program(SRC2MAN NAMES src2man)
 find_program(GROFF NAMES groff)
+find_program(FIND NAMES find)
+find_program(DIFF NAMES diff)
 
 find_program(PANDOC NAMES pandoc)
 if(NOT PANDOC)
 	message(WARNING "pandoc not found - Markdown documentation will not be generated")
 endif()
 
-if(TXT2MAN AND GROFF)
+if(SRC2MAN AND GROFF AND FIND AND DIFF)
 	# create man pages from sources
 	set(man3_list ${CMAKE_SOURCE_DIR}/doc/manuals_3.txt)
 	set(man7_list ${CMAKE_SOURCE_DIR}/doc/manuals_7.txt)
@@ -48,10 +50,16 @@ if(TXT2MAN AND GROFF)
 	install(FILES ${new_man7}
 		DESTINATION ${CMAKE_INSTALL_MANDIR}/man7)
 else()
-	if(NOT TXT2MAN)
-		message(WARNING "txt2man not found - man pages will not be generated")
+	if(NOT SRC2MAN)
+		message(WARNING "src2man not found - man pages will not be generated")
 	endif()
 	if(NOT GROFF)
 		message(WARNING "groff not found - man pages will not be generated")
+	endif()
+	if(NOT FIND)
+		message(WARNING "find not found - man pages will not be generated")
+	endif()
+	if(NOT DIFF)
+		message(WARNING "diff not found - man pages will not be generated")
 	endif()
 endif()
