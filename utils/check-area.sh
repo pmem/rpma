@@ -19,6 +19,9 @@ echo
 echo "Modified files:"
 echo "$files"
 
+# if [ $COMMON -eq 1 ] then the 'common' area should be printed
+COMMON=1
+
 function categorize() {
 	category=$1
 	shift
@@ -27,6 +30,7 @@ function categorize() {
 	if [ -n "${cat_files}" ]; then
 		echo "$category"
 		files=`echo "$files" | grep -v $*`
+		COMMON=0
 	fi
 }
 
@@ -44,6 +48,9 @@ categorize common    -e "^utils/" \
 			-e ".gitignore" \
 			-e "^.mailmap\$" \
 			-e "Makefile\$"
+
+# print out the 'common' area if nothing else was printed
+[ $COMMON -eq 1 ] && echo "common"
 
 echo
 echo "If the above list contains more than 1 entry, please consider splitting"
