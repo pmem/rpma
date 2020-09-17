@@ -74,10 +74,34 @@ flush__conn_dst_NULL_flags_0(void **unused)
 }
 
 /*
- * flush__success - happy day scenario
+ * flush__RPMA_E_NOSUPP - flush fails with RPMA_E_NOSUPP
  */
 static void
-flush__success(void **cstate_ptr)
+flush__RPMA_E_NOSUPP(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/* set direct_write_to_pmem to false */
+	will_return(rpma_peer_cfg_get_direct_write_to_pmem, false);
+	int ret = rpma_conn_apply_remote_peer_cfg(cstate->conn, MOCK_PEER_PCFG);
+	assert_int_equal(ret, MOCK_OK);
+
+	/* run test */
+	ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_LEN,
+			RPMA_FLUSH_TYPE_PERSISTENT,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOSUPP);
+}
+
+/*
+ * flush__success_FLUSH_TYPE_VISIBILITY - happy day scenario
+ * for RPMA_FLUSH_TYPE_VISIBILITY
+ */
+static void
+flush__success_FLUSH_TYPE_VISIBILITY(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -100,15 +124,51 @@ flush__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
+/*
+ * flush__success_FLUSH_TYPE_PERSISTENT - happy day scenario
+ * for RPMA_FLUSH_TYPE_PERSISTENT
+ */
+static void
+flush__success_FLUSH_TYPE_PERSISTENT(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/* set direct_write_to_pmem to true */
+	will_return(rpma_peer_cfg_get_direct_write_to_pmem, true);
+	int ret = rpma_conn_apply_remote_peer_cfg(cstate->conn, MOCK_PEER_PCFG);
+	assert_int_equal(ret, MOCK_OK);
+
+	/* configure mocks for rpma_flush() */
+	expect_value(rpma_flush_mock_do, qp, MOCK_QP);
+	expect_value(rpma_flush_mock_do, flush, MOCK_FLUSH);
+	expect_value(rpma_flush_mock_do, dst, MOCK_RPMA_MR_REMOTE);
+	expect_value(rpma_flush_mock_do, dst_offset, MOCK_REMOTE_OFFSET);
+	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
+	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
+	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+
+	/* run test */
+	ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
+			MOCK_REMOTE_OFFSET, MOCK_LEN,
+			RPMA_FLUSH_TYPE_PERSISTENT,
+			MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+}
+
 static const struct CMUnitTest tests_flush[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(flush__conn_NULL),
 	cmocka_unit_test(flush__dst_NULL),
 	cmocka_unit_test(flush__flags_0),
 	cmocka_unit_test(flush__conn_dst_NULL_flags_0),
-	cmocka_unit_test_setup_teardown(flush__success,
+	cmocka_unit_test_setup_teardown(flush__RPMA_E_NOSUPP,
 		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test(NULL)
+	cmocka_unit_test_setup_teardown(flush__success_FLUSH_TYPE_VISIBILITY,
+		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test_setup_teardown(flush__success_FLUSH_TYPE_PERSISTENT,
+		setup__conn_new, teardown__conn_delete),
 };
 
 int

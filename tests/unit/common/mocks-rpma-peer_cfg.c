@@ -17,5 +17,10 @@ int
 rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
+	assert_ptr_equal(pcfg, MOCK_PEER_PCFG);
+	assert_non_null(supported);
+
+	*supported = mock_type(bool);
+
 	return 0;
 }
