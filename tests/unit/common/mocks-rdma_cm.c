@@ -294,9 +294,15 @@ rdma_get_cm_event(struct rdma_event_channel *channel,
 /*
  * rdma_getaddrinfo -- rdma_getaddrinfo() mock
  */
+#ifdef RDMA_GETADDRINFO_OLD_SIGNATURE
+int
+rdma_getaddrinfo(char *node, char *port,
+		struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
+#else
 int
 rdma_getaddrinfo(const char *node, const char *port,
 		const struct rdma_addrinfo *hints, struct rdma_addrinfo **res)
+#endif
 {
 	struct rdma_addrinfo_args *args =
 				mock_type(struct rdma_addrinfo_args *);

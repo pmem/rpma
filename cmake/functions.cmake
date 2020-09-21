@@ -185,8 +185,8 @@ function(check_signature_rdma_getaddrinfo var)
 					return -1;
 				return 0;
 			}"
-			SIGNATURE_OK_RDMA_GETADDRINFO)
-		set(var ${SIGNATURE_OK_RDMA_GETADDRINFO} PARENT_SCOPE)
+			RDMA_GETADDRINFO_NEW_SIGNATURE)
+		set(var ${RDMA_GETADDRINFO_NEW_SIGNATURE} PARENT_SCOPE)
 		return()
 	endif()
 
@@ -194,19 +194,19 @@ function(check_signature_rdma_getaddrinfo var)
 	# We are running an old version of the GCC compiler
 	# that does not support the '-Werror=discarded-qualifiers' flag.
 	#
-	message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO")
+	message(NOTICE "-- Performing Test RDMA_GETADDRINFO_NEW_SIGNATURE")
 	find_file(RDMA_CMA_H rdma_cma.h PATHS /usr/include/rdma /usr/include)
 	if(NOT RDMA_CMA_H)
 		message(FATAL_ERROR "Cannot find the 'rdma_cma.h' header file!")
 	endif()
 	file(STRINGS ${RDMA_CMA_H} CORRECT_SIGNATURE_FOUND REGEX "int rdma_getaddrinfo[(]const char")
 	if(CORRECT_SIGNATURE_FOUND)
-		message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO - Success")
+		message(NOTICE "-- Performing Test RDMA_GETADDRINFO_NEW_SIGNATURE - Success")
 		# XXX It should be:
 		#    set(var 1 PARENT_SCOPE)
 		# but for an unknown reason it does not work.
-		set(SIGNATURE_OK_RDMA_GETADDRINFO 1 PARENT_SCOPE)
+		set(RDMA_GETADDRINFO_NEW_SIGNATURE 1 PARENT_SCOPE)
 	else()
-		message(NOTICE "-- Performing Test SIGNATURE_OK_RDMA_GETADDRINFO - Failed")
+		message(NOTICE "-- Performing Test RDMA_GETADDRINFO_NEW_SIGNATURE - Failed")
 	endif()
 endfunction()
