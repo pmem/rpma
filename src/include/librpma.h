@@ -48,14 +48,23 @@ enum rpma_util_ibv_context_type {
  *
  *	#include <librpma.h>
  *
+ *	struct ibv_context;
+ *	enum rpma_util_ibv_context_type {
+ *		RPMA_UTIL_IBV_CONTEXT_LOCAL,
+ *		RPMA_UTIL_IBV_CONTEXT_REMOTE
+ *	};
+ *
  *	int rpma_utils_get_ibv_context(const char *addr,
- *	        enum rpma_util_ibv_context_type type, struct ibv_context **dev);
+ *		enum rpma_util_ibv_context_type type, struct ibv_context **dev);
  *
  * DESCRIPTION
  * rpma_utils_get_ibv_context() obtains an RDMA device context
  * by the given IPv4/IPv6 address (either local or remote) using
  * the TCP RDMA port space (RDMA_PS_TCP) - reliable, connection-oriented
  * and message-based QP communication.
+ * Possible rpma_util_ibv_context_type to lookup for:
+ * - RPMA_UTIL_IBV_CONTEXT_LOCAL - lookup for a local device
+ * - RPMA_UTIL_IBV_CONTEXT_REMOTE - lookup for a remote device
  *
  * RETURN VALUE
  * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
@@ -81,6 +90,7 @@ int rpma_utils_get_ibv_context(const char *addr,
  *
  *	#include <librpma.h>
  *
+ *	struct ibv_context;
  *	int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
  *		int *is_odp_capable);
  *
