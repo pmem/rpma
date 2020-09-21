@@ -19,8 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_mr_get_descriptor(struct rpma_mr_local *mr,
-              struct rpma_mr_descriptor *desc);
+          int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
 
 DESCRIPTION
 ===========
