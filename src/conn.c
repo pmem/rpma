@@ -183,6 +183,14 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 			*event = RPMA_CONN_CLOSED;
 			break;
 		default:
+			// XXX introduce rdma_event_str() to provide
+			// more information about unexpected event
+			// RPMA_LOG_WARNING("%s: %s",
+			//	rpma_utils_conn_event_2str(*event),
+			//	cm_erdma_event_str( cm_event));
+			RPMA_LOG_WARNING("%s: %d",
+					rpma_utils_conn_event_2str(*event),
+					cm_event);
 			return RPMA_E_UNKNOWN;
 	}
 
