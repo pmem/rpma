@@ -20,9 +20,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_mr_remote_from_descriptor(
-           const struct rpma_mr_descriptor *desc,
-           struct rpma_mr_remote **mr_ptr);
+          int rpma_mr_remote_from_descriptor(const void *desc,
+                  size_t desc_size, struct rpma_mr_remote **mr_ptr);
 
 DESCRIPTION
 ===========
@@ -38,6 +37,8 @@ ERRORS
 errors:
 
 -   RPMA\_E\_INVAL - *desc* or *mr\_ptr* is NULL
+
+-   RPMA\_E\_INVAL - incompatible descriptor size
 
 -   RPMA\_E\_NOSUPP - deserialized information does not represent a
     valid memory region
