@@ -70,7 +70,7 @@ rpma_mr_write(struct ibv_qp *qp,
  */
 int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
-		enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr)
+		struct rpma_mr_local **mr_ptr)
 {
 	check_expected_ptr(peer);
 	check_expected(size);

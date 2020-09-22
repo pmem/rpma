@@ -307,18 +307,14 @@ int rpma_peer_delete(struct rpma_peer **peer);
 struct rpma_mr_local;
 struct rpma_mr_remote;
 
-#define RPMA_MR_USAGE_READ_SRC	(1 << 0)
-#define RPMA_MR_USAGE_READ_DST	(1 << 1)
-#define RPMA_MR_USAGE_WRITE_SRC	(1 << 2)
-#define RPMA_MR_USAGE_WRITE_DST	(1 << 3)
-#define RPMA_MR_USAGE_FLUSHABLE	(1 << 4)
-#define RPMA_MR_USAGE_SEND	(1 << 5)
-#define RPMA_MR_USAGE_RECV	(1 << 6)
-
-enum rpma_mr_plt {
-	RPMA_MR_PLT_VOLATILE, /* the region comes from volatile memory */
-	RPMA_MR_PLT_PERSISTENT /* the region comes from persistent memory */
-};
+#define RPMA_MR_USAGE_READ_SRC			(1 << 0)
+#define RPMA_MR_USAGE_READ_DST			(1 << 1)
+#define RPMA_MR_USAGE_WRITE_SRC			(1 << 2)
+#define RPMA_MR_USAGE_WRITE_DST			(1 << 3)
+#define RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY	(1 << 4)
+#define RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT	(1 << 5)
+#define RPMA_MR_USAGE_SEND			(1 << 6)
+#define RPMA_MR_USAGE_RECV			(1 << 7)
 
 /** 3
  * rpma_mr_reg - create a local memory registration object
@@ -328,7 +324,7 @@ enum rpma_mr_plt {
  *	#include <librpma.h>
  *
  *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
- *		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
+ *		int usage, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
  * rpma_mr_reg() registers a memory region and creates
@@ -343,7 +339,7 @@ enum rpma_mr_plt {
  * - RPMA_E_PROVIDER - memory registration failed
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
-		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
+		int usage, struct rpma_mr_local **mr_ptr);
 
 /** 3
  * rpma_mr_dereg - delete a local memory registration object

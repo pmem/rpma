@@ -19,6 +19,10 @@
 
 #define USAGE_WRONG	(~((int)0)) /* not allowed value of usage */
 
+#define RPMA_MR_USAGE_FLUSHABLE \
+	(RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY | \
+	RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+
 /* array of prestate structures */
 static struct prestate prestates[] = {
 	/* values used in reg_dereg__success called with (prestates + 0) */
@@ -61,7 +65,7 @@ reg__NULL_peer(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(NULL, MOCK_PTR, MOCK_SIZE,
-				MOCK_USAGE, MOCK_PLT, &mr);
+				MOCK_USAGE, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -77,7 +81,7 @@ reg__NULL_ptr(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, NULL, MOCK_SIZE,
-				MOCK_USAGE, MOCK_PLT, &mr);
+				MOCK_USAGE, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -92,7 +96,7 @@ reg__NULL_mr_ptr(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				MOCK_USAGE, MOCK_PLT, NULL);
+				MOCK_USAGE, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -106,7 +110,7 @@ reg__NULL_peer_ptr_mr_ptr(void **unused)
 {
 	/* run test */
 	int ret = rpma_mr_reg(NULL, NULL, MOCK_SIZE,
-				MOCK_USAGE, MOCK_PLT, NULL);
+				MOCK_USAGE, NULL);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -121,7 +125,7 @@ reg__0_size(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, 0,
-				MOCK_USAGE, MOCK_PLT, &mr);
+				MOCK_USAGE, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -137,7 +141,7 @@ reg__0_usage(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				0, MOCK_PLT, &mr);
+				0, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -153,7 +157,7 @@ reg__wrong_usage(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				USAGE_WRONG, MOCK_PLT, &mr);
+				USAGE_WRONG, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -168,7 +172,7 @@ reg__failed_E_NOMEM(void **unused)
 {
 	/* configure mocks */
 	struct rpma_peer_mr_reg_args mr_reg_args;
-	mr_reg_args.usage = RPMA_MR_USAGE_READ_SRC;
+	mr_reg_args.usage = RPMA_MR_USAGE_READ_SRC | MOCK_USAGE_FLUSHABLE;
 	mr_reg_args.access = IBV_ACCESS_REMOTE_READ;
 	mr_reg_args.mr = MOCK_MR;
 	will_return(__wrap__test_malloc, ENOMEM);
@@ -178,7 +182,7 @@ reg__failed_E_NOMEM(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				mr_reg_args.usage, MOCK_PLT, &mr);
+				mr_reg_args.usage, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -203,7 +207,7 @@ reg__peer_mr_reg_failed_E_PROVIDER(void **unused)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				mr_reg_args.usage, MOCK_PLT, &mr);
+				mr_reg_args.usage, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
