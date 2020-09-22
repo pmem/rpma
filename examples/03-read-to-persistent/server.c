@@ -44,7 +44,7 @@ main(int argc, char *argv[])
 	void *dst_ptr = NULL;
 	size_t dst_size = 0;
 	size_t dst_offset = 0;
-	enum rpma_mr_plt dst_plt = RPMA_MR_PLT_VOLATILE;
+	int flushable = RPMA_MR_USAGE_FLUSHABLE_VISIBILITY;
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
 
@@ -104,7 +104,7 @@ main(int argc, char *argv[])
 			pmem_persist(dst_ptr, SIGNATURE_LEN);
 		}
 
-		dst_plt = RPMA_MR_PLT_PERSISTENT;
+		flushable = RPMA_MR_USAGE_FLUSHABLE_PERSISTENCY;
 	}
 #endif
 
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 			return -1;
 
 		dst_size = KILOBYTE;
-		dst_plt = RPMA_MR_PLT_VOLATILE;
+		flushable = RPMA_MR_USAGE_FLUSHABLE_VISIBILITY;
 	}
 
 	/* RPMA resources */
@@ -137,8 +137,9 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
-			dst_plt, &dst_mr);
+	ret = rpma_mr_reg(peer, dst_ptr, dst_size,
+			RPMA_MR_USAGE_READ_DST | flushable,
+			&dst_mr);
 	if (ret)
 		goto err_ep_shutdown;
 
@@ -196,7 +197,7 @@ main(int argc, char *argv[])
 	}
 
 #ifdef USE_LIBPMEM
-	if (dst_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (flushable == RPMA_MR_USAGE_FLUSHABLE_PERSISTENCY) {
 		pmem_persist((char *)dst_ptr + dst_offset, KILOBYTE);
 	}
 #endif
@@ -227,7 +228,7 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
-	if (dst_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (flushable == RPMA_MR_USAGE_FLUSHABLE_PERSISTENCY) {
 		pmem_unmap(dst_ptr, dst_size);
 		dst_ptr = NULL;
 	}

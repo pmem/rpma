@@ -68,8 +68,9 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 
 	/* register the RAW buffer */
 	struct rpma_mr_local *raw_mr = NULL;
-	ret = rpma_mr_reg(peer, raw, RAW_SIZE, RPMA_MR_USAGE_READ_DST,
-			RPMA_MR_PLT_VOLATILE, &raw_mr);
+	ret = rpma_mr_reg(peer, raw, RAW_SIZE,
+		RPMA_MR_USAGE_READ_DST | RPMA_MR_USAGE_FLUSHABLE_VISIBILITY,
+		&raw_mr);
 	if (ret) {
 		free(raw);
 		return ret;

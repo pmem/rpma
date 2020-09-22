@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 	/* resources - memory region */
 	void *mr_ptr = NULL;
 	size_t mr_size = 0;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
+	int flushable = RPMA_MR_USAGE_FLUSHABLE_VISIBILITY;
 	struct rpma_mr_local *mr = NULL;
 
 	struct log *log;
@@ -121,7 +121,7 @@ main(int argc, char *argv[])
 			pmem_persist(mr_ptr, LOG_SIGNATURE_SIZE);
 		}
 
-		mr_plt = RPMA_MR_PLT_PERSISTENT;
+		flushable = RPMA_MR_USAGE_FLUSHABLE_PERSISTENCY;
 	}
 #endif
 
@@ -135,7 +135,7 @@ main(int argc, char *argv[])
 
 		mr_ptr = (void *)log;
 		mr_size = sizeof(struct log);
-		mr_plt = RPMA_MR_PLT_VOLATILE;
+		flushable = RPMA_MR_USAGE_FLUSHABLE_VISIBILITY;
 	}
 
 	/* RPMA resources */
@@ -155,8 +155,9 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC,
-			mr_plt, &mr)))
+			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC |
+				flushable,
+			&mr)))
 		goto err_ep_shutdown;
 
 	/* get size of the memory region's descriptor */
@@ -217,13 +218,13 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (flushable == RPMA_MR_USAGE_FLUSHABLE_PERSISTENCY) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}
 #endif
 
-	if (mr_plt == RPMA_MR_PLT_VOLATILE)
+	if (flushable == RPMA_MR_USAGE_FLUSHABLE_VISIBILITY)
 		free(log);
 
 	return ret ? -2 : 0;

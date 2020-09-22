@@ -68,11 +68,13 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV,
-			RPMA_MR_PLT_VOLATILE, &recv_mr)))
+	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE,
+			RPMA_MR_USAGE_RECV | RPMA_MR_USAGE_FLUSHABLE_VISIBILITY,
+			&recv_mr)))
 		goto err_ep_shutdown;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND,
-			RPMA_MR_PLT_VOLATILE, &send_mr))) {
+	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE,
+			RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_FLUSHABLE_VISIBILITY,
+			&send_mr))) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_ep_shutdown;
 	}

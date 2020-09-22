@@ -30,7 +30,7 @@ int server_main(int argc, char *argv[]);
  */
 static int
 create_descriptor(void *desc,
-	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t plt)
+	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t usage)
 {
 	char *buff = (char *)desc;
 
@@ -46,7 +46,7 @@ create_descriptor(void *desc,
 	memcpy(buff, &key, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	*((uint8_t *)buff) = plt;
+	*((uint8_t *)buff) = usage;
 
 	return 0;
 }
@@ -90,7 +90,8 @@ test_client__success(void **unused)
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_SIZE);
-	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	expect_value(ibv_reg_mr, access,
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
 	will_return(ibv_reg_mr, &allocated.ptr);
 	will_return(ibv_reg_mr, MOCK_MR);
 
@@ -138,7 +139,8 @@ test_client__success(void **unused)
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
-	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	expect_value(ibv_reg_mr, access,
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
 	will_return(ibv_reg_mr, &allocated_raw.ptr);
 	will_return(ibv_reg_mr, MOCK_MR_RAW);
 
@@ -152,7 +154,7 @@ test_client__success(void **unused)
 			(uintptr_t)MOCK_READ_ADDR,
 			MOCK_READ_LEN,
 			MOCK_RKEY,
-			RPMA_MR_PLT_VOLATILE);
+			RPMA_MR_USAGE_FLUSHABLE_VISIBILITY);
 	struct rdma_cm_event f_event = {0};
 	f_event.event = RDMA_CM_EVENT_ESTABLISHED;
 	f_event.param.conn.private_data = &data;
@@ -332,7 +334,8 @@ test_server__success(void **unused)
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
-	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	expect_value(ibv_reg_mr, access,
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
 	will_return(ibv_reg_mr, &allocated_raw.ptr);
 	will_return(ibv_reg_mr, MOCK_MR_RAW);
 

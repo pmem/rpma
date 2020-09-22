@@ -88,7 +88,8 @@ new__apm_mr_reg_RPMA_E_NOMEM(void **unused)
 	will_return(__wrap_posix_memalign, &allocated_raw);
 	expect_value(rpma_mr_reg, peer, MOCK_PEER);
 	expect_value(rpma_mr_reg, size, 8);
-	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
+	expect_value(rpma_mr_reg, usage,
+		RPMA_MR_USAGE_READ_DST | RPMA_MR_USAGE_FLUSHABLE_VISIBILITY);
 	will_return(rpma_mr_reg, &allocated_raw.ptr);
 	will_return(rpma_mr_reg, NULL);
 	will_return(rpma_mr_reg, RPMA_E_NOMEM);
@@ -117,7 +118,8 @@ new__apm_malloc_ENOMEM(void **unused)
 	will_return(__wrap_posix_memalign, &allocated_raw);
 	expect_value(rpma_mr_reg, peer, MOCK_PEER);
 	expect_value(rpma_mr_reg, size, 8);
-	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
+	expect_value(rpma_mr_reg, usage,
+		RPMA_MR_USAGE_READ_DST | RPMA_MR_USAGE_FLUSHABLE_VISIBILITY);
 	will_return(rpma_mr_reg, &allocated_raw.ptr);
 	will_return(rpma_mr_reg, MOCK_RPMA_MR_LOCAL);
 	will_return(__wrap__test_malloc, ENOMEM);

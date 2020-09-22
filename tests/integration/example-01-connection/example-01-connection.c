@@ -94,7 +94,8 @@ test_client__success(void **unused)
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
-	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	expect_value(ibv_reg_mr, access,
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
 	will_return(ibv_reg_mr, &allocated_raw.ptr);
 	will_return(ibv_reg_mr, MOCK_MR);
 
@@ -244,7 +245,8 @@ test_server__success(void **unused)
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
-	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
+	expect_value(ibv_reg_mr, access,
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
 	will_return(ibv_reg_mr, &allocated_raw.ptr);
 	will_return(ibv_reg_mr, MOCK_MR);
 
