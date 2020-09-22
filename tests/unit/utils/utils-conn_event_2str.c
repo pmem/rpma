@@ -53,14 +53,14 @@ conn_event_2str__CONN_LOST(void **unused)
 }
 
 /*
- * conn_event_2str__CONN_UNKOWN - sanity test for
+ * conn_event_2str__CONN_UNSUPPORTED - sanity test for
  * rpma_utils_conn_event_2str()
  */
 static void
-conn_event_2str__CONN_UNKNOWN(void **unused)
+conn_event_2str__CONN_UNSUPPORTED(void **unused)
 {
 	assert_string_equal(rpma_utils_conn_event_2str(RPMA_E_UNKNOWN),
-	"Unknown connection event");
+	"Unsupported connection event");
 }
 
 int
@@ -72,7 +72,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(conn_event_2str__CONN_ESTABLISHED),
 		cmocka_unit_test(conn_event_2str__CONN_CLOSED),
 		cmocka_unit_test(conn_event_2str__CONN_LOST),
-		cmocka_unit_test(conn_event_2str__CONN_UNKNOWN),
+		cmocka_unit_test(conn_event_2str__CONN_UNSUPPORTED),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
