@@ -130,6 +130,6 @@ rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)
 	case RPMA_CONN_LOST:
 		return "Connection lost";
 	default:
-		return "Unknown connection event";
+		return "Unsupported connection event";
 	}
 }
