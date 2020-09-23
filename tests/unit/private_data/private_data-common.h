@@ -10,6 +10,7 @@
 
 #include <rdma/rdma_cma.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cmocka_headers.h"
 #include "private_data.h"

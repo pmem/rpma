@@ -8,6 +8,8 @@
  * - rpma_conn_next_completion()
  */
 
+#include <string.h>
+
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
 #include "test-common.h"

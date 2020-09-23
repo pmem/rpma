@@ -5,6 +5,8 @@
  * conn-test-common.c -- the connection unit tests common functions
  */
 
+#include <string.h>
+
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"

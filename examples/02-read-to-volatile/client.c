@@ -8,9 +8,10 @@
  * volatile one.
  */
 
-#include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <librpma.h>
 
 #include "common-conn.h"
 

@@ -87,8 +87,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DUSE_ASAN=ON \
 	-DUSE_UBSAN=ON
 
-make -j$(nproc)
-ctest --output-on-failure
+make -j$(nproc) || make || /bin/bash -i
+ctest --output-on-failure || /bin/bash -i
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
