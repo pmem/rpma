@@ -5,6 +5,8 @@
  * mock-ibverbs.c -- libibverbs mocks
  */
 
+#include <string.h>
+
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-conn_cfg.h"
@@ -36,6 +38,7 @@ ibv_query_device(struct ibv_context *context,
 	return 0;
 }
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 /*
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
@@ -58,6 +61,7 @@ ibv_query_device_ex_mock(struct ibv_context *context,
 
 	return 0;
 }
+#endif
 
 /*
  * ibv_create_cq -- ibv_create_cq() mock

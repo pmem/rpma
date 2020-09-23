@@ -86,6 +86,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 
 	*is_odp_capable = 0;
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	/* query an RDMA device's attributes */
 	struct ibv_device_attr_ex attr = {{{0}}};
 	Rpma_provider_error = ibv_query_device_ex(dev, NULL /* input */,
@@ -109,7 +110,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 			*is_odp_capable = 1;
 		}
 	}
-
+#endif
 	return 0;
 }
 

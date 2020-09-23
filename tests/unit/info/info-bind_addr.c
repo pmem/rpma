@@ -9,6 +9,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "cmocka_headers.h"
 #include "conn_req.h"

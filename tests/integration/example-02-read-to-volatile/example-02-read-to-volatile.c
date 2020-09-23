@@ -5,9 +5,10 @@
  * example-02-read-to-volatile.c -- 'read to volatile' integration tests
  */
 
-#include <rdma/rdma_cma.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <rdma/rdma_cma.h>
 
 #include "cmocka_headers.h"
 #include "librpma.h"
@@ -80,7 +81,9 @@ test_client__success(void **unused)
 	expect_value(rdma_freeaddrinfo, res, &res1);
 
 	/* configure mocks for rpma_peer_new() */
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
+#endif
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_IBV_PD);
 
@@ -258,7 +261,9 @@ test_server__success(void **unused)
 	expect_value(rdma_freeaddrinfo, res, &res1);
 
 	/* configure mocks for rpma_peer_new() */
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	will_return(ibv_query_device_ex_mock, &Ibv_odp_capable_caps);
+#endif
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_IBV_PD);
 
@@ -403,7 +408,9 @@ int
 main(int argc, char *argv[])
 {
 	MOCK_VERBS->abi_compat = __VERBS_ABI_IS_EXTENDED;
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	Verbs_context.query_device_ex = ibv_query_device_ex_mock;
+#endif
 	Verbs_context.sz = sizeof(struct verbs_context);
 	MOCK_VERBS->ops.post_send = ibv_post_send_mock;
 	MOCK_VERBS->ops.poll_cq = ibv_poll_cq_mock;
