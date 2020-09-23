@@ -327,7 +327,7 @@ enum rpma_mr_plt {
  *
  *	#include <librpma.h>
  *
- *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
+ *	int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
  *		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
@@ -342,7 +342,7 @@ enum rpma_mr_plt {
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - memory registration failed
  */
-int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
+int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
 		int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
 
 /** 3
@@ -806,7 +806,7 @@ struct rpma_conn_req;
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
+ *	int rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
  *		const char *port, struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
@@ -821,7 +821,7 @@ struct rpma_conn_req;
  * - RPMA_E_PROVIDER - rdma_create_id(3), rdma_resolve_addr(3),
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
  */
-int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
+int rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
 	const char *port, struct rpma_conn_cfg *cfg,
 	struct rpma_conn_req **req_ptr);
 
@@ -937,7 +937,7 @@ struct rpma_ep;
  *   rdma_getaddrinfo(3), rdma_listen(3) failed
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
+int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
 	const char *port, struct rpma_ep **ep);
 
 /** 3

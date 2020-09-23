@@ -27,7 +27,7 @@ struct rpma_flush {
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - sysconf() or ibv_reg_mr() failed
  */
-int rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr);
+int rpma_flush_new(const struct rpma_peer *peer, struct rpma_flush **flush_ptr);
 
 /*
  * ERRORS

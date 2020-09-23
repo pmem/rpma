@@ -39,7 +39,7 @@ struct rpma_peer {
  * - cfg != NULL
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn_cfg *cfg)
 {
 	if (peer == NULL || id == NULL || cq == NULL)
@@ -107,8 +107,8 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
-	size_t length, int access)
+rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+		void *addr, size_t length, int access)
 {
 	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr != NULL)

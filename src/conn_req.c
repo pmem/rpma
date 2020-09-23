@@ -35,7 +35,7 @@ struct rpma_conn_req {
 	struct rpma_conn_private_data data;
 
 	/* a parent RPMA peer of this request - needed for derivative objects */
-	struct rpma_peer *peer;
+	const struct rpma_peer *peer;
 
 	/* completion event channel - copy for convenience */
 	struct ibv_comp_channel *channel;
@@ -49,7 +49,7 @@ struct rpma_conn_req {
  * - peer != NULL && id != NULL && cfg != NULL && req != NULL
  */
 static int
-rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
 {
 	int ret = 0;
@@ -321,8 +321,9 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
  * cfg != NULL
  */
 int
-rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
-		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
+rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
+		struct rdma_cm_event *edata, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || edata == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -354,8 +355,9 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *edata,
  * the prepared ID into rpma_conn_req_from_id.
  */
 int
-rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
-		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
+rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
+		const char *port, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;

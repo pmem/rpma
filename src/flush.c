@@ -19,7 +19,8 @@
 #include "mr.h"
 #include "rpma_err.h"
 
-static int rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush);
+static int rpma_flush_apm_new(const struct rpma_peer *peer,
+		struct rpma_flush *flush);
 static int rpma_flush_apm_delete(struct rpma_flush *flush);
 static int rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset,
@@ -49,7 +50,7 @@ struct flush_apm {
  * rpma_flush_apm_new -- allocate a RAW buffer and register it
  */
 static int
-rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
+rpma_flush_apm_new(const struct rpma_peer *peer, struct rpma_flush *flush)
 {
 	/* a memory registration has to be page-aligned */
 	long pagesize = sysconf(_SC_PAGESIZE);
@@ -135,7 +136,7 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
  * rpma_flush_new -- peak a flush implementation and return the flushing object
  */
 int
-rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
+rpma_flush_new(const struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	struct rpma_flush *flush = malloc(sizeof(struct rpma_flush_internal));
 	if (!flush)

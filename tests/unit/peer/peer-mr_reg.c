@@ -24,7 +24,7 @@
 static void
 mr_reg__fail_ENOMEM(void **peer_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	const struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -51,7 +51,7 @@ mr_reg__fail_ENOMEM(void **peer_ptr)
 static void
 mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	const struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -79,7 +79,7 @@ mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 static void
 mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	const struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -113,7 +113,7 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 static void
 mr_reg__success(void **peer_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	const struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -138,7 +138,7 @@ mr_reg__success(void **peer_ptr)
 static void
 mr_reg__success_odp(void **peer_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	const struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);

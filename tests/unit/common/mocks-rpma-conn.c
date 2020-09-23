@@ -17,7 +17,7 @@
  * rpma_conn_new -- rpma_conn_new()  mock
  */
 int
-rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_new(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
 {
 	assert_ptr_equal(peer, MOCK_PEER);

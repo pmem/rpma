@@ -254,7 +254,7 @@ rpma_mr_recv(struct ibv_qp *qp,
  * rpma_mr_reg -- create a local memory registration object
  */
 int
-rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
+rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr)
 {
 	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)

@@ -19,7 +19,7 @@
  * - RPMA_E_INVAL - peer, id or cq is NULL
  * - RPMA_E_PROVIDER - allocating a QP failed
  */
-int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+int rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn_cfg *cfg);
 
 /*
@@ -32,7 +32,7 @@ int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  *
  * - RPMA_E_PROVIDER - registering the memory region failed
  */
-int rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
-	size_t length, int access);
+int rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+		void *addr, size_t length, int access);
 
 #endif /* LIBRPMA_PEER_H */
