@@ -111,10 +111,11 @@ pkg_check_modules(LIBPROTOBUFC QUIET libprotobuf-c)
 
 # check if libibverbs has ODP support
 is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
-if(NOT ON_DEMAND_PAGING_SUPPORTED)
-	message(FATAL_ERROR "-- On-Demand Paging (ODP) is NOT supported, too old version of libibverbs!")
-else()
+if(ON_DEMAND_PAGING_SUPPORTED)
 	message(NOTICE "-- On-Demand Paging (ODP) in libibverbs supported - Success")
+	add_flag(-DON_DEMAND_PAGING_SUPPORTED=1)
+else()
+	message(WARNING "-- On-Demand Paging (ODP) is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
 # check if librdmacm has correct signature of rdma_getaddrinfo()

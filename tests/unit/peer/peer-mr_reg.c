@@ -89,12 +89,14 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EOPNOTSUPP);
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
 	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EAGAIN);
+#endif
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
@@ -103,7 +105,11 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
+#else
+	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
+#endif
 	assert_null(mr);
 }
 
@@ -148,11 +154,13 @@ mr_reg__success_odp(void **peer_ptr)
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EOPNOTSUPP);
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
 	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
 	will_return(ibv_reg_mr, MOCK_MR);
+#endif
 
 	/* run test */
 	struct ibv_mr *mr;
@@ -160,8 +168,14 @@ mr_reg__success_odp(void **peer_ptr)
 				MOCK_LEN, MOCK_ACCESS);
 
 	/* verify the results */
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(mr, MOCK_MR);
+#else
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
+	assert_null(mr);
+#endif
 }
 
 int

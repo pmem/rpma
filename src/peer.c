@@ -116,6 +116,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 
 	Rpma_provider_error = errno;
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	if (Rpma_provider_error != EOPNOTSUPP) {
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
 			"ibv_reg_mr()");
@@ -147,6 +148,10 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
 	}
 
 	return 0;
+#else
+	RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error, "ibv_reg_mr()");
+	return RPMA_E_PROVIDER;
+#endif
 }
 
 /* public librpma API */

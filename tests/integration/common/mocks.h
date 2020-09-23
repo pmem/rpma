@@ -58,10 +58,12 @@ struct posix_memalign_args {
 	void *ptr;
 };
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 int ibv_query_device_ex_mock(struct ibv_context *context,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
 		size_t attr_size);
+#endif
 
 int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 			struct ibv_send_wr **bad_wr);

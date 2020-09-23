@@ -5,6 +5,7 @@
  * mocks.c -- common mocks for integration tests
  */
 
+#include <string.h>
 #include <librpma.h>
 
 #include "cmocka_headers.h"
@@ -17,6 +18,7 @@ struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
 struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 /* predefined IBV On-demand Paging caps */
 struct ibv_odp_caps Ibv_odp_capable_caps = {
 	.general_caps = IBV_ODP_SUPPORT,
@@ -26,6 +28,7 @@ struct ibv_odp_caps Ibv_odp_capable_caps = {
 			0
 	},
 };
+#endif
 
 /*
  * ibv_query_device -- ibv_query_device() mock
@@ -46,6 +49,7 @@ ibv_query_device(struct ibv_context *context,
 	return 0;
 }
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 /*
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
@@ -68,6 +72,7 @@ ibv_query_device_ex_mock(struct ibv_context *context,
 
 	return 0;
 }
+#endif
 
 /*
  * ibv_req_notify_cq_mock -- ibv_req_notify_cq() mock

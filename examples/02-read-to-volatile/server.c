@@ -8,11 +8,12 @@
  *  him reading its contents.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <inttypes.h>
 #include <librpma.h>
 #include <librpma_log.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #include "common-conn.h"
 
