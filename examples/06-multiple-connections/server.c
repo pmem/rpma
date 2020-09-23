@@ -76,7 +76,7 @@ server_init(struct server_res *svr, struct rpma_peer *peer)
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, svr->dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
-			RPMA_MR_PLT_VOLATILE, &svr->dst_mr);
+				&svr->dst_mr);
 	if (ret) {
 		free(svr->dst_ptr);
 		close(svr->epoll);

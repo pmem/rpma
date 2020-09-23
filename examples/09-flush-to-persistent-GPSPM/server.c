@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 	void *mr_ptr = NULL;
 	size_t mr_size = 0;
 	size_t data_offset = 0;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
+	int flushable = RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY;
 	struct rpma_mr_local *mr = NULL;
 
 	/* messaging resources */
@@ -116,7 +116,7 @@ main(int argc, char *argv[])
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
 
-		mr_plt = RPMA_MR_PLT_PERSISTENT;
+		flushable = RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT;
 	}
 #endif /* USE_LIBPMEM */
 
@@ -127,7 +127,7 @@ main(int argc, char *argv[])
 			return -1;
 
 		mr_size = KILOBYTE;
-		mr_plt = RPMA_MR_PLT_VOLATILE;
+		flushable = RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY;
 	}
 
 	/* allocate messaging buffer */
@@ -164,14 +164,15 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_FLUSHABLE,
-			mr_plt, &mr)))
+			RPMA_MR_USAGE_WRITE_DST | flushable,
+			&mr)))
 		goto err_ep_shutdown;
 
 	/* register the messaging memory */
 	if ((ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE,
-			RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV,
-			RPMA_MR_PLT_VOLATILE, &msg_mr))) {
+			RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
+				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY,
+			&msg_mr))) {
 		(void) rpma_mr_dereg(&mr);
 		goto err_ep_shutdown;
 	}
@@ -313,7 +314,7 @@ err_free:
 	free(msg_ptr);
 
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (flushable == RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}

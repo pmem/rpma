@@ -68,7 +68,7 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, dst_ptr, KILOBYTE, RPMA_MR_USAGE_READ_DST,
-			RPMA_MR_PLT_VOLATILE, &dst_mr);
+				&dst_mr);
 	if (ret)
 		goto err_mr_free;
 

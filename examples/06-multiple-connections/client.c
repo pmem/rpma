@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, MAX_NAME_SIZE, RPMA_MR_USAGE_READ_SRC,
-			RPMA_MR_PLT_VOLATILE, &mr);
+				&mr);
 	if (ret)
 		goto err_mr_free;
 

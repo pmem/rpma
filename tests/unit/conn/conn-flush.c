@@ -147,6 +147,10 @@ flush__success_FLUSH_TYPE_PERSISTENT(void **cstate_ptr)
 	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
 	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
 
+	expect_value(rpma_mr_remote_supports_persistent_flush, mr,
+			MOCK_RPMA_MR_REMOTE);
+	will_return(rpma_mr_remote_supports_persistent_flush, true);
+
 	/* run test */
 	ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
 			MOCK_REMOTE_OFFSET, MOCK_LEN,

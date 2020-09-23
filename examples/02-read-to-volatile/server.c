@@ -74,8 +74,7 @@ main(int argc, char *argv[])
 	memcpy(mr_ptr, HELLO_STR, mr_size);
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC,
-			RPMA_MR_PLT_VOLATILE, &mr);
+	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC, &mr);
 	if (ret)
 		goto err_mr_free;
 
