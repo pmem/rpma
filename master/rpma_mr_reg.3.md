@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
+          int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
                   int usage, enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr);
 
 DESCRIPTION
