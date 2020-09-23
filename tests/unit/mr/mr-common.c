@@ -95,7 +95,7 @@ setup__reg_success(void **pprestate)
 	/* run test */
 	struct rpma_mr_local *mr = NULL;
 	int ret = rpma_mr_reg(MOCK_PEER, MOCK_PTR, MOCK_SIZE,
-				mr_reg_args.usage, MOCK_PLT, &mr);
+				mr_reg_args.usage, &mr);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);

@@ -30,7 +30,7 @@ int server_main(int argc, char *argv[]);
  */
 static int
 create_descriptor(void *desc,
-	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t plt)
+	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t usage)
 {
 	char *buff = (char *)desc;
 
@@ -46,7 +46,7 @@ create_descriptor(void *desc,
 	memcpy(buff, &key, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	*((uint8_t *)buff) = plt;
+	*((uint8_t *)buff) = usage;
 
 	return 0;
 }
@@ -152,7 +152,7 @@ test_client__success(void **unused)
 			(uintptr_t)MOCK_READ_ADDR,
 			MOCK_READ_LEN,
 			MOCK_RKEY,
-			RPMA_MR_PLT_VOLATILE);
+			RPMA_MR_USAGE_READ_DST);
 	struct rdma_cm_event f_event = {0};
 	f_event.event = RDMA_CM_EVENT_ESTABLISHED;
 	f_event.param.conn.private_data = &data;
