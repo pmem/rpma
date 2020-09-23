@@ -67,6 +67,7 @@ do
 	if [[ -s "$ERRORS" ]]; then
 		echo "src2man: errors found in the \"$MAN\" file:"
 		cat $ERRORS
+		exit 1
 	fi
 
 	if [ $PANDOC -eq 1 ]; then
@@ -93,7 +94,7 @@ do
 	cat $MANUALS >> $ALL_MANUALS
 
 	rm $MANUALS $ERRORS
-done
+done || exit 1
 
 NEW_MAN_3="$(mktemp)"
 NEW_MAN_7="$(mktemp)"
