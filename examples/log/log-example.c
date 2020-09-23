@@ -8,7 +8,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "librpma_log.h"
+#include "librpma.h"
 
 extern void log_worker_is_doing_something(void);
 

@@ -10,7 +10,6 @@
 
 #include <inttypes.h>
 #include <librpma.h>
-#include <librpma_log.h>
 #include <stdlib.h>
 #include <stdio.h>
 

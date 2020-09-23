@@ -10,7 +10,6 @@
 #include <stdio.h>
 
 #include <librpma.h>
-#include <librpma_log.h>
 
 #ifdef TEST_MOCK_MAIN
 #define main server_main
