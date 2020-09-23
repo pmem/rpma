@@ -476,7 +476,16 @@ struct rpma_conn_cfg;
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_new() creates a new connection configuration object.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_new() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_new() does not set
+ * *cfg_ptr value on failure.
  *
  * ERRORS
  * rpma_conn_cfg_new() can fail with the following error:
@@ -493,7 +502,16 @@ int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_delete() delete the connection configuration object.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_delete() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_delete() sets *cfg_ptr value to NULL
+ * on success and on failure.
  *
  * ERRORS
  * rpma_conn_cfg_delete() can fail with the following error:
@@ -509,8 +527,16 @@ int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg,
- *		int timeout_ms);
+ *			int timeout_ms);
+ *
+ * DESCRIPTION
+ * Sets connection establishment timeout.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_timeout() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_cfg_set_timeout() can fail with the following error:
@@ -526,8 +552,17 @@ int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg,
- *		int *timeout_ms);
+ *			int *timeout_ms);
+ *
+ * DESCRIPTION
+ * Gets connection establishment timeout.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_timeout() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_timeout() does not set
+ * *timeout_ms value on failure.
  *
  * ERRORS
  * rpma_conn_cfg_get_timeout() can fail with the following error:
@@ -543,8 +578,16 @@ int rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t cq_size);
+ *			uint32_t cq_size);
+ *
+ * DESCRIPTION
+ * Sets CQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_cq_size() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_cfg_set_cq_size() can fail with the following error:
@@ -560,8 +603,17 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t *cq_size);
+ *			uint32_t *cq_size);
+ *
+ * DESCRIPTION
+ * Gets CQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_cq_size() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_cq_size() does not set
+ * *cq_size value on failure.
  *
  * ERRORS
  * rpma_conn_cfg_get_cq_size() can fail with the following error:
@@ -577,8 +629,16 @@ int rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t sq_size);
+ *			uint32_t sq_size);
+ *
+ * DESCRIPTION
+ * Sets SQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_sq_size() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_cfg_set_sq_size() can fail with the following error:
@@ -594,8 +654,17 @@ int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t *sq_size);
+ *			uint32_t *sq_size);
+ *
+ * DESCRIPTION
+ * Gets SQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_sq_size() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_sq_size() does not set
+ * *sq_size value on failure.
  *
  * ERRORS
  * rpma_conn_cfg_get_sq_size() can fail with the following error:
@@ -611,8 +680,16 @@ int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t rq_size);
+ *			uint32_t rq_size);
+ *
+ * DESCRIPTION
+ * Sets RQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_rq_size() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_cfg_set_rq_size() can fail with the following error:
@@ -628,8 +705,17 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg,
- *		uint32_t *rq_size);
+ *			uint32_t *rq_size);
+ *
+ * DESCRIPTION
+ * Gets RQ size for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_rq_size() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_rq_size() does not set
+ * *rq_size value on failure.
  *
  * ERRORS
  * rpma_conn_cfg_get_rq_size() can fail with the following error:
@@ -649,10 +735,16 @@ struct rpma_conn;
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
  *	int rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
  * Get an event file descriptor of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_event_fd() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_get_event_fd() does not set
+ * *fd value on failure.
  *
  * ERRORS
  * rpma_conn_get_event_fd() can fail with the following error:
@@ -675,11 +767,28 @@ enum rpma_conn_event {
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
+ *	enum rpma_conn_event {
+ *		RPMA_CONN_UNDEFINED = -1,
+ *		RPMA_CONN_ESTABLISHED,
+ *		RPMA_CONN_CLOSED,
+ *		RPMA_CONN_LOST,
+ *	};
+ *
  *	int rpma_conn_next_event(struct rpma_conn *conn,
  *		enum rpma_conn_event *event);
  *
  * DESCRIPTION
- * Obtain the next event from the connection
+ * Obtain the next event from the connection.
+ * Types of events:
+ * - RPMA_CONN_UNDEFINED - undefined connection event
+ * - RPMA_CONN_ESTABLISHED - connection established
+ * - RPMA_CONN_CLOSED - connection closed
+ * - RPMA_CONN_LOST - connection lost
+ *
+ * RETURN VALUE
+ * The rpma_conn_next_event() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_next_event() can fail with the following errors:
@@ -698,10 +807,21 @@ int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
  *
  *	#include <librpma.h>
  *
+ *	enum rpma_conn_event {
+ *		RPMA_CONN_UNDEFINED = -1,
+ *		RPMA_CONN_ESTABLISHED,
+ *		RPMA_CONN_CLOSED,
+ *		RPMA_CONN_LOST,
+ *	};
+ *
  *	const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
  *
  * DESCRIPTION
  * Return const string representation of RPMA_CONN_* enums.
+ *
+ * RETURN VALUE
+ * The rpma_utils_conn_event_2str() const string representation
+ * of RPMA_CONN_* enums.
  *
  * ERRORS
  * rpma_utils_conn_event_2str() can not fail.
@@ -714,19 +834,25 @@ struct rpma_conn_private_data {
 };
 
 /** 3
- * rpma_conn_get_private_data - obtain a pointer to the connection's
- *                              private data
+ * rpma_conn_get_private_data - get a pointer to the connection's private data
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
+ *	struct rpma_conn_private_data;
  *	int rpma_conn_get_private_data(struct rpma_conn *conn,
- *	    struct rpma_conn_private_data *pdata);
+ *			struct rpma_conn_private_data *pdata);
  *
  * DESCRIPTION
  * Obtain a pointer to the private data given by the other side
  * of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_private_data() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_get_private_data() does not set
+ * *pdata value on failure.
  *
  * ERRORS
  * rpma_conn_get_private_data() can fail with the following error:
@@ -743,8 +869,18 @@ int rpma_conn_get_private_data(struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
+ *	struct rpma_peer_cfg;
  *	int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *			struct rpma_peer_cfg *pcfg);
+ *
+ * DESCRIPTION
+ * Apply remote peer cfg for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_apply_remote_peer_cfg() function returns 0 on success
+ * or a negative error code on failure. rpma_conn_apply_remote_peer_cfg()
+ * does not set *pcfg value on failure.
  *
  * ERRORS
  * rpma_conn_apply_remote_peer_cfg() can fail with the following error:
@@ -761,10 +897,15 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
  *	int rpma_conn_disconnect(struct rpma_conn *conn);
  *
  * DESCRIPTION
  * Initialize the RPMA connection disconnection process.
+ *
+ * RETURN VALUE
+ * The rpma_conn_disconnect() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_disconnect() can fail with the following errors:
@@ -781,7 +922,11 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
  *	int rpma_conn_delete(struct rpma_conn **conn);
+ *
+ * DESCRIPTION
+ * rpma_conn_delete() delete already closed connection.
  *
  * RETURN VALUE
  * The rpma_conn_delete() function returns 0 on success or a negative error code
@@ -806,12 +951,19 @@ struct rpma_conn_req;
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer;
+ *	struct rpma_conn_req;
  *	int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
- *		const char *port, struct rpma_conn_req **req_ptr);
+ *			const char *port, struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
  * Create a new outgoing connection request object using reliable,
  * connection-oriented and message-based (RDMA_PS_TCP) QP communication.
+ *
+ * RETURN VALUE
+ * The rpma_conn_req_new() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_req_new() does not set
+ * *req_ptr value on failure.
  *
  * ERRORS
  * rpma_conn_req_new() can fail with the following errors:
@@ -822,8 +974,8 @@ struct rpma_conn_req;
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-	const char *port, struct rpma_conn_cfg *cfg,
-	struct rpma_conn_req **req_ptr);
+		const char *port, struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req_ptr);
 
 /** 3
  * rpma_conn_req_delete - delete the connection request
@@ -832,19 +984,25 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_req;
  *	int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
  * Delete the connection request both incoming and outgoing.
+ *
+ * RETURN VALUE
+ * The rpma_conn_req_delete() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_req_delete() sets *req_ptr value to NULL
+ * on success and on failure.
  *
  * ERRORS
  * rpma_conn_req_delete() can fail with the following errors:
  *
  * - RPMA_E_INVAL - req_ptr is NULL
  * - RPMA_E_PROVIDER
- *     - rdma_destroy_qp(3) or ibv_destroy_cq(3) failed
- *     - rdma_reject(3) or rdma_ack_cm_event(3) failed (passive side only)
- *     - rdma_destroy_id(3) failed (active side only)
+ *	- rdma_destroy_qp(3) or ibv_destroy_cq(3) failed
+ *	- rdma_reject(3) or rdma_ack_cm_event(3) failed (passive side only)
+ *	- rdma_destroy_id(3) failed (active side only)
  */
 int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
@@ -855,9 +1013,12 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_req;
+ *	struct rpma_conn_private_data;
+ *	struct rpma_conn;
  *	int rpma_conn_req_connect(struct rpma_conn_req *req_ptr,
- *		struct rpma_conn_private_data *pdata,
- *		struct rpma_conn **conn_ptr);
+ *			struct rpma_conn_private_data *pdata,
+ *			struct rpma_conn **conn_ptr);
  *
  * DESCRIPTION
  * Connect the connection requests both incoming and outgoing.
@@ -877,11 +1038,12 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - initiating a connection request failed (active side only)
  * - RPMA_E_PROVIDER - accepting the connection request failed
- *                     (passive side only)
+ * (passive side only)
  * - RPMA_E_PROVIDER - freeing a communication event failed (passive side only)
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr);
+		struct rpma_conn_private_data *pdata,
+		struct rpma_conn **conn_ptr);
 
 /** 3
  * rpma_conn_req_recv - initialize the receive operation
@@ -890,15 +1052,21 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn_req;
+ *	struct rpma_mr_local;
  *	int rpma_conn_req_recv(struct rpma_conn_req *req,
- *		struct rpma_mr_local *dst, size_t offset, size_t len,
- *		void *op_context);
+ *			struct rpma_mr_local *dst, size_t offset, size_t len,
+ *			void *op_context);
  *
  * DESCRIPTION
  * Initialize the receive operation. It prepares a buffer for a message
  * send from other side of the connection. Please see rpma_send(3). This is
  * a variant of rpma_recv(3) which may be used before the connection is
  * established.
+ *
+ * RETURN VALUE
+ * The rpma_conn_req_recv() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_conn_req_recv() can fail with the following errors:
@@ -907,8 +1075,8 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
 int rpma_conn_req_recv(struct rpma_conn_req *req,
-    struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context);
+		struct rpma_mr_local *dst, size_t offset, size_t len,
+		void *op_context);
 
 /* server-side setup */
 
