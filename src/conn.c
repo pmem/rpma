@@ -383,11 +383,18 @@ rpma_flush(struct rpma_conn *conn,
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
 
-	if (type == RPMA_FLUSH_TYPE_PERSISTENT && !conn->direct_write_to_pmem) {
-		RPMA_LOG_ERROR(
-			"Connection does not support flush to persistency. "
-			"Check if the remote node supports direct write to persistent memory.");
-		return RPMA_E_NOSUPP;
+	if (type == RPMA_FLUSH_TYPE_PERSISTENT) {
+		if (!conn->direct_write_to_pmem) {
+			RPMA_LOG_ERROR(
+				"Connection does not support flush to persistency. "
+				"Check if the remote node supports direct write to persistent memory.");
+			return RPMA_E_NOSUPP;
+		}
+		if (!rpma_mr_remote_supports_persistent_flush(dst)) {
+			RPMA_LOG_ERROR(
+				"The remote node does not support flushing to persistency.");
+			return RPMA_E_NOSUPP;
+		}
 	}
 
 	rpma_flush_func flush = conn->flush->func;

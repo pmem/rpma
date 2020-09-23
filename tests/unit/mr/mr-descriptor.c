@@ -204,14 +204,17 @@ remote_from_descriptor__malloc_ENOMEM(void **unused)
 }
 
 /*
- * remote_from_descriptor__desc_plt_invalid - buff with invalid contents
+ * remote_from_descriptor__buff_usage_equal_zero - buff with invalid contents
  * should be detected as long as it breaks placement value
  */
 static void
-remote_from_descriptor__buff_plt_invalid(void **unused)
+remote_from_descriptor__buff_usage_equal_zero(void **unused)
 {
 	char desc_invalid[MR_DESC_SIZE];
-	memset(desc_invalid, 0xff, MR_DESC_SIZE);
+	memset(desc_invalid, 0xff, MR_DESC_SIZE - 1);
+
+	/* set usage to 0 */
+	desc_invalid[MR_DESC_SIZE - 1] = 0;
 
 	/* configure mock */
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
@@ -402,7 +405,7 @@ remote_from_descriptor__desc_alignment(void **unused)
 		assert_int_equal(ret, MOCK_OK);
 		assert_int_equal(size, MOCK_SIZE);
 		/*
-		 * XXX When it will be possible verify addr, rkey, and placement
+		 * XXX When it will be possible verify addr, rkey, and usage
 		 * using rpma_read or newly introduced getters.
 		 */
 
@@ -414,7 +417,8 @@ remote_from_descriptor__desc_alignment(void **unused)
 }
 
 static struct prestate prestate =
-		{RPMA_MR_USAGE_READ_SRC, IBV_ACCESS_REMOTE_READ, NULL};
+		{RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT,
+		IBV_ACCESS_REMOTE_READ, NULL};
 
 static const struct CMUnitTest tests_descriptor[] = {
 	/* rpma_mr_get_descriptor_size() unit test */
@@ -447,7 +451,7 @@ static const struct CMUnitTest tests_descriptor[] = {
 		remote_from_descriptor__mr_ptr_NULL_desc_NULL),
 	cmocka_unit_test(remote_from_descriptor__invalid_desc_size),
 	cmocka_unit_test(remote_from_descriptor__malloc_ENOMEM),
-	cmocka_unit_test(remote_from_descriptor__buff_plt_invalid),
+	cmocka_unit_test(remote_from_descriptor__buff_usage_equal_zero),
 
 	/* rpma_mr_remote_delete() unit test */
 	cmocka_unit_test(remote_delete__mr_ptr_NULL),

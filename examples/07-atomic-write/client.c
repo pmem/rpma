@@ -41,7 +41,6 @@ main(int argc, char *argv[])
 	/* resources - memory region */
 	void *mr_ptr = NULL;
 	size_t mr_size = KILOBYTE;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
 	struct rpma_mr_remote *remote_mr = NULL;
 	size_t remote_size = 0;
 	size_t used_offset = 0;
@@ -82,7 +81,7 @@ main(int argc, char *argv[])
 	/* register the memory for the remote log manipulation */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST,
-			mr_plt, &local_mr)))
+			&local_mr)))
 		goto err_peer_cfg_delete;
 
 	/* obtain the remote memory description */

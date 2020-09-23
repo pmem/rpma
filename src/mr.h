@@ -66,4 +66,13 @@ int rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, void *op_context);
 
+/*
+ * ASSUMPTIONS
+ * - mr != NULL
+ *
+ * ERRORS
+ * rpma_mr_remote_supports_persistent_flush() cannot fail.
+ */
+int rpma_mr_remote_supports_persistent_flush(struct rpma_mr_remote *mr);
+
 #endif /* LIBRPMA_MR_H */

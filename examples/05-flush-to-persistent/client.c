@@ -76,7 +76,6 @@ main(int argc, char *argv[])
 	void *mr_ptr = NULL;
 	size_t mr_size = 0;
 	size_t data_offset = 0;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
 	struct rpma_mr_remote *dst_mr = NULL;
 	size_t dst_size = 0;
 	size_t dst_offset = 0;
@@ -85,10 +84,11 @@ main(int argc, char *argv[])
 
 	struct hello_t *hello = NULL;
 
+	int is_pmem = 0;
+
 #ifdef USE_LIBPMEM
 	if (argc >= 4) {
 		char *path = argv[3];
-		int is_pmem;
 
 		/* map the file */
 		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
@@ -143,8 +143,6 @@ main(int argc, char *argv[])
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
-
-		mr_plt = RPMA_MR_PLT_PERSISTENT;
 	}
 #endif
 
@@ -156,7 +154,7 @@ main(int argc, char *argv[])
 
 		mr_size = sizeof(struct hello_t);
 		hello = mr_ptr;
-		mr_plt = RPMA_MR_PLT_VOLATILE;
+		is_pmem = 0;
 
 		/* write an initial value */
 		write_hello_str(hello, en);
@@ -184,9 +182,8 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory RDMA write */
-	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_SRC,
-			mr_plt, &src_mr);
+	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_WRITE_SRC,
+				&src_mr);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -281,7 +278,7 @@ main(int argc, char *argv[])
 	 */
 	translate(hello);
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (is_pmem) {
 		pmem_persist(hello, sizeof(struct hello_t));
 	}
 #endif
@@ -305,7 +302,7 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (is_pmem) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}

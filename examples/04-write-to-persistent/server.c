@@ -44,13 +44,13 @@ main(int argc, char *argv[])
 	void *mr_ptr = NULL;
 	size_t mr_size = 0;
 	size_t data_offset = 0;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
 	struct rpma_mr_local *mr = NULL;
+
+	int is_pmem = 0;
 
 #ifdef USE_LIBPMEM
 	if (argc >= 4) {
 		char *path = argv[3];
-		int is_pmem;
 
 		/* map the file */
 		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
@@ -103,8 +103,6 @@ main(int argc, char *argv[])
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
-
-		mr_plt = RPMA_MR_PLT_PERSISTENT;
 	}
 #endif
 
@@ -115,7 +113,7 @@ main(int argc, char *argv[])
 			return -1;
 
 		mr_size = KILOBYTE;
-		mr_plt = RPMA_MR_PLT_VOLATILE;
+		is_pmem = 0;
 	}
 
 	/* RPMA resources */
@@ -142,8 +140,7 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC,
-			mr_plt, &mr);
+			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC, &mr);
 	if (ret)
 		goto err_ep_shutdown;
 
@@ -198,7 +195,7 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (is_pmem) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}

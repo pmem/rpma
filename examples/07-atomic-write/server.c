@@ -58,15 +58,15 @@ main(int argc, char *argv[])
 	/* resources - memory region */
 	void *mr_ptr = NULL;
 	size_t mr_size = 0;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
 	struct rpma_mr_local *mr = NULL;
 
 	struct log *log;
 
+	int is_pmem = 0;
+
 #ifdef USE_LIBPMEM
 	if (argc == 4) {
 		char *path = argv[3];
-		int is_pmem;
 
 		/* map the file */
 		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
@@ -120,8 +120,6 @@ main(int argc, char *argv[])
 			strncpy(mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE);
 			pmem_persist(mr_ptr, LOG_SIGNATURE_SIZE);
 		}
-
-		mr_plt = RPMA_MR_PLT_PERSISTENT;
 	}
 #endif
 
@@ -135,7 +133,7 @@ main(int argc, char *argv[])
 
 		mr_ptr = (void *)log;
 		mr_size = sizeof(struct log);
-		mr_plt = RPMA_MR_PLT_VOLATILE;
+		is_pmem = 0;
 	}
 
 	/* RPMA resources */
@@ -155,8 +153,9 @@ main(int argc, char *argv[])
 
 	/* register the memory */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC,
-			mr_plt, &mr)))
+			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC |
+				is_pmem,
+			&mr)))
 		goto err_ep_shutdown;
 
 	/* get size of the memory region's descriptor */
@@ -217,13 +216,13 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
-	if (mr_plt == RPMA_MR_PLT_PERSISTENT) {
+	if (is_pmem) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}
 #endif
 
-	if (mr_plt == RPMA_MR_PLT_VOLATILE)
+	if (!is_pmem)
 		free(log);
 
 	return ret ? -2 : 0;
