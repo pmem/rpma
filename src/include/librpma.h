@@ -119,11 +119,6 @@ int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 
 struct rpma_peer_cfg;
 
-enum rpma_on_off_type {
-	RPMA_OFF,
-	RPMA_ON
-};
-
 /** 3
  * rpma_peer_cfg_new - create a new peer configuration object
  *
