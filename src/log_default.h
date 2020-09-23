@@ -8,7 +8,7 @@
 #ifndef LIBRPMA_LOG_DEFAULT_H
 #define LIBRPMA_LOG_DEFAULT_H
 
-#include "librpma_log.h"
+#include "librpma.h"
 
 void rpma_log_default_function(rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,

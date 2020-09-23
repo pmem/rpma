@@ -9,7 +9,7 @@
 #define LIBRPMA_LOG_INTERNAL_H
 
 #include <string.h>
-#include "librpma_log.h"
+#include "librpma.h"
 
 /* pointer to the logging function */
 extern log_function *Rpma_log_function;
