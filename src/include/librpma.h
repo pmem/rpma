@@ -1719,6 +1719,13 @@ int rpma_conn_next_completion(const struct rpma_conn *conn,
  *	#include <librpma.h>
  *
  *	int rpma_err_get_provider_error(void);
+ *
+ * DESCRIPTION
+ * rpma_err_get_provider_error() returns the last errno value
+ * reported by the provider.
+ *
+ * ERRORS
+ * rpma_err_get_provider_error() cannot fail.
  */
 int rpma_err_get_provider_error(void);
 
@@ -1746,6 +1753,9 @@ int rpma_err_get_provider_error(void);
  * The rpma_err_get_msg() function returns a pointer to a static buffer
  * containing the last error message logged for the current thread.
  *
+ * ERRORS
+ * rpma_err_get_msg() cannot fail.
+ *
  * SEE ALSO
  * librpma(7) and
  * .B <https://pmem.io>
@@ -1762,7 +1772,7 @@ const char *rpma_err_get_msg(void);
  *	const char *rpma_err_2str(int ret);
  *
  * DESCRIPTION
- * Return const string representation of RPMA error codes.
+ * rpma_err_2str() returns the const string representation of RPMA error codes.
  *
  * ERRORS
  * rpma_err_2str() can not fail.
