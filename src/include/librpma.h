@@ -1213,10 +1213,16 @@ int rpma_recv(struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
  *	int rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
- * Get a completion file descriptor of the connection.
+ * Gets a completion file descriptor of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_completion_fd() function returns 0 on success
+ * or a negative error code on failure. rpma_conn_get_completion_fd()
+ * does not set *fd value on failure.
  *
  * ERRORS
  * rpma_conn_get_completion_fd() can fail with the following error:
@@ -1247,11 +1253,16 @@ struct rpma_completion {
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
  *	int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  * DESCRIPTION
  * rpma_conn_prepare_completions() waits for incoming completions. If it
  * succeeded the completions can be collected using rpma_conn_next_completion().
+ *
+ * RETURN VALUE
+ * The rpma_conn_prepare_completions() function returns 0 on success
+ * or a negative error code on failure.
  *
  * ERRORS
  * rpma_conn_prepare_completions() can fail with the following errors:
@@ -1269,14 +1280,20 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_conn;
+ *	struct rpma_completion;
  *	int rpma_conn_next_completion(struct rpma_conn *conn,
- *		struct rpma_completion *cmpl);
+ *			struct rpma_completion *cmpl);
  *
  * DESCRIPTION
  * Receive the next available completion of an already posted operation. All
  * operations are generating completion on error. All operations posted with
  * the **RPMA_F_COMPLETION_ALWAYS** flag will also generate a completion on
  * success.
+ *
+ * RETURN VALUE
+ * The rpma_conn_next_completion() function returns 0 on success
+ * or a negative error code on failure.
  *
  * ERRORS
  * rpma_conn_next_completion() can fail with the following errors:
@@ -1288,7 +1305,7 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  * - RPMA_E_NOSUPP - not supported opcode
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
-	struct rpma_completion *cmpl);
+		struct rpma_completion *cmpl);
 
 /* error handling */
 
