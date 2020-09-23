@@ -324,12 +324,19 @@ struct rpma_mr_remote;
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer;
+ *	struct rpma_mr_local;
+ *
  *	int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
  *		int usage, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
- * rpma_mr_reg() registers a memory region and creates
- * a local memory registration object.
+ * rpma_mr_reg() registers a memory region and creates a local memory
+ * registration object.
+ *
+ * RETURN VALUE
+ * The rpma_mr_reg() function returns 0 on success or a negative error code
+ * on failure. rpma_mr_reg() does not set *mr_ptr value on failure.
  *
  * ERRORS
  * rpma_mr_reg() can fail with the following errors:
@@ -349,11 +356,16 @@ int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_local;
  *	int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
  * rpma_mr_dereg() deregisters a memory region
  * and deletes a local memory registration object.
+ *
+ * RETURN VALUE
+ * The rpma_mr_dereg() function returns 0 on success or a negative error code
+ * on failure. rpma_mr_dereg() does not set *mr_ptr value to NULL on failure.
  *
  * ERRORS
  * rpma_mr_dereg() can fail with the following errors:
@@ -370,6 +382,7 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_local;
  *	int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
  *
  * DESCRIPTION
@@ -378,6 +391,10 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  * the other side it can be consumed by rpma_mr_remote_from_descriptor() to
  * create a remote memory region's structure which allows transferring data
  * between the peers.
+ *
+ * RETURN VALUE
+ * The rpma_mr_get_descriptor() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_mr_get_descriptor() can fail with the following error:
@@ -393,13 +410,19 @@ int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_remote;
  *	int rpma_mr_remote_from_descriptor(const void *desc,
- *		size_t desc_size, struct rpma_mr_remote **mr_ptr);
+ *			size_t desc_size, struct rpma_mr_remote **mr_ptr);
  *
  * DESCRIPTION
  * Create a remote memory region's structure based on the provided descriptor
  * with a network-transferable description of the memory region local to
  * the remote peer.
+ *
+ * RETURN VALUE
+ * The rpma_mr_remote_from_descriptor() function returns 0 on success
+ * or a negative error code on failure. rpma_mr_remote_from_descriptor()
+ * does not set *mr_ptr value on failure.
  *
  * ERRORS
  * rpma_mr_remote_from_descriptor() can fail with the following errors:
@@ -407,7 +430,7 @@ int rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc);
  * - RPMA_E_INVAL - desc or mr_ptr is NULL
  * - RPMA_E_INVAL - incompatible descriptor size
  * - RPMA_E_NOSUPP - deserialized information does not represent a valid memory
- *   region
+ * region
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_mr_remote_from_descriptor(const void *desc,
@@ -420,8 +443,17 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_local;
  *	int rpma_mr_get_descriptor_size(struct rpma_mr_local *mr,
  *			size_t *desc_size);
+ *
+ * DESCRIPTION
+ * rpma_mr_get_descriptor_size() gets size of a memory region decriptor.
+ *
+ * RETURN VALUE
+ * The rpma_mr_get_descriptor_size() function returns 0 on success
+ * or a negative error code on failure. rpma_mr_remote_from_descriptor()
+ * does not set *desc_size value on failure.
  *
  * ERRORS
  * rpma_mr_get_descriptor_size() can fail with the following error:
@@ -437,7 +469,16 @@ int rpma_mr_get_descriptor_size(struct rpma_mr_local *mr, size_t *desc_size);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_remote;
  *	int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
+ *
+ * DESCRIPTION
+ * rpma_mr_remote_get_size() gets a remote memory region size.
+ *
+ * RETURN VALUE
+ * The rpma_mr_remote_get_size() function returns 0 on success
+ * or a negative error code on failure. rpma_mr_remote_get_size()
+ * does not set *size value on failure.
  *
  * ERRORS
  * rpma_mr_remote_get_size() can fail with the following error:
@@ -453,6 +494,7 @@ int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_mr_remote;
  *	int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  *			int *flush_type);
  *
@@ -466,7 +508,7 @@ int rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size);
  * - RPMA_E_INVAL - mr or flush_type is NULL
  */
 int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
-					int *flush_type);
+		int *flush_type);
 
 /** 3
  * rpma_mr_remote_delete - delete a remote memory region's structure
@@ -475,7 +517,16 @@ int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_mr_remote;
  *	int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
+ *
+ * DESCRIPTION
+ * rpma_mr_remote_delete() deletes a remote memory region's structure.
+ *
+ * RETURN VALUE
+ * The rpma_mr_remote_delete() function returns 0 on success
+ * or a negative error code on failure. rpma_mr_remote_delete()
+ * does not set *mr_ptr value to NULL on failure.
  *
  * ERRORS
  * rpma_mr_remote_delete() can fail with the following error:
