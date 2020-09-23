@@ -18,7 +18,7 @@
  * rpma_peer_create_qp -- rpma_peer_create_qp() mock
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn_cfg *cfg)
 {
 	assert_ptr_equal(peer, MOCK_PEER);
@@ -37,8 +37,8 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  * rpma_peer_mr_reg -- a mock of rpma_peer_mr_reg()
  */
 int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr, void *addr,
-	size_t length, int access)
+rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+		void *addr, size_t length, int access)
 {
 	/*
 	 * rpma_peer_mr_reg() and malloc() may be called in any order.

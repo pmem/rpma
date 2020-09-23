@@ -44,7 +44,7 @@ rpma_flush_mock_do(struct ibv_qp *qp, struct rpma_flush *flush,
  * rpma_flush_new -- rpma_flush_new() mock
  */
 int
-rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
+rpma_flush_new(const struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	assert_int_equal(peer, MOCK_PEER);
 	assert_non_null(flush_ptr);

@@ -42,7 +42,7 @@ struct rpma_conn {
  * ID has any outstanding (unacknowledged) events.
  */
 int
-rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_new(const struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
@@ -389,7 +389,7 @@ rpma_flush(struct rpma_conn *conn,
 			"Check if the remote node supports direct write to persistent memory.");
 		return RPMA_E_NOSUPP;
 	}
-
+// XXX new API call to check if flush is supported by MR
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
 			len, type, flags, op_context);
