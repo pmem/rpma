@@ -31,11 +31,21 @@ endif()
 include_directories(${LIBRPMA_INCLUDE_DIRS})
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-file(GLOB style_files ${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
-# filter out protobuf-c generated files
-list(FILTER style_files EXCLUDE REGEX ".*(pb-c).*")
-add_cstyle(examples-all ${style_files})
-add_check_whitespace(examples-all ${style_files})
+file(GLOB src_files ${CMAKE_CURRENT_SOURCE_DIR}/*/*.[ch])
+
+# Filter out protobuf-c generated files.
+# Starting from CMake v3.6 we could use:
+#    list(FILTER src_files EXCLUDE REGEX ".*(pb-c).*")
+# but we require CMake v3.3, so we have to do it
+# in the following way:
+foreach(file IN LISTS src_files)
+	if(NOT file MATCHES ".*(pb-c).*")
+		set(rpma_src_files "${file};${rpma_src_files}")
+	endif()
+endforeach()
+
+add_cstyle(examples-all ${rpma_src_files})
+add_check_whitespace(examples-all ${rpma_src_files})
 
 function(add_example)
 	set(options USE_LIBPMEM_IF_FOUND USE_LIBIBVERBS USE_LIBPROTOBUFC)
