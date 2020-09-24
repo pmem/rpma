@@ -25,7 +25,7 @@ rpma_conn_cfg_default()
  * rpma_conn_cfg_get_timeout -- rpma_conn_cfg_get_timeout() mock
  */
 int
-rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
+rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
 	struct conn_cfg_get_timeout_mock_args *args =
 			mock_type(struct conn_cfg_get_timeout_mock_args *);
@@ -42,7 +42,7 @@ rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
  * rpma_conn_cfg_get_cqe -- rpma_conn_cfg_get_cqe() mock
  */
 int
-rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
+rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
 	struct conn_cfg_get_q_size_mock_args *args =
 			mock_type(struct conn_cfg_get_q_size_mock_args *);
@@ -59,7 +59,7 @@ rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
  * rpma_conn_cfg_get_sq_size -- rpma_conn_cfg_get_sq_size() mock
  */
 int
-rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
+rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
 	struct conn_cfg_get_q_size_mock_args *args =
 			mock_type(struct conn_cfg_get_q_size_mock_args *);
@@ -76,7 +76,7 @@ rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
  * rpma_conn_cfg_get_rq_size -- rpma_conn_cfg_get_rq_size() mock
  */
 int
-rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size)
+rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
 	struct conn_cfg_get_q_size_mock_args *args =
 			mock_type(struct conn_cfg_get_q_size_mock_args *);

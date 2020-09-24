@@ -56,7 +56,7 @@ rpma_conn_cfg_default()
  * for storing into an int type of value. Convert otherwise.
  */
 int
-rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe)
+rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
 	if (cqe == NULL)
 		return RPMA_E_INVAL;
@@ -130,7 +130,7 @@ rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
  * rpma_conn_cfg_get_timeout -- get connection establishment timeout
  */
 int
-rpma_conn_cfg_get_timeout(struct rpma_conn_cfg *cfg, int *timeout_ms)
+rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
 	if (cfg == NULL || timeout_ms == NULL)
 		return RPMA_E_INVAL;
@@ -158,7 +158,7 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
  * rpma_conn_cfg_get_cq_size -- get CQ size for the connection
  */
 int
-rpma_conn_cfg_get_cq_size(struct rpma_conn_cfg *cfg, uint32_t *cq_size)
+rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 {
 	if (cfg == NULL || cq_size == NULL)
 		return RPMA_E_INVAL;
@@ -186,7 +186,7 @@ rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
  * rpma_conn_cfg_get_sq_size -- get SQ size for the connection
  */
 int
-rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg, uint32_t *sq_size)
+rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
 	if (cfg == NULL || sq_size == NULL)
 		return RPMA_E_INVAL;
@@ -214,7 +214,7 @@ rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
  * rpma_conn_cfg_get_rq_size -- get RQ size for the connection
  */
 int
-rpma_conn_cfg_get_rq_size(struct rpma_conn_cfg *cfg, uint32_t *rq_size)
+rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
 	if (cfg == NULL || rq_size == NULL)
 		return RPMA_E_INVAL;

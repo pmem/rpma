@@ -50,7 +50,7 @@ struct rpma_conn_req {
  */
 static int
 rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
+		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
 {
 	int ret = 0;
 
@@ -322,7 +322,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
  */
 int
 rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
-		struct rdma_cm_event *edata, struct rpma_conn_cfg *cfg,
+		struct rdma_cm_event *edata, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || edata == NULL || req_ptr == NULL)
@@ -356,7 +356,7 @@ rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
  */
 int
 rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
-		const char *port, struct rpma_conn_cfg *cfg,
+		const char *port, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
