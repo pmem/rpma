@@ -26,7 +26,18 @@
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
 		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
 		RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |\
-		RPMA_MR_USAGE_FLUSHABLE)
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+
+/*
+ * Make sure the size of the usage field is big enough
+ * to store all allowed values.
+ */
+#define STATIC_ASSERT(cond, msg)\
+	typedef char static_assertion_##msg[(cond) ? 1 : -1]
+
+STATIC_ASSERT(USAGE_ALL_ALLOWED < (1 << (8 * sizeof(uint8_t))),
+		usage_too_small);
 
 /* generate operation completion on success */
 #define RPMA_F_COMPLETION_ON_SUCCESS \
@@ -34,14 +45,14 @@
 
 struct rpma_mr_local {
 	struct ibv_mr *ibv_mr; /* an IBV memory registration object */
-	enum rpma_mr_plt plt; /* placement of the memory region */
+	int usage; /* usage of the memory region */
 };
 
 struct rpma_mr_remote {
 	uint64_t raddr; /* the base virtual address of the memory region */
 	uint64_t size; /* the size of the memory being registered */
 	uint32_t rkey; /* remote key of the memory region */
-	enum rpma_mr_plt plt; /* placement of the memory region */
+	int usage; /* usage of the memory region */
 };
 
 /* helper functions */
@@ -56,9 +67,13 @@ usage_to_access(int usage)
 {
 	int access = 0;
 
-	if (usage & (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_FLUSHABLE)) {
+	if (usage & (RPMA_MR_USAGE_READ_SRC |\
+			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
+			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)) {
 		access |= IBV_ACCESS_REMOTE_READ;
-		usage &= ~(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_FLUSHABLE);
+		usage &= ~(RPMA_MR_USAGE_READ_SRC |\
+				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
+				RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT);
 	}
 
 	if (usage & RPMA_MR_USAGE_READ_DST) {
@@ -255,7 +270,7 @@ rpma_mr_recv(struct ibv_qp *qp,
  */
 int
 rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size, int usage,
-		enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr)
+		struct rpma_mr_local **mr_ptr)
 {
 	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -277,7 +292,7 @@ rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size, int usage,
 	}
 
 	mr->ibv_mr = ibv_mr;
-	mr->plt = plt;
+	mr->usage = usage;
 	*mr_ptr = mr;
 
 	return 0;
@@ -334,7 +349,7 @@ rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc)
 	memcpy(buff, &rkey, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	*((uint8_t *)buff) = (uint8_t)mr->plt;
+	*((uint8_t *)buff) = (uint8_t)mr->usage;
 
 	return 0;
 }
@@ -372,12 +387,10 @@ rpma_mr_remote_from_descriptor(const void *desc,
 	memcpy(&rkey, buff, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	uint8_t plt = *(uint8_t *)buff;
+	uint8_t usage = *(uint8_t *)buff;
 
-	if (plt != RPMA_MR_PLT_VOLATILE && plt != RPMA_MR_PLT_PERSISTENT) {
-		RPMA_LOG_ERROR(
-			"incorrect value of the memory placement read from the descriptor: %i",
-			plt);
+	if (usage == 0) {
+		RPMA_LOG_ERROR("usage type of memory is not set");
 		return RPMA_E_INVAL;
 	}
 
@@ -388,14 +401,12 @@ rpma_mr_remote_from_descriptor(const void *desc,
 	mr->raddr = le64toh(raddr);
 	mr->size = le64toh(size);
 	mr->rkey = le32toh(rkey);
-	mr->plt = plt;
+	mr->usage = usage;
 	*mr_ptr = mr;
 
 	RPMA_LOG_INFO("new rpma_mr_remote(raddr=0x%" PRIx64 ", size=%" PRIu64
-			", rkey=0x%" PRIx32 ", plt=%s)",
-			raddr, size, rkey,
-			((plt == RPMA_MR_PLT_VOLATILE) ?
-					"volatile" : "persistent"));
+			", rkey=0x%" PRIx32 ", usage=0x%" PRIx8 ")",
+			raddr, size, rkey, usage);
 
 	return 0;
 }
@@ -442,6 +453,22 @@ rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 
 	free(*mr_ptr);
 	*mr_ptr = NULL;
+
+	return 0;
+}
+
+/*
+ * rpma_mr_remote_get_flush_type -- get a flush type supported
+ * by the remote memory region
+ */
+int
+rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
+{
+	if (mr == NULL || flush_type == NULL)
+		return RPMA_E_INVAL;
+
+	*flush_type = mr->usage & (RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT |
+					RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY);
 
 	return 0;
 }

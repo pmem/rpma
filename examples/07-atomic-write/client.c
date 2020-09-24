@@ -40,7 +40,6 @@ main(int argc, char *argv[])
 	/* resources - memory region */
 	void *mr_ptr = NULL;
 	size_t mr_size = KILOBYTE;
-	enum rpma_mr_plt mr_plt = RPMA_MR_PLT_VOLATILE;
 	struct rpma_mr_remote *remote_mr = NULL;
 	size_t remote_size = 0;
 	size_t used_offset = 0;
@@ -81,7 +80,7 @@ main(int argc, char *argv[])
 	/* register the memory for the remote log manipulation */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST,
-			mr_plt, &local_mr)))
+			&local_mr)))
 		goto err_peer_cfg_delete;
 
 	/* obtain the remote memory description */
@@ -132,6 +131,18 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
+	enum rpma_flush_type flush_type;
+	int remote_flush_type;
+	/*
+	 * rpma_mr_remote_get_flush_type() cannot fail here because:
+	 * remote_mr != NULL && remote_flush_type != NULL
+	 */
+	(void) rpma_mr_remote_get_flush_type(remote_mr, &remote_flush_type);
+	if (remote_flush_type & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+		flush_type = RPMA_FLUSH_TYPE_PERSISTENT;
+	else
+		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
+
 	for (int i = 3; i < argc; ++i) {
 		char *word = mr_ptr;
 		strcpy(word, argv[i]);
@@ -142,7 +153,7 @@ main(int argc, char *argv[])
 			break;
 
 		if ((ret = rpma_flush(conn, remote_mr, used_value,
-				sizeof(uint64_t), RPMA_FLUSH_TYPE_PERSISTENT,
+				sizeof(uint64_t), flush_type,
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
@@ -155,7 +166,7 @@ main(int argc, char *argv[])
 			break;
 
 		if ((ret = rpma_flush(conn, remote_mr, used_offset,
-				sizeof(uint64_t), RPMA_FLUSH_TYPE_PERSISTENT,
+				sizeof(uint64_t), flush_type,
 				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
 			break;
 
