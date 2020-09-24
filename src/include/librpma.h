@@ -814,7 +814,7 @@ struct rpma_conn_private_data {
  *	#include <librpma.h>
  *
  *	int rpma_conn_get_private_data(const struct rpma_conn *conn,
- *	    struct rpma_conn_private_data *pdata);
+ *			struct rpma_conn_private_data *pdata);
  *
  * DESCRIPTION
  * Obtain a pointer to the private data given by the other side
@@ -949,7 +949,7 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *	#include <librpma.h>
  *
  *	int rpma_conn_req_connect(struct rpma_conn_req *req_ptr,
- *		struct rpma_conn_private_data *pdata,
+ *		const struct rpma_conn_private_data *pdata,
  *		struct rpma_conn **conn_ptr);
  *
  * DESCRIPTION
@@ -974,7 +974,8 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * - RPMA_E_PROVIDER - freeing a communication event failed (passive side only)
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr);
+		const struct rpma_conn_private_data *pdata,
+		struct rpma_conn **conn_ptr);
 
 /** 3
  * rpma_conn_req_recv - initialize the receive operation
