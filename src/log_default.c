@@ -85,7 +85,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
  * - file == NULL || (file != NULL && function != NULL)
  */
 void
-rpma_log_default_function(rpma_log_level level, const char *file_name,
+rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,
 	const char *message_format, ...)
 {
