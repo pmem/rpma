@@ -321,7 +321,7 @@ err_destroy_event_channel:
 int
 rpma_read(struct rpma_conn *conn,
 	const struct rpma_mr_local *dst, size_t dst_offset,
-	struct rpma_mr_remote *src,  size_t src_offset,
+	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
@@ -338,7 +338,7 @@ rpma_read(struct rpma_conn *conn,
  */
 int
 rpma_write(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
@@ -356,7 +356,7 @@ rpma_write(struct rpma_conn *conn,
  */
 int
 rpma_write_atomic(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	int flags, void *op_context)
 {
@@ -377,7 +377,7 @@ rpma_write_atomic(struct rpma_conn *conn,
  */
 int
 rpma_flush(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, void *op_context)
 {
 	if (conn == NULL || dst == NULL || flags == 0)
