@@ -562,7 +562,7 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
  */
 int
 rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
-		struct rpma_peer_cfg *pcfg)
+		const struct rpma_peer_cfg *pcfg)
 {
 	if (conn == NULL || pcfg == NULL)
 		return RPMA_E_INVAL;
