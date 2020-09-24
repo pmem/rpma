@@ -1398,6 +1398,9 @@ typedef enum {
  *
  *	#include <librpma.h>
  *
+ *	int rpma_log_set_threshold(rpma_threshold threshold,
+ *			rpma_log_level level);
+ *
  *	typedef enum {
  *		RPMA_LOG_DISABLED,
  *		RPMA_LOG_LEVEL_FATAL,
@@ -1413,9 +1416,6 @@ typedef enum {
  *		RPMA_LOG_THRESHOLD_AUX,
  *		RPMA_LOG_THRESHOLD_MAX
  *	} rpma_log_threshold;
- *
- *	int rpma_log_set_threshold(rpma_threshold threshold,
- *			rpma_log_level level);
  *
  * DESCRIPTION
  * rpma_log_set_threshold() sets the logging threshold level.
