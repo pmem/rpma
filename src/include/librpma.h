@@ -120,11 +120,6 @@ int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 
 struct rpma_peer_cfg;
 
-enum rpma_on_off_type {
-	RPMA_OFF,
-	RPMA_ON
-};
-
 /** 3
  * rpma_peer_cfg_new - create a new peer configuration object
  *
@@ -132,7 +127,16 @@ enum rpma_on_off_type {
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_new() creates a new peer configuration object.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_new() function returns 0 on success or a negative
+ * error code on failure. rpm_peer_cfg_new() does not set
+ * *pcfg_ptr value on failure.
  *
  * ERRORS
  * rpma_peer_cfg_new() can fail with the following errors:
@@ -149,7 +153,16 @@ int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_delete() deletes the peer configuration object.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_delete() function returns 0 on success or a negative
+ * error code on failure. rpm_peer_cfg_delete() does not set
+ * *pcfg_ptr value to NULL on failure.
  *
  * ERRORS
  * rpma_peer_cfg_delete() can fail with the following error:
@@ -165,8 +178,17 @@ int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *			bool supported);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_set_direct_write_to_pmem() declares the support
+ * of the direct write to PMEM.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_set_direct_write_to_pmem() function returns 0 on success
+ * or a negative error code on failure.
  *
  * ERRORS
  * rpma_peer_cfg_set_direct_write_to_pmem() can fail with the following error:
@@ -183,8 +205,17 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *			bool *supported);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_get_direct_write_to_pmem() checks the support
+ * of the direct write to PMEM.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_get_direct_write_to_pmem() function returns 0 on success
+ * or a negative error code on failure.
  *
  * ERRORS
  * rpma_peer_cfg_get_direct_write_to_pmem() can fail with the following error:
@@ -195,14 +226,22 @@ int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool *supported);
 
 /** 3
- * rpma_peer_cfg_get_descriptor - get a descriptor of a peer configuration
+ * rpma_peer_cfg_get_descriptor - get the descriptor of the peer configuration
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
- *			rpma_peer_cfg_descriptor *desc);
+ *			void *desc);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_get_descriptor() gets the descriptor of the peer configuration.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_get_descriptor() function returns 0 on success or
+ * a negative error code on failure.
  *
  * ERRORS
  * rpma_peer_cfg_get_descriptor() can fail with the following error:
@@ -212,34 +251,52 @@ int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc);
 
 /** 3
- * rpma_peer_cfg_get_descriptor_size -- get size of the peer configuration
- * descriptor
+ * rpma_peer_cfg_get_descriptor_size -- get size of the peer cfg descriptor
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_descriptor_size(struct rpma_peer_cfg *pcfg,
- *                                            size_t *desc_size);
+ *			size_t *desc_size);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_get_descriptor_size() gets size of the peer configuration
+ * descriptor.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_get_descriptor_size() function returns 0 on success or
+ * a negative error code on failure.
  *
  * ERRORS
- * rpma_peer_cfg_get_descriptor() can fail with the following error:
+ * rpma_peer_cfg_get_descriptor_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg or desc_size is NULL
  */
 int
 rpma_peer_cfg_get_descriptor_size(struct rpma_peer_cfg *pcfg,
-					size_t *desc_size);
+		size_t *desc_size);
 
 /** 3
- * rpma_peer_cfg_from_descriptor - create a peer configuration from a descriptor
+ * rpma_peer_cfg_from_descriptor - create a peer cfg from the descriptor
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
  *			struct rpma_peer_cfg **pcfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_peer_cfg_from_descriptor() creates a peer configuration object
+ * from the descriptor.
+ *
+ * RETURN VALUE
+ * The rpma_peer_cfg_from_descriptor() function returns 0 on success
+ * or a negative error code on failure. rpma_peer_cfg_from_descriptor()
+ * does not set *pcfg_ptr value on failure.
  *
  * ERRORS
  * rpma_peer_cfg_from_descriptor() can fail with the following errors:
@@ -261,6 +318,8 @@ struct rpma_peer;
  *
  *	#include <librpma.h>
  *
+ *	struct ibv_context;
+ *	struct rpma_peer;
  *	int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
  *
  * DESCRIPTION
@@ -290,7 +349,16 @@ int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer;
  *	int rpma_peer_delete(struct rpma_peer **peer);
+ *
+ * DESCRIPTION
+ * rpma_peer_delete() deletes the peer object.
+ *
+ * RETURN VALUE
+ * The rpma_peer_delete() function returns 0 on success or a negative error
+ * code on failure. rpm_peer_delete() does not set *peer value
+ * to NULL on failure.
  *
  * RETURN VALUE
  * The rpma_peer_delete() function returns 0 on success or a negative error code
