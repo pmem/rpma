@@ -33,6 +33,8 @@
 			0x13, 0x12, 0x11, 0x10, \
 			0x11}
 
+#define MOCK_FLUSH_TYPE RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT
+
 #define MR_DESC_SIZE	21 /* sizeof(DESC_EXP_PMEM) */
 #define INVALID_MR_DESC_SIZE	1
 
