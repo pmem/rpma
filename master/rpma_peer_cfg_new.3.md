@@ -19,16 +19,26 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_peer_cfg;
           int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
 DESCRIPTION
 ===========
+
+**rpma\_peer\_cfg\_new**() creates a new peer configuration object.
+
+RETURN VALUE
+============
+
+The **rpma\_peer\_cfg\_new**() function returns 0 on success or a
+negative error code on failure. **rpm\_peer\_cfg\_new**() does not set
+\*pcfg\_ptr value on failure.
 
 ERRORS
 ======
 
 **rpma\_peer\_cfg\_new**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *pcfg\_ptr* is NULL
+-   RPMA\_E\_INVAL - pcfg\_ptr is NULL
 
 -   RPMA\_E\_NOMEM - out of memory

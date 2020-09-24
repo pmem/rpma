@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_peer\_cfg\_get\_descriptor** - get a descriptor of a peer
+**rpma\_peer\_cfg\_get\_descriptor** - get the descriptor of the peer
 configuration
 
 SYNOPSIS
@@ -20,11 +20,21 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_peer_cfg;
           int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
-                          rpma_peer_cfg_descriptor *desc);
+                          void *desc);
 
 DESCRIPTION
 ===========
+
+**rpma\_peer\_cfg\_get\_descriptor**() gets the descriptor of the peer
+configuration.
+
+RETURN VALUE
+============
+
+The **rpma\_peer\_cfg\_get\_descriptor**() function returns 0 on success
+or a negative error code on failure.
 
 ERRORS
 ======
@@ -32,4 +42,4 @@ ERRORS
 **rpma\_peer\_cfg\_get\_descriptor**() can fail with the following
 error:
 
--   RPMA\_E\_INVAL - *pcfg* or *desc* are NULL
+-   RPMA\_E\_INVAL - pcfg or desc are NULL
