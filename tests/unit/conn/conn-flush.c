@@ -114,6 +114,10 @@ flush__success_FLUSH_TYPE_VISIBILITY(void **cstate_ptr)
 	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
 	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
 
+	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
+	will_return(rpma_mr_remote_get_flush_type,
+			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY);
+
 	/* run test */
 	int ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
 			MOCK_REMOTE_OFFSET, MOCK_LEN,
@@ -146,6 +150,10 @@ flush__success_FLUSH_TYPE_PERSISTENT(void **cstate_ptr)
 	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
 	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
 	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+
+	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
+	will_return(rpma_mr_remote_get_flush_type,
+			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT);
 
 	/* run test */
 	ret = rpma_flush(cstate->conn, MOCK_RPMA_MR_REMOTE,
