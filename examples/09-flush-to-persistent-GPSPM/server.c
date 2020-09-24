@@ -206,12 +206,12 @@ main(int argc, char *argv[])
 	/* prepare buffer for a flush request */
 	if ((ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX,
 			NULL)))
-		goto err_mr_dereg;
+		goto err_req_delete;
 
 	/* accept the connection request and obtain the connection object */
 	if ((ret = rpma_conn_req_connect(&req, &pdata, &conn))) {
 		(void) rpma_conn_req_delete(&req);
-		goto err_mr_dereg;
+		goto err_req_delete;
 	}
 
 	/* wait for the connection to be established */
@@ -221,22 +221,20 @@ main(int argc, char *argv[])
 				"rpma_conn_next_event returned an unexptected event\n");
 		ret = -1;
 	}
-	if (ret) {
-		(void) rpma_conn_delete(&conn);
-		goto err_mr_dereg;
-	}
+	if (ret)
+		goto err_conn_delete;
 
 	/* wait for the completion to be ready */
 	if ((ret = rpma_conn_prepare_completions(conn)))
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
-		goto err_mr_dereg;
+		goto err_conn_delete;
 
 	/* unpack a flush request from the received buffer */
 	flush_req = gpspm_flush_request__unpack(NULL, cmpl.byte_len, recv_ptr);
 	if (flush_req == NULL) {
 		fprintf(stderr, "Cannot unpack the flush request buffer\n");
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	}
 	(void) printf("Flush request received: {offset: 0x%" PRIXPTR
 			", length: 0x%" PRIXPTR ", op_context: 0x%" PRIXPTR
@@ -259,7 +257,7 @@ main(int argc, char *argv[])
 				"Size of the packed flush response is bigger than the available space of the send buffer (%"
 				PRIu64 " > %u\n", flush_resp_size,
 				MSG_SIZE_MAX);
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	}
 	(void) gpspm_flush_response__pack(&flush_resp, send_ptr);
 	gpspm_flush_request__free_unpacked(flush_req, NULL);
@@ -267,24 +265,24 @@ main(int argc, char *argv[])
 	/* send the flush response */
 	if ((ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_resp_size,
 			RPMA_F_COMPLETION_ALWAYS, NULL)))
-		goto err_mr_dereg;
+		goto err_conn_delete;
 
 	/* wait for the completion to be ready */
 	if ((ret = rpma_conn_prepare_completions(conn)))
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
-		goto err_mr_dereg;
+		goto err_conn_delete;
 
 	/* validate the completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS)
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	if (cmpl.op != RPMA_OP_SEND) {
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
 				(uintptr_t)cmpl.op,
 				(uintptr_t)RPMA_OP_SEND);
-		goto err_mr_dereg;
+		goto err_conn_delete;
 	}
 
 	/*
@@ -293,9 +291,15 @@ main(int argc, char *argv[])
 	 */
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_conn_delete;
 
 	(void) printf("New value: %s\n", (char *)mr_ptr + data_offset);
+
+err_conn_delete:
+	(void) rpma_conn_delete(&conn);
+
+err_req_delete:
+	(void) rpma_conn_req_delete(&req);
 
 err_mr_dereg:
 	(void) rpma_mr_dereg(&msg_mr);
