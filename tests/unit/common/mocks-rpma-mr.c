@@ -19,7 +19,7 @@
 int
 rpma_mr_read(struct ibv_qp *qp,
 	const struct rpma_mr_local *dst, size_t dst_offset,
-	struct rpma_mr_remote *src,  size_t src_offset,
+	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
 	assert_non_null(qp);
@@ -44,7 +44,7 @@ rpma_mr_read(struct ibv_qp *qp,
  */
 int
 rpma_mr_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, void *op_context)
 {
