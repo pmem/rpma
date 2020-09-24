@@ -975,7 +975,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+ *	int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  * DESCRIPTION
  * Get a file descriptor of the endpoint.
@@ -985,7 +985,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  * - RPMA_E_INVAL - ep or fd is NULL
  */
-int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
 /** 3
  * rpma_ep_next_conn_req - obtain an incoming connection request
@@ -994,7 +994,7 @@ int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_next_conn_req(struct rpma_ep *ep, ,
+ *	int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *			struct rpma_conn_cfg *cfg, struct rpma_conn_req **req);
  *
  * DESCRIPTION
@@ -1009,7 +1009,7 @@ int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_NO_NEXT - no next connection request available
  */
-int rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
+int rpma_ep_next_conn_req(const struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req);
 
 /* remote memory access functions */
