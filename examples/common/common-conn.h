@@ -8,6 +8,7 @@
 #ifndef EXAMPLES_COMMON
 #define EXAMPLES_COMMON
 
+#include <string.h>
 #include <librpma.h>
 
 #ifdef USE_LIBPMEM

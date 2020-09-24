@@ -8,6 +8,8 @@
 #ifndef TEST_COMMON_H
 #define TEST_COMMON_H
 
+#include <string.h>
+
 #define MOCK_IP_ADDRESS		"127.0.0.1"
 #define MOCK_PORT		"1234" /* a random port number */
 #define MOCK_TIMEOUT_MS		5678
