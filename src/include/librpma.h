@@ -862,7 +862,7 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_req_connect(struct rpma_conn_req *req_ptr,
+ *	int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *		const struct rpma_conn_private_data *pdata,
  *		struct rpma_conn **conn_ptr);
  *
@@ -898,7 +898,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	#include <librpma.h>
  *
- *	int rpma_conn_req_recv(struct rpma_conn_req *req,
+ *	int rpma_conn_req_recv(const struct rpma_conn_req *req,
  *		const struct rpma_mr_local *dst, size_t offset, size_t len,
  *		void *op_context);
  *
@@ -914,7 +914,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * - RPMA_E_INVAL - req or src or op_context is NULL
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
-int rpma_conn_req_recv(struct rpma_conn_req *req,
+int rpma_conn_req_recv(const struct rpma_conn_req *req,
     const struct rpma_mr_local *dst, size_t offset, size_t len,
     void *op_context);
 
