@@ -17,7 +17,7 @@
  * mock_log_function -- custom log function
  */
 void
-mock_log_function(rpma_log_level level, const char *file_name,
+mock_log_function(enum rpma_log_level level, const char *file_name,
 		const int line_no, const char *function_name,
 		const char *message_format, ...)
 {
@@ -42,7 +42,7 @@ mock_log_function(rpma_log_level level, const char *file_name,
 int
 setup_threshold(void **level_ptr)
 {
-	rpma_log_level level = **(rpma_log_level **)level_ptr;
+	enum rpma_log_level level = **(enum rpma_log_level **)level_ptr;
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, level);
 
 	return 0;
@@ -66,9 +66,9 @@ setup_threshold(void **level_ptr)
 static void
 log__all(void **level_ptr)
 {
-	rpma_log_level primary = **(rpma_log_level **)level_ptr;
+	enum rpma_log_level primary = **(enum rpma_log_level **)level_ptr;
 
-	for (rpma_log_level secondary = RPMA_LOG_DISABLED;
+	for (enum rpma_log_level secondary = RPMA_LOG_DISABLED;
 			secondary <= RPMA_LOG_LEVEL_DEBUG; ++secondary) {
 
 		/*
@@ -106,13 +106,13 @@ main(int argc, char *argv[])
 	rpma_log_set_function(mock_log_function);
 
 	/* prestates */
-	rpma_log_level Level_disabled = RPMA_LOG_DISABLED;
-	rpma_log_level Level_fatal = RPMA_LOG_LEVEL_FATAL;
-	rpma_log_level Level_error = RPMA_LOG_LEVEL_ERROR;
-	rpma_log_level Level_warning = RPMA_LOG_LEVEL_WARNING;
-	rpma_log_level Level_notice = RPMA_LOG_LEVEL_NOTICE;
-	rpma_log_level Level_info = RPMA_LOG_LEVEL_INFO;
-	rpma_log_level Level_debug = RPMA_LOG_LEVEL_DEBUG;
+	enum rpma_log_level Level_disabled = RPMA_LOG_DISABLED;
+	enum rpma_log_level Level_fatal = RPMA_LOG_LEVEL_FATAL;
+	enum rpma_log_level Level_error = RPMA_LOG_LEVEL_ERROR;
+	enum rpma_log_level Level_warning = RPMA_LOG_LEVEL_WARNING;
+	enum rpma_log_level Level_notice = RPMA_LOG_LEVEL_NOTICE;
+	enum rpma_log_level Level_info = RPMA_LOG_LEVEL_INFO;
+	enum rpma_log_level Level_debug = RPMA_LOG_LEVEL_DEBUG;
 
 	const struct CMUnitTest tests[] = {
 		{"RPMA_LOG_DISABLED", log__all, setup_threshold, NULL,

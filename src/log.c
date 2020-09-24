@@ -34,7 +34,7 @@
 log_function *Rpma_log_function;
 
 /* threshold levels */
-rpma_log_level Rpma_log_threshold[] = {
+enum rpma_log_level Rpma_log_threshold[] = {
 		RPMA_LOG_THRESHOLD_DEFAULT,
 		RPMA_LOG_THRESHOLD_AUX_DEFAULT
 };
@@ -86,7 +86,8 @@ rpma_log_set_function(log_function *log_function)
  * rpma_log_set_threshold -- set the log level threshold
  */
 int
-rpma_log_set_threshold(rpma_log_threshold threshold, rpma_log_level level)
+rpma_log_set_threshold(enum rpma_log_threshold threshold,
+			enum rpma_log_level level)
 {
 	if (threshold != RPMA_LOG_THRESHOLD &&
 			threshold != RPMA_LOG_THRESHOLD_AUX)
@@ -104,7 +105,8 @@ rpma_log_set_threshold(rpma_log_threshold threshold, rpma_log_level level)
  * rpma_log_get_threshold -- get the log level threshold
  */
 int
-rpma_log_get_threshold(rpma_log_threshold threshold, rpma_log_level *level)
+rpma_log_get_threshold(enum rpma_log_threshold threshold,
+			enum rpma_log_level *level)
 {
 	if (threshold != RPMA_LOG_THRESHOLD &&
 			threshold != RPMA_LOG_THRESHOLD_AUX)
