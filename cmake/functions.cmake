@@ -210,3 +210,16 @@ function(check_signature_rdma_getaddrinfo var)
 		message(NOTICE "-- Performing Test RDMA_GETADDRINFO_NEW_SIGNATURE - Failed")
 	endif()
 endfunction()
+
+# clock_gettime() requires linking with -lrt for glibc versions before 2.17
+function(check_if_librt_is_required)
+	set(MINIMUM_GLIBC_VERSION "2.17")
+	execute_process(COMMAND ldd --version
+		OUTPUT_VARIABLE LDD_OUTPUT
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET)
+	string(REGEX MATCH "[0-9][.][0-9]+" LDD_VERSION "${LDD_OUTPUT}")
+	if(${LDD_VERSION} VERSION_LESS ${MINIMUM_GLIBC_VERSION})
+		set(LIBRT_LIBRARIES "rt" PARENT_SCOPE) # librt
+	endif()
+endfunction()

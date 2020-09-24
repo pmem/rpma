@@ -10,6 +10,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../cmake
 	${CMAKE_SOURCE_DIR}/../../cmake)
 
+include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
+# set LIBRT_LIBRARIES if linking with librt is required
+check_if_librt_is_required()
+
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
@@ -25,7 +29,7 @@ function(add_example name)
 	set(srcs ${ARGN})
 	add_executable(${name} ${srcs})
 	target_include_directories(${name} PUBLIC ${LIBRPMA_INCLUDE_DIRS})
-	target_link_libraries(${name} rpma)
+	target_link_libraries(${name} rpma ${LIBRT_LIBRARIES})
 endfunction()
 
 add_example(server server.c)

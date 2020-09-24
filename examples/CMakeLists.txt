@@ -17,6 +17,10 @@ add_flag(-DDEBUG DEBUG)
 
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
+include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
+# set LIBRT_LIBRARIES if linking with librt is required
+check_if_librt_is_required()
+
 if(USE_ASAN)
 	add_sanitizer_flag(address)
 endif()
@@ -69,7 +73,7 @@ function(add_example)
 	set_target_properties(${target} PROPERTIES
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
-	target_link_libraries(${target} ${LIBRPMA_LIBRARIES})
+	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} ${LIBRT_LIBRARIES})
 	target_include_directories(${target} PRIVATE common
 		${LIBRPMA_SOURCE_DIR})
 
