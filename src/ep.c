@@ -161,7 +161,7 @@ rpma_ep_get_fd(struct rpma_ep *ep, int *fd)
  * If succeeds it returns a newly created object.
  */
 int
-rpma_ep_next_conn_req(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
+rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req)
 {
 	if (ep == NULL || req == NULL)
