@@ -17,9 +17,10 @@ NAME
 SYNOPSIS
 ========
 
-    #include <librpma_log.h>
+          #include <librpma.h>
 
-    int rpma_log_get_threshold(rpma_threshold threshold, rpma_log_level *level);
+          int rpma_log_get_threshold(rpma_threshold threshold,
+                          rpma_log_level *level);
 
 DESCRIPTION
 ===========
