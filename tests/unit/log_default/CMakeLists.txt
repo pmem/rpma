@@ -23,7 +23,7 @@ function(build_log_default name)
 
 		set_target_properties(log_default-${name} PROPERTIES
 			LINK_FLAGS
-			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime")
+			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime,--wrap=getpid")
 
 	add_test_generic(NAME log_default-${name} TRACERS none)
 endfunction()

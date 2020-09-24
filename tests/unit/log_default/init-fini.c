@@ -11,6 +11,15 @@
 #include "log_default.h"
 
 /*
+ * __wrap_localtime -- localtime() mock
+ */
+__pid_t
+__wrap_getpid()
+{
+	return 123456;
+}
+
+/*
  * init__normal -- happy day scenario
  */
 void
