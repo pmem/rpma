@@ -1061,7 +1061,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+ *	int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  * DESCRIPTION
  * Get a file descriptor of the endpoint.
@@ -1071,7 +1071,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  * - RPMA_E_INVAL - ep or fd is NULL
  */
-int rpma_ep_get_fd(struct rpma_ep *ep, int *fd);
+int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
 /** 3
  * rpma_ep_next_conn_req - obtain an incoming connection request

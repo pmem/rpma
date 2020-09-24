@@ -144,7 +144,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
  * the endpoint
  */
 int
-rpma_ep_get_fd(struct rpma_ep *ep, int *fd)
+rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
 {
 	if (ep == NULL || fd == NULL)
 		return RPMA_E_INVAL;
