@@ -80,7 +80,7 @@ rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  * to PMEM is supported
  */
 int
-rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
 	if (pcfg == NULL || supported == NULL)
@@ -94,7 +94,7 @@ rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  * rpma_peer_cfg_get_descriptor -- get a descriptor of a peer configuration
  */
 int
-rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc)
+rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc)
 {
 	if (pcfg == NULL || desc == NULL)
 		return RPMA_E_INVAL;
@@ -109,7 +109,8 @@ rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc)
  * descriptor
  */
 int
-rpma_peer_cfg_get_descriptor_size(struct rpma_peer_cfg *pcfg, size_t *desc_size)
+rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
+		size_t *desc_size)
 {
 	if (pcfg == NULL || desc_size == NULL)
 		return RPMA_E_INVAL;

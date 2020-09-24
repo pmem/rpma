@@ -14,7 +14,7 @@
  * rpma_peer_cfg_get_direct_write_to_pmem -- mock of the original one
  */
 int
-rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
 	assert_ptr_equal(pcfg, MOCK_PEER_PCFG);
