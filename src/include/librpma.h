@@ -205,9 +205,9 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
- *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
- *			bool *supported);
+ *	const struct rpma_peer_cfg;
+ *	int rpma_peer_cfg_get_direct_write_to_pmem(
+ *			const struct rpma_peer_cfg *pcfg, bool *supported);
  *
  * DESCRIPTION
  * rpma_peer_cfg_get_direct_write_to_pmem() checks the support
@@ -222,7 +222,7 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  * - RPMA_E_INVAL - pcfg or supported are NULL
  */
-int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
+int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported);
 
 /** 3
@@ -232,8 +232,8 @@ int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
- *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg,
+ *	const struct rpma_peer_cfg;
+ *	int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg,
  *			void *desc);
  *
  * DESCRIPTION
@@ -248,7 +248,7 @@ int rpma_peer_cfg_get_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  * - RPMA_E_INVAL - pcfg or desc are NULL
  */
-int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc);
+int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
 
 /** 3
  * rpma_peer_cfg_get_descriptor_size -- get size of the peer cfg descriptor
@@ -257,8 +257,8 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc);
  *
  *	#include <librpma.h>
  *
- *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_get_descriptor_size(struct rpma_peer_cfg *pcfg,
+ *	const struct rpma_peer_cfg;
+ *	int rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *			size_t *desc_size);
  *
  * DESCRIPTION
@@ -275,7 +275,7 @@ int rpma_peer_cfg_get_descriptor(struct rpma_peer_cfg *pcfg, void *desc);
  * - RPMA_E_INVAL - pcfg or desc_size is NULL
  */
 int
-rpma_peer_cfg_get_descriptor_size(struct rpma_peer_cfg *pcfg,
+rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
 		size_t *desc_size);
 
 /** 3
@@ -831,7 +831,7 @@ int rpma_conn_get_private_data(struct rpma_conn *conn,
  *	#include <librpma.h>
  *
  *	int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
- *			struct rpma_peer_cfg *pcfg);
+ *			const struct rpma_peer_cfg *pcfg);
  *
  * ERRORS
  * rpma_conn_apply_remote_peer_cfg() can fail with the following error:
@@ -839,7 +839,7 @@ int rpma_conn_get_private_data(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or pcfg are NULL
  */
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
-		struct rpma_peer_cfg *pcfg);
+		const struct rpma_peer_cfg *pcfg);
 
 /** 3
  * rpma_conn_disconnect - initialize disconnection
