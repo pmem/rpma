@@ -45,9 +45,8 @@ main(int argc, char *argv[])
 	size_t data_offset = 0;
 	struct rpma_mr_local *mr = NULL;
 
-	int is_pmem = 0;
-
 #ifdef USE_LIBPMEM
+	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
 
@@ -112,7 +111,6 @@ main(int argc, char *argv[])
 			return -1;
 
 		mr_size = KILOBYTE;
-		is_pmem = 0;
 	}
 
 	/* RPMA resources */

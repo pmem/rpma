@@ -84,9 +84,8 @@ main(int argc, char *argv[])
 
 	struct hello_t *hello = NULL;
 
-	int is_pmem = 0;
-
 #ifdef USE_LIBPMEM
+	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
 
@@ -154,7 +153,6 @@ main(int argc, char *argv[])
 
 		mr_size = sizeof(struct hello_t);
 		hello = mr_ptr;
-		is_pmem = 0;
 
 		/* write an initial value */
 		write_hello_str(hello, en);
