@@ -20,11 +20,21 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_peer_cfg;
           int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
                           bool supported);
 
 DESCRIPTION
 ===========
+
+**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() declares the support
+of the direct write to PMEM.
+
+RETURN VALUE
+============
+
+The **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() function returns
+0 on success or a negative error code on failure.
 
 ERRORS
 ======
@@ -32,4 +42,4 @@ ERRORS
 **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() can fail with the
 following error:
 
--   RPMA\_E\_INVAL - *pcfg* is NULL
+-   RPMA\_E\_INVAL - pcfg is NULL
