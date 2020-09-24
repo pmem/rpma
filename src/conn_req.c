@@ -425,7 +425,7 @@ err_info_delete:
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
+	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
 	if (req_ptr == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
