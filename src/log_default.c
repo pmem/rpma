@@ -10,6 +10,7 @@
 #include <syslog.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "log_default.h"
 #include "log_internal.h"
@@ -65,7 +66,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	}
 
 	/* it cannot fail - please see the note above */
-	(void) snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
+	(void) snprintf(buf, buf_size, "%s.%06ld ", date, usec);
 	if (strnlen(buf, buf_size) == buf_size)
 		memcpy(buf, error_message, sizeof(error_message));
 }
@@ -120,13 +121,14 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 
 	/* assumed: level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] */
 	syslog(rpma_log_level_syslog_severity[level], "%s%s%s",
-		rpma_log_level_names[level], file_info,  message);
+		rpma_log_level_names[level], file_info, message);
+
 
 	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX]) {
 		char times_tamp[45] = "";
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
-		(void) fprintf(stderr, "%s%s%s%s", times_tamp,
-			rpma_log_level_names[level],  file_info, message);
+		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
+			rpma_log_level_names[level], file_info, message);
 	}
 }
 
