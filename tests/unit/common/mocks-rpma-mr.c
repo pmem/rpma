@@ -70,7 +70,7 @@ rpma_mr_write(struct ibv_qp *qp,
  */
 int
 rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size, int usage,
-		enum rpma_mr_plt plt, struct rpma_mr_local **mr_ptr)
+		struct rpma_mr_local **mr_ptr)
 {
 	check_expected_ptr(peer);
 	check_expected(size);
@@ -140,4 +140,18 @@ rpma_mr_recv(struct ibv_qp *qp,
 	check_expected_ptr(op_context);
 
 	return mock_type(int);
+}
+
+/*
+ * rpma_mr_remote_get_flush_type -- mock of rpma_mr_remote_get_flush_type
+ */
+int
+rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
+{
+	check_expected_ptr(mr);
+	assert_non_null(flush_type);
+
+	*flush_type = mock_type(int);
+
+	return 0;
 }

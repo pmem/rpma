@@ -389,7 +389,25 @@ rpma_flush(struct rpma_conn *conn,
 			"Check if the remote node supports direct write to persistent memory.");
 		return RPMA_E_NOSUPP;
 	}
-// XXX new API call to check if flush is supported by MR
+
+	int flush_type;
+	/* it cannot fail because: mr != NULL && flush_type != NULL */
+	(void) rpma_mr_remote_get_flush_type(dst, &flush_type);
+
+	if (type == RPMA_FLUSH_TYPE_PERSISTENT &&
+	    0 == (flush_type & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)) {
+		RPMA_LOG_ERROR(
+			"The remote memory region does not support flushing to persistency");
+		return RPMA_E_NOSUPP;
+	}
+
+	if (type == RPMA_FLUSH_TYPE_VISIBILITY &&
+	    0 == (flush_type & RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY)) {
+		RPMA_LOG_ERROR(
+			"The remote memory region does not support flushing to visibility");
+		return RPMA_E_NOSUPP;
+	}
+
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
 			len, type, flags, op_context);

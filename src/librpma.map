@@ -48,6 +48,7 @@ LIBRPMA_1.0 {
 		rpma_mr_reg;
 		rpma_mr_remote_delete;
 		rpma_mr_remote_from_descriptor;
+		rpma_mr_remote_get_flush_type;
 		rpma_mr_remote_get_size;
 		rpma_peer_cfg_delete;
 		rpma_peer_cfg_from_descriptor;
