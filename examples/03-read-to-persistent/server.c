@@ -46,9 +46,8 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
 
-	int is_pmem = 0;
-
 #ifdef USE_LIBPMEM
+	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
 
@@ -112,7 +111,6 @@ main(int argc, char *argv[])
 			return -1;
 
 		dst_size = KILOBYTE;
-		is_pmem = 0;
 	}
 
 	/* RPMA resources */
