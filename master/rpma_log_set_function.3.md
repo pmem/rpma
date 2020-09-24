@@ -17,17 +17,17 @@ NAME
 SYNOPSIS
 ========
 
-    #include <librpma_log.h>
+          #include <librpma.h>
 
-    typedef void log_function(
-          rpma_log_level level,
-          const char *file_name,
-          const int line_no,
-          const char *function_name,
-          const char *message_format,
-          ```);
+          typedef void log_function(
+                  rpma_log_level level,
+                  const char *file_name,
+                  const int line_no,
+                  const char *function_name,
+                  const char *message_format,
+                  ```);
 
-    void rpma_log_set_function(log_function *log_function);
+          void rpma_log_set_function(log_function *log_function);
 
 DESCRIPTION
 ===========
