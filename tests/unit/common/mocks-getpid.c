@@ -11,7 +11,7 @@
 #include "mocks-getpid.h"
 
 /*
- * grtpid shall be mocked only during tests otherwise ctest with COVERAGE=1
+ * getpid() shall be mocked only during tests otherwise ctest with COVERAGE=1
  * does not work properly
  */
 bool enabled__wrap_getpid = false;
