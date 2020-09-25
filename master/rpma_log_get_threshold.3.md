@@ -19,8 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_log_get_threshold(rpma_threshold threshold,
-                          rpma_log_level *level);
+          int rpma_log_get_threshold(enum rpma_log_threshold threshold,
+                          enum rpma_log_level *level);
 
 DESCRIPTION
 ===========

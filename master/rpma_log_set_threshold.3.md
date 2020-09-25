@@ -19,10 +19,10 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_log_set_threshold(rpma_threshold threshold,
-                          rpma_log_level level);
+          int rpma_log_set_threshold(enum rpma_log_threshold threshold,
+                          enum rpma_log_level level);
 
-          typedef enum {
+          enum rpma_log_level {
                   RPMA_LOG_DISABLED,
                   RPMA_LOG_LEVEL_FATAL,
                   RPMA_LOG_LEVEL_ERROR,
@@ -30,13 +30,13 @@ SYNOPSIS
                   RPMA_LOG_LEVEL_NOTICE,
                   RPMA_LOG_LEVEL_INFO,
                   RPMA_LOG_LEVEL_DEBUG,
-          } rpma_log_level;
+          };
 
-          typedef enum {
+          enum rpma_log_threshold {
                   RPMA_LOG_THRESHOLD,
                   RPMA_LOG_THRESHOLD_AUX,
                   RPMA_LOG_THRESHOLD_MAX
-          } rpma_log_threshold;
+          };
 
 DESCRIPTION
 ===========
@@ -57,7 +57,7 @@ Available thresholds are:
     not take this *threshold* into consideration. The default value is
     *RPMA\_LOG\_DISABLED*.
 
-Available *threshold* levels are defined by rpma\_log\_level:
+Available *threshold* levels are defined by enum rpma\_log\_level:
 
 -   *RPMA\_LOG\_DISABLED* - all messages will be suppressed
 
@@ -100,5 +100,5 @@ ERRORS
 -   RPMA\_E\_INVAL - *threshold* is not *RPMA\_LOG\_THRESHOLD* nor
     *RPMA\_LOG\_THRESHOLD\_AUX*
 
--   RPMA\_E\_INVAL - *level* is not a value defined by rpma\_log\_level
-    type
+-   RPMA\_E\_INVAL - *level* is not a value defined by enum
+    rpma\_log\_level type

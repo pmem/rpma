@@ -20,7 +20,7 @@ SYNOPSIS
           #include <librpma.h>
 
           typedef void log_function(
-                  rpma_log_level level,
+                  enum rpma_log_level level,
                   const char *file_name,
                   const int line_no,
                   const char *function_name,
