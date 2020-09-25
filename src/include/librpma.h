@@ -1244,13 +1244,20 @@ struct rpma_ep;
  *
  *	#include <librpma.h>
  *
- *	int rpma_ep_listen(const char *addr, const char *port,
- *	    struct rpma_ep **ep);
+ *	const struct rpma_peer;
+ *	struct rpma_ep;
+ *	int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
+ *			const char *port, struct rpma_ep **ep);
  *
  * DESCRIPTION
- * Create an endpoint and initialize listening for incoming connections
- * using reliable, connection-oriented and message-based (RDMA_PS_TCP)
- * QP communication.
+ * rpma_ep_listen() creates an endpoint and initializes listening for incoming
+ * connections using reliable, connection-oriented and message-based
+ * (RDMA_PS_TCP) QP communication.
+ *
+ * RETURN VALUE
+ * The rpma_ep_listen() function returns 0 on success or a negative
+ * error code on failure. rpma_ep_listen() does not set
+ * *ep value on failure.
  *
  * ERRORS
  * rpma_ep_listen() can fail with the following errors:
@@ -1261,7 +1268,7 @@ struct rpma_ep;
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
-	const char *port, struct rpma_ep **ep);
+		const char *port, struct rpma_ep **ep);
 
 /** 3
  * rpma_ep_shutdown - stop listening and delete the endpoint
@@ -1270,10 +1277,17 @@ int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_ep;
  *	int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  * DESCRIPTION
- * Stop listening for incoming connections and delete the endpoint.
+ * rpma_ep_shutdown() stops listening for incoming connections
+ * and delete the endpoint.
+ *
+ * RETURN VALUE
+ * The rpma_ep_shutdown() function returns 0 on success or a negative
+ * error code on failure. rpma_ep_shutdown() does not set
+ * *ep value to NULL on failure.
  *
  * ERRORS
  * rpma_ep_shutdown() can fail with the following errors:
@@ -1290,10 +1304,16 @@ int rpma_ep_shutdown(struct rpma_ep **ep);
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_ep;
  *	int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  * DESCRIPTION
- * Get a file descriptor of the endpoint.
+ * rpma_ep_get_fd() gets the file descriptor of the endpoint.
+ *
+ * RETURN VALUE
+ * The rpma_ep_get_fd() function returns 0 on success or a negative
+ * error code on failure. rpma_ep_get_fd() does not set
+ * *fd value on failure.
  *
  * ERRORS
  * rpma_ep_get_fd() can fail with the following error:
@@ -1309,12 +1329,21 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_ep;
+ *	const struct rpma_conn_cfg;
+ *	struct rpma_conn_req;
  *	int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *			const struct rpma_conn_cfg *cfg,
  *			struct rpma_conn_req **req);
  *
  * DESCRIPTION
- * Obtains the next connection request from the endpoint.
+ * rpma_ep_next_conn_req() obtains the next connection request
+ * from the endpoint.
+ *
+ * RETURN VALUE
+ * The rpma_ep_next_conn_req() function returns 0 on success or a negative
+ * error code on failure. rpma_ep_next_conn_req() does not set
+ * *req value on failure.
  *
  * ERRORS
  * rpma_ep_next_conn_req() can fail with the following errors:
