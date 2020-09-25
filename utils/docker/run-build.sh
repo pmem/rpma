@@ -11,18 +11,21 @@
 
 set -e
 
+PREFIX=/usr
+CC=${CC:-gcc}
+CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
+TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
+EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
+
 if [ "$WORKDIR" == "" ]; then
 	echo "Error: WORKDIR is not set"
 	exit 1
 fi
 
-./prepare-for-build.sh
-
-EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
-PREFIX=/usr
-TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
-CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
-CC=${CC:-gcc}
+if [ "$TEST_DIR" == "" ]; then
+	echo "Error: RPMA_TEST_DIR is not set"
+	exit 1
+fi
 
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
@@ -101,6 +104,8 @@ function test_compile_all_examples_standalone() {
 		compile_example_standalone $DIR
 	done
 }
+
+./prepare-for-build.sh
 
 # look for libprotobuf-c
 USR=$(find /usr -name "*protobuf-c.so*" || true)
