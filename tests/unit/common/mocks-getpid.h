@@ -8,12 +8,8 @@
 #ifndef MOCKS_GETPID_H
 #define MOCKS_GETPID_H
 
-#include <unistd.h>
+#include <stdbool.h>
 
-/*
- * __wrap_getpid -- getpid() mock
- */
-__pid_t
-__wrap_getpid();
+extern bool enabled__wrap_getpid;
 
 #endif /* MOCKS_GETPID_H */
