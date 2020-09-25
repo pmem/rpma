@@ -80,15 +80,6 @@ typedef struct {
 } mock_config;
 
 /*
- * __wrap_localtime -- localtime() mock
- */
-__pid_t
-__wrap_getpid()
-{
-	return 123456;
-}
-
-/*
  * setup_thresholds -- setup logging thresholds
  */
 int
@@ -197,6 +188,10 @@ function__syslog(void **config_ptr)
 #define MOCK_TIME_OF_DAY_STR "1970-01-01 00:00:00"
 #define MOCK_TIME_STR MOCK_TIME_OF_DAY_STR ".000000 "
 #define MOCK_TIME_ERROR_STR "[time error] "
+#define MOCK_GETPID 123456
+// #define STR_HELPER(x) #x
+// #define STR(x) STR_HELPER(x)
+#define MOCK_PID_AS_STR STR(MOCK_GETPID)
 
 static struct timespec Timespec = {0};
 static struct tm Tm = MOCK_TIME_OF_DAY;
@@ -248,11 +243,12 @@ function__stderr_path(void **config_ptr)
 	will_return(__wrap_snprintf, MOCK_OK);
 	will_return(syslog, MOCK_PASSTHROUGH);
 	MOCK_GET_TIMESTAMP_CONFIGURE(config);
+	will_return(__wrap_getpid, MOCK_GETPID);
 
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
 	strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-	strcat(msg, "[123456] ");
+	strcat(msg, "["MOCK_PID_AS_STR"] ");
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 	strcat(msg, MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
 		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
@@ -280,11 +276,12 @@ function__stderr_no_path(void **config_ptr)
 		will_return(__wrap_vsnprintf, MOCK_OK);
 		will_return(syslog, MOCK_PASSTHROUGH);
 		MOCK_GET_TIMESTAMP_CONFIGURE(config);
+		will_return(__wrap_getpid, MOCK_GETPID);
 
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
 		strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-		strcat(msg, "[123456] ");
+		strcat(msg, "["MOCK_PID_AS_STR"] ");
 		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 		strcat(msg, MOCK_MESSAGE);
 		will_return(__wrap_fprintf, MOCK_VALIDATE);

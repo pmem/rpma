@@ -19,6 +19,7 @@ function(build_log_default name)
 		${TEST_UNIT_COMMON_DIR}/mocks-stdio.c
 		${TEST_UNIT_COMMON_DIR}/mocks-syslog.c
 		${TEST_UNIT_COMMON_DIR}/mocks-time.c
+		${TEST_UNIT_COMMON_DIR}/mocks-getpid.c
 		${LIBRPMA_SOURCE_DIR}/log_default.c)
 
 		set_target_properties(log_default-${name} PROPERTIES
