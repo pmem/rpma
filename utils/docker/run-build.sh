@@ -71,6 +71,42 @@ function compile_example_standalone() {
 	cd -
 }
 
+# test standalone compilation of all examples
+function test_compile_all_examples_standalone() {
+
+	EXAMPLES=$(ls -1 $WORKDIR/examples/)
+	for e in $EXAMPLES; do
+		DIR=$WORKDIR/examples/$e
+		[ ! -d $DIR ] && continue
+		[ ! -f $DIR/CMakeLists.txt ] && continue
+		if [ "${LIBPROTOBUFC_FOUND}" == "NO" ]; then
+			case $e in
+			09-flush-to-persistent-GPSPM)
+				echo
+				echo "SKIP: Skipping the '$e' example, becuase libprotobuf-c is missing"
+				echo
+				continue
+				;;
+			esac
+		fi
+		echo
+		echo "###########################################################"
+		echo "### Testing standalone compilation of example: $e"
+		if [ "$PACKAGE_MANAGER" = "" ]; then
+			echo "### (with librpma installed from RELEASE sources)"
+		else
+			echo "### (with librpma installed from RELEASE packages)"
+		fi
+		echo "###########################################################"
+		compile_example_standalone $DIR
+	done
+}
+
+# look for libprotobuf-c
+USR=$(find /usr -name "*protobuf-c.so*" || true)
+LIB=$(find /lib* -name "*protobuf-c.so*" || true)
+[ "$USR" == "" -a "$LIB" == "" ] && LIBPROTOBUFC_FOUND="NO"
+
 echo
 echo "##################################################################"
 echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
@@ -123,19 +159,7 @@ if [ "$AUTO_DOC_UPDATE" == "1" ]; then
 	../utils/docker/run-doc-update.sh
 fi
 
-# Test standalone compilation of all examples
-EXAMPLES=$(ls -1 $WORKDIR/examples/)
-for e in $EXAMPLES; do
-	DIR=$WORKDIR/examples/$e
-	[ ! -d $DIR ] && continue
-	[ ! -f $DIR/CMakeLists.txt ] && continue
-	echo
-	echo "###########################################################"
-	echo "### Testing standalone compilation of example: $e"
-	echo "### (with librpma installed from DEBUG sources)"
-	echo "###########################################################"
-	compile_example_standalone $DIR
-done
+test_compile_all_examples_standalone
 
 # Uninstall libraries
 cd $WORKDIR/build
@@ -194,19 +218,7 @@ elif [ $PACKAGE_MANAGER = "rpm" ]; then
 	echo $USERPASS | sudo -S rpm -ivh --force *.rpm
 fi
 
-# Test standalone compilation of all examples
-EXAMPLES=$(ls -1 $WORKDIR/examples/)
-for e in $EXAMPLES; do
-	DIR=$WORKDIR/examples/$e
-	[ ! -d $DIR ] && continue
-	[ ! -f $DIR/CMakeLists.txt ] && continue
-	echo
-	echo "###########################################################"
-	echo "### Testing standalone compilation of example: $e"
-	echo "### (with librpma installed from RELEASE packages)"
-	echo "###########################################################"
-	compile_example_standalone $DIR
-done
+test_compile_all_examples_standalone
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
