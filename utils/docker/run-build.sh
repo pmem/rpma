@@ -22,6 +22,11 @@ if [ "$WORKDIR" == "" ]; then
 	exit 1
 fi
 
+if [ "$TEST_DIR" == "" ]; then
+	echo "Error: RPMA_TEST_DIR is not set"
+	exit 1
+fi
+
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
 }
