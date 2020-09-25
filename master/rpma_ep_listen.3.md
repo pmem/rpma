@@ -19,22 +19,31 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_ep_listen(const char *addr, const char *port,
-              struct rpma_ep **ep);
+          const struct rpma_peer;
+          struct rpma_ep;
+          int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
+                          const char *port, struct rpma_ep **ep);
 
 DESCRIPTION
 ===========
 
-Create an endpoint and initialize listening for incoming connections
-using reliable, connection-oriented and message-based (RDMA\_PS\_TCP) QP
-communication.
+**rpma\_ep\_listen**() creates an endpoint and initializes listening for
+incoming connections using reliable, connection-oriented and
+message-based (RDMA\_PS\_TCP) QP communication.
+
+RETURN VALUE
+============
+
+The **rpma\_ep\_listen**() function returns 0 on success or a negative
+error code on failure. **rpma\_ep\_listen**() does not set \*ep value on
+failure.
 
 ERRORS
 ======
 
 **rpma\_ep\_listen**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - peer, *addr*, *port* or *ep* is NULL
+-   RPMA\_E\_INVAL - peer, addr, port or ep is NULL
 
 -   RPMA\_E\_PROVIDER - **rdma\_create\_event\_channel**(3),
     **rdma\_create\_id**(3), **rdma\_getaddrinfo**(3),
