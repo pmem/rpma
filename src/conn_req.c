@@ -499,7 +499,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 int
 rpma_conn_req_recv(const struct rpma_conn_req *req,
     const struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context)
+    const void *op_context)
 {
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;

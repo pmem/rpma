@@ -322,7 +322,7 @@ int
 rpma_read(const struct rpma_conn *conn,
 	const struct rpma_mr_local *dst, size_t dst_offset,
 	const struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+	size_t len, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -340,7 +340,7 @@ int
 rpma_write(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+	size_t len, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -358,7 +358,7 @@ int
 rpma_write_atomic(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	int flags, void *op_context)
+	int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -378,7 +378,7 @@ rpma_write_atomic(const struct rpma_conn *conn,
 int
 rpma_flush(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
-	enum rpma_flush_type type, int flags, void *op_context)
+	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -419,7 +419,7 @@ rpma_flush(const struct rpma_conn *conn,
 int
 rpma_send(const struct rpma_conn *conn,
     const struct rpma_mr_local *src, size_t offset, size_t len,
-    int flags, void *op_context)
+    int flags, const void *op_context)
 {
 	if (conn == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -435,7 +435,7 @@ rpma_send(const struct rpma_conn *conn,
 int
 rpma_recv(const struct rpma_conn *conn,
     const struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context)
+    const void *op_context)
 {
 	if (conn == NULL || dst == NULL)
 		return RPMA_E_INVAL;

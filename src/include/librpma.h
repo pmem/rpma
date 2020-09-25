@@ -986,7 +986,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	int rpma_conn_req_recv(const struct rpma_conn_req *req,
  *		const struct rpma_mr_local *dst, size_t offset, size_t len,
- *		void *op_context);
+ *		const void *op_context);
  *
  * DESCRIPTION
  * Initialize the receive operation. It prepares a buffer for a message
@@ -1002,7 +1002,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  */
 int rpma_conn_req_recv(const struct rpma_conn_req *req,
     const struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context);
+    const void *op_context);
 
 /* server-side setup */
 
@@ -1116,7 +1116,7 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *	int rpma_read(const struct rpma_conn *conn,
  *		const struct rpma_mr_local *dst, size_t dst_offset,
  *		const struct rpma_mr_remote *src,  size_t src_offset,
- *		size_t len, int flags, void *op_context);
+ *		size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
  * Initialize the read operation (transferring data from
@@ -1132,7 +1132,7 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
 int rpma_read(const struct rpma_conn *conn,
 	const struct rpma_mr_local *dst, size_t dst_offset,
 	const struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, void *op_context);
+	size_t len, int flags, const void *op_context);
 
 /** 3
  * rpma_write - initialize the write operation
@@ -1144,7 +1144,7 @@ int rpma_read(const struct rpma_conn *conn,
  *	int rpma_write(const struct rpma_conn *conn,
  *		const struct rpma_mr_remote *dst, size_t dst_offset,
  *		const struct rpma_mr_local *src,  size_t src_offset,
- *		size_t len, int flags, void *op_context);
+ *		size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
  * Initialize the write operation (transferring data from
@@ -1160,7 +1160,7 @@ int rpma_read(const struct rpma_conn *conn,
 int rpma_write(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, void *op_context);
+	size_t len, int flags, const void *op_context);
 
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
@@ -1174,7 +1174,7 @@ int rpma_write(const struct rpma_conn *conn,
  *	int rpma_write_atomic(const struct rpma_conn *conn,
  *		const struct rpma_mr_remote *dst, size_t dst_offset,
  *		const struct rpma_mr_local *src,  size_t src_offset,
- *		int flags, void *op_context);
+ *		int flags, const void *op_context);
  *
  * DESCRIPTION
  * Initialize the atomic write operation (transferring data from
@@ -1193,7 +1193,7 @@ int rpma_write(const struct rpma_conn *conn,
 int rpma_write_atomic(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	int flags, void *op_context);
+	int flags, const void *op_context);
 
 /*
  * possible types of rpma_flush() operation
@@ -1214,7 +1214,7 @@ enum rpma_flush_type {
  *
  *	int rpma_flush(const struct rpma_conn *conn,
  *		const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
- *		enum rpma_flush_type type, int flags, void *op_context);
+ *		enum rpma_flush_type type, int flags, const void *op_context);
  *
  * DESCRIPTION
  * Initialize the flush operation (finalizing a transfer of data to
@@ -1232,7 +1232,7 @@ enum rpma_flush_type {
  */
 int rpma_flush(const struct rpma_conn *conn,
 	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
-	enum rpma_flush_type type, int flags, void *op_context);
+	enum rpma_flush_type type, int flags, const void *op_context);
 
 /** 3
  * rpma_send - initialize the send operation
@@ -1243,7 +1243,7 @@ int rpma_flush(const struct rpma_conn *conn,
  *
  *	int rpma_send(const struct rpma_conn *conn,
  *		const struct rpma_mr_local *src, size_t offset, size_t len,
- *		int flags, void *op_context);
+ *		int flags, const void *op_context);
  *
  * DESCRIPTION
  * Initialize the send operation which transfers a message from the local
@@ -1258,7 +1258,7 @@ int rpma_flush(const struct rpma_conn *conn,
  */
 int rpma_send(const struct rpma_conn *conn,
     const struct rpma_mr_local *src, size_t offset, size_t len,
-    int flags, void *op_context);
+    int flags, const void *op_context);
 
 /** 3
  * rpma_recv - initialize the receive operation
@@ -1269,7 +1269,7 @@ int rpma_send(const struct rpma_conn *conn,
  *
  *	int rpma_recv(const struct rpma_conn *conn,
  *		const struct rpma_mr_local *dst, size_t offset, size_t len,
- *		void *op_context);
+ *		const void *op_context);
  *
  * DESCRIPTION
  * Initialize the receive operation which prepares a buffer for a message
@@ -1296,7 +1296,7 @@ int rpma_send(const struct rpma_conn *conn,
  */
 int rpma_recv(const struct rpma_conn *conn,
     const struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context);
+    const void *op_context);
 
 /* completion handling */
 
