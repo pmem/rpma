@@ -20,16 +20,25 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_conn;
           int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
 
 DESCRIPTION
 ===========
 
-Get an event file descriptor of the connection.
+**rpma\_conn\_get\_event\_fd**() gets an event file descriptor of the
+connection.
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_get\_event\_fd**() function returns 0 on success or a
+negative error code on failure. **rpma\_conn\_get\_event\_fd**() does
+not set \*fd value on failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_get\_event\_fd**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *conn* or *fd* is NULL
+-   RPMA\_E\_INVAL - conn or fd is NULL

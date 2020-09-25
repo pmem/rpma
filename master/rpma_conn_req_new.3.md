@@ -20,22 +20,33 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_peer;
+          const struct rpma_conn_cfg;
+          struct rpma_conn_req;
           int rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
-                  const char *port, const struct rpma_conn_cfg *cfg,
-                  struct rpma_conn_req **req_ptr);
+                          const char *port, const struct rpma_conn_cfg *cfg,
+                          struct rpma_conn_req **req_ptr);
 
 DESCRIPTION
 ===========
 
-Create a new outgoing connection request object using reliable,
-connection-oriented and message-based (RDMA\_PS\_TCP) QP communication.
+**rpma\_conn\_req\_new**() creates a new outgoing connection request
+object using reliable, connection-oriented and message-based
+(RDMA\_PS\_TCP) QP communication.
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_req\_new**() function returns 0 on success or a
+negative error code on failure. **rpma\_conn\_req\_new**() does not set
+\*req\_ptr value on failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_req\_new**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *peer*, *addr*, *port* or *req\_ptr* is NULL
+-   RPMA\_E\_INVAL - peer, addr, port or req\_ptr is NULL
 
 -   RPMA\_E\_NOMEM - out of memory
 

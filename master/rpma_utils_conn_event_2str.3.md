@@ -22,10 +22,24 @@ SYNOPSIS
 
           const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
 
+          enum rpma_conn_event{
+                  RPMA_CONN_UNDEFINED = -1,
+                  RPMA_CONN_ESTABLISHED,
+                  RPMA_CONN_CLOSED,
+                  RPMA_CONN_LOST
+          };
+
 DESCRIPTION
 ===========
 
-Return const string representation of RPMA\_CONN\_\* enums.
+**rpma\_utils\_conn\_event\_2str**() converts RPMA\_CONN\_\* enum to the
+const string representation.
+
+RETURN VALUE
+============
+
+The **rpma\_utils\_conn\_event\_2str**() function returns the const
+string representation of RPMA\_CONN\_\* enums.
 
 ERRORS
 ======
