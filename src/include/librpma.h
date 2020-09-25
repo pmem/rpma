@@ -1371,14 +1371,21 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_local;
+ *	const struct rpma_mr_remote;
  *	int rpma_read(const struct rpma_conn *conn,
- *		const struct rpma_mr_local *dst, size_t dst_offset,
- *		const struct rpma_mr_remote *src,  size_t src_offset,
- *		size_t len, int flags, const void *op_context);
+ *			const struct rpma_mr_local *dst, size_t dst_offset,
+ *			const struct rpma_mr_remote *src,  size_t src_offset,
+ *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * Initialize the read operation (transferring data from
+ * rpma_read() initializes the read operation (transferring data from
  * the remote memory to the local memory).
+ *
+ * RETURN VALUE
+ * The rpma_read() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_read() can fail with the following errors:
@@ -1388,9 +1395,9 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_read(const struct rpma_conn *conn,
-	const struct rpma_mr_local *dst, size_t dst_offset,
-	const struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, const void *op_context);
+		const struct rpma_mr_local *dst, size_t dst_offset,
+		const struct rpma_mr_remote *src,  size_t src_offset,
+		size_t len, int flags, const void *op_context);
 
 /** 3
  * rpma_write - initialize the write operation
@@ -1399,14 +1406,21 @@ int rpma_read(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_local;
+ *	const struct rpma_mr_remote;
  *	int rpma_write(const struct rpma_conn *conn,
- *		const struct rpma_mr_remote *dst, size_t dst_offset,
- *		const struct rpma_mr_local *src,  size_t src_offset,
- *		size_t len, int flags, const void *op_context);
+ *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *			const struct rpma_mr_local *src,  size_t src_offset,
+ *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * Initialize the write operation (transferring data from
+ * rpma_write() initializes the write operation (transferring data from
  * the local memory to the remote memory).
+ *
+ * RETURN VALUE
+ * The rpma_write() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_write() can fail with the following errors:
@@ -1416,9 +1430,9 @@ int rpma_read(const struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_write(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, const void *op_context);
+		const struct rpma_mr_remote *dst, size_t dst_offset,
+		const struct rpma_mr_local *src,  size_t src_offset,
+		size_t len, int flags, const void *op_context);
 
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
@@ -1429,16 +1443,23 @@ int rpma_write(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_local;
+ *	const struct rpma_mr_remote;
  *	int rpma_write_atomic(const struct rpma_conn *conn,
- *		const struct rpma_mr_remote *dst, size_t dst_offset,
- *		const struct rpma_mr_local *src,  size_t src_offset,
- *		int flags, const void *op_context);
+ *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *			const struct rpma_mr_local *src,  size_t src_offset,
+ *			int flags, const void *op_context);
  *
  * DESCRIPTION
- * Initialize the atomic write operation (transferring data from
- * the local memory to the remote memory). The atomic write operation allows
- * transferring 8 bytes of data and storing them atomically in the remote
+ * rpma_write_atomic() initializes the atomic write operation (transferring
+ * data from the local memory to the remote memory). The atomic write operation
+ * allows transferring 8 bytes of data and storing them atomically in the remote
  * memory.
+ *
+ * RETURN VALUE
+ * The rpma_write_atomic() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_write_atomic() can fail with the following errors:
@@ -1449,9 +1470,9 @@ int rpma_write(const struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_write_atomic(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src,  size_t src_offset,
-	int flags, const void *op_context);
+		const struct rpma_mr_remote *dst, size_t dst_offset,
+		const struct rpma_mr_local *src,  size_t src_offset,
+		int flags, const void *op_context);
 
 /*
  * possible types of rpma_flush() operation
@@ -1470,13 +1491,29 @@ enum rpma_flush_type {
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_remote;
+ *	enum rpma_flush_type {
+ *		RPMA_FLUSH_TYPE_PERSISTENT,
+ *		RPMA_FLUSH_TYPE_VISIBILITY,
+ *	};
+ *
  *	int rpma_flush(const struct rpma_conn *conn,
- *		const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
- *		enum rpma_flush_type type, int flags, const void *op_context);
+ *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *			size_t len, enum rpma_flush_type type, int flags,
+ *			const void *op_context);
  *
  * DESCRIPTION
- * Initialize the flush operation (finalizing a transfer of data to
- * the remote memory).
+ * rpma_flush() initializes the flush operation (finalizing a transfer of data
+ * to the remote memory).
+ * Possible types of rpma_flush() operation:
+ * - RPMA_FLUSH_TYPE_PERSISTENT - flush data down to the persistent domain
+ * - RPMA_FLUSH_TYPE_VISIBILITY - flush data deep enough to make it visible
+ * on the remote node
+ *
+ * RETURN VALUE
+ * The rpma_flush() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_flush() can fail with the following errors:
@@ -1486,11 +1523,11 @@ enum rpma_flush_type {
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  * - RPMA_E_NOSUPP - type is RPMA_FLUSH_TYPE_PERSISTENT and
- *                   the direct write to pmem is not supported
+ * the direct write to pmem is not supported
  */
 int rpma_flush(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
-	enum rpma_flush_type type, int flags, const void *op_context);
+		const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+		enum rpma_flush_type type, int flags, const void *op_context);
 
 /** 3
  * rpma_send - initialize the send operation
@@ -1499,13 +1536,19 @@ int rpma_flush(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_local;
  *	int rpma_send(const struct rpma_conn *conn,
- *		const struct rpma_mr_local *src, size_t offset, size_t len,
- *		int flags, const void *op_context);
+ *			const struct rpma_mr_local *src, size_t offset,
+ *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * Initialize the send operation which transfers a message from the local
- * memory to other side of the connection.
+ * rpma_send() initializes the send operation which transfers a message from
+ * the local memory to other side of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_send() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_send() can fail with the following errors:
@@ -1515,8 +1558,8 @@ int rpma_flush(const struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_send(const struct rpma_conn *conn,
-    const struct rpma_mr_local *src, size_t offset, size_t len,
-    int flags, const void *op_context);
+		const struct rpma_mr_local *src, size_t offset, size_t len,
+		int flags, const void *op_context);
 
 /** 3
  * rpma_recv - initialize the receive operation
@@ -1525,13 +1568,15 @@ int rpma_send(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
+ *	const struct rpma_conn;
+ *	const struct rpma_mr_local;
  *	int rpma_recv(const struct rpma_conn *conn,
- *		const struct rpma_mr_local *dst, size_t offset, size_t len,
- *		const void *op_context);
+ *			const struct rpma_mr_local *dst, size_t offset,
+ *			size_t len, const void *op_context);
  *
  * DESCRIPTION
- * Initialize the receive operation which prepares a buffer for a message
- * send from other side of the connection. Please see rpma_send(3).
+ * rpma_recv() initializes the receive operation which prepares a buffer for
+ * a message send from other side of the connection. Please see rpma_send(3).
  *
  * All buffers prepared via rpma_recv(3) form an unordered set. When a message
  * arrives it is placed in one of the buffers awaitaning and a completion for
@@ -1546,6 +1591,10 @@ int rpma_send(const struct rpma_conn *conn,
  * In the RDMA standard, receive requests form an ordered queue.
  * The RPMA does NOT inherit this guarantee.
  *
+ * RETURN VALUE
+ * The rpma_recv() function returns 0 on success or a negative
+ * error code on failure.
+ *
  * ERRORS
  * rpma_recv() can fail with the following errors:
  *
@@ -1553,8 +1602,8 @@ int rpma_send(const struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
 int rpma_recv(const struct rpma_conn *conn,
-    const struct rpma_mr_local *dst, size_t offset, size_t len,
-    const void *op_context);
+		const struct rpma_mr_local *dst, size_t offset, size_t len,
+		const void *op_context);
 
 /* completion handling */
 
