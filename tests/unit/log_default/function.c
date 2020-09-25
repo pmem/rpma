@@ -254,7 +254,7 @@ function__stderr_path(void **config_ptr)
 	will_return(__wrap_fprintf, MOCK_VALIDATE);
 	expect_string(__wrap_fprintf, fprintf_output, msg);
 
-	/* enable getpid mock only for test execution */
+	/* enable getpid()'s mock only for test execution */
 	enabled__wrap_getpid = true;
 
 	/* run test */
@@ -262,7 +262,7 @@ function__stderr_path(void **config_ptr)
 			MOCK_LINE_NUMBER, MOCK_FUNCTION_NAME, "%s",
 			MOCK_MESSAGE);
 
-	/* disable getpid mock after test execution */
+	/* disable getpid()'s mock after test execution */
 	enabled__wrap_getpid = false;
 }
 
@@ -292,14 +292,14 @@ function__stderr_no_path(void **config_ptr)
 		will_return(__wrap_fprintf, MOCK_VALIDATE);
 		expect_string(__wrap_fprintf, fprintf_output, msg);
 
-		/* enable getpid mock only for test execution */
+		/* enable getpid()'s mock only for test execution */
 		enabled__wrap_getpid = true;
 
 		/* run test */
 		rpma_log_default_function(MOCK_LOG_LEVEL, NULL, 0, NULL, "%s",
 				MOCK_MESSAGE);
 
-		/* disable getpid mock after test execution */
+		/* disable getpid()'s mock after test execution */
 		enabled__wrap_getpid = false;
 	}
 }

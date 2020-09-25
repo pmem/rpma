@@ -16,10 +16,11 @@
  */
 bool enabled__wrap_getpid = false;
 
-/*
- * __wrap_getpid -- getpid() mock
- */
 __pid_t __real_getpid(void);
+
+/*
+ * __wrap_getpid -- mock of getpid()
+ */
 __pid_t
 __wrap_getpid()
 {
