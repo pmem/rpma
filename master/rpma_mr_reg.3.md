@@ -19,6 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_peer;
+          struct rpma_mr_local;
           int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
                   int usage, struct rpma_mr_local **mr_ptr);
 
@@ -28,14 +30,21 @@ DESCRIPTION
 **rpma\_mr\_reg**() registers a memory region and creates a local memory
 registration object.
 
+RETURN VALUE
+============
+
+The **rpma\_mr\_reg**() function returns 0 on success or a negative
+error code on failure. **rpma\_mr\_reg**() does not set \*mr\_ptr value
+on failure.
+
 ERRORS
 ======
 
 **rpma\_mr\_reg**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *peer* or *ptr* or *mr\_ptr* is NULL
+-   RPMA\_E\_INVAL - peer or ptr or mr\_ptr is NULL
 
--   RPMA\_E\_INVAL - *size* equals 0
+-   RPMA\_E\_INVAL - size equals 0
 
 -   RPMA\_E\_NOMEM - out of memory
 
