@@ -10,6 +10,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../cmake
 	${CMAKE_SOURCE_DIR}/../../cmake)
 
+include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
+# set LIBRT_LIBRARIES if linking with librt is required
+check_if_librt_is_required()
+
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
@@ -33,7 +37,7 @@ function(add_example name)
 			${LIBRPMA_INCLUDE_DIRS}
 			${LIBIBVERBS_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(example-${name} rpma ${LIBIBVERBS_LIBRARIES})
+	target_link_libraries(example-${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)
