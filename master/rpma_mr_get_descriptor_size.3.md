@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_mr\_get\_descriptor\_size** - get size of a memory region
+**rpma\_mr\_get\_descriptor\_size** - get size of the memory region
 descriptor
 
 SYNOPSIS
@@ -20,15 +20,27 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_mr_local;
           int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
                           size_t *desc_size);
 
 DESCRIPTION
 ===========
 
+**rpma\_mr\_get\_descriptor\_size**() gets size of the memory region
+decriptor.
+
+RETURN VALUE
+============
+
+The **rpma\_mr\_get\_descriptor\_size**() function returns 0 on success
+or a negative error code on failure.
+**rpma\_mr\_get\_descriptor\_size**() does not set \*desc\_size value on
+failure.
+
 ERRORS
 ======
 
 **rpma\_mr\_get\_descriptor\_size**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *mr* or *desc\_size* is NULL
+-   RPMA\_E\_INVAL - mr or desc\_size is NULL
