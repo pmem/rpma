@@ -12,23 +12,33 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_get\_completion\_fd** - get a completion file descriptor
+**rpma\_conn\_get\_completion\_fd** - get the completion file descriptor
 
 SYNOPSIS
 ========
 
           #include <librpma.h>
 
+          const struct rpma_conn;
           int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
 
 DESCRIPTION
 ===========
 
-Get a completion file descriptor of the connection.
+**rpma\_conn\_get\_completion\_fd**() gets the completion file
+descriptor of the connection.
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_get\_completion\_fd**() function returns 0 on success
+or a negative error code on failure.
+**rpma\_conn\_get\_completion\_fd**() does not set \*fd value on
+failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_get\_completion\_fd**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *conn* or *fd* is NULL
+-   RPMA\_E\_INVAL - conn or fd is NULL

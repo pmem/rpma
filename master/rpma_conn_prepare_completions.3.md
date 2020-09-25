@@ -19,14 +19,21 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_conn;
           int rpma_conn_prepare_completions(const struct rpma_conn *conn);
 
 DESCRIPTION
 ===========
 
 **rpma\_conn\_prepare\_completions**() waits for incoming completions.
-If it succeeded the completions can be collected using
+If it succeeds the completions can be collected using
 **rpma\_conn\_next\_completion**().
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_prepare\_completions**() function returns 0 on success
+or a negative error code on failure.
 
 ERRORS
 ======
@@ -34,7 +41,7 @@ ERRORS
 **rpma\_conn\_prepare\_completions**() can fail with the following
 errors:
 
--   RPMA\_E\_INVAL - *conn* is NULL
+-   RPMA\_E\_INVAL - conn is NULL
 
 -   RPMA\_E\_PROVIDER - **ibv\_req\_notify\_cq**(3) failed with a
     provider error
