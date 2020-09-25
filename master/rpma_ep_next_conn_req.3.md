@@ -19,8 +19,9 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_ep_next_conn_req(struct rpma_ep *ep,
-              struct rpma_conn_req **req);
+          int rpma_ep_next_conn_req(const struct rpma_ep *ep,
+                          const struct rpma_conn_cfg *cfg,
+                          struct rpma_conn_req **req);
 
 DESCRIPTION
 ===========

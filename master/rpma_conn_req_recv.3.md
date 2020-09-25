@@ -19,9 +19,9 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_req_recv(struct rpma_conn_req *req,
-                  struct rpma_mr_local *dst, size_t offset, size_t len,
-                  void *op_context);
+          int rpma_conn_req_recv(const struct rpma_conn_req *req,
+                  const struct rpma_mr_local *dst, size_t offset, size_t len,
+                  const void *op_context);
 
 DESCRIPTION
 ===========

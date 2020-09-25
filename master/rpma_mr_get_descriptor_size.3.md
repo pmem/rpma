@@ -20,7 +20,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_mr_get_descriptor_size(struct rpma_mr_local *mr,
+          int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
                           size_t *desc_size);
 
 DESCRIPTION

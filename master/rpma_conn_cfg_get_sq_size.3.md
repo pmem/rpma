@@ -19,8 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_cfg_get_sq_size(struct rpma_conn_cfg *cfg,
-                  uint32_t *sq_size);
+          int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
+                          uint32_t *sq_size);
 
 DESCRIPTION
 ===========

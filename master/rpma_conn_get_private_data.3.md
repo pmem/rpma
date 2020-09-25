@@ -20,8 +20,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_get_private_data(struct rpma_conn *conn,
-              struct rpma_conn_private_data *pdata);
+          int rpma_conn_get_private_data(const struct rpma_conn *conn,
+                          struct rpma_conn_private_data *pdata);
 
 DESCRIPTION
 ===========
