@@ -10,7 +10,6 @@
 #include "cmocka_headers.h"
 #include "log_default.h"
 
-
 /*
  * init__normal -- happy day scenario
  */
