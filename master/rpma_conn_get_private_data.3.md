@@ -12,28 +12,36 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_get\_private\_data** - obtain a pointer to the
-connection\'s
+**rpma\_conn\_get\_private\_data** - get a pointer to the connection\'s
+private data
 
 SYNOPSIS
 ========
 
           #include <librpma.h>
 
+          const struct rpma_conn;
+          struct rpma_conn_private_data;
           int rpma_conn_get_private_data(const struct rpma_conn *conn,
                           struct rpma_conn_private_data *pdata);
 
 DESCRIPTION
 ===========
 
-private data
+**rpma\_conn\_get\_private\_data**() obtains the pointer to the private
+data given by the other side of the connection.
 
-Obtain a pointer to the private data given by the other side of the
-connection.
+RETURN VALUE
+============
+
+The **rpma\_conn\_get\_private\_data**() function returns 0 on success
+or a negative error code on failure.
+**rpma\_conn\_get\_private\_data**() does not set \*pdata value on
+failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_get\_private\_data**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *conn* or *pdata* is NULL
+-   RPMA\_E\_INVAL - conn or pdata is NULL

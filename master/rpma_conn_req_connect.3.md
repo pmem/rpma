@@ -19,32 +19,36 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_conn_req;
+          const struct rpma_conn_private_data;
+          struct rpma_conn;
           int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-                  const struct rpma_conn_private_data *pdata,
-                  struct rpma_conn **conn_ptr);
+                          const struct rpma_conn_private_data *pdata,
+                          struct rpma_conn **conn_ptr);
 
 DESCRIPTION
 ===========
 
-Connect the connection requests both incoming and outgoing.
+**rpma\_conn\_req\_connect**() connects the connection requests both
+incoming and outgoing.
 
 RETURN VALUE
 ============
 
 The **rpma\_conn\_req\_connect**() function returns 0 on success or a
 negative error code on failure. On success, the newly created connection
-object is stored in \**conn\_ptr* whereas \**req\_ptr* is consumed and
-set to NULL. On failure, **rpma\_conn\_req\_connect**() does not set
-\**conn\_ptr* whereas \**req\_ptr* is consumed and set to NULL.
+object is stored in \*conn\_ptr whereas \*req\_ptr is consumed and set
+to NULL. On failure, **rpma\_conn\_req\_connect**() does not set
+\*conn\_ptr whereas \*req\_ptr is consumed and set to NULL.
 
 ERRORS
 ======
 
 **rpma\_conn\_req\_connect**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *req\_ptr*, \**req\_ptr* or *conn\_ptr* is NULL
+-   RPMA\_E\_INVAL - req\_ptr, \*req\_ptr or conn\_ptr is NULL
 
--   RPMA\_E\_INVAL - *pdata* is not NULL whereas *pdata*-\>len == 0
+-   RPMA\_E\_INVAL - pdata is not NULL whereas pdata-\>len == 0
 
 -   RPMA\_E\_NOMEM - out of memory
 

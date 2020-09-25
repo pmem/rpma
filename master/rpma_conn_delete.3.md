@@ -19,10 +19,13 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_conn;
           int rpma_conn_delete(struct rpma_conn **conn);
 
 DESCRIPTION
 ===========
+
+**rpma\_conn\_delete**() deletes already closed connection.
 
 RETURN VALUE
 ============

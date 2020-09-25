@@ -19,16 +19,27 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          struct rpma_conn_cfg;
           int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
 
 DESCRIPTION
 ===========
+
+**rpma\_conn\_cfg\_new**() creates a new connection configuration
+object.
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_cfg\_new**() function returns 0 on success or a
+negative error code on failure. **rpma\_conn\_cfg\_new**() does not set
+\*cfg\_ptr value on failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_cfg\_new**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *cfg\_ptr* is NULL
+-   RPMA\_E\_INVAL - cfg\_ptr is NULL
 
 -   RPMA\_E\_NOMEM - out of memory

@@ -12,26 +12,35 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_req\_delete** - delete the connection request
+**rpma\_conn\_req\_delete** - delete the connection requests
 
 SYNOPSIS
 ========
 
           #include <librpma.h>
 
+          struct rpma_conn_req;
           int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
 DESCRIPTION
 ===========
 
-Delete the connection request both incoming and outgoing.
+**rpma\_conn\_req\_delete**() deletes the connection requests both
+incoming and outgoing.
+
+RETURN VALUE
+============
+
+The **rpma\_conn\_req\_delete**() function returns 0 on success or a
+negative error code on failure. **rpma\_conn\_req\_delete**() sets
+\*req\_ptr value to NULL on success and on failure.
 
 ERRORS
 ======
 
 **rpma\_conn\_req\_delete**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *req\_ptr* is NULL
+-   RPMA\_E\_INVAL - req\_ptr is NULL
 
 -   RPMA\_E\_PROVIDER
 
