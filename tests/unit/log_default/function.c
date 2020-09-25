@@ -189,7 +189,7 @@ function__syslog(void **config_ptr)
 #define MOCK_TIME_STR MOCK_TIME_OF_DAY_STR ".000000 "
 #define MOCK_TIME_ERROR_STR "[time error] "
 #define MOCK_PID 123456
-#define MOCK_PID_AS_STR STR(MOCK_PID)
+#define MOCK_PID_AS_STR "["STR(MOCK_PID)"] "
 
 static struct timespec Timespec = {0};
 static struct tm Tm = MOCK_TIME_OF_DAY;
@@ -246,7 +246,7 @@ function__stderr_path(void **config_ptr)
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
 	strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-	strcat(msg, "["MOCK_PID_AS_STR"] ");
+	strcat(msg, MOCK_PID_AS_STR);
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 	strcat(msg, MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
 		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
@@ -279,7 +279,7 @@ function__stderr_no_path(void **config_ptr)
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
 		strcat(msg, MOCK_TIME_STR_EXPECTED(config));
-		strcat(msg, "["MOCK_PID_AS_STR"] ");
+		strcat(msg, MOCK_PID_AS_STR);
 		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 		strcat(msg, MOCK_MESSAGE);
 		will_return(__wrap_fprintf, MOCK_VALIDATE);
