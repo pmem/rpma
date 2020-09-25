@@ -2,7 +2,7 @@
 /* Copyright 2019-2020, Intel Corporation */
 
 /*
- * librpma.h -- definitions of librpma entry points (EXPERIMENTAL)
+ * librpma.h -- definitions of librpma entry points
  *
  * This library provides low-level support for remote access to persistent
  * memory utilizing RDMA-capable NICs.
@@ -20,6 +20,154 @@
 
 /** 7
  * librpma - remote persistent memory support library
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpmem.h>
+ *	cc ... -lrpmem
+ *
+ * DESCRIPTION
+ *
+ * librpma is a C library to simplify accessing persistent memory devices on
+ * remote hosts over Remote Direct Memory Access (RDMA).
+ *
+ * XXX
+ *
+ * REMOTE MEMORY ACCESS
+ *
+ * - rpma_read - XXX
+ * - rpma_write - XXX
+ * - rpma_write_atomic - XXX
+ * - rpma_flush - XXX
+ *
+ * MESSAGING
+ *
+ * - rpma_send - XXX
+ * - rpma_recv - XXX
+ * - rpma_conn_req_recv - XXX
+ *
+ * COMPLETIONS
+ *
+ * - rpma_conn_prepare_completions - XXX
+ * - rpma_conn_next_completion - XXX
+ *
+ * MEMORY MANAGEMENT
+ *
+ * - rpma_mr_reg - XXX
+ * - rpma_mr_dereg - XXX
+ * - rpma_mr_get_descriptor_size - XXX
+ * - rpma_mr_get_descriptor - XXX
+ * - rpma_mr_remote_from_descriptor - XXX
+ * - rpma_mr_remote_get_size - XXX
+ * - rpma_mr_remote_get_flush_type - XXX
+ * - rpma_mr_remote_delete - XXX
+ *
+ * PEER
+ *
+ * XXX
+ *
+ * - rpma_utils_get_ibv_context - XXX
+ * - rpma_peer_new - XXX
+ * - rpma_peer_delete - XXX
+ *
+ * SERVER OPERATION
+ *
+ * XXX
+ *
+ * - rpma_ep_listen - XXX
+ * - rpma_ep_next_conn_req - XXX
+ * - rpma_ep_shutdown - XXX
+ *
+ * CLIENT OPERATION
+ *
+ * XXX
+ *
+ * - rpma_conn_req_new - XXX
+ *
+ * CONNECTION
+ *
+ * - rpma_conn_req_connect - XXX
+ * - rpma_conn_next_event - XXX
+ *
+ * DISCONNECTION
+ *
+ * - rpma_conn_disconnect - XXX
+ * - rpma_conn_next_event - XXX
+ * - rpma_conn_delete - XXX
+ *
+ * or
+ *
+ * - rpma_conn_next_event - XXX
+ * - rpma_conn_disconnect - XXX
+ * - rpma_conn_delete - XXX
+ *
+ * DIRECT WRITE TO PMEM
+ *
+ * XXX
+ *
+ * - rpma_peer_cfg_new - XXX
+ * - rpma_peer_cfg_set_direct_write_to_pmem - XXX
+ * - rpma_peer_cfg_get_direct_write_to_pmem - XXX
+ * - rpma_peer_cfg_get_descriptor_size - XXX
+ * - rpma_peer_cfg_get_descriptor - XXX
+ * - rpma_peer_cfg_from_descriptor - XXX
+ * - rpma_conn_apply_remote_peer_cfg - XXX
+ * - rpma_peer_cfg_delete - XXX
+ *
+ * SYNCHRONOUS AND ASYNCHRONOUS MODE
+ *
+ * XXX
+ *
+ * - rpma_conn_cfg_new - XXX
+ * - rpma_conn_cfg_set_timeout - XXX
+ * - rpma_conn_cfg_get_timeout - XXX
+ *
+ * - rpma_ep_get_fd - XXX
+ * - rpma_conn_get_event_fd - XXX
+ * - rpma_conn_get_completion_fd - XXX
+ *
+ * SCALABILITY AND RESOURCE USE
+ *
+ * XXX
+ *
+ * - rpma_conn_cfg_new - XXX
+ * - rpma_conn_cfg_set_cq_size - XXX
+ * - rpma_conn_cfg_get_cq_size - XXX
+ * - rpma_conn_cfg_set_sq_size - XXX
+ * - rpma_conn_cfg_get_sq_size - XXX
+ * - rpma_conn_cfg_set_rq_size - XXX
+ * - rpma_conn_cfg_get_rq_size - XXX
+ *
+ * THREAD SAFETY
+ *
+ * XXX
+ *
+ * ON-DEMAND PAGING SUPPORT
+ *
+ * XXX
+ *
+ * - rpma_utils_ibv_context_is_odp_capable - XXX
+ *
+ * DEBUGGING AND ERROR HANDLING
+ *
+ * XXX
+ *
+ * - rpma_log_set_threshold - XXX
+ * - rpma_log_get_threshold - XXX
+ * - rpma_log_set_function - XXX
+ *
+ * EXAMPLE
+ *
+ * See https://github.com/pmem/rpma/tree/master/examples for examples using
+ * the librpma API.
+ *
+ * ACKNOWLEDGEMENTS
+ *
+ * librpma builds on the libibverbs and librdmacm APIs.
+ *
+ * SEE ALSO
+ *
+ * XXX
  */
 
 #define RPMA_W_WAIT_FOR_COMPLETION	(1)
