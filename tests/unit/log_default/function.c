@@ -32,6 +32,7 @@
 #include "log_internal.h"
 #include "mocks-stdio.h"
 #include "mocks-time.h"
+#include "mocks-getpid.h"
 #include "test-common.h"
 
 #define STR_HELPER(x) #x
@@ -185,9 +186,11 @@ function__syslog(void **config_ptr)
 }
 
 #define MOCK_TIME_OF_DAY {00, 00, 00, 1, 0, 70, 0, 365, 0}
-#define MOCK_TIME_OF_DAY_STR "1970-01-01 00:00:00"
-#define MOCK_TIME_STR "[" MOCK_TIME_OF_DAY_STR ".000000] "
+#define MOCK_TIME_OF_DAY_STR "Jan 01 00:00:00"
+#define MOCK_TIME_STR MOCK_TIME_OF_DAY_STR ".000000 "
 #define MOCK_TIME_ERROR_STR "[time error] "
+#define MOCK_PID 123456
+#define MOCK_PID_AS_STR "["STR(MOCK_PID)"] "
 
 static struct timespec Timespec = {0};
 static struct tm Tm = MOCK_TIME_OF_DAY;
@@ -239,20 +242,28 @@ function__stderr_path(void **config_ptr)
 	will_return(__wrap_snprintf, MOCK_OK);
 	will_return(syslog, MOCK_PASSTHROUGH);
 	MOCK_GET_TIMESTAMP_CONFIGURE(config);
+	will_return(__wrap_getpid, MOCK_PID);
 
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
 	strcat(msg, MOCK_TIME_STR_EXPECTED(config));
+	strcat(msg, MOCK_PID_AS_STR);
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 	strcat(msg, MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
 		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
 	will_return(__wrap_fprintf, MOCK_VALIDATE);
 	expect_string(__wrap_fprintf, fprintf_output, msg);
 
+	/* enable getpid()'s mock only for test execution */
+	enabled__wrap_getpid = true;
+
 	/* run test */
 	rpma_log_default_function(MOCK_LOG_LEVEL, config->path,
 			MOCK_LINE_NUMBER, MOCK_FUNCTION_NAME, "%s",
 			MOCK_MESSAGE);
+
+	/* disable getpid()'s mock after test execution */
+	enabled__wrap_getpid = false;
 }
 
 /*
@@ -270,18 +281,26 @@ function__stderr_no_path(void **config_ptr)
 		will_return(__wrap_vsnprintf, MOCK_OK);
 		will_return(syslog, MOCK_PASSTHROUGH);
 		MOCK_GET_TIMESTAMP_CONFIGURE(config);
+		will_return(__wrap_getpid, MOCK_PID);
 
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
 		strcat(msg, MOCK_TIME_STR_EXPECTED(config));
+		strcat(msg, MOCK_PID_AS_STR);
 		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 		strcat(msg, MOCK_MESSAGE);
 		will_return(__wrap_fprintf, MOCK_VALIDATE);
 		expect_string(__wrap_fprintf, fprintf_output, msg);
 
+		/* enable getpid()'s mock only for test execution */
+		enabled__wrap_getpid = true;
+
 		/* run test */
 		rpma_log_default_function(MOCK_LOG_LEVEL, NULL, 0, NULL, "%s",
 				MOCK_MESSAGE);
+
+		/* disable getpid()'s mock after test execution */
+		enabled__wrap_getpid = false;
 	}
 }
 

@@ -19,11 +19,12 @@ function(build_log_default name)
 		${TEST_UNIT_COMMON_DIR}/mocks-stdio.c
 		${TEST_UNIT_COMMON_DIR}/mocks-syslog.c
 		${TEST_UNIT_COMMON_DIR}/mocks-time.c
+		${TEST_UNIT_COMMON_DIR}/mocks-getpid.c
 		${LIBRPMA_SOURCE_DIR}/log_default.c)
 
 		set_target_properties(log_default-${name} PROPERTIES
 			LINK_FLAGS
-			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime")
+			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime,--wrap=getpid")
 
 	add_test_generic(NAME log_default-${name} TRACERS none)
 endfunction()
