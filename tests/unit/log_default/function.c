@@ -185,7 +185,7 @@ function__syslog(void **config_ptr)
 }
 
 #define MOCK_TIME_OF_DAY {00, 00, 00, 1, 0, 70, 0, 365, 0}
-#define MOCK_TIME_OF_DAY_STR "1970-01-01 00:00:00"
+#define MOCK_TIME_OF_DAY_STR "Jan 01 00:00:00"
 #define MOCK_TIME_STR MOCK_TIME_OF_DAY_STR ".000000 "
 #define MOCK_TIME_ERROR_STR "[time error] "
 #define MOCK_GETPID 123456

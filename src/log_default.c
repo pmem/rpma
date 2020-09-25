@@ -60,7 +60,7 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	}
 
 	usec = ts.tv_nsec / 1000;
-	if (!strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info)) {
+	if (!strftime(date, sizeof(date), "%b %d %H:%M:%S", info)) {
 		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
