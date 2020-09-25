@@ -20,7 +20,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd);
+          int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
 
 DESCRIPTION
 ===========

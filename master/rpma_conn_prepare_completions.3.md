@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_conn_prepare_completions(struct rpma_conn *conn);
+          int rpma_conn_prepare_completions(const struct rpma_conn *conn);
 
 DESCRIPTION
 ===========
