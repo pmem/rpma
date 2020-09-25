@@ -15,7 +15,7 @@
 extern log_function *Rpma_log_function;
 
 /* threshold levels */
-extern rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
+extern enum rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
 
 void rpma_log_init();
 

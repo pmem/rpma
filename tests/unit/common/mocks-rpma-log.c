@@ -8,7 +8,7 @@
 #include "cmocka_headers.h"
 #include "log_internal.h"
 
-rpma_log_level Rpma_log_threshold[] = {
+enum rpma_log_level Rpma_log_threshold[] = {
 		/* all logs have to be triggered */
 		RPMA_LOG_LEVEL_DEBUG,	/* RPMA_LOG_THRESHOLD */
 		RPMA_LOG_DISABLED	/* RPMA_LOG_THRESHOLD_AUX */
@@ -18,7 +18,7 @@ rpma_log_level Rpma_log_threshold[] = {
  * mock_function -- logging function's mock
  */
 static void
-mock_function(rpma_log_level level, const char *file_name,
+mock_function(enum rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,
 	const char *message_format, ...)
 {

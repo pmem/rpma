@@ -74,7 +74,7 @@ typedef struct {
 	int strftime_error;
 	int snprintf_no_eol;
 
-	rpma_log_level secondary;
+	enum rpma_log_level secondary;
 
 	char *path;
 } mock_config;
@@ -263,7 +263,7 @@ function__stderr_no_path(void **config_ptr)
 {
 	mock_config *config = (mock_config *)*config_ptr;
 
-	for (rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
+	for (enum rpma_log_level level = RPMA_LOG_LEVEL_FATAL;
 		level <= RPMA_LOG_LEVEL_DEBUG; level++) {
 
 		/* configure mocks */
