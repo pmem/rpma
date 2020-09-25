@@ -21,8 +21,8 @@ struct rpma_flush Rpma_flush;
  */
 int
 rpma_flush_mock_do(struct ibv_qp *qp, struct rpma_flush *flush,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
-	size_t len, enum rpma_flush_type type, int flags, void *op_context)
+	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	assert_non_null(qp);
 	assert_non_null(flush);
