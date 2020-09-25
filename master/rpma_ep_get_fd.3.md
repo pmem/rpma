@@ -19,16 +19,24 @@ SYNOPSIS
 
           #include <librpma.h>
 
+          const struct rpma_ep;
           int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
 DESCRIPTION
 ===========
 
-Get a file descriptor of the endpoint.
+**rpma\_ep\_get\_fd**() gets the file descriptor of the endpoint.
+
+RETURN VALUE
+============
+
+The **rpma\_ep\_get\_fd**() function returns 0 on success or a negative
+error code on failure. **rpma\_ep\_get\_fd**() does not set \*fd value
+on failure.
 
 ERRORS
 ======
 
 **rpma\_ep\_get\_fd**() can fail with the following error:
 
--   RPMA\_E\_INVAL - *ep* or *fd* is NULL
+-   RPMA\_E\_INVAL - ep or fd is NULL
