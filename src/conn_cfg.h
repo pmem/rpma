@@ -22,6 +22,6 @@ struct rpma_conn_cfg *rpma_conn_cfg_default();
  *
  * - RPMA_E_INVAL - cfg or cqe is NULL
  */
-int rpma_conn_cfg_get_cqe(struct rpma_conn_cfg *cfg, int *cqe);
+int rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe);
 
 #endif /* LIBRPMA_CONN_CFG_H */

@@ -50,7 +50,7 @@ struct rpma_conn_req {
  */
 static int
 rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
+		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
 {
 	int ret = 0;
 
@@ -322,7 +322,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
  */
 int
 rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
-		struct rdma_cm_event *edata, struct rpma_conn_cfg *cfg,
+		struct rdma_cm_event *edata, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || edata == NULL || req_ptr == NULL)
@@ -356,7 +356,7 @@ rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
  */
 int
 rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
-		const char *port, struct rpma_conn_cfg *cfg,
+		const char *port, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
@@ -425,7 +425,7 @@ err_info_delete:
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-	struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
+	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
 	if (req_ptr == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -497,9 +497,9 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
  * rpma_conn_req_recv -- initialize the receive operation
  */
 int
-rpma_conn_req_recv(struct rpma_conn_req *req,
-    struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context)
+rpma_conn_req_recv(const struct rpma_conn_req *req,
+    const struct rpma_mr_local *dst, size_t offset, size_t len,
+    const void *op_context)
 {
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;

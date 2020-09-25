@@ -110,9 +110,9 @@ usage_to_access(int usage)
  */
 int
 rpma_mr_read(struct ibv_qp *qp,
-	struct rpma_mr_local *dst, size_t dst_offset,
-	struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+	const struct rpma_mr_local *dst, size_t dst_offset,
+	const struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context)
 {
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
@@ -155,9 +155,9 @@ rpma_mr_read(struct ibv_qp *qp,
  */
 int
 rpma_mr_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+	const struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context)
 {
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
@@ -200,8 +200,8 @@ rpma_mr_write(struct ibv_qp *qp,
  */
 int
 rpma_mr_send(struct ibv_qp *qp,
-	struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, void *op_context)
+	const struct rpma_mr_local *src,  size_t offset,
+	size_t len, int flags, const void *op_context)
 {
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
@@ -236,8 +236,8 @@ rpma_mr_send(struct ibv_qp *qp,
  */
 int
 rpma_mr_recv(struct ibv_qp *qp,
-	struct rpma_mr_local *dst,  size_t offset,
-	size_t len, void *op_context)
+	const struct rpma_mr_local *dst,  size_t offset,
+	size_t len, const void *op_context)
 {
 	struct ibv_recv_wr wr;
 	struct ibv_sge sge;
@@ -330,7 +330,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
  * rpma_mr_get_descriptor -- get a descriptor of memory region
  */
 int
-rpma_mr_get_descriptor(struct rpma_mr_local *mr, void *desc)
+rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc)
 {
 	if (mr == NULL || desc == NULL)
 		return RPMA_E_INVAL;
@@ -415,7 +415,7 @@ rpma_mr_remote_from_descriptor(const void *desc,
  * rpma_mr_get_descriptor_size -- get size of a memory region descriptor
  */
 int
-rpma_mr_get_descriptor_size(struct rpma_mr_local *mr, size_t *desc_size)
+rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr, size_t *desc_size)
 {
 	if (mr == NULL || desc_size == NULL)
 		return RPMA_E_INVAL;
@@ -429,7 +429,7 @@ rpma_mr_get_descriptor_size(struct rpma_mr_local *mr, size_t *desc_size)
  * rpma_mr_remote_get_size -- get a remote memory region size
  */
 int
-rpma_mr_remote_get_size(struct rpma_mr_remote *mr, size_t *size)
+rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size)
 {
 	if (mr == NULL || size == NULL)
 		return RPMA_E_INVAL;

@@ -40,7 +40,7 @@ struct rpma_peer {
  */
 int
 rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq, struct rpma_conn_cfg *cfg)
+		struct ibv_cq *cq, const struct rpma_conn_cfg *cfg)
 {
 	if (peer == NULL || id == NULL || cq == NULL)
 		return RPMA_E_INVAL;

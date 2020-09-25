@@ -22,9 +22,9 @@
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_read(struct ibv_qp *qp,
-	struct rpma_mr_local *dst, size_t dst_offset,
-	struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, void *op_context);
+	const struct rpma_mr_local *dst, size_t dst_offset,
+	const struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -36,9 +36,9 @@ int rpma_mr_read(struct ibv_qp *qp,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, void *op_context);
+	const struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -50,8 +50,8 @@ int rpma_mr_write(struct ibv_qp *qp,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_send(struct ibv_qp *qp,
-	struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, void *op_context);
+	const struct rpma_mr_local *src,  size_t offset,
+	size_t len, int flags, const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -63,7 +63,7 @@ int rpma_mr_send(struct ibv_qp *qp,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_recv(struct ibv_qp *qp,
-	struct rpma_mr_local *dst,  size_t offset,
-	size_t len, void *op_context);
+	const struct rpma_mr_local *dst,  size_t offset,
+	size_t len, const void *op_context);
 
 #endif /* LIBRPMA_MR_H */

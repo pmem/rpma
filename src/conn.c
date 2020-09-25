@@ -120,7 +120,7 @@ rpma_conn_set_private_data(struct rpma_conn *conn,
  * associated with the connection
  */
 int
-rpma_conn_get_event_fd(struct rpma_conn *conn, int *fd)
+rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd)
 {
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
@@ -214,7 +214,7 @@ err_private_data_discard:
  * rpma_conn_get_private_data -- hand a pointer to the connection's private data
  */
 int
-rpma_conn_get_private_data(struct rpma_conn *conn,
+rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
 	if (conn == NULL || pdata == NULL)
@@ -230,7 +230,7 @@ rpma_conn_get_private_data(struct rpma_conn *conn,
  * rpma_conn_disconnect -- disconnect the connection
  */
 int
-rpma_conn_disconnect(struct rpma_conn *conn)
+rpma_conn_disconnect(const struct rpma_conn *conn)
 {
 	if (conn == NULL)
 		return RPMA_E_INVAL;
@@ -319,10 +319,10 @@ err_destroy_event_channel:
  * rpma_read -- initialize the read operation
  */
 int
-rpma_read(struct rpma_conn *conn,
-	struct rpma_mr_local *dst, size_t dst_offset,
-	struct rpma_mr_remote *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+rpma_read(const struct rpma_conn *conn,
+	const struct rpma_mr_local *dst, size_t dst_offset,
+	const struct rpma_mr_remote *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -337,10 +337,10 @@ rpma_read(struct rpma_conn *conn,
  * rpma_write -- initialize the write operation
  */
 int
-rpma_write(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, void *op_context)
+rpma_write(const struct rpma_conn *conn,
+	const struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -355,10 +355,10 @@ rpma_write(struct rpma_conn *conn,
  * rpma_write_atomic -- initialize the atomic write operation
  */
 int
-rpma_write_atomic(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	struct rpma_mr_local *src,  size_t src_offset,
-	int flags, void *op_context)
+rpma_write_atomic(const struct rpma_conn *conn,
+	const struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -376,9 +376,9 @@ rpma_write_atomic(struct rpma_conn *conn,
  * rpma_flush -- initialize the flush operation
  */
 int
-rpma_flush(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
-	enum rpma_flush_type type, int flags, void *op_context)
+rpma_flush(const struct rpma_conn *conn,
+	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -417,9 +417,9 @@ rpma_flush(struct rpma_conn *conn,
  * rpma_send -- initialize the send operation
  */
 int
-rpma_send(struct rpma_conn *conn,
-    struct rpma_mr_local *src, size_t offset, size_t len,
-    int flags, void *op_context)
+rpma_send(const struct rpma_conn *conn,
+    const struct rpma_mr_local *src, size_t offset, size_t len,
+    int flags, const void *op_context)
 {
 	if (conn == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -433,9 +433,9 @@ rpma_send(struct rpma_conn *conn,
  * rpma_recv -- initialize the receive operation
  */
 int
-rpma_recv(struct rpma_conn *conn,
-    struct rpma_mr_local *dst, size_t offset, size_t len,
-    void *op_context)
+rpma_recv(const struct rpma_conn *conn,
+    const struct rpma_mr_local *dst, size_t offset, size_t len,
+    const void *op_context)
 {
 	if (conn == NULL || dst == NULL)
 		return RPMA_E_INVAL;
@@ -450,7 +450,7 @@ rpma_recv(struct rpma_conn *conn,
  * channel associated with the connection
  */
 int
-rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd)
+rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd)
 {
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
@@ -464,7 +464,7 @@ rpma_conn_get_completion_fd(struct rpma_conn *conn, int *fd)
  * rpma_conn_prepare_completions -- wait for completions
  */
 int
-rpma_conn_prepare_completions(struct rpma_conn *conn)
+rpma_conn_prepare_completions(const struct rpma_conn *conn)
 {
 	if (conn == NULL)
 		return RPMA_E_INVAL;
@@ -499,7 +499,8 @@ rpma_conn_prepare_completions(struct rpma_conn *conn)
  * rpma_conn_next_completion -- receive an operation completion
  */
 int
-rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
+rpma_conn_next_completion(const struct rpma_conn *conn,
+		struct rpma_completion *cmpl)
 {
 	if (conn == NULL || cmpl == NULL)
 		return RPMA_E_INVAL;
@@ -562,7 +563,7 @@ rpma_conn_next_completion(struct rpma_conn *conn, struct rpma_completion *cmpl)
  */
 int
 rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
-		struct rpma_peer_cfg *pcfg)
+		const struct rpma_peer_cfg *pcfg)
 {
 	if (conn == NULL || pcfg == NULL)
 		return RPMA_E_INVAL;
