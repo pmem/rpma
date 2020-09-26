@@ -46,11 +46,11 @@ struct rpma_conn_req {
  * the latter with QP and CQ
  *
  * ASSUMPTIONS
- * - peer != NULL && id != NULL && cfg != NULL && req != NULL
+ * - peer != NULL && id != NULL && cfg != NULL && req_ptr != NULL
  */
 static int
 rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
-		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req)
+		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	int ret = 0;
 
@@ -94,19 +94,19 @@ rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	if (ret)
 		goto err_destroy_cq;
 
-	*req = (struct rpma_conn_req *)malloc(sizeof(struct rpma_conn_req));
-	if (*req == NULL) {
+	*req_ptr = (struct rpma_conn_req *)malloc(sizeof(struct rpma_conn_req));
+	if (*req_ptr == NULL) {
 		ret = RPMA_E_NOMEM;
 		goto err_destroy_qp;
 	}
 
-	(*req)->edata = NULL;
-	(*req)->id = id;
-	(*req)->cq = cq;
-	(*req)->data.ptr = NULL;
-	(*req)->data.len = 0;
-	(*req)->peer = peer;
-	(*req)->channel = channel;
+	(*req_ptr)->edata = NULL;
+	(*req_ptr)->id = id;
+	(*req_ptr)->cq = cq;
+	(*req_ptr)->data.ptr = NULL;
+	(*req_ptr)->data.len = 0;
+	(*req_ptr)->peer = peer;
+	(*req_ptr)->channel = channel;
 
 	return 0;
 
