@@ -24,7 +24,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Return const string representation of RPMA error codes.
+**rpma\_err\_2str**() returns the const string representation of RPMA
+error codes.
 
 ERRORS
 ======
