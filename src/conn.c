@@ -316,7 +316,7 @@ err_destroy_event_channel:
 }
 
 /*
- * rpma_read -- initialize the read operation
+ * rpma_read -- initiate the read operation
  */
 int
 rpma_read(const struct rpma_conn *conn,
@@ -334,7 +334,7 @@ rpma_read(const struct rpma_conn *conn,
 }
 
 /*
- * rpma_write -- initialize the write operation
+ * rpma_write -- initiate the write operation
  */
 int
 rpma_write(const struct rpma_conn *conn,
@@ -352,7 +352,7 @@ rpma_write(const struct rpma_conn *conn,
 }
 
 /*
- * rpma_write_atomic -- initialize the atomic write operation
+ * rpma_write_atomic -- initiate the atomic write operation
  */
 int
 rpma_write_atomic(const struct rpma_conn *conn,
@@ -373,7 +373,7 @@ rpma_write_atomic(const struct rpma_conn *conn,
 }
 
 /*
- * rpma_flush -- initialize the flush operation
+ * rpma_flush -- initiate the flush operation
  */
 int
 rpma_flush(const struct rpma_conn *conn,
@@ -414,7 +414,7 @@ rpma_flush(const struct rpma_conn *conn,
 }
 
 /*
- * rpma_send -- initialize the send operation
+ * rpma_send -- initiate the send operation
  */
 int
 rpma_send(const struct rpma_conn *conn,
@@ -430,7 +430,7 @@ rpma_send(const struct rpma_conn *conn,
 }
 
 /*
- * rpma_recv -- initialize the receive operation
+ * rpma_recv -- initiate the receive operation
  */
 int
 rpma_recv(const struct rpma_conn *conn,

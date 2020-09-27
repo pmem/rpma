@@ -197,7 +197,7 @@ client_handle_name(struct client_res *clnt, void *ptr)
  *
  * The only expected completion in this example is a success of
  * the RPMA_OP_READ after which the read client's name is printed to the output.
- * No matter what the disconnection process is initialized.
+ * No matter what the disconnection process is initiated.
  */
 void
 client_handle_completion(struct custom_event *ce)
@@ -245,7 +245,7 @@ client_handle_completion(struct custom_event *ce)
 	/* print received name of the client */
 	client_handle_name(clnt, svr->dst_ptr);
 
-	/* initialize disconnection process */
+	/* initiate disconnection process */
 	(void) rpma_conn_disconnect(clnt->conn);
 }
 
@@ -411,7 +411,7 @@ main(int argc, char *argv[])
 	if (ret)
 		return ret;
 
-	/* initialize the server structure */
+	/* initialize the server's structure */
 	ret = server_init(&svr, peer);
 	if (ret)
 		goto err_peer_delete;
