@@ -40,6 +40,11 @@ RETURN VALUE
 The **rpma\_err\_get\_msg**() function returns a pointer to a static
 buffer containing the last error message logged for the current thread.
 
+ERRORS
+======
+
+**rpma\_err\_get\_msg**() cannot fail.
+
 SEE ALSO
 ========
 

@@ -23,3 +23,11 @@ SYNOPSIS
 
 DESCRIPTION
 ===========
+
+**rpma\_err\_get\_provider\_error**() returns the last errno value
+reported by the provider.
+
+ERRORS
+======
+
+**rpma\_err\_get\_provider\_error**() cannot fail.
