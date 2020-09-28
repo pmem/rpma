@@ -29,7 +29,7 @@
 #define RPMA_E_PROVIDER			(-100002) /* Provider error occurred */
 #define RPMA_E_NOMEM			(-100003) /* Out of memory */
 #define RPMA_E_INVAL			(-100004) /* Invalid argument */
-#define RPMA_E_NO_COMPLETION		(-100005) /* No completion available */
+#define RPMA_E_NO_COMPLETION		(-100005) /* No next completion available */
 #define RPMA_E_NO_NEXT			(-100006) /* No next event available */
 
 /* picking up an RDMA-capable device */

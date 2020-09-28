@@ -46,6 +46,10 @@ rpma_err_2str(int ret)
 		return "Out of memory";
 	case RPMA_E_INVAL:
 		return "Invalid argument";
+	case RPMA_E_NO_COMPLETION:
+		return "No next completion available";
+	case RPMA_E_NO_NEXT:
+		return "No next event available";
 	case RPMA_E_UNKNOWN:
 	default:
 		return "Unknown error";
