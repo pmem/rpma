@@ -5,7 +5,6 @@
  * error.c -- unit tests for error-handling rpma-err module
  *
  * APIs covered:
- * - rpma_err_get_msg()
  * - rpma_err_get_provider_error()
  * - rpma_err_2str()
  */
@@ -13,17 +12,6 @@
 #include "cmocka_headers.h"
 #include "librpma.h"
 #include "rpma_err.h"
-
-#define EMPTY_STRING	""
-
-/*
- * err_get_msg - sanity test for rpma_err_get_msg()
- */
-static void
-err_get_msg(void **unused)
-{
-	assert_string_equal(rpma_err_get_msg(), EMPTY_STRING);
-}
 
 /*
  * err_get_provider_error - sanity test for rpma_err_get_provider_error()
@@ -87,7 +75,6 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(err_get_msg),
 		cmocka_unit_test(err_get_provider_error),
 		cmocka_unit_test(err_2str__E_NOSUPP),
 		cmocka_unit_test(err_2str__E_PROVIDER),
