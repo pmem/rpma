@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_send** - initialize the send operation
+**rpma\_send** - initiate the send operation
 
 SYNOPSIS
 ========
@@ -28,8 +28,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_send**() initializes the send operation which transfers a
-message from the local memory to other side of the connection.
+**rpma\_send**() initiates the send operation which transfers a message
+from the local memory to other side of the connection.
 
 RETURN VALUE
 ============

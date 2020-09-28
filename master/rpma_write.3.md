@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_write** - initialize the write operation
+**rpma\_write** - initiate the write operation
 
 SYNOPSIS
 ========
@@ -30,8 +30,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_write**() initializes the write operation (transferring data
-from the local memory to the remote memory).
+**rpma\_write**() initiates the write operation (transferring data from
+the local memory to the remote memory).
 
 RETURN VALUE
 ============

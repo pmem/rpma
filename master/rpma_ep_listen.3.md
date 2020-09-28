@@ -27,7 +27,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_ep\_listen**() creates an endpoint and initializes listening for
+**rpma\_ep\_listen**() creates an endpoint and initiates listening for
 incoming connections using reliable, connection-oriented and
 message-based (RDMA\_PS\_TCP) QP communication.
 
