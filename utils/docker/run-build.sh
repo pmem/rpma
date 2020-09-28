@@ -27,6 +27,26 @@ if [ "$TEST_DIR" == "" ]; then
 	exit 1
 fi
 
+case "$PACKAGE_MANAGER" in
+	"rpm"|"deb") # supported package managers
+		;;
+	"none") # no package manager, install the library from sources
+		echo "Notice: the librpma library will be installed from sources"
+		PACKAGE_MANAGER=""
+		;;
+	"")
+		echo "Error: PACKAGE_MANAGER is not set"
+		echo "       Use 'rpm' or 'deb' to build packages or 'none' to install the library from sources."
+		exit 1
+		;;
+	*)
+		# unsupported package manager
+		echo "Error: unsupported PACKAGE_MANAGER: $PACKAGE_MANAGER"
+		echo "       Use 'rpm' or 'deb' to build packages or 'none' to install the library from sources."
+		exit 1
+		;;
+esac
+
 function sudo_password() {
 	echo $USERPASS | sudo -Sk $*
 }
@@ -191,16 +211,21 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 
 make -j$(nproc)
 ctest --output-on-failure
-# Do not install the library from sources here,
-# because it will be installed from the packages below.
 
-echo "##############################################################"
-echo "### Making and testing packages (RELEASE version) ..."
-echo "##############################################################"
+if [ "$PACKAGE_MANAGER" = "" ]; then
+	# install the library from sources
+	sudo_password -S make -j$(nproc) install
+else
+	# Do not install the library from sources here,
+	# because it will be installed from the packages below.
 
-make -j$(nproc) package
+	echo "##############################################################"
+	echo "### Making and testing packages (RELEASE version) ..."
+	echo "##############################################################"
 
-find . -iname "librpma*.$PACKAGE_MANAGER"
+	make -j$(nproc) package
+	find . -iname "librpma*.$PACKAGE_MANAGER"
+fi
 
 if [ $PACKAGE_MANAGER = "deb" ]; then
 	echo "$ dpkg-deb --info ./librpma*.deb"
@@ -224,6 +249,12 @@ elif [ $PACKAGE_MANAGER = "rpm" ]; then
 fi
 
 test_compile_all_examples_standalone
+
+if [ "$PACKAGE_MANAGER" = "" ]; then
+	# uninstall the library, since it was installed from sources
+	cd $WORKDIR/build
+	sudo_password -S make uninstall
+fi
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
