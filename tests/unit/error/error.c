@@ -90,7 +90,7 @@ err_2str__E_NO_COMPLETION(void **unused)
 static void
 err_2str__E_NO_NEXT(void **unused)
 {
-	assert_string_equal(rpma_err_2str(RPMA_E_NO_NEXT),
+	assert_string_equal(rpma_err_2str(RPMA_E_NO_EVENT),
 				"No next event available");
 }
 

@@ -48,7 +48,7 @@ rpma_err_2str(int ret)
 		return "Invalid argument";
 	case RPMA_E_NO_COMPLETION:
 		return "No next completion available";
-	case RPMA_E_NO_NEXT:
+	case RPMA_E_NO_EVENT:
 		return "No next event available";
 	case RPMA_E_UNKNOWN:
 	default:

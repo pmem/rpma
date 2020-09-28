@@ -176,7 +176,7 @@ rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 	/* get an event */
 	if (rdma_get_cm_event(ep->evch, &event)) {
 		if (errno == ENODATA)
-			return RPMA_E_NO_NEXT;
+			return RPMA_E_NO_EVENT;
 
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,

@@ -98,7 +98,7 @@ next_conn_req__get_cm_event_ENODATA(void **estate_ptr)
 	int ret = rpma_ep_next_conn_req(estate->ep, NULL, &req);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_NO_NEXT);
+	assert_int_equal(ret, RPMA_E_NO_EVENT);
 	assert_null(req);
 }
 

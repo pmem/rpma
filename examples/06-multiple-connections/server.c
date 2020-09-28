@@ -318,7 +318,7 @@ client_handle_connection_event(struct custom_event *ce)
 	enum rpma_conn_event event;
 	int ret = rpma_conn_next_event(clnt->conn, &event);
 	if (ret) {
-		if (ret == RPMA_E_NO_NEXT)
+		if (ret == RPMA_E_NO_EVENT)
 			return;
 
 		(void) rpma_conn_disconnect(clnt->conn);

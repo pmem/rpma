@@ -95,7 +95,7 @@ next_event__get_cm_event_ENODATA(void **cstate_ptr)
 	int ret = rpma_conn_next_event(cstate->conn, &c_event);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_NO_NEXT);
+	assert_int_equal(ret, RPMA_E_NO_EVENT);
 	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
 }
 
