@@ -14,17 +14,6 @@ add_check_whitespace(tests-cmake
 
 add_flag(-Wall)
 
-if(USE_ASAN)
-       add_sanitizer_flag(address)
-endif()
-if(USE_UBSAN)
-       add_sanitizer_flag(undefined)
-endif()
-
-if(COVERAGE)
-       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
-endif()
-
 find_packages()
 
 add_library(test_backtrace STATIC test_backtrace.c)
