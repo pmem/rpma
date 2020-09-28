@@ -23,15 +23,6 @@ rpma_err_get_provider_error(void)
 }
 
 /*
- * rpma_err_get_msg -- return the last error message
- */
-const char *
-rpma_err_get_msg(void)
-{
-	return "";
-}
-
-/*
  * rpma_e2str -- return const string representation of an RPMA error
  */
 const char *

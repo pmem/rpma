@@ -36,7 +36,6 @@ LIBRPMA_1.0 {
 		rpma_ep_next_conn_req;
 		rpma_ep_shutdown;
 		rpma_err_2str;
-		rpma_err_get_msg;
 		rpma_err_get_provider_error;
 		rpma_flush;
 		rpma_log_get_threshold;
