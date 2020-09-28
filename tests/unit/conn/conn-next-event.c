@@ -10,6 +10,7 @@
 
 #include "conn-common.h"
 #include "mocks-rdma_cm.h"
+#include "rpma_err.h"
 
 /*
  * next_event__conn_NULL - NULL conn is invalid

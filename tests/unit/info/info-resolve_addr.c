@@ -17,6 +17,7 @@
 #include "librpma.h"
 #include "info-common.h"
 #include "mocks-rdma_cm.h"
+#include "rpma_err.h"
 
 #include <infiniband/verbs.h>
 

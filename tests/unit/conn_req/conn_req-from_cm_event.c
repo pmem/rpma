@@ -12,6 +12,7 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
 #include "mocks-rpma-conn_cfg.h"
+#include "rpma_err.h"
 
 static struct conn_cfg_get_q_size_mock_args Get_cqe = {
 		.cfg = MOCK_CONN_CFG_DEFAULT,

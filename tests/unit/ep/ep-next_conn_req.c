@@ -12,6 +12,7 @@
 #include "ep-common.h"
 #include "cmocka_headers.h"
 #include "mocks-rpma-conn_cfg.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*

@@ -17,6 +17,7 @@
 #include "mocks-rpma-utils.h"
 #include "peer.h"
 #include "peer-common.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*
