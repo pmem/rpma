@@ -81,8 +81,8 @@ enum rpma_util_ibv_context_type {
  * - RPMA_E_INVAL - addr or dev_ptr is NULL or type is unknown
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(), rdma_bind_addr()
- *   or rdma_resolve_addr() failed, errno can be checked using
- *   rpma_err_get_provider_error()
+ * or rdma_resolve_addr() failed, the exact cause of the error
+ * can be read from the log
  */
 int rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type,
@@ -112,8 +112,8 @@ int rpma_utils_get_ibv_context(const char *addr,
  * rpma_utils_ibv_context_is_odp_capable() can fail with the following errors:
  *
  * - RPMA_E_INVAL - dev or is_odp_capable is NULL
- * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, errno can be checked using
- *   rpma_err_get_provider_error()
+ * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, the exact cause
+ * of the error can be read from the log
  */
 int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 		int *is_odp_capable);
@@ -1714,24 +1714,6 @@ int rpma_conn_next_completion(const struct rpma_conn *conn,
 		struct rpma_completion *cmpl);
 
 /* error handling */
-
-/** 3
- * rpma_err_get_provider_error - return the last provider error
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	int rpma_err_get_provider_error(void);
- *
- * DESCRIPTION
- * rpma_err_get_provider_error() returns the last errno value
- * reported by the provider.
- *
- * ERRORS
- * rpma_err_get_provider_error() cannot fail.
- */
-int rpma_err_get_provider_error(void);
 
 /** 3
  * rpma_err_2str - convert RPMA error code to a string

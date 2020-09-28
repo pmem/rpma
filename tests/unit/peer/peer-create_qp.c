@@ -16,6 +16,7 @@
 #include "mocks-rpma-conn_cfg.h"
 #include "peer.h"
 #include "peer-common.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 static struct conn_cfg_get_q_size_mock_args Get_sq_size = {

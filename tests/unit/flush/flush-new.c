@@ -13,6 +13,7 @@
 #include "flush.h"
 #include "flush-common.h"
 #include "mocks-stdlib.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*

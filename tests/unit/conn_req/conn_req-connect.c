@@ -10,6 +10,7 @@
 
 #include "conn_req-common.h"
 #include "test-common.h"
+#include "rpma_err.h"
 
 static struct conn_req_new_test_state prestate_conn_cfg_default;
 

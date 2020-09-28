@@ -14,15 +14,6 @@ int Rpma_provider_error = 0;
 /* public librpma API */
 
 /*
- * rpma_err_get_provider_error -- return the last provider error
- */
-int
-rpma_err_get_provider_error(void)
-{
-	return Rpma_provider_error;
-}
-
-/*
  * rpma_e2str -- return const string representation of an RPMA error
  */
 const char *
@@ -41,4 +32,15 @@ rpma_err_2str(int ret)
 	default:
 		return "Unknown error";
 	}
+}
+
+/* internal librpma API */
+
+/*
+ * rpma_err_get_provider_error -- return the last provider error
+ */
+int
+rpma_err_get_provider_error(void)
+{
+	return Rpma_provider_error;
 }

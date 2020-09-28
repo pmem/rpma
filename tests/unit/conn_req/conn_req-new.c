@@ -11,6 +11,7 @@
 #include "conn_req-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-conn_cfg.h"
+#include "rpma_err.h"
 
 static struct conn_cfg_get_timeout_mock_args Get_t = {
 	.cfg = MOCK_CONN_CFG_DEFAULT,

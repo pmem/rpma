@@ -12,6 +12,7 @@
 #include "librpma.h"
 #include "ep-common.h"
 #include "cmocka_headers.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*

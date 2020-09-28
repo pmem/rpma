@@ -12,6 +12,7 @@
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 /*

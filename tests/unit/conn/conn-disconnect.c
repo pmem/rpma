@@ -10,6 +10,7 @@
 
 #include "mocks-rdma_cm.h"
 #include "conn-common.h"
+#include "rpma_err.h"
 
 /*
  * disconnect__conn_NULL - NULL conn is invalid

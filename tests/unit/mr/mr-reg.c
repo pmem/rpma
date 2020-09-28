@@ -15,6 +15,7 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-peer.h"
 #include "mr-common.h"
+#include "rpma_err.h"
 #include "test-common.h"
 
 #define USAGE_WRONG	(~((int)0)) /* not allowed value of usage */

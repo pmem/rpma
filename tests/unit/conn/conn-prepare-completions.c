@@ -10,6 +10,7 @@
 
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
+#include "rpma_err.h"
 
 /*
  * prepare_completions__conn_NULL - NULL conn is invalid
