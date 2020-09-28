@@ -41,7 +41,7 @@ static void
 err_2str__E_PROVIDER(void **unused)
 {
 	assert_string_equal(rpma_err_2str(RPMA_E_PROVIDER),
-	"Provider error occurred");
+				"Provider error occurred");
 }
 
 /*
@@ -63,6 +63,26 @@ err_2str__E_INVAL(void **unused)
 }
 
 /*
+ * err_2str__E_NO_COMPLETION - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__E_NO_COMPLETION(void **unused)
+{
+	assert_string_equal(rpma_err_2str(RPMA_E_NO_COMPLETION),
+				"No next completion available");
+}
+
+/*
+ * err_2str__E_NO_NEXT - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__E_NO_NEXT(void **unused)
+{
+	assert_string_equal(rpma_err_2str(RPMA_E_NO_EVENT),
+				"No next event available");
+}
+
+/*
  * err_2str__E_UNKOWN - sanity test for rpma_err_2str()
  */
 static void
@@ -80,6 +100,8 @@ main(int argc, char *argv[])
 		cmocka_unit_test(err_2str__E_PROVIDER),
 		cmocka_unit_test(err_2str__E_NOMEM),
 		cmocka_unit_test(err_2str__E_INVAL),
+		cmocka_unit_test(err_2str__E_NO_COMPLETION),
+		cmocka_unit_test(err_2str__E_NO_NEXT),
 		cmocka_unit_test(err_2str__E_UNKNOWN),
 	};
 

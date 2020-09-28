@@ -144,7 +144,7 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	struct rdma_cm_event *edata = NULL;
 	if (rdma_get_cm_event(conn->evch, &edata)) {
 		if (errno == ENODATA)
-			return RPMA_E_NO_NEXT;
+			return RPMA_E_NO_EVENT;
 
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
