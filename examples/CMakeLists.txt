@@ -21,17 +21,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
-if(USE_ASAN)
-	add_sanitizer_flag(address)
-endif()
-if(USE_UBSAN)
-	add_sanitizer_flag(undefined)
-endif()
-
-if(COVERAGE)
-       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
-endif()
-
 include_directories(${LIBRPMA_INCLUDE_DIRS})
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 

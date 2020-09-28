@@ -168,6 +168,10 @@ if(USE_UBSAN)
 	add_sanitizer_flag(undefined)
 endif()
 
+if(COVERAGE)
+       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
+endif()
+
 if(DEVELOPER_MODE)
 	add_flag(-Wall)
 	add_flag(-Werror)
