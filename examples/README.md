@@ -1,3 +1,6 @@
+Examples for librpma
+===
+
 This directory contains examples for librpma,
 the library to simplify accessing persistent memory devices
 on remote hosts over Remote Direct Memory Access (RDMA).
@@ -5,6 +8,8 @@ on remote hosts over Remote Direct Memory Access (RDMA).
 If you're looking for documentation to get you started using RPMA,
 start here: https://pmem.io/rpma and follow the links
 to examples and man pages.
+
+## Running examples on SoftRoCE
 
 This directory contains also the 'config_softroce.sh' script
 dedicated to configuring SoftRoCE (it can be also run

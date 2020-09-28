@@ -1,5 +1,0 @@
-This is examples/template-example/README.
-
-This directory contains examples for librpma, the library containing
-low-level support for remote access to persistent memory. A detailed
-explanation of these examples can be found here: https://pmem.io/pmdk/rpma
