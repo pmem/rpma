@@ -254,6 +254,12 @@ if [ "$PACKAGE_MANAGER" = "" ]; then
 	# uninstall the library, since it was installed from sources
 	cd $WORKDIR/build
 	sudo_password -S make uninstall
+elif [ $PACKAGE_MANAGER = "deb" ]; then
+	echo "sudo -S dpkg --remove librpma-dev"
+	echo $USERPASS | sudo -S dpkg --remove librpma-dev
+elif [ $PACKAGE_MANAGER = "rpm" ]; then
+	echo "$ sudo -S rpm --erase librpma-devel"
+	echo $USERPASS | sudo -S rpm --erase librpma-devel
 fi
 
 cd $WORKDIR
