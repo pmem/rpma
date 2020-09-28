@@ -1043,7 +1043,7 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
 
 /** 3
- * rpma_conn_disconnect - initialize disconnection
+ * rpma_conn_disconnect - initiate disconnection
  *
  * SYNOPSIS
  *
@@ -1053,7 +1053,7 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *	int rpma_conn_disconnect(const struct rpma_conn *conn);
  *
  * DESCRIPTION
- * rpma_conn_disconnect() initializes disconnecting of the RPMA
+ * rpma_conn_disconnect() initiates disconnecting of the RPMA
  * connection process.
  *
  * RETURN VALUE
@@ -1204,7 +1204,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		struct rpma_conn **conn_ptr);
 
 /** 3
- * rpma_conn_req_recv - initialize the receive operation
+ * rpma_conn_req_recv - initiate the receive operation
  *
  * SYNOPSIS
  *
@@ -1217,7 +1217,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *			size_t len, const void *op_context);
  *
  * DESCRIPTION
- * rpma_conn_req_recv() initializes the receive operation. It prepares a buffer
+ * rpma_conn_req_recv() initiates the receive operation. It prepares a buffer
  * for a message send from other side of the connection.
  * Please see rpma_send(3). This is a variant of rpma_recv(3) which may be used
  * before the connection is established.
@@ -1253,7 +1253,7 @@ struct rpma_ep;
  *			const char *port, struct rpma_ep **ep_ptr);
  *
  * DESCRIPTION
- * rpma_ep_listen() creates an endpoint and initializes listening for incoming
+ * rpma_ep_listen() creates an endpoint and initiates listening for incoming
  * connections using reliable, connection-oriented and message-based
  * (RDMA_PS_TCP) QP communication.
  *
@@ -1369,7 +1369,7 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
 #define RPMA_F_COMPLETION_ALWAYS	(1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
 
 /** 3
- * rpma_read - initialize the read operation
+ * rpma_read - initiate the read operation
  *
  * SYNOPSIS
  *
@@ -1384,7 +1384,7 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_read() initializes the read operation (transferring data from
+ * rpma_read() initiates the read operation (transferring data from
  * the remote memory to the local memory).
  *
  * RETURN VALUE
@@ -1404,7 +1404,7 @@ int rpma_read(const struct rpma_conn *conn,
 		size_t len, int flags, const void *op_context);
 
 /** 3
- * rpma_write - initialize the write operation
+ * rpma_write - initiate the write operation
  *
  * SYNOPSIS
  *
@@ -1419,7 +1419,7 @@ int rpma_read(const struct rpma_conn *conn,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_write() initializes the write operation (transferring data from
+ * rpma_write() initiates the write operation (transferring data from
  * the local memory to the remote memory).
  *
  * RETURN VALUE
@@ -1441,7 +1441,7 @@ int rpma_write(const struct rpma_conn *conn,
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
 /** 3
- * rpma_write_atomic - initialize the atomic write operation
+ * rpma_write_atomic - initiate the atomic write operation
  *
  * SYNOPSIS
  *
@@ -1456,7 +1456,7 @@ int rpma_write(const struct rpma_conn *conn,
  *			int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_write_atomic() initializes the atomic write operation (transferring
+ * rpma_write_atomic() initiates the atomic write operation (transferring
  * data from the local memory to the remote memory). The atomic write operation
  * allows transferring 8 bytes of data and storing them atomically in the remote
  * memory.
@@ -1489,7 +1489,7 @@ enum rpma_flush_type {
 };
 
 /** 3
- * rpma_flush - initialize the flush operation
+ * rpma_flush - initiate the flush operation
  *
  * SYNOPSIS
  *
@@ -1508,7 +1508,7 @@ enum rpma_flush_type {
  *			const void *op_context);
  *
  * DESCRIPTION
- * rpma_flush() initializes the flush operation (finalizing a transfer of data
+ * rpma_flush() initiates the flush operation (finalizing a transfer of data
  * to the remote memory).
  * Possible types of rpma_flush() operation:
  * - RPMA_FLUSH_TYPE_PERSISTENT - flush data down to the persistent domain
@@ -1534,7 +1534,7 @@ int rpma_flush(const struct rpma_conn *conn,
 		enum rpma_flush_type type, int flags, const void *op_context);
 
 /** 3
- * rpma_send - initialize the send operation
+ * rpma_send - initiate the send operation
  *
  * SYNOPSIS
  *
@@ -1547,7 +1547,7 @@ int rpma_flush(const struct rpma_conn *conn,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_send() initializes the send operation which transfers a message from
+ * rpma_send() initiates the send operation which transfers a message from
  * the local memory to other side of the connection.
  *
  * RETURN VALUE
@@ -1566,7 +1566,7 @@ int rpma_send(const struct rpma_conn *conn,
 		int flags, const void *op_context);
 
 /** 3
- * rpma_recv - initialize the receive operation
+ * rpma_recv - initiate the receive operation
  *
  * SYNOPSIS
  *
@@ -1579,7 +1579,7 @@ int rpma_send(const struct rpma_conn *conn,
  *			size_t len, const void *op_context);
  *
  * DESCRIPTION
- * rpma_recv() initializes the receive operation which prepares a buffer for
+ * rpma_recv() initiates the receive operation which prepares a buffer for
  * a message send from other side of the connection. Please see rpma_send(3).
  *
  * All buffers prepared via rpma_recv(3) form an unordered set. When a message
