@@ -162,9 +162,9 @@ rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
  */
 int
 rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
-		struct rpma_conn_req **req)
+		struct rpma_conn_req **req_ptr)
 {
-	if (ep == NULL || req == NULL)
+	if (ep == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	if (cfg == NULL)
@@ -192,7 +192,7 @@ rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		goto err_ack;
 	}
 
-	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req);
+	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req_ptr);
 	if (ret)
 		goto err_ack;
 

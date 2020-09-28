@@ -19,9 +19,10 @@
  */
 int
 rpma_utils_get_ibv_context(const char *addr,
-		enum rpma_util_ibv_context_type type, struct ibv_context **dev)
+		enum rpma_util_ibv_context_type type,
+		struct ibv_context **dev_ptr)
 {
-	if (addr == NULL || dev == NULL)
+	if (addr == NULL || dev_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	enum rpma_info_side side;
@@ -63,7 +64,7 @@ rpma_utils_get_ibv_context(const char *addr,
 	}
 
 	/* obtain the device */
-	*dev = temp_id->verbs;
+	*dev_ptr = temp_id->verbs;
 
 err_destroy_id:
 	(void) rdma_destroy_id(temp_id);

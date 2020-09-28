@@ -24,7 +24,7 @@ int rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 
 /*
  * ASSUMPTIONS
- * - peer != NULL && ibv_mr != NULL && addr != NULL && length > 0 &&
+ * - peer != NULL && ibv_mr_ptr != NULL && addr != NULL && length > 0 &&
  *   && peer->pd != NULL
  *
  * ERRORS
@@ -32,7 +32,7 @@ int rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
  *
  * - RPMA_E_PROVIDER - registering the memory region failed
  */
-int rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+int rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int access);
 
 #endif /* LIBRPMA_PEER_H */

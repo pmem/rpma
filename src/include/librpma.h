@@ -56,7 +56,8 @@ enum rpma_util_ibv_context_type {
  *	};
  *
  *	int rpma_utils_get_ibv_context(const char *addr,
- *		enum rpma_util_ibv_context_type type, struct ibv_context **dev);
+ *		enum rpma_util_ibv_context_type type,
+ *		struct ibv_context **dev_ptr);
  *
  * DESCRIPTION
  * rpma_utils_get_ibv_context() obtains an RDMA device context
@@ -71,20 +72,21 @@ enum rpma_util_ibv_context_type {
  *
  * RETURN VALUE
  * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
- * error code on failure. rpma_utils_get_ibv_context() does not set *dev value
- * on failure.
+ * error code on failure. rpma_utils_get_ibv_context() does not set *dev_ptr
+ * value on failure.
  *
  * ERRORS
  * rpma_utils_get_ibv_context() can fail with the following errors:
  *
- * - RPMA_E_INVAL - addr or dev is NULL or type is unknown
+ * - RPMA_E_INVAL - addr or dev_ptr is NULL or type is unknown
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(), rdma_bind_addr()
  *   or rdma_resolve_addr() failed, errno can be checked using
  *   rpma_err_get_provider_error()
  */
 int rpma_utils_get_ibv_context(const char *addr,
-		enum rpma_util_ibv_context_type type, struct ibv_context **dev);
+		enum rpma_util_ibv_context_type type,
+		struct ibv_context **dev_ptr);
 
 /** 3
  * rpma_utils_ibv_context_is_odp_capable - is On-Demand Paging supported
@@ -320,19 +322,20 @@ struct rpma_peer;
  *
  *	struct ibv_context;
  *	struct rpma_peer;
- *	int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
+ *	int rpma_peer_new(struct ibv_context *ibv_ctx,
+ *			struct rpma_peer **peer_ptr);
  *
  * DESCRIPTION
  * rpma_peer_new() creates a new peer object.
  *
  * RETURN VALUE
  * The rpma_peer_new() function returns 0 on success or a negative error code
- * on failure. rpma_peer_new() does not set *peer value on failure.
+ * on failure. rpma_peer_new() does not set *peer_ptr value on failure.
  *
  * ERRORS
  * rpma_peer_new() can fail with the following errors:
  *
- * - RPMA_E_INVAL - ibv_ctx or peer is NULL
+ * - RPMA_E_INVAL - ibv_ctx or peer_ptr is NULL
  * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
  * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error
  *   other than ENOMEM.
@@ -340,7 +343,7 @@ struct rpma_peer;
  *   value.
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
+int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
 
 /** 3
  * rpma_peer_delete - delete a peer object
@@ -350,26 +353,26 @@ int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer);
  *	#include <librpma.h>
  *
  *	struct rpma_peer;
- *	int rpma_peer_delete(struct rpma_peer **peer);
+ *	int rpma_peer_delete(struct rpma_peer **peer_ptr);
  *
  * DESCRIPTION
  * rpma_peer_delete() deletes the peer object.
  *
  * RETURN VALUE
  * The rpma_peer_delete() function returns 0 on success or a negative error
- * code on failure. rpm_peer_delete() does not set *peer value
+ * code on failure. rpm_peer_delete() does not set *peer_ptr value
  * to NULL on failure.
  *
  * RETURN VALUE
  * The rpma_peer_delete() function returns 0 on success or a negative error code
- * on failure. rpma_peer_delete() does not set *peer to NULL on failure.
+ * on failure. rpma_peer_delete() does not set *peer_ptr to NULL on failure.
  *
  * ERRORS
  * rpma_peer_delete() can fail with the following error:
  *
  * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
  */
-int rpma_peer_delete(struct rpma_peer **peer);
+int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
 /* memory-related structures */
 
@@ -1073,7 +1076,7 @@ int rpma_conn_disconnect(const struct rpma_conn *conn);
  *	#include <librpma.h>
  *
  *	struct rpma_conn;
- *	int rpma_conn_delete(struct rpma_conn **conn);
+ *	int rpma_conn_delete(struct rpma_conn **conn_ptr);
  *
  * DESCRIPTION
  * rpma_conn_delete() deletes already closed connection.
@@ -1247,7 +1250,7 @@ struct rpma_ep;
  *	const struct rpma_peer;
  *	struct rpma_ep;
  *	int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
- *			const char *port, struct rpma_ep **ep);
+ *			const char *port, struct rpma_ep **ep_ptr);
  *
  * DESCRIPTION
  * rpma_ep_listen() creates an endpoint and initializes listening for incoming
@@ -1257,18 +1260,18 @@ struct rpma_ep;
  * RETURN VALUE
  * The rpma_ep_listen() function returns 0 on success or a negative
  * error code on failure. rpma_ep_listen() does not set
- * *ep value on failure.
+ * *ep_ptr value on failure.
  *
  * ERRORS
  * rpma_ep_listen() can fail with the following errors:
  *
- * - RPMA_E_INVAL - peer, addr, port or ep is NULL
+ * - RPMA_E_INVAL - peer, addr, port or ep_ptr is NULL
  * - RPMA_E_PROVIDER - rdma_create_event_channel(3), rdma_create_id(3),
  *   rdma_getaddrinfo(3), rdma_listen(3) failed
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
-		const char *port, struct rpma_ep **ep);
+		const char *port, struct rpma_ep **ep_ptr);
 
 /** 3
  * rpma_ep_shutdown - stop listening and delete the endpoint
@@ -1278,7 +1281,7 @@ int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
  *	#include <librpma.h>
  *
  *	struct rpma_ep;
- *	int rpma_ep_shutdown(struct rpma_ep **ep);
+ *	int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
  *
  * DESCRIPTION
  * rpma_ep_shutdown() stops listening for incoming connections
@@ -1287,15 +1290,15 @@ int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
  * RETURN VALUE
  * The rpma_ep_shutdown() function returns 0 on success or a negative
  * error code on failure. rpma_ep_shutdown() does not set
- * *ep value to NULL on failure.
+ * *ep_ptr value to NULL on failure.
  *
  * ERRORS
  * rpma_ep_shutdown() can fail with the following errors:
  *
- * - RPMA_E_INVAL - ep is NULL
+ * - RPMA_E_INVAL - ep_ptr is NULL
  * - RPMA_E_PROVIDER - rdma_destroy_id(3) failed
  */
-int rpma_ep_shutdown(struct rpma_ep **ep);
+int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
 
 /** 3
  * rpma_ep_get_fd - get a file descriptor of the endpoint
@@ -1334,7 +1337,7 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *	struct rpma_conn_req;
  *	int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *			const struct rpma_conn_cfg *cfg,
- *			struct rpma_conn_req **req);
+ *			struct rpma_conn_req **req_ptr);
  *
  * DESCRIPTION
  * rpma_ep_next_conn_req() obtains the next connection request
@@ -1343,19 +1346,20 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  * RETURN VALUE
  * The rpma_ep_next_conn_req() function returns 0 on success or a negative
  * error code on failure. rpma_ep_next_conn_req() does not set
- * *req value on failure.
+ * *req_ptr value on failure.
  *
  * ERRORS
  * rpma_ep_next_conn_req() can fail with the following errors:
  *
- * - RPMA_E_INVAL - ep or req is NULL
+ * - RPMA_E_INVAL - ep or req_ptr is NULL
  * - RPMA_E_INVAL - obtained an event different than a connection request
  * - RPMA_E_PROVIDER - rdma_get_cm_event(3) failed
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_NO_NEXT - no next connection request available
  */
 int rpma_ep_next_conn_req(const struct rpma_ep *ep,
-		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req);
+		const struct rpma_conn_cfg *cfg,
+		struct rpma_conn_req **req_ptr);
 
 /* remote memory access functions */
 

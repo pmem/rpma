@@ -33,9 +33,9 @@ int rpma_info_new(const char *addr, const char *port,
  * ERRORS
  * rpma_info_delete() can fail with the following error:
  *
- * - RPMA_E_INVAL - info is NULL
+ * - RPMA_E_INVAL - info_ptr is NULL
  */
-int rpma_info_delete(struct rpma_info **info);
+int rpma_info_delete(struct rpma_info **info_ptr);
 
 /*
  * rpma_info_resolve_addr -- resolve the CM ID's destination address

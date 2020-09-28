@@ -37,7 +37,7 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
  * rpma_peer_mr_reg -- a mock of rpma_peer_mr_reg()
  */
 int
-rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int access)
 {
 	/*
@@ -53,15 +53,15 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
 	assert_int_equal(length, MOCK_SIZE);
 	assert_int_equal(access, args->access);
 
-	*ibv_mr = args->mr;
-	if (*ibv_mr == NULL) {
+	*ibv_mr_ptr = args->mr;
+	if (*ibv_mr_ptr == NULL) {
 		Rpma_provider_error = args->verrno;
 		return RPMA_E_PROVIDER;
 	}
 
-	(*ibv_mr)->addr = addr;
-	(*ibv_mr)->length = length;
-	(*ibv_mr)->rkey = MOCK_RKEY;
+	(*ibv_mr_ptr)->addr = addr;
+	(*ibv_mr_ptr)->length = length;
+	(*ibv_mr_ptr)->rkey = MOCK_RKEY;
 
 	return 0;
 }

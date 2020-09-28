@@ -107,11 +107,12 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
  * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
-rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
+rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int access)
 {
-	*ibv_mr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
-	if (*ibv_mr != NULL)
+	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
+					RPMA_IBV_ACCESS(access));
+	if (*ibv_mr_ptr != NULL)
 		return 0;
 
 	Rpma_provider_error = errno;
@@ -136,9 +137,9 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr,
 	 * supported we can retry the memory registration with
 	 * the IBV_ACCESS_ON_DEMAND flag.
 	 */
-	*ibv_mr = ibv_reg_mr(peer->pd, addr, length,
+	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
 			RPMA_IBV_ACCESS(access | IBV_ACCESS_ON_DEMAND));
-	if (*ibv_mr == NULL) {
+	if (*ibv_mr_ptr == NULL) {
 		Rpma_provider_error = errno;
 		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
 			"Memory registration with On-Demand Paging (maybe FSDAX?) support failed: "
