@@ -64,7 +64,7 @@ function(add_example)
 	set(target example-${EXAMPLE_NAME}-${EXAMPLE_BIN})
 
 	if (EXAMPLE_USE_LIBPROTOBUFC AND NOT LIBPROTOBUFC_FOUND)
-		message(NOTICE "-- ${target} skipped - no libprotobuf-c found")
+		message(STATUS "${target} skipped - no libprotobuf-c found")
 		return()
 	endif()
 
