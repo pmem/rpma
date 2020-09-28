@@ -46,5 +46,5 @@ following errors:
 
 -   RPMA\_E\_INVAL - dev or is\_odp\_capable is NULL
 
--   RPMA\_E\_PROVIDER - **ibv\_query\_device\_ex**() failed, errno can
-    be checked using **rpma\_err\_get\_provider\_error**()
+-   RPMA\_E\_PROVIDER - **ibv\_query\_device\_ex**() failed, the exact
+    cause of the error can be read from the log

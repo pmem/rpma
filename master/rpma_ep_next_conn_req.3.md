@@ -53,4 +53,4 @@ ERRORS
 
 -   RPMA\_E\_NOMEM - out of memory
 
--   RPMA\_E\_NO\_NEXT - no next connection request available
+-   RPMA\_E\_NO\_EVENT - no next connection request available

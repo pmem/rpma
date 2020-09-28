@@ -63,5 +63,5 @@ ERRORS
 -   RPMA\_E\_NOMEM - out of memory
 
 -   RPMA\_E\_PROVIDER - **rdma\_getaddrinfo**(), **rdma\_create\_id**(),
-    **rdma\_bind\_addr**() or **rdma\_resolve\_addr**() failed, errno
-    can be checked using **rpma\_err\_get\_provider\_error**()
+    **rdma\_bind\_addr**() or **rdma\_resolve\_addr**() failed, the
+    exact cause of the error can be read from the log
