@@ -24,7 +24,7 @@ SYNOPSIS
           struct rpma_conn_req;
           int rpma_ep_next_conn_req(const struct rpma_ep *ep,
                           const struct rpma_conn_cfg *cfg,
-                          struct rpma_conn_req **req);
+                          struct rpma_conn_req **req_ptr);
 
 DESCRIPTION
 ===========
@@ -37,14 +37,14 @@ RETURN VALUE
 
 The **rpma\_ep\_next\_conn\_req**() function returns 0 on success or a
 negative error code on failure. **rpma\_ep\_next\_conn\_req**() does not
-set \*req value on failure.
+set \*req\_ptr value on failure.
 
 ERRORS
 ======
 
 **rpma\_ep\_next\_conn\_req**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - ep or req is NULL
+-   RPMA\_E\_INVAL - ep or req\_ptr is NULL
 
 -   RPMA\_E\_INVAL - obtained an event different than a connection
     request
