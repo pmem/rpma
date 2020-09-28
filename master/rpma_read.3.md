@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_read** - initialize the read operation
+**rpma\_read** - initiate the read operation
 
 SYNOPSIS
 ========
@@ -30,7 +30,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_read**() initializes the read operation (transferring data from
+**rpma\_read**() initiates the read operation (transferring data from
 the remote memory to the local memory).
 
 RETURN VALUE

@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_disconnect** - initialize disconnection
+**rpma\_conn\_disconnect** - initiate disconnection
 
 SYNOPSIS
 ========
@@ -25,7 +25,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_disconnect**() initializes disconnecting of the RPMA
+**rpma\_conn\_disconnect**() initiates disconnecting of the RPMA
 connection process.
 
 RETURN VALUE

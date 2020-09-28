@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_flush** - initialize the flush operation
+**rpma\_flush** - initiate the flush operation
 
 SYNOPSIS
 ========
@@ -34,7 +34,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_flush**() initializes the flush operation (finalizing a transfer
+**rpma\_flush**() initiates the flush operation (finalizing a transfer
 of data to the remote memory). Possible types of **rpma\_flush**()
 operation:
 

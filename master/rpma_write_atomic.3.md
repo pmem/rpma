@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_write\_atomic** - initialize the atomic write operation
+**rpma\_write\_atomic** - initiate the atomic write operation
 
 SYNOPSIS
 ========
@@ -30,7 +30,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_write\_atomic**() initializes the atomic write operation
+**rpma\_write\_atomic**() initiates the atomic write operation
 (transferring data from the local memory to the remote memory). The
 atomic write operation allows transferring 8 bytes of data and storing
 them atomically in the remote memory.

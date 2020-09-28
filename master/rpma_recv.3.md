@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_recv** - initialize the receive operation
+**rpma\_recv** - initiate the receive operation
 
 SYNOPSIS
 ========
@@ -28,8 +28,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_recv**() initializes the receive operation which prepares a
-buffer for a message send from other side of the connection. Please see
+**rpma\_recv**() initiates the receive operation which prepares a buffer
+for a message send from other side of the connection. Please see
 **rpma\_send**(3).
 
 All buffers prepared via **rpma\_recv**(3) form an unordered set. When a
