@@ -28,7 +28,7 @@ channel.
 ## Usage
 
 ```bash
-[user@server]$ ./server $server_address $port [<pmem-path>] [<ddio>] [<auto_flush>]
+[user@server]$ ./server $server_address $port [<pmem-path>] [direct-pmem-write]
 ```
 
 ```bash
