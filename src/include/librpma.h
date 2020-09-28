@@ -1716,24 +1716,6 @@ int rpma_conn_next_completion(const struct rpma_conn *conn,
 /* error handling */
 
 /** 3
- * rpma_err_get_provider_error - return the last provider error
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	int rpma_err_get_provider_error(void);
- *
- * DESCRIPTION
- * rpma_err_get_provider_error() returns the last errno value
- * reported by the provider.
- *
- * ERRORS
- * rpma_err_get_provider_error() cannot fail.
- */
-int rpma_err_get_provider_error(void);
-
-/** 3
  * rpma_err_2str - convert RPMA error code to a string
  *
  * SYNOPSIS

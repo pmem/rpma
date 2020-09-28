@@ -10,4 +10,10 @@
 
 extern int Rpma_provider_error;
 
+/*
+ * ERRORS
+ * rpma_err_get_provider_error() cannot fail.
+ */
+int rpma_err_get_provider_error(void);
+
 #endif /* LIBRPMA_ERR_H */
