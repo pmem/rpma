@@ -66,12 +66,12 @@ function compile_example_standalone() {
 
 	# exit on error
 	if [[ $? != 0 ]]; then
-		cd -
+		cd - > /dev/null
 		return 1
 	fi
 
 	make -j$(nproc)
-	cd -
+	cd - > /dev/null
 }
 
 # test standalone compilation of all examples
