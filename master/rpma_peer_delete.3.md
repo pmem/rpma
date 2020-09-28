@@ -20,7 +20,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_peer;
-          int rpma_peer_delete(struct rpma_peer **peer);
+          int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
 DESCRIPTION
 ===========
@@ -31,15 +31,15 @@ RETURN VALUE
 ============
 
 The **rpma\_peer\_delete**() function returns 0 on success or a negative
-error code on failure. **rpm\_peer\_delete**() does not set \*peer value
-to NULL on failure.
+error code on failure. **rpm\_peer\_delete**() does not set \*peer\_ptr
+value to NULL on failure.
 
 RETURN VALUE
 ============
 
 The **rpma\_peer\_delete**() function returns 0 on success or a negative
-error code on failure. **rpma\_peer\_delete**() does not set \*peer to
-NULL on failure.
+error code on failure. **rpma\_peer\_delete**() does not set \*peer\_ptr
+to NULL on failure.
 
 ERRORS
 ======

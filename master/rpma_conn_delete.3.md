@@ -20,7 +20,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn;
-          int rpma_conn_delete(struct rpma_conn **conn);
+          int rpma_conn_delete(struct rpma_conn **conn_ptr);
 
 DESCRIPTION
 ===========
