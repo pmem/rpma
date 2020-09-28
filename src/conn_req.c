@@ -494,7 +494,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 }
 
 /*
- * rpma_conn_req_recv -- initialize the receive operation
+ * rpma_conn_req_recv -- initiate the receive operation
  */
 int
 rpma_conn_req_recv(const struct rpma_conn_req *req,
