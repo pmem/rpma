@@ -12,7 +12,6 @@
 #include "librpma.h"
 #include "ep-common.h"
 #include "cmocka_headers.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -110,7 +109,6 @@ listen__create_evch_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(ep);
 }
 
@@ -138,7 +136,6 @@ listen__create_id_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(ep);
 }
 
@@ -197,7 +194,6 @@ listen__info_bind_addr_E_PROVIDER(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(ep);
 }
 
@@ -227,7 +223,6 @@ listen__listen_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(ep);
 }
 
@@ -352,7 +347,6 @@ shutdown__destroy_id_EAGAIN(void **estate_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_non_null(estate->ep);
 	assert_int_equal(memcmp(&estate->cmid, &Cmid_zero,
 		sizeof(estate->cmid)), 0);

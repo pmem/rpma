@@ -13,7 +13,6 @@
 #include "flush.h"
 #include "flush-common.h"
 #include "mocks-stdlib.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -50,7 +49,6 @@ new__apm_sysconf_EINVAL(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
 	assert_null(flush);
 }
 

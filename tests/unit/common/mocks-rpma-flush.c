@@ -11,7 +11,6 @@
 #include "cmocka_headers.h"
 #include "flush.h"
 #include "mocks-rpma-flush.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 struct rpma_flush Rpma_flush;
@@ -68,7 +67,7 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 
 	int ret = mock_type(int);
 	if (ret == RPMA_E_PROVIDER)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	return ret;
 }

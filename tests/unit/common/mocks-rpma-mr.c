@@ -10,7 +10,6 @@
 
 #include "cmocka_headers.h"
 #include "mr.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*

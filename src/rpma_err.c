@@ -5,11 +5,8 @@
  * rpma_err.c -- error-handling related librpma definitions
  */
 
-#include "rpma_err.h"
 
 #include "librpma.h"
-
-int Rpma_provider_error = 0;
 
 /* public librpma API */
 
@@ -36,15 +33,4 @@ rpma_err_2str(int ret)
 	default:
 		return "Unknown error";
 	}
-}
-
-/* internal librpma API */
-
-/*
- * rpma_err_get_provider_error -- return the last provider error
- */
-int
-rpma_err_get_provider_error(void)
-{
-	return Rpma_provider_error;
 }

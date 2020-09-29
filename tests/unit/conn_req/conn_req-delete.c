@@ -9,7 +9,6 @@
  */
 
 #include "conn_req-common.h"
-#include "rpma_err.h"
 
 static struct conn_req_new_test_state prestate_conn_cfg_default;
 
@@ -65,7 +64,6 @@ delete_via_reject__destroy_cq_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -96,7 +94,6 @@ delete_via_reject__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -126,7 +123,6 @@ delete_via_reject__destroy_comp_channel_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -156,7 +152,6 @@ delete_via_reject__destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -185,7 +180,6 @@ delete_via_reject__reject_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -215,7 +209,6 @@ delete_via_reject__reject_EAGAIN_ack_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -244,7 +237,6 @@ delete_via_reject__ack_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -272,7 +264,6 @@ delete_via_destroy__destroy_cq_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -301,7 +292,6 @@ delete_via_destroy__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -329,7 +319,6 @@ delete_via_destroy__destroy_comp_channel_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -357,7 +346,6 @@ delete_via_destroy__destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 
@@ -385,7 +373,6 @@ delete_via_destroy__destroy_id_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 }
 

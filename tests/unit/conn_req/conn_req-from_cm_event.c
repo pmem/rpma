@@ -12,7 +12,6 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
 #include "mocks-rpma-conn_cfg.h"
-#include "rpma_err.h"
 
 static struct conn_cfg_get_q_size_mock_args Get_cqe = {
 		.cfg = MOCK_CONN_CFG_DEFAULT,
@@ -123,7 +122,6 @@ from_cm_event__create_comp_channel_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -152,7 +150,6 @@ from_cm_event__create_cq_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -182,7 +179,6 @@ from_cm_event__req_notify_cq_fail(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(req);
 }
 
@@ -217,7 +213,6 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -254,7 +249,6 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 

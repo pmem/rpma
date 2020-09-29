@@ -17,7 +17,6 @@
 #include "mr.h"
 #include "peer.h"
 #include "private_data.h"
-#include "rpma_err.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -57,8 +56,7 @@ rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	/* create a completion channel */
 	struct ibv_comp_channel *channel = ibv_create_comp_channel(id->verbs);
 	if (channel == NULL) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_create_comp_channel()");
 		return RPMA_E_PROVIDER;
 	}
@@ -73,17 +71,16 @@ rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
 				channel /* channel */,
 				0 /* comp_vector */);
 	if (cq == NULL) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_create_cq()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
 
 	/* request for the next completion on the completion channel */
-	Rpma_provider_error = ibv_req_notify_cq(cq, 0 /* all completions */);
-	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	errno = ibv_req_notify_cq(cq, 0 /* all completions */);
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_req_notify_cq()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_cq;
@@ -138,8 +135,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	int ret = 0;
 
 	if (rdma_accept(req->id, conn_param)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"rdma_accept()");
 		ret = RPMA_E_PROVIDER;
 		(void) rdma_ack_cm_event(req->edata);
@@ -148,8 +144,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 
 	/* ACK the connection request event */
 	if (rdma_ack_cm_event(req->edata)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"rdma_ack_cm_event()");
 		ret = RPMA_E_PROVIDER;
 		goto err_conn_disconnect;
@@ -215,7 +210,6 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
-	Rpma_provider_error = provider_error;
 
 err_conn_req_delete:
 	rdma_destroy_qp(req->id);
@@ -237,17 +231,16 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 {
 	int ret = 0;
 
-	Rpma_provider_error = ibv_destroy_cq(req->cq);
-	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	errno = ibv_destroy_cq(req->cq);
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_destroy_cq()");
 		ret = RPMA_E_PROVIDER;
 	}
 
-	int perror = ibv_destroy_comp_channel(req->channel);
-	if (!ret && perror) {
-		Rpma_provider_error = perror;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	errno = ibv_destroy_comp_channel(req->channel);
+	if (!ret && errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_destroy_comp_channel()");
 		ret = RPMA_E_PROVIDER;
 	}
@@ -256,8 +249,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 			NULL /* private data */,
 			0 /* private data len */)) {
 		if (!ret) {
-			Rpma_provider_error = errno;
-			RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
 					"rdma_reject()");
 			ret = RPMA_E_PROVIDER;
 		}
@@ -265,8 +257,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 
 	if (rdma_ack_cm_event(req->edata)) {
 		if (!ret) {
-			Rpma_provider_error = errno;
-			RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
 					"rdma_ack_cm_event()");
 			ret = RPMA_E_PROVIDER;
 		}
@@ -284,26 +275,25 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 static int
 rpma_conn_req_destroy(struct rpma_conn_req *req)
 {
-	Rpma_provider_error = ibv_destroy_cq(req->cq);
-	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	errno = ibv_destroy_cq(req->cq);
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_destroy_cq()");
 		(void) ibv_destroy_comp_channel(req->channel);
 		(void) rdma_destroy_id(req->id);
 		return RPMA_E_PROVIDER;
 	}
 
-	Rpma_provider_error = ibv_destroy_comp_channel(req->channel);
-	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	errno = ibv_destroy_comp_channel(req->channel);
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"ibv_destroy_comp_channel()");
 		(void) rdma_destroy_id(req->id);
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_destroy_id(req->id)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"rdma_destroy_id()");
 		return RPMA_E_PROVIDER;
 	}
@@ -375,8 +365,7 @@ rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
 
 	struct rdma_cm_id *id;
 	if (rdma_create_id(NULL, &id, NULL, RDMA_PS_TCP)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 				"rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
@@ -389,8 +378,7 @@ rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
 
 	/* resolve route */
 	if (rdma_resolve_route(id, timeout_ms)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"rdma_resolve_route(timeout_ms=%i)", timeout_ms);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;

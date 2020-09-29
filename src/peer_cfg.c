@@ -12,7 +12,6 @@
 #include "librpma.h"
 #include "log_internal.h"
 #include "peer_cfg.h"
-#include "rpma_err.h"
 #include "stdbool.h"
 
 #ifdef TEST_MOCK_ALLOC

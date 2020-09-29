@@ -10,7 +10,6 @@
 
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -28,7 +27,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 	if (*is_odp_capable == MOCK_ERR_PENDING) {
 		int ret = mock_type(int);
 		if (ret == RPMA_E_PROVIDER)
-			Rpma_provider_error = mock_type(int);
+			errno = mock_type(int);
 		return ret;
 	}
 

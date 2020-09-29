@@ -16,7 +16,6 @@
 #include "mocks-rpma-conn_cfg.h"
 #include "peer.h"
 #include "peer-common.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 static struct conn_cfg_get_q_size_mock_args Get_sq_size = {
@@ -111,7 +110,6 @@ create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 }
 
 /*

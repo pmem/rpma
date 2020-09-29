@@ -9,7 +9,6 @@
 
 #include "librpma.h"
 #include "log_internal.h"
-#include "rpma_err.h"
 #include "info.h"
 
 /* public librpma API */
@@ -45,8 +44,7 @@ rpma_utils_get_ibv_context(const char *addr,
 	struct rdma_cm_id *temp_id;
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
@@ -90,10 +88,10 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 	/* query an RDMA device's attributes */
 	struct ibv_device_attr_ex attr = {{{0}}};
-	Rpma_provider_error = ibv_query_device_ex(dev, NULL /* input */,
+	errno = ibv_query_device_ex(dev, NULL /* input */,
 			&attr);
-	if (Rpma_provider_error) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"ibv_query_device_ex(attr={0})");
 		return RPMA_E_PROVIDER;
 	}

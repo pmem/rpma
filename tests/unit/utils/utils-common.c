@@ -13,7 +13,6 @@
 #include "librpma.h"
 #include "mocks-ibverbs.h"
 #include "info.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -37,7 +36,7 @@ rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 	if (*info_ptr == NULL) {
 		int result = mock_type(int);
 		if (result == RPMA_E_PROVIDER)
-			Rpma_provider_error = mock_type(int);
+			errno = mock_type(int);
 
 		return result;
 	}
@@ -88,7 +87,7 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 
 	int ret = mock_type(int);
 	if (ret)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	return ret;
 }
@@ -106,7 +105,7 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
 
 	int ret = mock_type(int);
 	if (ret)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	return ret;
 }

@@ -10,7 +10,6 @@
 
 #include "cmocka_headers.h"
 #include "info.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -30,7 +29,7 @@ rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 		assert_int_not_equal(result, 0);
 
 		if (result == RPMA_E_PROVIDER)
-			Rpma_provider_error = mock_type(int);
+			errno = mock_type(int);
 
 		return result;
 	}
@@ -64,7 +63,7 @@ rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
 
 	int ret = mock_type(int);
 	if (ret == RPMA_E_PROVIDER)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	if (ret == MOCK_OK)
 		expect_value(rdma_resolve_route, id, id);
@@ -83,7 +82,7 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 
 	int ret = mock_type(int);
 	if (ret)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	return ret;
 }

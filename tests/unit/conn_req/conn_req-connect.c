@@ -10,7 +10,6 @@
 
 #include "conn_req-common.h"
 #include "test-common.h"
-#include "rpma_err.h"
 
 static struct conn_req_new_test_state prestate_conn_cfg_default;
 
@@ -147,7 +146,6 @@ connect_via_accept__accept_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -180,7 +178,6 @@ connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -213,7 +210,6 @@ connect_via_accept__ack_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -248,7 +244,6 @@ connect_via_accept__ack_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -286,7 +281,6 @@ connect_via_accept__conn_new_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -325,7 +319,6 @@ connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -435,7 +428,6 @@ connect_via_connect__connect_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -473,7 +465,6 @@ connect_via_connect__connect_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -507,7 +498,6 @@ connect_via_connect__conn_new_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }
@@ -542,7 +532,6 @@ connect_via_connect__conn_new_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->req);
 	assert_null(conn);
 }

@@ -16,7 +16,6 @@
 #include "mocks-rpma-utils.h"
 #include "peer.h"
 #include "peer-common.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -42,7 +41,6 @@ mr_reg__fail_ENOMEM(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), ENOMEM);
 	assert_null(mr);
 }
 
@@ -69,7 +67,6 @@ mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
 	assert_null(mr);
 }
 
@@ -107,9 +104,7 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 #ifdef ON_DEMAND_PAGING_SUPPORTED
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 #else
-	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
 #endif
 	assert_null(mr);
 }
@@ -174,7 +169,6 @@ mr_reg__success_odp(void **peer_ptr)
 	assert_ptr_equal(mr, MOCK_MR);
 #else
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EOPNOTSUPP);
 	assert_null(mr);
 #endif
 }
