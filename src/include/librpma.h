@@ -128,11 +128,22 @@
  *
  * DEBUGGING AND ERROR HANDLING
  *
- * Elaborate XXX
+ * All functions (except of rpma_log_set_function()) return a negative
+ * error code on failure. Error codes returned by functions are described
+ * in their manuals.
  *
- * - rpma_log_set_threshold - XXX
- * - rpma_log_get_threshold - XXX
- * - rpma_log_set_function - XXX
+ * The librpma library implements a logging API:
+ * - rpma_log_set_threshold() - set the logging threshold level
+ * - rpma_log_get_threshold() - get the logging threshold level
+ * - rpma_log_set_function() - set the logging function.
+ *
+ * The logging function (function that will print all generated logging
+ * messages) can be chosen using rpma_log_set_function(). It can be either
+ * the default logging function (built into the library)
+ * or a pointer to a user-defined function. The default logging function
+ * can write messages to syslog(3) and stderr(3).
+ * The logging threshold level can be set/got using
+ * rpma_log_set_function()/rpma_log_get_function().
  *
  * EXAMPLE
  *
@@ -1957,8 +1968,8 @@ enum rpma_log_threshold {
  * destination (RPMA_LOG_THRESHOLD_AUX applies).
  *
  * RETURN VALUE
- * rpma_log_syslog_set_threshold() function returns 0 on success or error code
- * on failure.
+ * rpma_log_syslog_set_threshold() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_log_set_threshold() can fail with the following errors:
@@ -1984,8 +1995,8 @@ int rpma_log_set_threshold(enum rpma_log_threshold threshold,
  * See rpma_log_set_threshold(3) for available thresholds and levels.
  *
  * RETURN VALUE
- * rpma_log_get_threshold() function returns 0 on success or error code
- * on failure.
+ * rpma_log_get_threshold() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_log_get_threshold() can fail with the following errors:
@@ -2016,7 +2027,7 @@ typedef void log_function(
 #define RPMA_LOG_USE_DEFAULT_FUNCTION (NULL)
 
 /** 3
- * rpma_log_set_function - set the log function
+ * rpma_log_set_function - set the logging function
  *
  * SYNOPSIS
  *
@@ -2036,7 +2047,7 @@ typedef void log_function(
  * rpma_log_set_function() allows choosing the function which will get all
  * the generated logging messages. The log_function can be either
  * RPMA_LOG_USE_DEFAULT_FUNCTION which will use the default logging function
- * (built into the library) or a pointer to user-defined function.
+ * (built into the library) or a pointer to a user-defined function.
  *
  * Parameters of a user-defined log function are as follow:
  * - level - the log level of the message
