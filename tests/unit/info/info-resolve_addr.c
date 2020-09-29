@@ -21,50 +21,6 @@
 #include <infiniband/verbs.h>
 
 /*
- * resolve_addr__id_NULL -- NULL id is invalid
- */
-static void
-resolve_addr__id_NULL(void **info_state_ptr)
-{
-	struct info_state *istate = *info_state_ptr;
-
-	/* run test */
-	int ret = rpma_info_resolve_addr(istate->info, NULL,
-			RPMA_DEFAULT_TIMEOUT_MS);
-
-	/* verify the result */
-	assert_int_equal(ret, RPMA_E_INVAL);
-}
-
-/*
- * resolve_addr__info_NULL -- NULL info is invalid
- */
-static void
-resolve_addr__info_NULL(void **unused)
-{
-	/* run test */
-	struct rdma_cm_id cmid = {0};
-	int ret = rpma_info_resolve_addr(NULL, &cmid, RPMA_DEFAULT_TIMEOUT_MS);
-
-	/* verify the result */
-	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
-}
-
-/*
- * resolve_addr__id_info_NULL -- NULL id and info are invalid
- */
-static void
-resolve_addr__id_info_NULL(void **unused)
-{
-	/* run test */
-	int ret = rpma_info_resolve_addr(NULL, NULL, RPMA_DEFAULT_TIMEOUT_MS);
-
-	/* verify the result */
-	assert_int_equal(ret, RPMA_E_INVAL);
-}
-
-/*
  * resolve_addr__resolve_addr_EAGAIN -- rdma_resolve_addr() fails
  * with EAGAIN
  */
@@ -120,10 +76,6 @@ main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
 		/* rpma_info_resolve_addr() unit tests */
-		cmocka_unit_test_setup_teardown(resolve_addr__id_NULL,
-				setup__new_active, teardown__delete),
-		cmocka_unit_test(resolve_addr__info_NULL),
-		cmocka_unit_test(resolve_addr__id_info_NULL),
 		cmocka_unit_test_setup_teardown(
 				resolve_addr__resolve_addr_EAGAIN,
 				setup__new_active, teardown__delete),
