@@ -17,7 +17,6 @@
 #include "flush.h"
 #include "log_internal.h"
 #include "mr.h"
-#include "rpma_err.h"
 
 static int rpma_flush_apm_new(const struct rpma_peer *peer,
 		struct rpma_flush *flush);
@@ -55,7 +54,6 @@ rpma_flush_apm_new(const struct rpma_peer *peer, struct rpma_flush *flush)
 	/* a memory registration has to be page-aligned */
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
-		Rpma_provider_error = errno;
 		RPMA_LOG_FATAL("sysconf(_SC_PAGESIZE) failed: %s",
 				strerror(errno));
 		return RPMA_E_PROVIDER;

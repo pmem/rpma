@@ -10,7 +10,6 @@
 
 #include "mocks-rdma_cm.h"
 #include "conn-common.h"
-#include "rpma_err.h"
 
 /*
  * disconnect__conn_NULL - NULL conn is invalid
@@ -42,7 +41,6 @@ disconnect__rdma_disconnect_EINVAL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
 }
 
 /*

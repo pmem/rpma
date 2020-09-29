@@ -15,7 +15,6 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-peer.h"
 #include "mr-common.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 #define USAGE_WRONG	(~((int)0)) /* not allowed value of usage */
@@ -202,7 +201,6 @@ reg__peer_mr_reg_failed_E_PROVIDER(void **unused)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(mr);
 }
 
@@ -273,7 +271,6 @@ dereg__failed_E_PROVIDER(void **pprestate)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(mr);
 }
 

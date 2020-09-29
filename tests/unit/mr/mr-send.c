@@ -11,7 +11,6 @@
 #include "cmocka_headers.h"
 #include "mr.h"
 #include "librpma.h"
-#include "rpma_err.h"
 
 #include "mocks-ibverbs.h"
 #include "mr-common.h"
@@ -41,7 +40,6 @@ send__failed_E_PROVIDER(void **mrs_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 }
 
 /*
