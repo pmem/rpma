@@ -414,7 +414,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *	#include <librpma.h>
  *
  *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+ *	int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
  *			struct rpma_peer_cfg **pcfg_ptr);
  *
  * DESCRIPTION
@@ -432,7 +432,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  * - RPMA_E_INVAL - desc or pcfg_ptr are NULL
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
 
 /* peer */
