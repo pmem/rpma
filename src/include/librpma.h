@@ -1966,7 +1966,7 @@ enum rpma_log_threshold {
  * - RPMA_E_INVAL - threshold is not RPMA_LOG_THRESHOLD nor
  * RPMA_LOG_THRESHOLD_AUX
  * - RPMA_E_INVAL - level is not a value defined by enum rpma_log_level type
- * - RPMA_E_UNKNOWN - level is not set due to multi-threading issue
+ * - RPMA_E_UNKNOWN - unknown error occurred
  */
 int rpma_log_set_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level level);
@@ -2060,7 +2060,7 @@ typedef void rpma_log_function(
  * on failure.
  *
  * ERRORS
- * - RPMA_E_UNKNOWN - function is not set due to multi-threading issue
+ * - RPMA_E_UNKNOWN - unknown error occurred
  *
  * NOTE
  * The logging messages on the levels above the RPMA_LOG_THRESHOLD
