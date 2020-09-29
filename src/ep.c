@@ -16,7 +16,7 @@
 
 struct rpma_ep {
 	/* parent peer object */
-	const struct rpma_peer *peer;
+	struct rpma_peer *peer;
 	/* CM ID dedicated to listening for incoming connections */
 	struct rdma_cm_id *id;
 	/* event channel of the CM ID */
@@ -36,7 +36,7 @@ struct rpma_ep {
  * channel and the CM ID.
  */
 int
-rpma_ep_listen(const struct rpma_peer *peer, const char *addr, const char *port,
+rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_ep **ep_ptr)
 {
 	if (peer == NULL || addr == NULL || port == NULL || ep_ptr == NULL)
@@ -152,7 +152,7 @@ rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
  * If succeeds it returns a newly created object.
  */
 int
-rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
+rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
 	if (ep == NULL || req_ptr == NULL)

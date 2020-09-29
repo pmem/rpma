@@ -109,7 +109,7 @@ usage_to_access(int usage)
  */
 int
 rpma_mr_read(struct ibv_qp *qp,
-	const struct rpma_mr_local *dst, size_t dst_offset,
+	struct rpma_mr_local *dst, size_t dst_offset,
 	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
@@ -153,7 +153,7 @@ rpma_mr_read(struct ibv_qp *qp,
  */
 int
 rpma_mr_write(struct ibv_qp *qp,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
+	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
@@ -232,7 +232,7 @@ rpma_mr_send(struct ibv_qp *qp,
  */
 int
 rpma_mr_recv(struct ibv_qp *qp,
-	const struct rpma_mr_local *dst,  size_t offset,
+	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context)
 {
 	struct ibv_recv_wr wr;
@@ -264,7 +264,7 @@ rpma_mr_recv(struct ibv_qp *qp,
  * rpma_mr_reg -- create a local memory registration object
  */
 int
-rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size, int usage,
+rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		struct rpma_mr_local **mr_ptr)
 {
 	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)

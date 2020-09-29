@@ -18,11 +18,11 @@
 #include "log_internal.h"
 #include "mr.h"
 
-static int rpma_flush_apm_new(const struct rpma_peer *peer,
+static int rpma_flush_apm_new(struct rpma_peer *peer,
 		struct rpma_flush *flush);
 static int rpma_flush_apm_delete(struct rpma_flush *flush);
 static int rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
-	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context);
 
 typedef int (*rpma_flush_delete_func)(struct rpma_flush *flush);
@@ -49,7 +49,7 @@ struct flush_apm {
  * rpma_flush_apm_new -- allocate a RAW buffer and register it
  */
 static int
-rpma_flush_apm_new(const struct rpma_peer *peer, struct rpma_flush *flush)
+rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 {
 	/* a memory registration has to be page-aligned */
 	long pagesize = sysconf(_SC_PAGESIZE);
@@ -115,7 +115,7 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
  */
 static int
 rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
-	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	struct rpma_flush_internal *flush_internal =
@@ -133,7 +133,7 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
  * rpma_flush_new -- peak a flush implementation and return the flushing object
  */
 int
-rpma_flush_new(const struct rpma_peer *peer, struct rpma_flush **flush_ptr)
+rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	struct rpma_flush *flush = malloc(sizeof(struct rpma_flush_internal));
 	if (!flush)

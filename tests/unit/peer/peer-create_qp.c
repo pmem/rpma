@@ -49,7 +49,7 @@ create_qp__peer_NULL(void **unused)
 static void
 create_qp__id_NULL(void **peer_ptr)
 {
-	const struct rpma_peer *peer = *peer_ptr;
+	struct rpma_peer *peer = *peer_ptr;
 
 	/* run test */
 	struct ibv_cq *cq = MOCK_IBV_CQ;
@@ -65,7 +65,7 @@ create_qp__id_NULL(void **peer_ptr)
 static void
 create_qp__cq_NULL(void **peer_ptr)
 {
-	const struct rpma_peer *peer = *peer_ptr;
+	struct rpma_peer *peer = *peer_ptr;
 
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
@@ -81,7 +81,7 @@ create_qp__cq_NULL(void **peer_ptr)
 static void
 create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
 {
-	const struct rpma_peer *peer = *peer_ptr;
+	struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mock: */
 	will_return(rpma_conn_cfg_get_sq_size, &Get_sq_size);
@@ -118,7 +118,7 @@ create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
 static void
 create_qp__success(void **peer_ptr)
 {
-	const struct rpma_peer *peer = *peer_ptr;
+	struct rpma_peer *peer = *peer_ptr;
 
 	/* configure mock: */
 	will_return(rpma_conn_cfg_get_sq_size, &Get_sq_size);
