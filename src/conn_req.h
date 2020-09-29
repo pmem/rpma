@@ -21,7 +21,7 @@
  * - RPMA_E_PROVIDER - ibv_create_cq(3) or rdma_create_qp(3) failed
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
+int rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *event, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr);
 

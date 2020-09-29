@@ -124,7 +124,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  * from a descriptor
  */
 int
-rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr)
 {
 	if (desc == NULL || pcfg_ptr == NULL)
