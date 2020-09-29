@@ -72,6 +72,10 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	 */
 	qp_init_attr.sq_sig_all = 0;
 
+	/*
+	 * The actual capabilities and properties of the created QP
+	 * are returned through qp_init_attr.
+	 */
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"rdma_create_qp(max_send_wr=%" PRIu32
@@ -81,8 +85,6 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 			RPMA_MAX_INLINE_DATA);
 		return RPMA_E_PROVIDER;
 	}
-
-	/* XXX should we have to validate qp_init_attr output values? */
 
 	return 0;
 }
