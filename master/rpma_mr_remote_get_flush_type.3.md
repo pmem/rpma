@@ -20,7 +20,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_mr_remote;
+          struct rpma_mr_remote;
           int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
                           int *flush_type);
 

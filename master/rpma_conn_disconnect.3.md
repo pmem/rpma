@@ -19,8 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          int rpma_conn_disconnect(const struct rpma_conn *conn);
+          struct rpma_conn;
+          int rpma_conn_disconnect(struct rpma_conn *conn);
 
 DESCRIPTION
 ===========

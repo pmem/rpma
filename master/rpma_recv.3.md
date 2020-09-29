@@ -19,10 +19,10 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          const struct rpma_mr_local;
-          int rpma_recv(const struct rpma_conn *conn,
-                          const struct rpma_mr_local *dst, size_t offset,
+          struct rpma_conn;
+          struct rpma_mr_local;
+          int rpma_recv(struct rpma_conn *conn,
+                          struct rpma_mr_local *dst, size_t offset,
                           size_t len, const void *op_context);
 
 DESCRIPTION

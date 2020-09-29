@@ -20,7 +20,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_peer_cfg;
+          struct rpma_peer_cfg;
           int rpma_peer_cfg_get_direct_write_to_pmem(
                           const struct rpma_peer_cfg *pcfg, bool *supported);
 

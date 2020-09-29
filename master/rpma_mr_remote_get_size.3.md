@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_mr_remote;
+          struct rpma_mr_remote;
           int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr,
                           size_t *size);
 

@@ -21,7 +21,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_peer_cfg;
-          int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+          int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
                           struct rpma_peer_cfg **pcfg_ptr);
 
 DESCRIPTION

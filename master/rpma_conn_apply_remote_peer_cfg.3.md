@@ -21,7 +21,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn;
-          const struct rpma_peer_cfg;
+          struct rpma_peer_cfg;
           int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
                           const struct rpma_peer_cfg *pcfg);
 
