@@ -86,8 +86,7 @@ rpma_log_set_function(rpma_log_function *log_function)
 			log_function_old, log_function))
 		return 0;
 	else
-		return Rpma_log_function == log_function ? 0 :
-				RPMA_E_UNKNOWN;
+		return RPMA_E_UNKNOWN;
 
 }
 
@@ -112,8 +111,7 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 			level_old, level))
 		return 0;
 	else
-		return Rpma_log_threshold[threshold] == level ? 0 :
-				RPMA_E_UNKNOWN;
+		return RPMA_E_UNKNOWN;
 }
 
 /*
