@@ -377,6 +377,7 @@ remote_from_descriptor__desc_alignment(void **unused)
 	void *desc = NULL;
 	struct rpma_mr_remote *mr = NULL;
 	size_t size = 0;
+	int usage = 0;
 	int ret = 0;
 
 	/* configure mock */
@@ -395,6 +396,11 @@ remote_from_descriptor__desc_alignment(void **unused)
 				&Desc_exp_pmem : &Desc_exp_dram;
 		memcpy(desc, desc_src, MR_DESC_SIZE);
 
+		/* specify the flush_type */
+		int flush_type = (i % 2) ?
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY;
+
 		/* run test */
 		ret = rpma_mr_remote_from_descriptor(desc, MR_DESC_SIZE, &mr);
 
@@ -404,9 +410,12 @@ remote_from_descriptor__desc_alignment(void **unused)
 		ret = rpma_mr_remote_get_size(mr, &size);
 		assert_int_equal(ret, MOCK_OK);
 		assert_int_equal(size, MOCK_SIZE);
+		ret = rpma_mr_remote_get_flush_type(mr, &usage);
+		assert_int_equal(ret, MOCK_OK);
+		assert_int_equal(usage, flush_type);
 		/*
-		 * XXX When it will be possible verify addr, rkey, and usage
-		 * using rpma_read or newly introduced getters.
+		 * It is not easy to verify whether the values
+		 * addr and rkey are correct.
 		 */
 
 		/* cleanup */
