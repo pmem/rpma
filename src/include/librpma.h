@@ -1966,6 +1966,7 @@ enum rpma_log_threshold {
  * - RPMA_E_INVAL - threshold is not RPMA_LOG_THRESHOLD nor
  * RPMA_LOG_THRESHOLD_AUX
  * - RPMA_E_INVAL - level is not a value defined by enum rpma_log_level type
+ * - RPMA_E_UNKNOWN - level is not set due to multi-threading issue
  */
 int rpma_log_set_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level level);
@@ -2000,7 +2001,7 @@ int rpma_log_get_threshold(enum rpma_log_threshold threshold,
 /*
  * the type used for defining logging functions
  */
-typedef void log_function(
+typedef void rpma_log_function(
 	/* the log level of the message */
 	enum rpma_log_level level,
 	/* name of the source file where the message coming from */
@@ -2023,7 +2024,7 @@ typedef void log_function(
  *
  *	#include <librpma.h>
  *
- *	typedef void log_function(
+ *	typedef void rpma_log_function(
  *		enum rpma_log_level level,
  *		const char *file_name,
  *		const int line_no,
@@ -2031,7 +2032,7 @@ typedef void log_function(
  *		const char *message_format,
  *		...);
  *
- *	void rpma_log_set_function(log_function *log_function);
+ *	int rpma_log_set_function(rpma_log_function *log_function);
  *
  * DESCRIPTION
  * rpma_log_set_function() allows choosing the function which will get all
@@ -2054,10 +2055,19 @@ typedef void log_function(
  * This function writes messages to syslog(3) (the primary destination) and to
  * stderr(3) (the secondary destination).
  *
+ * RETURN VALUE
+ * rpma_log_set_function() function returns 0 on success or error code
+ * on failure.
+ *
+ * ERRORS
+ * - RPMA_E_UNKNOWN - function is not set due to multi-threading issue
+ *
  * NOTE
  * The logging messages on the levels above the RPMA_LOG_THRESHOLD
  * level won't trigger the logging function.
+ *
+ * The user defined function must be thread-safe.
  */
-void rpma_log_set_function(log_function *log_function);
+int rpma_log_set_function(rpma_log_function *log_function);
 
 #endif /* LIBRPMA_H */
