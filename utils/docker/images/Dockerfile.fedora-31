@@ -40,12 +40,12 @@ ENV RPMA_DEPS "\
 	groff \
 	graphviz \
 	libunwind-devel \
+	pandoc \
 	rdma-core-devel"
 #	txt2man is installed from git repo now
 
 # doc update deps
 ENV DOC_UPDATE_DEPS "\
-	pandoc \
 	hub"
 
 # Install all required packages

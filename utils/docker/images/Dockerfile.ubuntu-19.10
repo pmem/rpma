@@ -43,7 +43,8 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libibverbs-dev \
 	librdmacm-dev \
-	libunwind-dev"
+	libunwind-dev \
+	pandoc"
 #	txt2man is installed from git repo now
 
 # Install all required packages
