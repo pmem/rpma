@@ -17,7 +17,6 @@
 #include "mocks-rpma-utils.h"
 #include "peer.h"
 #include "peer-common.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -129,7 +128,6 @@ new__alloc_pd_fail_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(peer);
 }
 
@@ -181,7 +179,6 @@ new__odp_PROVIDER_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(peer);
 }
 
@@ -313,7 +310,6 @@ delete__dealloc_pd_fail(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EBUSY);
 }
 
 int

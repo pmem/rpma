@@ -12,7 +12,6 @@
 
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -82,7 +81,6 @@ next_completion__poll_cq_fail_EAGAIN(void **cstate_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), -EAGAIN);
 }
 
 /*

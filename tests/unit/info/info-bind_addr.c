@@ -17,7 +17,6 @@
 #include "librpma.h"
 #include "info-common.h"
 #include "mocks-rdma_cm.h"
-#include "rpma_err.h"
 
 #include <infiniband/verbs.h>
 
@@ -84,7 +83,6 @@ bind_addr__bind_addr_EAGAIN(void **info_state_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_int_equal(memcmp(&cmid, &Cmid_zero, sizeof(cmid)), 0);
 }
 

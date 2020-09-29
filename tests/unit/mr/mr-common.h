@@ -14,7 +14,6 @@
 #include "cmocka_headers.h"
 #include "mr.h"
 #include "librpma.h"
-#include "rpma_err.h"
 
 #define MOCK_USAGE \
 	((int)(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\

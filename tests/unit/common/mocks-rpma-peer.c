@@ -11,7 +11,6 @@
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-peer.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -27,8 +26,9 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	check_expected_ptr(cfg);
 
 	int result = mock_type(int);
+	/* XXX validate the errno handling */
 	if (result == RPMA_E_PROVIDER)
-		Rpma_provider_error = mock_type(int);
+		errno = mock_type(int);
 
 	return result;
 }
@@ -55,7 +55,8 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 
 	*ibv_mr_ptr = args->mr;
 	if (*ibv_mr_ptr == NULL) {
-		Rpma_provider_error = args->verrno;
+		/* XXX validate the errno handling */
+		errno = args->verrno;
 		return RPMA_E_PROVIDER;
 	}
 

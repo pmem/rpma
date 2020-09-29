@@ -10,7 +10,6 @@
 
 #include "conn-common.h"
 #include "mocks-rdma_cm.h"
-#include "rpma_err.h"
 
 /*
  * next_event__conn_NULL - NULL conn is invalid
@@ -74,7 +73,6 @@ next_event__get_cm_event_EAGAIN(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
 }
 
@@ -153,7 +151,6 @@ next_event__event_REJECTED_ack_EINVAL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EINVAL);
 	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
 }
 

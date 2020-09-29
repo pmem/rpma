@@ -12,7 +12,6 @@
 #include "ep-common.h"
 #include "cmocka_headers.h"
 #include "mocks-rpma-conn_cfg.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -77,7 +76,6 @@ next_conn_req__get_cm_event_EAGAIN(void **estate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 

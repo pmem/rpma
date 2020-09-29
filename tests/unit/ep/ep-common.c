@@ -8,7 +8,6 @@
 #include "librpma.h"
 #include "ep-common.h"
 #include "info.h"
-#include "rpma_err.h"
 #include "cmocka_headers.h"
 #include "test-common.h"
 
@@ -206,9 +205,9 @@ rpma_info_bind_addr(const struct rpma_info *info, struct rdma_cm_id *id)
 	check_expected_ptr(id);
 	assert_ptr_equal(info, MOCK_INFO);
 
-	Rpma_provider_error = mock_type(int);
-
-	if (Rpma_provider_error)
+	/* XXX validate the errno handling */
+	errno = mock_type(int);
+	if (errno)
 		return RPMA_E_PROVIDER;
 
 	expect_value(rdma_listen, id, id);
