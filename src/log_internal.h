@@ -12,7 +12,7 @@
 #include "librpma.h"
 
 /* pointer to the logging function */
-extern log_function *Rpma_log_function;
+extern rpma_log_function *Rpma_log_function;
 
 /* threshold levels */
 extern enum rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
