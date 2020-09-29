@@ -163,8 +163,6 @@ main(int argc, char *argv[])
 	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR,
 			NULL);
 
-	/* XXX is waiting for RDMA.send completion required? */
-
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
