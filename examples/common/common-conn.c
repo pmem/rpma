@@ -57,7 +57,7 @@ common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
  * addr:port
  */
 int
-client_connect(const struct rpma_peer *peer, const char *addr, const char *port,
+client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr)
 {

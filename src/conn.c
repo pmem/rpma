@@ -41,7 +41,7 @@ struct rpma_conn {
  * ID has any outstanding (unacknowledged) events.
  */
 int
-rpma_conn_new(const struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
@@ -210,7 +210,7 @@ rpma_conn_get_private_data(const struct rpma_conn *conn,
  * rpma_conn_disconnect -- disconnect the connection
  */
 int
-rpma_conn_disconnect(const struct rpma_conn *conn)
+rpma_conn_disconnect(struct rpma_conn *conn)
 {
 	if (conn == NULL)
 		return RPMA_E_INVAL;
@@ -293,8 +293,8 @@ err_destroy_event_channel:
  * rpma_read -- initiate the read operation
  */
 int
-rpma_read(const struct rpma_conn *conn,
-	const struct rpma_mr_local *dst, size_t dst_offset,
+rpma_read(struct rpma_conn *conn,
+	struct rpma_mr_local *dst, size_t dst_offset,
 	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
@@ -311,8 +311,8 @@ rpma_read(const struct rpma_conn *conn,
  * rpma_write -- initiate the write operation
  */
 int
-rpma_write(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
+rpma_write(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
@@ -329,8 +329,8 @@ rpma_write(const struct rpma_conn *conn,
  * rpma_write_atomic -- initiate the atomic write operation
  */
 int
-rpma_write_atomic(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset,
+rpma_write_atomic(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	int flags, const void *op_context)
 {
@@ -350,8 +350,8 @@ rpma_write_atomic(const struct rpma_conn *conn,
  * rpma_flush -- initiate the flush operation
  */
 int
-rpma_flush(const struct rpma_conn *conn,
-	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+rpma_flush(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	if (conn == NULL || dst == NULL || flags == 0)
@@ -391,7 +391,7 @@ rpma_flush(const struct rpma_conn *conn,
  * rpma_send -- initiate the send operation
  */
 int
-rpma_send(const struct rpma_conn *conn,
+rpma_send(struct rpma_conn *conn,
     const struct rpma_mr_local *src, size_t offset, size_t len,
     int flags, const void *op_context)
 {
@@ -407,8 +407,8 @@ rpma_send(const struct rpma_conn *conn,
  * rpma_recv -- initiate the receive operation
  */
 int
-rpma_recv(const struct rpma_conn *conn,
-    const struct rpma_mr_local *dst, size_t offset, size_t len,
+rpma_recv(struct rpma_conn *conn,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
 	if (conn == NULL || dst == NULL)
@@ -438,7 +438,7 @@ rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd)
  * rpma_conn_prepare_completions -- wait for completions
  */
 int
-rpma_conn_prepare_completions(const struct rpma_conn *conn)
+rpma_conn_prepare_completions(struct rpma_conn *conn)
 {
 	if (conn == NULL)
 		return RPMA_E_INVAL;
@@ -472,7 +472,7 @@ rpma_conn_prepare_completions(const struct rpma_conn *conn)
  * rpma_conn_next_completion -- receive an operation completion
  */
 int
-rpma_conn_next_completion(const struct rpma_conn *conn,
+rpma_conn_next_completion(struct rpma_conn *conn,
 		struct rpma_completion *cmpl)
 {
 	if (conn == NULL || cmpl == NULL)

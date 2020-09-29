@@ -51,7 +51,7 @@ int common_peer_via_address(const char *addr,
 		common_peer_via_address(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, \
 				peer_ptr)
 
-int client_connect(const struct rpma_peer *peer, const char *addr,
+int client_connect(struct rpma_peer *peer, const char *addr,
 		const char *port, struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 

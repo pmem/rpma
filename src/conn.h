@@ -21,7 +21,7 @@
  *                     fail
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_conn_new(const struct rpma_peer *peer, struct rdma_cm_id *id,
+int rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn **conn_ptr);
 
 /*

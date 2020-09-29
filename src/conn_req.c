@@ -34,7 +34,7 @@ struct rpma_conn_req {
 	struct rpma_conn_private_data data;
 
 	/* a parent RPMA peer of this request - needed for derivative objects */
-	const struct rpma_peer *peer;
+	struct rpma_peer *peer;
 
 	/* completion event channel - copy for convenience */
 	struct ibv_comp_channel *channel;
@@ -48,7 +48,7 @@ struct rpma_conn_req {
  * - peer != NULL && id != NULL && cfg != NULL && req_ptr != NULL
  */
 static int
-rpma_conn_req_from_id(const struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	int ret = 0;
@@ -296,7 +296,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
  * cfg != NULL
  */
 int
-rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
+rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *edata, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
@@ -330,7 +330,7 @@ rpma_conn_req_from_cm_event(const struct rpma_peer *peer,
  * the prepared ID into rpma_conn_req_from_id.
  */
 int
-rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
+rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		const char *port, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
@@ -469,8 +469,8 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
  * rpma_conn_req_recv -- initiate the receive operation
  */
 int
-rpma_conn_req_recv(const struct rpma_conn_req *req,
-    const struct rpma_mr_local *dst, size_t offset, size_t len,
+rpma_conn_req_recv(struct rpma_conn_req *req,
+    struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
 	if (req == NULL || dst == NULL)

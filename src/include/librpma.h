@@ -333,7 +333,7 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer_cfg;
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_direct_write_to_pmem(
  *			const struct rpma_peer_cfg *pcfg, bool *supported);
  *
@@ -360,7 +360,7 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer_cfg;
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg,
  *			void *desc);
  *
@@ -385,7 +385,7 @@ int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer_cfg;
+ *	struct rpma_peer_cfg;
  *	int rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *			size_t *desc_size);
  *
@@ -414,7 +414,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *	#include <librpma.h>
  *
  *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+ *	int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
  *			struct rpma_peer_cfg **pcfg_ptr);
  *
  * DESCRIPTION
@@ -432,7 +432,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  * - RPMA_E_INVAL - desc or pcfg_ptr are NULL
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_peer_cfg_from_descriptor(void *desc, size_t desc_size,
+int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
 
 /* peer */
@@ -521,9 +521,9 @@ struct rpma_mr_remote;
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer;
+ *	struct rpma_peer;
  *	struct rpma_mr_local;
- *	int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
+ *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *		int usage, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
@@ -542,7 +542,7 @@ struct rpma_mr_remote;
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - memory registration failed
  */
-int rpma_mr_reg(const struct rpma_peer *peer, void *ptr, size_t size,
+int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
 		int usage, struct rpma_mr_local **mr_ptr);
 
 /** 3
@@ -578,7 +578,7 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_mr_local;
+ *	struct rpma_mr_local;
  *	int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  *
  * DESCRIPTION
@@ -639,7 +639,7 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_mr_local;
+ *	struct rpma_mr_local;
  *	int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
  *			size_t *desc_size);
  *
@@ -666,7 +666,7 @@ int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_mr_remote;
+ *	struct rpma_mr_remote;
  *	int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr,
  *			size_t *size);
  *
@@ -692,7 +692,7 @@ int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_mr_remote;
+ *	struct rpma_mr_remote;
  *	int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  *			int *flush_type);
  *
@@ -825,7 +825,7 @@ int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn_cfg;
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg,
  *			int *timeout_ms);
  *
@@ -876,7 +876,7 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn_cfg;
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
  *			uint32_t *cq_size);
  *
@@ -928,7 +928,7 @@ int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn_cfg;
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
  *			uint32_t *sq_size);
  *
@@ -980,7 +980,7 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn_cfg;
+ *	struct rpma_conn_cfg;
  *	int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
  *			uint32_t *rq_size);
  *
@@ -1011,7 +1011,7 @@ struct rpma_conn;
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
+ *	struct rpma_conn;
  *	int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
@@ -1117,7 +1117,7 @@ struct rpma_conn_private_data {
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
+ *	struct rpma_conn;
  *	struct rpma_conn_private_data;
  *	int rpma_conn_get_private_data(const struct rpma_conn *conn,
  *			struct rpma_conn_private_data *pdata);
@@ -1135,6 +1135,7 @@ struct rpma_conn_private_data {
  * rpma_conn_get_private_data() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or pdata is NULL
+ *
  */
 int rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
@@ -1147,7 +1148,7 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
  *	#include <librpma.h>
  *
  *	struct rpma_conn;
- *	const struct rpma_peer_cfg;
+ *	struct rpma_peer_cfg;
  *	int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *			const struct rpma_peer_cfg *pcfg);
  *
@@ -1175,8 +1176,8 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	int rpma_conn_disconnect(const struct rpma_conn *conn);
+ *	struct rpma_conn;
+ *	int rpma_conn_disconnect(struct rpma_conn *conn);
  *
  * DESCRIPTION
  * rpma_conn_disconnect() initiates disconnecting of the RPMA
@@ -1192,7 +1193,7 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_PROVIDER - rdma_disconnect() failed
  */
-int rpma_conn_disconnect(const struct rpma_conn *conn);
+int rpma_conn_disconnect(struct rpma_conn *conn);
 
 /** 3
  * rpma_conn_delete - delete already closed connection
@@ -1230,10 +1231,10 @@ struct rpma_conn_req;
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer;
- *	const struct rpma_conn_cfg;
+ *	struct rpma_peer;
+ *	struct rpma_conn_cfg;
  *	struct rpma_conn_req;
- *	int rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
+ *	int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
  *			const char *port, const struct rpma_conn_cfg *cfg,
  *			struct rpma_conn_req **req_ptr);
  *
@@ -1255,7 +1256,7 @@ struct rpma_conn_req;
  * - RPMA_E_PROVIDER - rdma_create_id(3), rdma_resolve_addr(3),
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
  */
-int rpma_conn_req_new(const struct rpma_peer *peer, const char *addr,
+int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		const char *port, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr);
 
@@ -1297,7 +1298,7 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *	#include <librpma.h>
  *
  *	struct rpma_conn_req;
- *	const struct rpma_conn_private_data;
+ *	struct rpma_conn_private_data;
  *	struct rpma_conn;
  *	int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *			const struct rpma_conn_private_data *pdata,
@@ -1336,10 +1337,10 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn_req;
- *	const struct rpma_mr_local;
- *	int rpma_conn_req_recv(const struct rpma_conn_req *req,
- *			const struct rpma_mr_local *dst, size_t offset,
+ *	struct rpma_conn_req;
+ *	struct rpma_mr_local;
+ *	int rpma_conn_req_recv(struct rpma_conn_req *req,
+ *			struct rpma_mr_local *dst, size_t offset,
  *			size_t len, const void *op_context);
  *
  * DESCRIPTION
@@ -1358,8 +1359,8 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * - RPMA_E_INVAL - req or src or op_context is NULL
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
-int rpma_conn_req_recv(const struct rpma_conn_req *req,
-		const struct rpma_mr_local *dst, size_t offset,
+int rpma_conn_req_recv(struct rpma_conn_req *req,
+		struct rpma_mr_local *dst, size_t offset,
 		size_t len, const void *op_context);
 
 /* server-side setup */
@@ -1373,9 +1374,9 @@ struct rpma_ep;
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_peer;
+ *	struct rpma_peer;
  *	struct rpma_ep;
- *	int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
+ *	int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
  *			const char *port, struct rpma_ep **ep_ptr);
  *
  * DESCRIPTION
@@ -1396,7 +1397,7 @@ struct rpma_ep;
  *   rdma_getaddrinfo(3), rdma_listen(3) failed
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_ep_listen(const struct rpma_peer *peer, const char *addr,
+int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 		const char *port, struct rpma_ep **ep_ptr);
 
 /** 3
@@ -1433,7 +1434,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_ep;
+ *	struct rpma_ep;
  *	int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  * DESCRIPTION
@@ -1458,10 +1459,10 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_ep;
- *	const struct rpma_conn_cfg;
+ *	struct rpma_ep;
+ *	struct rpma_conn_cfg;
  *	struct rpma_conn_req;
- *	int rpma_ep_next_conn_req(const struct rpma_ep *ep,
+ *	int rpma_ep_next_conn_req(struct rpma_ep *ep,
  *			const struct rpma_conn_cfg *cfg,
  *			struct rpma_conn_req **req_ptr);
  *
@@ -1483,7 +1484,7 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_NO_EVENT - no next connection request available
  */
-int rpma_ep_next_conn_req(const struct rpma_ep *ep,
+int rpma_ep_next_conn_req(struct rpma_ep *ep,
 		const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr);
 
@@ -1501,11 +1502,11 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_local;
- *	const struct rpma_mr_remote;
- *	int rpma_read(const struct rpma_conn *conn,
- *			const struct rpma_mr_local *dst, size_t dst_offset,
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	struct rpma_mr_remote;
+ *	int rpma_read(struct rpma_conn *conn,
+ *			struct rpma_mr_local *dst, size_t dst_offset,
  *			const struct rpma_mr_remote *src,  size_t src_offset,
  *			size_t len, int flags, const void *op_context);
  *
@@ -1524,8 +1525,8 @@ int rpma_ep_next_conn_req(const struct rpma_ep *ep,
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_read(const struct rpma_conn *conn,
-		const struct rpma_mr_local *dst, size_t dst_offset,
+int rpma_read(struct rpma_conn *conn,
+		struct rpma_mr_local *dst, size_t dst_offset,
 		const struct rpma_mr_remote *src,  size_t src_offset,
 		size_t len, int flags, const void *op_context);
 
@@ -1536,11 +1537,11 @@ int rpma_read(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_local;
- *	const struct rpma_mr_remote;
- *	int rpma_write(const struct rpma_conn *conn,
- *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	struct rpma_mr_remote;
+ *	int rpma_write(struct rpma_conn *conn,
+ *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			const struct rpma_mr_local *src,  size_t src_offset,
  *			size_t len, int flags, const void *op_context);
  *
@@ -1559,8 +1560,8 @@ int rpma_read(const struct rpma_conn *conn,
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_write(const struct rpma_conn *conn,
-		const struct rpma_mr_remote *dst, size_t dst_offset,
+int rpma_write(struct rpma_conn *conn,
+		struct rpma_mr_remote *dst, size_t dst_offset,
 		const struct rpma_mr_local *src,  size_t src_offset,
 		size_t len, int flags, const void *op_context);
 
@@ -1573,11 +1574,11 @@ int rpma_write(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_local;
- *	const struct rpma_mr_remote;
- *	int rpma_write_atomic(const struct rpma_conn *conn,
- *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	struct rpma_mr_remote;
+ *	int rpma_write_atomic(struct rpma_conn *conn,
+ *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			const struct rpma_mr_local *src,  size_t src_offset,
  *			int flags, const void *op_context);
  *
@@ -1599,8 +1600,8 @@ int rpma_write(const struct rpma_conn *conn,
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_write_atomic(const struct rpma_conn *conn,
-		const struct rpma_mr_remote *dst, size_t dst_offset,
+int rpma_write_atomic(struct rpma_conn *conn,
+		struct rpma_mr_remote *dst, size_t dst_offset,
 		const struct rpma_mr_local *src,  size_t src_offset,
 		int flags, const void *op_context);
 
@@ -1621,15 +1622,15 @@ enum rpma_flush_type {
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_remote;
+ *	struct rpma_conn;
+ *	struct rpma_mr_remote;
  *	enum rpma_flush_type {
  *		RPMA_FLUSH_TYPE_PERSISTENT,
  *		RPMA_FLUSH_TYPE_VISIBILITY,
  *	};
  *
- *	int rpma_flush(const struct rpma_conn *conn,
- *			const struct rpma_mr_remote *dst, size_t dst_offset,
+ *	int rpma_flush(struct rpma_conn *conn,
+ *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			size_t len, enum rpma_flush_type type, int flags,
  *			const void *op_context);
  *
@@ -1655,8 +1656,8 @@ enum rpma_flush_type {
  * - RPMA_E_NOSUPP - type is RPMA_FLUSH_TYPE_PERSISTENT and
  * the direct write to pmem is not supported
  */
-int rpma_flush(const struct rpma_conn *conn,
-		const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+int rpma_flush(struct rpma_conn *conn,
+		struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 		enum rpma_flush_type type, int flags, const void *op_context);
 
 /** 3
@@ -1666,9 +1667,9 @@ int rpma_flush(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_local;
- *	int rpma_send(const struct rpma_conn *conn,
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	int rpma_send(struct rpma_conn *conn,
  *			const struct rpma_mr_local *src, size_t offset,
  *			size_t len, int flags, const void *op_context);
  *
@@ -1687,7 +1688,7 @@ int rpma_flush(const struct rpma_conn *conn,
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_send(const struct rpma_conn *conn,
+int rpma_send(struct rpma_conn *conn,
 		const struct rpma_mr_local *src, size_t offset, size_t len,
 		int flags, const void *op_context);
 
@@ -1698,10 +1699,10 @@ int rpma_send(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	const struct rpma_mr_local;
- *	int rpma_recv(const struct rpma_conn *conn,
- *			const struct rpma_mr_local *dst, size_t offset,
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	int rpma_recv(struct rpma_conn *conn,
+ *			struct rpma_mr_local *dst, size_t offset,
  *			size_t len, const void *op_context);
  *
  * DESCRIPTION
@@ -1731,8 +1732,8 @@ int rpma_send(const struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or src is NULL
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
-int rpma_recv(const struct rpma_conn *conn,
-		const struct rpma_mr_local *dst, size_t offset, size_t len,
+int rpma_recv(struct rpma_conn *conn,
+		struct rpma_mr_local *dst, size_t offset, size_t len,
 		const void *op_context);
 
 /* completion handling */
@@ -1744,7 +1745,7 @@ int rpma_recv(const struct rpma_conn *conn,
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
+ *	struct rpma_conn;
  *	int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
@@ -1785,8 +1786,8 @@ struct rpma_completion {
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
- *	int rpma_conn_prepare_completions(const struct rpma_conn *conn);
+ *	struct rpma_conn;
+ *	int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  * DESCRIPTION
  * rpma_conn_prepare_completions() waits for incoming completions. If it
@@ -1803,7 +1804,7 @@ struct rpma_completion {
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
  */
-int rpma_conn_prepare_completions(const struct rpma_conn *conn);
+int rpma_conn_prepare_completions(struct rpma_conn *conn);
 
 /** 3
  * rpma_conn_next_completion - receive a completion of an operation
@@ -1812,9 +1813,9 @@ int rpma_conn_prepare_completions(const struct rpma_conn *conn);
  *
  *	#include <librpma.h>
  *
- *	const struct rpma_conn;
+ *	struct rpma_conn;
  *	struct rpma_completion;
- *	int rpma_conn_next_completion(const struct rpma_conn *conn,
+ *	int rpma_conn_next_completion(struct rpma_conn *conn,
  *			struct rpma_completion *cmpl);
  *
  * DESCRIPTION
@@ -1836,7 +1837,7 @@ int rpma_conn_prepare_completions(const struct rpma_conn *conn);
  * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
  * - RPMA_E_NOSUPP - not supported opcode
  */
-int rpma_conn_next_completion(const struct rpma_conn *conn,
+int rpma_conn_next_completion(struct rpma_conn *conn,
 		struct rpma_completion *cmpl);
 
 /* error handling */

@@ -13,7 +13,7 @@
 struct rpma_flush;
 
 typedef int (*rpma_flush_func)(struct ibv_qp *qp, struct rpma_flush *flush,
-	const struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context);
 
 struct rpma_flush {
@@ -27,7 +27,7 @@ struct rpma_flush {
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - sysconf() or ibv_reg_mr() failed
  */
-int rpma_flush_new(const struct rpma_peer *peer, struct rpma_flush **flush_ptr);
+int rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr);
 
 /*
  * ERRORS
