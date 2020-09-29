@@ -11,7 +11,6 @@
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 #include "test-common.h"
-#include "rpma_err.h"
 
 /*
  * rpma_conn_new -- rpma_conn_new()  mock
@@ -29,8 +28,9 @@ rpma_conn_new(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	struct rpma_conn *conn = mock_type(struct rpma_conn *);
 	if (!conn) {
 		int result = mock_type(int);
+		/* XXX validate the errno handling */
 		if (result == RPMA_E_PROVIDER)
-			Rpma_provider_error = mock_type(int);
+			errno = mock_type(int);
 
 		return result;
 	}
@@ -52,8 +52,9 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	int result = mock_type(int);
 	if (result) {
+		/* XXX validate the errno handling */
 		if (result == RPMA_E_PROVIDER)
-			Rpma_provider_error = mock_type(int);
+			errno = mock_type(int);
 
 		return result;
 	}

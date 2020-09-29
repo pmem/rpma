@@ -11,7 +11,6 @@
 #include "conn_req-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-conn_cfg.h"
-#include "rpma_err.h"
 
 static struct conn_cfg_get_timeout_mock_args Get_t = {
 	.cfg = MOCK_CONN_CFG_DEFAULT,
@@ -121,7 +120,6 @@ new__info_new_E_PROVIDER_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -144,7 +142,6 @@ new__create_id_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -176,7 +173,6 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -212,7 +208,6 @@ new__resolve_route_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -252,7 +247,6 @@ new__create_comp_channel_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -294,7 +288,6 @@ new__create_cq_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 
@@ -342,7 +335,6 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(req);
 }
 

@@ -10,7 +10,6 @@
 
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
-#include "rpma_err.h"
 
 /*
  * prepare_completions__conn_NULL - NULL conn is invalid
@@ -64,7 +63,6 @@ prepare_completions__req_notify_cq_fail(void **cstate_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 }
 
 /*

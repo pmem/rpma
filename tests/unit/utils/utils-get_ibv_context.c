@@ -13,7 +13,6 @@
 #include "librpma.h"
 #include "mocks-ibverbs.h"
 #include "info.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 #define TYPE_UNKNOWN (enum rpma_util_ibv_context_type)(-1)
@@ -113,7 +112,6 @@ get_ibvc__info_new_failed_E_PROVIDER(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(dev);
 }
 
@@ -167,7 +165,6 @@ get_ibvc__create_id_failed(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(dev);
 }
 
@@ -200,7 +197,6 @@ get_ibvc__bind_addr_failed_E_PROVIDER(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(dev);
 }
 
@@ -233,7 +229,6 @@ get_ibvc__resolve_addr_failed_E_PROVIDER(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(dev);
 }
 

@@ -12,7 +12,6 @@
 #include "conn_req.h"
 #include "log_internal.h"
 #include "peer.h"
-#include "rpma_err.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -74,8 +73,7 @@ rpma_peer_create_qp(const struct rpma_peer *peer, struct rdma_cm_id *id,
 	qp_init_attr.sq_sig_all = 0;
 
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"rdma_create_qp(max_send_wr=%" PRIu32
 			", max_recv_wr=%" PRIu32
 			", max_send/recv_sge=%i, max_inline_data=%i, qp_type=IBV_QPT_RC, sq_sig_all=0)",
@@ -115,17 +113,14 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	if (*ibv_mr_ptr != NULL)
 		return 0;
 
-	Rpma_provider_error = errno;
-
 #ifdef ON_DEMAND_PAGING_SUPPORTED
-	if (Rpma_provider_error != EOPNOTSUPP) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-			"ibv_reg_mr()");
+	if (errno != EOPNOTSUPP) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_reg_mr()");
 		return RPMA_E_PROVIDER;
 	}
 
 	if (!peer->is_odp_supported) {
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"Peer does not support On-Demand Paging: "
 			"ibv_reg_mr(addr=%p, length=%zu, access=%i)",
 			addr, length, access);
@@ -140,8 +135,7 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
 			RPMA_IBV_ACCESS(access | IBV_ACCESS_ON_DEMAND));
 	if (*ibv_mr_ptr == NULL) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"Memory registration with On-Demand Paging (maybe FSDAX?) support failed: "
 			"ibv_reg_mr(addr=%p, length=%zu, acccess=%i|IBV_ACCESS_ON_DEMAND)",
 			addr, length, access);
@@ -150,7 +144,7 @@ rpma_peer_mr_reg(const struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 
 	return 0;
 #else
-	RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error, "ibv_reg_mr()");
+	RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_reg_mr()");
 	return RPMA_E_PROVIDER;
 #endif
 }
@@ -187,9 +181,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 		if (errno == ENOMEM) {
 			return RPMA_E_NOMEM;
 		} else if (errno != 0) {
-			Rpma_provider_error = errno;
-			RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-					"ibv_alloc_pd()");
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_alloc_pd()");
 			return RPMA_E_PROVIDER;
 		} else {
 			return RPMA_E_UNKNOWN;
@@ -229,9 +221,7 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 
 	int ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
-		Rpma_provider_error = ret;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"ibv_dealloc_pd()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_dealloc_pd()");
 		return RPMA_E_PROVIDER;
 	}
 

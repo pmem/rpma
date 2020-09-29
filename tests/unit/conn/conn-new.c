@@ -12,7 +12,6 @@
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
-#include "rpma_err.h"
 #include "test-common.h"
 
 /*
@@ -105,7 +104,6 @@ new__create_evch_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(conn);
 }
 
@@ -128,7 +126,6 @@ new__migrate_id_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(conn);
 }
 
@@ -255,7 +252,6 @@ delete__flush_delete_E_PROVIDER(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), MOCK_ERRNO);
 	assert_null(cstate->conn);
 }
 
@@ -288,7 +284,6 @@ delete__destroy_cq_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->conn);
 }
 
@@ -323,12 +318,6 @@ delete__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	/*
-	 * We cannot assume which fails first either ibv_destroy_cq() or
-	 * rdma_destroy_id().
-	 */
-	int provider_error = rpma_err_get_provider_error();
-	assert_true(provider_error == EAGAIN || provider_error == EIO);
 	assert_null(cstate->conn);
 }
 
@@ -362,7 +351,6 @@ delete__destroy_comp_channel_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->conn);
 }
 
@@ -396,7 +384,6 @@ delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->conn);
 }
 
@@ -429,7 +416,6 @@ delete__destroy_id_EAGAIN(void **unused)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_int_equal(rpma_err_get_provider_error(), EAGAIN);
 	assert_null(cstate->conn);
 }
 

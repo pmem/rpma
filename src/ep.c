@@ -13,7 +13,6 @@
 #include "info.h"
 #include "librpma.h"
 #include "log_internal.h"
-#include "rpma_err.h"
 
 struct rpma_ep {
 	/* parent peer object */
@@ -51,16 +50,12 @@ rpma_ep_listen(const struct rpma_peer *peer, const char *addr, const char *port,
 
 	evch = rdma_create_event_channel();
 	if (evch == NULL) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"rdma_create_event_channel()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_event_channel()");
 		return RPMA_E_PROVIDER;
 	}
 
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"rdma_create_id()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_event_channel;
 	}
@@ -74,9 +69,7 @@ rpma_ep_listen(const struct rpma_peer *peer, const char *addr, const char *port,
 		goto err_info_delete;
 
 	if (rdma_listen(id, 0 /* backlog */)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"rdma_listen()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_listen()");
 		ret = RPMA_E_PROVIDER;
 		goto err_info_delete;
 	}
@@ -125,9 +118,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 		return 0;
 
 	if (rdma_destroy_id(ep->id)) {
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"rdma_destroy_id()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -178,9 +169,7 @@ rpma_ep_next_conn_req(const struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		if (errno == ENODATA)
 			return RPMA_E_NO_EVENT;
 
-		Rpma_provider_error = errno;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"rdma_get_cm_event()");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_get_cm_event()");
 		return RPMA_E_PROVIDER;
 	}
 
