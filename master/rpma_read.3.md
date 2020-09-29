@@ -19,11 +19,11 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          const struct rpma_mr_local;
-          const struct rpma_mr_remote;
-          int rpma_read(const struct rpma_conn *conn,
-                          const struct rpma_mr_local *dst, size_t dst_offset,
+          struct rpma_conn;
+          struct rpma_mr_local;
+          struct rpma_mr_remote;
+          int rpma_read(struct rpma_conn *conn,
+                          struct rpma_mr_local *dst, size_t dst_offset,
                           const struct rpma_mr_remote *src,  size_t src_offset,
                           size_t len, int flags, const void *op_context);
 

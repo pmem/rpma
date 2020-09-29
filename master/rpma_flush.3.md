@@ -19,15 +19,15 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          const struct rpma_mr_remote;
+          struct rpma_conn;
+          struct rpma_mr_remote;
           enum rpma_flush_type {
                   RPMA_FLUSH_TYPE_PERSISTENT,
                   RPMA_FLUSH_TYPE_VISIBILITY,
           };
 
-          int rpma_flush(const struct rpma_conn *conn,
-                          const struct rpma_mr_remote *dst, size_t dst_offset,
+          int rpma_flush(struct rpma_conn *conn,
+                          struct rpma_mr_remote *dst, size_t dst_offset,
                           size_t len, enum rpma_flush_type type, int flags,
                           const void *op_context);
 

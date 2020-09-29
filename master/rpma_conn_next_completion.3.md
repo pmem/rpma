@@ -19,9 +19,9 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
+          struct rpma_conn;
           struct rpma_completion;
-          int rpma_conn_next_completion(const struct rpma_conn *conn,
+          int rpma_conn_next_completion(struct rpma_conn *conn,
                           struct rpma_completion *cmpl);
 
 DESCRIPTION

@@ -19,9 +19,9 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          const struct rpma_mr_local;
-          int rpma_send(const struct rpma_conn *conn,
+          struct rpma_conn;
+          struct rpma_mr_local;
+          int rpma_send(struct rpma_conn *conn,
                           const struct rpma_mr_local *src, size_t offset,
                           size_t len, int flags, const void *op_context);
 

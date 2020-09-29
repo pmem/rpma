@@ -20,7 +20,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn_req;
-          const struct rpma_conn_private_data;
+          struct rpma_conn_private_data;
           struct rpma_conn;
           int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
                           const struct rpma_conn_private_data *pdata,

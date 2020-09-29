@@ -19,8 +19,8 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_conn;
-          int rpma_conn_prepare_completions(const struct rpma_conn *conn);
+          struct rpma_conn;
+          int rpma_conn_prepare_completions(struct rpma_conn *conn);
 
 DESCRIPTION
 ===========

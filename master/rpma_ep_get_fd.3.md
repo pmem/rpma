@@ -19,7 +19,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          const struct rpma_ep;
+          struct rpma_ep;
           int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
 DESCRIPTION
