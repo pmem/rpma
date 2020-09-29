@@ -76,20 +76,17 @@ rpma_log_fini()
 int
 rpma_log_set_function(rpma_log_function *log_function)
 {
-	rpma_log_function *log_function_new;
 
 	if (log_function == RPMA_LOG_USE_DEFAULT_FUNCTION)
-		log_function_new = rpma_log_default_function;
-	else
-		log_function_new = log_function;
+		log_function = rpma_log_default_function;
 
 	rpma_log_function *log_function_old = Rpma_log_function;
 
 	if (__sync_bool_compare_and_swap(&Rpma_log_function,
-			log_function_old, log_function_new))
+			log_function_old, log_function))
 		return 0;
 	else
-		return Rpma_log_function == log_function_new ? 0 :
+		return Rpma_log_function == log_function ? 0 :
 				RPMA_E_UNKNOWN;
 
 }
