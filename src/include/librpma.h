@@ -209,6 +209,10 @@ enum rpma_util_ibv_context_type {
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(), rdma_bind_addr()
  * or rdma_resolve_addr() failed, the exact cause of the error
  * can be read from the log
+ *
+ * SEE ALSO
+ * rpma_peer_new(3), rpma_utils_ibv_context_is_odp_capable(3) and
+ * https://pmem.io/rpma/
  */
 int rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type,
@@ -240,6 +244,9 @@ int rpma_utils_get_ibv_context(const char *addr,
  * - RPMA_E_INVAL - dev or is_odp_capable is NULL
  * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, the exact cause
  * of the error can be read from the log
+ *
+ * SEE ALSO
+ * rpma_utils_get_ibv_context(3) and https://pmem.io/rpma/
  */
 int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 		int *is_odp_capable);
@@ -271,6 +278,13 @@ struct rpma_peer_cfg;
  *
  * - RPMA_E_INVAL - pcfg_ptr is NULL
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_apply_remote_peer_cfg(3), rpma_peer_cfg_delete(3),
+ * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_get_descriptor(3),
+ * rpma_peer_cfg_get_descriptor_size(3),
+ * rpma_peer_cfg_get_direct_write_to_pmem(3),
+ * rpma_peer_cfg_set_direct_write_to_pmem(3) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
@@ -296,6 +310,9 @@ int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
  * rpma_peer_cfg_delete() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_peer_cfg_new(3) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
@@ -322,6 +339,11 @@ int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
  * rpma_peer_cfg_set_direct_write_to_pmem() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_apply_remote_peer_cfg(3), rpma_peer_cfg_get_descriptor(3),
+ * rpma_peer_cfg_get_direct_write_to_pmem(3), rpma_peer_cfg_new(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool supported);
@@ -349,6 +371,10 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  * rpma_peer_cfg_get_direct_write_to_pmem() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg or supported are NULL
+ *
+ * SEE ALSO
+ * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_new(3),
+ * rpma_peer_cfg_set_direct_write_to_pmem(3) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported);
@@ -375,6 +401,10 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
  * rpma_peer_cfg_get_descriptor() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg or desc are NULL
+ *
+ * SEE ALSO
+ * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_new(3) and
+ * https://pmem.io/rpma/
  */
 int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
 
@@ -401,6 +431,10 @@ int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
  * rpma_peer_cfg_get_descriptor_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - pcfg or desc_size is NULL
+ *
+ * SEE ALSO
+ * rpma_peer_cfg_get_descriptor(3), rpma_peer_cfg_new(3) and
+ * https://pmem.io/rpma/
  */
 int
 rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
@@ -431,6 +465,10 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *
  * - RPMA_E_INVAL - desc or pcfg_ptr are NULL
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_apply_remote_peer_cfg(3), rpma_peer_cfg_get_descriptor(3),
+ * rpma_peer_cfg_new(3) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
@@ -468,6 +506,10 @@ struct rpma_peer;
  * - RPMA_E_UNKNOWN - creating a verbs protection domain failed without error
  *   value.
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_listen(3), rpma_mr_reg(3), rpma_peer_delete(3),
+ * rpma_utils_get_ibv_context(3) and https://pmem.io/rpma/
  */
 int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
 
@@ -497,6 +539,9 @@ int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
  * rpma_peer_delete() can fail with the following error:
  *
  * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
+ *
+ * SEE ALSO
+ * rpma_peer_new(3) and https://pmem.io/rpma/
  */
 int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
