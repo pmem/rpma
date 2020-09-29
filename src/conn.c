@@ -183,20 +183,9 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 			*event = RPMA_CONN_CLOSED;
 			break;
 		default:
-/*
- * XXX
- * rdma_event_str() to be added
- * to provide more information about unexpected event.
- * e.g.:
- * RPMA_LOG_WARNING("%s (%s)",
- *	rpma_utils_conn_event_2str(*event),
- *	cm_erdma_event_str( cm_event));
- *
- * Note: This modification will cause several UT to be updated
- */
-			RPMA_LOG_WARNING("%s: %d",
+			RPMA_LOG_WARNING("%s: %s",
 					rpma_utils_conn_event_2str(*event),
-					cm_event);
+					rdma_event_str(cm_event));
 			return RPMA_E_UNKNOWN;
 	}
 
@@ -514,10 +503,9 @@ rpma_conn_next_completion(const struct rpma_conn *conn,
 		RPMA_LOG_DEBUG("No completion in the CQ");
 		return RPMA_E_NO_COMPLETION;
 	} else if (result < 0) {
-		/* XXX ibv_poll_cq() may return only -1; no errno provided */
+		/* ibv_poll_cq() may return only -1; no errno provided */
 		Rpma_provider_error = result;
-		RPMA_LOG_ERROR_WITH_ERRNO(Rpma_provider_error,
-				"ibv_poll_cq()");
+		RPMA_LOG_ERROR("ibv_poll_cq() failed");
 		return RPMA_E_PROVIDER;
 	} else if (result > 1) {
 		RPMA_LOG_ERROR(

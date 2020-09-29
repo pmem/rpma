@@ -370,3 +370,12 @@ rdma_bind_addr(struct rdma_cm_id *id, struct sockaddr *addr)
 
 	return 0;
 }
+
+/*
+ * rdma_event_str -- rdma_event_str() mock
+ */
+const char *
+rdma_event_str(enum rdma_cm_event_type event)
+{
+	return "";
+}
