@@ -314,7 +314,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 /* internal librpma API */
 
 /*
- * rpma_conn_req_from_cm_event -- XXX feeds an ID from cm event into
+ * rpma_conn_req_from_cm_event -- feeds an ID from cm event into
  * rpma_conn_req_from_id and add the event to conn_req
  *
  * ASSUMPTIONS
