@@ -90,7 +90,13 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env http_proxy=$http_proxy \
 	--env https_proxy=$https_proxy \
 	--env AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE \
+	--env GITHUB_ACTIONS=$GITHUB_ACTIONS \
+	--env GITHUB_HEAD_REF=$GITHUB_HEAD_REF \
 	--env GITHUB_REPO=$GITHUB_REPO \
+	--env GITHUB_REPOSITORY=$GITHUB_REPOSITORY \
+	--env GITHUB_REF=$GITHUB_REF \
+	--env GITHUB_RUN_ID=$GITHUB_RUN_ID \
+	--env GITHUB_SHA=$GITHUB_SHA \
 	--env WORKDIR=$WORKDIR \
 	--env SCRIPTSDIR=$SCRIPTSDIR \
 	--env COVERAGE=$COVERAGE \

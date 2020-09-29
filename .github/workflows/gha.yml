@@ -1,10 +1,3 @@
-#
-# The 'XXX_DISABLE_' suffix is used in this file to disable this action:
-# XXX_DISABLE_COVERAGE - disables uploads of coverage reports.
-# It is disabled, because it conflicts with the same one run on Travis.
-# Only one CI (Travis or GitHub Actions) can run it at the time, so it can be enabled here,
-# when we decide to switch from Travis to GitHub Actions. The 'XXX_DISABLE_' suffix should be removed then.
-#
 
 name: RPMA
 on: [push, pull_request]
@@ -28,7 +21,7 @@ jobs:
         CONFIG: ["N=1 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc PUSH_IMAGE=1",
                  "N=2 OS=fedora OS_VER=31    TYPE=normal CC=gcc PUSH_IMAGE=1 AUTO_DOC_UPDATE=1",
                  "N=3 OS=fedora OS_VER=31    TYPE=normal CC=clang",
-                 "N=4 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc XXX_DISABLE_COVERAGE=1",
+                 "N=4 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc COVERAGE=1",
                  "N=5 OS=ubuntu OS_VER=19.10 TYPE=coverity CC=gcc"]
     steps:
        - name: Clone the git repo
