@@ -26,10 +26,11 @@ DESCRIPTION
 ===========
 
 **rpma\_mr\_get\_descriptor**() writes a network-transferable
-description of the provided local memory region. Once the descriptor is
-transferred to the other side it can be consumed by
-**rpma\_mr\_remote\_from\_descriptor**() to create a remote memory
-region\'s structure which allows transferring data between the peers.
+description of the provided local memory region (called \'descriptor\').
+Once the descriptor is transferred to the other side it should be
+decoded by **rpma\_mr\_remote\_from\_descriptor**() to create a remote
+memory region\'s structure which allows for Remote Memory Access. Please
+see **librpma**(7) for details.
 
 RETURN VALUE
 ============

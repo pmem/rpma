@@ -115,32 +115,61 @@ steps:
 SERVER OPERATION
 ================
 
-Elaborate XXX
+A server is the passive side of the process of establishing a
+connection. Note that after establishing the connection both peers have
+the same capabilities.
 
--   **rpma\_ep\_listen**() - XXX
+The server, in order to establish a connection, has to perform the
+following steps:
 
--   **rpma\_ep\_next\_conn\_req**() - XXX
+-   rpma\_ep\_listen - create a listening endpoint
 
--   **rpma\_conn\_req\_connect**() - XXX
+-   rpma\_ep\_next\_conn\_req - obtain an incoming connection request
 
--   **rpma\_conn\_next\_event**() - XXX
+-   rpma\_conn\_req\_connect - initiate connecting the connection
+    request
 
--   **rpma\_conn\_disconnect**() - XXX
+-   rpma\_conn\_next\_event - wait for the RPMA\_CONN\_ESTABLISHED event
 
--   **rpma\_conn\_delete**() - XXX
+After establishing the connection both peers can perform Remote Memory
+Access and/or Messaging over the connection.
 
--   **rpma\_ep\_shutdown**() - XXX
+The server, in order to close a connection, has to perform the following
+steps:
+
+-   rpma\_conn\_next\_event - wait for the RPMA\_CONN\_CLOSED event
+
+-   rpma\_conn\_disconnect - disconnect the connection
+
+-   rpma\_conn\_delete - delete the closed connection
+
+When no more incoming connections are expected, the server can stop
+waiting for them:
+
+-   rpma\_ep\_shutdown - stop listening and delete the endpoint
 
 MEMORY MANAGEMENT
 =================
 
--   **rpma\_mr\_reg**() - XXX
+Every piece of memory (either volatile or persistent) must be registered
+and its usage must be specified in order to be used in Remote Memory
+Access or Messaging. This can be done using the following memory
+management librpma functions:
 
--   **rpma\_mr\_dereg**() - XXX
+-   **rpma\_mr\_reg**() which registers a memory region and creates a
+    local memory registration object and
 
--   **rpma\_mr\_get\_descriptor**() - XXX
+-   **rpma\_mr\_dereg**() which deregisters the memory region and
+    deletes the local memory registration object.
 
--   **rpma\_mr\_remote\_from\_descriptor**() - XXX
+A description of the registered memory region sometimes has to be
+transferred via network to the other side of the connection. In order to
+do that a network-transferable description of the provided memory region
+(called \'descriptor\') has to be created using
+**rpma\_mr\_get\_descriptor**(). On the other side of the connection the
+received descriptor should be decoded using
+**rpma\_mr\_remote\_from\_descriptor**(). It creates a remote memory
+region\'s structure that allows for Remote Memory Access.
 
 MESSAGING
 =========
