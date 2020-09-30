@@ -24,7 +24,7 @@ mock_function(enum rpma_log_level level, const char *file_name,
 {
 }
 
-log_function *Rpma_log_function = mock_function;
+rpma_log_function *Rpma_log_function = mock_function;
 
 /*
  * rpma_log_init -- rpma_log_init() mock

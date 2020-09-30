@@ -31,7 +31,7 @@
  * By default it is rpma_log_default_function() but could be a user logging
  * function provided via rpma_log_set().
  */
-log_function *Rpma_log_function;
+rpma_log_function *Rpma_log_function;
 
 /* threshold levels */
 enum rpma_log_level Rpma_log_threshold[] = {
@@ -73,13 +73,21 @@ rpma_log_fini()
  * rpma_log_set_function -- set the log function pointer either to
  * a user-provided function pointer or to the default logging function.
  */
-void
-rpma_log_set_function(log_function *log_function)
+int
+rpma_log_set_function(rpma_log_function *log_function)
 {
+
 	if (log_function == RPMA_LOG_USE_DEFAULT_FUNCTION)
-		Rpma_log_function = rpma_log_default_function;
+		log_function = rpma_log_default_function;
+
+	rpma_log_function *log_function_old = Rpma_log_function;
+
+	if (__sync_bool_compare_and_swap(&Rpma_log_function,
+			log_function_old, log_function))
+		return 0;
 	else
-		Rpma_log_function = log_function;
+		return RPMA_E_AGAIN;
+
 }
 
 /*
@@ -96,9 +104,14 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
-	Rpma_log_threshold[threshold] = level;
 
-	return 0;
+	enum rpma_log_level level_old = Rpma_log_threshold[threshold];
+
+	if (__sync_bool_compare_and_swap(&Rpma_log_threshold[threshold],
+			level_old, level))
+		return 0;
+	else
+		return RPMA_E_AGAIN;
 }
 
 /*
