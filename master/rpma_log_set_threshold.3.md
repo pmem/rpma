@@ -90,7 +90,7 @@ RETURN VALUE
 ============
 
 **rpma\_log\_syslog\_set\_threshold**() function returns 0 on success or
-error code on failure.
+a negative error code on failure.
 
 ERRORS
 ======
@@ -102,3 +102,6 @@ ERRORS
 
 -   RPMA\_E\_INVAL - *level* is not a value defined by enum
     rpma\_log\_level type
+
+-   RPMA\_E\_AGAIN - a temporary error occurred, the retry may fix the
+    problem
