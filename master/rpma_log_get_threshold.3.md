@@ -32,8 +32,8 @@ thresholds and levels.
 RETURN VALUE
 ============
 
-**rpma\_log\_get\_threshold**() function returns 0 on success or error
-code on failure.
+**rpma\_log\_get\_threshold**() function returns 0 on success or a
+negative error code on failure.
 
 ERRORS
 ======

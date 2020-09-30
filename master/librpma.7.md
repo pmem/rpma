@@ -164,16 +164,29 @@ Elaborate XXX
 DEBUGGING AND ERROR HANDLING
 ============================
 
-Elaborate XXX
+If a librpma function may fail, it returns a negative error code.
+Checking if the returned value is non-negative is the only
+programmatically available way to verify if the API call succeeded. The
+exact meaning of all error codes is described in the manual of each
+function.
 
--   rpma\_log\_set\_threshold - XXX
+The librpma library implements the logging API which may give additional
+information in case of an error and during normal operation as well,
+according to the current logging threshold levels.
 
--   rpma\_log\_get\_threshold - XXX
+The function that will handle all generated log messages can be set
+using **rpma\_log\_set\_function**(). The logging function can be either
+the default logging function (built into the library) or a user-defined,
+thread-safe, function. The default logging function can write messages
+to **syslog**(3) and **stderr**(3). The logging threshold level can be
+set or got using **rpma\_log\_set\_threshold**() or
+**rpma\_log\_get\_threshold**() respectively.
 
--   rpma\_log\_set\_function - XXX
+There is an example of the usage of the logging functions:
+https://github.com/pmem/rpma/tree/master/examples/log
 
-EXAMPLE
-=======
+EXAMPLES
+========
 
 See https://github.com/pmem/rpma/tree/master/examples for examples of
 using the librpma API.
