@@ -12,6 +12,8 @@
 #include <string.h>
 
 #include "librpma.h"
+
+#include "cmocka-compare_and_swap.h"
 #include "log_default.h"
 #include "log_internal.h"
 
@@ -82,12 +84,11 @@ rpma_log_set_function(rpma_log_function *log_function)
 
 	rpma_log_function *log_function_old = Rpma_log_function;
 
-	if (__sync_bool_compare_and_swap(&Rpma_log_function,
+	if (sync_bool_compare_and_swap_void((void **)&Rpma_log_function,
 			log_function_old, log_function))
 		return 0;
 	else
 		return RPMA_E_AGAIN;
-
 }
 
 /*
@@ -107,8 +108,9 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 
 	enum rpma_log_level level_old = Rpma_log_threshold[threshold];
 
-	if (__sync_bool_compare_and_swap(&Rpma_log_threshold[threshold],
-			level_old, level))
+	if (sync_bool_compare_and_swap_int(
+			&Rpma_log_threshold[threshold], level_old,
+			level))
 		return 0;
 	else
 		return RPMA_E_AGAIN;
