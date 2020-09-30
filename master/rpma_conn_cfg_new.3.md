@@ -43,3 +43,16 @@ ERRORS
 -   RPMA\_E\_INVAL - cfg\_ptr is NULL
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_conn\_cfg\_delete**(3), **rpma\_conn\_cfg\_get\_cq\_size**(3),
+**rpma\_conn\_cfg\_get\_rq\_size**(3),
+**rpma\_conn\_cfg\_get\_sq\_size**(3),
+**rpma\_conn\_cfg\_get\_timeout**(3),
+**rpma\_conn\_cfg\_set\_cq\_size**(3),
+**rpma\_conn\_cfg\_set\_rq\_size**(3),
+**rpma\_conn\_cfg\_set\_sq\_size**(3),
+**rpma\_conn\_cfg\_set\_timeout**(3), **rpma\_conn\_req\_new**(3),
+**rpma\_ep\_next\_conn\_req**(3) and https://pmem.io/rpma/

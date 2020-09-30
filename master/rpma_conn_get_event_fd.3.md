@@ -42,3 +42,9 @@ ERRORS
 **rpma\_conn\_get\_event\_fd**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - conn or fd is NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_next\_event**(3), **rpma\_conn\_req\_connect**(3) and
+https://pmem.io/rpma/

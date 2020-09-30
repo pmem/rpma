@@ -41,3 +41,8 @@ ERRORS
 **rpma\_conn\_cfg\_delete**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - cfg\_ptr is NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_cfg\_new**(3) and https://pmem.io/rpma/

@@ -53,3 +53,11 @@ ERRORS
 -   RPMA\_E\_PROVIDER - **rdma\_create\_id**(3),
     **rdma\_resolve\_addr**(3), **rdma\_resolve\_route**(3) or
     **ibv\_create\_cq**(3) failed
+
+SEE ALSO
+========
+
+**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_req\_connect**(3),
+**rpma\_conn\_req\_delete**(3), **rpma\_conn\_req\_recv**(3),
+**rpma\_ep\_next\_conn\_req**(3), **rpma\_peer\_new**(3) and
+https://pmem.io/rpma/

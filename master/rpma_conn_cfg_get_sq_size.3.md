@@ -43,3 +43,9 @@ ERRORS
 **rpma\_conn\_cfg\_get\_sq\_size**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - cfg or sq\_size is NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_cfg\_set\_sq\_size**(3) and
+https://pmem.io/rpma/

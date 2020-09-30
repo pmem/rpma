@@ -45,3 +45,8 @@ ERRORS
 **rpma\_conn\_get\_private\_data**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - conn or pdata is NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_connect**(3) and https://pmem.io/rpma/

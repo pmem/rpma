@@ -63,3 +63,9 @@ ERRORS
     **rdma\_ack\_cm\_event**() failed
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_connect**(3), **rpma\_conn\_disconnect**(3) and
+https://pmem.io/rpma/

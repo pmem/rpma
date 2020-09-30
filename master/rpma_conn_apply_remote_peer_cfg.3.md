@@ -46,3 +46,9 @@ ERRORS
 error:
 
 -   RPMA\_E\_INVAL - conn or pcfg are NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_connect**(3), **rpma\_peer\_cfg\_new**(3) and
+https://pmem.io/rpma/
