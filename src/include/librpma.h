@@ -50,15 +50,27 @@
  * - rpma_conn_apply_remote_peer_cfg - XXX
  *
  * CLIENT OPERATION
+ * A client is an active side of the process of establishing a connection.
+ * The process after creating a connection request object is common for both
+ * sides. A role of the peer during the process of establishing connection
+ * does not determine direction of the data flow (neither via
+ * Remote Memory Access nor via Messaging). After establishing the connection
+ * both peers have the same capabilities.
  *
- * Elaborate XXX
+ * The client to establish a connection has to perform the following steps:
  *
- * - rpma_conn_req_new - XXX
- * - rpma_conn_req_connect - XXX
- * - rpma_conn_next_event - XXX
- * - rpma_conn_disconnect - XXX
- * - rpma_conn_next_event - XXX
- * - rpma_conn_delete - XXX
+ * - rpma_conn_req_new - create a new outgoing connection request object
+ * - rpma_conn_req_connect - initiate processing the connection request
+ * - rpma_conn_next_event - wait for RPMA_CONN_ESTABLISHED event
+ * 
+ * After establishing the connection both peers can perform
+ * Remote Memory Access and/or Messaging over the connection.
+ * 
+ * The client to close a connection has to perform the following steps:
+ *
+ * - rpma_conn_disconnect - initiate disconnection
+ * - rpma_conn_next_event - wait for RPMA_CONN_CLOSED event
+ * - rpma_conn_delete - delete the closed connection
  *
  * SERVER OPERATION
  *
@@ -1291,7 +1303,7 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
 /** 3
- * rpma_conn_req_connect - connect the connection request
+ * rpma_conn_req_connect - initiate processing the connection request
  *
  * SYNOPSIS
  *
@@ -1305,8 +1317,9 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *			struct rpma_conn **conn_ptr);
  *
  * DESCRIPTION
- * rpma_conn_req_connect() connects the connection requests both
- * incoming and outgoing.
+ * rpma_conn_req_connect() initiate processing the connection requests both
+ * incoming and outgoing. The end of processing is notified by
+ * RPMA_CONN_ESTABLISHED event via rpma_conn_next_event().
  *
  * RETURN VALUE
  * The rpma_conn_req_connect() function returns 0 on success or a negative error
