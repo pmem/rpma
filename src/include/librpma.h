@@ -624,6 +624,11 @@ struct rpma_mr_remote;
  * - RPMA_E_INVAL - size equals 0
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - memory registration failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_recv(3), rpma_mr_dereg(3), rpma_mr_get_descriptor(3),
+ * rpma_mr_get_descriptor_size(3), rpma_peer_new(3), rpma_read(3), rpma_recv(3),
+ * rpma_send(3), rpma_write(3), rpma_write_atomic(3) and https://pmem.io/rpma/
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
 		int usage, struct rpma_mr_local **mr_ptr);
@@ -651,6 +656,9 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *
  * - RPMA_E_INVAL - mr_ptr is NULL
  * - RPMA_E_PROVIDER - memory deregistration failed
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
@@ -679,6 +687,9 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  * rpma_mr_get_descriptor() can fail with the following error:
  *
  * - RPMA_E_INVAL - mr or desc is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_get_descriptor_size(3), rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
 
@@ -711,6 +722,11 @@ int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  * - RPMA_E_NOSUPP - deserialized information does not represent a valid memory
  * region
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_mr_remote_delete(3), rpma_mr_remote_get_flush_type(3),
+ * rpma_mr_remote_get_size(3), rpma_flush(3), rpma_read(3), rpma_write(3),
+ * rpma_write_atomic(3) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_from_descriptor(const void *desc,
 		size_t desc_size, struct rpma_mr_remote **mr_ptr);
@@ -738,6 +754,9 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  * rpma_mr_get_descriptor_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - mr or desc_size is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_get_descriptor(3), rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
 		size_t *desc_size);
@@ -765,6 +784,9 @@ int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
  * rpma_mr_remote_get_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - mr or size is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
 
@@ -792,6 +814,9 @@ int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
  * rpma_mr_remote_get_flush_type() can fail with the following error:
  *
  * - RPMA_E_INVAL - mr or flush_type is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
 		int *flush_type);
@@ -818,6 +843,9 @@ int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  * rpma_mr_remote_delete() can fail with the following error:
  *
  * - RPMA_E_INVAL - mr_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
