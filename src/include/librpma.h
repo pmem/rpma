@@ -128,13 +128,28 @@
  *
  * DEBUGGING AND ERROR HANDLING
  *
- * Elaborate XXX
+ * If a librpma function may fail, it returns a negative error code.
+ * Checking if the returned value is non-negative is the only
+ * programmatically available way to verify if the API call succeeded.
+ * The exact meaning of all error codes is described in the manual
+ * of each function.
  *
- * - rpma_log_set_threshold - XXX
- * - rpma_log_get_threshold - XXX
- * - rpma_log_set_function - XXX
+ * The librpma library implements the logging API which may give additional
+ * information in case of an error and during normal operation as well,
+ * according to the current logging threshold levels.
  *
- * EXAMPLE
+ * The function that will handle all generated log messages can be set
+ * using rpma_log_set_function(). The logging function can be either
+ * the default logging function (built into the library)
+ * or a user-defined, thread-safe, function. The default logging function
+ * can write messages to syslog(3) and stderr(3).
+ * The logging threshold level can be set/got using
+ * rpma_log_set_threshold()/rpma_log_get_threshold().
+ *
+ * There is an example of the usage of the logging functions:
+ * https://github.com/pmem/rpma/tree/master/examples/log
+ *
+ * EXAMPLES
  *
  * See https://github.com/pmem/rpma/tree/master/examples for examples of using
  * the librpma API.
@@ -1958,8 +1973,8 @@ enum rpma_log_threshold {
  * destination (RPMA_LOG_THRESHOLD_AUX applies).
  *
  * RETURN VALUE
- * rpma_log_syslog_set_threshold() function returns 0 on success or error code
- * on failure.
+ * rpma_log_syslog_set_threshold() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_log_set_threshold() can fail with the following errors:
@@ -1985,8 +2000,8 @@ int rpma_log_set_threshold(enum rpma_log_threshold threshold,
  * See rpma_log_set_threshold(3) for available thresholds and levels.
  *
  * RETURN VALUE
- * rpma_log_get_threshold() function returns 0 on success or error code
- * on failure.
+ * rpma_log_get_threshold() function returns 0 on success or a negative
+ * error code on failure.
  *
  * ERRORS
  * rpma_log_get_threshold() can fail with the following errors:
@@ -2017,7 +2032,7 @@ typedef void log_function(
 #define RPMA_LOG_USE_DEFAULT_FUNCTION (NULL)
 
 /** 3
- * rpma_log_set_function - set the log function
+ * rpma_log_set_function - set the logging function
  *
  * SYNOPSIS
  *
@@ -2037,7 +2052,7 @@ typedef void log_function(
  * rpma_log_set_function() allows choosing the function which will get all
  * the generated logging messages. The log_function can be either
  * RPMA_LOG_USE_DEFAULT_FUNCTION which will use the default logging function
- * (built into the library) or a pointer to user-defined function.
+ * (built into the library) or a pointer to a user-defined function.
  *
  * Parameters of a user-defined log function are as follow:
  * - level - the log level of the message
