@@ -61,16 +61,21 @@
  * - rpma_conn_delete - XXX
  *
  * SERVER OPERATION
+ * A server is a passive side of the process of establishing a connection.
+ * Note that after establishing the connection both peers have
+ * the same capabilities.
  *
- * Elaborate XXX
+ * The server to establish a connection has to perform the following steps:
  *
- * - rpma_ep_listen - XXX
- * - rpma_ep_next_conn_req - XXX
- * - rpma_conn_req_connect - XXX
- * - rpma_conn_next_event - XXX
- * - rpma_conn_disconnect - XXX
- * - rpma_conn_delete - XXX
- * - rpma_ep_shutdown - XXX
+ * - rpma_ep_listen - create a listening endpoint
+ * - rpma_ep_next_conn_req - obtain an incoming connection request
+ * - rpma_conn_req_connect - initiate connecting the connection request
+ * - rpma_conn_next_event - wait for RPMA_CONN_ESTABLISHED event
+ * - Perform Remote Memory Access and/or Messaging over connection.
+ * - rpma_conn_next_event - wait for RPMA_CONN_CLOSED event
+ * - rpma_conn_disconnect - disconnect the connection
+ * - rpma_conn_delete - delete the closed connection
+ * - rpma_ep_shutdown - stop listening and delete the endpoint
  *
  * MEMORY MANAGEMENT
  *
@@ -1170,7 +1175,7 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
 
 /** 3
- * rpma_conn_disconnect - initiate disconnection
+ * rpma_conn_disconnect - tear-down the connection
  *
  * SYNOPSIS
  *
@@ -1180,8 +1185,13 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *	int rpma_conn_disconnect(struct rpma_conn *conn);
  *
  * DESCRIPTION
- * rpma_conn_disconnect() initiates disconnecting of the RPMA
- * connection process.
+ * rpma_conn_disconnect() tears-down the connection.
+ *
+ * - It may initiate disconnecting the connection. In this case,
+ * the end of disconnecting is notified by RPMA_CONN_CLOSED event via
+ * rpma_conn_next_event(). OR
+ * - It may be called after receiving the RPMA_CONN_CLOSED event. In this case,
+ * the disconnection is done when rpma_conn_disconnect() returns with success.
  *
  * RETURN VALUE
  * The rpma_conn_disconnect() function returns 0 on success or a negative
@@ -1412,7 +1422,8 @@ int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
  *
  * DESCRIPTION
  * rpma_ep_shutdown() stops listening for incoming connections
- * and delete the endpoint.
+ * and delete the endpoint. The connections established using the endpoint
+ * will still exist after deleting the endpoint.
  *
  * RETURN VALUE
  * The rpma_ep_shutdown() function returns 0 on success or a negative
