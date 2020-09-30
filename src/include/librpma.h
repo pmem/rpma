@@ -123,9 +123,23 @@
  *
  * MESSAGING
  *
- * - rpma_send() - XXX
- * - rpma_recv() - XXX
- * - rpma_conn_req_recv() - XXX
+ * The librpma messaging API allows transferring messages
+ * (buffers of arbitrary data) between the peers.
+ * Transferring messages requires preparing buffers
+ * on the remote side to receive the sent data.
+ * The received data are written to those dedicated buffers
+ * and the sender does not have to have a respective remote
+ * memory region object to send a message.
+ * The memory buffers used for messaging have to be registered
+ * using rpma_mr_reg() prior to rpma_send() or rpma_recv() function call.
+ *
+ * The librpma library implements the following messaging API:
+ * - rpma_send() - initiates the send operation which transfers a message
+ *   from the local memory to other side of the connection,
+ * - rpma_recv() - initiates the receive operation which prepares a buffer
+ *   for a message sent from other side of the connection,
+ * - rpma_conn_req_recv() works as rpma_recv(), but it may be used
+ *   before the connection is established.
  *
  * COMPLETIONS
  *
@@ -1549,7 +1563,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  * DESCRIPTION
  * rpma_conn_req_recv() initiates the receive operation. It prepares a buffer
- * for a message send from other side of the connection.
+ * for a message sent from other side of the connection.
  * Please see rpma_send(3). This is a variant of rpma_recv(3) which may be used
  * before the connection is established.
  *
@@ -1947,7 +1961,7 @@ int rpma_send(struct rpma_conn *conn,
  *
  * DESCRIPTION
  * rpma_recv() initiates the receive operation which prepares a buffer for
- * a message send from other side of the connection. Please see rpma_send(3).
+ * a message sent from other side of the connection. Please see rpma_send(3).
  *
  * All buffers prepared via rpma_recv(3) form an unordered set. When a message
  * arrives it is placed in one of the buffers awaitaning and a completion for
