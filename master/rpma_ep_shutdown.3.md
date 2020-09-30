@@ -26,7 +26,8 @@ DESCRIPTION
 ===========
 
 **rpma\_ep\_shutdown**() stops listening for incoming connections and
-delete the endpoint.
+deletes the endpoint. The connections established using the endpoint
+will still exist after deleting the endpoint.
 
 RETURN VALUE
 ============

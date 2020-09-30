@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_disconnect** - initiate disconnection
+**rpma\_conn\_disconnect** - tear the connection down
 
 SYNOPSIS
 ========
@@ -25,8 +25,15 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_disconnect**() initiates disconnecting of the RPMA
-connection process.
+**rpma\_conn\_disconnect**() tears the connection down.
+
+-   It may initiate disconnecting the connection. In this case, the end
+    of disconnecting is signalled by the RPMA\_CONN\_CLOSED event via
+    **rpma\_conn\_next\_event**() or
+
+-   It may be called after receiving the RPMA\_CONN\_CLOSED event. In
+    this case, the disconnection is done when
+    **rpma\_conn\_disconnect**() returns with success.
 
 RETURN VALUE
 ============
