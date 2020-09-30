@@ -35,33 +35,40 @@
  *
  * REMOTE MEMORY ACCESS
  *
- * - rpma_read - XXX
- * - rpma_write - XXX
- * - rpma_write_atomic - XXX
- * - rpma_flush - XXX
+ * - rpma_read() - XXX
+ * - rpma_write() - XXX
+ * - rpma_write_atomic() - XXX
+ * - rpma_flush() - XXX
  *
  * DIRECT WRITE TO PMEM
  *
- * **Direct Write to PMem** is a feature of a platform and its configuration
- * which allows an RDMA-capable network interface to write data to platform's
- * PMem in a persistent way. It may be impossible because of e.g. caching
- * mechanisms existing on the data's way. When **Direct Write to PMem** is
- * impossible, operating in the way assuming it is possible may corrupt data
- * on PMem, so this is why **Direct Write to PMem** is not enabled by default.
+ * .B Direct Write to PMem
+ * is a feature of a platform and its configuration which allows an RDMA-capable
+ * network interface to write data to platform's PMem in a persistent way.
+ * It may be impossible because of e.g. caching mechanisms existing
+ * on the data's way. When
+ * .B Direct Write to PMem
+ * is impossible, operating in the way assuming it is possible may corrupt data
+ * on PMem, so this is why
+ * .B Direct Write to PMem
+ * is not enabled by default.
  *
  * On the current Intel platforms, the only thing you have to do in order
- * to enable **Direct Write to PMem** is turning off Intel Direct Data I/O
- * (DDIO). Sometimes, you can turn off DDIO either globally for the whole
- * platform or for a specific PCIe Root Port. For details, please see
- * the manual of your platform.
+ * to enable
+ * .B Direct Write to PMem
+ * is turning off Intel Direct Data I/O (DDIO). Sometimes, you can turn off DDIO
+ * either globally for the whole platform or for a specific PCIe Root Port.
+ * For details, please see the manual of your platform.
  *
- * When you have a platform which allows **Direct Write to PMem**, you have to
- * declare this is the case in your peer's configuration. The peer's
+ * When you have a platform which allows
+ * .B Direct Write to PMem,
+ * you have to declare this is the case in your peer's configuration. The peer's
  * configuration has to be transferred to all the peers which want to execute
  * rpma_flush() with RPMA_FLUSH_TYPE_PERSISTENT against the platform's PMem and
  * applied to the connection object which safeguards access to PMem.
  *
- * - rpma_peer_cfg_set_direct_write_to_pmem - declare **Direct Write to PMem**
+ * - rpma_peer_cfg_set_direct_write_to_pmem - declare
+ * .B Direct Write to PMem
  * support
  * - rpma_peer_cfg_get_descriptor - get the descriptor of the peer configuration
  * - rpma_peer_cfg_from_descriptor - create a peer configuration from
@@ -99,55 +106,55 @@
  *
  * Elaborate XXX
  *
- * - rpma_ep_listen - XXX
- * - rpma_ep_next_conn_req - XXX
- * - rpma_conn_req_connect - XXX
- * - rpma_conn_next_event - XXX
- * - rpma_conn_disconnect - XXX
- * - rpma_conn_delete - XXX
- * - rpma_ep_shutdown - XXX
+ * - rpma_ep_listen() - XXX
+ * - rpma_ep_next_conn_req() - XXX
+ * - rpma_conn_req_connect() - XXX
+ * - rpma_conn_next_event() - XXX
+ * - rpma_conn_disconnect() - XXX
+ * - rpma_conn_delete() - XXX
+ * - rpma_ep_shutdown() - XXX
  *
  * MEMORY MANAGEMENT
  *
- * - rpma_mr_reg - XXX
- * - rpma_mr_dereg - XXX
- * - rpma_mr_get_descriptor - XXX
- * - rpma_mr_remote_from_descriptor - XXX
+ * - rpma_mr_reg() - XXX
+ * - rpma_mr_dereg() - XXX
+ * - rpma_mr_get_descriptor() - XXX
+ * - rpma_mr_remote_from_descriptor() - XXX
  *
  * MESSAGING
  *
- * - rpma_send - XXX
- * - rpma_recv - XXX
- * - rpma_conn_req_recv - XXX
+ * - rpma_send() - XXX
+ * - rpma_recv() - XXX
+ * - rpma_conn_req_recv() - XXX
  *
  * COMPLETIONS
  *
- * - rpma_conn_prepare_completions - XXX
- * - rpma_conn_next_completion - XXX
+ * - rpma_conn_prepare_completions() - XXX
+ * - rpma_conn_next_completion() - XXX
  *
  * PEER
  *
  * Elaborate XXX
  *
- * - rpma_utils_get_ibv_context - XXX
- * - rpma_peer_new - XXX
- * - rpma_peer_delete - XXX
+ * - rpma_utils_get_ibv_context() - XXX
+ * - rpma_peer_new() - XXX
+ * - rpma_peer_delete() - XXX
  *
  * SYNCHRONOUS AND ASYNCHRONOUS MODES
  *
  * Elaborate XXX
  *
- * - rpma_ep_get_fd - XXX
- * - rpma_conn_get_event_fd - XXX
- * - rpma_conn_get_completion_fd - XXX
+ * - rpma_ep_get_fd() - XXX
+ * - rpma_conn_get_event_fd() - XXX
+ * - rpma_conn_get_completion_fd() - XXX
  *
  * SCALABILITY AND RESOURCE USE
  *
  * Elaborate XXX
  *
- * - rpma_conn_cfg_set_cq_size - XXX
- * - rpma_conn_cfg_set_sq_size - XXX
- * - rpma_conn_cfg_set_rq_size - XXX
+ * - rpma_conn_cfg_set_cq_size() - XXX
+ * - rpma_conn_cfg_set_sq_size() - XXX
+ * - rpma_conn_cfg_set_rq_size() - XXX
  *
  * Mention getters XXX
  *
@@ -159,7 +166,7 @@
  *
  * Elaborate XXX
  *
- * - rpma_utils_ibv_context_is_odp_capable - XXX
+ * - rpma_utils_ibv_context_is_odp_capable() - XXX
  *
  * DEBUGGING AND ERROR HANDLING
  *
