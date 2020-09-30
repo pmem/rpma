@@ -42,12 +42,34 @@
  *
  * DIRECT WRITE TO PMEM
  *
- * Elaborate XXX
+ * **Direct Write to PMem** is a feature of a platform and its configuration
+ * which allows an RDMA-capable network interface to write data to platform's
+ * PMem in a persistent way. It may be impossible because of e.g. caching
+ * mechanisms existing on the data's way. When **Direct Write to PMem** is
+ * impossible, operating in the way assuming it is possible may corrupt data
+ * on PMem, so this is why **Direct Write to PMem** is not enabled by default.
  *
- * - rpma_peer_cfg_set_direct_write_to_pmem - XXX
- * - rpma_peer_cfg_get_descriptor - XXX
- * - rpma_peer_cfg_from_descriptor - XXX
- * - rpma_conn_apply_remote_peer_cfg - XXX
+ * On the current Intel platforms, the only thing you have to do in order
+ * to enable **Direct Write to PMem** is turning off Intel Direct Data I/O
+ * (DDIO). Sometimes, you can turn off DDIO either globally for the whole
+ * platform or for a specific PCIe Root Port. For details, please see
+ * the manual of your platform.
+ *
+ * When you have a platform which allows **Direct Write to PMem**, you have to
+ * declare this is the case in your peer's configuration. The peer's
+ * configuration has to be transferred to all the peers which want to execute
+ * rpma_flush() with RPMA_FLUSH_TYPE_PERSISTENT against the platform's PMem and
+ * applied to the connection object which safeguards access to PMem.
+ *
+ * - rpma_peer_cfg_set_direct_write_to_pmem - declare **Direct Write to PMem**
+ * support
+ * - rpma_peer_cfg_get_descriptor - get the descriptor of the peer configuration
+ * - rpma_peer_cfg_from_descriptor - create a peer configuration from
+ * the descriptor
+ * - rpma_conn_apply_remote_peer_cfg - apply remote peer cfg to the connection
+ *
+ * For details on how to use these APIs please see
+ * https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
  *
  * CLIENT OPERATION
  *
