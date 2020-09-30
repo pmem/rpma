@@ -55,3 +55,10 @@ ERRORS
     is available
 
 -   RPMA\_E\_NOSUPP - not supported opcode
+
+SEE ALSO
+========
+
+**rpma\_conn\_get\_completion\_fd**(3),
+**rpma\_conn\_prepare\_completions**(3), **rpma\_conn\_req\_connect**(3)
+and https://pmem.io/rpma/

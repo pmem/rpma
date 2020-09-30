@@ -43,3 +43,8 @@ ERRORS
 -   RPMA\_E\_INVAL - ep\_ptr is NULL
 
 -   RPMA\_E\_PROVIDER - **rdma\_destroy\_id**(3) failed
+
+SEE ALSO
+========
+
+**rpma\_ep\_listen**(3) and https://pmem.io/rpma/

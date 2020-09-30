@@ -82,3 +82,9 @@ The logging messages on the levels above the RPMA\_LOG\_THRESHOLD
 *level* won\'t trigger the logging function.
 
 The user defined function must be thread-safe.
+
+SEE ALSO
+========
+
+**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_threshold**(3) and
+https://pmem.io/rpma/

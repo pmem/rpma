@@ -105,3 +105,9 @@ ERRORS
 
 -   RPMA\_E\_AGAIN - a temporary error occurred, the retry may fix the
     problem
+
+SEE ALSO
+========
+
+**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_function**(3) and
+https://pmem.io/rpma/
