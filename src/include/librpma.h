@@ -143,8 +143,8 @@
  * the default logging function (built into the library)
  * or a user-defined, thread-safe, function. The default logging function
  * can write messages to syslog(3) and stderr(3).
- * The logging threshold level can be set/got using
- * rpma_log_set_threshold()/rpma_log_get_threshold().
+ * The logging threshold level can be set or got using
+ * rpma_log_set_threshold() or rpma_log_get_threshold() respectively.
  *
  * There is an example of the usage of the logging functions:
  * https://github.com/pmem/rpma/tree/master/examples/log
