@@ -1872,6 +1872,10 @@ int rpma_recv(struct rpma_conn *conn,
  * rpma_conn_get_completion_fd() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or fd is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_next_completion(3), rpma_conn_prepare_completions(3),
+ * rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
 
@@ -1914,6 +1918,10 @@ struct rpma_completion {
  * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
+ *
+ * SEE ALSO
+ * rpma_conn_get_completion_fd(3), rpma_conn_next_completion(3),
+ * rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_prepare_completions(struct rpma_conn *conn);
 
@@ -1947,6 +1955,10 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
  * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
  * - RPMA_E_NOSUPP - not supported opcode
+ *
+ * SEE ALSO
+ * rpma_conn_get_completion_fd(3), rpma_conn_prepare_completions(3),
+ * rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
 		struct rpma_completion *cmpl);
@@ -1967,6 +1979,9 @@ int rpma_conn_next_completion(struct rpma_conn *conn,
  *
  * ERRORS
  * rpma_err_2str() can not fail.
+ *
+ * SEE ALSO
+ * https://pmem.io/rpma/
  */
 const char *rpma_err_2str(int ret);
 
@@ -2078,6 +2093,9 @@ enum rpma_log_threshold {
  * RPMA_LOG_THRESHOLD_AUX
  * - RPMA_E_INVAL - level is not a value defined by enum rpma_log_level type
  * - RPMA_E_AGAIN - a temporary error occurred, the retry may fix the problem
+ *
+ * SEE ALSO
+ * rpma_log_get_threshold(3), rpma_log_set_function(3) and https://pmem.io/rpma/
  */
 int rpma_log_set_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level level);
@@ -2105,6 +2123,9 @@ int rpma_log_set_threshold(enum rpma_log_threshold threshold,
  * - RPMA_E_INVAL - threshold is not RPMA_LOG_THRESHOLD nor
  * RPMA_LOG_THRESHOLD_AUX
  * - RPMA_E_INVAL - *level is NULL
+ *
+ * SEE ALSO
+ * rpma_log_set_function(3), rpma_log_set_threshold(3) and https://pmem.io/rpma/
  */
 int rpma_log_get_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level *level);
@@ -2178,6 +2199,9 @@ typedef void rpma_log_function(
  * level won't trigger the logging function.
  *
  * The user defined function must be thread-safe.
+ *
+ * SEE ALSO
+ * rpma_log_get_threshold(3), rpma_log_set_threshold(3) and https://pmem.io/rpma/
  */
 int rpma_log_set_function(rpma_log_function *log_function);
 
