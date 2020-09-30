@@ -42,3 +42,8 @@ ERRORS
 **rpma\_mr\_remote\_get\_size**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - mr or size is NULL
+
+SEE ALSO
+========
+
+**rpma\_mr\_remote\_from\_descriptor**(3) and https://pmem.io/rpma/

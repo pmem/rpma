@@ -48,3 +48,8 @@ following errors:
 
 -   RPMA\_E\_PROVIDER - **ibv\_query\_device\_ex**() failed, the exact
     cause of the error can be read from the log
+
+SEE ALSO
+========
+
+**rpma\_utils\_get\_ibv\_context**(3) and https://pmem.io/rpma/

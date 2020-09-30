@@ -43,3 +43,9 @@ ERRORS
 error:**
 
 -   RPMA\_E\_INVAL - pcfg or desc\_size is NULL
+
+SEE ALSO
+========
+
+**rpma\_peer\_cfg\_get\_descriptor(3), rpma\_peer\_cfg\_new(3) and**
+https://pmem.io/rpma/

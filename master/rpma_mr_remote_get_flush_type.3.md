@@ -45,3 +45,8 @@ ERRORS
 error:**
 
 -   RPMA\_E\_INVAL - mr or flush\_type is NULL
+
+SEE ALSO
+========
+
+**rpma\_mr\_remote\_from\_descriptor(3) and https://pmem.io/rpma/**

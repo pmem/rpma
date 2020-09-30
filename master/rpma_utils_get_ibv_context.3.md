@@ -65,3 +65,10 @@ ERRORS
 -   RPMA\_E\_PROVIDER - **rdma\_getaddrinfo**(), **rdma\_create\_id**(),
     **rdma\_bind\_addr**() or **rdma\_resolve\_addr**() failed, the
     exact cause of the error can be read from the log
+
+SEE ALSO
+========
+
+**rpma\_peer\_new**(3),
+**rpma\_utils\_ibv\_context\_is\_odp\_capable**(3) and
+https://pmem.io/rpma/

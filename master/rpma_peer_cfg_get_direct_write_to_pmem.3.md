@@ -43,3 +43,10 @@ ERRORS
 following error:
 
 -   RPMA\_E\_INVAL - pcfg or supported are NULL
+
+SEE ALSO
+========
+
+**rpma\_peer\_cfg\_from\_descriptor**(3), **rpma\_peer\_cfg\_new**(3),
+**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3) and
+https://pmem.io/rpma/
