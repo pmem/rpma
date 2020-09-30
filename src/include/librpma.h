@@ -67,13 +67,14 @@
  * rpma_flush() with RPMA_FLUSH_TYPE_PERSISTENT against the platform's PMem and
  * applied to the connection object which safeguards access to PMem.
  *
- * - rpma_peer_cfg_set_direct_write_to_pmem - declare
+ * - rpma_peer_cfg_set_direct_write_to_pmem() - declare
  * .B Direct Write to PMem
  * support
- * - rpma_peer_cfg_get_descriptor - get the descriptor of the peer configuration
- * - rpma_peer_cfg_from_descriptor - create a peer configuration from
+ * - rpma_peer_cfg_get_descriptor() - get the descriptor of the peer
+ * configuration
+ * - rpma_peer_cfg_from_descriptor() - create a peer configuration from
  * the descriptor
- * - rpma_conn_apply_remote_peer_cfg - apply remote peer cfg to the connection
+ * - rpma_conn_apply_remote_peer_cfg() - apply remote peer cfg to the connection
  *
  * For details on how to use these APIs please see
  * https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
@@ -110,10 +111,10 @@
  * The server, in order to establish a connection, has to perform the following
  * steps:
  *
- * - rpma_ep_listen - create a listening endpoint
- * - rpma_ep_next_conn_req - obtain an incoming connection request
- * - rpma_conn_req_connect - initiate connecting the connection request
- * - rpma_conn_next_event - wait for the RPMA_CONN_ESTABLISHED event
+ * - rpma_ep_listen() - create a listening endpoint
+ * - rpma_ep_next_conn_req() - obtain an incoming connection request
+ * - rpma_conn_req_connect() - initiate connecting the connection request
+ * - rpma_conn_next_event() - wait for the RPMA_CONN_ESTABLISHED event
  *
  * After establishing the connection both peers can perform
  * Remote Memory Access and/or Messaging over the connection.
@@ -121,14 +122,14 @@
  * The server, in order to close a connection, has to perform the following
  * steps:
  *
- * - rpma_conn_next_event - wait for the RPMA_CONN_CLOSED event
- * - rpma_conn_disconnect - disconnect the connection
- * - rpma_conn_delete - delete the closed connection
+ * - rpma_conn_next_event() - wait for the RPMA_CONN_CLOSED event
+ * - rpma_conn_disconnect() - disconnect the connection
+ * - rpma_conn_delete() - delete the closed connection
  *
  * When no more incoming connections are expected, the server can stop waiting
  * for them:
  *
- * - rpma_ep_shutdown - stop listening and delete the endpoint
+ * - rpma_ep_shutdown() - stop listening and delete the endpoint
  *
  * MEMORY MANAGEMENT
  *
