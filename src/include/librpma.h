@@ -132,10 +132,23 @@
  *
  * MEMORY MANAGEMENT
  *
- * - rpma_mr_reg() - XXX
- * - rpma_mr_dereg() - XXX
- * - rpma_mr_get_descriptor() - XXX
- * - rpma_mr_remote_from_descriptor() - XXX
+ * Every piece of memory (either volatile or persistent) must be registered
+ * and its usage must be specified in order to be used in Remote Memory Access
+ * or Messaging. This can be done using the following memory management
+ * librpma functions:
+ * - rpma_mr_reg() which registers a memory region and creates a local memory
+ * registration object and
+ * - rpma_mr_dereg() which deregisters the memory region and deletes
+ * the local memory registration object.
+ *
+ * A description of the registered memory region sometimes has to be
+ * transferred via network to the other side of the connection.
+ * In order to do that a network-transferable description
+ * of the provided memory region (called 'descriptor') has to be created
+ * using rpma_mr_get_descriptor(). On the other side of the connection
+ * the received descriptor should be decoded using
+ * rpma_mr_remote_from_descriptor(). It creates a remote memory region's
+ * structure that allows for Remote Memory Access.
  *
  * MESSAGING
  *
@@ -709,11 +722,12 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  *	int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  *
  * DESCRIPTION
- * rpma_mr_get_descriptor() writes a network-transferable description of
- * the provided local memory region. Once the descriptor is transferred to
- * the other side it can be consumed by rpma_mr_remote_from_descriptor() to
- * create a remote memory region's structure which allows transferring data
- * between the peers.
+ * rpma_mr_get_descriptor() writes a network-transferable description
+ * of the provided local memory region (called 'descriptor').
+ * Once the descriptor is transferred to the other side it should be decoded
+ * by rpma_mr_remote_from_descriptor() to create a remote memory region's
+ * structure which allows for Remote Memory Access.
+ * Please see librpma(7) for details.
  *
  * RETURN VALUE
  * The rpma_mr_get_descriptor() function returns 0 on success or a negative
