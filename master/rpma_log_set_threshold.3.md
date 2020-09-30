@@ -90,7 +90,7 @@ RETURN VALUE
 ============
 
 **rpma\_log\_syslog\_set\_threshold**() function returns 0 on success or
-error code on failure.
+a negative error code on failure.
 
 ERRORS
 ======

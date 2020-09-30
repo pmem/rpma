@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_log\_set\_function** - set the log function
+**rpma\_log\_set\_function** - set the logging function
 
 SYNOPSIS
 ========
@@ -35,7 +35,7 @@ DESCRIPTION
 **rpma\_log\_set\_function**() allows choosing the function which will
 get all the generated logging messages. The *log\_function* can be
 either RPMA\_LOG\_USE\_DEFAULT\_FUNCTION which will use the default
-logging function (built into the library) or a pointer to user-defined
+logging function (built into the library) or a pointer to a user-defined
 function.
 
 Parameters of a user-defined log function are as follow:
