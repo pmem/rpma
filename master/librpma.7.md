@@ -63,17 +63,17 @@ execute **rpma\_flush**() with RPMA\_FLUSH\_TYPE\_PERSISTENT against the
 platform\'s PMem and applied to the connection object which safeguards
 access to PMem.
 
--   rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem - declare **Direct
-    Write to PMem** support
+-   **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() - declare
+    **Direct Write to PMem** support
 
--   rpma\_peer\_cfg\_get\_descriptor - get the descriptor of the peer
-    configuration
+-   **rpma\_peer\_cfg\_get\_descriptor**() - get the descriptor of the
+    peer configuration
 
--   rpma\_peer\_cfg\_from\_descriptor - create a peer configuration from
-    the descriptor
+-   **rpma\_peer\_cfg\_from\_descriptor**() - create a peer
+    configuration from the descriptor
 
--   rpma\_conn\_apply\_remote\_peer\_cfg - apply remote peer cfg to the
-    connection
+-   **rpma\_conn\_apply\_remote\_peer\_cfg**() - apply remote peer cfg
+    to the connection
 
 For details on how to use these APIs please see
 https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
@@ -122,14 +122,16 @@ the same capabilities.
 The server, in order to establish a connection, has to perform the
 following steps:
 
--   rpma\_ep\_listen - create a listening endpoint
+-   **rpma\_ep\_listen**() - create a listening endpoint
 
--   rpma\_ep\_next\_conn\_req - obtain an incoming connection request
-
--   rpma\_conn\_req\_connect - initiate connecting the connection
+-   **rpma\_ep\_next\_conn\_req**() - obtain an incoming connection
     request
 
--   rpma\_conn\_next\_event - wait for the RPMA\_CONN\_ESTABLISHED event
+-   **rpma\_conn\_req\_connect**() - initiate connecting the connection
+    request
+
+-   **rpma\_conn\_next\_event**() - wait for the RPMA\_CONN\_ESTABLISHED
+    event
 
 After establishing the connection both peers can perform Remote Memory
 Access and/or Messaging over the connection.
@@ -137,16 +139,17 @@ Access and/or Messaging over the connection.
 The server, in order to close a connection, has to perform the following
 steps:
 
--   rpma\_conn\_next\_event - wait for the RPMA\_CONN\_CLOSED event
+-   **rpma\_conn\_next\_event**() - wait for the RPMA\_CONN\_CLOSED
+    event
 
--   rpma\_conn\_disconnect - disconnect the connection
+-   **rpma\_conn\_disconnect**() - disconnect the connection
 
--   rpma\_conn\_delete - delete the closed connection
+-   **rpma\_conn\_delete**() - delete the closed connection
 
 When no more incoming connections are expected, the server can stop
 waiting for them:
 
--   rpma\_ep\_shutdown - stop listening and delete the endpoint
+-   **rpma\_ep\_shutdown**() - stop listening and delete the endpoint
 
 MEMORY MANAGEMENT
 =================
@@ -201,13 +204,40 @@ Elaborate XXX
 SYNCHRONOUS AND ASYNCHRONOUS MODES
 ==================================
 
-Elaborate XXX
+By default, all endpoints and connections operate in the synchronous
+mode where:
 
--   **rpma\_ep\_get\_fd**() - XXX
+-   **rpma\_ep\_next\_conn\_req**(),
 
--   **rpma\_conn\_get\_event\_fd**() - XXX
+-   **rpma\_conn\_prepare\_completions**() and
 
--   **rpma\_conn\_get\_completion\_fd**() - XXX
+-   **rpma\_conn\_get\_next\_event**()
+
+are blocking calls. You can make those API calls non-blocking by
+modifying the respective file descriptors:
+
+-   **rpma\_ep\_get\_fd**() - provides a file descriptor for
+    **rpma\_ep\_next\_conn\_req**()
+
+-   **rpma\_conn\_get\_completion\_fd**() - provides a file descriptor
+    for **rpma\_conn\_prepare\_completions**()
+
+-   **rpma\_conn\_get\_event\_fd**() - provides a file descriptor for
+    **rpma\_conn\_get\_next\_event**()
+
+When you have a file descriptor, you can make it non-blocking using
+**fcntl**(2) as follows:
+
+            int ret = fcntl(fd, F_GETFL);
+            fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+Such change makes the respective API call non-blocking automatically.
+
+The provided file descriptors can also be used for scalable I/O handling
+like **epoll**(7).
+
+Please see the example showing how to make use of RPMA file descriptors:
+https://github.com/pmem/rpma/tree/master/examples/06-multiple-connections
 
 SCALABILITY AND RESOURCE USE
 ============================
