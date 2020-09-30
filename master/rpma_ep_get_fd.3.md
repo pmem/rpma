@@ -40,3 +40,8 @@ ERRORS
 **rpma\_ep\_get\_fd**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - ep or fd is NULL
+
+SEE ALSO
+========
+
+**rpma\_ep\_listen**(3) and https://pmem.io/rpma/

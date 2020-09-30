@@ -50,3 +50,10 @@ ERRORS
     **rdma\_listen**(3) failed
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_ep\_get\_fd**(3), **rpma\_ep\_next\_conn\_req**(3),
+**rpma\_ep\_shutdown**(3), **rpma\_peer\_new**(3) and
+https://pmem.io/rpma/

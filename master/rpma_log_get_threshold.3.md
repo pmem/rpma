@@ -44,3 +44,9 @@ ERRORS
     RPMA\_LOG\_THRESHOLD\_AUX
 
 -   RPMA\_E\_INVAL - \**level* is NULL
+
+SEE ALSO
+========
+
+**rpma\_log\_set\_function**(3), **rpma\_log\_set\_threshold**(3) and
+https://pmem.io/rpma/

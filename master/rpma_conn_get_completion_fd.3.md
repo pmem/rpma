@@ -42,3 +42,10 @@ ERRORS
 **rpma\_conn\_get\_completion\_fd**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - conn or fd is NULL
+
+SEE ALSO
+========
+
+**rpma\_conn\_next\_completion**(3),
+**rpma\_conn\_prepare\_completions**(3), **rpma\_conn\_req\_connect**(3)
+and https://pmem.io/rpma/

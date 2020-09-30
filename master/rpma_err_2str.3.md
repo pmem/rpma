@@ -31,3 +31,8 @@ ERRORS
 ======
 
 **rpma\_err\_2str**() can not fail.
+
+SEE ALSO
+========
+
+https://pmem.io/rpma/

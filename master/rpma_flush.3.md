@@ -65,3 +65,9 @@ ERRORS
 
 -   RPMA\_E\_NOSUPP - type is RPMA\_FLUSH\_TYPE\_PERSISTENT and the
     direct write to pmem is not supported
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_connect**(3),
+**rpma\_mr\_remote\_from\_descriptor**(3) and https://pmem.io/rpma/
