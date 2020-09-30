@@ -76,7 +76,8 @@
  * - rpma_conn_apply_remote_peer_cfg - apply remote peer cfg to the connection
  *
  * For details on how to use these APIs please see
- * https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
+ * .UR https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent
+ * .UE
  *
  * CLIENT OPERATION
  * A client is the active side of the process of establishing a connection.
@@ -189,7 +190,9 @@
  * rpma_log_set_threshold() or rpma_log_get_threshold() respectively.
  *
  * There is an example of the usage of the logging functions:
- * https://github.com/pmem/rpma/tree/master/examples/log
+ * .UR https://github.com/pmem/rpma/tree/master/examples/log
+ * Log example
+ * .UE
  *
  * EXAMPLES
  *
