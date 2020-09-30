@@ -42,3 +42,9 @@ ERRORS
 -   RPMA\_E\_INVAL - conn is NULL
 
 -   RPMA\_E\_PROVIDER - **rdma\_disconnect**() failed
+
+SEE ALSO
+========
+
+**rpma\_conn\_delete**(3), **rpma\_conn\_next\_event**(3),
+**rpma\_conn\_req\_connect**(3) and https://pmem.io/rpma/

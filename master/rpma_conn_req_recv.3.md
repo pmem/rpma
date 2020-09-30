@@ -47,3 +47,9 @@ ERRORS
 -   RPMA\_E\_INVAL - req or src or op\_context is NULL
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_recv**(3) failed
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_new**(3), **rpma\_mr\_reg**(3) and
+https://pmem.io/rpma/

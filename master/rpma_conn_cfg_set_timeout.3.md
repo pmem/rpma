@@ -41,3 +41,9 @@ ERRORS
 **rpma\_conn\_cfg\_set\_timeout**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - cfg is NULL or timeout\_ms \< 0
+
+SEE ALSO
+========
+
+**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_cfg\_get\_timeout**(3) and
+https://pmem.io/rpma/

@@ -45,3 +45,8 @@ ERRORS
 ======
 
 **rpma\_utils\_conn\_event\_2str**() can not fail.
+
+SEE ALSO
+========
+
+**rpma\_conn\_next\_event**(3) and https://pmem.io/rpma/

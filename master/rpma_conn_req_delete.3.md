@@ -50,3 +50,8 @@ ERRORS
         (passive side only)
 
     -   **rdma\_destroy\_id**(3) failed (active side only)
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_new**(3) and https://pmem.io/rpma/
