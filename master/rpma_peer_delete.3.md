@@ -47,3 +47,8 @@ ERRORS
 **rpma\_peer\_delete**() can fail with the following error:
 
 -   RPMA\_E\_PROVIDER - deleting the verbs protection domain failed.
+
+SEE ALSO
+========
+
+**rpma\_peer\_new**(3) and https://pmem.io/rpma/

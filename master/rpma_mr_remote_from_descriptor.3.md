@@ -53,3 +53,12 @@ errors:
     valid memory region
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_mr\_remote\_delete**(3),
+**rpma\_mr\_remote\_get\_flush\_type**(3),
+**rpma\_mr\_remote\_get\_size**(3), **rpma\_flush**(3),
+**rpma\_read**(3), **rpma\_write**(3), **rpma\_write\_atomic**(3) and
+https://pmem.io/rpma/

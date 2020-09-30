@@ -43,3 +43,9 @@ ERRORS
 **rpma\_mr\_get\_descriptor**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - mr or desc is NULL
+
+SEE ALSO
+========
+
+**rpma\_mr\_get\_descriptor\_size**(3), **rpma\_mr\_reg**(3) and
+https://pmem.io/rpma/

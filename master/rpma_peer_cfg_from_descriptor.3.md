@@ -47,3 +47,10 @@ errors:
 -   RPMA\_E\_INVAL - desc or pcfg\_ptr are NULL
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_conn\_apply\_remote\_peer\_cfg**(3),
+**rpma\_peer\_cfg\_get\_descriptor**(3), **rpma\_peer\_cfg\_new**(3) and
+https://pmem.io/rpma/
