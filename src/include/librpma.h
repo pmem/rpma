@@ -322,7 +322,7 @@ enum rpma_util_ibv_context_type {
  * can be read from the log
  *
  * SEE ALSO
- * rpma_peer_new(3), rpma_utils_ibv_context_is_odp_capable(3) and
+ * rpma_peer_new(3), rpma_utils_ibv_context_is_odp_capable(3), librpma(7) and
  * https://pmem.io/rpma/
  */
 int rpma_utils_get_ibv_context(const char *addr,
@@ -357,7 +357,7 @@ int rpma_utils_get_ibv_context(const char *addr,
  * of the error can be read from the log
  *
  * SEE ALSO
- * rpma_utils_get_ibv_context(3) and https://pmem.io/rpma/
+ * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 		int *is_odp_capable);
@@ -395,7 +395,8 @@ struct rpma_peer_cfg;
  * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_get_descriptor(3),
  * rpma_peer_cfg_get_descriptor_size(3),
  * rpma_peer_cfg_get_direct_write_to_pmem(3),
- * rpma_peer_cfg_set_direct_write_to_pmem(3) and https://pmem.io/rpma/
+ * rpma_peer_cfg_set_direct_write_to_pmem(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
 
@@ -423,7 +424,7 @@ int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
  * - RPMA_E_INVAL - pcfg_ptr is NULL
  *
  * SEE ALSO
- * rpma_peer_cfg_new(3) and https://pmem.io/rpma/
+ * rpma_peer_cfg_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
@@ -453,7 +454,7 @@ int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
  *
  * SEE ALSO
  * rpma_conn_apply_remote_peer_cfg(3), rpma_peer_cfg_get_descriptor(3),
- * rpma_peer_cfg_get_direct_write_to_pmem(3), rpma_peer_cfg_new(3)
+ * rpma_peer_cfg_get_direct_write_to_pmem(3), rpma_peer_cfg_new(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
@@ -485,7 +486,8 @@ int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
  *
  * SEE ALSO
  * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_new(3),
- * rpma_peer_cfg_set_direct_write_to_pmem(3) and https://pmem.io/rpma/
+ * rpma_peer_cfg_set_direct_write_to_pmem(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported);
@@ -514,7 +516,7 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
  * - RPMA_E_INVAL - pcfg or desc are NULL
  *
  * SEE ALSO
- * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_new(3) and
+ * rpma_peer_cfg_from_descriptor(3), rpma_peer_cfg_new(3), librpma(7) and
  * https://pmem.io/rpma/
  */
 int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
@@ -544,7 +546,7 @@ int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
  * - RPMA_E_INVAL - pcfg or desc_size is NULL
  *
  * SEE ALSO
- * rpma_peer_cfg_get_descriptor(3), rpma_peer_cfg_new(3) and
+ * rpma_peer_cfg_get_descriptor(3), rpma_peer_cfg_new(3), librpma(7) and
  * https://pmem.io/rpma/
  */
 int
@@ -579,7 +581,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
  *
  * SEE ALSO
  * rpma_conn_apply_remote_peer_cfg(3), rpma_peer_cfg_get_descriptor(3),
- * rpma_peer_cfg_new(3) and https://pmem.io/rpma/
+ * rpma_peer_cfg_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
@@ -620,7 +622,7 @@ struct rpma_peer;
  *
  * SEE ALSO
  * rpma_conn_req_new(3), rpma_ep_listen(3), rpma_mr_reg(3), rpma_peer_delete(3),
- * rpma_utils_get_ibv_context(3) and https://pmem.io/rpma/
+ * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
 
@@ -652,7 +654,7 @@ int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
  * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
  *
  * SEE ALSO
- * rpma_peer_new(3) and https://pmem.io/rpma/
+ * rpma_peer_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
@@ -679,12 +681,25 @@ struct rpma_mr_remote;
  *
  *	struct rpma_peer;
  *	struct rpma_mr_local;
+ *
  *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *		int usage, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
  * rpma_mr_reg() registers a memory region and creates a local memory
- * registration object.
+ * registration object. The usage parameter specifies the operations
+ * that can be performed on the given memory region which should be expressed
+ * as bitwise-inclusive OR of the following:
+ * - RPMA_MR_USAGE_READ_SRC - memory used as a source of the read operation
+ * - RPMA_MR_USAGE_READ_DST - memory used as a destination of the read operation
+ * - RPMA_MR_USAGE_WRITE_SRC - memory used as a source of the write operation
+ * - RPMA_MR_USAGE_WRITE_DST - memory used as a destination of
+ * the write operation
+ * - RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY - memory with available flush operation
+ * - RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT - memory with available
+ * persistent flush operation
+ * - RPMA_MR_USAGE_SEND - memory used for send operation
+ * - RPMA_MR_USAGE_RECV - memory used for receive operation
  *
  * RETURN VALUE
  * The rpma_mr_reg() function returns 0 on success or a negative error code
@@ -701,7 +716,8 @@ struct rpma_mr_remote;
  * SEE ALSO
  * rpma_conn_req_recv(3), rpma_mr_dereg(3), rpma_mr_get_descriptor(3),
  * rpma_mr_get_descriptor_size(3), rpma_peer_new(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_write(3), rpma_write_atomic(3) and https://pmem.io/rpma/
+ * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
 		int usage, struct rpma_mr_local **mr_ptr);
@@ -731,7 +747,7 @@ int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  * - RPMA_E_PROVIDER - memory deregistration failed
  *
  * SEE ALSO
- * rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
@@ -763,7 +779,8 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  * - RPMA_E_INVAL - mr or desc is NULL
  *
  * SEE ALSO
- * rpma_mr_get_descriptor_size(3), rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_mr_get_descriptor_size(3), rpma_mr_reg(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
 
@@ -800,7 +817,7 @@ int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  * SEE ALSO
  * rpma_mr_remote_delete(3), rpma_mr_remote_get_flush_type(3),
  * rpma_mr_remote_get_size(3), rpma_flush(3), rpma_read(3), rpma_write(3),
- * rpma_write_atomic(3) and https://pmem.io/rpma/
+ * rpma_write_atomic(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_from_descriptor(const void *desc,
 		size_t desc_size, struct rpma_mr_remote **mr_ptr);
@@ -830,7 +847,8 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  * - RPMA_E_INVAL - mr or desc_size is NULL
  *
  * SEE ALSO
- * rpma_mr_get_descriptor(3), rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_mr_get_descriptor(3), rpma_mr_reg(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
 		size_t *desc_size);
@@ -860,7 +878,7 @@ int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
  * - RPMA_E_INVAL - mr or size is NULL
  *
  * SEE ALSO
- * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
 
@@ -890,7 +908,7 @@ int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
  * - RPMA_E_INVAL - mr or flush_type is NULL
  *
  * SEE ALSO
- * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
 		int *flush_type);
@@ -919,7 +937,7 @@ int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  * - RPMA_E_INVAL - mr_ptr is NULL
  *
  * SEE ALSO
- * rpma_mr_remote_from_descriptor(3) and https://pmem.io/rpma/
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
@@ -956,8 +974,8 @@ struct rpma_conn_cfg;
  * rpma_conn_cfg_get_rq_size(3), rpma_conn_cfg_get_sq_size(3),
  * rpma_conn_cfg_get_timeout(3), rpma_conn_cfg_set_cq_size(3),
  * rpma_conn_cfg_set_rq_size(3), rpma_conn_cfg_set_sq_size(3),
- * rpma_conn_cfg_set_timeout(3), rpma_conn_req_new(3), rpma_ep_next_conn_req(3)
- * and https://pmem.io/rpma/
+ * rpma_conn_cfg_set_timeout(3), rpma_conn_req_new(3), rpma_ep_next_conn_req(3),
+ * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
 
@@ -985,7 +1003,7 @@ int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
  * - RPMA_E_INVAL - cfg_ptr is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
 
@@ -1013,7 +1031,8 @@ int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
  * - RPMA_E_INVAL - cfg is NULL or timeout_ms < 0
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_get_timeout(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_timeout(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
 
@@ -1042,7 +1061,8 @@ int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
  * - RPMA_E_INVAL - cfg or timeout_ms is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_set_timeout(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_timeout(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
 
@@ -1070,7 +1090,8 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
  * - RPMA_E_INVAL - cfg is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_get_cq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_cq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
@@ -1099,7 +1120,8 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
  * - RPMA_E_INVAL - cfg or cq_size is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_set_cq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_cq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *cq_size);
@@ -1128,7 +1150,8 @@ int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
  * - RPMA_E_INVAL - cfg is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_get_sq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_sq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
 
@@ -1157,7 +1180,8 @@ int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
  * - RPMA_E_INVAL - cfg or sq_size is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_set_sq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_sq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *sq_size);
@@ -1186,7 +1210,8 @@ int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
  * - RPMA_E_INVAL - cfg is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_get_rq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_rq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 
@@ -1215,7 +1240,8 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
  * - RPMA_E_INVAL - cfg or rq_size is NULL
  *
  * SEE ALSO
- * rpma_conn_cfg_new(3), rpma_conn_cfg_set_rq_size(3) and https://pmem.io/rpma/
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_rq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *rq_size);
@@ -1248,7 +1274,8 @@ struct rpma_conn;
  * - RPMA_E_INVAL - conn or fd is NULL
  *
  * SEE ALSO
- * rpma_conn_next_event(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_next_event(3), rpma_conn_req_connect(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
 
@@ -1298,7 +1325,8 @@ enum rpma_conn_event {
  * - RPMA_E_NOMEM - out of memory
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_conn_disconnect(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_conn_disconnect(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
@@ -1330,7 +1358,7 @@ int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
  * rpma_utils_conn_event_2str() can not fail.
  *
  * SEE ALSO
- * rpma_conn_next_event(3) and https://pmem.io/rpma/
+ * rpma_conn_next_event(3), librpma(7) and https://pmem.io/rpma/
  */
 const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
 
@@ -1366,7 +1394,7 @@ struct rpma_conn_private_data {
  * - RPMA_E_INVAL - conn or pdata is NULL
  *
  * SEE ALSO
- * rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
@@ -1398,7 +1426,8 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or pcfg are NULL
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_peer_cfg_new(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_peer_cfg_new(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
@@ -1433,7 +1462,8 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - rdma_disconnect() failed
  *
  * SEE ALSO
- * rpma_conn_delete(3), rpma_conn_next_event(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_delete(3), rpma_conn_next_event(3), rpma_conn_req_connect(3),
+ * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_disconnect(struct rpma_conn *conn);
 
@@ -1461,7 +1491,8 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  * - RPMA_E_PROVIDER - ibv_destroy_cq() or rdma_destroy_id() failed
  *
  * SEE ALSO
- * rpma_conn_disconnect(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_disconnect(3), rpma_conn_req_connect(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_delete(struct rpma_conn **conn_ptr);
 
@@ -1503,7 +1534,7 @@ struct rpma_conn_req;
  *
  * SEE ALSO
  * rpma_conn_cfg_new(3), rpma_conn_req_connect(3), rpma_conn_req_delete(3),
- * rpma_conn_req_recv(3), rpma_ep_next_conn_req(3), rpma_peer_new(3)
+ * rpma_conn_req_recv(3), rpma_ep_next_conn_req(3), rpma_peer_new(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
@@ -1539,7 +1570,7 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
  *	- rdma_destroy_id(3) failed (active side only)
  *
  * SEE ALSO
- * rpma_conn_req_new(3) and https://pmem.io/rpma/
+ * rpma_conn_req_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
@@ -1587,7 +1618,8 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * rpma_conn_next_completion(3), rpma_conn_next_event(3),
  * rpma_conn_prepare_completions(3), rpma_conn_req_new(3),
  * rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_write(3), rpma_write_atomic(3) and https://pmem.io/rpma/
+ * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		const struct rpma_conn_private_data *pdata,
@@ -1623,7 +1655,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_new(3), rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_conn_req_new(3), rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_req_recv(struct rpma_conn_req *req,
 		struct rpma_mr_local *dst, size_t offset,
@@ -1665,7 +1697,7 @@ struct rpma_ep;
  *
  * SEE ALSO
  * rpma_ep_get_fd(3), rpma_ep_next_conn_req(3), rpma_ep_shutdown(3),
- * rpma_peer_new(3) and https://pmem.io/rpma/
+ * rpma_peer_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 		const char *port, struct rpma_ep **ep_ptr);
@@ -1697,7 +1729,7 @@ int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
  * - RPMA_E_PROVIDER - rdma_destroy_id(3) failed
  *
  * SEE ALSO
- * rpma_ep_listen(3) and https://pmem.io/rpma/
+ * rpma_ep_listen(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
 
@@ -1725,7 +1757,7 @@ int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
  * - RPMA_E_INVAL - ep or fd is NULL
  *
  * SEE ALSO
- * rpma_ep_listen(3) and https://pmem.io/rpma/
+ * rpma_ep_listen(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
@@ -1763,7 +1795,7 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  *
  * SEE ALSO
  * rpma_conn_cfg_new(3), rpma_conn_req_delete(3), rpma_conn_req_connect(3),
- * rpma_ep_listen(3) and https://pmem.io/rpma/
+ * rpma_ep_listen(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep,
 		const struct rpma_conn_cfg *cfg,
@@ -1794,6 +1826,10 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * DESCRIPTION
  * rpma_read() initiates the read operation (transferring data from
  * the remote memory to the local memory).
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
  *
  * RETURN VALUE
  * The rpma_read() function returns 0 on success or a negative
@@ -1807,8 +1843,8 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
- * and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3),
+ * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_read(struct rpma_conn *conn,
 		struct rpma_mr_local *dst, size_t dst_offset,
@@ -1833,6 +1869,10 @@ int rpma_read(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write() initiates the write operation (transferring data from
  * the local memory to the remote memory).
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
  *
  * RETURN VALUE
  * The rpma_write() function returns 0 on success or a negative
@@ -1846,8 +1886,8 @@ int rpma_read(struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
- * and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_mr_reg(3),
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_write(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
@@ -1874,8 +1914,12 @@ int rpma_write(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write_atomic() initiates the atomic write operation (transferring
  * data from the local memory to the remote memory). The atomic write operation
- * allows transferring 8 bytes of data and storing them atomically in the remote
- * memory.
+ * allows transferring 8 bytes of data (RPMA_ATOMIC_WRITE_ALIGNMENT) and storing
+ * them atomically in the remote memory.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
  *
  * RETURN VALUE
  * The rpma_write_atomic() function returns 0 on success or a negative
@@ -1890,8 +1934,8 @@ int rpma_write(struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
- * and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_mr_reg(3),
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_write_atomic(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
@@ -1935,6 +1979,11 @@ enum rpma_flush_type {
  * - RPMA_FLUSH_TYPE_VISIBILITY - flush data deep enough to make it visible
  * on the remote node
  *
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
+ *
  * RETURN VALUE
  * The rpma_flush() function returns 0 on success or a negative
  * error code on failure.
@@ -1950,7 +1999,7 @@ enum rpma_flush_type {
  * the direct write to pmem is not supported
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_remote_from_descriptor(3)
+ * rpma_conn_req_connect(3), rpma_mr_remote_from_descriptor(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_flush(struct rpma_conn *conn,
@@ -1973,6 +2022,10 @@ int rpma_flush(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_send() initiates the send operation which transfers a message from
  * the local memory to other side of the connection.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
  *
  * RETURN VALUE
  * The rpma_send() function returns 0 on success or a negative
@@ -1986,7 +2039,8 @@ int rpma_flush(struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_send(struct rpma_conn *conn,
 		const struct rpma_mr_local *src, size_t offset, size_t len,
@@ -2018,6 +2072,11 @@ int rpma_send(struct rpma_conn *conn,
  * The order of buffers in the set does not affect the order of completions of
  * receive operations get via rpma_conn_next_completion(3).
  *
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
+ *
  * NOTE
  * In the RDMA standard, receive requests form an ordered queue.
  * The RPMA does NOT inherit this guarantee.
@@ -2033,7 +2092,8 @@ int rpma_send(struct rpma_conn *conn,
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  *
  * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_recv(struct rpma_conn *conn,
 		struct rpma_mr_local *dst, size_t offset, size_t len,
@@ -2067,7 +2127,7 @@ int rpma_recv(struct rpma_conn *conn,
  *
  * SEE ALSO
  * rpma_conn_next_completion(3), rpma_conn_prepare_completions(3),
- * rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
 
@@ -2113,7 +2173,7 @@ struct rpma_completion {
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_next_completion(3),
- * rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_prepare_completions(struct rpma_conn *conn);
 
@@ -2126,6 +2186,14 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  *	struct rpma_conn;
  *	struct rpma_completion;
+ *	enum rpma_op {
+ *		RPMA_OP_READ,
+ *		RPMA_OP_WRITE,
+ *		RPMA_OP_FLUSH,
+ *		RPMA_OP_SEND,
+ *		RPMA_OP_RECV,
+ *	};
+ *
  *	int rpma_conn_next_completion(struct rpma_conn *conn,
  *			struct rpma_completion *cmpl);
  *
@@ -2134,6 +2202,12 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  * of an already posted operation. All operations are generating completion on
  * error. All operations posted with the **RPMA_F_COMPLETION_ALWAYS** flag will
  * also generate a completion on success.
+ * The following operations are available:
+ * - RPMA_OP_READ - RMA read operation
+ * - RPMA_OP_WRITE - RMA write operation
+ * - RPMA_OP_FLUSH - RMA flush operation
+ * - RPMA_OP_SEND - messaging send operation
+ * - RPMA_OP_RECV - messaging receive operation
  *
  * RETURN VALUE
  * The rpma_conn_next_completion() function returns 0 on success
@@ -2150,7 +2224,9 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_prepare_completions(3),
- * rpma_conn_req_connect(3) and https://pmem.io/rpma/
+ * rpma_conn_req_connect(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
+ * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_conn_next_completion(struct rpma_conn *conn,
 		struct rpma_completion *cmpl);
@@ -2173,7 +2249,7 @@ int rpma_conn_next_completion(struct rpma_conn *conn,
  * rpma_err_2str() can not fail.
  *
  * SEE ALSO
- * https://pmem.io/rpma/
+ * librpma(7) and https://pmem.io/rpma/
  */
 const char *rpma_err_2str(int ret);
 
@@ -2287,7 +2363,8 @@ enum rpma_log_threshold {
  * - RPMA_E_AGAIN - a temporary error occurred, the retry may fix the problem
  *
  * SEE ALSO
- * rpma_log_get_threshold(3), rpma_log_set_function(3) and https://pmem.io/rpma/
+ * rpma_log_get_threshold(3), rpma_log_set_function(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_log_set_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level level);
@@ -2317,7 +2394,8 @@ int rpma_log_set_threshold(enum rpma_log_threshold threshold,
  * - RPMA_E_INVAL - *level is NULL
  *
  * SEE ALSO
- * rpma_log_set_function(3), rpma_log_set_threshold(3) and https://pmem.io/rpma/
+ * rpma_log_set_function(3), rpma_log_set_threshold(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_log_get_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level *level);
@@ -2393,7 +2471,8 @@ typedef void rpma_log_function(
  * The user defined function must be thread-safe.
  *
  * SEE ALSO
- * rpma_log_get_threshold(3), rpma_log_set_threshold(3) and https://pmem.io/rpma/
+ * rpma_log_get_threshold(3), rpma_log_set_threshold(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_log_set_function(rpma_log_function *log_function);
 
