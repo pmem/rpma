@@ -40,3 +40,8 @@ ERRORS
 **rpma\_peer\_cfg\_delete**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - pcfg\_ptr is NULL
+
+SEE ALSO
+========
+
+**rpma\_peer\_cfg\_new**(3) and https://pmem.io/rpma/

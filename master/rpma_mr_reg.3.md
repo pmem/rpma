@@ -49,3 +49,12 @@ ERRORS
 -   RPMA\_E\_NOMEM - out of memory
 
 -   RPMA\_E\_PROVIDER - memory registration failed
+
+SEE ALSO
+========
+
+**rpma\_conn\_req\_recv**(3), **rpma\_mr\_dereg**(3),
+**rpma\_mr\_get\_descriptor**(3),
+**rpma\_mr\_get\_descriptor\_size**(3), **rpma\_peer\_new**(3),
+**rpma\_read**(3), **rpma\_recv**(3), **rpma\_send**(3),
+**rpma\_write**(3), **rpma\_write\_atomic**(3) and https://pmem.io/rpma/

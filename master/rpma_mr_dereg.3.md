@@ -43,3 +43,8 @@ ERRORS
 -   RPMA\_E\_INVAL - mr\_ptr is NULL
 
 -   RPMA\_E\_PROVIDER - memory deregistration failed
+
+SEE ALSO
+========
+
+**rpma\_mr\_reg**(3) and https://pmem.io/rpma/

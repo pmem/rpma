@@ -42,3 +42,15 @@ ERRORS
 -   RPMA\_E\_INVAL - pcfg\_ptr is NULL
 
 -   RPMA\_E\_NOMEM - out of memory
+
+SEE ALSO
+========
+
+**rpma\_conn\_apply\_remote\_peer\_cfg**(3),
+**rpma\_peer\_cfg\_delete**(3),
+**rpma\_peer\_cfg\_from\_descriptor**(3),
+**rpma\_peer\_cfg\_get\_descriptor**(3),
+**rpma\_peer\_cfg\_get\_descriptor\_size**(3),
+**rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**(3),
+**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3) and
+https://pmem.io/rpma/
