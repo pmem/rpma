@@ -86,6 +86,33 @@ get_threshold__threshold_level_invalid(void **unused)
 }
 
 /*
+ * set_threshold__compare_and_swap_failed -- compare_and_swap failed
+ */
+void
+set_threshold__compare_and_swap_failed_first_time(void **unused)
+{
+	enum rpma_log_level level;
+	for (int i = RPMA_LOG_THRESHOLD; i <= RPMA_LOG_THRESHOLD_AUX; i++) {
+		for (int j = RPMA_LOG_DISABLED; j <= RPMA_LOG_LEVEL_DEBUG;
+				j++) {
+			will_return(__wrap_sync_bool_compare_and_swap_int, 0);
+			will_return(__wrap_sync_bool_compare_and_swap_int, 1);
+			int ret = rpma_log_set_threshold(
+					(enum rpma_log_threshold)i, j);
+			assert_int_equal(ret, RPMA_E_AGAIN);
+			ret = rpma_log_set_threshold(
+					(enum rpma_log_threshold)i, j);
+			assert_int_equal(ret, 0);
+
+			ret = rpma_log_get_threshold(
+					(enum rpma_log_threshold)i, &level);
+			assert_int_equal(level, j);
+			assert_int_equal(ret, 0);
+		}
+	}
+}
+
+/*
  * threshold_lifecycle -- happy day scenario
  */
 void
@@ -95,6 +122,7 @@ threshold_lifecycle(void **unused)
 	for (int i = RPMA_LOG_THRESHOLD; i <= RPMA_LOG_THRESHOLD_AUX; i++) {
 		for (int j = RPMA_LOG_DISABLED; j <= RPMA_LOG_LEVEL_DEBUG;
 				j++) {
+			will_return(__wrap_sync_bool_compare_and_swap_int, 1);
 			int ret = rpma_log_set_threshold(
 					(enum rpma_log_threshold)i, j);
 			assert_int_equal(ret, 0);
@@ -115,6 +143,8 @@ main(int argc, char *argv[])
 		cmocka_unit_test(set_threshold__threshold_invalid),
 		cmocka_unit_test(set_threshold__level_invalid),
 		cmocka_unit_test(set_threshold__threshold_level_invalid),
+		cmocka_unit_test(
+			set_threshold__compare_and_swap_failed_first_time),
 
 		/* rpma_log_get_threshold() unit tests */
 		cmocka_unit_test(get_threshold__threshold_invalid),
