@@ -121,12 +121,33 @@
  * - rpma_peer_delete - XXX
  *
  * SYNCHRONOUS AND ASYNCHRONOUS MODES
+ * By default, all endpoints and connections operate in a synchronous mode
+ * where:
  *
- * Elaborate XXX
+ * - rpma_ep_next_conn_req()
+ * - rpma_conn_prepare_completions()
+ * - rpma_conn_get_next_event()
  *
- * - rpma_ep_get_fd - XXX
- * - rpma_conn_get_event_fd - XXX
- * - rpma_conn_get_completion_fd - XXX
+ * are blocking calls. You can make those API calls non-blocking by modifying
+ * respective file descriptors:
+ *
+ * - rpma_ep_get_fd() - provides a file descriptor for rpma_ep_next_conn_req()
+ * - rpma_conn_get_completion_fd() - provides a file descriptor for
+ * rpma_conn_prepare_completions()
+ * - rpma_conn_get_event_fd() - provides a file descriptor for
+ * rpma_conn_get_next_event()
+ *
+ * Having a file descriptor you can make it non-blocking, at the same time
+ * making non-blocking the respective API call, using fcntl(2) as follows:
+ *
+ *	int ret = fcntl(fd, F_GETFL);
+ *	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+ *
+ * The provided file descriptors can also be used for scalable I/O handling like
+ * epoll(7).
+ *
+ * Please see the example showing how to make use of RPMA file descriptors:
+ * https://github.com/pmem/rpma/tree/master/examples/06-multiple-connections
  *
  * SCALABILITY AND RESOURCE USE
  *
