@@ -626,12 +626,23 @@ struct rpma_mr_remote;
  *
  *	struct rpma_peer;
  *	struct rpma_mr_local;
+ *
+ *	#define RPMA_MR_USAGE_READ_SRC			(1 << 0)
+ *	#define RPMA_MR_USAGE_READ_DST			(1 << 1)
+ *	#define RPMA_MR_USAGE_WRITE_SRC			(1 << 2)
+ *	#define RPMA_MR_USAGE_WRITE_DST			(1 << 3)
+ *	#define RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY	(1 << 4)
+ *	#define RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT	(1 << 5)
+ *	#define RPMA_MR_USAGE_SEND			(1 << 6)
+ *	#define RPMA_MR_USAGE_RECV			(1 << 7)
+ *
  *	int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
  *		int usage, struct rpma_mr_local **mr_ptr);
  *
  * DESCRIPTION
  * rpma_mr_reg() registers a memory region and creates a local memory
- * registration object.
+ * registration object. The usege parameter specifies the operation
+ * that can be performed on a given memory region.
  *
  * RETURN VALUE
  * The rpma_mr_reg() function returns 0 on success or a negative error code
@@ -1726,6 +1737,10 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  *	struct rpma_conn;
  *	struct rpma_mr_local;
  *	struct rpma_mr_remote;
+ *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_read(struct rpma_conn *conn,
  *			struct rpma_mr_local *dst, size_t dst_offset,
  *			const struct rpma_mr_remote *src,  size_t src_offset,
@@ -1734,6 +1749,10 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * DESCRIPTION
  * rpma_read() initiates the read operation (transferring data from
  * the remote memory to the local memory).
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * RETURN VALUE
  * The rpma_read() function returns 0 on success or a negative
@@ -1765,6 +1784,10 @@ int rpma_read(struct rpma_conn *conn,
  *	struct rpma_conn;
  *	struct rpma_mr_local;
  *	struct rpma_mr_remote;
+ *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_write(struct rpma_conn *conn,
  *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			const struct rpma_mr_local *src,  size_t src_offset,
@@ -1773,6 +1796,10 @@ int rpma_read(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write() initiates the write operation (transferring data from
  * the local memory to the remote memory).
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * RETURN VALUE
  * The rpma_write() function returns 0 on success or a negative
@@ -1806,6 +1833,12 @@ int rpma_write(struct rpma_conn *conn,
  *	struct rpma_conn;
  *	struct rpma_mr_local;
  *	struct rpma_mr_remote;
+ *
+ *	#define RPMA_ATOMIC_WRITE_ALIGNMENT 8
+ *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_write_atomic(struct rpma_conn *conn,
  *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			const struct rpma_mr_local *src,  size_t src_offset,
@@ -1814,8 +1847,12 @@ int rpma_write(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write_atomic() initiates the atomic write operation (transferring
  * data from the local memory to the remote memory). The atomic write operation
- * allows transferring 8 bytes of data and storing them atomically in the remote
- * memory.
+ * allows transferring 8 bytes of data (RPMA_ATOMIC_WRITE_ALIGNMENT) and storing
+ * them atomically in the remote memory.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * -RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * RETURN VALUE
  * The rpma_write_atomic() function returns 0 on success or a negative
@@ -1862,6 +1899,9 @@ enum rpma_flush_type {
  *		RPMA_FLUSH_TYPE_VISIBILITY,
  *	};
  *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_flush(struct rpma_conn *conn,
  *			struct rpma_mr_remote *dst, size_t dst_offset,
  *			size_t len, enum rpma_flush_type type, int flags,
@@ -1874,6 +1914,11 @@ enum rpma_flush_type {
  * - RPMA_FLUSH_TYPE_PERSISTENT - flush data down to the persistent domain
  * - RPMA_FLUSH_TYPE_VISIBILITY - flush data deep enough to make it visible
  * on the remote node
+ *
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * -RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * RETURN VALUE
  * The rpma_flush() function returns 0 on success or a negative
@@ -1906,6 +1951,10 @@ int rpma_flush(struct rpma_conn *conn,
  *
  *	struct rpma_conn;
  *	struct rpma_mr_local;
+ *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_send(struct rpma_conn *conn,
  *			const struct rpma_mr_local *src, size_t offset,
  *			size_t len, int flags, const void *op_context);
@@ -1913,6 +1962,10 @@ int rpma_flush(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_send() initiates the send operation which transfers a message from
  * the local memory to other side of the connection.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * -RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * RETURN VALUE
  * The rpma_send() function returns 0 on success or a negative
@@ -1941,6 +1994,10 @@ int rpma_send(struct rpma_conn *conn,
  *
  *	struct rpma_conn;
  *	struct rpma_mr_local;
+ *
+ *	#define RPMA_F_COMPLETION_ON_ERROR (1 << 0)
+ *	#define RPMA_F_COMPLETION_ALWAYS (1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+ *
  *	int rpma_recv(struct rpma_conn *conn,
  *			struct rpma_mr_local *dst, size_t offset,
  *			size_t len, const void *op_context);
@@ -1957,6 +2014,11 @@ int rpma_send(struct rpma_conn *conn,
  *
  * The order of buffers in the set does not affect the order of completions of
  * receive operations get via rpma_conn_next_completion(3).
+ *
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate operation completion on error
+ * -RPMA_F_COMPLETION_ALWAYS - generate operation completion regardless
+ * of its result
  *
  * NOTE
  * In the RDMA standard, receive requests form an ordered queue.
@@ -2066,6 +2128,14 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  *
  *	struct rpma_conn;
  *	struct rpma_completion;
+ *	enum rpma_op {
+ *		RPMA_OP_READ,
+ *		RPMA_OP_WRITE,
+ *		RPMA_OP_FLUSH,
+ *		RPMA_OP_SEND,
+ *		RPMA_OP_RECV,
+ *	};
+ *
  *	int rpma_conn_next_completion(struct rpma_conn *conn,
  *			struct rpma_completion *cmpl);
  *
