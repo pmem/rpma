@@ -781,6 +781,14 @@ struct rpma_conn_cfg;
  *
  * - RPMA_E_INVAL - cfg_ptr is NULL
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_delete(3), rpma_conn_cfg_get_cq_size(3),
+ * rpma_conn_cfg_get_rq_size(3), rpma_conn_cfg_get_sq_size(3),
+ * rpma_conn_cfg_get_timeout(3), rpma_conn_cfg_set_cq_size(3),
+ * rpma_conn_cfg_set_rq_size(3), rpma_conn_cfg_set_sq_size(3),
+ * rpma_conn_cfg_set_timeout(3), rpma_conn_req_new(3), rpma_ep_next_conn_req(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
 
@@ -806,6 +814,9 @@ int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
  * rpma_conn_cfg_delete() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
 
@@ -831,6 +842,9 @@ int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
  * rpma_conn_cfg_set_timeout() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg is NULL or timeout_ms < 0
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_timeout(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
 
@@ -857,6 +871,9 @@ int rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms);
  * rpma_conn_cfg_get_timeout() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg or timeout_ms is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_timeout(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
 
@@ -882,6 +899,9 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
  * rpma_conn_cfg_set_cq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_cq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
@@ -908,6 +928,9 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
  * rpma_conn_cfg_get_cq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg or cq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_cq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *cq_size);
@@ -934,6 +957,9 @@ int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
  * rpma_conn_cfg_set_sq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_sq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
 
@@ -960,6 +986,9 @@ int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
  * rpma_conn_cfg_get_sq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg or sq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_sq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *sq_size);
@@ -986,6 +1015,9 @@ int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
  * rpma_conn_cfg_set_rq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_rq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 
@@ -1012,6 +1044,9 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
  * rpma_conn_cfg_get_rq_size() can fail with the following error:
  *
  * - RPMA_E_INVAL - cfg or rq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_rq_size(3) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *rq_size);
@@ -1042,6 +1077,9 @@ struct rpma_conn;
  * rpma_conn_get_event_fd() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or fd is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_next_event(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
 
@@ -1089,6 +1127,9 @@ enum rpma_conn_event {
  * - RPMA_E_UNKNOWN - unexpected event
  * - RPMA_E_PROVIDER - rdma_get_cm_event() or rdma_ack_cm_event() failed
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_conn_disconnect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
 
@@ -1118,6 +1159,9 @@ int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
  *
  * ERRORS
  * rpma_utils_conn_event_2str() can not fail.
+ *
+ * SEE ALSO
+ * rpma_conn_next_event(3) and https://pmem.io/rpma/
  */
 const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
 
@@ -1152,6 +1196,8 @@ struct rpma_conn_private_data {
  *
  * - RPMA_E_INVAL - conn or pdata is NULL
  *
+ * SEE ALSO
+ * rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
@@ -1181,6 +1227,9 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
  * rpma_conn_apply_remote_peer_cfg() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or pcfg are NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_peer_cfg_new(3) and https://pmem.io/rpma/
  */
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
@@ -1208,6 +1257,9 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
  *
  * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_PROVIDER - rdma_disconnect() failed
+ *
+ * SEE ALSO
+ * rpma_conn_delete(3), rpma_conn_next_event(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_disconnect(struct rpma_conn *conn);
 
@@ -1233,6 +1285,9 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  * rpma_conn_delete() can fail with the following errors:
  * - RPMA_E_INVAL - conn_ptr is NULL
  * - RPMA_E_PROVIDER - ibv_destroy_cq() or rdma_destroy_id() failed
+ *
+ * SEE ALSO
+ * rpma_conn_disconnect(3), rpma_conn_req_connect(3) and https://pmem.io/rpma/
  */
 int rpma_conn_delete(struct rpma_conn **conn_ptr);
 
@@ -1271,6 +1326,11 @@ struct rpma_conn_req;
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_create_id(3), rdma_resolve_addr(3),
  *   rdma_resolve_route(3) or ibv_create_cq(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_req_connect(3), rpma_conn_req_delete(3),
+ * rpma_conn_req_recv(3), rpma_ep_next_conn_req(3), rpma_peer_new(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		const char *port, const struct rpma_conn_cfg *cfg,
@@ -1303,6 +1363,9 @@ int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
  *	- rdma_destroy_qp(3) or ibv_destroy_cq(3) failed
  *	- rdma_reject(3) or rdma_ack_cm_event(3) failed (passive side only)
  *	- rdma_destroy_id(3) failed (active side only)
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3) and https://pmem.io/rpma/
  */
 int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
 
@@ -1341,6 +1404,15 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * - RPMA_E_PROVIDER - accepting the connection request failed
  * (passive side only)
  * - RPMA_E_PROVIDER - freeing a communication event failed (passive side only)
+ *
+ * SEE ALSO
+ * rpma_conn_apply_remote_peer_cfg(3), rpma_conn_delete(3),
+ * rpma_conn_disconnect(3), rpma_conn_get_completion_fd(3),
+ * rpma_conn_get_event_fd(3), rpma_conn_get_private_data(3),
+ * rpma_conn_next_completion(3), rpma_conn_next_event(3),
+ * rpma_conn_prepare_completions(3), rpma_conn_req_new(3),
+ * rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
+ * rpma_send(3), rpma_write(3), rpma_write_atomic(3) and https://pmem.io/rpma/
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		const struct rpma_conn_private_data *pdata,
@@ -1374,6 +1446,9 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  * - RPMA_E_INVAL - req or src or op_context is NULL
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_conn_req_recv(struct rpma_conn_req *req,
 		struct rpma_mr_local *dst, size_t offset,
