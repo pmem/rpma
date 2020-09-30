@@ -157,6 +157,7 @@
 #define RPMA_E_INVAL		(-100004) /* Invalid argument */
 #define RPMA_E_NO_COMPLETION	(-100005) /* No next completion available */
 #define RPMA_E_NO_EVENT		(-100006) /* No next event available */
+#define RPMA_E_EGAIN		(-100007) /* Temporary error */
 
 /* picking up an RDMA-capable device */
 
@@ -1966,7 +1967,7 @@ enum rpma_log_threshold {
  * - RPMA_E_INVAL - threshold is not RPMA_LOG_THRESHOLD nor
  * RPMA_LOG_THRESHOLD_AUX
  * - RPMA_E_INVAL - level is not a value defined by enum rpma_log_level type
- * - RPMA_E_UNKNOWN - unknown error occurred
+ * - RPMA_E_EGAIN - temporary error occurred - retry may fix the problem
  */
 int rpma_log_set_threshold(enum rpma_log_threshold threshold,
 				enum rpma_log_level level);
@@ -2060,7 +2061,7 @@ typedef void rpma_log_function(
  * on failure.
  *
  * ERRORS
- * - RPMA_E_UNKNOWN - unknown error occurred
+ * - RPMA_E_EGAIN - temporary error occurred - retry may fix the problem
  *
  * NOTE
  * The logging messages on the levels above the RPMA_LOG_THRESHOLD
