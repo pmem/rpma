@@ -81,9 +81,9 @@
  * The client, in order to establish a connection, has to perform the following
  * steps:
  *
- * - rpma_conn_req_new - create a new outgoing connection request object
- * - rpma_conn_req_connect - initiate processing the connection request
- * - rpma_conn_next_event - wait for the RPMA_CONN_ESTABLISHED event
+ * - rpma_conn_req_new() - create a new outgoing connection request object
+ * - rpma_conn_req_connect() - initiate processing the connection request
+ * - rpma_conn_next_event() - wait for the RPMA_CONN_ESTABLISHED event
  *
  * After establishing the connection both peers can perform
  * Remote Memory Access and/or Messaging over the connection.
@@ -91,9 +91,9 @@
  * The client, in order to close a connection, has to perform the following
  * steps:
  *
- * - rpma_conn_disconnect - initiate disconnection
- * - rpma_conn_next_event - wait for the RPMA_CONN_CLOSED event
- * - rpma_conn_delete - delete the closed connection
+ * - rpma_conn_disconnect() - initiate disconnection
+ * - rpma_conn_next_event() - wait for the RPMA_CONN_CLOSED event
+ * - rpma_conn_delete() - delete the closed connection
  *
  * SERVER OPERATION
  *
