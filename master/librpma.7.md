@@ -81,19 +81,36 @@ https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
 CLIENT OPERATION
 ================
 
-Elaborate XXX
+A client is the active side of the process of establishing a connection.
+A role of the peer during the process of establishing connection does
+not determine direction of the data flow (neither via Remote Memory
+Access nor via Messaging). After establishing the connection both peers
+have the same capabilities.
 
--   rpma\_conn\_req\_new - XXX
+The client, in order to establish a connection, has to perform the
+following steps:
 
--   rpma\_conn\_req\_connect - XXX
+-   **rpma\_conn\_req\_new**() - create a new outgoing connection
+    request object
 
--   rpma\_conn\_next\_event - XXX
+-   **rpma\_conn\_req\_connect**() - initiate processing the connection
+    request
 
--   rpma\_conn\_disconnect - XXX
+-   **rpma\_conn\_next\_event**() - wait for the RPMA\_CONN\_ESTABLISHED
+    event
 
--   rpma\_conn\_next\_event - XXX
+After establishing the connection both peers can perform Remote Memory
+Access and/or Messaging over the connection.
 
--   rpma\_conn\_delete - XXX
+The client, in order to close a connection, has to perform the following
+steps:
+
+-   **rpma\_conn\_disconnect**() - initiate disconnection
+
+-   **rpma\_conn\_next\_event**() - wait for the RPMA\_CONN\_CLOSED
+    event
+
+-   **rpma\_conn\_delete**() - delete the closed connection
 
 SERVER OPERATION
 ================

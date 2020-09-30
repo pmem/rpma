@@ -12,7 +12,8 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_req\_connect** - connect the connection request
+**rpma\_conn\_req\_connect** - initiate processing the connection
+request
 
 SYNOPSIS
 ========
@@ -29,8 +30,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_req\_connect**() connects the connection requests both
-incoming and outgoing.
+**rpma\_conn\_req\_connect**() initiates processing the connection
+requests both incoming and outgoing. The end of processing is signalled
+by the RPMA\_CONN\_ESTABLISHED event via **rpma\_conn\_next\_event**().
 
 RETURN VALUE
 ============
