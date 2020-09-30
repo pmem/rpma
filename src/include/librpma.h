@@ -1596,6 +1596,10 @@ struct rpma_ep;
  * - RPMA_E_PROVIDER - rdma_create_event_channel(3), rdma_create_id(3),
  *   rdma_getaddrinfo(3), rdma_listen(3) failed
  * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_ep_get_fd(3), rpma_ep_next_conn_req(3), rpma_ep_shutdown(3),
+ * rpma_peer_new(3) and https://pmem.io/rpma/
  */
 int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
 		const char *port, struct rpma_ep **ep_ptr);
@@ -1624,6 +1628,9 @@ int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
  *
  * - RPMA_E_INVAL - ep_ptr is NULL
  * - RPMA_E_PROVIDER - rdma_destroy_id(3) failed
+ *
+ * SEE ALSO
+ * rpma_ep_listen(3) and https://pmem.io/rpma/
  */
 int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
 
@@ -1649,6 +1656,9 @@ int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
  * rpma_ep_get_fd() can fail with the following error:
  *
  * - RPMA_E_INVAL - ep or fd is NULL
+ *
+ * SEE ALSO
+ * rpma_ep_listen(3) and https://pmem.io/rpma/
  */
 int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
@@ -1683,6 +1693,10 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
  * - RPMA_E_PROVIDER - rdma_get_cm_event(3) failed
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_NO_EVENT - no next connection request available
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_req_delete(3), rpma_conn_req_connect(3),
+ * rpma_ep_listen(3) and https://pmem.io/rpma/
  */
 int rpma_ep_next_conn_req(struct rpma_ep *ep,
 		const struct rpma_conn_cfg *cfg,
@@ -1724,6 +1738,10 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * - RPMA_E_INVAL - conn, dst or src is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_read(struct rpma_conn *conn,
 		struct rpma_mr_local *dst, size_t dst_offset,
@@ -1759,6 +1777,10 @@ int rpma_read(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn, dst or src is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_write(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
@@ -1799,6 +1821,10 @@ int rpma_write(struct rpma_conn *conn,
  * - RPMA_E_INVAL - dst_offset is not aligned to 8 bytes
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), rpma_mr_remote_from_descriptor(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_write_atomic(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
@@ -1855,6 +1881,10 @@ enum rpma_flush_type {
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  * - RPMA_E_NOSUPP - type is RPMA_FLUSH_TYPE_PERSISTENT and
  * the direct write to pmem is not supported
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_remote_from_descriptor(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_flush(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
@@ -1887,6 +1917,9 @@ int rpma_flush(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or src is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_send(struct rpma_conn *conn,
 		const struct rpma_mr_local *src, size_t offset, size_t len,
@@ -1931,6 +1964,9 @@ int rpma_send(struct rpma_conn *conn,
  *
  * - RPMA_E_INVAL - conn or src is NULL
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3) and https://pmem.io/rpma/
  */
 int rpma_recv(struct rpma_conn *conn,
 		struct rpma_mr_local *dst, size_t offset, size_t len,
