@@ -15,7 +15,12 @@
 #include "log_default.h"
 #include "log_internal.h"
 
+#ifdef TEST_MOCK_COMPARE_AND_SWAP
 #include "cmocka-compare_and_swap.h"
+#else
+#define sync_bool_compare_and_swap_void __sync_bool_compare_and_swap
+#define sync_bool_compare_and_swap_int __sync_bool_compare_and_swap
+#endif
 
 /*
  * Default levels of the logging thresholds
@@ -104,6 +109,7 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
+
 	enum rpma_log_level level_old = Rpma_log_threshold[threshold];
 
 	if (sync_bool_compare_and_swap_int(
@@ -118,7 +124,7 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
  */
 int
 rpma_log_get_threshold(enum rpma_log_threshold threshold,
-			enum rpma_log_level *level)
+		enum rpma_log_level *level)
 {
 	if (threshold != RPMA_LOG_THRESHOLD &&
 			threshold != RPMA_LOG_THRESHOLD_AUX)
