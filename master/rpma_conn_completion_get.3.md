@@ -36,10 +36,10 @@ DESCRIPTION
 ===========
 
 **rpma\_conn\_completion\_get**() receives the next available completion
-of an already posted operation. All operations are generating completion
-on error. All operations posted with the
-\*\*RPMA\_F\_COMPLETION\_ALWAYS\*\* flag will also generate a completion
-on success. The following operations are available:
+of an already posted operation. All operations generate completion on
+error. The operations posted with the
+\*\*RPMA\_F\_COMPLETION\_ALWAYS\*\* flag also generate a completion on
+success. The following operations are available:
 
 -   RPMA\_OP\_READ - RMA read operation
 

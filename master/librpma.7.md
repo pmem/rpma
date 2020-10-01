@@ -230,20 +230,58 @@ completion is generated.
 COMPLETIONS
 ===========
 
--   **rpma\_conn\_completion\_wait**() - XXX
+RDMA operations generate complitions that notify a user that the
+respective operation has been completed.
 
--   **rpma\_conn\_completion\_get**() - XXX
+The following operations are available in librpma:
+
+-   RPMA\_OP\_READ - RMA read operation
+
+-   RPMA\_OP\_WRITE - RMA write operation
+
+-   RPMA\_OP\_FLUSH - RMA flush operation
+
+-   RPMA\_OP\_SEND - messaging send operation
+
+-   RPMA\_OP\_RECV - messaging receive operation
+
+All operations generate completion on error. The operations posted with
+the \*\*RPMA\_F\_COMPLETION\_ALWAYS\*\* flag also generate a completion
+on success. Completion codes are reused from the libibverbs library,
+where the IBV\_WC\_SUCCESS status indicates the successful completion of
+an operation. Completions are collected in the completion queue (CQ)
+(see the \*\*QUEUES, PERFORMANCE AND RESOURCE USE\*\* section for more
+details on queues).
+
+The librpma library implements the following API for handling
+completions:
+
+-   **rpma\_conn\_completion\_wait**() waits for incoming completions.
+    If it succeeds the completions can be collected using
+    **rpma\_conn\_completion\_get**().
+
+-   **rpma\_conn\_completion\_get**() receives the next available
+    completion of an already posted operation.
 
 PEER
 ====
 
-Elaborate XXX
+A peer is an abstraction representing an RDMA-capable device. All other
+RPMA objects have to be created in the context of a peer. A peer allows
+to:
 
--   **rpma\_utils\_get\_ibv\_context**() - XXX
+-   establish connections (Client Operation)
 
--   **rpma\_peer\_new**() - XXX
+-   register memory regions (Memory Management)
 
--   **rpma\_peer\_delete**() - XXX
+-   create endpoints for listening for incoming connections (Server
+    Operation)
+
+At the beginning, in order to create a peer, a user has to obtain an
+RDMA device context by the given IPv4/IPv6 address using
+**rpma\_utils\_get\_ibv\_context**(). Then a new peer object can be
+created using **rpma\_peer\_new**() and deleted using
+**rpma\_peer\_delete**().
 
 SYNCHRONOUS AND ASYNCHRONOUS MODES
 ==================================
@@ -336,7 +374,66 @@ the settings to take effect.
 THREAD SAFETY
 =============
 
-Elaborate XXX
+Most of the core librpma API calls are thread-safe but there are also
+very important exceptions mainly related to connection\'s configuration,
+establishment and tear-down. Here you can find a complete list of NOT
+thread-safe API calls:
+
+-   **rpma\_conn\_apply\_remote\_peer\_cfg**()
+
+-   **rpma\_conn\_cfg\_get\_cq\_size**()
+
+-   **rpma\_conn\_cfg\_get\_rq\_size**()
+
+-   **rpma\_conn\_cfg\_get\_sq\_size**()
+
+-   **rpma\_conn\_cfg\_get\_timeout**()
+
+-   **rpma\_conn\_cfg\_set\_cq\_size**()
+
+-   **rpma\_conn\_cfg\_set\_rq\_size**()
+
+-   **rpma\_conn\_cfg\_set\_sq\_size**()
+
+-   **rpma\_conn\_cfg\_set\_timeout**()
+
+-   **rpma\_conn\_delete**()
+
+-   **rpma\_conn\_disconnect**()
+
+-   **rpma\_conn\_get\_private\_data**()
+
+-   **rpma\_conn\_next\_event**()
+
+-   **rpma\_conn\_req\_connect**()
+
+-   **rpma\_conn\_req\_delete**()
+
+-   **rpma\_conn\_req\_new**()
+
+-   **rpma\_ep\_listen**()
+
+-   **rpma\_ep\_next\_conn\_req**()
+
+-   **rpma\_ep\_shutdown**()
+
+-   **rpma\_peer\_cfg\_get\_descriptor**()
+
+-   **rpma\_peer\_cfg\_get\_descriptor\_size**()
+
+-   **rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**()
+
+-   **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**()
+
+-   **rpma\_utils\_get\_ibv\_context**()
+
+Other librpma API calls are thread-safe. However, creating RPMA library
+resources usually involves dynamic memory allocation and destroying
+resources usually involves a dynamic memory release. The same resource
+cannot be destroyed more than once, at any thread, and a resource cannot
+be used after it was destroyed. It is the user\'s responsibility to
+follow those rules and not doing so may result in a segmentation fault
+or undefined behaviour.
 
 ON-DEMAND PAGING SUPPORT
 
