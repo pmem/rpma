@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-write_atomic.c -- the rpma_write_atomic() unit tests
+ * conn-write_atomic.c -- the rpma_write_atomic() unit tests
  *
  * APIs covered:
  * - rpma_write_atomic()

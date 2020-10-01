@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-new.c -- the connection new/delete unit tests
+ * conn-new.c -- the connection new/delete unit tests
  *
  * APIs covered:
  * - rpma_conn_new()

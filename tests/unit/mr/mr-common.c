@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * mr-test-common.c -- the memory region unit tests's common functions
+ * mr-common.c -- the memory region unit tests's common functions
  */
 
 #include "mocks-ibverbs.h"

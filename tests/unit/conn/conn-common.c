@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-common.c -- the connection unit tests common functions
+ * conn-common.c -- the connection unit tests common functions
  */
 
 #include <string.h>

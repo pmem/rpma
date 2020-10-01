@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-get_event_fd.c -- the connection get_event_fd unit tests
+ * conn-get_event_fd.c -- the connection get_event_fd unit tests
  *
  * API covered:
  * - rpma_conn_get_event_fd()

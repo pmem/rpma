@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-disconnect.c -- the connection disconnect unit tests
+ * conn-disconnect.c -- the connection disconnect unit tests
  *
  * API covered:
  * - rpma_conn_disconnect()

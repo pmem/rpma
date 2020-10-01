@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-write.c -- the rpma_write() unit tests
+ * conn-write.c -- the rpma_write() unit tests
  *
  * APIs covered:
  * - rpma_write()

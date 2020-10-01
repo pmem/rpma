@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * mr-test-reg.c -- the memory region registration/deregistration unit tests
+ * mr-reg.c -- the memory region registration/deregistration unit tests
  *
  * APIs covered:
  * - rpma_mr_reg()

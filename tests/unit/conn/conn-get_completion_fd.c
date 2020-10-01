@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-get_completion_fd.c -- the connection get_completion_fd unit tests
+ * conn-get_completion_fd.c -- the connection get_completion_fd unit tests
  *
  * API covered:
  * - rpma_conn_get_completion_fd()

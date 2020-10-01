@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-next-event.c -- the connection next_event unit tests
+ * conn-next-event.c -- the connection next_event unit tests
  *
  * API covered:
  * - rpma_conn_next_event()
