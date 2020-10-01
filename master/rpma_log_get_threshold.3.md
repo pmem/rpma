@@ -48,5 +48,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_log\_set\_function**(3), **rpma\_log\_set\_threshold**(3) and
-https://pmem.io/rpma/
+**rpma\_log\_set\_function**(3), **rpma\_log\_set\_threshold**(3),
+**librpma**(7) and https://pmem.io/rpma/

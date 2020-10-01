@@ -52,4 +52,5 @@ following errors:
 SEE ALSO
 ========
 
-**rpma\_utils\_get\_ibv\_context**(3) and https://pmem.io/rpma/
+**rpma\_utils\_get\_ibv\_context**(3), **librpma**(7) and
+https://pmem.io/rpma/

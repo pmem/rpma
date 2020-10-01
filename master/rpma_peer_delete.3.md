@@ -51,4 +51,4 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_peer\_new**(3) and https://pmem.io/rpma/
+**rpma\_peer\_new**(3), **librpma**(7) and https://pmem.io/rpma/

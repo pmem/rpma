@@ -47,5 +47,5 @@ error:
 SEE ALSO
 ========
 
-**rpma\_peer\_cfg\_from\_descriptor**(3), **rpma\_peer\_cfg\_new**(3)
-and https://pmem.io/rpma/
+**rpma\_peer\_cfg\_from\_descriptor**(3), **rpma\_peer\_cfg\_new**(3),
+**librpma**(7) and https://pmem.io/rpma/

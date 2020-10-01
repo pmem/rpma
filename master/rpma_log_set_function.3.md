@@ -86,5 +86,5 @@ The user defined function must be thread-safe.
 SEE ALSO
 ========
 
-**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_threshold**(3) and
-https://pmem.io/rpma/
+**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_threshold**(3),
+**librpma**(7) and https://pmem.io/rpma/

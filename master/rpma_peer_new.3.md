@@ -59,4 +59,5 @@ SEE ALSO
 
 **rpma\_conn\_req\_new**(3), **rpma\_ep\_listen**(3),
 **rpma\_mr\_reg**(3), **rpma\_peer\_delete**(3),
-**rpma\_utils\_get\_ibv\_context**(3) and https://pmem.io/rpma/
+**rpma\_utils\_get\_ibv\_context**(3), **librpma**(7) and
+https://pmem.io/rpma/

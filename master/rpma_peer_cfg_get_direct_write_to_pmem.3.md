@@ -48,5 +48,5 @@ SEE ALSO
 ========
 
 **rpma\_peer\_cfg\_from\_descriptor**(3), **rpma\_peer\_cfg\_new**(3),
-**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3) and
+**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3), **librpma**(7) and
 https://pmem.io/rpma/

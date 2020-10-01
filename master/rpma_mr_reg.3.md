@@ -21,6 +21,7 @@ SYNOPSIS
 
           struct rpma_peer;
           struct rpma_mr_local;
+
           int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
                   int usage, struct rpma_mr_local **mr_ptr);
 
@@ -28,7 +29,31 @@ DESCRIPTION
 ===========
 
 **rpma\_mr\_reg**() registers a memory region and creates a local memory
-registration object.
+registration object. The usage parameter specifies the operations that
+can be performed on the given memory region which should be expressed as
+bitwise-inclusive OR of the following:
+
+-   RPMA\_MR\_USAGE\_READ\_SRC - memory used as a source of the read
+    operation
+
+-   RPMA\_MR\_USAGE\_READ\_DST - memory used as a destination of the
+    read operation
+
+-   RPMA\_MR\_USAGE\_WRITE\_SRC - memory used as a source of the write
+    operation
+
+-   RPMA\_MR\_USAGE\_WRITE\_DST - memory used as a destination of the
+    write operation
+
+-   RPMA\_MR\_USAGE\_FLUSH\_TYPE\_VISIBILITY - memory with available
+    flush operation
+
+-   RPMA\_MR\_USAGE\_FLUSH\_TYPE\_PERSISTENT - memory with available
+    persistent flush operation
+
+-   RPMA\_MR\_USAGE\_SEND - memory used for send operation
+
+-   RPMA\_MR\_USAGE\_RECV - memory used for receive operation
 
 RETURN VALUE
 ============
@@ -57,4 +82,5 @@ SEE ALSO
 **rpma\_mr\_get\_descriptor**(3),
 **rpma\_mr\_get\_descriptor\_size**(3), **rpma\_peer\_new**(3),
 **rpma\_read**(3), **rpma\_recv**(3), **rpma\_send**(3),
-**rpma\_write**(3), **rpma\_write\_atomic**(3) and https://pmem.io/rpma/
+**rpma\_write**(3), **rpma\_write\_atomic**(3), **librpma**(7) and
+https://pmem.io/rpma/

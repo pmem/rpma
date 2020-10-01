@@ -44,6 +44,13 @@ operation:
 -   RPMA\_FLUSH\_TYPE\_VISIBILITY - flush data deep enough to make it
     visible on the remote node
 
+The attribute flags set the completion notification indicator:
+
+-   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+
+-   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+    result of the operation
+
 RETURN VALUE
 ============
 
@@ -70,4 +77,5 @@ SEE ALSO
 ========
 
 **rpma\_conn\_req\_connect**(3),
-**rpma\_mr\_remote\_from\_descriptor**(3) and https://pmem.io/rpma/
+**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+https://pmem.io/rpma/

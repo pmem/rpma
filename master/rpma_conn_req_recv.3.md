@@ -29,7 +29,7 @@ DESCRIPTION
 ===========
 
 **rpma\_conn\_req\_recv**() initiates the receive operation. It prepares
-a buffer for a message send from other side of the connection. Please
+a buffer for a message sent from other side of the connection. Please
 see **rpma\_send**(3). This is a variant of **rpma\_recv**(3) which may
 be used before the connection is established.
 
@@ -51,5 +51,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_req\_new**(3), **rpma\_mr\_reg**(3) and
+**rpma\_conn\_req\_new**(3), **rpma\_mr\_reg**(3), **librpma**(7) and
 https://pmem.io/rpma/

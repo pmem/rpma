@@ -44,4 +44,4 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_ep\_listen**(3) and https://pmem.io/rpma/
+**rpma\_ep\_listen**(3), **librpma**(7) and https://pmem.io/rpma/

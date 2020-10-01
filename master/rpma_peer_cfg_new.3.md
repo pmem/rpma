@@ -52,5 +52,5 @@ SEE ALSO
 **rpma\_peer\_cfg\_get\_descriptor**(3),
 **rpma\_peer\_cfg\_get\_descriptor\_size**(3),
 **rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**(3),
-**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3) and
+**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**(3), **librpma**(7) and
 https://pmem.io/rpma/

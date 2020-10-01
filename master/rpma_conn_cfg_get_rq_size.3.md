@@ -47,5 +47,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_cfg\_set\_rq\_size**(3) and
-https://pmem.io/rpma/
+**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_cfg\_set\_rq\_size**(3),
+**librpma**(7) and https://pmem.io/rpma/

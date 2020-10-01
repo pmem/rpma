@@ -29,7 +29,7 @@ DESCRIPTION
 ===========
 
 **rpma\_recv**() initiates the receive operation which prepares a buffer
-for a message send from other side of the connection. Please see
+for a message sent from other side of the connection. Please see
 **rpma\_send**(3).
 
 All buffers prepared via **rpma\_recv**(3) form an unordered set. When a
@@ -40,6 +40,13 @@ A buffer for an incoming message have to be prepared beforehand.
 
 The order of buffers in the set does not affect the order of completions
 of receive operations get via **rpma\_conn\_next\_completion**(3).
+
+The attribute flags set the completion notification indicator:
+
+-   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+
+-   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+    result of the operation
 
 NOTE
 ====
@@ -65,5 +72,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3) and
-https://pmem.io/rpma/
+**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3), **librpma**(7)
+and https://pmem.io/rpma/

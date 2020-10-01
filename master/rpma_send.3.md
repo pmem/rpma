@@ -29,7 +29,13 @@ DESCRIPTION
 ===========
 
 **rpma\_send**() initiates the send operation which transfers a message
-from the local memory to other side of the connection.
+from the local memory to other side of the connection. The attribute
+flags set the completion notification indicator:
+
+-   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+
+-   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+    result of the operation
 
 RETURN VALUE
 ============
@@ -51,5 +57,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3) and
-https://pmem.io/rpma/
+**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3), **librpma**(7)
+and https://pmem.io/rpma/
