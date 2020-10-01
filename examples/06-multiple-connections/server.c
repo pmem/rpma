@@ -219,7 +219,7 @@ client_handle_completion(struct custom_event *ce)
 
 	/* get next completion */
 	struct rpma_completion cmpl;
-	ret = rpma_conn_next_completion(clnt->conn, &cmpl);
+	ret = rpma_conn_completion_get(clnt->conn, &cmpl);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
