@@ -30,9 +30,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_read**() initiates the read operation (transferring data from
-the remote memory to the local memory). The attribute flags set the
-completion notification indicator:
+**rpma\_read**() initiates transferring data from the remote memory to
+the local memory. The attribute flags set the completion notification
+indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
 

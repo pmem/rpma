@@ -30,9 +30,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_write**() initiates the write operation (transferring data from
-the local memory to the remote memory). The attribute flags set the
-completion notification indicator:
+**rpma\_write**() initiates transferring data from the local memory to
+the remote memory. The attribute flags set the completion notification
+indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
 

@@ -31,13 +31,40 @@ Elaborate XXX
 REMOTE MEMORY ACCESS
 ====================
 
--   **rpma\_read**() - XXX
+The librpma library implements four basic API calls dedicated for
+accessing a remote memory:
 
--   **rpma\_write**() - XXX
+-   **rpma\_read**() - initiates transferring data from the remote
+    memory to the local memory,
 
--   **rpma\_write\_atomic**() - XXX
+-   **rpma\_write**() - initiates transferring data from the local
+    memory to the remote memory),
 
--   **rpma\_flush**() - XXX
+-   **rpma\_write\_atomic**() - works like **rpma\_write**(), but it
+    allows transferring 8 bytes of data (RPMA\_ATOMIC\_WRITE\_ALIGNMENT)
+    and storing them atomically in the remote memory (see
+    **rpma\_write\_atomic**(3) for details and restrictions), and:
+
+-   **rpma\_flush**() - initiates finalizing a transfer of data to the
+    remote memory. Possible types of **rpma\_flush**() operation:
+
+    -   RPMA\_FLUSH\_TYPE\_PERSISTENT - flush data down to the
+        persistent domain,
+
+    -   RPMA\_FLUSH\_TYPE\_VISIBILITY - flush data deep enough to make
+        it visible on the remote node.
+
+All the above functions use the attribute flags to set the completion
+notification indicator:
+
+-   RPMA\_F\_COMPLETION\_ON\_ERROR - generates the completion only on
+    error
+
+-   RPMA\_F\_COMPLETION\_ALWAYS - generates the completion regardless of
+    a result of the operation.
+
+All of these operations are considered as finished when the respective
+completion is generated.
 
 DIRECT WRITE TO PMEM
 ====================
