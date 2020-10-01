@@ -222,11 +222,17 @@
  *
  * PEER
  *
- * Elaborate XXX
+ * A peer is an abstraction representing an RDMA-capable device.
+ * All other RPMA objects have to be created in the context of a peer.
+ * A peer allows to:
+ * - establish connections (Client Operation)
+ * - register memory regions (Memory Management)
+ * - create endpoints for listening for incoming connections (Server Operation)
  *
- * - rpma_utils_get_ibv_context() - XXX
- * - rpma_peer_new() - XXX
- * - rpma_peer_delete() - XXX
+ * At the beginning, in order to create a peer, a user has to obtain
+ * an RDMA device context by the given IPv4/IPv6 address using
+ * rpma_utils_get_ibv_context(). Then a new peer object can be created
+ * using rpma_peer_new() and deleted using rpma_peer_delete().
  *
  * SYNCHRONOUS AND ASYNCHRONOUS MODES
  * By default, all endpoints and connections operate in the synchronous mode
