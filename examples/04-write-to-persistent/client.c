@@ -240,7 +240,7 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
-	ret = rpma_conn_next_completion(conn, &cmpl);
+	ret = rpma_conn_completion_get(conn, &cmpl);
 	if (ret)
 		goto err_mr_remote_delete;
 

@@ -9,13 +9,13 @@ rpma_conn_cfg_set_cq_size.3
 rpma_conn_cfg_set_rq_size.3
 rpma_conn_cfg_set_sq_size.3
 rpma_conn_cfg_set_timeout.3
+rpma_conn_completion_get.3
 rpma_conn_completion_wait.3
 rpma_conn_delete.3
 rpma_conn_disconnect.3
 rpma_conn_get_completion_fd.3
 rpma_conn_get_event_fd.3
 rpma_conn_get_private_data.3
-rpma_conn_next_completion.3
 rpma_conn_next_event.3
 rpma_conn_req_connect.3
 rpma_conn_req_delete.3

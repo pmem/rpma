@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_completion_wait(conn)))
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
+	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 		goto err_mr_remote_delete;
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
@@ -174,7 +174,7 @@ main(int argc, char *argv[])
 		if ((ret = rpma_conn_completion_wait(conn)))
 			break;
 
-		if ((ret = rpma_conn_next_completion(conn, &cmpl)))
+		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 			break;
 
 		if (cmpl.op_status != IBV_WC_SUCCESS) {
