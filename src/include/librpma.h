@@ -176,7 +176,7 @@
  *
  * COMPLETIONS
  *
- * - rpma_conn_prepare_completions() - XXX
+ * - rpma_conn_completion_wait() - XXX
  * - rpma_conn_next_completion() - XXX
  *
  * PEER
@@ -192,7 +192,7 @@
  * where:
  *
  * - rpma_ep_next_conn_req(),
- * - rpma_conn_prepare_completions() and
+ * - rpma_conn_completion_wait() and
  * - rpma_conn_get_next_event()
  *
  * are blocking calls. You can make those API calls non-blocking by modifying
@@ -200,7 +200,7 @@
  *
  * - rpma_ep_get_fd() - provides a file descriptor for rpma_ep_next_conn_req()
  * - rpma_conn_get_completion_fd() - provides a file descriptor for
- * rpma_conn_prepare_completions()
+ * rpma_conn_completion_wait()
  * - rpma_conn_get_event_fd() - provides a file descriptor for
  * rpma_conn_get_next_event()
  *
@@ -1633,7 +1633,7 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * rpma_conn_disconnect(3), rpma_conn_get_completion_fd(3),
  * rpma_conn_get_event_fd(3), rpma_conn_get_private_data(3),
  * rpma_conn_next_completion(3), rpma_conn_next_event(3),
- * rpma_conn_prepare_completions(3), rpma_conn_req_new(3),
+ * rpma_conn_completion_wait(3), rpma_conn_req_new(3),
  * rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
  * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
  * https://pmem.io/rpma/
@@ -2143,7 +2143,7 @@ int rpma_recv(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or fd is NULL
  *
  * SEE ALSO
- * rpma_conn_next_completion(3), rpma_conn_prepare_completions(3),
+ * rpma_conn_next_completion(3), rpma_conn_completion_wait(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
@@ -2164,25 +2164,25 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_prepare_completions - wait for completions
+ * rpma_conn_completion_wait - wait for completions
  *
  * SYNOPSIS
  *
  *	#include <librpma.h>
  *
  *	struct rpma_conn;
- *	int rpma_conn_prepare_completions(struct rpma_conn *conn);
+ *	int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  * DESCRIPTION
- * rpma_conn_prepare_completions() waits for incoming completions. If it
+ * rpma_conn_completion_wait() waits for incoming completions. If it
  * succeeds the completions can be collected using rpma_conn_next_completion().
  *
  * RETURN VALUE
- * The rpma_conn_prepare_completions() function returns 0 on success
+ * The rpma_conn_completion_wait() function returns 0 on success
  * or a negative error code on failure.
  *
  * ERRORS
- * rpma_conn_prepare_completions() can fail with the following errors:
+ * rpma_conn_completion_wait() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
@@ -2192,7 +2192,7 @@ struct rpma_completion {
  * rpma_conn_get_completion_fd(3), rpma_conn_next_completion(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
  */
-int rpma_conn_prepare_completions(struct rpma_conn *conn);
+int rpma_conn_completion_wait(struct rpma_conn *conn);
 
 /** 3
  * rpma_conn_next_completion - receive a completion of an operation
@@ -2240,7 +2240,7 @@ int rpma_conn_prepare_completions(struct rpma_conn *conn);
  * - RPMA_E_NOSUPP - not supported opcode
  *
  * SEE ALSO
- * rpma_conn_get_completion_fd(3), rpma_conn_prepare_completions(3),
+ * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
  * rpma_conn_req_connect(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
  * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
  * https://pmem.io/rpma/

@@ -167,7 +167,7 @@ test_client__success(void **unused)
 	expect_value(rdma_ack_cm_event, event, &f_event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 
-	/* configure mocks for rpma_conn_prepare_completions() */
+	/* configure mocks for rpma_conn_completion_wait() */
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_get_cq_event, MOCK_OK);
 	expect_value(ibv_ack_cq_events, cq, MOCK_CQ);
