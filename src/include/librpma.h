@@ -66,34 +66,28 @@
  *
  * DIRECT WRITE TO PMEM
  *
- * .B Direct Write to PMem
- * is a feature of a platform and its configuration which allows an RDMA-capable
- * network interface to write data to platform's PMem in a persistent way.
- * It may be impossible because of e.g. caching mechanisms existing
- * on the data's way. When
- * .B Direct Write to PMem
- * is impossible, operating in the way assuming it is possible may corrupt data
- * on PMem, so this is why
- * .B Direct Write to PMem
- * is not enabled by default.
+ * \f[B]Direct Write to PMem\f[R] is a feature of a platform and
+ * its configuration which allows an RDMA-capable network interface to write
+ * data to platform's PMem in a persistent way. It may be impossible because
+ * of e.g. caching mechanisms existing on the data's way. When \f[B]Direct Write
+ * to PMem\f[R] is impossible, operating in the way assuming it is possible may
+ * corrupt data on PMem, so this is why \f[B]Direct Write to PMem\f[R] is not
+ * enabled by default.
  *
  * On the current Intel platforms, the only thing you have to do in order
- * to enable
- * .B Direct Write to PMem
- * is turning off Intel Direct Data I/O (DDIO). Sometimes, you can turn off DDIO
- * either globally for the whole platform or for a specific PCIe Root Port.
+ * to enable \f[B]Direct Write to PMem\f[R] is turning off
+ * Intel Direct Data I/O (DDIO). Sometimes, you can turn off DDIO either
+ * globally for the whole platform or for a specific PCIe Root Port.
  * For details, please see the manual of your platform.
  *
- * When you have a platform which allows
- * .B Direct Write to PMem,
+ * When you have a platform which allows \f[B]Direct Write to PMem\f[R],
  * you have to declare this is the case in your peer's configuration. The peer's
  * configuration has to be transferred to all the peers which want to execute
  * rpma_flush() with RPMA_FLUSH_TYPE_PERSISTENT against the platform's PMem and
  * applied to the connection object which safeguards access to PMem.
  *
- * - rpma_peer_cfg_set_direct_write_to_pmem() - declare
- * .B Direct Write to PMem
- * support
+ * - rpma_peer_cfg_set_direct_write_to_pmem() - declare \f[B]Direct Write
+ * to PMem\f[R] support
  * - rpma_peer_cfg_get_descriptor() - get the descriptor of the peer
  * configuration
  * - rpma_peer_cfg_from_descriptor() - create a peer configuration from
@@ -211,11 +205,11 @@
  * - RPMA_OP_RECV - messaging receive operation
  *
  * All operations generate completion on error. The operations posted
- * with the **RPMA_F_COMPLETION_ALWAYS** flag also generate a completion
+ * with the \f[B]RPMA_F_COMPLETION_ALWAYS\f[R] flag also generate a completion
  * on success. Completion codes are reused from the libibverbs library,
  * where the IBV_WC_SUCCESS status indicates the successful completion
  * of an operation. Completions are collected in the completion queue (CQ)
- * (see the **QUEUES, PERFORMANCE AND RESOURCE USE** section
+ * (see the \f[B]QUEUES, PERFORMANCE AND RESOURCE USE\f[R] section
  * for more details on queues).
  *
  * The librpma library implements the following API for handling completions:
@@ -271,42 +265,25 @@
  *
  * .SH QUEUES, PERFORMANCE AND RESOURCE USE
  *
- * .B Remote Memory Access
- * operations,
- * .B Messaging
- * operations and their
- * .B Completions
- * consume space in queues allocated in an RDMA-capable network interface (RNIC)
- * hardware for each of the connections. You must be aware of the existence
- * of these queues:
+ * \f[B]Remote Memory Access\f[R] operations, \f[B]Messaging\f[R] operations
+ * and their \f[B]Completions\f[R] consume space in queues allocated
+ * in an RDMA-capable network interface (RNIC) hardware for each
+ * of the connections.
+ * You must be aware of the existence of these queues:
  *
- * - completion queue
- * .B (CQ)
- * where completions of operations are placed,
+ * - completion queue \f[B](CQ)\f[R] where completions of operations are placed,
  * either when a completion was required by a user (RPMA_F_COMPLETION_ALWAYS)
- * or a completion with an error occurred. All
- * .B Remote Memory Access
- * operations and
- * .B Messaging
- * operations can consume
- * .B CQ
- * space.
- * - send queue
- * .B (SQ)
- * where all
- * .B Remote Memory Access
+ * or a completion with an error occurred. All \f[B]Remote Memory Access\f[R]
+ * operations and \f[B]Messaging\f[R] operations can consume \f[B]CQ\f[R] space.
+ * - send queue \f[B](SQ)\f[R] where all \f[B]Remote Memory Access\f[R]
  * operations and rpma_send() operations are placed before they are executed by
  * RNIC.
- * - receive queue
- * .B (RQ)
- * where rpma_recv() entries are placed before they are consumed by
- * the rpma_send() coming from another side of the connection.
+ * - receive queue \f[B](RQ)\f[R] where rpma_recv() entries are placed before
+ * they are consumed by the rpma_send() coming from another side
+ * of the connection.
  *
- * You must assume
- * .B SQ
- * and
- * .B RQ
- * entries occupy the place in their respective queue till:
+ * You must assume \f[B]SQ\f[R] and \f[B]RQ\f[R] entries occupy the place
+ * in their respective queue till:
  *
  * - a respective operation's completion is generated or
  * - a completion of an operation, which was scheduled later, is generated.
@@ -321,12 +298,9 @@
  * RPMA application you can configure the length of each of the queues
  * separately for each of the connections:
  *
- * - rpma_conn_cfg_set_cq_size() - set length of
- * .B CQ
- * - rpma_conn_cfg_set_sq_size() - set length of
- * .B SQ
- * - rpma_conn_cfg_set_rq_size() - set length of
- * .B RQ
+ * - rpma_conn_cfg_set_cq_size() - set length of \f[B]CQ\f[R]
+ * - rpma_conn_cfg_set_sq_size() - set length of \f[B]SQ\f[R]
+ * - rpma_conn_cfg_set_rq_size() - set length of \f[B]RQ\f[R]
  *
  * When the connection configuration object is ready it has to be used for
  * either rpma_conn_req_new() or rpma_ep_next_conn_req() for the settings
@@ -691,7 +665,7 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
 
 /** 3
- * rpma_peer_cfg_get_descriptor_size -- get size of the peer cfg descriptor
+ * rpma_peer_cfg_get_descriptor_size - get size of the peer cfg descriptor
  *
  * SYNOPSIS
  *
@@ -1052,7 +1026,7 @@ int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
 int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
 
 /** 3
- * rpma_mr_remote_get_flush_type -- get a remote memory region's flush types
+ * rpma_mr_remote_get_flush_type - get a remote memory region's flush types
  *
  * SYNOPSIS
  *
