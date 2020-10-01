@@ -12,8 +12,8 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_mr\_remote\_get\_flush\_type \-- get a remote memory region\'s
-flush types**
+**rpma\_mr\_remote\_get\_flush\_type** - get a remote memory region\'s
+flush types
 
 SYNOPSIS
 ========
@@ -27,27 +27,27 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_mr\_remote\_get\_flush\_type() gets flush types supported** by
+**rpma\_mr\_remote\_get\_flush\_type**() gets flush types supported by
 the remote memory region.
 
 RETURN VALUE
 ============
 
-The **rpma\_mr\_remote\_get\_flush\_type() function returns 0 on
-success** or a negative error code on failure.
-**rpma\_mr\_remote\_get\_flush\_type()** does not set \*flush\_type
+The **rpma\_mr\_remote\_get\_flush\_type**() function returns 0 on
+success or a negative error code on failure.
+**rpma\_mr\_remote\_get\_flush\_type**() does not set \*flush\_type
 value on failure.
 
 ERRORS
 ======
 
-**rpma\_mr\_remote\_get\_flush\_type() can fail with the following
-error:**
+**rpma\_mr\_remote\_get\_flush\_type**() can fail with the following
+error:
 
 -   RPMA\_E\_INVAL - mr or flush\_type is NULL
 
 SEE ALSO
 ========
 
-**rpma\_mr\_remote\_from\_descriptor(3), librpma(7) and
-https://pmem.io/rpma/**
+**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+https://pmem.io/rpma/

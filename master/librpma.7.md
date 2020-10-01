@@ -77,7 +77,7 @@ DIRECT WRITE TO PMEM
 configuration which allows an RDMA-capable network interface to write
 data to platform\'s PMem in a persistent way. It may be impossible
 because of e.g. caching mechanisms existing on the data\'s way. When
-**Direct Write to PMem** is impossible, operating in the way assuming it
+**Direct Write** to PMem is impossible, operating in the way assuming it
 is possible may corrupt data on PMem, so this is why **Direct Write to
 PMem** is not enabled by default.
 
@@ -87,7 +87,7 @@ to enable **Direct Write to PMem** is turning off Intel Direct Data I/O
 platform or for a specific PCIe Root Port. For details, please see the
 manual of your platform.
 
-When you have a platform which allows **Direct Write to PMem,** you have
+When you have a platform which allows **Direct Write to PMem**, you have
 to declare this is the case in your peer\'s configuration. The peer\'s
 configuration has to be transferred to all the peers which want to
 execute **rpma\_flush**() with RPMA\_FLUSH\_TYPE\_PERSISTENT against the
@@ -95,7 +95,7 @@ platform\'s PMem and applied to the connection object which safeguards
 access to PMem.
 
 -   **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() - declare
-    **Direct Write to PMem** support
+    **Direct Write** to PMem support
 
 -   **rpma\_peer\_cfg\_get\_descriptor**() - get the descriptor of the
     peer configuration
@@ -250,12 +250,12 @@ The following operations are available in librpma:
 -   RPMA\_OP\_RECV - messaging receive operation
 
 All operations generate completion on error. The operations posted with
-the \*\*RPMA\_F\_COMPLETION\_ALWAYS\*\* flag also generate a completion
-on success. Completion codes are reused from the libibverbs library,
-where the IBV\_WC\_SUCCESS status indicates the successful completion of
-an operation. Completions are collected in the completion queue (CQ)
-(see the \*\*QUEUES, PERFORMANCE AND RESOURCE USE\*\* section for more
-details on queues).
+the **RPMA\_F\_COMPLETION\_ALWAYS** flag also generate a completion on
+success. Completion codes are reused from the libibverbs library, where
+the IBV\_WC\_SUCCESS status indicates the successful completion of an
+operation. Completions are collected in the completion queue (CQ) (see
+the **QUEUES, PERFORMANCE AND RESOURCE USE** section for more details on
+queues).
 
 The librpma library implements the following API for handling
 completions:
