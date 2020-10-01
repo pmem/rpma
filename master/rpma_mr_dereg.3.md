@@ -47,4 +47,4 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_mr\_reg**(3) and https://pmem.io/rpma/
+**rpma\_mr\_reg**(3), **librpma**(7) and https://pmem.io/rpma/

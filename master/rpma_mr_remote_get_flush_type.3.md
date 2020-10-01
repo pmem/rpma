@@ -49,4 +49,5 @@ error:**
 SEE ALSO
 ========
 
-**rpma\_mr\_remote\_from\_descriptor(3) and https://pmem.io/rpma/**
+**rpma\_mr\_remote\_from\_descriptor(3), librpma(7) and
+https://pmem.io/rpma/**

@@ -74,4 +74,4 @@ SEE ALSO
 **rpma\_conn\_prepare\_completions**(3), **rpma\_conn\_req\_new**(3),
 **rpma\_ep\_next\_conn\_req**(3), **rpma\_flush**(3), **rpma\_read**(3),
 **rpma\_recv**(3), **rpma\_send**(3), **rpma\_write**(3),
-**rpma\_write\_atomic**(3) and https://pmem.io/rpma/
+**rpma\_write\_atomic**(3), **librpma**(7) and https://pmem.io/rpma/

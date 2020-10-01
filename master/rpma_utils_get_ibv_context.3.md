@@ -70,5 +70,5 @@ SEE ALSO
 ========
 
 **rpma\_peer\_new**(3),
-**rpma\_utils\_ibv\_context\_is\_odp\_capable**(3) and
+**rpma\_utils\_ibv\_context\_is\_odp\_capable**(3), **librpma**(7) and
 https://pmem.io/rpma/

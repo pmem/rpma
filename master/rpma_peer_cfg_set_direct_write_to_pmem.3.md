@@ -50,4 +50,4 @@ SEE ALSO
 **rpma\_conn\_apply\_remote\_peer\_cfg**(3),
 **rpma\_peer\_cfg\_get\_descriptor**(3),
 **rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**(3),
-**rpma\_peer\_cfg\_new**(3) and https://pmem.io/rpma/
+**rpma\_peer\_cfg\_new**(3), **librpma**(7) and https://pmem.io/rpma/

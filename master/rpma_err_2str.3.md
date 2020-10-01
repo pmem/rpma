@@ -35,4 +35,4 @@ ERRORS
 SEE ALSO
 ========
 
-https://pmem.io/rpma/
+**librpma**(7) and https://pmem.io/rpma/

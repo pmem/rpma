@@ -67,5 +67,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_req\_connect**(3), **rpma\_conn\_disconnect**(3) and
-https://pmem.io/rpma/
+**rpma\_conn\_req\_connect**(3), **rpma\_conn\_disconnect**(3),
+**librpma**(7) and https://pmem.io/rpma/

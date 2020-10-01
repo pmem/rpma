@@ -109,5 +109,5 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_function**(3) and
-https://pmem.io/rpma/
+**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_function**(3),
+**librpma**(7) and https://pmem.io/rpma/

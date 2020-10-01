@@ -55,5 +55,5 @@ SEE ALSO
 ========
 
 **rpma\_ep\_get\_fd**(3), **rpma\_ep\_next\_conn\_req**(3),
-**rpma\_ep\_shutdown**(3), **rpma\_peer\_new**(3) and
+**rpma\_ep\_shutdown**(3), **rpma\_peer\_new**(3), **librpma**(7) and
 https://pmem.io/rpma/

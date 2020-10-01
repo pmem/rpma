@@ -55,4 +55,5 @@ SEE ALSO
 **rpma\_conn\_cfg\_set\_rq\_size**(3),
 **rpma\_conn\_cfg\_set\_sq\_size**(3),
 **rpma\_conn\_cfg\_set\_timeout**(3), **rpma\_conn\_req\_new**(3),
-**rpma\_ep\_next\_conn\_req**(3) and https://pmem.io/rpma/
+**rpma\_ep\_next\_conn\_req**(3), **librpma**(7) and
+https://pmem.io/rpma/

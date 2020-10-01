@@ -49,4 +49,4 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_next\_event**(3) and https://pmem.io/rpma/
+**rpma\_conn\_next\_event**(3), **librpma**(7) and https://pmem.io/rpma/
