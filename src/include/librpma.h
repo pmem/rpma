@@ -35,10 +35,30 @@
  *
  * REMOTE MEMORY ACCESS
  *
- * - rpma_read() - XXX
- * - rpma_write() - XXX
- * - rpma_write_atomic() - XXX
- * - rpma_flush() - XXX
+ * The librpma library implements four basic API calls
+ * dedicated for accessing a remote memory:
+ * - rpma_read() - initiates transferring data from the remote memory
+ *   to the local memory,
+ * - rpma_write() - initiates transferring data from the local memory
+ *   to the remote memory),
+ * - rpma_write_atomic() - works like rpma_write(), but it allows transferring
+ *   8 bytes of data (RPMA_ATOMIC_WRITE_ALIGNMENT) and storing them atomically
+ *   in the remote memory (see rpma_write_atomic(3) for details
+ *   and restrictions), and:
+ * - rpma_flush() - initiates finalizing a transfer of data to the remote
+ *   memory. Possible types of rpma_flush() operation:
+ *   - RPMA_FLUSH_TYPE_PERSISTENT - flush data down to the persistent domain,
+ *   - RPMA_FLUSH_TYPE_VISIBILITY - flush data deep enough to make it visible
+ *   on the remote node.
+ *
+ * All the above functions use the attribute flags to set the completion
+ * notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generates the completion only on error
+ * - RPMA_F_COMPLETION_ALWAYS - generates the completion regardless of a result
+ * of the operation.
+ *
+ * All of these operations are considered as finished
+ * when the respective completion is generated.
  *
  * DIRECT WRITE TO PMEM
  *
@@ -1841,8 +1861,8 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_read() initiates the read operation (transferring data from
- * the remote memory to the local memory).
+ * rpma_read() initiates transferring data from the remote memory
+ * to the local memory.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -1884,8 +1904,8 @@ int rpma_read(struct rpma_conn *conn,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_write() initiates the write operation (transferring data from
- * the local memory to the remote memory).
+ * rpma_write() initiates transferring data from the local memory
+ * to the remote memory.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
