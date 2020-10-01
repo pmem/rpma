@@ -229,8 +229,34 @@
  * Mention getters XXX
  *
  * THREAD SAFETY
+ * The librpma API is divided into stages:
  *
- * Elaborate XXX
+ * - the initiation stage API calls which should be called from a single
+ * dedicated application thread at a time. These are all API calls which lead
+ * to the creation of the connection object.
+ * - the execution stage API calls which can be called from multiple threads at
+ * the same time as long as single connection object is used by a single thread
+ * a time. The execution stage API calls do not interfere with the initiation
+ * stage API calls so both of these groups can be used by various threads
+ * simultaneously.
+ *
+ * The execution stage API calls are:
+ *
+ * - rpma_conn_apply_remote_peer_cfg()
+ * - rpma_conn_get_private_data()
+ * - rpma_conn_next_completion()
+ * - rpma_conn_next_event()
+ * - rpma_conn_prepare_completions()
+ * - rpma_flush()
+ * - rpma_mr_remote_delete()
+ * - rpma_mr_remote_from_descriptor()
+ * - rpma_mr_remote_get_flush_type()
+ * - rpma_mr_remote_get_size()
+ * - rpma_read()
+ * - rpma_recv()
+ * - rpma_send()
+ * - rpma_write()
+ * - rpma_write_atomic()
  *
  * ON-DEMAND PAGING SUPPORT
  *
