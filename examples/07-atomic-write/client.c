@@ -110,7 +110,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_prepare_completions(conn)))
+	if ((ret = rpma_conn_completion_wait(conn)))
 		goto err_mr_remote_delete;
 
 	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
@@ -171,7 +171,7 @@ main(int argc, char *argv[])
 			break;
 
 		/* wait for the completion to be ready */
-		if ((ret = rpma_conn_prepare_completions(conn)))
+		if ((ret = rpma_conn_completion_wait(conn)))
 			break;
 
 		if ((ret = rpma_conn_next_completion(conn, &cmpl)))

@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 
 		do {
 			/* prepare completions, get one and validate it */
-			if ((ret = rpma_conn_prepare_completions(conn))) {
+			if ((ret = rpma_conn_completion_wait(conn))) {
 				break;
 			} else if ((ret = rpma_conn_next_completion(conn,
 					&cmpl))) {

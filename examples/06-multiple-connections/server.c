@@ -206,7 +206,7 @@ client_handle_completion(struct custom_event *ce)
 	const struct server_res *svr = clnt->svr;
 
 	/* prepare detected completions for processing */
-	int ret = rpma_conn_prepare_completions(clnt->conn);
+	int ret = rpma_conn_completion_wait(clnt->conn);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)

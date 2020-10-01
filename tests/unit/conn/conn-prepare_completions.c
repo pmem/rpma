@@ -2,33 +2,33 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-prepare-completions.c -- the rpma_conn_prepare_completions() unit tests
+ * conn-prepare-completions.c -- the rpma_conn_completion_wait() unit tests
  *
  * APIs covered:
- * - rpma_conn_prepare_completions()
+ * - rpma_conn_completion_wait()
  */
 
 #include "conn-common.h"
 #include "mocks-ibverbs.h"
 
 /*
- * prepare_completions__conn_NULL - NULL conn is invalid
+ * completion_wait__conn_NULL - NULL conn is invalid
  */
 static void
-prepare_completions__conn_NULL(void **unused)
+completion_wait__conn_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_prepare_completions(NULL);
+	int ret = rpma_conn_completion_wait(NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * prepare_completions__get_cq_event_fail - ibv_get_cq_event() fails
+ * completion_wait__get_cq_event_fail - ibv_get_cq_event() fails
  */
 static void
-prepare_completions__get_cq_event_fail(void **cstate_ptr)
+completion_wait__get_cq_event_fail(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -37,17 +37,17 @@ prepare_completions__get_cq_event_fail(void **cstate_ptr)
 	will_return(ibv_get_cq_event, MOCK_ERRNO);
 
 	/* run test */
-	int ret = rpma_conn_prepare_completions(cstate->conn);
+	int ret = rpma_conn_completion_wait(cstate->conn);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_NO_COMPLETION);
 }
 
 /*
- * prepare_completions__req_notify_cq_fail - ibv_req_notify_cq() fails
+ * completion_wait__req_notify_cq_fail - ibv_req_notify_cq() fails
  */
 static void
-prepare_completions__req_notify_cq_fail(void **cstate_ptr)
+completion_wait__req_notify_cq_fail(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -59,17 +59,17 @@ prepare_completions__req_notify_cq_fail(void **cstate_ptr)
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 
 	/* run test */
-	int ret = rpma_conn_prepare_completions(cstate->conn);
+	int ret = rpma_conn_completion_wait(cstate->conn);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
 }
 
 /*
- * prepare_completions__success - happy day scenario
+ * completion_wait__success - happy day scenario
  */
 static void
-prepare_completions__success(void **cstate_ptr)
+completion_wait__success(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -81,7 +81,7 @@ prepare_completions__success(void **cstate_ptr)
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_conn_prepare_completions(cstate->conn);
+	int ret = rpma_conn_completion_wait(cstate->conn);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
@@ -102,16 +102,16 @@ group_setup_prepare_completions(void **unused)
 }
 
 static const struct CMUnitTest tests_prepare_completions[] = {
-	/* rpma_conn_prepare_completions() unit tests */
-	cmocka_unit_test(prepare_completions__conn_NULL),
+	/* rpma_conn_completion_wait() unit tests */
+	cmocka_unit_test(completion_wait__conn_NULL),
 	cmocka_unit_test_setup_teardown(
-		prepare_completions__get_cq_event_fail,
+		completion_wait__get_cq_event_fail,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		prepare_completions__req_notify_cq_fail,
+		completion_wait__req_notify_cq_fail,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		prepare_completions__success,
+		completion_wait__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };

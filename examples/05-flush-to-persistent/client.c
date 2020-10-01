@@ -250,7 +250,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
-	ret = rpma_conn_prepare_completions(conn);
+	ret = rpma_conn_completion_wait(conn);
 	if (ret)
 		goto err_mr_remote_delete;
 
