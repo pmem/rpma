@@ -256,18 +256,55 @@ like **epoll**(7).
 Please see the example showing how to make use of RPMA file descriptors:
 https://github.com/pmem/rpma/tree/master/examples/06-multiple-connections
 
-SCALABILITY AND RESOURCE USE
-============================
+QUEUES, PERFORMANCE AND RESOURCE USE
+====================================
 
-Elaborate XXX
+**Remote Memory Access** operations, **Messaging** operations and their
+**Completions** consume space in queues allocated in an RDMA-capable
+network interface (RNIC) hardware for each of the connections. You must
+be aware of the existence of these queues:
 
--   **rpma\_conn\_cfg\_set\_cq\_size**() - XXX
+-   completion queue **(CQ)** where completions of operations are
+    placed, either when a completion was required by a user
+    (RPMA\_F\_COMPLETION\_ALWAYS) or a completion with an error
+    occurred. All **Remote Memory Access** operations and **Messaging**
+    operations can consume **CQ** space.
 
--   **rpma\_conn\_cfg\_set\_sq\_size**() - XXX
+-   send queue **(SQ)** where all **Remote Memory Access** operations
+    and **rpma\_send**() operations are placed before they are executed
+    by RNIC.
 
--   **rpma\_conn\_cfg\_set\_rq\_size**() - XXX
+-   receive queue **(RQ)** where **rpma\_recv**() entries are placed
+    before they are consumed by the **rpma\_send**() coming from another
+    side of the connection.
 
-Mention getters XXX
+You must assume **SQ** and **RQ** entries occupy the place in their
+respective queue till:
+
+-   a respective operation\'s completion is generated or
+
+-   a completion of an operation, which was scheduled later, is
+    generated.
+
+You must also be aware that RNIC has limited resources so it is
+impossible to store a very long set of queues for many possibly existing
+connections. If all of the queues will not fit into RNIC\'s resources it
+will start using the platform\'s memory for this purpose. In this case,
+the performance will be degraded because of inevitable cache misses.
+
+Because the length of queues has so profound impact on the performance
+of RPMA application you can configure the length of each of the queues
+separately for each of the connections:
+
+-   **rpma\_conn\_cfg\_set\_cq\_size**() - set length of **CQ**
+
+-   **rpma\_conn\_cfg\_set\_sq\_size**() - set length of **SQ**
+
+-   **rpma\_conn\_cfg\_set\_rq\_size**() - set length of **RQ**
+
+When the connection configuration object is ready it has to be used for
+either **rpma\_conn\_req\_new**() or **rpma\_ep\_next\_conn\_req**() for
+the settings to take effect.
 
 THREAD SAFETY
 =============
