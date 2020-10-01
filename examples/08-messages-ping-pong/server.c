@@ -111,7 +111,7 @@ main(int argc, char *argv[])
 			/* prepare completions, get one and validate it */
 			if ((ret = rpma_conn_completion_wait(conn))) {
 				break;
-			} else if ((ret = rpma_conn_next_completion(conn,
+			} else if ((ret = rpma_conn_completion_get(conn,
 					&cmpl))) {
 				break;
 			} else if (cmpl.op_status != IBV_WC_SUCCESS) {

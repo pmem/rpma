@@ -469,10 +469,10 @@ rpma_conn_completion_wait(struct rpma_conn *conn)
 }
 
 /*
- * rpma_conn_next_completion -- receive an operation completion
+ * rpma_conn_completion_get -- receive an operation completion
  */
 int
-rpma_conn_next_completion(struct rpma_conn *conn,
+rpma_conn_completion_get(struct rpma_conn *conn,
 		struct rpma_completion *cmpl)
 {
 	if (conn == NULL || cmpl == NULL)
