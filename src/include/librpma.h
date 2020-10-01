@@ -649,7 +649,7 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 int rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc);
 
 /** 3
- * rpma_peer_cfg_get_descriptor_size -- get size of the peer cfg descriptor
+ * rpma_peer_cfg_get_descriptor_size - get size of the peer cfg descriptor
  *
  * SYNOPSIS
  *
@@ -1010,7 +1010,7 @@ int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
 int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size);
 
 /** 3
- * rpma_mr_remote_get_flush_type -- get a remote memory region's flush types
+ * rpma_mr_remote_get_flush_type - get a remote memory region's flush types
  *
  * SYNOPSIS
  *
