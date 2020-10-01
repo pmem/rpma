@@ -181,11 +181,19 @@
  *
  * PEER
  *
- * Elaborate XXX
+ * Peer is a software abstraction representing an initiator or target node
+ * for the application using the librpma library for remote persistent
+ * memory access. Passive and active peers are distinguished.
+ * The passive peer is the one playing role of server – waiting for other
+ * peers to connect to (similar to socket listening for incoming connections).
+ * The active peer establishes a connection to the passive one
+ * (in a similar way to a socket connect()). Both peers can start
+ * any RDMA service as soon as a connection is established.
  *
- * - rpma_utils_get_ibv_context() - XXX
- * - rpma_peer_new() - XXX
- * - rpma_peer_delete() - XXX
+ * At the beginning, in order to create a peer, a user has to obtain
+ * an RDMA device context by the given IPv4/IPv6 address using
+ * rpma_utils_get_ibv_context(). Then a new peer object can be created
+ * using rpma_peer_new() and deleted using rpma_peer_delete().
  *
  * SYNCHRONOUS AND ASYNCHRONOUS MODES
  * By default, all endpoints and connections operate in the synchronous mode
