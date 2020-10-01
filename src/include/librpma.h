@@ -234,9 +234,21 @@
  *
  * ON-DEMAND PAGING SUPPORT
  *
- * Elaborate XXX
+ * On-Demand-Paging (ODP) is a technique that simplifies the memory
+ * registration process (for example, applications no longer need to pin down
+ * the underlying physical pages of the address space and track the validity
+ * of the mappings). On-Demand Paging is available if both the hardware
+ * and the kernel support it. The detailed description of ODP can be found here:
+ * https://community.mellanox.com/s/article/understanding-on-demand-paging--odp-x
  *
- * - rpma_utils_ibv_context_is_odp_capable() - XXX
+ * State of ODP support can be checked using
+ * the rpma_utils_ibv_context_is_odp_capable() function
+ * that queries the RDMA device context's capabilities
+ * and checks if it supports On-Demand Paging.
+ *
+ * The librpma library uses ODP automatically if it is supported,
+ * because rpma_utils_ibv_context_is_odp_capable() is called
+ * by rpma_peer_new() internally.
  *
  * DEBUGGING AND ERROR HANDLING
  *
