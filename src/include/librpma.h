@@ -196,8 +196,29 @@
  *
  * COMPLETIONS
  *
- * - rpma_conn_completion_wait() - XXX
- * - rpma_conn_completion_get() - XXX
+ * RDMA operations generate complitions that notify a user
+ * that the respective operation has been completed.
+ *
+ * The following operations are available in librpma:
+ * - RPMA_OP_READ - RMA read operation
+ * - RPMA_OP_WRITE - RMA write operation
+ * - RPMA_OP_FLUSH - RMA flush operation
+ * - RPMA_OP_SEND - messaging send operation
+ * - RPMA_OP_RECV - messaging receive operation
+ *
+ * All operations generate completion on error. The operations posted
+ * with the **RPMA_F_COMPLETION_ALWAYS** flag also generate a completion
+ * on success. Completion codes are reused from the libibverbs library,
+ * where the IBV_WC_SUCCESS status indicates the successful completion
+ * of an operation. Completions are collected in the completion queue (CQ)
+ * (see the **QUEUES, PERFORMANCE AND RESOURCE USE** section
+ * for more details on queues).
+ *
+ * The librpma library implements the following API for handling completions:
+ * - rpma_conn_completion_wait() waits for incoming completions. If it
+ * succeeds the completions can be collected using rpma_conn_completion_get().
+ * - rpma_conn_completion_get() receives the next available completion
+ * of an already posted operation.
  *
  * PEER
  *
@@ -2325,8 +2346,8 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  * DESCRIPTION
  * rpma_conn_completion_get() receives the next available completion
- * of an already posted operation. All operations are generating completion on
- * error. All operations posted with the **RPMA_F_COMPLETION_ALWAYS** flag will
+ * of an already posted operation. All operations generate completion on
+ * error. The operations posted with the **RPMA_F_COMPLETION_ALWAYS** flag
  * also generate a completion on success.
  * The following operations are available:
  * - RPMA_OP_READ - RMA read operation
