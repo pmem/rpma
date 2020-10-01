@@ -230,7 +230,42 @@
  *
  * THREAD SAFETY
  *
- * Elaborate XXX
+ * Most of the core librpma API calls are thread-safe but there are also very
+ * important exemptions mainly related to connection configuration,
+ * establishment and tear-down. Here you can find a complete list of
+ * NOT thread-safe API calls:
+ *
+ * - rpma_conn_apply_remote_peer_cfg()
+ * - rpma_conn_cfg_get_cq_size()
+ * - rpma_conn_cfg_get_rq_size()
+ * - rpma_conn_cfg_get_sq_size()
+ * - rpma_conn_cfg_get_timeout()
+ * - rpma_conn_cfg_set_cq_size()
+ * - rpma_conn_cfg_set_rq_size()
+ * - rpma_conn_cfg_set_sq_size()
+ * - rpma_conn_cfg_set_timeout()
+ * - rpma_conn_delete()
+ * - rpma_conn_disconnect()
+ * - rpma_conn_get_private_data()
+ * - rpma_conn_next_event()
+ * - rpma_conn_req_connect()
+ * - rpma_conn_req_delete()
+ * - rpma_conn_req_new()
+ * - rpma_ep_listen()
+ * - rpma_ep_next_conn_req()
+ * - rpma_ep_shutdown()
+ * - rpma_peer_cfg_get_descriptor()
+ * - rpma_peer_cfg_get_descriptor_size()
+ * - rpma_peer_cfg_get_direct_write_to_pmem()
+ * - rpma_peer_cfg_set_direct_write_to_pmem()
+ * - rpma_utils_get_ibv_context()
+ *
+ * Other librpma API calls are thread-safe. However, creating RPMA library
+ * resources usually involves dynamic memory allocation and destroying
+ * resources usually involves a dynamic memory release. The same resource
+ * cannot be destroyed more than once, at any thread, and a resource cannot be
+ * used after it was destroyed. It is up to the user to follow those rules and
+ * not doing so may result in a segmentation fault or undefined behaviour.
  *
  * ON-DEMAND PAGING SUPPORT
  *
