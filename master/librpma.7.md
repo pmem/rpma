@@ -436,10 +436,24 @@ follow those rules and not doing so may result in a segmentation fault
 or undefined behaviour.
 
 ON-DEMAND PAGING SUPPORT
+========================
 
-Elaborate XXX
+On-Demand-Paging (ODP) is a technique that simplifies the memory
+registration process (for example, applications no longer need to pin
+down the underlying physical pages of the address space and track the
+validity of the mappings). On-Demand Paging is available if both the
+hardware and the kernel support it. The detailed description of ODP can
+be found here:
+https://community.mellanox.com/s/article/understanding-on-demand-paging-**-odp-x**
 
--   **rpma\_utils\_ibv\_context\_is\_odp\_capable**() - XXX
+State of ODP support can be checked using the
+**rpma\_utils\_ibv\_context\_is\_odp\_capable**() function that queries
+the RDMA device context\'s capabilities and checks if it supports
+On-Demand Paging.
+
+The librpma library uses ODP automatically if it is supported. ODP
+support is required to register PMem memory region mapped from File
+System DAX (FSDAX).
 
 DEBUGGING AND ERROR HANDLING
 ============================
