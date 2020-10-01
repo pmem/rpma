@@ -203,9 +203,9 @@ completion is generated.
 COMPLETIONS
 ===========
 
--   **rpma\_conn\_prepare\_completions**() - XXX
+-   **rpma\_conn\_completion\_wait**() - XXX
 
--   **rpma\_conn\_next\_completion**() - XXX
+-   **rpma\_conn\_completion\_get**() - XXX
 
 PEER
 ====
@@ -226,7 +226,7 @@ mode where:
 
 -   **rpma\_ep\_next\_conn\_req**(),
 
--   **rpma\_conn\_prepare\_completions**() and
+-   **rpma\_conn\_completion\_wait**() and
 
 -   **rpma\_conn\_get\_next\_event**()
 
@@ -237,7 +237,7 @@ modifying the respective file descriptors:
     **rpma\_ep\_next\_conn\_req**()
 
 -   **rpma\_conn\_get\_completion\_fd**() - provides a file descriptor
-    for **rpma\_conn\_prepare\_completions**()
+    for **rpma\_conn\_completion\_wait**()
 
 -   **rpma\_conn\_get\_event\_fd**() - provides a file descriptor for
     **rpma\_conn\_get\_next\_event**()

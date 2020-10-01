@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_prepare\_completions** - wait for completions
+**rpma\_conn\_completion\_wait** - wait for completions
 
 SYNOPSIS
 ========
@@ -20,26 +20,25 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn;
-          int rpma_conn_prepare_completions(struct rpma_conn *conn);
+          int rpma_conn_completion_wait(struct rpma_conn *conn);
 
 DESCRIPTION
 ===========
 
-**rpma\_conn\_prepare\_completions**() waits for incoming completions.
-If it succeeds the completions can be collected using
-**rpma\_conn\_next\_completion**().
+**rpma\_conn\_completion\_wait**() waits for incoming completions. If it
+succeeds the completions can be collected using
+**rpma\_conn\_completion\_get**().
 
 RETURN VALUE
 ============
 
-The **rpma\_conn\_prepare\_completions**() function returns 0 on success
-or a negative error code on failure.
+The **rpma\_conn\_completion\_wait**() function returns 0 on success or
+a negative error code on failure.
 
 ERRORS
 ======
 
-**rpma\_conn\_prepare\_completions**() can fail with the following
-errors:
+**rpma\_conn\_completion\_wait**() can fail with the following errors:
 
 -   RPMA\_E\_INVAL - conn is NULL
 
@@ -52,5 +51,5 @@ SEE ALSO
 ========
 
 **rpma\_conn\_get\_completion\_fd**(3),
-**rpma\_conn\_next\_completion**(3), **rpma\_conn\_req\_connect**(3),
+**rpma\_conn\_completion\_get**(3), **rpma\_conn\_req\_connect**(3),
 **librpma**(7) and https://pmem.io/rpma/

@@ -39,7 +39,7 @@ completion for the receive operation is generated.
 A buffer for an incoming message have to be prepared beforehand.
 
 The order of buffers in the set does not affect the order of completions
-of receive operations get via **rpma\_conn\_next\_completion**(3).
+of receive operations get via **rpma\_conn\_completion\_get**(3).
 
 The attribute flags set the completion notification indicator:
 

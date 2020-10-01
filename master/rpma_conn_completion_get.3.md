@@ -12,7 +12,7 @@ date: rpma API version 0.0
 NAME
 ====
 
-**rpma\_conn\_next\_completion** - receive a completion of an operation
+**rpma\_conn\_completion\_get** - receive a completion of an operation
 
 SYNOPSIS
 ========
@@ -29,15 +29,15 @@ SYNOPSIS
                   RPMA_OP_RECV,
           };
 
-          int rpma_conn_next_completion(struct rpma_conn *conn,
+          int rpma_conn_completion_get(struct rpma_conn *conn,
                           struct rpma_completion *cmpl);
 
 DESCRIPTION
 ===========
 
-**rpma\_conn\_next\_completion**() receives the next available
-completion of an already posted operation. All operations are generating
-completion on error. All operations posted with the
+**rpma\_conn\_completion\_get**() receives the next available completion
+of an already posted operation. All operations are generating completion
+on error. All operations posted with the
 \*\*RPMA\_F\_COMPLETION\_ALWAYS\*\* flag will also generate a completion
 on success. The following operations are available:
 
@@ -54,13 +54,13 @@ on success. The following operations are available:
 RETURN VALUE
 ============
 
-The **rpma\_conn\_next\_completion**() function returns 0 on success or
-a negative error code on failure.
+The **rpma\_conn\_completion\_get**() function returns 0 on success or a
+negative error code on failure.
 
 ERRORS
 ======
 
-**rpma\_conn\_next\_completion**() can fail with the following errors:
+**rpma\_conn\_completion\_get**() can fail with the following errors:
 
 -   RPMA\_E\_INVAL - conn or cmpl is NULL
 
@@ -78,7 +78,7 @@ SEE ALSO
 ========
 
 **rpma\_conn\_get\_completion\_fd**(3),
-**rpma\_conn\_prepare\_completions**(3),
-**rpma\_conn\_req\_connect**(3), **rpma\_flush**(3), **rpma\_read**(3),
-**rpma\_recv**(3), **rpma\_send**(3), **rpma\_write**(3),
-**rpma\_write\_atomic**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma\_conn\_completion\_wait**(3), **rpma\_conn\_req\_connect**(3),
+**rpma\_flush**(3), **rpma\_read**(3), **rpma\_recv**(3),
+**rpma\_send**(3), **rpma\_write**(3), **rpma\_write\_atomic**(3),
+**librpma**(7) and https://pmem.io/rpma/
