@@ -19,14 +19,14 @@ LIBRPMA_1.0 {
 		rpma_conn_cfg_set_rq_size;
 		rpma_conn_cfg_set_sq_size;
 		rpma_conn_cfg_set_timeout;
+		rpma_conn_completion_get;
+		rpma_conn_completion_wait;
 		rpma_conn_delete;
 		rpma_conn_disconnect;
 		rpma_conn_get_completion_fd;
 		rpma_conn_get_event_fd;
 		rpma_conn_get_private_data;
-		rpma_conn_next_completion;
 		rpma_conn_next_event;
-		rpma_conn_prepare_completions;
 		rpma_conn_req_connect;
 		rpma_conn_req_delete;
 		rpma_conn_req_new;

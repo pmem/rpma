@@ -119,15 +119,15 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
-	ret = rpma_conn_prepare_completions(conn);
+	ret = rpma_conn_completion_wait(conn);
 	if (ret)
 		goto err_mr_remote_delete;
 
 	/* wait for a completion of the RDMA read */
-	ret = rpma_conn_next_completion(conn, &cmpl);
+	ret = rpma_conn_completion_get(conn, &cmpl);
 	if (cmpl.op != RPMA_OP_READ) {
 		fprintf(stderr,
-				"rpma_conn_next_completion returned a completion of an unexpected operation: %d\n",
+				"rpma_conn_completion_get returned a completion of an unexpected operation: %d\n",
 				cmpl.op);
 	} else if (cmpl.op_status == IBV_WC_SUCCESS) {
 		fprintf(stdout, "Read a message: %s\n", (char *)dst_ptr);

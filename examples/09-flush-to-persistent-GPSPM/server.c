@@ -225,9 +225,9 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_prepare_completions(conn)))
+	if ((ret = rpma_conn_completion_wait(conn)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
+	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 		goto err_conn_delete;
 
 	/* unpack a flush request from the received buffer */
@@ -268,9 +268,9 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_prepare_completions(conn)))
+	if ((ret = rpma_conn_completion_wait(conn)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_next_completion(conn, &cmpl)))
+	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 		goto err_conn_delete;
 
 	/* validate the completion */

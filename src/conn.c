@@ -435,10 +435,10 @@ rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd)
 }
 
 /*
- * rpma_conn_prepare_completions -- wait for completions
+ * rpma_conn_completion_wait -- wait for completions
  */
 int
-rpma_conn_prepare_completions(struct rpma_conn *conn)
+rpma_conn_completion_wait(struct rpma_conn *conn)
 {
 	if (conn == NULL)
 		return RPMA_E_INVAL;
@@ -469,10 +469,10 @@ rpma_conn_prepare_completions(struct rpma_conn *conn)
 }
 
 /*
- * rpma_conn_next_completion -- receive an operation completion
+ * rpma_conn_completion_get -- receive an operation completion
  */
 int
-rpma_conn_next_completion(struct rpma_conn *conn,
+rpma_conn_completion_get(struct rpma_conn *conn,
 		struct rpma_completion *cmpl)
 {
 	if (conn == NULL || cmpl == NULL)
