@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-next-completion.c -- the rpma_conn_next_completion() unit tests
+ * conn-next-completion.c -- the rpma_conn_next_completion() unit tests
  *
  * APIs covered:
  * - rpma_conn_next_completion()

@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-recv.c -- the rpma_recv() unit tests
+ * conn-recv.c -- the rpma_recv() unit tests
  *
  * APIs covered:
  * - rpma_recv()

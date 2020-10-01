@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-common.c -- the connection unit tests common definitions
+ * conn-common.c -- the connection unit tests common definitions
  */
 
 #ifndef CONN_COMMON_H

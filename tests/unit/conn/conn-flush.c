@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-flush.c -- the rpma_flush() unit tests
+ * conn-flush.c -- the rpma_flush() unit tests
  *
  * APIs covered:
  * - rpma_flush()

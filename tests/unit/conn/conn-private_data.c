@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-private-data.c -- the connection's private data unit tests
+ * conn-private-data.c -- the connection's private data unit tests
  *
  * APIs covered:
  * - rpma_conn_set_private_data()

@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-send.c -- the rpma_send() unit tests
+ * conn-send.c -- the rpma_send() unit tests
  *
  * APIs covered:
  * - rpma_send()
