@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * mr-test-recv.c -- rpma_mr_recv() unit tests
+ * mr-recv.c -- rpma_mr_recv() unit tests
  */
 
 #include <infiniband/verbs.h>

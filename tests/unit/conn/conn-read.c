@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * conn-test-read.c -- the rpma_read() unit tests
+ * conn-read.c -- the rpma_read() unit tests
  *
  * APIs covered:
  * - rpma_read()

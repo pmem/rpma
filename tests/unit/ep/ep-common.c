@@ -25,7 +25,7 @@ const struct rdma_event_channel Evch_zero = {.fd = MOCK_FD};
  * malloc (may happen at any time)
  *
  * Additionally, this test assumes each successful creation of the resource will
- * be paired with destroying it before the end of the setup-test-teardown
+ * be paired with destroying it before the end of the setup->test->teardown
  * sequence e.g.:
  * _create_event_channel -> _destroy_event_channel
  */
