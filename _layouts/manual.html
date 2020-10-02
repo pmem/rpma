@@ -38,7 +38,6 @@
 	<br>
 	{% assign page_title =  page.title | downcase %}
 	{% assign dc_title =  page.collection %}
-	{% assign lib_name = dc_title | remove:'lib' %}
 	{% assign man_name =  dc_title | append:'3.html' %}
 	{% assign dc_title_ext =  dc_title | append:'.7.html' %}
 
@@ -58,14 +57,14 @@
 					{% endif %}
 					<li class="release_tag" ><a href="#">{{ dc_title }} {{version_name}} {{ release.tag }}</a>
 						<ul>
-							<li><a href="/{{ lib_name }}/{{ version_tag }}/{{ dc_title_ext }}">{{ dc_title }}</a></li>
+							<li><a href="/rpma/manpages/{{ version_tag }}/{{ dc_title_ext }}">{{ dc_title }}</a></li>
 							{% assign rev_functions =  release.func.[dc_title] | split: " " %}
 							{% for rev_function in rev_functions %}
 								{% assign rev_function_no_ext = rev_function | remove:'.3' | remove:'.7' %}
 								{% for x in site.data.libs_map %}
 									{% assign value_to_rev_func = x.[rev_function_no_ext] %}
 									{% if value_to_rev_func != "" and value_to_rev_func != nil %}
-										<li><a href="/{{ lib_name }}/{{ version_tag }}/{{ value_to_rev_func }}">{{ rev_function_no_ext }}</a></li>
+										<li><a href="/rpma/manpages/{{ version_tag }}/{{ value_to_rev_func }}">{{ rev_function_no_ext }}</a></li>
 									{% endif %}
 								{% endfor %}
 							{% endfor %}
