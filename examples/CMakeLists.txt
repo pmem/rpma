@@ -21,6 +21,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
+add_custom_target(examples)
 include_directories(${LIBRPMA_INCLUDE_DIRS})
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
@@ -49,7 +50,7 @@ function(add_example)
 		"${oneValueArgs}"
 		"${multiValueArgs}"
 		${ARGN})
-		
+
 	set(target example-${EXAMPLE_NAME}-${EXAMPLE_BIN})
 
 	if (EXAMPLE_USE_LIBPROTOBUFC AND NOT LIBPROTOBUFC_FOUND)
@@ -59,6 +60,7 @@ function(add_example)
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 	add_executable(${target} ${EXAMPLE_SRCS})
+	add_dependencies(examples ${target})
 	set_target_properties(${target} PROPERTIES
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
