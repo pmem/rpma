@@ -11,4 +11,5 @@ simplify accessing persistent memory devices on remote hosts over
 
 Documentation is available:
 
-* for current [master](./master/librpma.7.html)
+* for the current [master](./master/librpma.7.html)
+* for [v0.9.0](./releases/v0.9.0/librpma.7.html)
