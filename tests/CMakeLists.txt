@@ -5,6 +5,8 @@
 
 include(cmake/ctest_helpers.cmake)
 
+add_custom_target(tests)
+
 add_cstyle(tests)
 
 add_check_whitespace(tests)
