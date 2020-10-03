@@ -72,8 +72,11 @@ if [ "$LINK" == "" ]; then
 	# pick up the first 'up' one
 	LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "state UP" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
 	if [ "$LINK" == "" ]; then
-		echo "Error: cannot find an active and up network interface"
-		exit 1
+		LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "UP" | grep -e "state UNKNOWN" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
+		if [ "$LINK" == "" ]; then
+			echo "Error: cannot find an active and up network interface"
+			exit 1
+		fi
 	fi
 fi
 
