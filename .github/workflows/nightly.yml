@@ -1,0 +1,67 @@
+
+# This build is run at 00:00 UTC every day
+name: Nightly
+
+on:
+  schedule:
+    # run this job at 00:00 UTC every day
+    - cron:  '0 0 * * *'
+
+env:
+    GITHUB_REPO:             pmem/rpma
+    DOCKERHUB_REPO:          pmem/rpma
+    DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
+    DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
+    DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
+    HOST_WORKDIR:            /home/runner/work/rpma/rpma
+    WORKDIR:                 utils/docker
+    TYPE:                    normal
+    PUSH_IMAGE:              1
+
+jobs:
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        CONFIG: ["N=Ubuntu20.10  OS=ubuntu  OS_VER=20.10",
+                 "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
+                 "N=Ubuntu19.10  OS=ubuntu  OS_VER=19.10",
+                 "N=Ubuntu18.04  OS=ubuntu  OS_VER=18.04",
+                 "N=Ubuntu16.04  OS=ubuntu  OS_VER=16.04",
+                 "N=Fedora33     OS=fedora  OS_VER=33",
+                 "N=Fedora32     OS=fedora  OS_VER=32",
+                 "N=Fedora31     OS=fedora  OS_VER=31",
+                 "N=Fedora30     OS=fedora  OS_VER=30",
+                 "N=Fedora29     OS=fedora  OS_VER=29",
+                 "N=Fedora28     OS=fedora  OS_VER=28",
+                 "N=Fedora27     OS=fedora  OS_VER=27",
+                 "N=Fedora26     OS=fedora  OS_VER=26",
+                 "N=CentOS8      OS=centos  OS_VER=8",
+                 "N=CentOS7      OS=centos  OS_VER=7",
+                 "N=CentOS6      OS=centos  OS_VER=6",
+                 "N=Debian10     OS=debian  OS_VER=10",
+                 "N=Debian9      OS=debian  OS_VER=9",
+                 "N=DebianS      OS=debian  OS_VER=stable",
+                 # Rolling/testing/experimental distributions:
+                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
+                 "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
+                 "N=Debian_Testing       OS=debian               OS_VER=testing",
+                 "N=Debian_Experimental  OS=debian               OS_VER=experimental",
+                 "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest",
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v1
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./build.sh
+
+       - name: Push the image
+         run: cd $WORKDIR && source ./set-vars.sh && ${{ matrix.CONFIG }} /bin/bash -c "if [[ -f ${CI_FILE_PUSH_IMAGE_TO_REPO} ]]; then images/push-image.sh; fi"
