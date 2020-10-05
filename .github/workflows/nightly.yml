@@ -1,0 +1,66 @@
+
+# This build is run at 00:00 UTC every day
+name: Nightly
+
+on:
+  schedule:
+    # run this job at 00:00 UTC every day
+    - cron:  '0 0 * * *'
+
+env:
+    GITHUB_REPO:             pmem/rpma
+    DOCKERHUB_REPO:          pmem/rpma
+    DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
+    DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
+    DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
+    HOST_WORKDIR:            /home/runner/work/rpma/rpma
+    WORKDIR:                 utils/docker
+    TYPE:                    normal
+    PUSH_IMAGE:              1
+
+jobs:
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        CONFIG: ["N=StableU    OS=ubuntu         OS_VER=latest",
+                 "N=StableF    OS=fedora         OS_VER=latest",
+                 "N=StableC    OS=centos         OS_VER=latest",
+                 "N=StableOL   OS=opensuse-leap  OS_VER=latest",
+                 "N=StableDL   OS=debian         OS_VER=latest",
+                 "N=StableDS   OS=debian         OS_VER=stable",
+
+                 "N=OldF30     OS=fedora  OS_VER=30",
+                 "N=OldF29     OS=fedora  OS_VER=29",
+                 "N=OldF28     OS=fedora  OS_VER=28",
+                 "N=OldF27     OS=fedora  OS_VER=27",
+                 "N=OldF26     OS=fedora  OS_VER=26",
+                 "N=OldU18     OS=ubuntu  OS_VER=18.04",
+                 "N=OldU16     OS=ubuntu  OS_VER=16.04",
+                 "N=OldC8      OS=centos  OS_VER=8",
+                 "N=OldC7      OS=centos  OS_VER=7",
+                 "N=OldC6      OS=centos  OS_VER=6",
+                 "N=OldD10     OS=debian  OS_VER=10",
+                 "N=OldD9      OS=debian  OS_VER=9",
+
+                 "N=TestingUR  OS=ubuntu               OS_VER=rolling",
+                 "N=TestingFR  OS=fedora               OS_VER=rawhide",
+                 "N=TestingDT  OS=debian               OS_VER=testing",
+                 "N=TestingDE  OS=debian               OS_VER=experimental",
+                 "N=TestingAL  OS=archlinux-base       OS_VER=latest",
+                 "N=TestingOT  OS=opensuse-tumbleweed  OS_VER=latest"]
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v1
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./build.sh
+
+       - name: Push the image
+         run: cd $WORKDIR && source ./set-vars.sh && ${{ matrix.CONFIG }} /bin/bash -c "if [[ -f ${CI_FILE_PUSH_IMAGE_TO_REPO} ]]; then images/push-image.sh; fi"

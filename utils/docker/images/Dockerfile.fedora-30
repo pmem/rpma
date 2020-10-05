@@ -11,7 +11,7 @@
 # Add or remove this comment just to force the image rebuild
 
 # Pull base image
-FROM fedora:31
+FROM fedora:30
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -19,7 +19,6 @@ RUN dnf update -y
 
 # base deps
 ENV BASE_DEPS "\
-	clang \
 	gcc \
 	git \
 	make \
@@ -29,8 +28,7 @@ ENV BASE_DEPS "\
 	which"
 
 ENV EXAMPLES_DEPS "\
-	libpmem-devel \
-	protobuf-c-devel"
+	libpmem-devel"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -40,12 +38,12 @@ ENV RPMA_DEPS "\
 	groff \
 	graphviz \
 	libunwind-devel \
-	pandoc \
 	rdma-core-devel"
 #	txt2man is installed from git repo now
 
 # doc update deps
 ENV DOC_UPDATE_DEPS "\
+	pandoc \
 	hub"
 
 # Install all required packages
@@ -74,7 +72,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 31
+ENV OS_VER 30
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
