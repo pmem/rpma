@@ -143,8 +143,6 @@ add_custom_target(check-whitespace-main
 
 add_dependencies(check-whitespace check-whitespace-main)
 
-add_custom_target(tests)
-
 add_flag(-Wpointer-arith)
 add_flag(-Wunused-macros)
 add_flag(-Wsign-conversion)
