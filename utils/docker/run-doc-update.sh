@@ -50,10 +50,11 @@ git checkout -B $GH_PAGES_NAME upstream/gh-pages
 git clean -dfx
 
 # Clean old content, since some files might have been deleted
-rm -r ./$VERSION
-mkdir ./$VERSION
+DOCS_DIR=./manpages/$VERSION/
+rm -r $DOCS_DIR
+mkdir $DOCS_DIR
 
-cp -r ../md/* ./$VERSION/
+cp -r ../md/* $DOCS_DIR
 
 # Add and push changes.
 # git commit command may fail if there is nothing to commit.
