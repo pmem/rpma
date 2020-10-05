@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2020, Intel Corporation
 #
 
 #
@@ -9,30 +9,29 @@
 #
 
 # Pull base image
-FROM fedora:31
+FROM centos:8
 MAINTAINER tomasz.gromadzki@intel.com
 
-# Update all packages
 RUN dnf update -y
+RUN dnf install -y epel-release
+RUN dnf install -y 'dnf-command(config-manager)'
+RUN dnf config-manager --set-enabled PowerTools
 
 # base deps
 ENV BASE_DEPS "\
-	clang \
 	gcc \
 	git \
 	make \
-	patch \
+	passwd \
 	pkg-config \
 	rpm-build \
+	sudo \
 	which"
-
-ENV EXAMPLES_DEPS "\
-	libpmem-devel \
-	protobuf-c-devel"
 
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
+	diffutils \
 	file \
 	gawk \
 	groff \
@@ -41,16 +40,10 @@ ENV RPMA_DEPS "\
 	pandoc \
 	rdma-core-devel"
 
-# doc update deps
-ENV DOC_UPDATE_DEPS "\
-	hub"
-
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
-	$EXAMPLES_DEPS \
 	$RPMA_DEPS \
-	$DOC_UPDATE_DEPS \
 && dnf clean all
 
 # Install cmocka
@@ -65,13 +58,12 @@ RUN ./install-txt2man.sh
 ENV USER user
 ENV USERPASS p1a2s3s4
 RUN useradd -m $USER
-RUN echo "$USER:$USERPASS" | chpasswd
+RUN echo $USERPASS | passwd $USER --stdin
 RUN gpasswd wheel -a $USER
 USER $USER
 
 # Set required environment variables
-ENV OS fedora
-ENV OS_VER 31
+ENV OS centos
+ENV OS_VER 8
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
-

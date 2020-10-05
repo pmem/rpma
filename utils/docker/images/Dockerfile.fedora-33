@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM fedora:31
+FROM fedora:33
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -71,7 +71,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 31
+ENV OS_VER 33
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 

@@ -4,12 +4,12 @@
 #
 
 #
-# Dockerfile - a 'recipe' for Docker to build an image of ubuntu-based
+# Dockerfile - a 'recipe' for Docker to build an image of debian-based
 #              environment prepared for running tests of librpma.
 #
 
 # Pull base image
-FROM ubuntu:19.10
+FROM debian:10
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -31,8 +31,7 @@ ENV BASE_DEPS "\
 	whois"
 
 ENV EXAMPLES_DEPS "\
-	libpmem-dev \
-	libprotobuf-c-dev"
+	libpmem-dev"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -43,8 +42,7 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libibverbs-dev \
 	librdmacm-dev \
-	libunwind-dev \
-	pandoc"
+	libunwind-dev"
 
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
@@ -73,7 +71,7 @@ RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
 USER $USER
 
 # Set required environment variables
-ENV OS ubuntu
-ENV OS_VER 19.10
+ENV OS debian
+ENV OS_VER 10
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
