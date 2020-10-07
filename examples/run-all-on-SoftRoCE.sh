@@ -13,6 +13,7 @@ IP_ADDRESS=$2
 PORT=$3
 
 MODULE="rdma_rxe"
+STATE_OK="state ACTIVE physical_state LINK_UP"
 
 function verify_SoftRoCE() {
 	SCRIPT_DIR=$(dirname $0)
