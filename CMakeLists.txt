@@ -103,8 +103,8 @@ if(NOT LIBRDMACM_FOUND)
 	find_package(LIBRDMACM REQUIRED librdmacm)
 endif()
 
-pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
-pkg_check_modules(LIBPROTOBUFC QUIET libprotobuf-c)
+pkg_check_modules(LIBPMEM libpmem>=${LIBPMEM_REQUIRED_VERSION})
+pkg_check_modules(LIBPROTOBUFC libprotobuf-c)
 
 # check if libibverbs has ODP support
 is_ODP_supported(ON_DEMAND_PAGING_SUPPORTED)
@@ -208,7 +208,7 @@ write_basic_package_version_file(librpma-config-version.cmake
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/librpma-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/librpma-config-version.cmake
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/librpma/cmake)
 
-pkg_check_modules(VALGRIND QUIET valgrind)
+pkg_check_modules(VALGRIND valgrind)
 
 if(VALGRIND_FOUND)
 	add_flag(-DVG_MEMCHECK_ENABLED=1)
