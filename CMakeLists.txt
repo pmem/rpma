@@ -7,11 +7,6 @@ cmake_minimum_required(VERSION 3.3)
 
 project(rpma C)
 
-# disable in-source builds
-if(${PROJECT_SOURCE_DIR} STREQUAL ${PROJECT_BINARY_DIR})
-	message(FATAL_ERROR "In-source build is not allowed.")
-endif()
-
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 9)
 set(VERSION_PATCH 0)
