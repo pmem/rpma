@@ -72,8 +72,17 @@ if [ "$LINK" == "" ]; then
 	# pick up the first 'up' one
 	LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "state UP" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
 	if [ "$LINK" == "" ]; then
-		echo "Error: cannot find an active and up network interface"
-		exit 1
+		#
+		# Look for a USB Ethernet network interfaces,
+		# which may not have 'state UP',
+		# but only 'UP' and 'state UNKNOWN', for example:
+		# ... <BROADCAST,MULTICAST,UP,LOWER_UP> ... state UNKNOWN ...
+		#
+		LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "UP" | grep -e "state UNKNOWN" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
+		if [ "$LINK" == "" ]; then
+			echo "Error: cannot find an active and up network interface"
+			exit 1
+		fi
 	fi
 fi
 
