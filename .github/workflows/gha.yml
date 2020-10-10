@@ -3,8 +3,8 @@ name: RPMA
 on: [push, pull_request]
 
 env:
-    GITHUB_REPO:    pmem/rpma
-    DOCKERHUB_REPO: pmem/rpma
+    GITHUB_REPO: pmem/rpma
+    DOCKER_REPO: pmem/rpma
 
 jobs:
   linux:
