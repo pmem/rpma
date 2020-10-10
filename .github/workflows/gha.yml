@@ -5,17 +5,16 @@ on: [push, pull_request]
 env:
     GITHUB_REPO: pmem/rpma
     DOCKER_REPO: pmem/rpma
+    DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
+    DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
+    DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
+    HOST_WORKDIR: /home/runner/work/rpma/rpma
+    WORKDIR:      utils/docker
 
 jobs:
   linux:
     name: Linux
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USER:          ${{ secrets.DOCKERHUB_USER }}
-      DOCKERHUB_PASSWORD:      ${{ secrets.DOCKERHUB_PASSWORD }}
-      DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
-      HOST_WORKDIR:   /home/runner/work/rpma/rpma
-      WORKDIR:        utils/docker
     strategy:
       matrix:
         CONFIG: ["N=1 OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc PUSH_IMAGE=1",
