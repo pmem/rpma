@@ -8,6 +8,7 @@ In order to build librpma, you need to have installed several components:
 
 - C compiler
 - [CMake](http://www.cmake.org) >= 3.3
+- pkg-config
 - libibverbs-dev(el)
 - librdmacm-dev(el)
 - libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-cmocka.sh to install the verified revision)
