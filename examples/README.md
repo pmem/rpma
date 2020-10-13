@@ -2,7 +2,7 @@ Examples for librpma
 ===
 
 This directory contains examples for librpma,
-the library to simplify accessing persistent memory devices
+the library to simplify accessing persistent memory
 on remote hosts over Remote Direct Memory Access (RDMA).
 
 If you're looking for documentation to get you started using RPMA,

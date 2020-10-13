@@ -5,7 +5,7 @@
 [![librpma version](https://img.shields.io/github/tag/pmem/rpma.svg)](https://github.com/pmem/rpma/releases/latest)
 [![Coverage Status](https://codecov.io/github/pmem/rpma/coverage.svg?branch=master)](https://codecov.io/gh/pmem/rpma/branch/master)
 
-The **Remote Persistent Memory Access (RPMA)** is a C library to simplify accessing persistent memory devices on remote hosts over **Remote Direct Memory Access (RDMA)**. For more information, see
+The **Remote Persistent Memory Access (RPMA)** is a C library to simplify accessing persistent memory on remote hosts over **Remote Direct Memory Access (RDMA)**. For more information, see
 [pmem.io](https://pmem.io).
 
 

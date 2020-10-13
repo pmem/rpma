@@ -48,7 +48,7 @@ set(CPACK_PACKAGE_NAME "librpma")
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "library to simplify accessing persistent memory devices on remote hosts over RDMA")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "library to simplify accessing persistent memory on remote hosts over RDMA")
 set(CPACK_PACKAGE_VENDOR "Intel")
 
 set(CPACK_RPM_PACKAGE_NAME "librpma-devel")
