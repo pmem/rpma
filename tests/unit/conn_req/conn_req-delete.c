@@ -58,6 +58,7 @@ delete_via_reject__destroy_cq_EAGAIN(void **unused)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -88,6 +89,7 @@ delete_via_reject__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rdma_reject, EIO); /* second error */
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO); /* third error */
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -117,6 +119,7 @@ delete_via_reject__destroy_comp_channel_EAGAIN(void **unused)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -146,6 +149,7 @@ delete_via_reject__destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rdma_reject, EIO); /* second error */
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO); /* third error */
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -174,6 +178,7 @@ delete_via_reject__reject_EAGAIN(void **unused)
 	will_return(rdma_reject, EAGAIN);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -203,6 +208,7 @@ delete_via_reject__reject_EAGAIN_ack_EIO(void **unused)
 	will_return(rdma_reject, EAGAIN);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -231,6 +237,7 @@ delete_via_reject__ack_EAGAIN(void **unused)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EAGAIN);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -258,6 +265,7 @@ delete_via_destroy__destroy_cq_EAGAIN(void **unused)
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -286,6 +294,7 @@ delete_via_destroy__destroy_cq_EAGAIN_subsequent_EIO(void **unused)
 	will_return(ibv_destroy_comp_channel, EIO); /* second error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, EIO); /* third error */
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -313,6 +322,7 @@ delete_via_destroy__destroy_comp_channel_EAGAIN(void **unused)
 	will_return(ibv_destroy_comp_channel, EAGAIN);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -340,6 +350,7 @@ delete_via_destroy__destroy_comp_channel_EAGAIN_subsequent_EIO(void **unused)
 	will_return(ibv_destroy_comp_channel, EAGAIN);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, EIO);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -367,6 +378,7 @@ delete_via_destroy__destroy_id_EAGAIN(void **unused)
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, EAGAIN);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
