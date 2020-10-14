@@ -349,6 +349,7 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
