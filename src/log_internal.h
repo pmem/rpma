@@ -8,6 +8,7 @@
 #ifndef LIBRPMA_LOG_INTERNAL_H
 #define LIBRPMA_LOG_INTERNAL_H
 
+#include <stdlib.h>
 #include <string.h>
 #include "librpma.h"
 
@@ -55,6 +56,6 @@ void rpma_log_fini();
  * additional arguments.
  */
 #define RPMA_LOG_ERROR_WITH_ERRNO(e, f, ...) \
-	RPMA_LOG_ERROR(f " failed: %s", ##__VA_ARGS__, strerror(e));
+	RPMA_LOG_ERROR(f " failed: %s", ##__VA_ARGS__, strerror(abs(e)));
 
 #endif /* LIBRPMA_LOG_INTERNAL_H */
