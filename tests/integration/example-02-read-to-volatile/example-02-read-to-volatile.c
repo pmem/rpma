@@ -301,7 +301,7 @@ test_server__success(void **unused)
 	/* configure mocks for rpma_ep_next_conn_req() */
 	struct rdma_cm_event f_event = {0};
 	const char *msg = "Hello client!";
-	f_event.param.conn.private_data = NULL;
+	f_event.param.conn.private_data = msg;
 	f_event.param.conn.private_data_len = MOCK_READ_LEN * sizeof(char);
 	f_event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	f_event.id = &Cm_id;

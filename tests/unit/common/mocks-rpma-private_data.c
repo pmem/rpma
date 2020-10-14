@@ -44,4 +44,5 @@ void
 rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 {
 	assert_non_null(pdata);
+	function_called();
 }
