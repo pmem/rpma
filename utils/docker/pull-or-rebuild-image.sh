@@ -104,4 +104,4 @@ done
 
 # Getting here means rebuilding the Docker image is not required.
 # Pull the image from ${DOCKER_REPO}.
-docker pull ${DOCKER_REPO}:0.1-${OS}-${OS_VER}
+docker pull ${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER}

@@ -37,7 +37,7 @@ if [[ -z "${GH_CR_USER}" || -z "${GH_CR_PAT}" ]]; then
 	exit 1
 fi
 
-TAG="0.1-${OS}-${OS_VER}"
+TAG="${IMG_VER}-${OS}-${OS_VER}"
 
 # Check if the image tagged with ${DOCKER_REPO}:${TAG} exists locally
 if [[ ! $(docker images -a | awk -v pattern="^${DOCKER_REPO}:${TAG}\$" \
