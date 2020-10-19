@@ -105,4 +105,4 @@ done
 
 # Getting here means rebuilding the Docker image is not required.
 # Pull the image from Docker Hub.
-docker pull ${DOCKERHUB_REPO}:0.1-${OS}-${OS_VER}
+docker pull ${DOCKERHUB_REPO}:${IMG_VER}-${OS}-${OS_VER}

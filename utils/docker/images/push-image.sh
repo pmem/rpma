@@ -31,7 +31,7 @@ if [[ -z "${DOCKERHUB_REPO}" ]]; then
 	exit 1
 fi
 
-TAG="0.1-${OS}-${OS_VER}"
+TAG="${IMG_VER}-${OS}-${OS_VER}"
 
 # Check if the image tagged with pmdk/OS-VER exists locally
 if [[ ! $(docker images -a | awk -v pattern="^${DOCKERHUB_REPO}:${TAG}\$" \
