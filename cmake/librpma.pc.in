@@ -3,7 +3,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 
 Name: librpma
-Description: librpma - library to simplify accessing persistent memory devices on remote hosts over RDMA
+Description: librpma - library to simplify accessing persistent memory on remote hosts over RDMA
 Version: @VERSION@
 URL: https://github.com/pmem/rpma
 Cflags: -I${includedir}
