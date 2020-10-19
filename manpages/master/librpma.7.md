@@ -23,8 +23,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-librpma is a C library to simplify accessing persistent memory (PMem)
-devices on remote hosts over Remote Direct Memory Access (RDMA).
+librpma is a C library to simplify accessing persistent memory (PMem) on
+remote hosts over Remote Direct Memory Access (RDMA).
 
 The librpma library provides two possible schemes of operation: Remote
 Memory Access and Messaging. Both of them are available over a
