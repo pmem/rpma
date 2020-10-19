@@ -12,9 +12,9 @@ env:
     - GITHUB_REPO=pmem/rpma
     - DOCKERHUB_REPO=pmem/rpma
   matrix:
-    - OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc
-    - OS=fedora OS_VER=31    TYPE=normal CC=gcc
-    - OS=fedora OS_VER=31    TYPE=normal CC=clang
+    - OS=ubuntu OS_VER=20.04 TYPE=normal CC=gcc
+    - OS=fedora OS_VER=32    TYPE=normal CC=gcc
+    - OS=fedora OS_VER=32    TYPE=normal CC=clang
 
 before_install:
   - echo $TRAVIS_COMMIT_RANGE

@@ -11,7 +11,7 @@
 # Add or remove this comment just to force the image rebuild
 
 # Pull base image
-FROM fedora:31
+FROM fedora:32
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -74,7 +74,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 31
+ENV OS_VER 32
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
