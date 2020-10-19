@@ -44,7 +44,7 @@ else
 	fi
 fi
 
-imageName=${DOCKERHUB_REPO}:0.1-${OS}-${OS_VER}
+imageName=${DOCKERHUB_REPO}:${IMG_VER}-${OS}-${OS_VER}
 containerName=rpma-${OS}-${OS_VER}
 
 if [[ "$command" == "" ]]; then
@@ -78,7 +78,7 @@ SCRIPTSDIR=$WORKDIR/utils/docker
 # do not allocate a pseudo-TTY if we are running on GitHub Actions
 [ ! $GITHUB_ACTIONS ] && TTY='-t' || TTY=''
 
-echo Building 0.1-${OS}-${OS_VER}
+echo Building ${IMG_VER}-${OS}-${OS_VER}
 
 # Run a container with
 #  - environment variables set (--env)
