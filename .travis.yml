@@ -15,7 +15,6 @@ env:
     - OS=ubuntu OS_VER=19.10 TYPE=normal CC=gcc
     - OS=fedora OS_VER=31    TYPE=normal CC=gcc
     - OS=fedora OS_VER=31    TYPE=normal CC=clang
-    - OS=ubuntu OS_VER=19.10 TYPE=coverity CC=gcc
 
 before_install:
   - echo $TRAVIS_COMMIT_RANGE
