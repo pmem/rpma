@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM fedora:32
+FROM fedora:30
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -17,7 +17,6 @@ RUN dnf update -y
 
 # base deps
 ENV BASE_DEPS "\
-	clang \
 	gcc \
 	git \
 	make \
@@ -71,7 +70,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 32
+ENV OS_VER 30
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
