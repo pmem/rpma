@@ -43,21 +43,25 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_copy -- copy private data from src to dst
+ * rpma_private_data_move -- move private data from src to dst
  */
 int
-rpma_private_data_copy(struct rpma_conn_private_data *dst,
+rpma_private_data_move(struct rpma_conn_private_data *dst,
 		struct rpma_conn_private_data *src)
 {
 	if (src->ptr == NULL)
 		return 0;
-
+#if 0
 	dst->ptr = malloc(src->len);
 	if (dst->ptr == NULL)
 		return RPMA_E_NOMEM;
-
 	memcpy(dst->ptr, src->ptr, src->len);
+#endif
+	dst->ptr = src->ptr;
 	dst->len = src->len;
+
+	src->ptr = NULL;
+	src->len = 0;
 
 	return 0;
 }

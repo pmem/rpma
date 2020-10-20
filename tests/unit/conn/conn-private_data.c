@@ -72,7 +72,7 @@ set_private_data__failed_ENOMEM(void **cstate_ptr)
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, RPMA_E_NOMEM);
+	will_return(rpma_private_data_move, RPMA_E_NOMEM);
 
 	/* set private data */
 	int ret = rpma_conn_set_private_data(cstate->conn, &data);
@@ -105,8 +105,8 @@ set_private_data__success(void **cstate_ptr)
 	/* configure mocks for rpma_conn_set_private_data() */
 	cstate->data.ptr = MOCK_PRIVATE_DATA;
 	cstate->data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
+	will_return(rpma_private_data_move, 0);
+	will_return(rpma_private_data_move, MOCK_PRIVATE_DATA);
 
 	/* set private data */
 	int ret = rpma_conn_set_private_data(cstate->conn, &cstate->data);

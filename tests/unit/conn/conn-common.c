@@ -42,10 +42,10 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_copy -- rpma_private_data_copy() mock
+ * rpma_private_data_move -- rpma_private_data_move() mock
  */
 int
-rpma_private_data_copy(struct rpma_conn_private_data *dst,
+rpma_private_data_move(struct rpma_conn_private_data *dst,
 		struct rpma_conn_private_data *src)
 {
 	assert_non_null(src);

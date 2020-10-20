@@ -35,11 +35,11 @@ int rpma_private_data_store(struct rdma_cm_event *edata,
  * - src == {NULL, 0} || (src->ptr != NULL && src->len != 0)
  *
  * ERRORS
- * rpma_private_data_copy() can fail with the following error:
+ * rpma_private_data_move() can fail with the following error:
  *
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_private_data_copy(struct rpma_conn_private_data *dst,
+int rpma_private_data_move(struct rpma_conn_private_data *dst,
 		struct rpma_conn_private_data *src);
 
 /*
