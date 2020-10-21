@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM fedora:32
+FROM fedora:28
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -24,6 +24,7 @@ ENV BASE_DEPS "\
 	patch \
 	pkg-config \
 	rpm-build \
+	sudo \
 	which"
 
 ENV EXAMPLES_DEPS "\
@@ -71,7 +72,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 32
+ENV OS_VER 28
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 

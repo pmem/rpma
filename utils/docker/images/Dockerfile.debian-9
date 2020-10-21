@@ -4,18 +4,19 @@
 #
 
 #
-# Dockerfile - a 'recipe' for Docker to build an image of ubuntu-based
+# Dockerfile - a 'recipe' for Docker to build an image of debian-based
 #              environment prepared for running tests of librpma.
 #
 
 # Pull base image
-FROM ubuntu:20.04
+FROM debian:9
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
 
 # Additional parameters to build docker without building components
 ARG SKIP_SCRIPTS_DOWNLOAD
+ARG SKIP_PMDK_BUILD
 
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
@@ -24,6 +25,7 @@ RUN apt-get update && apt-get dist-upgrade -y
 ENV BASE_DEPS "\
 	apt-utils \
 	build-essential \
+	ca-certificates \
 	clang \
 	devscripts \
 	git \
@@ -31,9 +33,30 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
+# ndctl (optional if libndctl-dev and libdaxctl-dev >= 60.1, 64.1 preferred)
+ENV NDCTL_DEPS "\
+	automake \
+	bash-completion \
+	build-essential \
+	git \
+	libjson-c-dev \
+	libkeyutils-dev \
+	libkmod-dev \
+	libtool \
+	libudev-dev \
+	pkg-config \
+	systemd \
+	uuid-dev"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	debhelper \
+	devscripts \
+	pandoc"
+
 ENV EXAMPLES_DEPS "\
-	libpmem-dev \
-	libprotobuf-c-dev"
+	$NDCTL_DEPS \
+	$PMDK_DEPS"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -44,8 +67,7 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libibverbs-dev \
 	librdmacm-dev \
-	libunwind-dev \
-	pandoc"
+	libunwind-dev"
 
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
@@ -74,7 +96,7 @@ RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
 USER $USER
 
 # Set required environment variables
-ENV OS ubuntu
-ENV OS_VER 20.04
+ENV OS debian
+ENV OS_VER 9
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
