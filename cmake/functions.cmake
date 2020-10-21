@@ -173,7 +173,7 @@ function(check_signature_rdma_getaddrinfo var)
 		endif()
 	else()
 		# the clang compiler ignores the '-Werror=discarded-qualifiers' flag
-		set(RUN_CHECK_C_SOURCE_COMPILES 1)
+		set(RUN_CHECK_C_SOURCE_COMPILES 0)
 	endif()
 
 	if(RUN_CHECK_C_SOURCE_COMPILES)
