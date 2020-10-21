@@ -139,7 +139,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	if (*ibv_mr_ptr == NULL) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"Memory registration with On-Demand Paging (maybe FSDAX?) support failed: "
-			"ibv_reg_mr(addr=%p, length=%zu, acccess=%i|IBV_ACCESS_ON_DEMAND)",
+			"ibv_reg_mr(addr=%p, length=%zu, access=%i|IBV_ACCESS_ON_DEMAND)",
 			addr, length, access);
 		return RPMA_E_PROVIDER;
 	}

@@ -977,7 +977,7 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  *			size_t *desc_size);
  *
  * DESCRIPTION
- * rpma_mr_get_descriptor_size() gets size of the memory region decriptor.
+ * rpma_mr_get_descriptor_size() gets size of the memory region descriptor.
  *
  * RETURN VALUE
  * The rpma_mr_get_descriptor_size() function returns 0 on success

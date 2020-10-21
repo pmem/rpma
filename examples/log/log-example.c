@@ -60,7 +60,7 @@ main(int argc, char *argv[])
 		"Use: \n$ sudo tail -n 60 /var/log/syslog | grep rpma\nto see messages in the syslog.");
 
 	/*
-	 * log messages to be transfered only to custom user function
+	 * log messages to be transferred only to custom user function
 	 */
 	rpma_log_set_function(user_log_function);
 	printf(

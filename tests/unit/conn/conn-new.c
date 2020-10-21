@@ -356,7 +356,7 @@ delete__destroy_comp_channel_EAGAIN(void **unused)
 
 /*
  * delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO --
- * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail wit EIO
+ * ibv_destroy_comp_channel() fails with EAGAIN whereas subsequent fail with EIO
  */
 static void
 delete__destroy_comp_channel_EAGAIN_subseqeunt_EIO(void **unused)
