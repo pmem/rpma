@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM ubuntu:20.04
+FROM ubuntu:19.10
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -62,11 +62,6 @@ RUN ./install-cmocka.sh
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
 
-# Download scripts required in run-*.sh
-COPY download-scripts.sh download-scripts.sh
-COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
-RUN ./download-scripts.sh
-
 # Add user
 ENV USER user
 ENV USERPASS p1a2s3s4
@@ -75,6 +70,6 @@ USER $USER
 
 # Set required environment variables
 ENV OS ubuntu
-ENV OS_VER 20.04
+ENV OS_VER 19.10
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
