@@ -28,7 +28,7 @@ DESCRIPTION
 ===========
 
 **rpma\_mr\_get\_descriptor\_size**() gets size of the memory region
-decriptor.
+descriptor.
 
 RETURN VALUE
 ============

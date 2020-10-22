@@ -272,7 +272,7 @@ PEER
 
 A peer is an abstraction representing an RDMA-capable device. All other
 RPMA objects have to be created in the context of a peer. A peer allows
-to:
+one to:
 
 -   establish connections (Client Operation)
 
