@@ -106,7 +106,7 @@ function test_compile_all_examples_standalone() {
 			case $e in
 			09-flush-to-persistent-GPSPM)
 				echo
-				echo "SKIP: Skipping the '$e' example, becuase libprotobuf-c is missing"
+				echo "SKIP: Skipping the '$e' example, because libprotobuf-c is missing"
 				echo
 				continue
 				;;

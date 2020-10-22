@@ -29,7 +29,7 @@ section=`sed -n 's/^title:.*\([0-9]\))$/\1/p' $filename`
 secondary_title=`sed -n 's/^secondary_title:\ *\(.*\)$/\1/p' $filename`
 
 dt="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%F)"
-# since genereted docs are not kept in the repo the output dir may not exist
+# since generated docs are not kept in the repo the output dir may not exist
 out_dir=`echo $outfile | sed 's/\(.*\)\/.*/\1/'`
 mkdir -p $out_dir
 

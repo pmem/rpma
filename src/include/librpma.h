@@ -222,7 +222,7 @@
  *
  * A peer is an abstraction representing an RDMA-capable device.
  * All other RPMA objects have to be created in the context of a peer.
- * A peer allows to:
+ * A peer allows one to:
  * - establish connections (Client Operation)
  * - register memory regions (Memory Management)
  * - create endpoints for listening for incoming connections (Server Operation)
@@ -977,7 +977,7 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  *			size_t *desc_size);
  *
  * DESCRIPTION
- * rpma_mr_get_descriptor_size() gets size of the memory region decriptor.
+ * rpma_mr_get_descriptor_size() gets size of the memory region descriptor.
  *
  * RETURN VALUE
  * The rpma_mr_get_descriptor_size() function returns 0 on success

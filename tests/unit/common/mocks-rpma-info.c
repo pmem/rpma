@@ -47,7 +47,7 @@ rpma_info_delete(struct rpma_info **info_ptr)
 	assert_non_null(info_ptr);
 	assert_int_equal(*info_ptr, MOCK_INFO);
 
-	/* if argument is correct it connot fail */
+	/* if argument is correct it cannot fail */
 	return 0;
 }
 

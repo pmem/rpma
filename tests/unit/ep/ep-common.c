@@ -39,7 +39,7 @@ const struct rdma_event_channel Evch_zero = {.fd = MOCK_FD};
 int Mock_ctrl_defer_destruction = MOCK_CTRL_NO_DEFER;
 
 /*
- * rpma_info_bind() function requires succesfull creation of two types of
+ * rpma_info_bind() function requires successful creation of two types of
  * objects so both of them have to be created before queuing any expect_*
  * against rpma_info_bind().
  */
