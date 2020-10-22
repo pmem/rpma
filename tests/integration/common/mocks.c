@@ -17,6 +17,7 @@ struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
 struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
+struct ibv_mr Ibv_mr_conn; /* mock IBV MR CONN */
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 /* predefined IBV On-demand Paging caps */
