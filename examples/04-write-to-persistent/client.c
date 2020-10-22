@@ -20,6 +20,12 @@
 
 #include "common-conn.h"
 
+#ifdef TEST_MOCK_MAIN
+#include "cmocka_headers.h"
+#include "cmocka_alloc.h"
+#define main client_main
+#endif
+
 enum lang_t {en, es};
 
 static const char *hello_str[] = {

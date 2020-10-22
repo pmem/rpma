@@ -21,6 +21,12 @@
 
 #include "common-conn.h"
 
+#ifdef TEST_MOCK_MAIN
+#include "cmocka_headers.h"
+#include "cmocka_alloc.h"
+#define main server_main
+#endif
+
 int
 main(int argc, char *argv[])
 {
