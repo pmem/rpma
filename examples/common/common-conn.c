@@ -32,6 +32,9 @@ malloc_aligned(size_t size)
 		return NULL;
 	}
 
+	/* zero the allocated memory */
+	memset(mem, 0, size);
+
 	return mem;
 }
 /*
