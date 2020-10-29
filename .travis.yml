@@ -10,7 +10,8 @@ services:
 env:
   global:
     - GITHUB_REPO=pmem/rpma
-    - DOCKER_REPO=pmem/rpma
+    - DOCKER_REPO=ghcr.io/pmem/rpma
+    - GH_CR_ADDR=ghcr.io
   matrix:
     - OS=ubuntu OS_VER=20.04 TYPE=normal CC=gcc
     - OS=fedora OS_VER=32    TYPE=normal CC=gcc
