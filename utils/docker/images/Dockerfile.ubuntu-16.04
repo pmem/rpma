@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM ubuntu:20.04
+FROM ubuntu:16.04
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -24,6 +24,7 @@ RUN apt-get update && apt-get dist-upgrade -y
 ENV BASE_DEPS "\
 	apt-utils \
 	build-essential \
+	ca-certificates \
 	clang \
 	devscripts \
 	git \
@@ -31,8 +32,30 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
+ENV NDCTL_DEPS "\
+	asciidoctor \
+	automake \
+	bash-completion \
+	build-essential \
+	git \
+	libjson-c-dev \
+	libkeyutils-dev \
+	libkmod-dev \
+	libtool \
+	libudev-dev \
+	pkg-config \
+	systemd \
+	uuid-dev"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	debhelper \
+	devscripts \
+	pandoc"
+
 ENV EXAMPLES_DEPS "\
-	libpmem-dev \
+	$NDCTL_DEPS \
+	$PMDK_DEPS \
 	libprotobuf-c-dev"
 
 # RPMA deps
@@ -54,6 +77,14 @@ RUN apt-get install -y --no-install-recommends \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+# Install libndctl
+COPY install-libndctl.sh install-libndctl.sh
+RUN ./install-libndctl.sh ubuntu
+
+# Install pmdk
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
@@ -61,11 +92,6 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
-
-# Download scripts required in run-*.sh
-COPY download-scripts.sh download-scripts.sh
-COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
-RUN ./download-scripts.sh
 
 # Add user
 ENV USER user
@@ -75,6 +101,6 @@ USER $USER
 
 # Set required environment variables
 ENV OS ubuntu
-ENV OS_VER 20.04
+ENV OS_VER 16.04
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
