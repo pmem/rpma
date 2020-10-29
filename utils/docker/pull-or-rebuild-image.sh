@@ -14,11 +14,10 @@
 #
 # If the Travis build is not of the "pull_request" type (i.e. in case of
 # merge after pull_request) and it succeed, the Docker image should be pushed
-# to the Docker Hub repository. An empty file is created to signal that to
-# further scripts.
+# to ${DOCKER_REPO}. An empty file is created to signal that to further scripts.
 #
 # If the Docker image does not have to be rebuilt, it will be pulled from
-# Docker Hub.
+# ${DOCKER_REPO}.
 #
 
 set -e
@@ -84,7 +83,7 @@ for file in $files; do
 		./build-image.sh ${DOCKER_REPO} ${OS}-${OS_VER}
 		popd
 
-		# Check if the image has to be pushed to Docker Hub
+		# Check if the image has to be pushed to ${DOCKER_REPO}
 		# (i.e. the build is triggered by commits to the ${GITHUB_REPO}
 		# repository's master branch, and the Travis build is not
 		# of the "pull_request" type). In that case, create the empty
@@ -94,15 +93,15 @@ for file in $files; do
 			&& $CI_EVENT_TYPE != "pull_request"
 			&& $PUSH_IMAGE == "1" ]]
 		then
-			echo "The image will be pushed to Docker Hub"
+			echo "The image will be pushed to ${DOCKER_REPO}"
 			touch $CI_FILE_PUSH_IMAGE_TO_REPO
 		else
-			echo "Skip pushing the image to Docker Hub"
+			echo "Skip pushing the image to ${DOCKER_REPO}"
 		fi
 		exit 0
 	fi
 done
 
 # Getting here means rebuilding the Docker image is not required.
-# Pull the image from Docker Hub.
+# Pull the image from ${DOCKER_REPO}.
 docker pull ${DOCKER_REPO}:0.1-${OS}-${OS_VER}
