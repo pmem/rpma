@@ -1,19 +1,22 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2020, Intel Corporation
 #
 
 #
-# Dockerfile - a 'recipe' for Docker to build an image of fedora-based
-#              environment prepared for running tests of librpma.
+# Dockerfile - a 'recipe' for Docker to build an image of environment
+#              prepared for running tests of librpma.
 #
 
 # Pull base image
-FROM fedora:32
+FROM opensuse/leap:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
+# Update the OS
+RUN zypper dup -y
+
 # Update all packages
-RUN dnf update -y
+RUN zypper update -y
 
 # base deps
 ENV BASE_DEPS "\
@@ -21,14 +24,9 @@ ENV BASE_DEPS "\
 	gcc \
 	git \
 	make \
-	patch \
 	pkg-config \
-	rpm-build \
+	sudo \
 	which"
-
-ENV EXAMPLES_DEPS "\
-	libpmem-devel \
-	protobuf-c-devel"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -39,19 +37,13 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libunwind-devel \
 	pandoc \
+	rpm-build \
 	rdma-core-devel"
 
-# doc update deps
-ENV DOC_UPDATE_DEPS "\
-	hub"
-
 # Install all required packages
-RUN dnf install -y \
+RUN zypper install -y \
 	$BASE_DEPS \
-	$EXAMPLES_DEPS \
-	$RPMA_DEPS \
-	$DOC_UPDATE_DEPS \
-&& dnf clean all
+	$RPMA_DEPS
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
@@ -61,17 +53,26 @@ RUN ./install-cmocka.sh
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
 
+# Clean the package cache
+RUN zypper clean all
+
 # Add user
 ENV USER user
 ENV USERPASS p1a2s3s4
+ENV PFILE ./password
 RUN useradd -m $USER
-RUN echo "$USER:$USERPASS" | chpasswd
+RUN echo $USERPASS > $PFILE
+RUN echo $USERPASS >> $PFILE
+RUN passwd $USER < $PFILE
+RUN rm -f $PFILE
+RUN sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers
+RUN groupadd wheel
 RUN gpasswd wheel -a $USER
 USER $USER
 
 # Set required environment variables
-ENV OS fedora
-ENV OS_VER 32
+ENV OS opensuse/leap
+ENV OS_VER latest
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
