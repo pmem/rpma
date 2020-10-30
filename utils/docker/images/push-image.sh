@@ -5,11 +5,11 @@
 #
 
 #
-# push-image.sh - pushes the Docker image to the Docker Hub.
+# push-image.sh - pushes the Docker image to ${DOCKER_REPO}
 #
-# The script utilizes $DOCKERHUB_USER and $DOCKERHUB_PASSWORD variables
-# to log in to Docker Hub. The variables can be set in the CI project's
-# configuration for automated builds.
+# The script utilizes $GH_CR_USER and $GH_CR_PAT variables
+# to log in to ${DOCKER_REPO}. The variables can be set
+# in the CI project's configuration for automated builds.
 #
 
 set -e
@@ -26,23 +26,29 @@ if [[ -z "$OS_VER" ]]; then
 	exit 1
 fi
 
-if [[ -z "${DOCKERHUB_REPO}" ]]; then
-	echo "DOCKERHUB_REPO environment variable is not set"
+if [[ -z "${DOCKER_REPO}" ]]; then
+	echo "DOCKER_REPO environment variable is not set"
+	exit 1
+fi
+
+if [[ -z "${GH_CR_USER}" || -z "${GH_CR_PAT}" ]]; then
+	echo "ERROR: variables GH_CR_USER=\"${GH_CR_USER}\" and GH_CR_PAT=\"${GH_CR_PAT}\"" \
+		"have to be set properly to allow login to the ${DOCKER_REPO}."
 	exit 1
 fi
 
 TAG="0.1-${OS}-${OS_VER}"
 
-# Check if the image tagged with pmdk/OS-VER exists locally
-if [[ ! $(docker images -a | awk -v pattern="^${DOCKERHUB_REPO}:${TAG}\$" \
+# Check if the image tagged with ${DOCKER_REPO}:${TAG} exists locally
+if [[ ! $(docker images -a | awk -v pattern="^${DOCKER_REPO}:${TAG}\$" \
 	'$1":"$2 ~ pattern') ]]
 then
-	echo "ERROR: Docker image tagged ${DOCKERHUB_REPO}:${TAG} does not exists locally."
+	echo "ERROR: Docker image tagged ${DOCKER_REPO}:${TAG} does not exists locally."
 	exit 1
 fi
 
-# Log in to the Docker Hub
-docker login -u="$DOCKERHUB_USER" -p="$DOCKERHUB_PASSWORD"
+# Log in to ${DOCKER_REPO}
+echo "${GH_CR_PAT}" | docker login ${GH_CR_ADDR} -u="${GH_CR_USER}" --password-stdin
 
-# Push the image to the repository
-docker push ${DOCKERHUB_REPO}:${TAG}
+# Push the image to ${DOCKER_REPO}
+docker push ${DOCKER_REPO}:${TAG}
