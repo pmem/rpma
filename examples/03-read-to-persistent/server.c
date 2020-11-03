@@ -101,6 +101,8 @@ main(int argc, char *argv[])
 			memcpy(dst_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(dst_ptr, SIGNATURE_LEN);
 		}
+
+		dst_size = KILOBYTE + SIGNATURE_LEN;
 	}
 #endif
 
