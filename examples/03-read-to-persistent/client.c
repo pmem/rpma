@@ -133,6 +133,7 @@ main(int argc, char *argv[])
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
+		mr_size = KILOBYTE;
 	}
 #endif
 

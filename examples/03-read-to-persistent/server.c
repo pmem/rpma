@@ -101,6 +101,7 @@ main(int argc, char *argv[])
 			memcpy(dst_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(dst_ptr, SIGNATURE_LEN);
 		}
+		dst_size = KILOBYTE;
 	}
 #endif
 
@@ -112,7 +113,6 @@ main(int argc, char *argv[])
 
 		dst_size = KILOBYTE;
 	}
-
 	/* RPMA resources */
 	struct rpma_peer *peer = NULL;
 	struct rpma_ep *ep = NULL;
@@ -164,7 +164,8 @@ main(int argc, char *argv[])
 	}
 
 	ret = rpma_read(conn, dst_mr, dst_offset, src_mr, src_data->data_offset,
-			KILOBYTE, RPMA_F_COMPLETION_ALWAYS, NULL);
+			(size_t)KILOBYTE - src_data->data_offset,
+			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
