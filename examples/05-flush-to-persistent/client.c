@@ -20,20 +20,7 @@
 #endif /* USE_LIBPMEM */
 
 #include "common-conn.h"
-
-enum lang_t {en, es};
-
-static const char *hello_str[] = {
-	[en] = "Hello world!",
-	[es] = "¡Hola Mundo!"
-};
-
-#define LANG_NUM	(sizeof(hello_str) / sizeof(hello_str[0]))
-
-struct hello_t {
-	enum lang_t lang;
-	char str[KILOBYTE];
-};
+#include "hello.h"
 
 #define FLUSH_ID	(void *)0xF01D /* a random identifier */
 
