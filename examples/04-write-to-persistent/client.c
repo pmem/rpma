@@ -19,20 +19,7 @@
 #endif /* USE_LIBPMEM */
 
 #include "common-conn.h"
-
-enum lang_t {en, es};
-
-static const char *hello_str[] = {
-	[en] = "Hello world!",
-	[es] = "¡Hola Mundo!"
-};
-
-#define LANG_NUM	(sizeof(hello_str) / sizeof(hello_str[0]))
-
-struct hello_t {
-	enum lang_t lang;
-	char str[KILOBYTE];
-};
+#include "hello.h"
 
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
@@ -49,6 +36,12 @@ translate(struct hello_t *hello)
 	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
 	write_hello_str(hello, lang);
 }
+
+#ifdef TEST_MOCK_MAIN
+#include "cmocka_headers.h"
+#include "cmocka_alloc.h"
+#define main client_main
+#endif
 
 int
 main(int argc, char *argv[])
