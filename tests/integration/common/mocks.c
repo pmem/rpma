@@ -16,7 +16,8 @@ struct verbs_context Verbs_context;
 struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
-struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
+struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
+struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 /* predefined IBV On-demand Paging caps */
@@ -141,9 +142,9 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 	check_expected(wr->wr.rdma.remote_addr);
 
 	uint64_t *pdst_addr = mock_type(uint64_t *);
-	assert_int_equal(wr->sg_list->addr, *pdst_addr);
+	uint64_t src_offset = mock_type(uint64_t);
+	assert_int_equal(wr->sg_list->addr, *pdst_addr + src_offset);
 
-	/* mock of RDMA read */
 	memcpy((void *)wr->sg_list->addr,
 		(void *)wr->wr.rdma.remote_addr, wr->sg_list->length);
 
