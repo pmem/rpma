@@ -12,6 +12,7 @@
 #define MOCK_PORT		"1234"
 #define MOCK_MR			(&Ibv_mr)
 #define MOCK_MR_RAW		(&Ibv_mr_raw)
+#define MOCK_MR_FLUSH	(&Ibv_mr_flush)
 #define MOCK_RAW_SIZE		8 /* memory region size */
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
 #define MOCK_CQ			(&Ibv_cq)
@@ -50,6 +51,7 @@ extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
+extern struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
 
 /* predefined IBV On-demand Paging caps */
 extern struct ibv_odp_caps Ibv_odp_capable_caps;
