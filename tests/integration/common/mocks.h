@@ -12,6 +12,7 @@
 #define MOCK_PORT		"1234"
 #define MOCK_MR			(&Ibv_mr)
 #define MOCK_MR_RAW		(&Ibv_mr_raw)
+#define MOCK_MR_FLUSH	(&Ibv_mr_flush)
 #define MOCK_RAW_SIZE		8 /* memory region size */
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
 #define MOCK_CQ			(&Ibv_cq)
@@ -50,6 +51,9 @@ extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
+extern struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
+extern struct rdma_cm_id Cm_id;	/* mock CM ID */
+extern struct ibv_qp Ibv_qp;		/* mock IBV QP */
 
 /* predefined IBV On-demand Paging caps */
 extern struct ibv_odp_caps Ibv_odp_capable_caps;
@@ -75,3 +79,5 @@ void *__real__test_malloc(size_t size);
 void *__wrap__test_malloc(size_t size);
 int __wrap_fprintf(FILE *__restrict __stream,
 		const char *__restrict __format, ...);
+int	create_descriptor(void *desc,
+		uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t usage);
