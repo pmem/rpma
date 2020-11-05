@@ -167,6 +167,18 @@ test_client__success(void **unused)
 	expect_value(rdma_ack_cm_event, event, &f_event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 
+	/* configure mocks for rpma_read() */
+	expect_value(ibv_post_send_mock, qp, &Ibv_qp);
+	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_READ);
+	expect_value(ibv_post_send_mock, wr->send_flags, IBV_SEND_SIGNALED);
+	expect_value(ibv_post_send_mock, wr->wr_id, 0 /* op_context */);
+	expect_value(ibv_post_send_mock, wr->num_sge, 1);
+	expect_value(ibv_post_send_mock, wr->sg_list->length, MOCK_READ_LEN);
+	expect_value(ibv_post_send_mock, wr->wr.rdma.remote_addr,
+			MOCK_READ_ADDR);
+	will_return(ibv_post_send_mock, (uint64_t *)&allocated.ptr);
+	will_return(ibv_post_send_mock, MOCK_OK);
+
 	/* configure mocks for rpma_conn_completion_wait() */
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_get_cq_event, MOCK_OK);
@@ -180,17 +192,9 @@ test_client__success(void **unused)
 	will_return(ibv_poll_cq_mock, 1);
 	will_return(ibv_poll_cq_mock, &wc);
 
-	/* configure mocks for rpma_read() */
-	expect_value(ibv_post_send_mock, qp, &Ibv_qp);
-	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_READ);
-	expect_value(ibv_post_send_mock, wr->send_flags, IBV_SEND_SIGNALED);
-	expect_value(ibv_post_send_mock, wr->wr_id, 0 /* op_context */);
-	expect_value(ibv_post_send_mock, wr->num_sge, 1);
-	expect_value(ibv_post_send_mock, wr->sg_list->length, MOCK_READ_LEN);
-	expect_value(ibv_post_send_mock, wr->wr.rdma.remote_addr,
-			MOCK_READ_ADDR);
-	will_return(ibv_post_send_mock, (uint64_t *)&allocated.ptr);
-	will_return(ibv_post_send_mock, MOCK_OK);
+	/* configure mocks for rpma_conn_disconnect() */
+	expect_value(rdma_disconnect, id, &Cm_id);
+	will_return(rdma_disconnect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_next_event() */
 	struct rdma_cm_event s_event = {0};
@@ -200,10 +204,6 @@ test_client__success(void **unused)
 
 	expect_value(rdma_ack_cm_event, event, &s_event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
-
-	/* configure mocks for rpma_conn_disconnect() */
-	expect_value(rdma_disconnect, id, &Cm_id);
-	will_return(rdma_disconnect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_delete() */
 	expect_value(ibv_dereg_mr, mr, MOCK_MR_RAW);
@@ -219,10 +219,10 @@ test_client__success(void **unused)
 	expect_value(rdma_destroy_id, id, &Cm_id);
 	will_return(rdma_destroy_id, MOCK_OK);
 
+	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
+
 	expect_value(ibv_dereg_mr, mr, MOCK_MR);
 	will_return(ibv_dereg_mr, MOCK_OK);
-
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* configure mocks for rpma_peer_delete() */
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
@@ -355,10 +355,6 @@ test_server__success(void **unused)
 	expect_value(rdma_ack_cm_event, event, &s_event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 
-	/* configure mocks for rpma_conn_disconnect() */
-	expect_value(rdma_disconnect, id, &Cm_id);
-	will_return(rdma_disconnect, MOCK_OK);
-
 	/* configure mocks for rpma_conn_next_event() */
 	struct rdma_cm_event t_event = {0};
 	t_event.event = RDMA_CM_EVENT_DISCONNECTED;
@@ -367,6 +363,10 @@ test_server__success(void **unused)
 
 	expect_value(rdma_ack_cm_event, event, &t_event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+
+	/* configure mocks for rpma_conn_disconnect() */
+	expect_value(rdma_disconnect, id, &Cm_id);
+	will_return(rdma_disconnect, MOCK_OK);
 
 	/* configure mocks for rpma_conn_delete() */
 	expect_value(ibv_dereg_mr, mr, MOCK_MR_RAW);
@@ -382,10 +382,10 @@ test_server__success(void **unused)
 	expect_value(rdma_destroy_id, id, &Cm_id);
 	will_return(rdma_destroy_id, MOCK_OK);
 
+	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
+
 	expect_value(ibv_dereg_mr, mr, MOCK_MR);
 	will_return(ibv_dereg_mr, MOCK_OK);
-
-	expect_value(rdma_destroy_event_channel, channel, MOCK_EVCH);
 
 	/* configure mocks for rpma_ep_shutdown() */
 	expect_value(rdma_destroy_id, id, &Cm_id);
