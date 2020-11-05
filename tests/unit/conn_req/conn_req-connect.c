@@ -387,6 +387,7 @@ connect_via_accept__success_incoming(void **unused)
 	expect_value(rpma_conn_set_private_data, pdata->ptr, MOCK_PRIVATE_DATA);
 	expect_value(rpma_conn_set_private_data, pdata->len, MOCK_PDATA_LEN);
 	will_return(rpma_conn_set_private_data, 0);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;

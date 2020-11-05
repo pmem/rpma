@@ -87,6 +87,7 @@ teardown__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -160,6 +161,7 @@ teardown__conn_req_new(void **cstate_ptr)
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
