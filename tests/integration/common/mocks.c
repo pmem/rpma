@@ -16,7 +16,10 @@ struct verbs_context Verbs_context;
 struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
-struct ibv_mr Ibv_mr_raw; /* mock IBV MR RAW */
+struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
+struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
+struct rdma_cm_id Cm_id;	/* mock CM ID */
+struct ibv_qp Ibv_qp;		/* mock IBV QP */
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 /* predefined IBV On-demand Paging caps */
@@ -141,9 +144,9 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 	check_expected(wr->wr.rdma.remote_addr);
 
 	uint64_t *pdst_addr = mock_type(uint64_t *);
-	assert_int_equal(wr->sg_list->addr, *pdst_addr);
+	uint64_t src_offset = mock_type(uint64_t);
+	assert_int_equal(wr->sg_list->addr, *pdst_addr + src_offset);
 
-	/* mock of RDMA read */
 	memcpy((void *)wr->sg_list->addr,
 		(void *)wr->wr.rdma.remote_addr, wr->sg_list->length);
 
@@ -727,5 +730,31 @@ __wrap_posix_memalign(void **memptr, size_t alignment, size_t size)
 int
 __wrap_fprintf(FILE *__restrict __stream, const char *__restrict __format, ...)
 {
+	return 0;
+}
+
+/*
+ * create_descriptor -- create a descriptor from the given values
+ */
+int
+create_descriptor(void *desc,
+	uint64_t raddr, uint64_t size, uint32_t rkey, uint8_t usage)
+{
+	char *buff = (char *)desc;
+
+	uint64_t addr = htole64(raddr);
+	memcpy(buff, &addr, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint64_t length = htole64(size);
+	memcpy(buff, &length, sizeof(uint64_t));
+	buff += sizeof(uint64_t);
+
+	uint32_t key = htole32(rkey);
+	memcpy(buff, &key, sizeof(uint32_t));
+	buff += sizeof(uint32_t);
+
+	*((uint8_t *)buff) = usage;
+
 	return 0;
 }
