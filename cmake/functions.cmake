@@ -166,18 +166,16 @@ endfunction()
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
 	if(${CMAKE_C_COMPILER} MATCHES "gcc")
-		# check if the GCC compiler supports the '-Werror=discarded-qualifiers' flag
-		CHECK_C_COMPILER_FLAG("-Werror=discarded-qualifiers" C_HAS_Werror_discarded_qualifiers)
-		if(C_HAS_Werror_discarded_qualifiers)
-			set(RUN_CHECK_C_SOURCE_COMPILES 1)
-		endif()
-	else()
-		# the clang compiler ignores the '-Werror=discarded-qualifiers' flag
-		set(RUN_CHECK_C_SOURCE_COMPILES 0)
+		set(DISCARDED_QUALIFIERS_FLAG "-Werror=discarded-qualifiers")
+	elseif(${CMAKE_C_COMPILER} MATCHES "clang")
+		set(DISCARDED_QUALIFIERS_FLAG "-Werror;-Wincompatible-pointer-types-discards-qualifiers")
 	endif()
 
-	if(RUN_CHECK_C_SOURCE_COMPILES)
-		set(CMAKE_REQUIRED_FLAGS "-Werror=discarded-qualifiers;${CMAKE_REQUIRED_FLAGS}")
+	# check if a compiler supports the ${DISCARDED_QUALIFIERS_FLAG} flag
+	CHECK_C_COMPILER_FLAG("${DISCARDED_QUALIFIERS_FLAG}" C_HAS_Werror_discarded_qualifiers)
+
+	if(C_HAS_Werror_discarded_qualifiers)
+		set(CMAKE_REQUIRED_FLAGS "${DISCARDED_QUALIFIERS_FLAG};${CMAKE_REQUIRED_FLAGS}")
 		set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
 
 		CHECK_C_SOURCE_COMPILES("
