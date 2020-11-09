@@ -37,6 +37,7 @@ malloc_aligned(size_t size)
 
 	return mem;
 }
+
 /*
  * common_peer_via_address -- create a new RPMA peer based on ibv_context
  * received by the provided address
