@@ -124,6 +124,7 @@ main(int argc, char *argv[])
 	struct rpma_peer *peer = NULL;
 	struct rpma_ep *ep = NULL;
 	struct rpma_conn *conn = NULL;
+	bool direct_write_to_pmem = false;
 
 	/* if the string content is not empty */
 	if (((char *)mr_ptr + data_offset)[0] != '\0') {
@@ -154,6 +155,11 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_pcfg_delete;
 
+	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg,
+			&direct_write_to_pmem);
+	if (ret)
+		goto err_pcfg_delete;
+
 	/* start a listening endpoint at addr:port */
 	ret = rpma_ep_listen(peer, addr, port, &ep);
 	if (ret)
@@ -162,7 +168,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_DST |
-			(is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
+			(direct_write_to_pmem ?
+				RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
 			&mr);
 	if (ret)
