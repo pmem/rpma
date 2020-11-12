@@ -27,7 +27,7 @@ apm_do__success(void **fstate_ptr)
 	expect_value(rpma_mr_read, src, MOCK_RPMA_MR_REMOTE);
 	expect_value(rpma_mr_read, src_offset, MOCK_REMOTE_OFFSET);
 	expect_value(rpma_mr_read, len, MOCK_RAW_LEN);
-	expect_value(rpma_mr_read, flags, RPMA_F_COMPLETION_ALWAYS);
+	expect_value(rpma_mr_read, flags, MOCK_FLAGS);
 	expect_value(rpma_mr_read, op_context, MOCK_OP_CONTEXT);
 	will_return(rpma_mr_read, MOCK_OK);
 
