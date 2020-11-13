@@ -20,11 +20,14 @@ if(SRC2MAN AND GROFF AND FIND AND DIFF)
 
 	add_custom_target(doc ALL 
 		COMMAND ${CMAKE_SOURCE_DIR}/utils/src2mans.sh
-			${CMAKE_SOURCE_DIR}/src ${man3_list} ${man7_list})
+			${CMAKE_SOURCE_DIR}/src ${man3_list} ${man7_list}
+			${CMAKE_SOURCE_DIR}/utils/mans_header.md)
 
 	add_custom_target(doc-fix
 		COMMAND ${CMAKE_SOURCE_DIR}/utils/src2mans.sh
-			${CMAKE_SOURCE_DIR}/src ${man3_list} ${man7_list} fix)
+			${CMAKE_SOURCE_DIR}/src ${man3_list} ${man7_list}
+			${CMAKE_SOURCE_DIR}/utils/mans_header.md
+			fix)
 
 	file(STRINGS ${man3_list} man3)
 	file(STRINGS ${man7_list} man7)
