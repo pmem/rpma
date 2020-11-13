@@ -1,0 +1,16 @@
+{
+   The list of translations, once it is created, is not freed
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:*/lib*/libnl-*.so*
+}
+
+{
+   The name of routing table, once it is created, is not freed
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:strdup
+   obj:*/lib*/libnl-*.so*
+}
