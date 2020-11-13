@@ -1,0 +1,108 @@
+{
+   The array of ports, once it is allocated, is not freed
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:ucma_init_device.part.0
+   fun:ucma_init_device
+}
+
+{
+   The list of devices, once it is created, is not freed
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:insert_cma_dev.isra.0
+   fun:sync_devices_list
+}
+
+{
+   Verbs devices, once they are opened, are never closed (RXE variant)
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:verbs_init_context
+   fun:_verbs_init_and_alloc_context
+}
+
+{
+   Verbs device context, once it is created, is not freed
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:_verbs_init_and_alloc_context
+}
+
+{
+   rdma-cm-leak-005
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:*/lib*/librdmacm.so*
+}
+
+{
+   rdma-cm-leak-006
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:*/lib*/librdmacm.so*
+}
+
+{
+   rdma-cm-leak-007
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:*/lib*/libibverbs.so*
+}
+
+{
+   rdma-cm-leak-008
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:*/lib*/libibverbs.so*
+}
+
+{
+   rdma-cm-leak-009
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   obj:*/lib*/libnl-*.so*
+}
+
+{
+   rdma-cm-leak-010
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:strdup
+   obj:*/lib*/libc-*.so*
+}
+
+{
+   rdma-cm-leak-011
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:strdup
+   obj:*/lib*/libnl-*.so*
+}
+
+{
+   rdma-cm-param-001
+   Memcheck:Param
+   write(buf)
+   fun:write
+   fun:rdma_accept
+}
+
+{
+   rdma-cm-param-002
+   Memcheck:Param
+   write(buf)
+   fun:write
+   fun:rdma_connect
+}
