@@ -9,21 +9,24 @@
 DIR=$1
 MAN_3=$2
 MAN_7=$3
-[ "$4" == "fix" ] && FIX=1 || FIX=0
+MANS_HEADER=$4
+[ "$5" == "fix" ] && FIX=1 || FIX=0
 
-if [ $# -lt 3 ] || [ ! -d $DIR ] || [ ! -f $MAN_3 ] || [ ! -f $MAN_7 ]; then
+if [ $# -lt 4 ] || [ ! -d $DIR ] || [ ! -f $MAN_3 ] || [ ! -f $MAN_7 ] || [ ! -f $MANS_HEADER ]; then
 	echo "$ $0 $*"
 	echo "Error: missing or wrong argument"
 	echo
-	echo "Usage: $(basename $0) <directory> <man3-file> <man7-file> [fix]"
-	echo "   <directory> - directory to be searched for *.h files"
-	echo "   <man3-file> - file containing list of section #3 manuals"
-	echo "   <man7-file> - file containing list of section #7 manuals"
-	echo "   fix         - fix files containing list of manuals"
+	echo "Usage: $(basename $0) <directory> <man3-file> <man7-file> <mans_header> [fix]"
+	echo "   <directory>   - directory to be searched for *.h files"
+	echo "   <man3-file>   - file containing list of section #3 manuals"
+	echo "   <man7-file>   - file containing list of section #7 manuals"
+	echo "   <mans_header> - common header of markup manuals"
+	echo "   fix           - fix files containing list of manuals"
 	echo
 	[ ! -d $DIR ] && echo "Error: $DIR does not exist or is not a directory"
 	[ ! -f $MAN_3 ] && echo "Error: $MAN_3 does not exist or is not a regular file"
 	[ ! -f $MAN_7 ] && echo "Error: $MAN_7 does not exist or is not a regular file"
+	[ ! -f $MANS_HEADER ] && echo "Error: $MANS_HEADER does not exist or is not a regular file"
 	exit 1
 fi
 
@@ -84,7 +87,7 @@ do
 			# fix the name issue '**a **-' -> '**a** -'
 			sed -i '5s/ \*\*-/\*\* -/' $f.tmp2
 			# start with a custom header
-			cat ../../utils/mans_header.md > md/$f.md
+			cat $MANS_HEADER > md/$f.md
 			cat $f.tmp2 >> md/$f.md
 			rm $f.tmp1 $f.tmp2
 		done
