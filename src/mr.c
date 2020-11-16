@@ -87,6 +87,10 @@ usage_to_access(int usage)
 	if (usage & RPMA_MR_USAGE_RECV)
 		access |= IBV_ACCESS_LOCAL_WRITE;
 
+	/*
+	 * There is no IBV_ACCESS_* value to be set for RPMA_MR_USAGE_SEND.
+	 */
+
 	return access;
 }
 
