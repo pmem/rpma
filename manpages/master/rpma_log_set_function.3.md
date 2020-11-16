@@ -53,7 +53,7 @@ Parameters of a user-defined log function are as follow:
 -   *message\_format* - **printf**(3)**-like** format string of the
     message
 
--   \`\`\` - additional arguments of the message format string
+-   \"\`\`\`\" - additional arguments of the message format string
 
 THE DEFAULT LOGGING FUNCTION
 ============================
