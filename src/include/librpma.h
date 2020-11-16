@@ -2593,7 +2593,7 @@ typedef void rpma_log_function(
  * - line_no - the source file line where the message coming from
  * - function_name - the function name where the message coming from
  * - message_format - printf(3)-like format string of the message
- * - ... - additional arguments of the message format string
+ * - "..." - additional arguments of the message format string
  *
  * THE DEFAULT LOGGING FUNCTION
  * The initial value of the logging function is RPMA_LOG_USE_DEFAULT_FUNCTION.
