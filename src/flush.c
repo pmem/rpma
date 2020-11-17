@@ -124,7 +124,7 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 			(struct flush_apm *)flush_internal->context;
 
 	return rpma_mr_read(qp, flush_apm->raw_mr, 0, dst, dst_offset,
-			RAW_SIZE, RPMA_F_COMPLETION_ALWAYS, op_context);
+			RAW_SIZE, flags, op_context);
 }
 
 /* internal librpma API */
