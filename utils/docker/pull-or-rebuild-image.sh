@@ -25,17 +25,14 @@ set -e
 source $(dirname $0)/set-ci-vars.sh
 source $(dirname $0)/set-vars.sh
 
-if [[ "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" \
-	&& "$TYPE" == "coverity" ]]; then
+if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
 	echo "INFO: Skip Coverity scan job if build is triggered neither by " \
 		"'cron' nor by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
-if [[ ( "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" )\
-	&& "$TYPE" != "coverity" ]]; then
-	echo "INFO: Skip regular jobs if build is triggered either by 'cron'" \
-		" or by a push to 'coverity_scan' branch"
+if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
+	echo "INFO: Skip regular jobs if build is triggered by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
