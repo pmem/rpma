@@ -136,7 +136,7 @@ main(int argc, char *argv[])
 						"received completion is not as expected (%p != %p [cmpl.op_context] || %"
 						PRIu32
 						" != %ld [cmpl.byte_len] )\n",
-						cmpl.op_context, recv,
+						cmpl.op_context, (void *)recv,
 						cmpl.byte_len, MSG_SIZE);
 					ret = -1;
 					break;
