@@ -32,16 +32,14 @@ if [[ -z "$HOST_WORKDIR" ]]; then
 	HOST_WORKDIR=$(readlink -f ../..)
 fi
 
-if [[ "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" ]]; then
-	if [[ "$TYPE" != "coverity" ]]; then
-		echo "Skipping non-Coverity job for cron/Coverity build"
-		exit 0
-	fi
-else
-	if [[ "$TYPE" == "coverity" ]]; then
-		echo "Skipping Coverity job for non cron/Coverity build"
-		exit 0
-	fi
+if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
+	echo "Skipping Coverity job for non cron/Coverity build"
+	exit 0
+fi
+
+if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
+	echo "Skipping non-Coverity job for cron/Coverity build"
+	exit 0
 fi
 
 imageName=${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER}
