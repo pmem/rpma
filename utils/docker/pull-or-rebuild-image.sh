@@ -25,6 +25,32 @@ set -e
 source $(dirname $0)/set-ci-vars.sh
 source $(dirname $0)/set-vars.sh
 
+function rebuild_and_push_image()
+{
+	# Rebuild Docker image for the current OS version
+	echo "Rebuilding the Docker image for the Dockerfile.$OS-$OS_VER"
+	pushd $images_dir_name
+	./build-image.sh ${DOCKER_REPO} ${OS}-${OS_VER}
+	popd
+
+	# Check if the image has to be pushed to ${DOCKER_REPO}
+	# (i.e. the build is triggered by commits to the ${GITHUB_REPO}
+	# repository's master branch, and the Travis build is not
+	# of the "pull_request" type). In that case, create the empty
+	# file.
+	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
+		&& ($CI_BRANCH == stable-* || $CI_BRANCH == master) \
+		&& $CI_EVENT_TYPE != "pull_request"
+		&& $PUSH_IMAGE == "1" ]]
+	then
+		echo "The image will be pushed to ${DOCKER_REPO}"
+		touch $CI_FILE_PUSH_IMAGE_TO_REPO
+	else
+		echo "Skip pushing the image to ${DOCKER_REPO}"
+	fi
+	exit 0
+}
+
 if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
 	echo "INFO: Skip Coverity scan job if build is triggered neither by " \
 		"'cron' nor by a push to 'coverity_scan' branch"
@@ -74,31 +100,10 @@ for file in $files; do
 	if [[ $file =~ ^($base_dir)\/Dockerfile\.($OS)-($OS_VER)$ ]] \
 		|| [[ $file =~ ^($base_dir)\/.*\.sh$ ]]
 	then
-		# Rebuild Docker image for the current OS version
-		echo "Rebuilding the Docker image for the Dockerfile.$OS-$OS_VER"
-		pushd $images_dir_name
-		./build-image.sh ${DOCKER_REPO} ${OS}-${OS_VER}
-		popd
-
-		# Check if the image has to be pushed to ${DOCKER_REPO}
-		# (i.e. the build is triggered by commits to the ${GITHUB_REPO}
-		# repository's master branch, and the Travis build is not
-		# of the "pull_request" type). In that case, create the empty
-		# file.
-		if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
-			&& ($CI_BRANCH == stable-* || $CI_BRANCH == master) \
-			&& $CI_EVENT_TYPE != "pull_request"
-			&& $PUSH_IMAGE == "1" ]]
-		then
-			echo "The image will be pushed to ${DOCKER_REPO}"
-			touch $CI_FILE_PUSH_IMAGE_TO_REPO
-		else
-			echo "Skip pushing the image to ${DOCKER_REPO}"
-		fi
-		exit 0
+		rebuild_and_push_image
 	fi
 done
 
 # Getting here means rebuilding the Docker image is not required.
 # Pull the image from ${DOCKER_REPO}.
-docker pull ${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER}
+docker pull ${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER} || rebuild_and_push_image
