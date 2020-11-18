@@ -98,7 +98,8 @@ base_dir=utils/docker/$images_dir_name
 for file in $files; do
 	# Check if modified files are relevant to the current build
 	if [[ $file =~ ^($base_dir)\/Dockerfile\.($OS)-($OS_VER)$ ]] \
-		|| [[ $file =~ ^($base_dir)\/.*\.sh$ ]]
+		|| [[ $file =~ ^($base_dir)\/.*\.sh$ ]] \
+		|| [[ "$REBUILD_ALWAYS" == "YES" ]]
 	then
 		rebuild_and_push_image
 	fi
