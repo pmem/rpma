@@ -375,13 +375,6 @@ rpma_flush(struct rpma_conn *conn,
 		return RPMA_E_NOSUPP;
 	}
 
-	if (type == RPMA_FLUSH_TYPE_VISIBILITY &&
-	    0 == (flush_type & RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY)) {
-		RPMA_LOG_ERROR(
-			"The remote memory region does not support flushing to global visibility");
-		return RPMA_E_NOSUPP;
-	}
-
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
 			len, type, flags, op_context);
