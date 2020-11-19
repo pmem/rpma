@@ -106,5 +106,6 @@ for file in $files; do
 done
 
 # Getting here means rebuilding the Docker image is not required.
-# Pull the image from ${DOCKER_REPO}.
+# Pull the image from ${DOCKER_REPO}. If pulling fails
+# (e.g. there is no desired image), then rebuild the image.
 docker pull ${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER} || rebuild_and_push_image
