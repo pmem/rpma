@@ -145,4 +145,13 @@ $ ifconfig ens785f0 mtu 4200
 
 ## Running workloads
 
-XXX placeholder
+Before running your workload make sure your PMem and RDMA-capable network interface you want to use belong to the same NUMA node and it is the NUMA node you want to run your software on.
+
+**XXX** more details needed here.
+
+When you have all hardware resources attached to one NUMA node you can run your software on this NUMA node.
+
+```sh
+$ NUMA_NODE=0
+$ numactl -N $NUMA_NODE ./fio ~/fio_jobs/librpma-client.fio
+```
