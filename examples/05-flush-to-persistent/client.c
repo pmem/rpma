@@ -151,7 +151,7 @@ main(int argc, char *argv[])
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
 	bool direct_write_to_pmem = false;
-	enum rpma_flush_type flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
+	enum rpma_flush_type flush_type;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -227,7 +227,8 @@ main(int argc, char *argv[])
 		printf("RPMA_FLUSH_TYPE_PERSISTENT is supported\n");
 		flush_type = RPMA_FLUSH_TYPE_PERSISTENT;
 	} else {
-		printf("RPMA_FLUSH_TYPE_PERSISTENT is NOT supported\n");
+		printf("RPMA_FLUSH_TYPE_PERSISTENT is NOT supported\n"
+			"RPMA_FLUSH_TYPE_VISIBILITY is used instead\n");
 		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 	}
 

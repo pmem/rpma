@@ -162,7 +162,8 @@ main(int argc, char *argv[])
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
 			RPMA_MR_USAGE_WRITE_DST |
-			(is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
+			(is_pmem ? (RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT |
+				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY) :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
 			&mr);
 	if (ret)
