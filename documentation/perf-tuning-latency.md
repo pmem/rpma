@@ -101,4 +101,13 @@ XXX placeholder
 
 ## Running workloads
 
-XXX placeholder
+Before running your workload make sure your PMem and RDMA-capable network interface you want to use belong to the same NUMA node and it is the NUMA node you want to run your software on.
+
+**XXX** more details needed here.
+
+When you have everything in check you can run your software attaching it to the dedicated NUMA node.
+
+```sh
+$ NUMA_NODE=0
+$ numactl -N $NUMA_NODE ./fio ~/fio_jobs/librpma-client.fio
+```
