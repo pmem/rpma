@@ -190,7 +190,8 @@ rpma_mr_write(struct ibv_qp *qp,
 int
 rpma_mr_send(struct ibv_qp *qp,
 	const struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, const void *op_context)
+	size_t len, int flags, const void *op_context,
+	enum ibv_wr_opcode operation, uint32_t value)
 {
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
@@ -204,7 +205,15 @@ rpma_mr_send(struct ibv_qp *qp,
 	wr.num_sge = 1;
 	wr.next = NULL;
 
-	wr.opcode = IBV_WR_SEND;
+	wr.opcode = operation;
+	switch (wr.opcode) {
+	case IBV_WR_SEND:
+		break;
+	default:
+		RPMA_LOG_ERROR("unsupported wr.opcode == %d", wr.opcode);
+		return RPMA_E_NOSUPP;
+	}
+
 	wr.wr_id = (uint64_t)op_context;
 	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
 		IBV_SEND_SIGNALED : 0;

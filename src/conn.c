@@ -400,7 +400,8 @@ rpma_send(struct rpma_conn *conn,
 
 	return rpma_mr_send(conn->id->qp,
 			src, offset, len,
-			flags, op_context);
+			flags, op_context,
+			IBV_WR_SEND, 0);
 }
 
 /*
