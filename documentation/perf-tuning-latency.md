@@ -95,9 +95,53 @@ FREQ=2.3Ghz
 sudo cpupower frequency-set --min $FREQ
 sudo cpupower frequency-set --max $FREQ
 ```
+
 ## RDMA-capable network interface
 
-XXX placeholder
+### PCIe [[3.1]][mlx-pcie]
+
+[XXX TODO][mlx-pcie]
+
+### Link mode [[3.2]][mlx-port-speed]
+
+List supported link modes:
+
+```sh
+$ ethtool ens785f0
+Settings for ens785f0:
+        Supported ports: [ Backplane ]
+        Supported link modes:   1000baseKX/Full
+# ...
+                                100000baseKR4/Full
+                                100000baseSR4/Full
+                                100000baseCR4/Full
+                                100000baseLR4_ER4/Full
+#...
+```
+
+Set the maximum available value:
+
+```sh
+$ sudo ethtool -s ens785f0 speed 100000 autoneg off
+```
+
+### Maximum Transmission Unit (MTU) [[3.3]][mlx-mtu]
+
+Set MTU to the maximum recommended value. In most cases, it is 4200.
+
+```sh
+$ ifconfig ens785f0 mtu 4200
+```
+
+### References
+
+* [3.1] [Mellanox: Understanding PCIe Configuration for Maximum Performance][mlx-pcie]
+* [3.2] [Mellanox: HowTo Change the Ethernet Port Speed of Mellanox Adapters (Linux)][mlx-port-speed]
+* [3.3] [Mellanox: MTU Considerations for RoCE based Applications][mlx-mtu]
+
+[mlx-pcie]: https://community.mellanox.com/s/article/understanding-pcie-configuration-for-maximum-performance
+[mlx-port-speed]: https://community.mellanox.com/s/article/howto-change-the-ethernet-port-speed-of-mellanox-adapters--linux-x
+[mlx-mtu]: https://community.mellanox.com/s/article/mtu-considerations-for-roce-based-applications
 
 ## Running workloads
 
