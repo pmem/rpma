@@ -16,4 +16,5 @@ The documentation is available for:
 
 #### Recommended reading list
 
+* [Basic - Direct write to PMem (WIP)](./documentation/basic-direct-write-to-pmem.html)
 * [Performance - Tuning for latency (WIP)](./documentation/perf-tuning-latency.html)
