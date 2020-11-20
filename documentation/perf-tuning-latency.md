@@ -95,3 +95,10 @@ FREQ=2.3Ghz
 sudo cpupower frequency-set --min $FREQ
 sudo cpupower frequency-set --max $FREQ
 ```
+## RDMA-capable network interface
+
+XXX placeholder
+
+## Running workloads
+
+XXX placeholder
