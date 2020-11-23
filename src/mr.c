@@ -168,6 +168,8 @@ rpma_mr_write(struct ibv_qp *qp,
 	wr.opcode = IBV_WR_RDMA_WRITE;
 	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
 		IBV_SEND_SIGNALED : 0;
+	wr.send_flags |= (flags & RPMA_F_COMPLETION_ON_ERROR) ?
+		IBV_SEND_FENCE : 0;
 
 	struct ibv_send_wr *bad_wr;
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
