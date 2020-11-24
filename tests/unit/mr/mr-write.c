@@ -38,7 +38,7 @@ write__COMPL_ALWAYS_failed_E_PROVIDER(void **mrs_ptr)
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
 				mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT);
+				MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -66,7 +66,7 @@ write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
 				mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
-				MOCK_OP_CONTEXT);
+				MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -93,7 +93,7 @@ write__success(void **mrs_ptr)
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
 				mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT);
+				MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);

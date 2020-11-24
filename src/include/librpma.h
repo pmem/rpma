@@ -422,6 +422,9 @@ enum rpma_util_ibv_context_type {
 	RPMA_UTIL_IBV_CONTEXT_REMOTE /* lookup for a remote device */
 };
 
+#define RPMA_F_SEND_NOFENCE		0
+#define RPMA_F_SEND_FENCE		1
+
 /** 3
  * rpma_utils_get_ibv_context - obtain an RDMA device context by IP address
  *
