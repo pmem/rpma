@@ -405,6 +405,23 @@ rpma_send(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_send_with_imm -- initiate the send operation with immediate data
+ */
+int
+rpma_send_with_imm(struct rpma_conn *conn,
+	const struct rpma_mr_local *src, size_t offset, size_t len,
+	int flags, const void *op_context, uint32_t imm_data)
+{
+	if (conn == NULL || src == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_send(conn->id->qp,
+			src, offset, len,
+			flags, op_context,
+			IBV_WR_SEND_WITH_IMM, imm_data);
+}
+
+/*
  * rpma_recv -- initiate the receive operation
  */
 int
@@ -519,6 +536,10 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->byte_len = wc.byte_len;
 	cmpl->op_status = wc.status;
+	cmpl->flags = wc.wc_flags;
+
+	if (cmpl->flags & IBV_WC_WITH_IMM)
+		cmpl->imm_data = be32toh(wc.imm_data);
 
 	if (unlikely(wc.status != IBV_WC_SUCCESS)) {
 		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64

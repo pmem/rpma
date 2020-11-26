@@ -60,6 +60,7 @@ LIBRPMA_1.0 {
 		rpma_read;
 		rpma_recv;
 		rpma_send;
+		rpma_send_with_imm;
 		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
 		rpma_utils_ibv_context_is_odp_capable;
