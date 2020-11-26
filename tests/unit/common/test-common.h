@@ -29,6 +29,8 @@
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
+#define MOCK_NOFENCE		false
+#define MOCK_FENCE			true
 
 #define MOCK_OK			0
 #define MOCK_ERRNO		123456
