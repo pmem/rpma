@@ -147,7 +147,7 @@ int
 rpma_mr_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, const void *op_context)
+	size_t len, int flags, const void *op_context, bool fence)
 {
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
@@ -168,6 +168,8 @@ rpma_mr_write(struct ibv_qp *qp,
 	wr.opcode = IBV_WR_RDMA_WRITE;
 	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
 		IBV_SEND_SIGNALED : 0;
+	wr.send_flags |= (fence == true) ?
+		IBV_SEND_FENCE : 0;
 
 	struct ibv_send_wr *bad_wr;
 	int ret = ibv_post_send(qp, &wr, &bad_wr);

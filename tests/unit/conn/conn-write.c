@@ -105,6 +105,7 @@ write__success(void **cstate_ptr)
 	expect_value(rpma_mr_write, len, MOCK_LEN);
 	expect_value(rpma_mr_write, flags, MOCK_FLAGS);
 	expect_value(rpma_mr_write, op_context, MOCK_OP_CONTEXT);
+	expect_value(rpma_mr_write, fence, MOCK_NOFENCE);
 	will_return(rpma_mr_write, MOCK_OK);
 
 	/* run test */
