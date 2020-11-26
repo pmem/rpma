@@ -209,6 +209,9 @@ rpma_mr_send(struct ibv_qp *qp,
 	switch (wr.opcode) {
 	case IBV_WR_SEND:
 		break;
+	case IBV_WR_SEND_WITH_IMM:
+		wr.imm_data = htobe32(value);
+		break;
 	default:
 		RPMA_LOG_ERROR("unsupported wr.opcode == %d", wr.opcode);
 		return RPMA_E_NOSUPP;
