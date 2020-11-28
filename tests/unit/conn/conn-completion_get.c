@@ -161,14 +161,24 @@ completion_get__success(void **cstate_ptr)
 			IBV_WC_RDMA_READ,
 			IBV_WC_RDMA_WRITE,
 			IBV_WC_SEND,
+			IBV_WC_RECV,
 			IBV_WC_RECV
 	};
 	enum rpma_op ops[] = {
 			RPMA_OP_READ,
 			RPMA_OP_WRITE,
 			RPMA_OP_SEND,
+			RPMA_OP_RECV,
 			RPMA_OP_RECV
 	};
+	unsigned flags[] = {
+		0,
+		0,
+		0,
+		0,
+		IBV_WC_WITH_IMM
+	};
+
 	int n_values = sizeof(opcodes) / sizeof(opcodes[0]);
 
 	for (int i = 0; i < n_values; i++) {
@@ -181,6 +191,10 @@ completion_get__success(void **cstate_ptr)
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 		wc.byte_len = MOCK_LEN;
 		wc.status = MOCK_WC_STATUS;
+		if (flags[i] == IBV_WC_WITH_IMM) {
+			wc.wc_flags = flags[i];
+			wc.imm_data = htobe32(MOCK_IMM_DATA);
+		}
 		will_return(poll_cq, &wc);
 
 		/* run test */
@@ -193,6 +207,10 @@ completion_get__success(void **cstate_ptr)
 		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
 		assert_int_equal(cmpl.byte_len, MOCK_LEN);
 		assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
+		if (flags[i] == IBV_WC_WITH_IMM) {
+			assert_int_equal(cmpl.flags, IBV_WC_WITH_IMM);
+			assert_int_equal(cmpl.imm_data, MOCK_IMM_DATA);
+		}
 	}
 }
 

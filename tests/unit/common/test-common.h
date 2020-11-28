@@ -14,6 +14,7 @@
 #define MOCK_PORT		"1234" /* a random port number */
 #define MOCK_TIMEOUT_MS		5678
 #define MOCK_Q_SIZE		123
+#define MOCK_IMM_DATA		1234
 
 /* random values */
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
