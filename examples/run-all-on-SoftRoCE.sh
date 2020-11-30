@@ -65,6 +65,11 @@ function run_example() {
 		$DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
 		RV=$?
 		;;
+	10-send-with-imm)
+		echo "Starting the client ..."
+		$DIR/client $IP_ADDRESS $PORT "1st_word" "imm_data=1234"
+		RV=$?
+		;;
 	*)
 		echo "Starting the client ..."
 		$DIR/client $IP_ADDRESS $PORT
