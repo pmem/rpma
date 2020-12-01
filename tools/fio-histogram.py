@@ -7,6 +7,9 @@
 #
 # fio-histogram.py -- generate a histogram from a FIO log (EXPERIMENTAL)
 #
+# To generate a FIO log you have to use write_bw_log, write_lat_log
+# or write_iops_log option. Please see the FIO manual for details.
+#
 
 import argparse
 import pandas as pd
