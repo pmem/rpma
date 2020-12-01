@@ -19,7 +19,13 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
 
 * Platform and CPU related [[1.1]][opt-part-1]
     * Disable lower CPU power states: C-states[[1.2]][power-states], C1E, and memory and PCI-e power saving states. Settings vary from vendor to vendor so some of them may not be available for you.
+      * Power n Performance - CPU Power and Performance Policy - **Performance**
+      * Power n Performance - Package C-State - **0x0 (C0/C1 state)**
+      * Power n Performance - C1E - **Disabled**
     * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better).
+      * Memory Configuration - Average Power Budget (in mW) **15 mW = 0x3A98**, **18 mW = 0x4650**
+      * Memory Configuration - NVM Performance Setting - **Latency Optimized**
+      * System Acoustic and Performance Configuration - Set Fan Profile - **0x1 (Performance)**
 * PMem-related
     * configure maximum available operating power for your PMem devices **[XXX source and details are missing]**. **Note**: Different sizes of PMem devices have different performance capabilites. If it is important for you, pick the right one for your application. [[1.3]][pmem-200-brief]
 
@@ -28,7 +34,10 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
 * Ensure that *Intel® Turbo Boost*[[1.4]][turbo] is on.
 * Disable hyper-threading to reduce variations in latency (jitter).
 * Disable any virtualization options.
+  * Processor Configuration - Intel(R) Virtualization Technology - **Disabled**
+  * Processor Configuration - Intel(R) Hyper-Threading Tech - **Disabled**
 * Disable any monitoring options.
+  * Memory Configuration - Thermal Monitor - **Disabled**
 * Disable Hardware Power Management, introduced in the Intel® Xeon® processor E5-2600 v4 product family. It provides more control over power management, but it can cause jitter and so is not recommended for latency-sensitive applications.
 
 ### References
