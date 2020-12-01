@@ -1,0 +1,20 @@
+# The librpma_server engine requires some options to work correctly:
+# - create_serialize=0 forces specific initiation sequence
+
+[global]
+ioengine=librpma_server
+create_serialize=0
+bindname=${bindname}
+port=7204
+thread
+
+# The server side spawns a single thread, opens and registers the whole
+# provided memory. The server accepts a connection, waits for it to end up,
+# and closes itself.
+
+[server]
+sync=1
+iomem_align=$pagesize
+mem=${mem}
+num_conns=${num_conns}
+size=100MiB
