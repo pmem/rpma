@@ -34,6 +34,10 @@ function usage()
     exit 1
 }
 
+echo "Performance results: $OUTPUT"
+echo "Output and errors (both sides): $LOG_ERR"
+echo
+
 if [ "$#" -lt 1 ]; then
     usage "Too few arguments"
 elif [ -z "$JOB_NUMA" ]; then
