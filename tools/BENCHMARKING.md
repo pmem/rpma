@@ -11,13 +11,35 @@ As a baseline the generally accepted tools like `ib_read_lat`, `ib_read_bw` etc.
 Generate the baseline latency numbers using `./ib_read_lat.sh` tool which single-sidedly runs `ib_read_lat` with various data sizes:
 
 ```sh
-$ # XXX
+$ export JOB_NUMA=0
+
+# -d <IB device> -R (enable rdma_cm QP)
+$ export AUX_PARAMS='-d mlx5_0 -R'
+$ export REMOTE_USER=user
+$ export REMOTE_PASS=pass
+$ export REMOTE_JOB_NUMA=0
+$ export REMOTE_AUX_PARAMS='-d mlx5_0 -R'
+
+$ ./ib_read_lat.sh <SERVER_IP>
 ```
 
 Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_read_lat.sh`:
 
 ```sh
-$ # XXX
+$ export JOB_NUMA=0
+$ export FIO_PATH=/custom/fio/path
+$ export REMOTE_USER=user
+$ export REMOTE_PASS=pass
+$ export REMOTE_JOB_NUMA=0
+$ export REMOTE_FIO_PATH=/custom/fio/path
+
+# optional, by default: /dev/shm/librpma-server-${TIMESTAMP}.fio
+$ export REMOTE_JOB_PATH=/custom/jobs/path
+
+# optional, by default: malloc
+$ export REMOTE_JOB_MEM=mmap:/path/to/mem
+
+$ ./rpma_read_lat.sh <SERVER_IP>
 ```
 
 Generate a comparison using XXX tool:
