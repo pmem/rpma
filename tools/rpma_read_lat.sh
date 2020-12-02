@@ -56,7 +56,7 @@ if [ -z "$REMOTE_JOB_PATH" ]; then
     REMOTE_JOB_PATH=/dev/shm/librpma-server-${TIMESTAMP}.fio
 fi
 if [ -z "$REMOTE_JOB_MEM" ]; then
-    REMOTE_JOB_MEM=mmap
+    REMOTE_JOB_MEM=malloc
 fi
 
 for ds in $DATA_SIZE; do
@@ -74,7 +74,7 @@ for ds in $DATA_SIZE; do
     # run FIO
     hostname=$SERVER_IP blocksize=$ds \
         numactl -N $JOB_NUMA ${FIO_PATH}fio \
-        ${JOBS_PATH}librpma-client-read.fio --output-format=json+ \
+        ./fio_jobs/librpma-client-read.fio --output-format=json+ \
         > $TEMP_JSON
     if [ "$?" -ne 0 ]; then
         echo "Error: FIO job failed"
