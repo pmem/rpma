@@ -53,7 +53,7 @@ echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
 
 for ds in $DATA_SIZE; do
     # run the server
-    sshpass -p "$REMOTE_PASS" ssh $REMOTE_USER@$SERVER_IP \
+    sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
         "numactl -N $REMOTE_JOB_NUMA ib_read_lat --size $ds \
         $REMOTE_AUX_PARAMS > /dev/shm/ib_read_lat.log " \
 	    2>>$LOG_ERR &

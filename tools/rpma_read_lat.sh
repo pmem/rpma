@@ -64,7 +64,7 @@ for ds in $DATA_SIZE; do
     sshpass -p "$REMOTE_PASS" scp ./fio_jobs/librpma-server.fio \
         $REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
     # run the server
-    sshpass -p "$REMOTE_PASS" ssh $REMOTE_USER@$SERVER_IP \
+    sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
         "bindname=$SERVER_IP mem=$REMOTE_JOB_MEM num_conns=1 \
         numactl -N $REMOTE_JOB_NUMA \
             ${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR" 2>>$LOG_ERR &
