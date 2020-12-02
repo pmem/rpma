@@ -55,8 +55,7 @@ for ds in $DATA_SIZE; do
     # run the server
     sshpass -p "$REMOTE_PASS" ssh $REMOTE_USER@$SERVER_IP \
         "numactl -N $REMOTE_JOB_NUMA ib_read_lat --size $ds \
-        $REMOTE_AUX_PARAMS > /dev/shm/ib_read_lat.log " \
-	    2>>$LOG_ERR &
+        $REMOTE_AUX_PARAMS > $LOG_ERR" 2>>$LOG_ERR &
     sleep 1
 
     # XXX --duration hides detailed statistics
