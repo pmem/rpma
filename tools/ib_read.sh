@@ -86,3 +86,6 @@ for ds in $DATA_SIZE; do
         grep -v '[B]' | sed 's/^[ ]*//' | sed 's/[ ]*$//' | \
         sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 done
+
+# convert to standardized-CSV
+./csv2standardized.py --csv_type ib --output_file $OUTPUT $OUTPUT
