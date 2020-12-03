@@ -48,6 +48,10 @@ elif [ -z "$REMOTE_JOB_NUMA" ]; then
     usage "REMOTE_JOB_NUMA not set"
 fi
 
+echo "Performance results: $OUTPUT"
+echo "Output and errors (both sides): $LOG_ERR"
+echo
+
 SERVER_IP=$1
 
 rm -f $LOG_ERR $OUTPUT
