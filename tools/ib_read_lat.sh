@@ -17,7 +17,7 @@ ITERATIONS=10000000
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 OUTPUT=ib_read_lat-${TIMESTAMP}.csv
 LOG_ERR=/dev/shm/ib_read_lat_err-${TIMESTAMP}.log
-HEADER=" #bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]"
+HEADER="#bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]"
 
 function usage()
 {
@@ -66,6 +66,6 @@ for ds in $DATA_SIZE; do
     echo "[size: $ds, iters: $ITERATIONS] (duration: ~60s)"
     numactl -N $JOB_NUMA ib_read_lat --size $ds --iters $ITERATIONS \
         --perform_warm_up $SERVER_IP $AUX_PARAMS 2>>$LOG_ERR | grep $ds | \
-        grep -v '[B]' | sed -r 's/[[:blank:]]+/,/g' \
-        >> $OUTPUT
+        grep -v '[B]' | sed 's/^[ ]*//' | sed 's/[ ]*$//' | \
+        sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 done
