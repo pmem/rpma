@@ -95,3 +95,6 @@ done
 cat $OUTPUT | head -1 > $TEMP_CSV
 cat $OUTPUT | grep -v 'lat' >> $TEMP_CSV
 cp $TEMP_CSV $OUTPUT
+
+# convert to standardized-CSV
+./csv2standardized.py --csv_type fio --output_file $OUTPUT $OUTPUT
