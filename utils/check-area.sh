@@ -39,6 +39,7 @@ echo "Areas computed basing on the list of modified files: (see utils/check-area
 
 categorize rpma      -e "^src/"
 categorize test      -e "^tests/"
+categorize tools     -e "^tools/"
 categorize examples  -e "^examples/"
 categorize doc       -e "^doc/" -e ".md\$" -e "^ChangeLog" -e "README"
 categorize common    -e "^utils/" \
