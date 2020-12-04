@@ -73,18 +73,18 @@ rm -f $LOG_ERR
 echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
 
 for ds in $DATA_SIZE; do
-    # run the server
-    sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-        "numactl -N $REMOTE_JOB_NUMA ${IB_TOOL} --size $ds \
-        $REMOTE_AUX_PARAMS > $LOG_ERR" 2>>$LOG_ERR &
-    sleep 1
+	# run the server
+	sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
+		"numactl -N $REMOTE_JOB_NUMA ${IB_TOOL} --size $ds \
+		$REMOTE_AUX_PARAMS > $LOG_ERR" 2>>$LOG_ERR &
+	sleep 1
 
-    # XXX --duration hides detailed statistics
-    echo "[size: $ds, iters: $ITERATIONS] (duration: ~60s)"
-    numactl -N $JOB_NUMA ${IB_TOOL} --size $ds --iters $ITERATIONS \
-        $SERVER_IP $AUX_PARAMS 2>>$LOG_ERR | grep $ds | \
-        grep -v '[B]' | sed 's/^[ ]*//' | sed 's/[ ]*$//' | \
-        sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
+	# XXX --duration hides detailed statistics
+	echo "[size: $ds, iters: $ITERATIONS] (duration: ~60s)"
+	numactl -N $JOB_NUMA ${IB_TOOL} --size $ds --iters $ITERATIONS \
+		$SERVER_IP $AUX_PARAMS 2>>$LOG_ERR | grep $ds | \
+		grep -v '[B]' | sed 's/^[ ]*//' | sed 's/[ ]*$//' | \
+		sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 done
 
 # convert to standardized-CSV
