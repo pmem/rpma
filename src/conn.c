@@ -322,7 +322,7 @@ rpma_write(struct rpma_conn *conn,
 	return rpma_mr_write(conn->id->qp,
 			dst, dst_offset,
 			src, src_offset,
-			len, flags, op_context);
+			len, flags, op_context, false);
 }
 
 /*
@@ -343,7 +343,7 @@ rpma_write_atomic(struct rpma_conn *conn,
 	return rpma_mr_write(conn->id->qp,
 			dst, dst_offset,
 			src, src_offset,
-			RPMA_ATOMIC_WRITE_ALIGNMENT, flags, op_context);
+			RPMA_ATOMIC_WRITE_ALIGNMENT, flags, op_context, true);
 }
 
 /*

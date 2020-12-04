@@ -45,7 +45,7 @@ int
 rpma_mr_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
-	size_t len, int flags, const void *op_context)
+	size_t len, int flags, const void *op_context, bool fence)
 {
 	assert_non_null(qp);
 	assert_non_null(dst);
@@ -60,6 +60,7 @@ rpma_mr_write(struct ibv_qp *qp,
 	check_expected(len);
 	check_expected(flags);
 	check_expected_ptr(op_context);
+	check_expected(fence);
 
 	return mock_type(int);
 }
