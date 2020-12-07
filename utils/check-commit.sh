@@ -29,7 +29,7 @@ if [[ $subject =~ ^Revert.* ]]; then
 fi
 
 # valid area names
-AREAS="rpma\|test\|examples\|doc\|common"
+AREAS="rpma\|test\|tools\|examples\|doc\|common"
 
 prefix=$(echo $subject | sed -n "s/^\($AREAS\)\:.*/\1/p")
 
