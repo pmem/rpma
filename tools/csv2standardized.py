@@ -18,7 +18,7 @@
 # - lat_max - max latency [usec]
 # - lat_mode - mode latency [usec] (optional)
 # - lat_avg - avg latency [usec]
-# - lat_stddev - stddev latency [usec]
+# - lat_stdev - stdev latency [usec]
 # - lat_pctl_99.0 - 99.0th percentile latency [usec]
 # - lat_pctl_99.9 - 99.9th percentile latency [usec]
 # - lat_pctl_99.99 - 99.99th percentile latency [usec] (optional)
@@ -29,15 +29,15 @@ import argparse
 import pandas as pd
 
 fio_input_names = [
-    'bs', 'lat_min', 'lat_max', 'lat_avg', 'lat_stddev', 'ops',
+    'bs', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'ops',
     'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
 
 fio_nsec_2_usec_names = [
-    'lat_min', 'lat_max', 'lat_avg', 'lat_stddev', 'lat_pctl_99.0',
+    'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
     'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
 
 fio_names = [
-    'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stddev', 
+    'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 
     'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
 
 ib_input_names = [
