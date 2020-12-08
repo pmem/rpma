@@ -8,24 +8,46 @@
 # csv_compare.py -- compare CSV files (EXPERIMENTAL)
 #
 # In order to compare both CSV are plotted on the same chart.
-# XXX xticks overlap ugly. They should be rotated. Please see the comment
-# in the code.
 # XXX annotate data points / include data table for more fine-grained
 # comparison.
 # XXX legend should be more humanredable.
-# XXX plot title can be prettier.
 # XXX include hostname for easier reporting.
-# XXX it will be easier to compare both data sets if all columns will be drawn
-# into a single file.
 #
 
 import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
-names = [
-    'lat_min', 'lat_max', 'lat_avg', 'lat_stddev', 'lat_pctl_99.0',
-    'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
+layouts = {
+    'lat': {
+        'nrows': 4,
+        'ncols': 2,
+        'columns': [
+            'lat_avg', 'lat_stdev',
+            'lat_min', 'lat_max', 
+            'lat_pctl_99.0', 'lat_pctl_99.9',
+            'lat_pctl_99.99', 'lat_pctl_99.999'
+        ]
+    }
+}
+
+def draw_column(ax, dfs, column, legend):
+    xticks = None
+    for df in dfs:
+        if column not in df.columns:
+            continue
+        # get xticks from the first data frame
+        if xticks is None:
+            xticks = df['bs'].tolist()
+        df = df.set_index('bs')
+        # plot line on the subplot
+        df[column].plot.line(ax=ax, rot=45)
+
+    ax.set_xticks(xticks)
+    ax.set_xlabel('block size [B]')
+    ax.set_ylabel('latency [usec]')
+    ax.legend(legend)
+    ax.grid(True)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -34,25 +56,34 @@ def main():
         help='a CSV log file to process')
     parser.add_argument('--output_file', metavar='OUTPUT_FILE',
         default='compare.png', help='an output file')
-    parser.add_argument('--column', metavar='COLUMN', choices=names,
-        help='a CSV column to compare')
+    parser.add_argument('--output_layout', metavar='OUTPUT_LAYOUT',
+        choices=layouts.keys(), required=True, help='an output file layout')
+    parser.add_argument('--output_title', metavar='OUTPUT_TITLE',
+        default='title', help='an output title')
     args = parser.parse_args()
 
-    fig, ax = plt.subplots()
-    xticks = None
+    # read all CSV files
+    dfs = []
     for csv_file in args.csv_files:
         df = pd.read_csv(csv_file)
-        if xticks is None:
-            xticks = df['bs'].tolist()
-        df = df.set_index('bs')
-        # XXX with rot=45 looks a lot better but xlabel is obscured
-        df[args.column].plot.line(ax=ax)
+        dfs.append(df)
 
-    ax.set_xticks(xticks)
-    ax.set_xlabel('block size [B]')
-    ax.set_ylabel('latency [usec]')
-    plt.title(args.column)
-    ax.legend(args.csv_files)
+    # set output file size, padding and title
+    fig = plt.figure(figsize=[12.8, 19.2], dpi=200, tight_layout={'pad': 6})
+    fig.suptitle(args.output_title)
+
+    # get layout parameters dict
+    layout = layouts.get(args.output_layout)
+    # draw all subplots
+    for index, column in enumerate(layout.get('columns'), start=1):
+        # get a subplot
+        ax = plt.subplot(layout.get('nrows'), layout.get('ncols'), index)
+        # set the subplot title
+        ax.title.set_text(column)
+        # draw CSVs column as subplot
+        draw_column(ax, dfs, column, args.csv_files)
+
+    # save the output file
     plt.savefig(args.output_file)
 
 if __name__ == "__main__":
