@@ -156,5 +156,7 @@ for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 done
 
+CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//g')
+
 # convert to standardized-CSV
-./csv2standardized.py --csv_type ib --output_file $OUTPUT $OUTPUT
+./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT

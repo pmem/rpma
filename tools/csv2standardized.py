@@ -24,6 +24,10 @@
 # - lat_pctl_99.99 - 99.99th percentile latency [usec] (optional)
 # - lat_pctl_99.999 - 99.999th percentile latency [usec] (optional)
 #
+# - bw_peak - peak of bandwidth [Gb/sec]
+# - bw_avg - average bandwidth [Gb/sec]
+# - msg_rate - message rate [Mpps]
+#
 
 import argparse
 import pandas as pd
@@ -40,13 +44,19 @@ fio_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 
     'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
 
-ib_input_names = [
+ib_lat_input_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
     'lat_pctl_99.0', 'lat_pctl_99.9']
 
-ib_names = [
+ib_lat_output_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
     'lat_pctl_99.0', 'lat_pctl_99.9']
+
+ib_bw_input_names = [
+    'bs', 'ops', 'bw_peak', 'bw_avg', 'msg_rate']
+
+ib_bw_output_names = [
+    'bs', 'bw_avg', 'msg_rate']
 
 def main():
     parser = argparse.ArgumentParser(
@@ -54,14 +64,17 @@ def main():
     parser.add_argument('csv_file', metavar='CSV_FILE',
         help='a CSV log file to process')
     parser.add_argument('--csv_type', metavar='CSV_TYPE', required=True,
-        choices=['ib', 'fio'], help='a type of the CSV file')
+        choices=['ib_lat', 'ib_bw', 'fio'], help='a type of the CSV file')
     parser.add_argument('--output_file', metavar='OUTPUT_FILE',
         default='output.csv', help='an output file')
     args = parser.parse_args()
 
-    if args.csv_type == 'ib':
-        df = pd.read_csv(args.csv_file, header=0, names=ib_input_names)
-        df = df.reindex(columns=ib_names)
+    if args.csv_type == 'ib_lat':
+        df = pd.read_csv(args.csv_file, header=0, names=ib_lat_input_names)
+        df = df.reindex(columns=ib_lat_output_names)
+    elif args.csv_type == 'ib_bw':
+        df = pd.read_csv(args.csv_file, header=0, names=ib_bw_input_names)
+        df = df.reindex(columns=ib_bw_output_names)
     else: # fio
         df = pd.read_csv(args.csv_file, header=0, names=fio_input_names)
         # convert nsec to usec
