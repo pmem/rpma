@@ -24,6 +24,8 @@
 # - lat_pctl_99.99 - 99.99th percentile latency [usec] (optional)
 # - lat_pctl_99.999 - 99.999th percentile latency [usec] (optional)
 #
+# - bw_min - min bandwidth [Gb/sec]
+# - bw_max - max bandwidth [Gb/sec]
 # - bw_avg - average bandwidth [Gb/sec]
 # - msg_rate - message rate [Mpps]
 #
@@ -33,15 +35,21 @@ import pandas as pd
 
 fio_input_names = [
     'bs', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'ops',
-    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
+    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999',
+    'bw_avg', 'bw_min', 'bw_max', 'threads']
 
 fio_nsec_2_usec_names = [
     'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
     'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
 
-fio_names = [
-    'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 
-    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999']
+fio_KiBps_2_Gbps_names = ['bw_avg', 'bw_min', 'bw_max']
+
+KiBpbs_2_Gbps = 1024 * 8 / 1000 / 1000 / 1000
+
+fio_output_names = [
+    'threads', 'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 
+    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999',
+    'bw_min', 'bw_max', 'bw_avg']
 
 ib_lat_input_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
@@ -79,6 +87,9 @@ def main():
         # convert nsec to usec
         df = df.apply(lambda x: round(x / 1000, 2) \
             if x.name in fio_nsec_2_usec_names else x)
+        # convert KiB/s to Gb/s
+        df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
+            if x.name in fio_KiBps_2_Gbps_names else x)
         df = df.reindex(columns=fio_names)
     df.to_csv(args.output_file, index=False)
 
