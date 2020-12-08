@@ -34,9 +34,9 @@ import argparse
 import pandas as pd
 
 fio_input_names = [
-    'bs', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'ops',
+    'bs', 'threads', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'ops',
     'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999',
-    'bw_avg', 'bw_min', 'bw_max', 'threads']
+    'bw_avg', 'bw_min', 'bw_max']
 
 fio_nsec_2_usec_names = [
     'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
