@@ -125,6 +125,7 @@ for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		IT_OPT="--iters $IT"
 		DS_OPT="--size $DS"
 		QP_OPT="--qp $TH"
+		echo -n "1," >> $OUTPUT
 		;;
 	bw-th)
 		IT=${ITERATIONS[${i}]}
