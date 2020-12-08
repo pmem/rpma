@@ -35,6 +35,10 @@ def main():
         # prepare data for writing
         csv_columns = ['bs']
         csv_data = {'bs': options['bs']}
+        # append numjobs
+        column = 'numjobs'
+        csv_columns.append(column)
+        csv_data[column] = options[column] if column in options else "1"
         for k,v in lat_ns.items():
             if k == "percentile" or k == "bins":
                 continue
@@ -46,6 +50,11 @@ def main():
             column = 'lat_ns_pctl_' + k
             csv_columns.append(column)
             csv_data[column] = v
+        # prepare bw for writing
+        bw_columns = ['bw', 'bw_min', 'bw_max']
+        for column in bw_columns:
+            csv_columns.append(column)
+            csv_data[column] = op[column]
         # write CSV file
         writer = csv.DictWriter(csv_file, fieldnames=csv_columns)
         writer.writeheader()
