@@ -79,11 +79,13 @@ bw-ds)
 bw-th)
 	IB_TOOL=ib_read_bw
 	HEADER=$HEADER_BW
-	THREADS=(1 2 4 8 12 16)
+	# XXX TH=16 hangs the ib_read_bw at the moment
+	# XXX TH=16 takes 11143637 iterations to run for ~60s
+	THREADS=(1 2 4 8 12)
 	DATA_SIZE=4096
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
-	ITERATIONS=(100000000 89126559 44581990 22290994 14859379 11143637)
+	ITERATIONS=(100000000 89126559 44581990 22290994 14859379)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits"
 	NAME="${MODE}-${DATA_SIZE}ds"
 	verify_threads
