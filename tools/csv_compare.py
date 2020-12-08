@@ -10,7 +10,6 @@
 # In order to compare both CSV are plotted on the same chart.
 # XXX annotate data points / include data table for more fine-grained
 # comparison.
-# XXX legend should be more humanredable.
 # XXX include hostname for easier reporting.
 #
 
@@ -33,9 +32,11 @@ layouts = {
 
 def draw_column(ax, dfs, column, legend):
     xticks = None
-    for df in dfs:
+    column_legend = []
+    for df, df_name in zip(dfs, legend):
         if column not in df.columns:
             continue
+        column_legend.append(df_name)
         # get xticks from the first data frame
         if xticks is None:
             xticks = df['bs'].tolist()
@@ -46,7 +47,7 @@ def draw_column(ax, dfs, column, legend):
     ax.set_xticks(xticks)
     ax.set_xlabel('block size [B]')
     ax.set_ylabel('latency [usec]')
-    ax.legend(legend)
+    ax.legend(column_legend)
     ax.grid(True)
 
 def main():
@@ -60,6 +61,8 @@ def main():
         choices=layouts.keys(), required=True, help='an output file layout')
     parser.add_argument('--output_title', metavar='OUTPUT_TITLE',
         default='title', help='an output title')
+    parser.add_argument('--legend', metavar='SERIES', nargs='+',
+        help='a legend for the data series read from the CSV files')
     args = parser.parse_args()
 
     # read all CSV files
@@ -81,7 +84,7 @@ def main():
         # set the subplot title
         ax.title.set_text(column)
         # draw CSVs column as subplot
-        draw_column(ax, dfs, column, args.csv_files)
+        draw_column(ax, dfs, column, args.legend)
 
     # save the output file
     plt.savefig(args.output_file)
