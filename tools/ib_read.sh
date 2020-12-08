@@ -13,7 +13,7 @@
 #
 
 HEADER_LAT="#bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]"
-HEADER_BW="#bytes     #iterations    BW_peak[Gb/sec]    BW_average[Gb/sec]   MsgRate[Mpps]"
+HEADER_BW="#threads #bytes     #iterations    BW_peak[Gb/sec]    BW_average[Gb/sec]   MsgRate[Mpps]"
 
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 
@@ -131,6 +131,7 @@ for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		IT_OPT="--iters $IT"
 		DS_OPT="--size $DS"
 		QP_OPT="--qp $TH"
+		echo -n "${TH}," >> $OUTPUT
 		;;
 	lat)
 		IT=${ITERATIONS[${i}]}

@@ -52,10 +52,10 @@ ib_lat_output_names = [
     'lat_pctl_99.0', 'lat_pctl_99.9']
 
 ib_bw_input_names = [
-    'bs', 'ops', 'bw_peak', 'bw_avg', 'msg_rate']
+    'threads', 'bs', 'ops', 'bw_peak', 'bw_avg', 'msg_rate']
 
 ib_bw_output_names = [
-    'bs', 'ops', 'bw_avg', 'msg_rate']
+    'threads', 'bs', 'ops', 'bw_avg', 'msg_rate']
 
 def main():
     parser = argparse.ArgumentParser(
