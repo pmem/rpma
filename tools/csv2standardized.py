@@ -19,7 +19,6 @@
 # - lat_* group (optional)
 #   - lat_min - min latency [usec]
 #   - lat_max - max latency [usec]
-#   - lat_mode - mode latency [usec] (optional)
 #   - lat_avg - avg. latency [usec]
 #   - lat_stdev - stdev latency [usec]
 #   - lat_pctl_99.0 - 99.0th percentile latency [usec]
@@ -30,7 +29,6 @@
 #   - bw_min - min bandwidth [Gb/sec] (optional)
 #   - bw_max - max bandwidth [Gb/sec] (optional)
 #   - bw_avg - avg. bandwidth [Gb/sec]
-# - msg_rate - message rate [Mpps] (optional)
 #
 
 import argparse
@@ -59,14 +57,14 @@ ib_lat_input_names = [
     'lat_pctl_99.0', 'lat_pctl_99.9']
 
 ib_lat_output_names = [
-    'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
-    'lat_pctl_99.0', 'lat_pctl_99.9']
+    'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
+    'lat_pctl_99.9']
 
 ib_bw_input_names = [
     'threads', 'bs', 'ops', 'bw_peak', 'bw_avg', 'msg_rate']
 
 ib_bw_output_names = [
-    'threads', 'bs', 'ops', 'bw_avg', 'msg_rate']
+    'threads', 'bs', 'ops', 'bw_avg']
 
 def main():
     parser = argparse.ArgumentParser(
@@ -87,8 +85,6 @@ def main():
         df = df.reindex(columns=ib_bw_output_names)
         df = df.apply(lambda x: round(x, 2) \
             if x.name == 'bw_avg' else x)
-        df = df.apply(lambda x: round(x, 2) \
-            if x.name == 'msg_rate' else x)
     else: # fio
         df = pd.read_csv(args.csv_file, header=0, names=fio_input_names)
         # convert nsec to usec
