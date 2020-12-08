@@ -114,7 +114,7 @@ echo
 rm -f $LOG_ERR
 echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
 
-for i in $(seq 1 ${#ITERATIONS[@]}); do
+for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 	case $MODE in
 	bw-ds)
 		IT=${ITERATIONS[${i}]}
