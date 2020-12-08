@@ -31,7 +31,7 @@ For easy turning on and off DDIO on per-PCIe Root Port basis you can use [ddio.s
 
 ```sh
 $ PCIe_Root_Port=0000:17:00.0
-$ sudo ./ddio -d $PCIe_Root_Port -q
+$ sudo ./ddio.sh -d $PCIe_Root_Port -q
 $ echo $?
 1
 ```
@@ -39,8 +39,8 @@ $ echo $?
 The `1` at the end of the output in this case means the DDIO feature is turned on for this PCIe Root Port which is the default for today Intel platforms. But you want to turn it off for each system with PMem if you want to write to PMem directly via RDMA. For details please see [rpma_peer_cfg_set_direct_write_to_pmem(3)](https://pmem.io/rpma/manpages/master/rpma_peer_cfg_set_direct_write_to_pmem.3) and [rpma_flush(3)](https://pmem.io/rpma/manpages/master/rpma_flush.3).
 
 ```sh
-$ sudo /.ddio -d $PCIe_Root_Port -s disable
-$ sudo ./ddio -d $PCIe_Root_Port -q
+$ sudo ./ddio.sh -d $PCIe_Root_Port -s disable
+$ sudo ./ddio.sh -d $PCIe_Root_Port -q
 $ echo $?
 0
 ```
