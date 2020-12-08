@@ -17,36 +17,56 @@ import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
+column_to_label = {
+    'bs':   'block size [B]',
+    'lat':  'latency [nsec]',
+    'bw':   'bandwidth [Gb/s]',
+}
+
 layouts = {
     'lat': {
         'nrows': 4,
         'ncols': 2,
+        'x': 'bs',
         'columns': [
             'lat_avg', 'lat_stdev',
             'lat_min', 'lat_max', 
             'lat_pctl_99.0', 'lat_pctl_99.9',
             'lat_pctl_99.99', 'lat_pctl_99.999'
         ]
+    },
+    'bw_vs_bs': {
+        'nrows': 1,
+        'ncols': 1,
+        'x': 'bs',
+        'columns': [
+            'bw_avg'
+        ]
     }
 }
 
-def draw_column(ax, dfs, column, legend):
+def get_label(column):
+    for key, label in column_to_label.items():
+        if key in column:
+            return label
+
+def draw_column(ax, dfs, legend, x, y):
     xticks = None
     column_legend = []
     for df, df_name in zip(dfs, legend):
-        if column not in df.columns:
+        if y not in df.columns:
             continue
         column_legend.append(df_name)
         # get xticks from the first data frame
         if xticks is None:
-            xticks = df['bs'].tolist()
-        df = df.set_index('bs')
+            xticks = df[x].tolist()
+        df = df.set_index(x)
         # plot line on the subplot
-        df[column].plot.line(ax=ax, rot=45)
+        df[y].plot.line(ax=ax, rot=45)
 
     ax.set_xticks(xticks)
-    ax.set_xlabel('block size [B]')
-    ax.set_ylabel('latency [usec]')
+    ax.set_xlabel(get_label(x))
+    ax.set_ylabel(get_label(y))
     ax.legend(column_legend)
     ax.grid(True)
 
@@ -71,20 +91,25 @@ def main():
         df = pd.read_csv(csv_file)
         dfs.append(df)
 
+    # get layout parameters
+    layout = layouts.get(args.output_layout)
+    nrows = layout.get('nrows')
+    ncols =  layout.get('ncols')
+    x = layout.get('x')
+
     # set output file size, padding and title
-    fig = plt.figure(figsize=[12.8, 19.2], dpi=200, tight_layout={'pad': 6})
+    fig = plt.figure(figsize=[6.4 * ncols, 4.8 * nrows], dpi=200, \
+        tight_layout={'pad': 6})
     fig.suptitle(args.output_title)
 
-    # get layout parameters dict
-    layout = layouts.get(args.output_layout)
     # draw all subplots
     for index, column in enumerate(layout.get('columns'), start=1):
         # get a subplot
-        ax = plt.subplot(layout.get('nrows'), layout.get('ncols'), index)
+        ax = plt.subplot(nrows, ncols, index)
         # set the subplot title
         ax.title.set_text(column)
         # draw CSVs column as subplot
-        draw_column(ax, dfs, column, args.legend)
+        draw_column(ax, dfs, args.legend, x, column)
 
     # save the output file
     plt.savefig(args.output_file)
