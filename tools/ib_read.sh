@@ -19,29 +19,29 @@ TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 
 function usage()
 {
-    echo "Error: $1"
-    echo
-    echo "usage: $0 <bw-bs|bw-th|lat> <server_ip>"
-    echo
-    echo "export JOB_NUMA=0"
-    echo "export AUX_PARAMS='-d mlx5_0 -R'"
-    echo "export REMOTE_USER=user"
-    echo "export REMOTE_PASS=pass"
-    echo "export REMOTE_JOB_NUMA=0"
-    echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
-    exit 1
+	echo "Error: $1"
+	echo
+	echo "usage: $0 <bw-bs|bw-th|lat> <server_ip>"
+	echo
+	echo "export JOB_NUMA=0"
+	echo "export AUX_PARAMS='-d mlx5_0 -R'"
+	echo "export REMOTE_USER=user"
+	echo "export REMOTE_PASS=pass"
+	echo "export REMOTE_JOB_NUMA=0"
+	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
+	exit 1
 }
 
 if [ "$#" -lt 2 ]; then
-    usage "Too few arguments"
+	usage "Too few arguments"
 elif [ -z "$JOB_NUMA" ]; then
-    usage "JOB_NUMA not set"
+	usage "JOB_NUMA not set"
 elif [ -z "$REMOTE_USER" ]; then
-    usage "REMOTE_USER not set"
+	usage "REMOTE_USER not set"
 elif [ -z "$REMOTE_PASS" ]; then
-    usage "REMOTE_PASS not set"
+	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
-    usage "REMOTE_JOB_NUMA not set"
+	usage "REMOTE_JOB_NUMA not set"
 fi
 
 MODE=$1
