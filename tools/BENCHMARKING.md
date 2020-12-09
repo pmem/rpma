@@ -71,8 +71,16 @@ With the help of additional parameters, we can also adjust various output aspect
 
 Generate the baseline bandwidth numbers using `./ib_read_bw.sh` tool which single-sidedly runs `ib_read_bw` with various data sizes:
 
+ - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
+ - thread = 1
 ```sh
-$ # XXX
+$ ./ib_read.sh bw-bs <SERVER_IP>
+```
+
+ - iterates over the number of threads (1, 2, 4, 8, 12)
+ - block size = 4096B
+```sh
+$ ./ib_read.sh bw-th <SERVER_IP>
 ```
 
 Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_read_bw.sh`:
