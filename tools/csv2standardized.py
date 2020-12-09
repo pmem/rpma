@@ -92,7 +92,7 @@ def main():
         # convert KiB/s to Gb/s
         df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
             if x.name in fio_KiBps_2_Gbps_names else x)
-        df = df.reindex(columns=fio_names)
+        df = df.reindex(columns=fio_output_names)
     df.to_csv(args.output_file, index=False)
 
 if __name__ == "__main__":
