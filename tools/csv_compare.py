@@ -18,9 +18,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 column_to_label = {
-    'bs':   'block size [B]',
-    'lat':  'latency [nsec]',
-    'bw':   'bandwidth [Gb/s]',
+    'threads':  '# of threads',
+    'bs':       'block size [B]',
+    'lat':      'latency [nsec]',
+    'bw':       'bandwidth [Gb/s]',
 }
 
 layouts = {
@@ -39,6 +40,14 @@ layouts = {
         'nrows': 1,
         'ncols': 1,
         'x': 'bs',
+        'columns': [
+            'bw_avg'
+        ]
+    },
+    'bw_vs_th': {
+        'nrows': 1,
+        'ncols': 1,
+        'x': 'threads',
         'columns': [
             'bw_avg'
         ]
