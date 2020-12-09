@@ -11,7 +11,7 @@
 # sizes (1KiB, 4KiB, 64KiB) and generates a single CSV file with all results.
 #
 
-DATA_SIZE="1024 4096 65536"
+BLOCK_SIZE="1024 4096 65536"
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 TEMP_JSON=/dev/shm/rpma_read_lat_temp-${TIMESTAMP}.json
 TEMP_CSV=/dev/shm/rpma_read_lat_temp-${TIMESTAMP}.csv
@@ -63,7 +63,7 @@ if [ -z "$REMOTE_JOB_MEM" ]; then
     REMOTE_JOB_MEM=malloc
 fi
 
-for ds in $DATA_SIZE; do
+for bs in $BLOCK_SIZE; do
     # copy config to the server
     sshpass -p "$REMOTE_PASS" scp ./fio_jobs/librpma-server.fio \
         $REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
@@ -74,9 +74,9 @@ for ds in $DATA_SIZE; do
             ${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR" 2>>$LOG_ERR &
     sleep 1
 
-    echo "[size: $ds]"
+    echo "[size: $bs]"
     # run FIO
-    hostname=$SERVER_IP blocksize=$ds \
+    hostname=$SERVER_IP blocksize=$bs \
         numactl -N $JOB_NUMA ${FIO_PATH}fio \
         ./fio_jobs/librpma-client-read.fio --output-format=json+ \
         > $TEMP_JSON
