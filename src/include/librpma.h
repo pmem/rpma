@@ -328,6 +328,7 @@
  * - rpma_conn_next_event()
  * - rpma_conn_req_connect()
  * - rpma_conn_req_delete()
+ * - rpma_conn_req_get_private_data
  * - rpma_conn_req_new()
  * - rpma_ep_listen()
  * - rpma_ep_next_conn_req()
@@ -1943,6 +1944,47 @@ int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 int rpma_ep_next_conn_req(struct rpma_ep *ep,
 		const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr);
+
+/** 3
+ * rpma_conn_req_get_private_data - get a pointer to the request's private data
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_req;
+ *	struct rpma_conn_private_data;
+ *	int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
+ *			struct rpma_conn_private_data *pdata);
+ *
+ * DESCRIPTION
+ * rpma_conn_req_get_private_data() obtains the pointer to the connection's
+ * private data given by the other side of the connection before connection is
+ * fully established.
+ *
+* NOTE
+ * pdata pointer becomes invalid after connection is established.
+ * Use rpma_conn_get_private_data(3) to get pointer to the connection's private
+ * data if an access to it is still required after connection is established.
+ *
+ * RETURN VALUE
+ * The rpma_conn_req_get_private_data() function returns 0 on success or
+ * a negative error code on failure. rpma_conn_req_get_private_data() does not
+ * set *pdata value on failure.
+ *
+ * ERRORS
+ * rpma_conn_req_get_private_data() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - req or pdata is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_get_private_data(3), rpma_ep_next_conn_req(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
+		struct rpma_conn_private_data *pdata);
+
+
 
 /* remote memory access functions */
 
