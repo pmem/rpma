@@ -17,6 +17,8 @@ HEADER_BW="#threads #bytes     #iterations    BW_peak[Gb/sec]    BW_average[Gb/s
 
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 
+echo "THIS TOOL IS EXPERIMENTAL. YOU ARE USING IT ON YOUR OWN RISK."
+
 function usage()
 {
     echo "Error: $1"
