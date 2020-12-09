@@ -21,7 +21,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 <bw-ds|bw-th|lat> <server_ip>"
+    echo "usage: $0 <bw-bs|bw-th|lat> <server_ip>"
     echo
     echo "export JOB_NUMA=0"
     echo "export AUX_PARAMS='-d mlx5_0 -R'"
@@ -47,10 +47,10 @@ fi
 MODE=$1
 SERVER_IP=$2
 
-function verify_data_size()
+function verify_block_size()
 {
-	if [ ${#DATA_SIZE[@]} -ne ${#ITERATIONS[@]} ]; then
-		echo "Error: sizes of the arrays: DATA_SIZE(${#DATA_SIZE[@]}) and ITERATIONS(${#ITERATIONS[@]}) are different!"
+	if [ ${#BLOCK_SIZE[@]} -ne ${#ITERATIONS[@]} ]; then
+		echo "Error: sizes of the arrays: BLOCK_SIZE(${#BLOCK_SIZE[@]}) and ITERATIONS(${#ITERATIONS[@]}) are different!"
 		exit 1
 	fi
 }
@@ -64,17 +64,17 @@ function verify_threads()
 }
 
 case $MODE in
-bw-ds)
+bw-bs)
 	IB_TOOL=ib_read_bw
 	HEADER=$HEADER_BW
 	THREADS=1
-	DATA_SIZE=(256 1024 4096 8192 65536)
+	BLOCK_SIZE=(256 1024 4096 8192 65536)
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
 	ITERATIONS=(100000000 100000000 100000000 85753202 11138529)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits"
 	NAME="${MODE}-${THREADS}th"
-	verify_data_size
+	verify_block_size
 	;;
 bw-th)
 	IB_TOOL=ib_read_bw
@@ -82,24 +82,24 @@ bw-th)
 	# XXX TH=16 hangs the ib_read_bw at the moment
 	# XXX TH=16 takes 11143637 iterations to run for ~60s
 	THREADS=(1 2 4 8 12)
-	DATA_SIZE=4096
+	BLOCK_SIZE=4096
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
 	ITERATIONS=(100000000 89126559 44581990 22290994 14859379)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits"
-	NAME="${MODE}-${DATA_SIZE}ds"
+	NAME="${MODE}-${BLOCK_SIZE}bs"
 	verify_threads
 	;;
 lat)
 	IB_TOOL=ib_read_lat
 	HEADER=$HEADER_LAT
 	THREADS=1
-	DATA_SIZE=(1024 4096 65536)
+	BLOCK_SIZE=(1024 4096 65536)
 	# values measured empirically, so that duration was ~60s
 	ITERATIONS=(27678723 20255739 6002473)
 	AUX_PARAMS="$AUX_PARAMS --perform_warm_up"
 	NAME="${MODE}"
-	verify_data_size
+	verify_block_size
 	;;
 *)
 	usage "Wrong mode: $MODE"
@@ -118,44 +118,44 @@ echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
 
 for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 	case $MODE in
-	bw-ds)
+	bw-bs)
 		IT=${ITERATIONS[${i}]}
-		DS="${DATA_SIZE[${i}]}"
+		BS="${BLOCK_SIZE[${i}]}"
 		TH="${THREADS}"
 		IT_OPT="--iters $IT"
-		DS_OPT="--size $DS"
+		BS_OPT="--size $BS"
 		QP_OPT="--qp $TH"
 		echo -n "${TH}," >> $OUTPUT
 		;;
 	bw-th)
 		IT=${ITERATIONS[${i}]}
-		DS="${DATA_SIZE}"
+		BS="${BLOCK_SIZE}"
 		TH="${THREADS[${i}]}"
 		IT_OPT="--iters $IT"
-		DS_OPT="--size $DS"
+		BS_OPT="--size $BS"
 		QP_OPT="--qp $TH"
 		echo -n "${TH}," >> $OUTPUT
 		;;
 	lat)
 		IT=${ITERATIONS[${i}]}
-		DS="${DATA_SIZE[${i}]}"
+		BS="${BLOCK_SIZE[${i}]}"
 		TH="1"
 		IT_OPT="--iters $IT"
-		DS_OPT="--size $DS"
+		BS_OPT="--size $BS"
 		QP_OPT=""
 		;;
 	esac
 
 	# run the server
 	sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-		"numactl -N $REMOTE_JOB_NUMA ${IB_TOOL} $DS_OPT $QP_OPT \
+		"numactl -N $REMOTE_JOB_NUMA ${IB_TOOL} $BS_OPT $QP_OPT \
 		$REMOTE_AUX_PARAMS >> $LOG_ERR" 2>>$LOG_ERR &
 	sleep 1
 
 	# XXX --duration hides detailed statistics
-	echo "[size: ${DS}, threads: ${TH}, iters: ${IT}] (duration: ~60s)"
-	numactl -N $JOB_NUMA ${IB_TOOL} $IT_OPT $DS_OPT $QP_OPT \
-		$AUX_PARAMS $SERVER_IP 2>>$LOG_ERR | grep ${DS} | \
+	echo "[size: ${BS}, threads: ${TH}, iters: ${IT}] (duration: ~60s)"
+	numactl -N $JOB_NUMA ${IB_TOOL} $IT_OPT $BS_OPT $QP_OPT \
+		$AUX_PARAMS $SERVER_IP 2>>$LOG_ERR | grep ${BS} | \
 		grep -v '[B]' | sed 's/^[ ]*//' | sed 's/[ ]*$//' | \
 		sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 done
