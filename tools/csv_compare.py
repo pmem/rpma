@@ -65,6 +65,13 @@ def main():
         help='a legend for the data series read from the CSV files')
     args = parser.parse_args()
 
+    # validate the legend
+    if args.legend is None:
+        args.legend = args.csv_files
+    elif len(args.legend) != len(args.csv_files):
+        raise Exception(
+            'The number of legend entries does not match the number of CSV files')
+
     # read all CSV files
     dfs = []
     for csv_file in args.csv_files:
