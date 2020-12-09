@@ -13,21 +13,24 @@
 # - converting units
 #
 # The standardized-CSV format columns are (in order):
+# - threads - number of threads [1] (optional)
 # - bs - block size [B]
-# - lat_min - min latency [usec]
-# - lat_max - max latency [usec]
-# - lat_mode - mode latency [usec] (optional)
-# - lat_avg - avg latency [usec]
-# - lat_stdev - stdev latency [usec]
-# - lat_pctl_99.0 - 99.0th percentile latency [usec]
-# - lat_pctl_99.9 - 99.9th percentile latency [usec]
-# - lat_pctl_99.99 - 99.99th percentile latency [usec] (optional)
-# - lat_pctl_99.999 - 99.999th percentile latency [usec] (optional)
-#
-# - bw_min - min bandwidth [Gb/sec]
-# - bw_max - max bandwidth [Gb/sec]
-# - bw_avg - average bandwidth [Gb/sec]
-# - msg_rate - message rate [Mpps]
+# - ops - number of operations executed [1]
+# - lat_* group (optional)
+#   - lat_min - min latency [usec]
+#   - lat_max - max latency [usec]
+#   - lat_mode - mode latency [usec] (optional)
+#   - lat_avg - avg. latency [usec]
+#   - lat_stdev - stdev latency [usec]
+#   - lat_pctl_99.0 - 99.0th percentile latency [usec]
+#   - lat_pctl_99.9 - 99.9th percentile latency [usec]
+#   - lat_pctl_99.99 - 99.99th percentile latency [usec] (optional)
+#   - lat_pctl_99.999 - 99.999th percentile latency [usec] (optional)
+# - bw_* group (optional)
+#   - bw_min - min bandwidth [Gb/sec] (optional)
+#   - bw_max - max bandwidth [Gb/sec] (optional)
+#   - bw_avg - avg. bandwidth [Gb/sec]
+# - msg_rate - message rate [Mpps] (optional)
 #
 
 import argparse
