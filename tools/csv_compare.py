@@ -7,9 +7,7 @@
 #
 # csv_compare.py -- compare CSV files (EXPERIMENTAL)
 #
-# In order to compare both CSV are plotted on the same chart.
-# XXX annotate data points / include data table for more fine-grained
-# comparison.
+# In order to compare all CSV are plotted on the same chart.
 # XXX include hostname for easier reporting.
 #
 
@@ -58,7 +56,37 @@ def get_label(column):
         if key in column:
             return label
 
-def draw_column(ax, dfs, legend, x, y):
+def dfs_filter(dfs, df_names, column_list):
+    """Filter out all pandas.DataFrame without required columns
+
+    :param dfs: list of pandas.DataFrame objects to draw on the subplot
+    :type dfs: list[pandas.DataFrame]
+    :param df_names: a list of human readable descriptions for dfs
+    :type df_names: list[str]
+    :param column_list: a list of required columns
+    :type column_list: list[str]
+    :return: a list of pandas.DataFrame and their names
+    :rtype: list[pandas.DataFrame], list[str]
+    """
+    dfs_out = []
+    df_names_out = []
+    # loop over all (pandas.DataFrame, str) pairs
+    for df, df_name in zip(dfs, df_names):
+        # if DataFrame does not have a specific column just skip the DataFrame
+        has_all = True
+        for column in column_list:
+            if column not in df.columns:
+                has_all = False
+                break
+        if not has_all:
+            break
+        # append the DataFrame and its name to the outputs
+        dfs_out.append(df)
+        df_names_out.append(df_name)
+
+    return dfs_out, df_names_out
+
+def draw_plot(ax, dfs, legend, x, y):
     """Draw multiple lines y(x) using data from the dfs list on the ax subplot.
 
     :param ax: an axes (subplot)
@@ -72,19 +100,9 @@ def draw_column(ax, dfs, legend, x, y):
     :param y: a column to be drawn on the y-axis
     :type y: str
     """
-    xticks = None
-    column_legend = []
-    # loop over all (pandas.DataFrame, str) pairs
-    for df, df_name in zip(dfs, legend):
-        # if DataFrame does not have a specific column just skip the DataFrame
-        if y not in df.columns:
-            continue
-        # append the legend str to the list
-        column_legend.append(df_name)
-        # get xticks from the first data frame
-        # assuming all DataFrames have matching x values
-        if xticks is None:
-            xticks = df[x].tolist()
+    xticks = dfs[0][x].tolist()
+    # loop over all pandas.DataFrame objects
+    for df in dfs:
         # setting the x-column as an index is required to draw the y-column
         # as a function of x argument
         df = df.set_index(x)
@@ -94,8 +112,35 @@ def draw_column(ax, dfs, legend, x, y):
     ax.set_xticks(xticks)
     ax.set_xlabel(get_label(x))
     ax.set_ylabel(get_label(y))
-    ax.legend(column_legend)
+    ax.legend(legend)
     ax.grid(True)
+
+def draw_table(ax, dfs, legend, x, y):
+    """Draw a table of all data used to chart y(x)
+
+    :param ax: an axes (subplot)
+    :type ax: matplotlib.axes
+    :param dfs: list of pandas.DataFrame objects to draw on the subplot
+    :type dfs: list[pandas.DataFrame]
+    :param legend: a list of human readable descriptions for dfs
+    :type legend: list[str]
+    :param x: a column to be drawn on the x-axis
+    :type x: str
+    :param y: a column to be drawn on the y-axis
+    :type y: str
+    """
+    col_labels = dfs[0][x].tolist()
+    column_legend = []
+    cell_text = []
+    # loop over all pandas.DataFrame objects
+    for df in dfs:
+        # plot line on the subplot
+        cell_text.append(df[y].tolist())
+
+    ax.axis('tight')
+    ax.axis('off')
+    ax.table(cellText=cell_text, rowLabels=legend, colLabels=col_labels, \
+        loc='top')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -106,6 +151,8 @@ def main():
         default='compare.png', help='an output file')
     parser.add_argument('--output_layout', metavar='OUTPUT_LAYOUT',
         choices=layouts.keys(), required=True, help='an output file layout')
+    parser.add_argument('--output_with_tables', action='store_true',
+        help='an output file layout')
     parser.add_argument('--output_title', metavar='OUTPUT_TITLE',
         default='title', help='an output title')
     parser.add_argument('--legend', metavar='SERIES', nargs='+',
@@ -127,9 +174,17 @@ def main():
 
     # get layout parameters
     layout = layouts.get(args.output_layout)
+    columns = layout.get('columns')
     nrows = layout.get('nrows')
     ncols =  layout.get('ncols')
     x = layout.get('x')
+
+    # prepare indices
+    indices = list(range(1, len(columns) + 1))
+    # make space for tables
+    if args.output_with_tables:
+        indices = [i + int((i - 1) / ncols) * ncols for i in indices]
+        nrows *= 2
 
     # set output file size, padding and title
     fig = plt.figure(figsize=[6.4 * ncols, 4.8 * nrows], dpi=200, \
@@ -137,13 +192,23 @@ def main():
     fig.suptitle(args.output_title)
 
     # draw all subplots
-    for index, column in enumerate(layout.get('columns'), start=1):
+    for index, column in zip(indices, columns):
         # get a subplot
         ax = plt.subplot(nrows, ncols, index)
         # set the subplot title
         ax.title.set_text(column)
+        # filter out all DataFrames without required columns
+        dfs_filtered, dfs_names_filtered = \
+            dfs_filter(dfs, args.legend, [x, column])
+        if len(dfs_filtered) == 0:
+            continue
         # draw CSVs column as subplot
-        draw_column(ax, dfs, args.legend, x, column)
+        draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column)
+        if args.output_with_tables:
+            # get a subplot just beneath the subplot with the chart
+            ax = plt.subplot(nrows, ncols, index + ncols)
+            # put a table
+            draw_table(ax, dfs_filtered, dfs_names_filtered, x, column)
 
     # save the output file
     plt.savefig(args.output_file)
