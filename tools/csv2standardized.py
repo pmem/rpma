@@ -83,6 +83,8 @@ def main():
         df = pd.read_csv(args.csv_file, header=0, names=ib_bw_input_names)
         df = df.reindex(columns=ib_bw_output_names)
         df = df.apply(lambda x: round(x, 2) \
+            if x.name == 'bw_avg' else x)
+        df = df.apply(lambda x: round(x, 2) \
             if x.name == 'msg_rate' else x)
     else: # fio
         df = pd.read_csv(args.csv_file, header=0, names=fio_input_names)
