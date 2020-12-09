@@ -31,6 +31,7 @@ LIBRPMA_1.0 {
 		rpma_conn_req_delete;
 		rpma_conn_req_new;
 		rpma_conn_req_recv;
+		rpma_conn_req_get_private_data;
 		rpma_ep_get_fd;
 		rpma_ep_listen;
 		rpma_ep_next_conn_req;

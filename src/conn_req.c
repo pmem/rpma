@@ -481,3 +481,20 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
 			dst, offset, len,
 			op_context);
 }
+
+/*
+ * rpma_conn_req_get_private_data - get a pointer to the incoming connection's
+ * private data
+ */
+int
+rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
+    struct rpma_conn_private_data *pdata)
+{
+	if (req == NULL || pdata == NULL)
+		return RPMA_E_INVAL;
+
+	pdata->ptr = req->data.ptr;
+	pdata->len = req->data.len;
+
+	return 0;
+}
