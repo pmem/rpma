@@ -1,0 +1,26 @@
+# The librpma_client engine requires some options to work correctly:
+# - create_serialize=0 forces specific initiation sequence
+
+[global]
+ioengine=librpma_client
+create_serialize=0
+hostname=${hostname}
+port=7204
+thread
+disable_clat=1
+lat_percentiles=1
+percentile_list=99.0:99.9:99.99:99.999
+
+# The client will get a remote memory region description after establishing
+# a connection.
+
+[client]
+sync=1
+iomem_align=$pagesize
+readwrite=read
+blocksize=${blocksize}
+numjobs=${numjobs}
+ramp_time=15
+time_based
+runtime=60
+group_reporting
