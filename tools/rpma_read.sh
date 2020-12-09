@@ -5,7 +5,7 @@
 #
 
 #
-# rpma_read_lat.py -- a single-sided RPMA latency benchmark (EXPERIMENTAL)
+# rpma_read.py -- a single-sided RPMA benchmark (EXPERIMENTAL)
 #
 # Spawns both server and client, collects the results for multiple data
 # sizes (1KiB, 4KiB, 64KiB) and generates a single CSV file with all results.
@@ -13,10 +13,10 @@
 
 BLOCK_SIZE="1024 4096 65536"
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
-TEMP_JSON=/dev/shm/rpma_read_lat_temp-${TIMESTAMP}.json
-TEMP_CSV=/dev/shm/rpma_read_lat_temp-${TIMESTAMP}.csv
-OUTPUT=rpma_read_lat-${TIMESTAMP}.csv
-LOG_ERR=/dev/shm/rpma_read_lat-${TIMESTAMP}.log
+TEMP_JSON=/dev/shm/rpma_read_temp-${TIMESTAMP}.json
+TEMP_CSV=/dev/shm/rpma_read_temp-${TIMESTAMP}.csv
+OUTPUT=rpma_read-${TIMESTAMP}.csv
+LOG_ERR=/dev/shm/rpma_read-${TIMESTAMP}.log
 
 function usage()
 {
@@ -26,7 +26,7 @@ function usage()
     echo
     echo "export JOB_NUMA=0"
     echo "export FIO_PATH=/custom/fio/path"
-    echo 
+    echo
     echo "export REMOTE_USER=user"
     echo "export REMOTE_PASS=pass"
     echo "export REMOTE_JOB_NUMA=0"
