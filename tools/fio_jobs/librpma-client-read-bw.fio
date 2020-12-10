@@ -15,7 +15,7 @@ percentile_list=99.0:99.9:99.99:99.999
 # a connection.
 
 [client]
-sync=1
+iodepth=2
 iomem_align=$pagesize
 readwrite=read
 blocksize=${blocksize}
