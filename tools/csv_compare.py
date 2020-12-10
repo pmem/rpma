@@ -96,6 +96,25 @@ def dfs_filter(dfs, df_names, column_list):
 
     return dfs_out, df_names_out
 
+def dfs_all_values(dfs, column):
+    """Find all possible values of a column in the pandas.DataFram list
+
+    :param dfs: list of pandas.DataFrame objects to draw on the subplot
+    :type dfs: list[pandas.DataFrame]
+    :param column: a columns
+    :type column: str
+    :return: a sorted list of possible values from the column
+    :rtype: list[values]
+    """
+    values = []
+    # loop over all (pandas.DataFrame, str) pairs
+    for df in dfs:
+        values.extend(df[column].tolist())
+
+    # set() removes duplicates
+    # sorted() converts Set to List and sort the elements
+    return sorted(set(values))
+
 def draw_plot(ax, dfs, legend, x, y):
     """Draw multiple lines y(x) using data from the dfs list on the ax subplot.
 
@@ -110,7 +129,7 @@ def draw_plot(ax, dfs, legend, x, y):
     :param y: a column to be drawn on the y-axis
     :type y: str
     """
-    xticks = dfs[0][x].tolist()
+    xticks = dfs_all_values(dfs, x)
     # loop over all pandas.DataFrame objects
     for df in dfs:
         # setting the x-column as an index is required to draw the y-column
@@ -139,13 +158,18 @@ def draw_table(ax, dfs, legend, x, y):
     :param y: a column to be drawn on the y-axis
     :type y: str
     """
-    col_labels = dfs[0][x].tolist()
+    col_labels = dfs_all_values(dfs, x)
     column_legend = []
     cell_text = []
     # loop over all pandas.DataFrame objects
     for df in dfs:
-        # plot line on the subplot
-        cell_text.append(df[y].tolist())
+        # to allow query y(x) easily
+        df = df.set_index(x)
+        df_row = df[y]
+        # build a row with filled blanks '-'
+        row = [df_row[column] if column in df_row.index else '-' \
+            for column in col_labels]
+        cell_text.append(row)
 
     ax.axis('tight')
     ax.axis('off')
