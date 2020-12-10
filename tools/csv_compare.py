@@ -81,14 +81,15 @@ def dfs_filter(dfs, df_names, column_list):
     df_names_out = []
     # loop over all (pandas.DataFrame, str) pairs
     for df, df_name in zip(dfs, df_names):
-        # if DataFrame does not have a specific column just skip the DataFrame
         has_all = True
         for column in column_list:
             if column not in df.columns:
                 has_all = False
                 break
+        # if DataFrame does not have all specified columns just skip
+        # the DataFrame
         if not has_all:
-            break
+            continue
         # append the DataFrame and its name to the outputs
         dfs_out.append(df)
         df_names_out.append(df_name)
