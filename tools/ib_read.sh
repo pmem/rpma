@@ -74,7 +74,7 @@ bw-bs)
 	BLOCK_SIZE=(256 1024 4096 8192 65536)
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
-	ITERATIONS=(100000000 100000000 100000000 85753202 11138529)
+	ITERATIONS=(25831474 23448108 15927940 12618268 5001135)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits --tx-depth=${BW_TX_DEPTH}"
 	NAME="${MODE}-${THREADS}th"
 	verify_block_size
@@ -88,7 +88,7 @@ bw-th)
 	BLOCK_SIZE=4096
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
-	ITERATIONS=(100000000 89126559 44581990 22290994 14859379)
+	ITERATIONS=(16527218 32344690 61246542 89456698 89591370)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits --tx-depth=${BW_TX_DEPTH}"
 	NAME="${MODE}-${BLOCK_SIZE}bs"
 	verify_threads
@@ -99,7 +99,7 @@ lat)
 	THREADS=1
 	BLOCK_SIZE=(1024 4096 65536)
 	# values measured empirically, so that duration was ~60s
-	ITERATIONS=(27678723 20255739 6002473)
+	ITERATIONS=(15463608 11237260 3066641)
 	AUX_PARAMS="$AUX_PARAMS --perform_warm_up"
 	NAME="${MODE}"
 	verify_block_size
