@@ -12,6 +12,9 @@
 # the resutls.
 #
 
+# size of tx queue for ib_read_bw
+BW_TX_DEPTH=2
+
 HEADER_LAT="#bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]"
 HEADER_BW="#threads #bytes     #iterations    BW_peak[Gb/sec]    BW_average[Gb/sec]   MsgRate[Mpps]"
 
@@ -72,7 +75,7 @@ bw-bs)
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
 	ITERATIONS=(100000000 100000000 100000000 85753202 11138529)
-	AUX_PARAMS="$AUX_PARAMS --report_gbits"
+	AUX_PARAMS="$AUX_PARAMS --report_gbits --tx-depth=${BW_TX_DEPTH}"
 	NAME="${MODE}-${THREADS}th"
 	verify_block_size
 	;;
@@ -86,7 +89,7 @@ bw-th)
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
 	ITERATIONS=(100000000 89126559 44581990 22290994 14859379)
-	AUX_PARAMS="$AUX_PARAMS --report_gbits"
+	AUX_PARAMS="$AUX_PARAMS --report_gbits --tx-depth=${BW_TX_DEPTH}"
 	NAME="${MODE}-${BLOCK_SIZE}bs"
 	verify_threads
 	;;
