@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <bw-bs|bw-th|lat> <server_ip>"
+	echo "usage: $0 <bw-bs|bw-dp|bw-th|lat> <server_ip>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path"
@@ -51,17 +51,27 @@ bw-bs)
 	THREADS=1
 	BLOCK_SIZE=(256 1024 4096 8192 65536)
 	ITERATIONS=${#BLOCK_SIZE[@]}
+	DEPTH=2
+	SUFFIX=bw
+	;;
+bw-dp)
+	THREADS=1
+	BLOCK_SIZE=4096
+	DEPTH=(2 4 8 16 32 64 128)
+	ITERATIONS=${#DEPTH[@]}
 	SUFFIX=bw
 	;;
 bw-th)
 	THREADS=(1 2 4 8 12 16)
 	BLOCK_SIZE=4096
+	DEPTH=2
 	ITERATIONS=${#THREADS[@]}
 	SUFFIX=bw
 	;;
 lat)
 	THREADS=1
 	BLOCK_SIZE=(1024 4096 65536)
+	DEPTH=2
 	ITERATIONS=${#BLOCK_SIZE[@]}
 	SUFFIX=lat
 	;;
@@ -94,14 +104,22 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 	bw-bs)
 		BS="${BLOCK_SIZE[${i}]}"
 		TH="${THREADS}"
+		DP="${DEPTH}"
+		;;
+	bw-dp)
+		BS="${BLOCK_SIZE}"
+		TH="${THREADS[${i}]}"
+		DP="${DEPTH[${i}]}"
 		;;
 	bw-th)
 		BS="${BLOCK_SIZE}"
 		TH="${THREADS[${i}]}"
+		DP="${DEPTH}"
 		;;
 	lat)
 		BS="${BLOCK_SIZE[${i}]}"
 		TH="${THREADS}"
+		DP="${DEPTH}"
 		;;
 	esac
 
@@ -117,7 +135,7 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 
 	echo "[size: $BS threads: $TH]"
 	# run FIO
-	hostname=$SERVER_IP blocksize=$BS numjobs=$TH \
+	hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} \
 		numactl -N $JOB_NUMA ${FIO_PATH}fio \
 		./fio_jobs/librpma-client-read-${SUFFIX}.fio --output-format=json+ \
 		> $TEMP_JSON
