@@ -133,7 +133,7 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 			${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR" 2>>$LOG_ERR &
 	sleep 1
 
-	echo "[size: $BS threads: $TH]"
+	echo "[size: $BS, threads: $TH, iodepth: $DP]"
 	# run FIO
 	hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} \
 		numactl -N $JOB_NUMA ${FIO_PATH}fio \
