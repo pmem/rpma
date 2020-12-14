@@ -14,6 +14,7 @@
 #
 # The standardized-CSV format columns are (in order):
 # - threads - number of threads [1] (optional)
+# - iodepth - number of operations submitted at once [1] (optional)
 # - bs - block size [B]
 # - ops - number of operations executed [1]
 # - lat_* group (optional)
@@ -35,9 +36,9 @@ import argparse
 import pandas as pd
 
 fio_input_names = [
-    'bs', 'threads', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'ops',
-    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999',
-    'bw_avg', 'bw_min', 'bw_max']
+    'bs', 'iodepth', 'threads', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev',
+    'ops', 'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99',
+    'lat_pctl_99.999', 'bw_avg', 'bw_min', 'bw_max']
 
 fio_nsec_2_usec_names = [
     'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
@@ -48,9 +49,9 @@ fio_KiBps_2_Gbps_names = ['bw_avg', 'bw_min', 'bw_max']
 KiBpbs_2_Gbps = 1024 * 8 / 1000 / 1000 / 1000
 
 fio_output_names = [
-    'threads', 'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 
-    'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99', 'lat_pctl_99.999',
-    'bw_min', 'bw_max', 'bw_avg']
+    'threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg',
+    'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99',
+    'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg']
 
 ib_lat_input_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
