@@ -57,7 +57,7 @@ bw-bs)
 bw-dp)
 	THREADS=1
 	BLOCK_SIZE=4096
-	DEPTH=(2 4 8 16 32 64 128)
+	DEPTH=(1 2 4 8 16 32 64 128)
 	ITERATIONS=${#DEPTH[@]}
 	SUFFIX=bw
 	;;
