@@ -23,7 +23,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <bw-bs|bw-dp|bw-th|lat> <server_ip>"
+	echo "usage: $0 <bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export AUX_PARAMS='-d mlx5_0 -R'"
@@ -87,7 +87,7 @@ bw-bs)
 	NAME="${MODE}-${THREADS}th"
 	verify_block_size
 	;;
-bw-dp)
+bw-dp-exp)
 	IB_TOOL=ib_read_bw
 	HEADER=$HEADER_BW
 	THREADS=1
@@ -96,6 +96,19 @@ bw-dp)
 	# values measured empirically, so that duration was ~60s
 	# 100000000 is the maximum value of iterations
 	ITERATIONS=(21969641 21747009 22329851 21782537 22034520 21802325 22238498)
+	AUX_PARAMS="$AUX_PARAMS --report_gbits"
+	NAME="${MODE}-${BLOCK_SIZE}bs"
+	verify_depth
+	;;
+bw-dp-lin)
+	IB_TOOL=ib_read_bw
+	HEADER=$HEADER_BW
+	THREADS=1
+	BLOCK_SIZE=4096
+	DEPTH=(1 2 3 4 5 6 7 8 9 10)
+	# values measured empirically, so that duration was ~60s
+	# 100000000 is the maximum value of iterations
+	ITERATIONS=(20609419 30493585 40723132 43536049 50576557 55879517 60512919 65088286 67321386 68566797)
 	AUX_PARAMS="$AUX_PARAMS --report_gbits"
 	NAME="${MODE}-${BLOCK_SIZE}bs"
 	verify_depth
@@ -155,7 +168,7 @@ for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		DP_OPT="--tx-depth=${DP}"
 		echo -n "${TH},${DP}," >> $OUTPUT
 		;;
-	bw-dp)
+	bw-dp-exp|bw-dp-lin)
 		IT=${ITERATIONS[${i}]}
 		BS="${BLOCK_SIZE}"
 		TH="${THREADS}"
