@@ -22,6 +22,8 @@ column_to_label = {
     'bw':       'bandwidth [Gb/s]',
 }
 
+dimmensions = {'threads', 'bs'}
+
 layouts = {
     'lat': {
         'nrows': 4,
@@ -34,22 +36,14 @@ layouts = {
             'lat_pctl_99.99', 'lat_pctl_99.999'
         ]
     },
-    'bw_vs_bs': {
+    'bw': {
         'nrows': 1,
         'ncols': 1,
-        'x': 'bs',
+        'x': '<arg_axis>',
         'columns': [
             'bw_avg'
         ]
     },
-    'bw_vs_th': {
-        'nrows': 1,
-        'ncols': 1,
-        'x': 'threads',
-        'columns': [
-            'bw_avg'
-        ]
-    }
 }
 
 def get_label(column):
@@ -185,6 +179,9 @@ def main():
         default='compare.png', help='an output file')
     parser.add_argument('--output_layout', metavar='OUTPUT_LAYOUT',
         choices=layouts.keys(), required=True, help='an output file layout')
+    parser.add_argument('--arg_axis', metavar='ARG_AXIS',
+        choices=dimmensions, required=False,
+        help='an axis for layouts which requires to pick one')
     parser.add_argument('--output_with_tables', action='store_true',
         help='an output file layout')
     parser.add_argument('--output_title', metavar='OUTPUT_TITLE',
@@ -206,8 +203,16 @@ def main():
         df = pd.read_csv(csv_file)
         dfs.append(df)
 
-    # get layout parameters
+    # get a layout
     layout = layouts.get(args.output_layout)
+
+    # fill out an optional axis with the provided argument
+    if args.output_layout == 'bw':
+        if args.arg_axis is None:
+            raise Exception('The bw layout requires --arg_axis')
+        layout['x'] = args.arg_axis
+
+    # get layout parameters
     columns = layout.get('columns')
     nrows = layout.get('nrows')
     ncols =  layout.get('ncols')
