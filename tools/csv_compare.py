@@ -17,12 +17,13 @@ import matplotlib.pyplot as plt
 
 column_to_label = {
     'threads':  '# of threads',
+    'iodepth':  'iodepth'
     'bs':       'block size [B]',
     'lat':      'latency [nsec]',
     'bw':       'bandwidth [Gb/s]',
 }
 
-dimmensions = {'threads', 'bs'}
+dimmensions = {'threads', 'iodepth', 'bs'}
 
 layouts = {
     'lat': {
