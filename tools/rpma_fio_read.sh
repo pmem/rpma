@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <bw-bs|bw-dp|bw-th|lat> <server_ip>"
+	echo "usage: $0 <bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path"
@@ -54,10 +54,17 @@ bw-bs)
 	DEPTH=2
 	SUFFIX=bw
 	;;
-bw-dp)
+bw-dp-exp)
 	THREADS=1
 	BLOCK_SIZE=4096
 	DEPTH=(1 2 4 8 16 32 64 128)
+	ITERATIONS=${#DEPTH[@]}
+	SUFFIX=bw
+	;;
+bw-dp-lin)
+	THREADS=1
+	BLOCK_SIZE=4096
+	DEPTH=(1 2 3 4 5 6 7 8 9 10)
 	ITERATIONS=${#DEPTH[@]}
 	SUFFIX=bw
 	;;
@@ -106,7 +113,7 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 		TH="${THREADS}"
 		DP="${DEPTH}"
 		;;
-	bw-dp)
+	bw-dp-exp|bw-dp-lin)
 		BS="${BLOCK_SIZE}"
 		TH="${THREADS}"
 		DP="${DEPTH[${i}]}"
