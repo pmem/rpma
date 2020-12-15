@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 column_to_label = {
     'threads':  '# of threads',
-    'iodepth':  'iodepth'
+    'iodepth':  'iodepth',
     'bs':       'block size [B]',
     'lat':      'latency [nsec]',
     'bw':       'bandwidth [Gb/s]',
