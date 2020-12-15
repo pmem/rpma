@@ -5,7 +5,7 @@
 #
 
 #
-# rpma_fio_read.py -- a single-sided Fio RPMA benchmark (EXPERIMENTAL)
+# rpma_fio_bench.sh -- a single-sided Fio RPMA benchmark (EXPERIMENTAL)
 #
 # Spawns both server and client, collects the results for multiple data
 # sizes (1KiB, 4KiB, 64KiB) and generates a single CSV file with all results.
@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
+	echo "usage: $0 <read|write> <bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path"
@@ -31,7 +31,7 @@ function usage()
 	exit 1
 }
 
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 3 ]; then
 	usage "Too few arguments"
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
@@ -43,8 +43,17 @@ elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
 fi
 
-MODE=$1
-SERVER_IP=$2
+OP=$1
+MODE=$2
+SERVER_IP=$3
+
+case $OP in
+read|write)
+	;;
+*)
+	usage "Wrong operation: $OP"
+	;;
+esac
 
 case $MODE in
 bw-bs)
@@ -87,10 +96,12 @@ lat)
 	;;
 esac
 
-TEMP_JSON=/dev/shm/rpma_fio_read_${MODE}-${TIMESTAMP}_temp.json
-TEMP_CSV=/dev/shm/rpma_fio_read_${MODE}-${TIMESTAMP}_temp.csv
-OUTPUT=rpma_fio_read_${MODE}-${TIMESTAMP}.csv
-LOG_ERR=/dev/shm/rpma_fio_read_${MODE}-${TIMESTAMP}.log
+NAME=rpma_fio_${OP}_${MODE}-${TIMESTAMP}
+DIR=/dev/shm
+TEMP_JSON=${DIR}/${NAME}_temp.json
+TEMP_CSV=${DIR}/${NAME}_temp.csv
+OUTPUT=${NAME}.csv
+LOG_ERR=${DIR}/${NAME}.log
 
 echo "Performance results: $OUTPUT"
 echo "Output and errors (both sides): $LOG_ERR"
@@ -100,7 +111,7 @@ echo
 rm -f $LOG_ERR $OUTPUT
 
 if [ -z "$REMOTE_JOB_PATH" ]; then
-	REMOTE_JOB_PATH=/dev/shm/librpma-server-${TIMESTAMP}.fio
+	REMOTE_JOB_PATH=${DIR}/librpma-server-${TIMESTAMP}.fio
 fi
 if [ -z "$REMOTE_JOB_MEM" ]; then
 	REMOTE_JOB_MEM=malloc
@@ -142,9 +153,9 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 
 	echo "[size: $BS, threads: $TH, iodepth: $DP]"
 	# run FIO
-	hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} \
+	hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
 		numactl -N $JOB_NUMA ${FIO_PATH}fio \
-		./fio_jobs/librpma-client-read-${SUFFIX}.fio --output-format=json+ \
+		./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 		> $TEMP_JSON
 	if [ "$?" -ne 0 ]; then
 		echo "Error: FIO job failed"
@@ -152,7 +163,7 @@ for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 	fi
 	# convert JSON to CSV
 	./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV \
-		--op read
+		--op ${OP}
 	# append CSV to the output
 	cat $TEMP_CSV >> $OUTPUT
 done

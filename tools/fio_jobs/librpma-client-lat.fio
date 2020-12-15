@@ -17,7 +17,7 @@ percentile_list=99.0:99.9:99.99:99.999
 [client]
 sync=1
 iomem_align=$pagesize
-readwrite=read
+readwrite=${readwrite}
 blocksize=${blocksize}
 ramp_time=15
 time_based
