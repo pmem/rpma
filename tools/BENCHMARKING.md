@@ -25,6 +25,9 @@ $ pip3 install --user matplotlib
 ### Latency
 
 Generate the baseline latency numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_lat` with various data sizes:
+ - iterates over the block size (1024B, 4096B, 65536B)
+ - thread = 1
+ - tx_depth = 1
 
 ```sh
 $ export JOB_NUMA=0
@@ -40,6 +43,9 @@ $ ./ib_read.sh lat <SERVER_IP>
 ```
 
 Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_read.sh`:
+ - iterates over the block size (1024B, 4096B, 65536B)
+ - thread = 1
+ - iodepth = 1
 
 ```sh
 $ export JOB_NUMA=0
@@ -64,28 +70,59 @@ Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-s
 
  - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
  - thread = 1
+ - tx_depth = 2
 ```sh
 $ ./ib_read.sh bw-bs <SERVER_IP>
 ```
 
  - iterates over the number of threads (1, 2, 4, 8, 12)
  - block size = 4096B
+ - tx_depth = 2
 ```sh
 $ ./ib_read.sh bw-th <SERVER_IP>
+```
+
+ - iterates over the tx_depth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+ - thread = 1
+ - block size = 4096B
+```sh
+$ ./ib_read.sh bw-dp-lin <SERVER_IP>
+```
+
+ - iterates over the tx_depth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
+ - thread = 1
+ - block size = 4096B
+```sh
+$ ./ib_read.sh bw-dp-exp <SERVER_IP>
 ```
 
 Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_read.sh`:
 
  - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
  - thread = 1
+ - iodepth = 2
 ```sh
 $ ./rpma_fio_read.sh bw-bs <SERVER_IP>
 ```
 
  - iterates over the number of threads (1, 2, 4, 8, 12, 16)
  - block size = 4096B
+ - iodepth = 2
 ```sh
 $ ./rpma_fio_read.sh bw-th <SERVER_IP>
+```
+ - iterates over the iodepth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+ - thread = 1
+ - block size = 4096B
+```sh
+$ ./rpma_fio_read.sh bw-dp-lin <SERVER_IP>
+```
+
+ - iterates over the iodepth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
+ - thread = 1
+ - block size = 4096B
+```sh
+$ ./rpma_fio_read.sh bw-dp-exp <SERVER_IP>
 ```
 
 ### Comparison
