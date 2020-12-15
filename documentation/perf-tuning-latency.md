@@ -21,6 +21,8 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
       * Power n Performance - C1E - **Disabled**
     * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better) e.g.:
       * Power n Performance - CPU Power and Performance Policy - **Performance**
+      * Power and Performance - CPU P state control - Intel Turbo Boost Technology - **Enabled**
+      * Power and Performance - CPU P state control - Energy Efficient Turbo - **Disabled**
       * System Acoustic and Performance Configuration - Set Fan Profile - **Performance**
 * PMem-related
     * configure maximum available operating power for your PMem devices **[XXX source and details are missing]**. **Note**: Different sizes of PMem devices have different performance capabilites. If it is important for you, pick the right one for your application e.g.: [[1.3]][pmem-200-brief]
