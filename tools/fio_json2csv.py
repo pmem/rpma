@@ -36,9 +36,9 @@ def main():
         csv_columns = ['bs']
         csv_data = {'bs': options['bs']}
         # append numjobs
-        column = 'numjobs'
-        csv_columns.append(column)
-        csv_data[column] = options[column] if column in options else "1"
+        for column in ['iodepth', 'numjobs']:
+            csv_columns.append(column)
+            csv_data[column] = options[column] if column in options else "1"
         for k,v in lat_ns.items():
             if k == "percentile" or k == "bins":
                 continue
