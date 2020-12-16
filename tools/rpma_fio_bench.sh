@@ -61,35 +61,30 @@ bw-bs)
 	BLOCK_SIZE=(256 1024 4096 8192 65536)
 	ITERATIONS=${#BLOCK_SIZE[@]}
 	DEPTH=2
-	SUFFIX=bw
 	;;
 bw-dp-exp)
 	THREADS=1
 	BLOCK_SIZE=4096
 	DEPTH=(1 2 4 8 16 32 64 128)
 	ITERATIONS=${#DEPTH[@]}
-	SUFFIX=bw
 	;;
 bw-dp-lin)
 	THREADS=1
 	BLOCK_SIZE=4096
 	DEPTH=(1 2 3 4 5 6 7 8 9 10)
 	ITERATIONS=${#DEPTH[@]}
-	SUFFIX=bw
 	;;
 bw-th)
 	THREADS=(1 2 4 8 12 16)
 	BLOCK_SIZE=4096
 	DEPTH=2
 	ITERATIONS=${#THREADS[@]}
-	SUFFIX=bw
 	;;
 lat)
 	THREADS=1
 	BLOCK_SIZE=(1024 4096 65536)
 	DEPTH=1
 	ITERATIONS=${#BLOCK_SIZE[@]}
-	SUFFIX=lat
 	;;
 *)
 	usage "Wrong mode: $MODE"
@@ -102,6 +97,7 @@ TEMP_JSON=${DIR}/${NAME}_temp.json
 TEMP_CSV=${DIR}/${NAME}_temp.csv
 OUTPUT=${NAME}.csv
 LOG_ERR=${DIR}/${NAME}.log
+SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
 echo "Performance results: $OUTPUT"
 echo "Output and errors (both sides): $LOG_ERR"
