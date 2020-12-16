@@ -19,7 +19,7 @@ column_to_label = {
     'threads':  '# of threads',
     'iodepth':  'iodepth',
     'bs':       'block size [B]',
-    'lat':      'latency [nsec]',
+    'lat':      'latency [usec]',
     'bw':       'bandwidth [Gb/s]',
 }
 
