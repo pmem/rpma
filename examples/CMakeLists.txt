@@ -15,6 +15,8 @@ add_flag(-fno-common)
 add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
 
+add_flag(-lpthread)
+
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
@@ -129,6 +131,8 @@ add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPMEM_IF_FOUND US
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 100-thread-safe-test BIN 01-rpma_utils_get_ibv_context
+	SRCS 100-thread-safe-test/01-rpma_utils_get_ibv_context.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
