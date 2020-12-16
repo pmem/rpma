@@ -162,7 +162,7 @@ def draw_table(ax, dfs, legend, x, y):
         df = df.set_index(x)
         df_row = df[y]
         # build a row with filled blanks '-'
-        row = [df_row[column] if column in df_row.index else '-' \
+        row = ["{:.2f}".format(df_row[column]) if column in df_row.index else '-' \
             for column in col_labels]
         cell_text.append(row)
 
