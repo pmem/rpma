@@ -91,7 +91,13 @@ lat)
 	;;
 esac
 
-NAME=rpma_fio_${OP}_${MODE}-${TIMESTAMP}
+if [ -z "$REMOTE_JOB_MEM" ]; then
+	MEM=dram
+else
+	MEM="$( echo "$REMOTE_JOB_MEM" | cut -c11- )"
+fi
+
+NAME=rpma_fio_${OP}_${MODE}_${MEM}-${TIMESTAMP}
 DIR=/dev/shm
 TEMP_JSON=${DIR}/${NAME}_temp.json
 TEMP_CSV=${DIR}/${NAME}_temp.csv
