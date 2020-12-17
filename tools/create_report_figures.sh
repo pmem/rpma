@@ -22,8 +22,10 @@ function usage()
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
-    echo "export LAT_MACHINE=NAME_OF_THE_MACHINE # a machine used to generate the Figure_2_3_4"
-    echo "export BW_MACHINE=NAME_OF_THE_MACHINE # a machine used to generate the Figure_5 and Figure_6"
+    echo "export READ_LAT_MACHINE=NAME_OF_THE_MACHINE # a machine used to generate the Figure_2_3_4"
+    echo "export READ_BW_MACHINE=NAME_OF_THE_MACHINE # a machine used to generate the Figure_5 and Figure_6"
+    echo "export WRITE_LAT_MACHINE=NAME_OF_THE_MACHINE # a machine used to generate the Figure_7"
+    echo "export WRITE_BW_MACHINE=NAME_OF_THE_MACHINE"
     exit 1
 }
 
@@ -133,12 +135,12 @@ lat_figure \
     'Appendix_B3_rpma_read_lat_PMEM'
 
 echo '- ib_read_lat vs rpma_read() from DRAM vs rpma_read() from PMEM'
-if [ -z "$LAT_MACHINE" ]; then
-	echo "SKIP: LAT_MACHINE not set"
+if [ -z "$READ_LAT_MACHINE" ]; then
+	echo "SKIP: READ_LAT_MACHINE not set"
     echo
 else
     lat_figure \
-        "$DATA_PATH/READ/$LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/$LAT_MACHINE/PMEM/*/CSV/*lat*" \
+        "$DATA_PATH/READ/$READ_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/$READ_LAT_MACHINE/PMEM/*/CSV/*lat*" \
         'ib_read_lat vs rpma_read() from DRAM and PMEM' \
         'Figure_2_3_4_rpma_read_lat_vs_ib' \
         'ib_read_lat' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
@@ -173,12 +175,12 @@ bw_figure \
     'Appendix_C3_rpma_read_bw_bs_pmem'
 
 echo "- ib_read_bw vs rpma_read() from DRAM vs rpma_read() from PMEM"
-if [ -z "$BW_MACHINE" ]; then
-	echo "SKIP: BW_MACHINE not set"
+if [ -z "$READ_BW_MACHINE" ]; then
+	echo "SKIP: READ_BW_MACHINE not set"
     echo
 else
     bw_figure \
-        "$DATA_PATH/READ/$BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/$BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
+        "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
         'ib_read_bw vs rpma_read() from DRAM and PMEM' \
         'bs' \
         'Figure_5_rpma_read_bw_bs_vs_ib' \
@@ -213,14 +215,46 @@ bw_figure \
     'Appendix_D3_rpma_read_bw_th_pmem'
 
 echo "- ib_read_bw vs rpma_read() from DRAM vs rpma_read() from PMEM"
-if [ -z "$BW_MACHINE" ]; then
-	echo "SKIP: BW_MACHINE not set"
+if [ -z "$READ_BW_MACHINE" ]; then
+	echo "SKIP: READ_BW_MACHINE not set"
     echo
 else
     bw_figure \
-        "$DATA_PATH/READ/$BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/$BW_MACHINE/PMEM/*/CSV/*bw-th*" \
+        "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
         'ib_read_bw vs rpma_read() from DRAM and PMEM' \
         'threads' \
         'Figure_6_rpma_read_bw_th_vs_ib' \
         'ib_read_bw' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
+
+cd ..
+
+echo 'WRITE LAT'
+mkdir 05_write_lat
+cd 05_write_lat
+
+echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
+lat_figure \
+    "$DATA_PATH/WRITE/*/DRAM/*/CSV/rpma*lat*" \
+    'rpma_write() + rpma_flush() to DRAM' \
+    'Appendix_E1_rpma_write_flush_lat_DRAM'
+
+echo '- compare all machines rpma_write() + rpma_flush() to PMEM'
+lat_figure \
+    "$DATA_PATH/WRITE/*/PMEM/*/CSV/rpma*lat*" \
+    'rpma_write() + rpma_flush() to PMEM' \
+    'Appendix_E2_rpma_write_flush_lat_PMEM'
+
+echo '- rpma_write() + rpma_flush() to DRAM vs to PMEM'
+if [ -z "$WRITE_LAT_MACHINE" ]; then
+	echo "SKIP: WRITE_LAT_MACHINE not set"
+    echo
+else
+    lat_figure \
+        "$DATA_PATH/WRITE/$WRITE_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/WRITE/$WRITE_LAT_MACHINE/PMEM/*/CSV/*lat*" \
+        'rpma_write() + rpma_flush() to DRAM vs to PMEM' \
+        'Figure_7_rpma_write_flush_lat' \
+        'to DRAM' 'to PMEM'
+fi
+
+cd ..
