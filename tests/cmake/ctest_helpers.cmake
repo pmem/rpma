@@ -216,3 +216,30 @@ function(add_test_generic)
 		endforeach()
 	endif()
 endfunction()
+
+function(add_multithreaded)
+	set(options USE_LIBIBVERBS)
+	set(oneValueArgs NAME BIN)
+	set(multiValueArgs SRCS)
+	cmake_parse_arguments(MULTITHREADED
+		"${options}"
+		"${oneValueArgs}"
+		"${multiValueArgs}"
+		${ARGN})
+
+	set(target multithreaded-${MULTITHREADED_NAME}-${MULTITHREADED_BIN})
+
+	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
+	add_executable(${target} ${MULTITHREADED_SRCS})
+	target_include_directories(${target} PRIVATE
+		${LIBRPMA_INCLUDE_DIRS})
+	set_target_properties(${target} PROPERTIES
+		OUTPUT_NAME ${MULTITHREADED_BIN})
+	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} pthread)
+
+	if(MULTITHREADED_USE_LIBIBVERBS)
+		target_include_directories(${target}
+			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
+	endif()
+endfunction()
