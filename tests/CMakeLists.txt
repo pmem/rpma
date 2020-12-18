@@ -32,3 +32,4 @@ add_check_whitespace(tests-all
 
 add_subdirectory(unit)
 add_subdirectory(integration)
+add_subdirectory(multithreaded)
