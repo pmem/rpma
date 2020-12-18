@@ -50,3 +50,6 @@ endif()
 
 add_subdirectory(unit)
 add_subdirectory(integration)
+if(TESTS_SOFT_ROCE)
+	add_subdirectory(multithreaded)
+endif()
