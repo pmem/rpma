@@ -224,7 +224,7 @@ rpma_mr_send(struct ibv_qp *qp,
  * rpma_mr_recv -- post an RDMA recv from dst
  */
 int
-rpma_mr_recv(struct ibv_qp *qp,
+rpma_mr_recv(struct rdma_cm_id *id,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context)
 {
@@ -242,9 +242,17 @@ rpma_mr_recv(struct ibv_qp *qp,
 	wr.wr_id = (uint64_t)op_context;
 
 	struct ibv_recv_wr *bad_wr;
-	int ret = ibv_post_recv(qp, &wr, &bad_wr);
+	int ret;
+	if (id->srq) /* Use SRQ */
+		ret = ibv_post_srq_recv(id->srq, &wr, &bad_wr);
+	else /* Use normal QP */
+		ret = ibv_post_recv(id->qp, &wr, &bad_wr);
 	if (ret) {
-		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");
+		if (id->srq) {
+			RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_srq_recv");
+		} else {
+			RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");
+		}
 		return RPMA_E_PROVIDER;
 	}
 

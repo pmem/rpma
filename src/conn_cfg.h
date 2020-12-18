@@ -10,6 +10,20 @@
 
 #include "librpma.h"
 
+/* the maximum number of scatter/gather elements in any Work Request */
+#define RPMA_MAX_SGE 1
+struct rpma_conn_cfg {
+	bool use_srq;
+	int timeout_ms;	/* connection establishment timeout */
+	uint32_t cq_size;	/* CQ size */
+	uint32_t sq_size;	/* SQ size */
+	uint32_t rq_size;	/* RQ size */
+	/* SRQ only attributes */
+	uint32_t max_wr;	/* maximum number of outstanding work requests (WRs) in the SRQ */
+	uint32_t max_sge;	/* maximum number of scatter elements per WR */
+	uint32_t srq_limit;	/* the limit value of the SRQ */
+};
+
 /*
  * ERRORS
  * rpma_conn_cfg_default() cannot fail.

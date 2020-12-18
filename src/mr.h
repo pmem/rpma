@@ -11,6 +11,7 @@
 #include "librpma.h"
 
 #include <infiniband/verbs.h>
+#include <rdma/rdma_cma.h>
 
 /*
  * ASSUMPTIONS
@@ -62,7 +63,7 @@ int rpma_mr_send(struct ibv_qp *qp,
  *
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_mr_recv(struct ibv_qp *qp,
+int rpma_mr_recv(struct rdma_cm_id *id,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context);
 
