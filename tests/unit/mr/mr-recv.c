@@ -16,6 +16,8 @@
 #include "mr-common.h"
 #include "test-common.h"
 
+static struct rdma_cm_id Cm_id;
+
 /*
  * recv__failed_E_PROVIDER - rpma_mr_recv failed with RPMA_E_PROVIDER
  */
@@ -31,8 +33,11 @@ recv__failed_E_PROVIDER(void **mrs_ptr)
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_recv_mock, &args);
 
+	Cm_id.srq = NULL;
+	Cm_id.qp = MOCK_QP;
+
 	/* run test */
-	int ret = rpma_mr_recv(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -54,8 +59,11 @@ recv__success(void **mrs_ptr)
 	args.ret = MOCK_OK;
 	will_return(ibv_post_recv_mock, &args);
 
+	Cm_id.srq = NULL;
+	Cm_id.qp = MOCK_QP;
+
 	/* run test */
-	int ret = rpma_mr_recv(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */

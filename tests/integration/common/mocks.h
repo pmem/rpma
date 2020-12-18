@@ -21,6 +21,7 @@
 #define MOCK_SRC_ADDR		((struct sockaddr *)0x0ADD)
 #define MOCK_DST_ADDR		((struct sockaddr *)0x0ADE)
 #define MOCK_IBV_PD		((struct ibv_pd *)0x00D0)
+#define MOCK_SRQ		((struct ibv_srq *)0xD569)
 #define MOCK_QP			((struct ibv_qp *)0xD56A)
 #define MOCK_OP_CONTEXT		((void *)0xC417)
 #define MOCK_RKEY		((uint32_t)0x10111213)

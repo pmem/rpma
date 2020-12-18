@@ -22,6 +22,7 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_COMP_CHANNEL	(struct ibv_comp_channel *)&Ibv_comp_channel
 #define MOCK_IBV_CQ		(struct ibv_cq *)&Ibv_cq
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
+#define MOCK_SRQ		((struct ibv_srq *)0xD569)
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
 
@@ -45,6 +46,12 @@ struct ibv_post_send_mock_args {
 
 struct ibv_post_recv_mock_args {
 	struct ibv_qp *qp;
+	uint64_t wr_id;
+	int ret;
+};
+
+struct ibv_post_srq_recv_mock_args {
+	struct ibv_srq *srq;
 	uint64_t wr_id;
 	int ret;
 };

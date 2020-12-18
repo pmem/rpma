@@ -78,6 +78,11 @@ test_client__success(void **unused)
 
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
+	expect_value(rdma_create_srq, id, &id);
+	expect_value(rdma_create_srq, pd, MOCK_IBV_PD);
+	will_return(rdma_create_srq, MOCK_OK);
+	will_return(rdma_create_srq, MOCK_SRQ);
+
 	expect_value(rdma_create_qp, id, &id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
 	will_return(rdma_create_qp, MOCK_OK);
@@ -135,6 +140,7 @@ test_client__success(void **unused)
 	will_return(ibv_dereg_mr, MOCK_OK);
 
 	expect_value(rdma_destroy_qp, id, &id);
+	expect_value(rdma_destroy_srq, id, &id);
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
@@ -226,6 +232,11 @@ test_server__success(void **unused)
 
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
+	expect_value(rdma_create_srq, id, &id);
+	expect_value(rdma_create_srq, pd, MOCK_IBV_PD);
+	will_return(rdma_create_srq, MOCK_OK);
+	will_return(rdma_create_srq, MOCK_SRQ);
+
 	expect_value(rdma_create_qp, id, &id);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
 	will_return(rdma_create_qp, MOCK_OK);
@@ -285,6 +296,7 @@ test_server__success(void **unused)
 	will_return(ibv_dereg_mr, MOCK_OK);
 
 	expect_value(rdma_destroy_qp, id, &id);
+	expect_value(rdma_destroy_srq, id, &id);
 
 	expect_value(ibv_destroy_cq, cq, MOCK_CQ);
 	will_return(ibv_destroy_cq, MOCK_OK);
