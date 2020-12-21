@@ -131,7 +131,7 @@ def draw_plot(ax, dfs, legend, x, y):
         # as a function of x argument
         df = df.set_index(x)
         # plot line on the subplot
-        df[y].plot.line(ax=ax, rot=45)
+        df[y].plot.line(ax=ax, rot=45, marker='.')
 
     ax.set_xticks(xticks)
     ax.set_xlabel(get_label(x))
