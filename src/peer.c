@@ -12,19 +12,18 @@
 #include "conn_req.h"
 #include "log_internal.h"
 #include "peer.h"
+#include "conn_cfg.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
 #endif
-
-/* the maximum number of scatter/gather elements in any Work Request */
-#define RPMA_MAX_SGE 1
 
 /* the maximum message size (in bytes) that can be posted inline */
 #define RPMA_MAX_INLINE_DATA 0
 
 struct rpma_peer {
 	struct ibv_pd *pd; /* a protection domain */
+	struct ibv_srq *srq;
 
 	int is_odp_supported; /* is On-Demand Paging supported */
 };
@@ -47,14 +46,36 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	/* read SQ and RQ sizes from the configuration */
 	uint32_t sq_size = 0;
 	uint32_t rq_size = 0;
+	bool use_srq = false;
+	uint32_t srq_limit = 0;
 	(void) rpma_conn_cfg_get_sq_size(cfg, &sq_size);
 	(void) rpma_conn_cfg_get_rq_size(cfg, &rq_size);
+	(void) rpma_conn_cfg_get_use_srq(cfg, &use_srq);
+	(void) rpma_conn_cfg_get_srq_limit(cfg, &srq_limit);
 
 	struct ibv_qp_init_attr qp_init_attr;
+	if (use_srq && !peer->srq) {
+		struct ibv_srq_init_attr srq_init_attr;
+		struct ibv_srq *srq;
+		memset(&srq_init_attr, 0, sizeof(srq_init_attr));
+		srq_init_attr.attr.max_wr  = rq_size;
+		srq_init_attr.attr.max_sge = RPMA_MAX_SGE;
+		srq_init_attr.attr.srq_limit = srq_limit;
+		srq = ibv_create_srq(peer->pd, &srq_init_attr);
+		if (srq == NULL) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_create_srq()");
+			return RPMA_E_PROVIDER;
+		}
+		qp_init_attr.srq = srq;
+		peer->srq = srq;
+	} else if (use_srq) {
+		qp_init_attr.srq = peer->srq;
+	} else {
+		qp_init_attr.srq = NULL;
+	}
 	qp_init_attr.qp_context = NULL;
 	qp_init_attr.send_cq = cq;
 	qp_init_attr.recv_cq = cq;
-	qp_init_attr.srq = NULL;
 	qp_init_attr.cap.max_send_wr = sq_size;
 	qp_init_attr.cap.max_recv_wr = rq_size;
 	qp_init_attr.cap.max_send_sge = RPMA_MAX_SGE;
@@ -196,6 +217,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 		goto err_dealloc_pd;
 	}
 
+	peer->srq = NULL;
 	peer->pd = pd;
 	peer->is_odp_supported = is_odp_supported;
 	*peer_ptr = peer;
@@ -218,10 +240,19 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 		return RPMA_E_INVAL;
 
 	struct rpma_peer *peer = *peer_ptr;
+	int ret;
 	if (peer == NULL)
 		return 0;
 
-	int ret = ibv_dealloc_pd(peer->pd);
+	if (peer->srq) {
+		ret = ibv_destroy_srq(peer->srq);
+		if (ret) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_destroy_srq()");
+			return RPMA_E_PROVIDER;
+		}
+	}
+
+	ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_dealloc_pd()");
 		return RPMA_E_PROVIDER;

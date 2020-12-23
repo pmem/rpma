@@ -305,9 +305,17 @@ rpma_mr_recv(struct ibv_qp *qp,
 	wr.wr_id = (uint64_t)op_context;
 
 	struct ibv_recv_wr *bad_wr;
-	int ret = ibv_post_recv(qp, &wr, &bad_wr);
+	int ret;
+	if (qp->srq) /* Use SRQ */
+		ret = ibv_post_srq_recv(qp->srq, &wr, &bad_wr);
+	else /* Use normal QP */
+		ret = ibv_post_recv(qp, &wr, &bad_wr);
 	if (ret) {
-		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");
+		if (qp->srq) {
+			RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_srq_recv");
+		} else {
+			RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");
+		}
 		return RPMA_E_PROVIDER;
 	}
 
