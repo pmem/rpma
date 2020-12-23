@@ -12,6 +12,7 @@
 
 /* mocked IBV entities */
 extern struct verbs_context Verbs_context;
+extern struct ibv_srq Ibv_srq;
 extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_cq Ibv_cq;
 extern struct ibv_qp Ibv_qp;
@@ -22,6 +23,7 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_COMP_CHANNEL	(struct ibv_comp_channel *)&Ibv_comp_channel
 #define MOCK_IBV_CQ		(struct ibv_cq *)&Ibv_cq
 #define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
+#define MOCK_SRQ		((struct ibv_srq *)&Ibv_srq)
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
 
@@ -49,6 +51,12 @@ struct ibv_post_recv_mock_args {
 	int ret;
 };
 
+struct ibv_post_srq_recv_mock_args {
+	struct ibv_srq *srq;
+	uint64_t wr_id;
+	int ret;
+};
+
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 int ibv_query_device_ex_mock(struct ibv_context *context,
 		const struct ibv_query_device_ex_input *input,
@@ -61,6 +69,8 @@ int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 
 int ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
 			struct ibv_recv_wr **bad_wr);
+int ibv_post_srq_recv_mock(struct ibv_srq *srq, struct ibv_recv_wr *wr,
+				struct ibv_recv_wr **bad_wr);
 
 int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 

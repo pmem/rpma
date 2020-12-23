@@ -16,6 +16,8 @@
 #include "mr-common.h"
 #include "test-common.h"
 
+static struct rdma_cm_id Cm_id;
+
 /*
  * recv__failed_E_PROVIDER - rpma_mr_recv failed with RPMA_E_PROVIDER
  */
@@ -31,8 +33,11 @@ recv__failed_E_PROVIDER(void **mrs_ptr)
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_recv_mock, &args);
 
+	Cm_id.srq = NULL;
+	Cm_id.qp = MOCK_QP;
+
 	/* run test */
-	int ret = rpma_mr_recv(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -54,8 +59,63 @@ recv__success(void **mrs_ptr)
 	args.ret = MOCK_OK;
 	will_return(ibv_post_recv_mock, &args);
 
+	Cm_id.srq = NULL;
+	Cm_id.qp = MOCK_QP;
+
 	/* run test */
-	int ret = rpma_mr_recv(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+}
+
+/*
+ * recv_use_srq__failed_E_PROVIDER - rpma_mr_recv failed with RPMA_E_PROVIDER
+ */
+static void
+recv_use_srq__failed_E_PROVIDER(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* configure mocks */
+	struct ibv_post_srq_recv_mock_args args;
+	args.srq = MOCK_SRQ;
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.ret = MOCK_ERRNO;
+	will_return(ibv_post_srq_recv_mock, &args);
+
+	Cm_id.srq = MOCK_SRQ;
+	Cm_id.qp = MOCK_QP;
+
+	/* run test */
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
+				MOCK_LEN, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+}
+
+/*
+ * recv_use_srq__success - happy day scenario
+ */
+static void
+recv_use_srq__success(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* configure mocks */
+	struct ibv_post_srq_recv_mock_args args;
+	args.srq = MOCK_SRQ;
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.ret = MOCK_OK;
+	will_return(ibv_post_srq_recv_mock, &args);
+
+	Cm_id.srq = MOCK_SRQ;
+	Cm_id.qp = MOCK_QP;
+
+	/* run test */
+	int ret = rpma_mr_recv(&Cm_id, mrs->local, MOCK_SRC_OFFSET,
 				MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -81,7 +141,10 @@ group_setup_mr_recv(void **unused)
 	 * to our mock function.
 	 */
 	MOCK_VERBS->ops.post_recv = ibv_post_recv_mock;
+	MOCK_VERBS->ops.post_srq_recv = ibv_post_srq_recv_mock;
 	Ibv_qp.context = MOCK_VERBS;
+	Ibv_qp.srq = MOCK_SRQ;
+	Ibv_qp.srq->context = MOCK_VERBS;
 
 	return 0;
 }
@@ -92,6 +155,12 @@ static const struct CMUnitTest tests_mr_recv[] = {
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(recv__success,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(recv_use_srq__failed_E_PROVIDER,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(recv_use_srq__success,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test(NULL)

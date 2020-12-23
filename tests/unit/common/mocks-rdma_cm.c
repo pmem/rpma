@@ -15,7 +15,7 @@
 #include "test-common.h"
 
 struct rdma_event_channel Evch; /* mock event channel */
-struct rdma_cm_id Cm_id;	/* mock CM ID */
+struct rdma_cm_id Cm_id; /* mock CM ID */
 
 /*
  * Rdma_migrate_id_counter -- counter of calls to rdma_migrate_id() which allows
@@ -41,7 +41,7 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
 	check_expected(qp_init_attr->qp_context);
 	check_expected(qp_init_attr->send_cq);
 	check_expected(qp_init_attr->recv_cq);
-	assert_null(qp_init_attr->srq);
+	assert_true(qp_init_attr->srq == NULL || qp_init_attr->srq == MOCK_SRQ);
 	check_expected(qp_init_attr->cap.max_send_wr);
 	check_expected(qp_init_attr->cap.max_recv_wr);
 	check_expected(qp_init_attr->cap.max_send_sge);
@@ -62,6 +62,38 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
  */
 void
 rdma_destroy_qp(struct rdma_cm_id *id)
+{
+	check_expected_ptr(id);
+}
+
+/*
+ * rdma_create_srq -- rdma_create_srq() mock
+ */
+int
+rdma_create_srq(struct rdma_cm_id *id, struct ibv_pd *pd,
+					struct ibv_srq_init_attr *attr)
+{
+	check_expected_ptr(id);
+	check_expected_ptr(pd);
+	assert_non_null(attr);
+	check_expected(attr->srq_context);
+	check_expected(attr->attr.max_wr);
+	check_expected(attr->attr.max_sge);
+	check_expected(attr->attr.srq_limit);
+
+	id->srq = NULL;
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+	id->srq = mock_type(struct ibv_srq *);
+	return 0;
+}
+
+/*
+ * rdma_destroy_srq -- rdma_destroy_srq() mock
+ */
+void
+rdma_destroy_srq(struct rdma_cm_id *id)
 {
 	check_expected_ptr(id);
 }

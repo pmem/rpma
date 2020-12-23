@@ -28,6 +28,18 @@ prestate_init(struct conn_req_new_test_state *prestate,
 	prestate->get_cqe.q_size = cq_size;
 }
 
+void
+prestate_enable_srq(struct conn_req_new_test_state *prestate)
+{
+	prestate->id.srq = MOCK_SRQ;
+}
+
+void
+state_enable_srq(struct conn_req_test_state *state)
+{
+	state->id.srq = MOCK_SRQ;
+}
+
 /*
  * setup__conn_req_from_cm_event -- prepare a valid rpma_conn_req object from CM
  * event
@@ -162,6 +174,8 @@ teardown__conn_req_new(void **cstate_ptr)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->id.srq)
+		expect_value(rdma_destroy_srq, id, &cstate->id);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);

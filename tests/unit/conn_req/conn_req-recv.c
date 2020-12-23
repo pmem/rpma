@@ -64,7 +64,7 @@ recv__success(void **cstate_ptr)
 	struct conn_req_new_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks */
-	expect_value(rpma_mr_recv, qp, MOCK_QP);
+	expect_value(rpma_mr_recv, id, &cstate->id);
 	expect_value(rpma_mr_recv, dst, MOCK_RPMA_MR_LOCAL);
 	expect_value(rpma_mr_recv, offset, MOCK_LOCAL_OFFSET);
 	expect_value(rpma_mr_recv, len, MOCK_LEN);
@@ -98,6 +98,7 @@ main(int argc, char *argv[])
 	/* prepare prestate - default conn_cfg */
 	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
 			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
+	prestate_enable_srq(&prestate_conn_cfg_default);
 
 	return cmocka_run_group_tests(tests_recv, group_setup_conn_req, NULL);
 }

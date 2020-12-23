@@ -21,6 +21,7 @@
 #define MOCK_SRC_ADDR		((struct sockaddr *)0x0ADD)
 #define MOCK_DST_ADDR		((struct sockaddr *)0x0ADE)
 #define MOCK_IBV_PD		((struct ibv_pd *)0x00D0)
+#define MOCK_SRQ		((struct ibv_srq *)&Ibv_srq)
 #define MOCK_QP			((struct ibv_qp *)0xD56A)
 #define MOCK_OP_CONTEXT		((void *)0xC417)
 #define MOCK_RKEY		((uint32_t)0x10111213)
@@ -46,6 +47,7 @@ struct common_data {
 };
 
 extern struct verbs_context Verbs_context;
+extern struct ibv_srq Ibv_srq;
 /* mock IBV completion channel */
 extern struct ibv_comp_channel Ibv_comp_channel;
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */

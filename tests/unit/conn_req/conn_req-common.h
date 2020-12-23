@@ -42,6 +42,9 @@ struct conn_req_new_test_state {
 void prestate_init(struct conn_req_new_test_state *prestate,
 		struct rpma_conn_cfg *cfg, int timeout_ms, uint32_t cq_size);
 
+void prestate_enable_srq(struct conn_req_new_test_state *prestate);
+void state_enable_srq(struct conn_req_test_state *state);
+
 int setup__conn_req_new(void **cstate_ptr);
 int teardown__conn_req_new(void **cstate_ptr);
 

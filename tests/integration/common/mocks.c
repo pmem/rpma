@@ -13,6 +13,7 @@
 #include "mocks.h"
 
 struct verbs_context Verbs_context;
+struct ibv_srq Ibv_srq;
 struct ibv_comp_channel Ibv_comp_channel; /* mock IBV completion channel */
 struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 struct ibv_mr Ibv_mr;		/* mock IBV MR */
@@ -467,7 +468,7 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
 	assert_int_equal(qp_init_attr->qp_context, NULL);
 	assert_int_equal(qp_init_attr->send_cq, MOCK_CQ);
 	assert_int_equal(qp_init_attr->recv_cq, MOCK_CQ);
-	assert_int_equal(qp_init_attr->srq, NULL);
+	assert_true(qp_init_attr->srq == NULL || qp_init_attr->srq == MOCK_SRQ);
 	assert_int_equal(qp_init_attr->cap.max_send_wr, MOCK_DEFAULT_Q_SIZE);
 	assert_int_equal(qp_init_attr->cap.max_recv_wr, MOCK_DEFAULT_Q_SIZE);
 	assert_int_equal(qp_init_attr->cap.max_send_sge, MOCK_MAX_SGE);
@@ -491,6 +492,36 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
  */
 void
 rdma_destroy_qp(struct rdma_cm_id *id)
+{
+	check_expected_ptr(id);
+}
+
+/*
+ * rdma_create_srq -- rdma_create_srq() mock
+ */
+int rdma_create_srq(struct rdma_cm_id *id, struct ibv_pd *pd,
+				struct ibv_srq_init_attr *attr)
+{
+	check_expected_ptr(id);
+	check_expected_ptr(pd);
+	assert_non_null(attr);
+	assert_int_equal(attr->srq_context, NULL);
+	assert_int_equal(attr->attr.max_wr, MOCK_DEFAULT_Q_SIZE << 1);
+	assert_int_equal(attr->attr.max_sge, MOCK_MAX_SGE);
+	assert_int_equal(attr->attr.srq_limit, MOCK_DEFAULT_Q_SIZE);
+
+	errno = mock_type(int);
+	if (errno)
+		return -1;
+	id->srq = mock_type(struct ibv_srq *);
+	return 0;
+}
+
+/*
+ * rdma_destroy_srq -- rdma_destroy_srq() mock
+ */
+void
+rdma_destroy_srq(struct rdma_cm_id *id)
 {
 	check_expected_ptr(id);
 }

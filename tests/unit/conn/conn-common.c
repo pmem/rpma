@@ -133,6 +133,8 @@ teardown__conn_delete(void **cstate_ptr)
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, cstate->data.ptr);
 	expect_value(rpma_private_data_discard, pdata->len, cstate->data.len);
+	if ((MOCK_CM_ID)->srq)
+		expect_value(rdma_destroy_srq, id, MOCK_CM_ID);
 
 	/* delete the object */
 	int ret = rpma_conn_delete(&cstate->conn);

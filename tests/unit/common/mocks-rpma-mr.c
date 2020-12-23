@@ -126,14 +126,14 @@ rpma_mr_send(struct ibv_qp *qp,
  * rpma_mr_recv -- mock of rpma_mr_recv
  */
 int
-rpma_mr_recv(struct ibv_qp *qp,
+rpma_mr_recv(struct rdma_cm_id *id,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context)
 {
-	assert_non_null(qp);
+	assert_non_null(id);
 	assert_non_null(dst);
 
-	check_expected_ptr(qp);
+	check_expected_ptr(id);
 	check_expected_ptr(dst);
 	check_expected(offset);
 	check_expected(len);
