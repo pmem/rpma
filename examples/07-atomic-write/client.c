@@ -63,7 +63,7 @@ main(int argc, char *argv[])
 		goto err_free;
 
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, NULL, &conn)))
+	if ((ret = client_connect(peer, addr, port, NULL, &conn, NULL)))
 		goto err_peer_delete;
 
 	/*

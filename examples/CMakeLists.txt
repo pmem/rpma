@@ -129,6 +129,10 @@ add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPMEM_IF_FOUND US
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 10-messages-ping-pong-use-srq BIN server USE_LIBIBVERBS
+	SRCS 10-messages-ping-pong-use-srq/server.c common/common-conn.c common/common-epoll.c)
+add_example(NAME 10-messages-ping-pong-use-srq BIN client USE_LIBIBVERBS
+	SRCS 10-messages-ping-pong-use-srq/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c

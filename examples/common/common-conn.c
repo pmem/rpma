@@ -63,13 +63,13 @@ common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
 int
 client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_conn_private_data *pdata,
-		struct rpma_conn **conn_ptr)
+		struct rpma_conn **conn_ptr, struct rpma_conn_cfg *cfg)
 {
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 
 	/* create a connection request */
-	int ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
+	int ret = rpma_conn_req_new(peer, addr, port, cfg, &req);
 	if (ret)
 		return ret;
 

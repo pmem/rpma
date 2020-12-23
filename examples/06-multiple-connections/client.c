@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(struct common_data);
 
 	/* establish a new connection to a server listening at addr:port */
-	ret = client_connect(peer, addr, port, &pdata, &conn);
+	ret = client_connect(peer, addr, port, &pdata, &conn, NULL);
 	if (ret)
 		goto err_mr_dereg;
 
