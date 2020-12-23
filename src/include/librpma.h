@@ -1389,6 +1389,247 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *rq_size);
 
+/** 3
+ * rpma_conn_cfg_set_use_srq - set if use shared received queue for connection.
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_use_srq(struct rpma_conn_cfg *cfg,
+ *			bool use_srq);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_use_srq() set if use shared received queue for connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_use_srq() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_use_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_use_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_use_srq(struct rpma_conn_cfg *cfg, bool use_srq);
+
+/** 3
+ * rpma_conn_cfg_get_use_srq - get if use shared received queue for connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_use_srq(const struct rpma_conn_cfg *cfg,
+ *			bool *use_srq);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_use_srq() get if use shared received queue for connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_use_srq() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_use_srq() does not set
+ * *rq_size value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_use_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or use_srq is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_use_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_use_srq(const struct rpma_conn_cfg *cfg,
+		bool *use_srq);
+
+/** 3
+ * rpma_conn_cfg_set_max_wr - set max wr for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_max_wr(struct rpma_conn_cfg *cfg,
+ *			uint32_t max_wr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_max_wr() set if use shared received queue for connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_max_wr() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_max_wr() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_max_wr(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_max_wr(struct rpma_conn_cfg *cfg, uint32_t max_wr);
+
+/** 3
+ * rpma_conn_cfg_get_max_wr - get max wr for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_max_wr(const struct rpma_conn_cfg *cfg,
+ *			bool *max_wr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_max_wr() get max wr for the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_max_wr() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_max_wr() does not set
+ * *max_wr value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_max_wr() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or max_wr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_max_wr(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_max_wr(const struct rpma_conn_cfg *cfg,
+		uint32_t *max_wr);
+
+/** 3
+ * rpma_conn_cfg_set_max_sge - set max wr for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_max_sge(struct rpma_conn_cfg *cfg,
+ *			uint32_t max_sge);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_max_sge() set if use shared received queue for connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_max_sge() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_max_sge() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_max_sge(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_max_sge(struct rpma_conn_cfg *cfg, uint32_t max_sge);
+
+/** 3
+ * rpma_conn_cfg_get_max_sge - get max sge for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_max_sge(const struct rpma_conn_cfg *cfg,
+ *			bool *max_sge);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_max_sge() get max sge for the connection
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_max_sge() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_max_sge() does not set
+ * *rq_size value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_max_sge() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or max_sge is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_max_sge(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_max_sge(const struct rpma_conn_cfg *cfg,
+		uint32_t *max_sge);
+
+/** 3
+ * rpma_conn_cfg_set_srq_limit - set max wr for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_srq_limit(struct rpma_conn_cfg *cfg,
+ *			uint32_t srq_limit);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_srq_limit() set if use shared received queue for
+ * connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_srq_limit() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_srq_limit() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_srq_limit(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_srq_limit(struct rpma_conn_cfg *cfg, uint32_t srq_limit);
+
+/** 3
+ * rpma_conn_cfg_get_srq_limit - get srq limit for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_srq_limit(const struct rpma_conn_cfg *cfg,
+ *			bool *srq_limit);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_srq_limit() get srq limit for the connection
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_srq_limit() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_srq_limit() does not set
+ * *srq_limit value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_srq_limit() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or srq_limit is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_srq_limit(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_srq_limit(const struct rpma_conn_cfg *cfg,
+		uint32_t *srq_limit);
+
 /* connection */
 
 struct rpma_conn;

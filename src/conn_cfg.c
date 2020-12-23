@@ -24,18 +24,15 @@
  */
 #define RPMA_DEFAULT_Q_SIZE 10
 
-struct rpma_conn_cfg {
-	int timeout_ms;	/* connection establishment timeout */
-	uint32_t cq_size;	/* CQ size */
-	uint32_t sq_size;	/* SQ size */
-	uint32_t rq_size;	/* RQ size */
-};
-
 static struct rpma_conn_cfg Conn_cfg_default  = {
+	.use_srq = false,
 	.timeout_ms = RPMA_DEFAULT_TIMEOUT_MS,
 	.cq_size = RPMA_DEFAULT_Q_SIZE,
 	.sq_size = RPMA_DEFAULT_Q_SIZE,
-	.rq_size = RPMA_DEFAULT_Q_SIZE
+	.rq_size = RPMA_DEFAULT_Q_SIZE,
+	.max_wr = RPMA_DEFAULT_Q_SIZE << 1,
+	.max_sge = RPMA_MAX_SGE,
+	.srq_limit = RPMA_DEFAULT_Q_SIZE
 };
 
 /* internal librpma API */
@@ -221,5 +218,102 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 
 	*rq_size = cfg->rq_size;
 
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_use_srq -- set if use shared received queue for connection
+ */
+int
+rpma_conn_cfg_set_use_srq(struct rpma_conn_cfg *cfg, bool use_srq)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+	cfg->use_srq = use_srq;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_use_srq -- get if use shared received queue for connection
+ */
+int
+rpma_conn_cfg_get_use_srq(const struct rpma_conn_cfg *cfg, bool *use_srq)
+{
+	if (cfg == NULL || use_srq == NULL)
+		return RPMA_E_INVAL;
+	*use_srq = cfg->use_srq;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_max_wr -- set max wr for the connection
+ */
+int
+rpma_conn_cfg_set_max_wr(struct rpma_conn_cfg *cfg, uint32_t max_wr)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+	cfg->max_wr = max_wr;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_max_wr -- get max wr for the connection
+ */
+int
+rpma_conn_cfg_get_max_wr(const struct rpma_conn_cfg *cfg, uint32_t *max_wr)
+{
+	if (cfg == NULL || max_wr == NULL)
+		return RPMA_E_INVAL;
+	*max_wr = cfg->max_wr;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_max_sge -- set max sge for the connection
+ */
+int
+rpma_conn_cfg_set_max_sge(struct rpma_conn_cfg *cfg, uint32_t max_sge)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+	cfg->max_sge = max_sge;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_max_sge -- get max sge for the connection
+ */
+int
+rpma_conn_cfg_get_max_sge(const struct rpma_conn_cfg *cfg, uint32_t *max_sge)
+{
+	if (cfg == NULL || max_sge == NULL)
+		return RPMA_E_INVAL;
+	*max_sge = cfg->max_sge;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_srq_limit -- set srq limit for the connection
+ */
+int
+rpma_conn_cfg_set_srq_limit(struct rpma_conn_cfg *cfg, uint32_t srq_limit)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+	cfg->srq_limit = srq_limit;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_srq_limit -- get srq limit for the connection
+ */
+int
+rpma_conn_cfg_get_srq_limit(const struct rpma_conn_cfg *cfg,
+						uint32_t *srq_limit)
+{
+	if (cfg == NULL || srq_limit == NULL)
+		return RPMA_E_INVAL;
+	*srq_limit = cfg->srq_limit;
 	return 0;
 }

@@ -14,6 +14,7 @@
 #include "log_internal.h"
 #include "mr.h"
 #include "private_data.h"
+#include <rdma/rdma_verbs.h>
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -246,6 +247,9 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	rdma_destroy_qp(conn->id);
 
+	if (conn->id->srq)
+		rdma_destroy_srq(conn->id);
+
 	errno = ibv_destroy_cq(conn->cq);
 	if (errno) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_destroy_cq()");
@@ -414,7 +418,7 @@ rpma_recv(struct rpma_conn *conn,
 	if (conn == NULL || dst == NULL)
 		return RPMA_E_INVAL;
 
-	return rpma_mr_recv(conn->id->qp,
+	return rpma_mr_recv(conn->id,
 			dst, offset, len,
 			op_context);
 }

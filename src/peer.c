@@ -12,13 +12,12 @@
 #include "conn_req.h"
 #include "log_internal.h"
 #include "peer.h"
+#include "conn_cfg.h"
+#include <rdma/rdma_verbs.h>
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
 #endif
-
-/* the maximum number of scatter/gather elements in any Work Request */
-#define RPMA_MAX_SGE 1
 
 /* the maximum message size (in bytes) that can be posted inline */
 #define RPMA_MAX_INLINE_DATA 0
@@ -47,14 +46,36 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	/* read SQ and RQ sizes from the configuration */
 	uint32_t sq_size = 0;
 	uint32_t rq_size = 0;
+	bool use_srq = false;
+	uint32_t max_wr = 0;
+	uint32_t max_sge = 0;
+	uint32_t srq_limit = 0;
 	(void) rpma_conn_cfg_get_sq_size(cfg, &sq_size);
 	(void) rpma_conn_cfg_get_rq_size(cfg, &rq_size);
+	(void) rpma_conn_cfg_get_use_srq(cfg, &use_srq);
+	(void) rpma_conn_cfg_get_max_wr(cfg, &max_wr);
+	(void) rpma_conn_cfg_get_max_sge(cfg, &max_sge);
+	(void) rpma_conn_cfg_get_srq_limit(cfg, &srq_limit);
 
 	struct ibv_qp_init_attr qp_init_attr;
+	if (use_srq) {
+		struct ibv_srq_init_attr srq_init_attr;
+		memset(&srq_init_attr, 0, sizeof(srq_init_attr));
+		srq_init_attr.attr.max_wr  = max_wr;
+		srq_init_attr.attr.max_sge = max_sge;
+		srq_init_attr.attr.srq_limit = srq_limit;
+		rdma_create_srq(id, peer->pd, &srq_init_attr);
+		if (id->srq == NULL) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_create_srq()");
+			return RPMA_E_PROVIDER;
+		}
+		qp_init_attr.srq = id->srq;
+	} else {
+		qp_init_attr.srq = NULL;
+	}
 	qp_init_attr.qp_context = NULL;
 	qp_init_attr.send_cq = cq;
 	qp_init_attr.recv_cq = cq;
-	qp_init_attr.srq = NULL;
 	qp_init_attr.cap.max_send_wr = sq_size;
 	qp_init_attr.cap.max_recv_wr = rq_size;
 	qp_init_attr.cap.max_send_sge = RPMA_MAX_SGE;

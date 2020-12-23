@@ -17,6 +17,7 @@
 #include "mr.h"
 #include "peer.h"
 #include "private_data.h"
+#include <rdma/rdma_verbs.h>
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -451,8 +452,10 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	rdma_destroy_qp(req->id);
 
-	int ret = 0;
+	if (req->id->srq)
+		rdma_destroy_srq(req->id);
 
+	int ret = 0;
 	if (req->edata)
 		ret = rpma_conn_req_reject(req);
 	else
@@ -477,7 +480,7 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;
 
-	return rpma_mr_recv(req->id->qp,
+	return rpma_mr_recv(req->id,
 			dst, offset, len,
 			op_context);
 }
