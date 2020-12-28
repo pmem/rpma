@@ -103,7 +103,7 @@ function benchmark_one() {
 	DEST="$(echo $REMOTE_JOB_DEST | cut -d'=' -f2- | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
-	NAME=rpma_fio_${OP}_${MODE}_${DEST}-${TIMESTAMP}
+	NAME=rpma_fio_${P_MODE}_${OP}_${MODE}_${DEST}-${TIMESTAMP}
 	DIR=/dev/shm
 	TEMP_JSON=${DIR}/${NAME}_temp.json
 	TEMP_CSV=${DIR}/${NAME}_temp.csv
