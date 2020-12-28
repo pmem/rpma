@@ -94,7 +94,7 @@ esac
 if [ -z "$REMOTE_JOB_MEM" ]; then
 	MEM=dram
 else
-	MEM="$( echo "$REMOTE_JOB_MEM" | cut -c11- )"
+	MEM="$(echo $REMOTE_JOB_MEM | cut -d'/' -f2- | sed 's/\//_/g')"
 fi
 
 NAME=rpma_fio_${OP}_${MODE}_${MEM}-${TIMESTAMP}
