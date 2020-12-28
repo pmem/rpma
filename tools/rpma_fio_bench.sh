@@ -49,14 +49,6 @@ function benchmark_one() {
 	MODE=$2
 	SERVER_IP=$3
 
-	case $OP in
-	read|write)
-		;;
-	*)
-		usage "Wrong operation: $OP"
-		;;
-	esac
-
 	case $MODE in
 	bw-bs)
 		THREADS=1
@@ -87,9 +79,6 @@ function benchmark_one() {
 		BLOCK_SIZE=(1024 4096 65536)
 		DEPTH=1
 		ITERATIONS=${#BLOCK_SIZE[@]}
-		;;
-	*)
-		usage "Wrong mode: $MODE"
 		;;
 	esac
 
