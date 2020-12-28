@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
+	echo "usage: $0 <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path"
@@ -27,11 +27,11 @@ function usage()
 	echo "export REMOTE_JOB_NUMA=0"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
-	echo "export REMOTE_JOB_MEM=mmap:/path/to/mem"
+	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
 	exit 1
 }
 
-if [ "$#" -lt 3 ]; then
+if [ "$#" -lt 4 ]; then
 	usage "Too few arguments"
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
@@ -41,13 +41,31 @@ elif [ -z "$REMOTE_PASS" ]; then
 	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
+elif [ -z "$REMOTE_JOB_MEM_PATH" -a "$1" == "gpspm" ]; then
+	usage "REMOTE_JOB_MEM_PATH not set"
 fi
 
 function benchmark_one() {
 
-	OP=$1
-	MODE=$2
-	SERVER_IP=$3
+	P_MODE=$1 # persistency mode
+	OP=$2
+	MODE=$3
+	SERVER_IP=$4
+
+	case $P_MODE in
+	apm)
+		GPSPM=""
+		if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
+			REMOTE_JOB_DEST="mem=mmap:$REMOTE_JOB_MEM_PATH"
+		else
+			REMOTE_JOB_DEST="mem=malloc"
+		fi
+		;;
+	gpspm)
+		GPSPM="_gpspm"
+		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
+		;;
+	esac
 
 	case $MODE in
 	bw-bs)
@@ -82,13 +100,10 @@ function benchmark_one() {
 		;;
 	esac
 
-	if [ -z "$REMOTE_JOB_MEM" ]; then
-		MEM=dram
-	else
-		MEM="$(echo $REMOTE_JOB_MEM | cut -d'/' -f2- | sed 's/\//_/g')"
-	fi
+	DEST="$(echo $REMOTE_JOB_DEST | cut -d'=' -f2- | cut -d'/' -f2- | sed 's/\//_/g')"
+	[ "$DEST" == "malloc" ] && DEST="dram"
 
-	NAME=rpma_fio_${OP}_${MODE}_${MEM}-${TIMESTAMP}
+	NAME=rpma_fio_${OP}_${MODE}_${DEST}-${TIMESTAMP}
 	DIR=/dev/shm
 	TEMP_JSON=${DIR}/${NAME}_temp.json
 	TEMP_CSV=${DIR}/${NAME}_temp.csv
@@ -96,7 +111,7 @@ function benchmark_one() {
 	LOG_ERR=${DIR}/${NAME}.log
 	SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
-	echo "STARTING benchmark for OP=$OP MODE=$MODE IP=$SERVER_IP ..."
+	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
 	echo "Performance results: $OUTPUT"
 	echo "Output and errors (both sides): $LOG_ERR"
 	echo "This tool is EXPERIMENTAL"
@@ -105,10 +120,7 @@ function benchmark_one() {
 	rm -f $LOG_ERR $OUTPUT
 
 	if [ -z "$REMOTE_JOB_PATH" ]; then
-		REMOTE_JOB_PATH=${DIR}/librpma-server-${TIMESTAMP}.fio
-	fi
-	if [ -z "$REMOTE_JOB_MEM" ]; then
-		REMOTE_JOB_MEM=malloc
+		REMOTE_JOB_PATH=${DIR}/librpma${GPSPM}-server-${TIMESTAMP}.fio
 	fi
 
 	for i in $(seq 0 $(expr $ITERATIONS - 1)); do
@@ -136,19 +148,19 @@ function benchmark_one() {
 		esac
 
 		# copy config to the server
-		sshpass -p "$REMOTE_PASS" scp ./fio_jobs/librpma-server.fio \
+		sshpass -p "$REMOTE_PASS" scp ./fio_jobs/librpma${GPSPM}-server.fio \
 			$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
 		# run the server
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-			"bindname=$SERVER_IP mem=$REMOTE_JOB_MEM num_conns=${TH} \
+			"bindname=$SERVER_IP num_conns=${TH} ${REMOTE_JOB_DEST} \
 			numactl -N $REMOTE_JOB_NUMA \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR" 2>>$LOG_ERR &
 		sleep 1
 
-		echo "[op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
+		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
 		hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
-			ioengine=librpma_client \
+			ioengine=librpma${GPSPM}_client \
 			numactl -N $JOB_NUMA ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 			> $TEMP_JSON
@@ -171,13 +183,25 @@ function benchmark_one() {
 	# convert to standardized-CSV
 	./csv2standardized.py --csv_type fio --output_file $OUTPUT $OUTPUT
 
-	echo "FINISHED benchmark for OP=$OP MODE=$MODE IP=$SERVER_IP"
+	echo "FINISHED benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
 	echo
 }
 
-OPS=$1
-MODES=$2
-SERVER_IP=$3
+P_MODES=$1 # persistency mode
+OPS=$2
+MODES=$3
+SERVER_IP=$4
+
+case $P_MODES in
+apm|gpspm)
+	;;
+all)
+	P_MODES="apm gpspm"
+	;;
+*)
+	usage "Wrong persistency mode: $P_MODES"
+	;;
+esac
 
 case $OPS in
 read|write)
@@ -201,8 +225,10 @@ all)
 	;;
 esac
 
-for o in $OPS; do
-	for m in $MODES; do
-		benchmark_one $o $m $SERVER_IP
+for p in $P_MODES; do
+	for o in $OPS; do
+		for m in $MODES; do
+			benchmark_one $p $o $m $SERVER_IP
+		done
 	done
 done
