@@ -15,6 +15,8 @@ import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from PIL import Image
+
 column_to_label = {
     'threads':  '# of threads',
     'iodepth':  'iodepth',
@@ -171,6 +173,15 @@ def draw_table(ax, dfs, legend, x, y):
     ax.table(cellText=cell_text, rowLabels=legend, colLabels=col_labels, \
         loc='top')
 
+def get_content_height(im):
+    width, height = im.size
+    x = width / 2
+    for y in range(height - 1, 0, -1):
+        pixel = im.getpixel((x, y))
+        if pixel[0] != 255 or pixel[1] != 255 or pixel[2] != 255:
+            return y + 1
+    return 0
+
 def main():
     parser = argparse.ArgumentParser(
         description='Compare CSV files (EXPERIMENTAL)')
@@ -252,6 +263,20 @@ def main():
 
     # save the output file
     plt.savefig(args.output_file)
+
+    # crop
+    if args.output_layout == 'bw':
+        # open the file
+        im = Image.open(args.output_file)
+        # calculate the crop parameters
+        width, height = im.size
+        left = 0
+        top = 0
+        right = width
+        bottom = get_content_height(im)
+        # crop and save the output file
+        im = im.crop((left, top, right, bottom))
+        im.save(args.output_file)
 
 if __name__ == "__main__":
     main()
