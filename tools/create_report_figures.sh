@@ -66,6 +66,7 @@ function lat_figure()
     $TOOLS_PATH/csv_compare.py \
         --output_title "$title" \
         --output_layout 'lat_all' \
+        --split_long \
         --output_with_table \
         --legend "${legend[@]}" \
         --output_file "$output.png" \
