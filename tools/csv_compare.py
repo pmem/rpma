@@ -28,7 +28,31 @@ column_to_label = {
 dimmensions = {'threads', 'iodepth', 'bs'}
 
 layouts = {
-    'lat': {
+    'lat_avg': {
+        'nrows': 1,
+        'ncols': 1,
+        'x': 'bs',
+        'columns': [
+            'lat_avg'
+        ]
+    },
+    'lat_pctls_999': {
+        'nrows': 1,
+        'ncols': 2,
+        'x': 'bs',
+        'columns': [
+            'lat_pctl_99.0', 'lat_pctl_99.9'
+        ]
+    },
+    'lat_pctls_99999': {
+        'nrows': 1,
+        'ncols': 2,
+        'x': 'bs',
+        'columns': [
+            'lat_pctl_99.99', 'lat_pctl_99.999'
+        ]
+    },
+    'lat_all': {
         'nrows': 4,
         'ncols': 2,
         'x': 'bs',
@@ -173,9 +197,10 @@ def draw_table(ax, dfs, legend, x, y):
     ax.table(cellText=cell_text, rowLabels=legend, colLabels=col_labels, \
         loc='top')
 
-def get_content_height(im):
+def get_content_height(im, ncols):
     width, height = im.size
-    x = width / 2
+    # pick a vertical line where the content is expected
+    x = width / (ncols + 1)
     for y in range(height - 1, 0, -1):
         pixel = im.getpixel((x, y))
         if pixel[0] != 255 or pixel[1] != 255 or pixel[2] != 255:
@@ -265,7 +290,8 @@ def main():
     plt.savefig(args.output_file)
 
     # crop
-    if args.output_layout == 'bw':
+    if args.output_layout in \
+            ['bw', 'lat_avg', 'lat_pctls_999', 'lat_pctls_99999']:
         # open the file
         im = Image.open(args.output_file)
         # calculate the crop parameters
@@ -273,7 +299,7 @@ def main():
         left = 0
         top = 0
         right = width
-        bottom = get_content_height(im)
+        bottom = get_content_height(im, layout['ncols'])
         # crop and save the output file
         im = im.crop((left, top, right, bottom))
         im.save(args.output_file)

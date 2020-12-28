@@ -65,7 +65,7 @@ function lat_figure()
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
         --output_title "$title" \
-        --output_layout 'lat' \
+        --output_layout 'lat_all' \
         --output_with_table \
         --legend "${legend[@]}" \
         --output_file "$output.png" \
