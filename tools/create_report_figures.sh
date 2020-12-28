@@ -49,7 +49,7 @@ function files_to_machines()
     done
 }
 
-function lat_figure()
+function lat_appendix()
 {
     filter="$1"
     title="$2"
@@ -70,6 +70,34 @@ function lat_figure()
         --legend "${legend[@]}" \
         --output_file "$output.png" \
         $filter
+    echo
+}
+
+function lat_figures()
+{
+    filter="$1"
+    title="$2"
+    figno="$3"
+    output="$4"
+    shift 4
+
+    if [ "$#" -gt "0" ]; then
+        legend=( "$@" )
+    else
+        legend=( $(files_to_machines $filter) )
+    fi
+
+    echo_filter $filter
+    for layout in 'lat_avg' 'lat_pctls_999' 'lat_pctls_99999'; do
+        $TOOLS_PATH/csv_compare.py \
+            --output_title "$title" \
+            --output_layout "$layout" \
+            --output_with_table \
+            --legend "${legend[@]}" \
+            --output_file "Figure_${figno}_$output.png" \
+            $filter
+        figno=$((figno + 1))
+    done
     echo
 }
 
@@ -117,19 +145,19 @@ mkdir 02_read_lat
 cd 02_read_lat
 
 echo '- compare all machines ib_read_lat'
-lat_figure \
+lat_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/ib*lat*" \
     'ib_read_lat (DRAM)' \
     'Appendix_B1_ib_read_lat'
 
 echo '- compare all machines rpma_read() from DRAM'
-lat_figure \
+lat_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/rpma*lat*" \
     'rpma_read() from DRAM' \
     'Appendix_B2_rpma_read_lat_DRAM'
 
 echo '- compare all machines rpma_read() from PMEM'
-lat_figure \
+lat_appendix \
     "$DATA_PATH/READ/*/PMEM/*/CSV/rpma*lat*" \
     'rpma_read() from PMEM' \
     'Appendix_B3_rpma_read_lat_PMEM'
@@ -139,10 +167,10 @@ if [ -z "$READ_LAT_MACHINE" ]; then
 	echo "SKIP: READ_LAT_MACHINE not set"
     echo
 else
-    lat_figure \
+    lat_figures \
         "$DATA_PATH/READ/$READ_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/$READ_LAT_MACHINE/PMEM/*/CSV/*lat*" \
         'ib_read_lat vs rpma_read() from DRAM and PMEM' \
-        'Figure_2_3_4_rpma_read_lat_vs_ib' \
+        '2' 'rpma_read_lat_vs_ib' \
         'ib_read_lat' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
@@ -234,13 +262,13 @@ mkdir 05_write_lat
 cd 05_write_lat
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
-lat_figure \
+lat_appendix \
     "$DATA_PATH/WRITE/*/DRAM/*/CSV/rpma*lat*" \
     'rpma_write() + rpma_flush() to DRAM' \
     'Appendix_E1_rpma_write_flush_lat_DRAM'
 
 echo '- compare all machines rpma_write() + rpma_flush() to PMEM'
-lat_figure \
+lat_appendix \
     "$DATA_PATH/WRITE/*/PMEM/*/CSV/rpma*lat*" \
     'rpma_write() + rpma_flush() to PMEM' \
     'Appendix_E2_rpma_write_flush_lat_PMEM'
@@ -250,10 +278,10 @@ if [ -z "$WRITE_LAT_MACHINE" ]; then
 	echo "SKIP: WRITE_LAT_MACHINE not set"
     echo
 else
-    lat_figure \
+    lat_figures \
         "$DATA_PATH/WRITE/$WRITE_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/WRITE/$WRITE_LAT_MACHINE/PMEM/*/CSV/*lat*" \
         'rpma_write() + rpma_flush() to DRAM vs to PMEM' \
-        'Figure_7_rpma_write_flush_lat' \
+        '7' 'rpma_write_flush_lat' \
         'to DRAM' 'to PMEM'
 fi
 
