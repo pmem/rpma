@@ -2,7 +2,7 @@
 # - create_serialize=0 forces specific initiation sequence
 
 [global]
-ioengine=librpma_client
+ioengine=${ioengine}
 create_serialize=0
 hostname=${hostname}
 port=7204

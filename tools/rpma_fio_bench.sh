@@ -159,6 +159,7 @@ function benchmark_one() {
 		echo "[op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
 		hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
+			ioengine=librpma_client \
 			numactl -N $JOB_NUMA ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 			> $TEMP_JSON
