@@ -70,8 +70,11 @@ main(int argc, char *argv[])
 		/* map the file */
 		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
 				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL)
+		if (mr_ptr == NULL) {
+			(void) fprintf(stderr, "pmem_map_file() for %s "
+					"failed\n", path);
 			return -1;
+		}
 
 		/* pmem is expected */
 		if (!is_pmem) {
