@@ -25,6 +25,18 @@ column_to_label = {
     'bw':       'bandwidth [Gb/s]',
 }
 
+column_to_description = {
+    'threads':  'threads={}',
+    'iodepth':  'iodepth={}',
+    'bs':       'block size={}B',
+}
+
+column_default = {
+    'threads':  1,
+    'iodepth':  1,
+    'bs':       None,
+}
+
 dimmensions = {'threads', 'iodepth', 'bs'}
 
 layouts = {
@@ -207,6 +219,13 @@ def get_content_height(im, ncols):
             return y + 1
     return 0
 
+def get_const_param(dfs, column):
+    df = dfs[0]
+    value = column_default[column]
+    if column in df.columns:
+        value = df.at[0, column]
+    return value
+
 def main():
     parser = argparse.ArgumentParser(
         description='Compare CSV files (EXPERIMENTAL)')
@@ -271,13 +290,30 @@ def main():
     for index, column in zip(indices, columns):
         # get a subplot
         ax = plt.subplot(nrows, ncols, index)
-        # set the subplot title
-        ax.title.set_text(column)
+        
         # filter out all DataFrames without required columns
         dfs_filtered, dfs_names_filtered = \
             dfs_filter(dfs, args.legend, [x, column])
         if len(dfs_filtered) == 0:
+            ax.title.set_text(column)
             continue
+
+        # prepare constant parameters description
+        const_params = []
+        for param in column_default.keys():
+            if param == x:
+                continue
+            value = get_const_param(dfs_filtered, param)
+            if value is not None:
+                const_params.append(column_to_description[param].format(value))
+
+        # set the subplot title
+        if len(const_params) == 0:
+            title = column
+        else:
+            title = "{} [{}]".format(column, ', '.join(const_params))
+        ax.title.set_text(title)
+
         # draw CSVs column as subplot
         draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column)
         if args.output_with_tables:
