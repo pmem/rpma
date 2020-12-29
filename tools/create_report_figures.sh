@@ -8,8 +8,34 @@
 # create_report_figures.sh -- generate Figures and Appendix charts for
 # a performance report (EXPERIMENTAL)
 #
-# XXX Describe assumed directory hierarchy.
-# XXX add DDIO_ON / DDIO_OFF to the directory hierarchy.
+# Note: The DATA_PATH variable has to point directories of the following
+# structure:
+# .
+# ├── READ
+# │   ├── MACHINE_A
+# │   │   ├── DRAM
+# │   │   │   └── *
+# │   │   │       └── CSV
+# │   │   │           ├── ...
+# │   │   │           └── *.csv
+# │   │   └── PMEM
+# │   │       └── *
+# │   │           └── CSV
+# │   │               ├── ...
+# │   │               └── *.csv
+# │   ├── MACHINE_B
+# │   │   └── ...
+# │   └── ...
+# └── WRITE
+#     └── ...
+#
+# Note: It is assumed APM is ALWAYS used when DDIO is turned OFF on the target
+# side whereas for GPSPM DDIO is turned ON on the target side. If one would like
+# to e.g. generate a comparison between either APM or GPSPM for both DDIO
+# turned ON and OFF but on the client-side, you should use other available
+# mechanisms e.g. by creating separate directories:
+# - MACHINE_A_DDIO_ON
+# - MACHINE_A_DDIO_OFF
 #
 
 echo "This tool is EXPERIMENTAL"
