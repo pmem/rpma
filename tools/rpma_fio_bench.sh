@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
+	echo "usage: $0 <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip> [<custom_part_of_filename>]"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path"
@@ -51,6 +51,7 @@ function benchmark_one() {
 	OP=$2
 	MODE=$3
 	SERVER_IP=$4
+	[ "$5" != "" ] && COMMENT="__$5__"
 
 	case $P_MODE in
 	apm)
@@ -73,37 +74,42 @@ function benchmark_one() {
 		BLOCK_SIZE=(256 512 1024 2048 4096 8192 16384 24576 32768 65536)
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		DEPTH=2
+		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		;;
 	bw-dp-exp)
 		THREADS=1
 		BLOCK_SIZE=4096
 		DEPTH=(1 2 4 8 16 32 64 128)
 		ITERATIONS=${#DEPTH[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		;;
 	bw-dp-lin)
 		THREADS=1
 		BLOCK_SIZE=4096
 		DEPTH=(1 2 3 4 5 6 7 8 9 10)
 		ITERATIONS=${#DEPTH[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		;;
 	bw-th)
 		THREADS=(1 2 4 8 12 16)
 		BLOCK_SIZE=4096
 		DEPTH=2
 		ITERATIONS=${#THREADS[@]}
+		NAME_SUFFIX=bs${BLOCK_SIZE}_dp${DEPTH}
 		;;
 	lat)
 		THREADS=1
 		BLOCK_SIZE=(1024 4096 65536)
 		DEPTH=1
 		ITERATIONS=${#BLOCK_SIZE[@]}
+		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		;;
 	esac
 
 	DEST="$(echo $REMOTE_JOB_DEST | cut -d'=' -f2- | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
-	NAME=rpma_fio_${P_MODE}_${OP}_${MODE}_${DEST}-${TIMESTAMP}
+	NAME=rpma_fio_${P_MODE}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
 	DIR=/dev/shm
 	TEMP_JSON=${DIR}/${NAME}_temp.json
 	TEMP_CSV=${DIR}/${NAME}_temp.csv
@@ -228,7 +234,7 @@ esac
 for p in $P_MODES; do
 	for o in $OPS; do
 		for m in $MODES; do
-			benchmark_one $p $o $m $SERVER_IP
+			benchmark_one $p $o $m $SERVER_IP $5
 		done
 	done
 done
