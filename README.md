@@ -1,4 +1,4 @@
-# **RPMA: Remote Persistent Memory Access**
+# RPMA: Remote Persistent Memory Access
 
 [![Travis build status](https://travis-ci.org/pmem/rpma.svg?branch=master)](https://travis-ci.org/pmem/rpma)
 [![GHA build status](https://github.com/pmem/rpma/workflows/RPMA/badge.svg?branch=master)](https://github.com/pmem/rpma/actions)
