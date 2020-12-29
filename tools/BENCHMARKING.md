@@ -42,7 +42,7 @@ $ export REMOTE_AUX_PARAMS='-d mlx5_0 -R'
 $ ./ib_read.sh lat <SERVER_IP>
 ```
 
-Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_read.sh`:
+Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
  - iterates over the block size (1024B, 4096B, 65536B)
  - thread = 1
  - iodepth = 1
@@ -59,9 +59,9 @@ $ export REMOTE_FIO_PATH=/custom/fio/path
 $ export REMOTE_JOB_PATH=/custom/jobs/path
 
 # optional, by default: malloc
-$ export REMOTE_JOB_MEM=mmap:/path/to/mem
+$ export REMOTE_JOB_MEM_PATH=/path/to/mem
 
-$ ./rpma_fio_read.sh lat <SERVER_IP>
+$ ./rpma_fio_bench.sh apm read lat <SERVER_IP>
 ```
 
 ### Bandwidth
@@ -100,14 +100,14 @@ $ ./ib_read.sh bw-dp-lin <SERVER_IP>
 $ ./ib_read.sh bw-dp-exp <SERVER_IP>
 ```
 
-Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_read.sh`:
+Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
 
  - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
  - thread = 1
  - iodepth = 2
 
 ```sh
-$ ./rpma_fio_read.sh bw-bs <SERVER_IP>
+$ ./rpma_fio_bench.sh apm read bw-bs <SERVER_IP>
 ```
 
  - iterates over the number of threads (1, 2, 4, 8, 12, 16)
@@ -115,14 +115,14 @@ $ ./rpma_fio_read.sh bw-bs <SERVER_IP>
  - iodepth = 2
 
 ```sh
-$ ./rpma_fio_read.sh bw-th <SERVER_IP>
+$ ./rpma_fio_bench.sh apm read bw-th <SERVER_IP>
 ```
  - iterates over the iodepth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
  - thread = 1
  - block size = 4096B
 
 ```sh
-$ ./rpma_fio_read.sh bw-dp-lin <SERVER_IP>
+$ ./rpma_fio_bench.sh apm read bw-dp-lin <SERVER_IP>
 ```
 
  - iterates over the iodepth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
@@ -130,7 +130,7 @@ $ ./rpma_fio_read.sh bw-dp-lin <SERVER_IP>
  - block size = 4096B
 
 ```sh
-$ ./rpma_fio_read.sh bw-dp-exp <SERVER_IP>
+$ ./rpma_fio_bench.sh apm read bw-dp-exp <SERVER_IP>
 ```
 
 ### Comparison
