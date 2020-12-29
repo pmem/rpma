@@ -16,6 +16,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from PIL import Image
+from textwrap import wrap
 
 column_to_label = {
     'threads':  '# of threads',
@@ -265,7 +266,7 @@ def main():
     # set output file size, padding and title
     fig = plt.figure(figsize=[6.4 * ncols, 4.8 * nrows], dpi=200, \
         tight_layout={'pad': 6})
-    fig.suptitle(args.output_title)
+    fig.suptitle("\n".join(wrap(args.output_title, 60 * ncols)))
 
     # draw all subplots
     for index, column in zip(indices, columns):
