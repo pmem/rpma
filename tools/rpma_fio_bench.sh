@@ -20,12 +20,12 @@ function usage()
 	echo "usage: $0 <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip> [<custom_part_of_filename>]"
 	echo
 	echo "export JOB_NUMA=0"
-	echo "export FIO_PATH=/custom/fio/path"
+	echo "export FIO_PATH=/custom/fio/path/"
 	echo
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
-	echo "export REMOTE_FIO_PATH=/custom/fio/path"
+	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
 	exit 1
