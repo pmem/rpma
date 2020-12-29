@@ -241,7 +241,7 @@ def main():
         dfs.append(df)
 
     # get a layout
-    layout = layouts.get(args.output_layout)
+    layout = layouts[args.output_layout]
 
     # fill out an optional axis with the provided argument
     if args.output_layout == 'bw':
@@ -250,10 +250,10 @@ def main():
         layout['x'] = args.arg_axis
 
     # get layout parameters
-    columns = layout.get('columns')
-    nrows = layout.get('nrows')
-    ncols =  layout.get('ncols')
-    x = layout.get('x')
+    columns = layout['columns']
+    nrows = layout['nrows']
+    ncols =  layout['ncols']
+    x = layout['x']
 
     # prepare indices
     indices = list(range(1, len(columns) + 1))
