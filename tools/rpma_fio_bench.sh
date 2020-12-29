@@ -148,7 +148,8 @@ function benchmark_one() {
 		esac
 
 		# copy config to the server
-		sshpass -p "$REMOTE_PASS" scp ./fio_jobs/librpma${GPSPM}-server.fio \
+		sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+			./fio_jobs/librpma${GPSPM}-server.fio \
 			$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
 		# run the server
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \

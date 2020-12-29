@@ -206,9 +206,10 @@ function benchmark_one() {
 		esac
 
 		# run the server
-		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-			"numactl -N $REMOTE_JOB_NUMA ${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT \
-			$REMOTE_AUX_PARAMS >> $LOG_ERR" 2>>$LOG_ERR &
+		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+			$REMOTE_USER@$SERVER_IP "numactl -N $REMOTE_JOB_NUMA \
+			${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT $REMOTE_AUX_PARAMS \
+			>> $LOG_ERR" 2>>$LOG_ERR &
 		sleep 1
 
 		# XXX --duration hides detailed statistics
