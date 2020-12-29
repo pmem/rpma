@@ -12,6 +12,7 @@
 #
 
 import argparse
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -207,6 +208,32 @@ def get_content_height(im, ncols):
             return y + 1
     return 0
 
+def crop_to_content(file, ncols):
+    # open the file
+    im = Image.open(file)
+    # calculate the crop parameters
+    width, height = im.size
+    left = 0
+    top = 0
+    right = width
+    bottom = get_content_height(im, ncols)
+    # crop and save the output file
+    im = im.crop((left, top, right, bottom))
+    im.save(file)
+
+def split_in_half(input, output, top):
+    # open the file
+    im = Image.open(input)
+    # calculate the crop parameters
+    width, height = im.size
+    left = 0
+    top = int(top * height)
+    right = width
+    bottom = int(top + 0.5 * height)
+    # crop and save the output file
+    im = im.crop((left, top, right, bottom))
+    im.save(output)
+
 def main():
     parser = argparse.ArgumentParser(
         description='Compare CSV files (EXPERIMENTAL)')
@@ -292,17 +319,16 @@ def main():
     # crop
     if args.output_layout in \
             ['bw', 'lat_avg', 'lat_pctls_999', 'lat_pctls_99999']:
-        # open the file
-        im = Image.open(args.output_file)
-        # calculate the crop parameters
-        width, height = im.size
-        left = 0
-        top = 0
-        right = width
-        bottom = get_content_height(im, layout['ncols'])
-        # crop and save the output file
-        im = im.crop((left, top, right, bottom))
-        im.save(args.output_file)
+        crop_to_content(args.output_file, layout['ncols'])
+
+    # split long files
+    if args.output_layout == 'lat_all':
+        name, ext = os.path.splitext(args.output_file)
+        output_file_2 = "{}_2{}".format(name, ext)
+        split_in_half(args.output_file, output_file_2, 0.5)
+        crop_to_content(output_file_2, layout['ncols'])
+        split_in_half(args.output_file, args.output_file, 0.0)
+        crop_to_content(args.output_file, layout['ncols'])
 
 if __name__ == "__main__":
     main()
