@@ -160,7 +160,7 @@ function benchmark_one() {
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
 			"bindname=$SERVER_IP num_conns=${TH} ${REMOTE_JOB_DEST} \
 			numactl -N $REMOTE_JOB_NUMA \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		sleep 1
 
 		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
