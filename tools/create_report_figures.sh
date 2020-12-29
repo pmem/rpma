@@ -8,8 +8,26 @@
 # create_report_figures.sh -- generate Figures and Appendix charts for
 # a performance report (EXPERIMENTAL)
 #
-# XXX Describe assumed directory hierarchy.
-# XXX add DDIO_ON / DDIO_OFF to the directory hierarchy.
+# Note: The DATA_PATH variable has to point directories of the following
+# structure:
+# .
+# ├── READ
+# │   ├── MACHINE_A
+# │   │   ├── DRAM
+# │   │   │   └── *
+# │   │   │       └── CSV
+# │   │   │           ├── ...
+# │   │   │           └── *.csv
+# │   │   └── PMEM
+# │   │       └── *
+# │   │           └── CSV
+# │   │               ├── ...
+# │   │               └── *.csv
+# │   ├── MACHINE_B
+# │   │   └── ...
+# │   └── ...
+# └── WRITE
+#     └── ...
 #
 
 echo "This tool is EXPERIMENTAL"
