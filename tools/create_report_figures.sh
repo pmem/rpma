@@ -52,9 +52,10 @@ function files_to_machines()
 function lat_appendix()
 {
     filter="$1"
-    title="$2"
-    output="$3"
-    shift 3
+    no="$2"
+    title="$3"
+    output="$4"
+    shift 4
 
     if [ "$#" -gt "0" ]; then
         legend=( "$@" )
@@ -64,7 +65,7 @@ function lat_appendix()
 
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
-        --output_title "$title" \
+        --output_title "Appendix $no. Latency: $title (all platforms)" \
         --output_layout 'lat_all' \
         --output_with_table \
         --legend "${legend[@]}" \
@@ -88,9 +89,16 @@ function lat_figures()
     fi
 
     echo_filter $filter
-    for layout in 'lat_avg' 'lat_pctls_999' 'lat_pctls_99999'; do
+    layouts=('lat_avg' 'lat_pctls_999' 'lat_pctls_99999')
+    title_prefixes=( \
+        'Latency' \
+        'Latency (99.0% and 99.9% percentiles)' \
+        'Latency (99.99% and 99.999% percentiles)')
+    for index in "${!layouts[@]}"; do
+        layout="${layouts[$index]}"
+        title_prefix="${title_prefixes[$index]}"
         $TOOLS_PATH/csv_compare.py \
-            --output_title "$title" \
+            --output_title "Figure $figno. $title_prefix: $title" \
             --output_layout "$layout" \
             --output_with_table \
             --legend "${legend[@]}" \
@@ -98,6 +106,33 @@ function lat_figures()
             $filter
         figno=$((figno + 1))
     done
+    echo
+}
+
+function bw_appendix()
+{
+    filter="$1"
+    no="$2"
+    title="$3"
+    arg_axis="$4"
+    output="$5"
+    shift 5
+
+    if [ "$#" -gt 0 ]; then
+        legend=( "$@" )
+    else
+        legend=( $(files_to_machines $filter) )
+    fi
+
+    echo_filter $filter
+    $TOOLS_PATH/csv_compare.py \
+        --output_title "Appendix $no. Bandwidth: $title (all platforms)" \
+        --output_layout 'bw' \
+        --arg_axis "$arg_axis" \
+        --output_with_table \
+        --legend "${legend[@]}" \
+        --output_file "$output.png" \
+        $filter
     echo
 }
 
@@ -147,19 +182,19 @@ cd 02_read_lat
 echo '- compare all machines ib_read_lat'
 lat_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/ib*lat*" \
-    'ib_read_lat (DRAM)' \
+    'B1' 'ib_read_lat from DRAM' \
     'Appendix_B1_ib_read_lat'
 
 echo '- compare all machines rpma_read() from DRAM'
 lat_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/rpma*lat*" \
-    'rpma_read() from DRAM' \
+    'B2' 'rpma_read() from DRAM' \
     'Appendix_B2_rpma_read_lat_DRAM'
 
 echo '- compare all machines rpma_read() from PMEM'
 lat_appendix \
     "$DATA_PATH/READ/*/PMEM/*/CSV/rpma*lat*" \
-    'rpma_read() from PMEM' \
+    'B3' 'rpma_read() from PMEM' \
     'Appendix_B3_rpma_read_lat_PMEM'
 
 echo '- ib_read_lat vs rpma_read() from DRAM vs rpma_read() from PMEM'
@@ -169,9 +204,9 @@ if [ -z "$READ_LAT_MACHINE" ]; then
 else
     lat_figures \
         "$DATA_PATH/READ/$READ_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/$READ_LAT_MACHINE/PMEM/*/CSV/*lat*" \
-        'ib_read_lat vs rpma_read() from DRAM and PMEM' \
+        'rpma_read() vs ib_read_lat' \
         '2' 'rpma_read_lat_vs_ib' \
-        'ib_read_lat' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
+        'ib_read_lat from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
 cd ..
@@ -181,24 +216,24 @@ mkdir 03_read_bw_bs
 cd 03_read_bw_bs
 
 echo "- compare all machines ib_read_bw"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/ib*bw-bs*" \
-    'ib_read_bw (DRAM)' \
+    'C1' 'ib_read_bw from DRAM' \
     'bs' \
     'Appendix_C1_ib_read_bw_bs'
 
 
 echo "- compare all machines rpma_read() from DRAM"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/rpma*bw-bs*" \
-    'rpma_read() from DRAM' \
+    'C2' 'rpma_read() from DRAM' \
     'bs' \
     'Appendix_C2_rpma_read_bw_bs_dram'
 
 echo "- compare all machines rpma_read() from PMEM"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/PMEM/*/CSV/rpma*bw-bs*" \
-    'rpma_read() from PMEM' \
+    'C3' 'rpma_read() from PMEM' \
     'bs' \
     'Appendix_C3_rpma_read_bw_bs_pmem'
 
@@ -209,10 +244,10 @@ if [ -z "$READ_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
-        'ib_read_bw vs rpma_read() from DRAM and PMEM' \
+        'Figure 5. Bandwidth: rpma_read() vs ib_read_bw' \
         'bs' \
         'Figure_5_rpma_read_bw_bs_vs_ib' \
-        'ib_read_bw' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
+        'ib_read_bw from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
 cd ..
@@ -222,23 +257,23 @@ mkdir 04_read_bw_th
 cd 04_read_bw_th
 
 echo "- compare all machines ib_read_bw"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/ib*bw-th*" \
-    'ib_read_bw (DRAM)' \
+    'D1' 'ib_read_bw from DRAM' \
     'threads' \
     'Appendix_D1_ib_read_bw_th'
 
 echo "- compare all machines rpma_read() from DRAM"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/DRAM/*/CSV/rpma*bw-th*" \
-    'rpma_read() from DRAM' \
+    'D2' 'rpma_read() from DRAM' \
     'threads' \
     'Appendix_D2_rpma_read_bw_th_dram'
 
 echo "- compare all machines rpma_read() from PMEM"
-bw_figure \
+bw_appendix \
     "$DATA_PATH/READ/*/PMEM/*/CSV/rpma*bw-th*" \
-    'rpma_read() from PMEM' \
+    'D3' 'rpma_read() from PMEM' \
     'threads' \
     'Appendix_D3_rpma_read_bw_th_pmem'
 
@@ -249,7 +284,7 @@ if [ -z "$READ_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
-        'ib_read_bw vs rpma_read() from DRAM and PMEM' \
+        'Figure 6. Bandwidth: rpma_read() vs ib_read_bw' \
         'threads' \
         'Figure_6_rpma_read_bw_th_vs_ib' \
         'ib_read_bw' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
@@ -264,13 +299,13 @@ cd 05_write_lat
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
 lat_appendix \
     "$DATA_PATH/WRITE/*/DRAM/*/CSV/rpma*lat*" \
-    'rpma_write() + rpma_flush() to DRAM' \
+    'E1' 'rpma_write() + rpma_flush() to DRAM' \
     'Appendix_E1_rpma_write_flush_lat_DRAM'
 
 echo '- compare all machines rpma_write() + rpma_flush() to PMEM'
 lat_appendix \
     "$DATA_PATH/WRITE/*/PMEM/*/CSV/rpma*lat*" \
-    'rpma_write() + rpma_flush() to PMEM' \
+    'E2' 'rpma_write() + rpma_flush() to PMEM' \
     'Appendix_E2_rpma_write_flush_lat_PMEM'
 
 echo '- rpma_write() + rpma_flush() to DRAM vs to PMEM'
@@ -280,7 +315,7 @@ if [ -z "$WRITE_LAT_MACHINE" ]; then
 else
     lat_figures \
         "$DATA_PATH/WRITE/$WRITE_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/WRITE/$WRITE_LAT_MACHINE/PMEM/*/CSV/*lat*" \
-        'rpma_write() + rpma_flush() to DRAM vs to PMEM' \
+        'rpma_write() + rpma_flush()' \
         '7' 'rpma_write_flush_lat' \
         'to DRAM' 'to PMEM'
 fi
@@ -292,16 +327,16 @@ mkdir 06_write_bw_bs
 cd 06_write_bw_bs
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
-bw_figure \
+bw_appendix \
     "$DATA_PATH/WRITE/*/DRAM/*/CSV/rpma*bw-bs*" \
-    'rpma_write() + rpma_flush() to DRAM (iodepth=2)' \
+    'F1' 'rpma_write() + rpma_flush() to DRAM' \
     'bs' \
     'Appendix_F1_rpma_write_flush_bw_bs_DRAM'
 
 echo '- compare all machines rpma_write() + rpma_flush() to PMEM'
-bw_figure \
+bw_appendix \
     "$DATA_PATH/WRITE/*/PMEM/*/CSV/rpma*bw-bs*" \
-    'rpma_write() + rpma_flush() to PMEM (iodepth=2)' \
+    'F2' 'rpma_write() + rpma_flush() to PMEM' \
     'bs' \
     'Appendix_F2_rpma_write_flush_bw_bs_PMEM'
 
@@ -312,7 +347,7 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/WRITE/$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/WRITE/$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
-        'rpma_write() + rpma_flush() to DRAM vs to PMEM (both iodepth=2)' \
+        'Figure 8. Bandwidth: rpma_write() + rpma_flush()' \
         'bs' \
         'Figure_8_rpma_write_flush_bw_bs' \
         'to DRAM' 'to PMEM'
@@ -325,16 +360,16 @@ mkdir 07_write_bw_th
 cd 07_write_bw_th
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
-bw_figure \
+bw_appendix \
     "$DATA_PATH/WRITE/*/DRAM/*/CSV/rpma*bw-th*" \
-    'rpma_write() + rpma_flush() to DRAM (iodepth=2)' \
+    'G1' 'rpma_write() + rpma_flush() to DRAM' \
     'threads' \
     'Appendix_G1_rpma_write_flush_bw_th_DRAM'
 
 echo '- compare all machines rpma_write() + rpma_flush() to PMEM'
-bw_figure \
+bw_appendix \
     "$DATA_PATH/WRITE/*/PMEM/*/CSV/rpma*bw-th*" \
-    'rpma_write() + rpma_flush() to PMEM (iodepth=2)' \
+    'G2' 'rpma_write() + rpma_flush() to PMEM' \
     'threads' \
     'Appendix_G2_rpma_write_flush_bw_th_PMEM'
 
@@ -345,7 +380,7 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/WRITE/$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/WRITE/$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
-        'rpma_write() + rpma_flush() to DRAM vs to PMEM (both iodepth=2)' \
+        'Figure 9. Bandwidth: rpma_write() + rpma_flush()' \
         'threads' \
         'Figure_9_rpma_write_flush_bw_th' \
         'to DRAM' 'to PMEM'
