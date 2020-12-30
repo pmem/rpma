@@ -272,10 +272,19 @@ def main():
         default='title', help='an output title')
     parser.add_argument('--legend', metavar='SERIES', nargs='+',
         help='a legend for the data series read from the CSV files')
+    parser.add_argument('--legend_from_file_name_comment', action='store_true',
+        help='generate a legend from the file name comments __COMMENT__')
     args = parser.parse_args()
 
-    # validate the legend
-    if args.legend is None:
+    # generate or validate the legend
+    if args.legend_from_file_name_comment:
+        args.legend = []
+        for fname in args.csv_files:
+            comment = fname.split('__')
+            if len(comment) != 3 or len(comment[1]) == 0:
+                args.legend.append(fname)
+            args.legend.append(comment[1])
+    elif args.legend is None:
         args.legend = args.csv_files
     elif len(args.legend) != len(args.csv_files):
         raise Exception(
