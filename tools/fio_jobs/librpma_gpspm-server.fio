@@ -24,3 +24,7 @@ size=100MiB
 # It is set to a fixed value now, but there is a possibility to calculate it
 # at runtime (according to values suggested by protobuff-c).
 blocksize=1KiB
+
+# The client will terminate the server when the client will end up its job.
+time_based
+runtime=365d
