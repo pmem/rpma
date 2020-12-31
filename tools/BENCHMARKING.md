@@ -11,14 +11,33 @@ To use these tools, you must have several components installed in your system:
  - python3-pip
  - pandas
  - matplotlib
+ - perftest (providing ib tools like `ib_read_lat`, `ib_read_bw` etc)
+ - fio
 
 ```sh
 $ sudo yum install python3 python3-pip
 $ pip3 install --user pandas
 $ pip3 install --user matplotlib
+
+$ git clone https://github.com/linux-rdma/perftest.git
+$ cd perftest
+$ ./autogen.sh
+$ ./configure
+$ make
+$ make install
+or
+$ sudo yum install perftest
+
+$ git clone https://github.com/pmem/fio.git
+$ cd fio
+$ ./configure
+$ make
+$ make install
 ```
 
-*Note*: All of the scripts presented in the following sections must be run on the client side.
+*Note*:
+ - All of the scripts presented in the following sections must be run on the client side.
+ - Current fio package doesn't support librpma fio engine.
 
 ## Comparing the RPMA read with the baseline
 
