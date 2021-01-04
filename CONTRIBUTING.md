@@ -8,11 +8,11 @@ of code and contributing it out of the blue.
 To propose new features, suggest adding features, or simply start a dialogue about librpma,
 open an issue in our [GitHub Issues Database](https://github.com/pmem/rpma/issues)
 
-**NOTE: If you do decide to implement code changes and contribute them,
+**Note**: If you do decide to implement code changes and contribute them,
 please make sure you agree your contribution can be made available
-under the [BSD-style License used for the RPMA](https://github.com/pmem/rpma/blob/master/LICENSE).**
+under the [BSD-style License used for the RPMA](https://github.com/pmem/rpma/blob/master/LICENSE).
 
-**NOTE: Submitting your changes also means that you certify the following:**
+**Note**: Submitting your changes also means that you certify the following:
 
 ```
 Developer's Certificate of Origin 1.1
