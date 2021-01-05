@@ -25,7 +25,7 @@ $ pip3 install --user matplotlib
 ### Latency
 
 Generate the baseline latency numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_lat` with various data sizes:
- - iterates over the block size (1024B, 4096B, 65536B)
+ - iterates over the block sizes (1024B, 4096B, 65536B)
  - thread = 1
  - tx_depth = 1
 
@@ -43,7 +43,7 @@ $ ./ib_read.sh <SERVER_IP> lat
 ```
 
 Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
- - iterates over the block size (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
+ - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - iodepth = 1
 
@@ -68,7 +68,7 @@ $ ./rpma_fio_bench.sh <SERVER_IP> apm read lat
 
 Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_bw` with various data sizes:
 
- - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
+ - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 65536B)
  - thread = 1
  - tx_depth = 2
 
@@ -76,7 +76,7 @@ Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-s
 $ ./ib_read.sh <SERVER_IP> bw-bs
 ```
 
- - iterates over the number of threads (1, 2, 4, 8, 12)
+ - iterates over the numbers of threads (1, 2, 4, 8, 12)
  - block size = 4096B
  - tx_depth = 2
 
@@ -84,7 +84,7 @@ $ ./ib_read.sh <SERVER_IP> bw-bs
 $ ./ib_read.sh <SERVER_IP> bw-th
 ```
 
- - iterates over the tx_depth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+ - iterates over the tx_depth values increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
  - thread = 1
  - block size = 4096B
 
@@ -92,7 +92,7 @@ $ ./ib_read.sh <SERVER_IP> bw-th
 $ ./ib_read.sh <SERVER_IP> bw-dp-lin
 ```
 
- - iterates over the tx_depth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
+ - iterates over the tx_depth values increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
  - thread = 1
  - block size = 4096B
 
@@ -102,7 +102,7 @@ $ ./ib_read.sh <SERVER_IP> bw-dp-exp
 
 Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
 
- - iterates over the block size (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
+ - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - iodepth = 2
 
@@ -110,14 +110,14 @@ Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_
 $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-bs
 ```
 
- - iterates over the number of threads (1, 2, 4, 8, 12, 16)
+ - iterates over the numbers of threads (1, 2, 4, 8, 12, 16)
  - block size = 4096B
  - iodepth = 2
 
 ```sh
 $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-th
 ```
- - iterates over the iodepth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+ - iterates over the iodepth values increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
  - thread = 1
  - block size = 4096B
 
@@ -125,7 +125,7 @@ $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-th
 $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-lin
 ```
 
- - iterates over the iodepth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
+ - iterates over the iodepth values increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
  - thread = 1
  - block size = 4096B
 
