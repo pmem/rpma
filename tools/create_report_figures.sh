@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -200,10 +200,7 @@ cd $REPORT_DIR
 
 echo "Output directory: $REPORT_DIR"
 echo
-
 echo 'READ LAT'
-mkdir 02_read_lat
-cd 02_read_lat
 
 echo '- compare all machines ib_read_lat'
 lat_appendix \
@@ -235,11 +232,7 @@ else
         'ib_read_lat from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
-cd ..
-
 echo "READ BW(BS)"
-mkdir 03_read_bw_bs
-cd 03_read_bw_bs
 
 echo "- compare all machines ib_read_bw"
 bw_appendix \
@@ -276,11 +269,7 @@ else
         'ib_read_bw from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
-cd ..
-
 echo "READ BW(TH)"
-mkdir 04_read_bw_th
-cd 04_read_bw_th
 
 echo "- compare all machines ib_read_bw"
 bw_appendix \
@@ -316,11 +305,7 @@ else
         'ib_read_bw' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
-cd ..
-
 echo 'WRITE LAT'
-mkdir 05_write_lat
-cd 05_write_lat
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
 lat_appendix \
@@ -346,11 +331,7 @@ else
         'to DRAM' 'to PMEM'
 fi
 
-cd ..
-
 echo 'WRITE BW(BS)'
-mkdir 06_write_bw_bs
-cd 06_write_bw_bs
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
 bw_appendix \
@@ -379,11 +360,7 @@ else
         'to DRAM' 'to PMEM'
 fi
 
-cd ..
-
 echo 'WRITE BW(TH)'
-mkdir 07_write_bw_th
-cd 07_write_bw_th
 
 echo '- compare all machines rpma_write() + rpma_flush() to DRAM'
 bw_appendix \
