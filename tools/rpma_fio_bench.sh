@@ -17,7 +17,10 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <server_ip> <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> [<custom_part_of_filename>]"
+	echo "Usage: $0 <server_ip> <all|apm|gpspm> [all|read|write] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat] [<custom_part_of_filename>]"
+	echo "Notes:"
+	echo " - 'all' is the default value for missing arguments"
+	echo " - the 'gpspm' mode does not support the 'read' operation for now."
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -31,8 +34,10 @@ function usage()
 	exit 1
 }
 
-if [ "$#" -lt 4 ]; then
+if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
 	usage "Too few arguments"
+elif [ "$2" == "gpspm" -a "$3" == "read" ]; then
+	usage "The 'gpspm' mode does not support the 'read' operation for now."
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
 elif [ -z "$REMOTE_USER" ]; then
@@ -52,6 +57,12 @@ function benchmark_one() {
 	OP=$3
 	MODE=$4
 	[ "$5" != "" ] && COMMENT="__$5__"
+
+	# the 'gpspm' mode does not support the 'read' operation for now
+	if [ "$P_MODE" == "gpspm" -a "$OP" == "read" ]; then
+		echo "Notice: SKIPPING the unsupported 'gpspm-read' combination."
+		return
+	fi
 
 	case $P_MODE in
 	apm)
@@ -196,8 +207,8 @@ function benchmark_one() {
 
 SERVER_IP=$1
 P_MODES=$2 # persistency mode
-OPS=$3
-MODES=$4
+[ -n "$3" ] && OPS=$3 || OPS="all"
+[ -n "$4" ] && MODES=$4 || MODES="all"
 
 case $P_MODES in
 apm|gpspm)
