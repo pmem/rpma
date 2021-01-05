@@ -17,7 +17,6 @@ thread
 iodepth=${iodepth}
 iomem_align=$pagesize
 filename=${filename}
-num_conns=${num_conns}
 size=100MiB
 
 # XXX blocksize should equal the sum of the sizes of recv and send messages.
