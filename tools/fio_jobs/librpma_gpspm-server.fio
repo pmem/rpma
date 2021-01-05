@@ -13,8 +13,8 @@ thread
 # and closes itself.
 
 [server]
-sync=1
-iodepth=1
+# XXX iodepth equal to the client's iopdeth is sufficient (with surplus)
+iodepth=${iodepth}
 iomem_align=$pagesize
 filename=${filename}
 num_conns=${num_conns}
