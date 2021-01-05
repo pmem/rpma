@@ -27,10 +27,13 @@ function usage()
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export AUX_PARAMS='-d mlx5_0 -R'"
+	echo "export IB_PATH=/custom/ib tool/path/"
+	echo
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
 	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
+	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
 	exit 1
 }
 
@@ -208,13 +211,14 @@ function benchmark_one() {
 		# run the server
 		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 			$REMOTE_USER@$SERVER_IP "numactl -N $REMOTE_JOB_NUMA \
-			${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT $REMOTE_AUX_PARAMS \
-			>> $LOG_ERR" 2>>$LOG_ERR &
+			${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT \
+			$REMOTE_AUX_PARAMS >> $LOG_ERR" 2>>$LOG_ERR &
 		sleep 1
 
 		# XXX --duration hides detailed statistics
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
-		numactl -N $JOB_NUMA ${IB_TOOL} $IT_OPT $BS_OPT $QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR \
+		numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
+			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR \
 			| grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
 			| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 	done
