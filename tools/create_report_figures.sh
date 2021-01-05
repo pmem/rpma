@@ -61,6 +61,8 @@ elif [ -z "$DATA_PATH" ]; then
 	usage "DATA_PATH not set"
 fi
 
+N_DIGITS=3
+
 function echo_filter()
 {
     for f in $*; do
@@ -123,12 +125,13 @@ function lat_figures()
     for index in "${!layouts[@]}"; do
         layout="${layouts[$index]}"
         title_prefix="${title_prefixes[$index]}"
+        printf -v figno_name "%0${N_DIGITS}d" $figno
         $TOOLS_PATH/csv_compare.py \
             --output_title "Figure $figno. $title_prefix: $title" \
             --output_layout "$layout" \
             --output_with_table \
             --legend "${legend[@]}" \
-            --output_file "Figure_${figno}_$output.png" \
+            --output_file "Figure_${figno_name}_$output.png" \
             $filter
         figno=$((figno + 1))
     done
@@ -177,6 +180,8 @@ function bw_figure()
         legend=( $(files_to_machines $filter) )
     fi
 
+    printf -v figno_name "%0${N_DIGITS}d" $figno
+
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
         --output_title "Figure $figno. $title" \
@@ -184,7 +189,7 @@ function bw_figure()
         --arg_axis "$arg_axis" \
         --output_with_table \
         --legend "${legend[@]}" \
-        --output_file "Figure_${figno}_$output.png" \
+        --output_file "Figure_${figno_name}_$output.png" \
         $filter
     echo
 }
