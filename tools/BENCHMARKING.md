@@ -43,7 +43,7 @@ $ ./ib_read.sh <SERVER_IP> lat
 ```
 
 Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
- - iterates over the block size (1024B, 4096B, 65536B)
+ - iterates over the block size (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - iodepth = 1
 
@@ -102,7 +102,7 @@ $ ./ib_read.sh <SERVER_IP> bw-dp-exp
 
 Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
 
- - iterates over the block size (256B, 1024B, 4096B, 8192B, 65536B)
+ - iterates over the block size (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - iodepth = 2
 
