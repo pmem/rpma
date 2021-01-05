@@ -226,7 +226,7 @@ if [ -z "$READ_LAT_MACHINE" ]; then
     echo
 else
     lat_figures \
-        "$DATA_PATH/READ/$READ_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/$READ_LAT_MACHINE/PMEM/*/CSV/*lat*" \
+        "$DATA_PATH/READ/MACHINE_$READ_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/READ/MACHINE_$READ_LAT_MACHINE/PMEM/*/CSV/*lat*" \
         'rpma_read() vs ib_read_lat' \
         '2' 'rpma_read_lat_vs_ib' \
         'ib_read_lat from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
@@ -262,7 +262,7 @@ if [ -z "$READ_BW_MACHINE" ]; then
     echo
 else
     bw_figure \
-        "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
+        "$DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
         'Figure 5. Bandwidth: rpma_read() vs ib_read_bw' \
         'bs' \
         'Figure_5_rpma_read_bw_bs_vs_ib' \
@@ -298,7 +298,7 @@ if [ -z "$READ_BW_MACHINE" ]; then
     echo
 else
     bw_figure \
-        "$DATA_PATH/READ/$READ_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/$READ_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
+        "$DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
         'Figure 6. Bandwidth: rpma_read() vs ib_read_bw' \
         'threads' \
         'Figure_6_rpma_read_bw_th_vs_ib' \
@@ -325,7 +325,7 @@ if [ -z "$WRITE_LAT_MACHINE" ]; then
     echo
 else
     lat_figures \
-        "$DATA_PATH/WRITE/$WRITE_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/WRITE/$WRITE_LAT_MACHINE/PMEM/*/CSV/*lat*" \
+        "$DATA_PATH/WRITE/MACHINE_$WRITE_LAT_MACHINE/DRAM/*/CSV/*lat* $DATA_PATH/WRITE/MACHINE_$WRITE_LAT_MACHINE/PMEM/*/CSV/*lat*" \
         'rpma_write() + rpma_flush()' \
         '7' 'rpma_write_flush_lat' \
         'to DRAM' 'to PMEM'
@@ -353,7 +353,7 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
     echo
 else
     bw_figure \
-        "$DATA_PATH/WRITE/$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/WRITE/$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
+        "$DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
         'Figure 8. Bandwidth: rpma_write() + rpma_flush()' \
         'bs' \
         'Figure_8_rpma_write_flush_bw_bs' \
@@ -382,7 +382,7 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
     echo
 else
     bw_figure \
-        "$DATA_PATH/WRITE/$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/WRITE/$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
+        "$DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
         'Figure 9. Bandwidth: rpma_write() + rpma_flush()' \
         'threads' \
         'Figure_9_rpma_write_flush_bw_th' \
