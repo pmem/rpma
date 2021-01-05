@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -23,7 +23,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip>"
+	echo "usage: $0 <server_ip> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat>"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export AUX_PARAMS='-d mlx5_0 -R'"
@@ -72,8 +72,8 @@ function verify_depth()
 
 function benchmark_one() {
 
-	MODE=$1
-	SERVER_IP=$2
+	SERVER_IP=$1
+	MODE=$2
 
 	case $MODE in
 	bw-bs)
@@ -228,8 +228,8 @@ function benchmark_one() {
 	echo
 }
 
-MODES=$1
-SERVER_IP=$2
+SERVER_IP=$1
+MODES=$2
 
 case $MODES in
 bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat)
@@ -243,5 +243,5 @@ all)
 esac
 
 for m in $MODES; do
-	benchmark_one $m $SERVER_IP
+	benchmark_one $SERVER_IP $m
 done
