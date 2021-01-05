@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> <server_ip> [<custom_part_of_filename>]"
+	echo "usage: $0 <server_ip> <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat> [<custom_part_of_filename>]"
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -47,10 +47,10 @@ fi
 
 function benchmark_one() {
 
-	P_MODE=$1 # persistency mode
-	OP=$2
-	MODE=$3
-	SERVER_IP=$4
+	SERVER_IP=$1
+	P_MODE=$2 # persistency mode
+	OP=$3
+	MODE=$4
 	[ "$5" != "" ] && COMMENT="__$5__"
 
 	case $P_MODE in
@@ -194,10 +194,10 @@ function benchmark_one() {
 	echo
 }
 
-P_MODES=$1 # persistency mode
-OPS=$2
-MODES=$3
-SERVER_IP=$4
+SERVER_IP=$1
+P_MODES=$2 # persistency mode
+OPS=$3
+MODES=$4
 
 case $P_MODES in
 apm|gpspm)
@@ -235,7 +235,7 @@ esac
 for p in $P_MODES; do
 	for o in $OPS; do
 		for m in $MODES; do
-			benchmark_one $p $o $m $SERVER_IP $5
+			benchmark_one $SERVER_IP $p $o $m $5
 		done
 	done
 done

@@ -39,7 +39,7 @@ $ export REMOTE_PASS=pass
 $ export REMOTE_JOB_NUMA=0
 $ export REMOTE_AUX_PARAMS='-d mlx5_0 -R'
 
-$ ./ib_read.sh lat <SERVER_IP>
+$ ./ib_read.sh <SERVER_IP> lat
 ```
 
 Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
@@ -61,7 +61,7 @@ $ export REMOTE_JOB_PATH=/custom/jobs/path
 # optional, by default: malloc
 $ export REMOTE_JOB_MEM_PATH=/path/to/mem
 
-$ ./rpma_fio_bench.sh apm read lat <SERVER_IP>
+$ ./rpma_fio_bench.sh <SERVER_IP> apm read lat
 ```
 
 ### Bandwidth
@@ -73,7 +73,7 @@ Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-s
  - tx_depth = 2
 
 ```sh
-$ ./ib_read.sh bw-bs <SERVER_IP>
+$ ./ib_read.sh <SERVER_IP> bw-bs
 ```
 
  - iterates over the number of threads (1, 2, 4, 8, 12)
@@ -81,7 +81,7 @@ $ ./ib_read.sh bw-bs <SERVER_IP>
  - tx_depth = 2
 
 ```sh
-$ ./ib_read.sh bw-th <SERVER_IP>
+$ ./ib_read.sh <SERVER_IP> bw-th
 ```
 
  - iterates over the tx_depth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -89,7 +89,7 @@ $ ./ib_read.sh bw-th <SERVER_IP>
  - block size = 4096B
 
 ```sh
-$ ./ib_read.sh bw-dp-lin <SERVER_IP>
+$ ./ib_read.sh <SERVER_IP> bw-dp-lin
 ```
 
  - iterates over the tx_depth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
@@ -97,7 +97,7 @@ $ ./ib_read.sh bw-dp-lin <SERVER_IP>
  - block size = 4096B
 
 ```sh
-$ ./ib_read.sh bw-dp-exp <SERVER_IP>
+$ ./ib_read.sh <SERVER_IP> bw-dp-exp
 ```
 
 Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
@@ -107,7 +107,7 @@ Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_
  - iodepth = 2
 
 ```sh
-$ ./rpma_fio_bench.sh apm read bw-bs <SERVER_IP>
+$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-bs
 ```
 
  - iterates over the number of threads (1, 2, 4, 8, 12, 16)
@@ -115,14 +115,14 @@ $ ./rpma_fio_bench.sh apm read bw-bs <SERVER_IP>
  - iodepth = 2
 
 ```sh
-$ ./rpma_fio_bench.sh apm read bw-th <SERVER_IP>
+$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-th
 ```
  - iterates over the iodepth value increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
  - thread = 1
  - block size = 4096B
 
 ```sh
-$ ./rpma_fio_bench.sh apm read bw-dp-lin <SERVER_IP>
+$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-lin
 ```
 
  - iterates over the iodepth value increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
@@ -130,7 +130,7 @@ $ ./rpma_fio_bench.sh apm read bw-dp-lin <SERVER_IP>
  - block size = 4096B
 
 ```sh
-$ ./rpma_fio_bench.sh apm read bw-dp-exp <SERVER_IP>
+$ ./rpma_fio_bench.sh apm <SERVER_IP> read bw-dp-exp
 ```
 
 ### Comparison
