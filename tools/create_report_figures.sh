@@ -166,9 +166,10 @@ function bw_figure()
 {
     filter="$1"
     title="$2"
-    arg_axis="$3"
-    output="$4"
-    shift 4
+    figno="$3"
+    arg_axis="$4"
+    output="$5"
+    shift 5
 
     if [ "$#" -gt 0 ]; then
         legend=( "$@" )
@@ -178,12 +179,12 @@ function bw_figure()
 
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
-        --output_title "$title" \
+        --output_title "Figure $figno. $title" \
         --output_layout 'bw' \
         --arg_axis "$arg_axis" \
         --output_with_table \
         --legend "${legend[@]}" \
-        --output_file "$output.png" \
+        --output_file "Figure_${figno}_$output.png" \
         $filter
     echo
 }
@@ -263,9 +264,10 @@ if [ -z "$READ_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
-        'Figure 5. Bandwidth: rpma_read() vs ib_read_bw' \
+        'Bandwidth: rpma_read() vs ib_read_bw' \
+        '5' \
         'bs' \
-        'Figure_5_rpma_read_bw_bs_vs_ib' \
+        'rpma_read_bw_bs_vs_ib' \
         'ib_read_bw from DRAM' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
@@ -299,9 +301,10 @@ if [ -z "$READ_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/READ/MACHINE_$READ_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
-        'Figure 6. Bandwidth: rpma_read() vs ib_read_bw' \
+        'Bandwidth: rpma_read() vs ib_read_bw' \
+        '6' \
         'threads' \
-        'Figure_6_rpma_read_bw_th_vs_ib' \
+        'rpma_read_bw_th_vs_ib' \
         'ib_read_bw' 'rpma_read() from DRAM' 'rpma_read() from PMEM'
 fi
 
@@ -354,9 +357,10 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-bs* $DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-bs*" \
-        'Figure 8. Bandwidth: rpma_write() + rpma_flush()' \
+        'Bandwidth: rpma_write() + rpma_flush()' \
+        '10' \
         'bs' \
-        'Figure_8_rpma_write_flush_bw_bs' \
+        'rpma_write_flush_bw_bs' \
         'to DRAM' 'to PMEM'
 fi
 
@@ -383,8 +387,9 @@ if [ -z "$WRITE_BW_MACHINE" ]; then
 else
     bw_figure \
         "$DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/DRAM/*/CSV/*bw-th* $DATA_PATH/WRITE/MACHINE_$WRITE_BW_MACHINE/PMEM/*/CSV/*bw-th*" \
-        'Figure 9. Bandwidth: rpma_write() + rpma_flush()' \
+        'Bandwidth: rpma_write() + rpma_flush()' \
+        '11' \
         'threads' \
-        'Figure_9_rpma_write_flush_bw_th' \
+        'rpma_write_flush_bw_th' \
         'to DRAM' 'to PMEM'
 fi
