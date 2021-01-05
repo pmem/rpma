@@ -130,7 +130,7 @@ $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-lin
  - block size = 4096B
 
 ```sh
-$ ./rpma_fio_bench.sh apm <SERVER_IP> read bw-dp-exp
+$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-exp
 ```
 
 ### Comparison
