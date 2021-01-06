@@ -22,7 +22,7 @@ size=100MiB
 # XXX blocksize should equal the sum of the sizes of recv and send messages.
 # It is set to a fixed value now, but there is a possibility to calculate it
 # at runtime (according to values suggested by protobuff-c).
-blocksize=1KiB
+blocksize=1024
 
 # The client will terminate the server when the client will end up its job.
 time_based
