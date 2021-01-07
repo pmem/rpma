@@ -31,6 +31,8 @@ function usage()
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
+	echo
+	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
 	exit 1
 }
 
@@ -131,8 +133,6 @@ function benchmark_one() {
 	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
 	echo "Performance results: $OUTPUT"
 	echo "Output and errors (both sides): $LOG_ERR"
-	echo "This tool is EXPERIMENTAL"
-	echo
 
 	rm -f $LOG_ERR $OUTPUT
 
@@ -178,7 +178,7 @@ function benchmark_one() {
 		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
 		hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
-			ioengine=librpma${GPSPM}_client \
+			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma${GPSPM}_client \
 			numactl -N $JOB_NUMA ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 			> $TEMP_JSON
@@ -205,10 +205,24 @@ function benchmark_one() {
 	echo
 }
 
+echo "This tool is EXPERIMENTAL"
+
 SERVER_IP=$1
 P_MODES=$2 # persistency mode
 [ -n "$3" ] && OPS=$3 || OPS="all"
 [ -n "$4" ] && MODES=$4 || MODES="all"
+
+if [ "$SHORT_RUNTIME" == "1" ]; then
+	RAMP_TIME=0
+	RUNTIME=10
+
+	echo "Notice: The results may be inaccurate (SHORT_RUNTIME=1)"
+else
+	RAMP_TIME=15
+	RUNTIME=60
+fi
+
+echo
 
 case $P_MODES in
 apm|gpspm)
