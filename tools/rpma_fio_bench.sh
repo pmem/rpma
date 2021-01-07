@@ -32,7 +32,11 @@ function usage()
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
 	echo
+	echo "Debug:"
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
+	echo "export TRACER='gdbserver localhost:2345'"
+	echo "export REMOTE_TRACER='gdbserver localhost:2345'"
+	echo
 	exit 1
 }
 
@@ -169,17 +173,23 @@ function benchmark_one() {
 			./fio_jobs/librpma${GPSPM}-server.fio \
 			$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
 		# run the server
+		if [ "x$REMOTE_TRACER" == "x" ]; then
+			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
+		fi
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
 			"bindname=$SERVER_IP num_conns=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
-			numactl -N $REMOTE_JOB_NUMA \
+			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		sleep 1
 
 		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
+		if [ "x$TRACER" == "x" ]; then
+			TRACER="numactl -N $JOB_NUMA"
+		fi
 		hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
 			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma${GPSPM}_client \
-			numactl -N $JOB_NUMA ${FIO_PATH}fio \
+			$TRACER ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 			> $TEMP_JSON
 		if [ "$?" -ne 0 ]; then
