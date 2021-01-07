@@ -13,6 +13,7 @@ thread
 # and closes itself.
 
 [server]
+numjobs=${num_conns}
 # XXX iodepth equal to the client's iopdeth is sufficient (with surplus)
 iodepth=${iodepth}
 iomem_align=$pagesize
