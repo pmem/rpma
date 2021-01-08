@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> <all|apm|gpspm> [all|read|write] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat] [<custom_part_of_filename>]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|write] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
 	echo " - the 'gpspm' mode does not support the 'read' operation for now."
@@ -31,6 +31,7 @@ function usage()
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
+	echo "export COMMENT=any_text_to_be_added_to_every_file_name"
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
@@ -62,7 +63,9 @@ function benchmark_one() {
 	P_MODE=$2 # persistency mode
 	OP=$3
 	MODE=$4
-	[ "$5" != "" ] && COMMENT="__$5__"
+	if [ -n "$COMMENT" ]; then
+		COMMENT="__$COMMENT""__"
+	fi
 
 	# the 'gpspm' mode does not support the 'read' operation for now
 	if [ "$P_MODE" == "gpspm" -a "$OP" == "read" ]; then
