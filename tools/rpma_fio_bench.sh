@@ -17,7 +17,13 @@ function usage()
 {
 	echo "Error: $1"
 	echo
+<<<<<<< HEAD
 	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|write] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+=======
+	echo "Usage: $0 <server_ip> <all|apm|gpspm> <all|read|write> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat>"
+	echo "       $0 --env - show environment variables used by the script"
+	echo
+>>>>>>> a780821... tools: option to show environment variables used by the script
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
 	echo " - the 'gpspm' mode does not support the 'read' operation for now."
@@ -40,6 +46,32 @@ function usage()
 	echo
 	exit 1
 }
+
+function show_environment() {
+	echo
+	echo "Environment variables used by the script:"
+	echo
+	echo "export JOB_NUMA=$JUB_NUMA"
+	echo "export FIO_PATH=$FIO_PATH"
+	echo
+	echo "export REMOTE_USER=$REMOTE_USER"
+	echo "export REMOTE_PASS=$REMOTE_PASS"
+	echo "export REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA"
+	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
+	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
+	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
+	echo "export CUSTOM_PART_OF_FILENAME=$CUSTOM_PART_OF_FILENAME"
+	echo
+	echo "Debug:"
+	echo "export SHORT_RUNTIME=$SHORT_RUNTIME"
+	echo "export TRACER=$TRACER"
+	echo "export REMOTE_TRACER=$REMOTE_TRACER"
+	exit 0
+}
+
+if [ "$1" == "--env" ]; then
+	show_environment
+fi
 
 if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
 	usage "Too few arguments"
