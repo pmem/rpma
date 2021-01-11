@@ -83,6 +83,8 @@ send__success(void **cstate_ptr)
 	expect_value(rpma_mr_send, offset, MOCK_LOCAL_OFFSET);
 	expect_value(rpma_mr_send, len, MOCK_LEN);
 	expect_value(rpma_mr_send, flags, MOCK_FLAGS);
+	expect_value(rpma_mr_send, operation, IBV_WR_SEND);
+	expect_value(rpma_mr_send, imm, 0);
 	expect_value(rpma_mr_send, op_context, MOCK_OP_CONTEXT);
 	will_return(rpma_mr_send, MOCK_OK);
 

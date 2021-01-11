@@ -47,11 +47,13 @@ int rpma_mr_write(struct ibv_qp *qp,
  * ERRORS
  * rpma_mr_send() can fail with the following error:
  *
+ * - RPMA_E_NOSUPP   - unsupported operation parament(wr.opcode)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_send(struct ibv_qp *qp,
 	const struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, const void *op_context);
+	size_t len, int flags, enum ibv_wr_opcode operation,
+	uint32_t imm, const void *op_context);
 
 /*
  * ASSUMPTIONS
