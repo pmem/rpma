@@ -13,11 +13,13 @@ To use these tools, you must have several components installed in your system:
  - matplotlib
  - perftest (providing ib tools like `ib_read_lat`, `ib_read_bw` etc)
  - fio (supporting the librpma fio engine)
+ - numactl
+ - sshpass
 
 *Note*: Currently only https://github.com/pmem/fio.git supports the librpma fio engine.
 
 ```sh
-$ sudo yum install python3 python3-pip
+$ sudo yum install python3 python3-pip numactl sshpass
 $ pip3 install --user pandas
 $ pip3 install --user matplotlib
 
