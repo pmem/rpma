@@ -206,7 +206,8 @@ function benchmark_one() {
 			"bindname=$SERVER_IP num_conns=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
 			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
-		sleep 1
+		# XXX having no retry procedure forces to wait as long as it may be required
+		sleep 10
 
 		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
