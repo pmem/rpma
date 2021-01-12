@@ -77,9 +77,9 @@ function benchmark_one() {
 	apm)
 		GPSPM=""
 		if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-			REMOTE_JOB_DEST="mem=mmap:$REMOTE_JOB_MEM_PATH"
+			REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		else
-			REMOTE_JOB_DEST="mem=malloc"
+			REMOTE_JOB_DEST="filename=malloc"
 		fi
 		;;
 	gpspm)
