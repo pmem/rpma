@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|write] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|write|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
 	echo " - the 'gpspm' mode does not support the 'read' operation for now."
@@ -133,15 +133,38 @@ function benchmark_one() {
 	DIR=/dev/shm
 	TEMP_JSON=${DIR}/${NAME}_temp.json
 	TEMP_CSV=${DIR}/${NAME}_temp.csv
-	OUTPUT=${NAME}.csv
 	LOG_ERR=${DIR}/${NAME}.log
 	SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
-	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
-	echo "Performance results: $OUTPUT"
-	echo "Output and errors (both sides): $LOG_ERR"
+	OPS=(read write)
+	# set indexes (INDS) for arrays: OPS and OUTPUT
+	case $OP in
+	read)
+		INDS=0 # read
+		;;
+	write)
+		INDS=1 # write
+		;;
+	rw|randrw)
+		INDS="0 1" # read write
+		;;
+	esac
+	case $OP in
+	read|write)
+		OUTPUT=(${NAME}.csv ${NAME}.csv) # the same names
+		;;
+	rw|randrw)
+		OUTPUT=(${NAME}_${OPS[0]}.csv ${NAME}_${OPS[1]}.csv)
+		;;
+	esac
 
-	rm -f $LOG_ERR $OUTPUT
+	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
+	echo "Output and errors (both sides): $LOG_ERR"
+	for i in $INDS; do
+		echo "Performance results of ${OPS[i]}s: ${OUTPUT[i]}"
+		rm -f ${OUTPUT[i]}
+	done
+	rm -f $LOG_ERR
 
 	if [ -z "$REMOTE_JOB_PATH" ]; then
 		REMOTE_JOB_PATH=${DIR}/librpma${GPSPM}-server-${TIMESTAMP}.fio
@@ -199,20 +222,24 @@ function benchmark_one() {
 			echo "Error: FIO job failed"
 			exit 1
 		fi
-		# convert JSON to CSV
-		./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV \
-			--op ${OP}
-		# append CSV to the output
-		cat $TEMP_CSV >> $OUTPUT
+
+		for i in $INDS; do
+			rm -f $TEMP_CSV
+			# convert JSON to CSV
+			./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV --op ${OPS[i]}
+			# append CSV to the output
+			cat $TEMP_CSV >> ${OUTPUT[i]}
+		done
 	done
 
-	# remove redundant headers
-	cat $OUTPUT | head -1 > $TEMP_CSV
-	cat $OUTPUT | grep -v 'lat' >> $TEMP_CSV
-	cp $TEMP_CSV $OUTPUT
-
-	# convert to standardized-CSV
-	./csv2standardized.py --csv_type fio --output_file $OUTPUT $OUTPUT
+	for i in $INDS; do
+		# remove redundant headers
+		cat ${OUTPUT[i]} | head -1 > $TEMP_CSV
+		cat ${OUTPUT[i]} | grep -v 'lat' >> $TEMP_CSV
+		mv $TEMP_CSV ${OUTPUT[i]}
+		# convert to standardized-CSV
+		./csv2standardized.py --csv_type fio --output_file ${OUTPUT[i]} ${OUTPUT[i]}
+	done
 
 	echo "FINISHED benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
 	echo
@@ -249,10 +276,10 @@ all)
 esac
 
 case $OPS in
-read|write)
+read|write|rw|randrw)
 	;;
 all)
-	OPS="read write"
+	OPS="read write rw randrw"
 	;;
 *)
 	usage "Wrong operation: $OPS"

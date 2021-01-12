@@ -18,6 +18,7 @@ percentile_list=99.0:99.9:99.99:99.999
 iodepth=${iodepth}
 iomem_align=$pagesize
 readwrite=${readwrite}
+rwmixread=70 # valid only for the 'rw' and 'randrw' readwrite modes
 blocksize=${blocksize}
 numjobs=${numjobs}
 ramp_time=${ramp_time}
