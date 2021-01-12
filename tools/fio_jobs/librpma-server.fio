@@ -16,5 +16,5 @@ thread
 sync=1
 iomem_align=$pagesize
 mem=${mem}
-num_conns=${num_conns}
+numjobs=${numjobs}
 size=100MiB

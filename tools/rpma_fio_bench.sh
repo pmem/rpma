@@ -203,7 +203,7 @@ function benchmark_one() {
 			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
 		fi
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-			"bindname=$SERVER_IP num_conns=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
+			"bindname=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
 			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		sleep 1
