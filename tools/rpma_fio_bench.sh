@@ -318,7 +318,7 @@ case $MODES in
 bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat)
 	;;
 all)
-	MODES="bw-bs bw-dp-exp bw-dp-lin bw-th lat"
+	MODES="lat bw-bs bw-th bw-dp-lin bw-dp-exp"
 	;;
 *)
 	usage "Wrong mode: $MODES"
