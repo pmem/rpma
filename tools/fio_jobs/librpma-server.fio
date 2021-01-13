@@ -15,6 +15,6 @@ thread
 [server]
 sync=1
 iomem_align=$pagesize
-mem=${mem}
+filename=${filename}
 num_conns=${num_conns}
 size=100MiB
