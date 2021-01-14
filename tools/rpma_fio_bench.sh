@@ -47,7 +47,7 @@ function show_environment() {
 	echo
 	echo "Environment variables used by the script:"
 	echo
-	echo "export JOB_NUMA=$JUB_NUMA"
+	echo "export JOB_NUMA=$JOB_NUMA"
 	echo "export FIO_PATH=$FIO_PATH"
 	echo
 	echo "export REMOTE_USER=$REMOTE_USER"
