@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 
 #
 # config_softroce.sh - configure SoftRoCE
@@ -24,6 +24,13 @@ fi
 
 MODULE="rdma_rxe"
 DIR="/lib/modules/$(uname -r)"
+STATE_OK="state ACTIVE physical_state LINK_UP"
+
+function print_IP() {
+	NETDEV=$(rdma link show | grep -e "$STATE_OK" | head -n1 | cut -d' ' -f8)
+	IP=$(ip -4 -j -p a show $NETDEV | grep -e local | cut -d'"' -f4)
+	echo "IP address of the SoftRoCE-configured network interface: $IP"
+}
 
 if [ $(lsmod | grep -e $MODULE | wc -l) -lt 1 ]; then
 	N_MODULES=$(find $DIR -name "$MODULE.ko*" | wc -l)
@@ -54,14 +61,13 @@ if ! rdma link show > /dev/null ; then
 	exit 1
 fi
 
-STATE_OK="state ACTIVE physical_state LINK_UP"
-
 if [ "$LINK" == "" ]; then
 	RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | wc -l)
 	if [ $RDMA_LINKS -gt 0 ]; then
 		if [ $VERIFY -eq 0 ]; then
 			echo "SoftRoCE has been already configured:"
-			rdma link show
+			rdma link show | grep -e "$STATE_OK"
+			print_IP
 		fi
 		exit 0
 	elif [ $VERIFY -eq 1 ]; then
@@ -102,4 +108,4 @@ if [ $RDMA_LINKS -lt 1 ]; then
 fi
 
 echo "SoftRoCE successfully configured"
-
+print_IP
