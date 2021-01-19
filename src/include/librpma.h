@@ -2215,11 +2215,6 @@ int rpma_send(struct rpma_conn *conn,
  * The order of buffers in the set does not affect the order of completions of
  * receive operations get via rpma_conn_completion_get(3).
  *
- * The attribute flags set the completion notification indicator:
- * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
- * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
- * the operation
- *
  * NOTE
  * In the RDMA standard, receive requests form an ordered queue.
  * The RPMA does NOT inherit this guarantee.
