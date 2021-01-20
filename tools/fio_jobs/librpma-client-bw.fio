@@ -4,7 +4,7 @@
 [global]
 ioengine=${ioengine}
 create_serialize=0
-hostname=${hostname}
+serverip=${serverip}
 port=7204
 thread
 disable_clat=1

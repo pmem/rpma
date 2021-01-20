@@ -231,7 +231,7 @@ function benchmark_one() {
 			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
 		fi
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
-			"bindname=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
+			"serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
 			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		# XXX having no retry procedure forces to wait as long as it may be required
@@ -243,7 +243,7 @@ function benchmark_one() {
 		if [ "x$TRACER" == "x" ]; then
 			TRACER="numactl -N $JOB_NUMA"
 		fi
-		hostname=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
+		serverip=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
 			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma${GPSPM}_client \
 			$TRACER ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
