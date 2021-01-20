@@ -4,7 +4,7 @@
 [global]
 ioengine=librpma_server
 create_serialize=0
-bindname=${bindname}
+serverip=${serverip}
 port=7204
 thread
 
