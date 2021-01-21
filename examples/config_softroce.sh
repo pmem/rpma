@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 
 #
 # config_softroce.sh - configure SoftRoCE
@@ -16,10 +16,10 @@
 
 if [ "$1" == "verify" ]; then
 	VERIFY=1
-	LINK=""
+	NET_IF=""
 else
 	VERIFY=0
-	LINK=$1
+	NET_IF=$1
 fi
 
 MODULE="rdma_rxe"
@@ -56,7 +56,7 @@ fi
 
 STATE_OK="state ACTIVE physical_state LINK_UP"
 
-if [ "$LINK" == "" ]; then
+if [ "$NET_IF" == "" ]; then
 	RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | wc -l)
 	if [ $RDMA_LINKS -gt 0 ]; then
 		if [ $VERIFY -eq 0 ]; then
@@ -69,25 +69,25 @@ if [ "$LINK" == "" ]; then
 		exit 1
 	fi
 
-	# pick up the first 'up' one
-	LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "state UP" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
-	if [ "$LINK" == "" ]; then
+	# pick up the first 'up' network interface
+	NET_IF=$(ip link | grep -v -e "LOOPBACK" | grep -e "state UP" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
+	if [ "$NET_IF" == "" ]; then
 		#
 		# Look for a USB Ethernet network interfaces,
 		# which may not have 'state UP',
 		# but only 'UP' and 'state UNKNOWN', for example:
 		# ... <BROADCAST,MULTICAST,UP,LOWER_UP> ... state UNKNOWN ...
 		#
-		LINK=$(ip link | grep -v -e "LOOPBACK" | grep -e "UP" | grep -e "state UNKNOWN" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
-		if [ "$LINK" == "" ]; then
+		NET_IF=$(ip link | grep -v -e "LOOPBACK" | grep -e "UP" | grep -e "state UNKNOWN" | head -n1 | cut -d: -f2 | cut -d' ' -f2)
+		if [ "$NET_IF" == "" ]; then
 			echo "Error: cannot find an active and up network interface"
 			exit 1
 		fi
 	fi
 fi
 
-echo "Configuring SoftRoCE for the '$LINK' network interface:"
-sudo rdma link add rxe_$LINK type rxe netdev $LINK
+echo "Configuring SoftRoCE for the '$NET_IF' network interface:"
+sudo rdma link add rxe_$NET_IF type rxe netdev $NET_IF
 if [ $? -ne 0 ]; then
 	echo "Error: configuring SoftRoCE failed"
 	exit 1
@@ -102,4 +102,3 @@ if [ $RDMA_LINKS -lt 1 ]; then
 fi
 
 echo "SoftRoCE successfully configured"
-
