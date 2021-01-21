@@ -1,9 +1,6 @@
-# The librpma_client engine requires some options to work correctly:
-# - create_serialize=0 forces specific initiation sequence
-
 [global]
 ioengine=${ioengine}
-create_serialize=0
+create_serialize=0 # (required) forces specific initiation sequence
 serverip=${serverip}
 port=7204
 thread
@@ -15,13 +12,13 @@ percentile_list=99.0:99.9:99.99:99.999
 # a connection.
 
 [client]
-iodepth=${iodepth}
+numjobs=${numjobs}
+group_reporting=1
 iomem_align=$pagesize
+iodepth=${iodepth}
 readwrite=${readwrite}
 rwmixread=70 # valid only for the 'rw' and 'randrw' readwrite modes
 blocksize=${blocksize}
-numjobs=${numjobs}
 ramp_time=${ramp_time}
 time_based
 runtime=${runtime}
-group_reporting
