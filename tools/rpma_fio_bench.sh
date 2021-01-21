@@ -22,6 +22,7 @@ function usage()
 	echo
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
+	echo " - the 'gpspm' mode does not support the 'read' operation for now."
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -72,6 +73,12 @@ fi
 
 if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
 	usage "Too few arguments"
+elif [ "$2" == "gpspm" ]; then
+	case "$3" in
+	read|rw|randrw)
+		usage "The 'gpspm' mode does not support the '$3' operation for now."
+		;;
+	esac
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
 elif [ -z "$REMOTE_USER" ]; then
@@ -159,7 +166,7 @@ function benchmark_one() {
 	LOG_ERR=${DIR}/${NAME}.log
 	SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
-	OPS=(read write)
+	local OPS=(read write)
 	# set indexes (INDS) for arrays: OPS and OUTPUT
 	case $OP in
 	read)
@@ -325,6 +332,13 @@ esac
 
 for p in $P_MODES; do
 	for o in $OPS; do
+		if [ "$p" == "gpspm" ]; then
+			case "$o" in
+			read|rw|randrw)
+				continue
+				;;
+			esac
+		fi
 		for m in $MODES; do
 			benchmark_one $SERVER_IP $p $o $m $5
 		done
