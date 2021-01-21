@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2016-2021, Intel Corporation
 #
 
 #
@@ -144,6 +144,7 @@ CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DTESTS_SOFT_ROCE=OFF \
 	-DDEVELOPER_MODE=1 \
 	-DUSE_ASAN=ON \
 	-DUSE_UBSAN=ON
@@ -168,6 +169,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DCOVERAGE=$COVERAGE \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DTESTS_SOFT_ROCE=OFF \
 	-DDEVELOPER_MODE=1
 
 make -j$(nproc)
@@ -207,6 +209,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
+	-DTESTS_SOFT_ROCE=OFF \
 	-DDEVELOPER_MODE=1
 
 make -j$(nproc)
