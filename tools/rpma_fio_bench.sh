@@ -22,7 +22,6 @@ function usage()
 	echo
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
-	echo " - the 'gpspm' mode does not support the 'read' operation for now."
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -73,8 +72,6 @@ fi
 
 if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
 	usage "Too few arguments"
-elif [ "$2" == "gpspm" -a "$3" == "read" ]; then
-	usage "The 'gpspm' mode does not support the 'read' operation for now."
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
 elif [ -z "$REMOTE_USER" ]; then
@@ -97,12 +94,6 @@ function benchmark_one() {
 	MODE=$4
 	if [ -n "$COMMENT" ]; then
 		COMMENT="__$COMMENT""__"
-	fi
-
-	# the 'gpspm' mode does not support the 'read' operation for now
-	if [ "$P_MODE" == "gpspm" -a "$OP" == "read" ]; then
-		echo "Notice: SKIPPING the unsupported 'gpspm-read' combination."
-		return
 	fi
 
 	case $P_MODE in
