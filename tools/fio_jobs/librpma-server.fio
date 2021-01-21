@@ -4,6 +4,7 @@
 [global]
 ioengine=librpma_server
 create_serialize=0
+kb_base=1000 # turn on the straight units handling (non-compatibility mode)
 serverip=${serverip}
 port=7204
 thread
