@@ -20,4 +20,4 @@ sync=1
 iomem_align=$pagesize
 filename=${filename}
 numjobs=${numjobs}
-size=100MiB
+size=104857600 # 100MiB

@@ -21,7 +21,7 @@ numjobs=${numjobs}
 iodepth=${iodepth}
 iomem_align=$pagesize
 filename=${filename}
-size=100MiB
+size=104857600 # 100MiB
 
 # XXX blocksize should equal the sum of the sizes of recv and send messages.
 # It is set to a fixed value now, but there is a possibility to calculate it
