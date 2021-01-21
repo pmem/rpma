@@ -30,7 +30,7 @@ function usage()
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
-	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=true/false (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
+	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
