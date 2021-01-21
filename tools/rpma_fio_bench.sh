@@ -30,6 +30,7 @@ function usage()
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
+	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=true"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
@@ -53,6 +54,7 @@ function show_environment() {
 	echo "export REMOTE_USER=$REMOTE_USER"
 	echo "export REMOTE_PASS=$REMOTE_PASS"
 	echo "export REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA"
+	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM"
 	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
 	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
@@ -81,6 +83,8 @@ elif [ -z "$REMOTE_PASS" ]; then
 	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
+elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
+	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ -z "$REMOTE_JOB_MEM_PATH" -a "$1" == "gpspm" ]; then
 	usage "REMOTE_JOB_MEM_PATH not set"
 fi
@@ -232,6 +236,7 @@ function benchmark_one() {
 		fi
 		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
 			"serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
+			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		# XXX having no retry procedure forces to wait as long as it may be required

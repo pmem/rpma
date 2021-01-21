@@ -13,6 +13,9 @@ thread
 # and closes itself.
 
 [server]
+# set to true ONLY when Direct Write to PMem from the remote host is possible
+# (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)
+direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 # XXX iodepth equal to the client's iopdeth is sufficient (with surplus)
 iodepth=${iodepth}
