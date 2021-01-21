@@ -1,33 +1,28 @@
-# The librpma_server engine requires some options to work correctly:
-# - create_serialize=0 forces specific initiation sequence
-
 [global]
 ioengine=librpma_gpspm_server
-create_serialize=0
+create_serialize=0 # (required) forces specific initiation sequence
 kb_base=1000 # turn on the straight units handling (non-compatibility mode)
 serverip=${serverip}
 port=7204
 thread
 
-# The server side spawns a single thread, opens and registers the whole
-# provided memory. The server accepts a connection, waits for it to end up,
-# and closes itself.
+# The server side spawns one thread for each expected connection from
+# the client-side, opens and registers the range dedicated for this thread
+# (a workspace) from the provided memory.
+# Each of the server threads accepts a connection on the dedicated port
+# (different for each and every working thread), accepts and executes flush
+# requests, and sends back a flush response for each of the requests.
+# When the client is done it sends the termination notice to the server's thread.
 
 [server]
-# set to true ONLY when Direct Write to PMem from the remote host is possible
+# set to 1 (true) ONLY when Direct Write to PMem from the remote host is possible
 # (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)
 direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
-# XXX iodepth equal to the client's iopdeth is sufficient (with surplus)
 iodepth=${iodepth}
 iomem_align=$pagesize
-filename=${filename}
 size=100MiB
-
-# XXX blocksize should equal the sum of the sizes of recv and send messages.
-# It is set to a fixed value now, but there is a possibility to calculate it
-# at runtime (according to values suggested by protobuff-c).
-blocksize=1024
+filename=${filename}
 
 # The client will terminate the server when the client will end up its job.
 time_based
