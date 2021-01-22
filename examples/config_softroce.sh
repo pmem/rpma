@@ -24,6 +24,36 @@ fi
 
 MODULE="rdma_rxe"
 DIR="/lib/modules/$(uname -r)"
+STATE_OK="state ACTIVE physical_state LINK_UP"
+
+function get_IP4() {
+	NET_IF=$1
+	ip -4 -j -p a show $NET_IF | grep -e local | cut -d'"' -f4
+}
+
+function print_IP4_of() {
+	NET_IF=$1
+	echo -n "The SoftRoCE-configured network interface '$NET_IF' has "
+	IP=$(get_IP4 $NET_IF)
+	if [ "$IP" != "" ]; then
+		echo "been assigned the following IP address: $IP"
+	else
+		echo "no IP address assigned"
+	fi
+}
+
+function print_IP4_all() {
+	echo "The IP addresses of the SoftRoCE-configured network interfaces:"
+	NET_IFS=$(rdma link show | grep -e "$STATE_OK" | cut -d' ' -f8)
+	for NET_IF in $NET_IFS; do
+		IP=$(get_IP4 $NET_IF)
+		if [ "$IP" != "" ]; then
+			echo "- network interface: $NET_IF, IP address: $IP"
+		else
+			echo "- network interface: $NET_IF, no IP address assigned"
+		fi
+	done
+}
 
 if [ $(lsmod | grep -e $MODULE | wc -l) -lt 1 ]; then
 	N_MODULES=$(find $DIR -name "$MODULE.ko*" | wc -l)
@@ -54,14 +84,13 @@ if ! rdma link show > /dev/null ; then
 	exit 1
 fi
 
-STATE_OK="state ACTIVE physical_state LINK_UP"
-
 if [ "$NET_IF" == "" ]; then
 	RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | wc -l)
 	if [ $RDMA_LINKS -gt 0 ]; then
 		if [ $VERIFY -eq 0 ]; then
 			echo "SoftRoCE has been already configured:"
 			rdma link show | grep -e "$STATE_OK"
+			print_IP4_all
 		fi
 		exit 0
 	elif [ $VERIFY -eq 1 ]; then
@@ -102,3 +131,4 @@ fi
 
 echo "SoftRoCE for the '$NET_IF' network interface was successfully configured:"
 rdma link show | grep -e "$NET_IF"
+print_IP4_of $NET_IF
