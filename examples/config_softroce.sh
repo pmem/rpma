@@ -61,7 +61,7 @@ if [ "$NET_IF" == "" ]; then
 	if [ $RDMA_LINKS -gt 0 ]; then
 		if [ $VERIFY -eq 0 ]; then
 			echo "SoftRoCE has been already configured:"
-			rdma link show
+			rdma link show | grep -e "$STATE_OK"
 		fi
 		exit 0
 	elif [ $VERIFY -eq 1 ]; then
@@ -86,19 +86,19 @@ if [ "$NET_IF" == "" ]; then
 	fi
 fi
 
-echo "Configuring SoftRoCE for the '$NET_IF' network interface:"
-sudo rdma link add rxe_$NET_IF type rxe netdev $NET_IF
+echo "Configuring SoftRoCE for the '$NET_IF' network interface..."
+RXE_NAME="rxe_$NET_IF"
+sudo rdma link add $RXE_NAME type rxe netdev $NET_IF
 if [ $? -ne 0 ]; then
 	echo "Error: configuring SoftRoCE failed"
 	exit 1
 fi
 
-rdma link show
-
-RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | wc -l)
+RDMA_LINKS=$(rdma link show | grep -e "$STATE_OK" | grep -e "$NET_IF" | wc -l)
 if [ $RDMA_LINKS -lt 1 ]; then
-	echo "Error: configuring SoftRoCE failed"
+	echo "Error: configuring SoftRoCE for the '$NET_IF' network interface failed"
 	exit 1
 fi
 
-echo "SoftRoCE successfully configured"
+echo "SoftRoCE for the '$NET_IF' network interface was successfully configured:"
+rdma link show | grep -e "$NET_IF"
