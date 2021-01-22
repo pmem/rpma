@@ -166,8 +166,8 @@ function benchmark_one() {
 	LOG_ERR=${DIR}/${NAME}.log
 	SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
-	local OPS=(read write)
-	# set indexes (INDS) for arrays: OPS and OUTPUT
+	local RW_OPS=(read write)
+	# set indexes (INDS) for arrays: RW_OPS and OUTPUT
 	case $OP in
 	read)
 		INDS=0 # read
@@ -184,14 +184,14 @@ function benchmark_one() {
 		OUTPUT=(${NAME}.csv ${NAME}.csv) # the same names
 		;;
 	rw|randrw)
-		OUTPUT=(${NAME}_${OPS[0]}.csv ${NAME}_${OPS[1]}.csv)
+		OUTPUT=(${NAME}_${RW_OPS[0]}.csv ${NAME}_${RW_OPS[1]}.csv)
 		;;
 	esac
 
 	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
 	echo "Output and errors (both sides): $LOG_ERR"
 	for i in $INDS; do
-		echo "Performance results of ${OPS[i]}s: ${OUTPUT[i]}"
+		echo "Performance results of ${RW_OPS[i]}s: ${OUTPUT[i]}"
 		rm -f ${OUTPUT[i]}
 	done
 	rm -f $LOG_ERR
@@ -259,7 +259,7 @@ function benchmark_one() {
 		for i in $INDS; do
 			rm -f $TEMP_CSV
 			# convert JSON to CSV
-			./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV --op ${OPS[i]}
+			./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV --op ${RW_OPS[i]}
 			# append CSV to the output
 			cat $TEMP_CSV >> ${OUTPUT[i]}
 		done
