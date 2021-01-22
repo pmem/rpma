@@ -40,8 +40,8 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *dst_ptr = NULL;
-	size_t dst_size = 0;
+	void *mr_ptr = NULL;
+	size_t mr_size = 0;
 	size_t dst_offset = 0;
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
@@ -52,14 +52,17 @@ main(int argc, char *argv[])
 		char *path = argv[3];
 
 		/* map the file */
-		dst_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &dst_size, &is_pmem);
-		if (dst_ptr == NULL)
+		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
+				0 /* mode */, &mr_size, &is_pmem);
+		if (mr_ptr == NULL) {
+			(void) fprintf(stderr, "pmem_map_file() for %s "
+					"failed\n", path);
 			return -1;
+		}
 
 		/* pmem is expected */
 		if (!is_pmem) {
-			(void) pmem_unmap(dst_ptr, dst_size);
+			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 
@@ -70,10 +73,10 @@ main(int argc, char *argv[])
 		 * the signature to convey any meaningful content and be usable
 		 * as a persistent store.
 		 */
-		if (dst_size < SIGNATURE_LEN) {
+		if (mr_size < SIGNATURE_LEN) {
 			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, dst_size, SIGNATURE_LEN);
-			(void) pmem_unmap(dst_ptr, dst_size);
+					path, mr_size, SIGNATURE_LEN);
+			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 		dst_offset = SIGNATURE_LEN;
@@ -82,10 +85,10 @@ main(int argc, char *argv[])
 		 * All of the space under the offset is intended for
 		 * the string contents. Space is assumed to be at least 1 KiB.
 		 */
-		if (dst_size - dst_offset < KILOBYTE) {
+		if (mr_size - dst_offset < KILOBYTE) {
 			fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, dst_size, KILOBYTE + dst_offset);
-			(void) pmem_unmap(dst_ptr, dst_size);
+					path, mr_size, KILOBYTE + dst_offset);
+			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 
@@ -93,24 +96,24 @@ main(int argc, char *argv[])
 		 * If the signature is not in place the persistent content has
 		 * to be initialized and persisted.
 		 */
-		if (strncmp(dst_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
 			/* write an initial empty string and persist it */
-			((char *)dst_ptr + dst_offset)[0] = '\0';
-			pmem_persist(dst_ptr, 1);
+			((char *)mr_ptr + dst_offset)[0] = '\0';
+			pmem_persist(mr_ptr, 1);
 			/* write the signature to mark the content as valid */
-			memcpy(dst_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(dst_ptr, SIGNATURE_LEN);
+			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
 	}
 #endif
 
 	/* if no pmem support or it is not provided */
-	if (dst_ptr == NULL) {
-		dst_ptr = malloc_aligned(KILOBYTE);
-		if (dst_ptr == NULL)
+	if (mr_ptr == NULL) {
+		mr_ptr = malloc_aligned(KILOBYTE);
+		if (mr_ptr == NULL)
 			return -1;
 
-		dst_size = KILOBYTE;
+		mr_size = KILOBYTE;
 	}
 
 	/* RPMA resources */
@@ -132,7 +135,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
+	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_DST,
 				&dst_mr);
 	if (ret)
 		goto err_ep_shutdown;
@@ -159,8 +162,8 @@ main(int argc, char *argv[])
 		goto err_disconnect;
 
 	/* if the string content is not empty */
-	if (((char *)dst_ptr + dst_offset)[0] != '\0') {
-		(void) printf("Old value: %s\n", (char *)dst_ptr + dst_offset);
+	if (((char *)mr_ptr + dst_offset)[0] != '\0') {
+		(void) printf("Old value: %s\n", (char *)mr_ptr + dst_offset);
 	}
 
 	ret = rpma_read(conn, dst_mr, dst_offset, src_mr, src_data->data_offset,
@@ -192,11 +195,11 @@ main(int argc, char *argv[])
 
 #ifdef USE_LIBPMEM
 	if (is_pmem) {
-		pmem_persist((char *)dst_ptr + dst_offset, KILOBYTE);
+		pmem_persist((char *)mr_ptr + dst_offset, KILOBYTE);
 	}
 #endif
 
-	(void) printf("New value: %s\n", (char *)dst_ptr + dst_offset);
+	(void) printf("New value: %s\n", (char *)mr_ptr + dst_offset);
 
 err_mr_remote_delete:
 	(void) rpma_mr_remote_delete(&src_mr);
@@ -223,13 +226,13 @@ err_peer_delete:
 err_free:
 #ifdef USE_LIBPMEM
 	if (is_pmem) {
-		pmem_unmap(dst_ptr, dst_size);
-		dst_ptr = NULL;
+		pmem_unmap(mr_ptr, mr_size);
+		mr_ptr = NULL;
 	}
 #endif
 
-	if (dst_ptr != NULL)
-		free(dst_ptr);
+	if (mr_ptr != NULL)
+		free(mr_ptr);
 
 	return ret;
 }
