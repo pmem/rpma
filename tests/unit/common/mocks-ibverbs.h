@@ -40,6 +40,7 @@ struct ibv_post_send_mock_args {
 	enum ibv_wr_opcode opcode;
 	unsigned send_flags;
 	uint64_t wr_id;
+	uint32_t imm_data;
 	int ret;
 };
 
