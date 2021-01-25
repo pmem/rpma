@@ -1,12 +1,10 @@
-# RPMA - Performance Report - Release {{release}}
-
 **Testing Date**: {{test_date}}
 
 {{authors}}
 
 {{audience}}
 
-## Test Setup
+<h2 id="test-setup">Test Setup</h2>
 
 {{configuration_common}}
 
