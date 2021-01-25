@@ -97,6 +97,11 @@ function run_example() {
 		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
 		RV=$?
 		;;
+	10-send-with-imm)
+		echo "Starting the client ..."
+		$VLD_SCMD $DIR/client $IP_ADDRESS $PORT "1st_word" "1234"
+		RV=$?
+		;;
 	*)
 		echo "Starting the client ..."
 		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT
