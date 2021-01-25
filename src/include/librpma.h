@@ -2194,6 +2194,47 @@ int rpma_send(struct rpma_conn *conn,
 		int flags, const void *op_context);
 
 /** 3
+ * rpma_send_with_imm - initiate the send operation with immediate data
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	int rpma_send_with_imm(struct rpma_conn *conn,
+ *			const struct rpma_mr_local *src, size_t offset,
+ *			size_t len, int flags, uint32_t imm,
+ *			const void *op_context);
+ *
+ * DESCRIPTION
+ * rpma_send_with_imm() initiates the send operation with immediate data which
+ * transfers a message from the local memory to other side of the connection.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
+ *
+ * RETURN VALUE
+ * The rpma_send_with_imm() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_send_with_imm() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or src is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_send_with_imm(struct rpma_conn *conn,
+	const struct rpma_mr_local *src, size_t offset, size_t len,
+	int flags, uint32_t imm, const void *op_context);
+
+/** 3
  * rpma_recv - initiate the receive operation
  *
  * SYNOPSIS
@@ -2286,6 +2327,8 @@ struct rpma_completion {
 	enum rpma_op op;
 	uint32_t byte_len;
 	enum ibv_wc_status op_status;
+	unsigned flags;
+	uint32_t imm;
 };
 
 /** 3
