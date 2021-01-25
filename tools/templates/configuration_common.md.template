@@ -1,0 +1,13 @@
+### Common Configuration (both initiator and target)
+
+|Item|Description|
+|---|---|
+|Server Platform|<i>The name of the platform</i>|
+|CPU|<i>Producer&reg; Name A.BGHz</i>|
+|Memory|<i>Cx DGB Producer&reg; Model, DDRE, FMT/s</i><br/><i>Gx HGB Producer&reg; Model Persistent Memory, IMT/s</i><br/><i>Total of JGB DRAM + KGB PMem</i><br/>|
+|Operating System|Distribution Linux L.M|
+|BIOS|<i>N</i>|
+|Linux kernel version|<i>version-patch.architecture</i>|
+|RPMA version|<i>build-patch-hash</i>|
+|FIO version|<i>fio-major.minor-patch-hash</i>|
+|NIC|<i>Ox PGbps Producer&reg; Model NIC</i>|
