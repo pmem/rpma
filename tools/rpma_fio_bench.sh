@@ -105,7 +105,7 @@ function benchmark_one() {
 
 	case $P_MODE in
 	apm)
-		GPSPM=""
+		PERSIST_MODE="apm"
 		if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
 			REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		else
@@ -113,7 +113,7 @@ function benchmark_one() {
 		fi
 		;;
 	gpspm)
-		GPSPM="_gpspm"
+		PERSIST_MODE="gpspm"
 		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		;;
 	esac
@@ -197,7 +197,7 @@ function benchmark_one() {
 	rm -f $LOG_ERR
 
 	if [ -z "$REMOTE_JOB_PATH" ]; then
-		REMOTE_JOB_PATH=${DIR}/librpma${GPSPM}-server-${TIMESTAMP}.fio
+		REMOTE_JOB_PATH=${DIR}/librpma_${PERSIST_MODE}-server-${TIMESTAMP}.fio
 	fi
 
 	for i in $(seq 0 $(expr $ITERATIONS - 1)); do
@@ -226,7 +226,7 @@ function benchmark_one() {
 
 		# copy config to the server
 		sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-			./fio_jobs/librpma${GPSPM}-server.fio \
+			./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
 			$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
 		# run the server
 		if [ "x$REMOTE_TRACER" == "x" ]; then
@@ -247,7 +247,7 @@ function benchmark_one() {
 			TRACER="numactl -N $JOB_NUMA"
 		fi
 		serverip=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
-			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma${GPSPM}_client \
+			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma_${PERSIST_MODE}_client \
 			$TRACER ${FIO_PATH}fio \
 			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
 			> $TEMP_JSON
