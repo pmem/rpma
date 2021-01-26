@@ -35,18 +35,18 @@ link_directories(${LIBRPMA_LIBRARY_DIRS})
 
 function(add_example name)
 	set(srcs ${ARGN})
-	add_executable(example-${name} ${srcs})
-	target_include_directories(example-${name}
+	add_executable(${name} ${srcs})
+	target_include_directories(${name}
 		PRIVATE
 			${LIBRPMA_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(example-${name} rpma ${LIBRT_LIBRARIES})
+	target_link_libraries(${name} rpma ${LIBRT_LIBRARIES})
 
 	if(LIBPMEM_FOUND)
-		target_include_directories(example-${name}
+		target_include_directories(${name}
 			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(example-${name} ${LIBPMEM_LIBRARIES})
-		target_compile_definitions(example-${name}
+		target_link_libraries(${name} ${LIBPMEM_LIBRARIES})
+		target_compile_definitions(${name}
 			PRIVATE USE_LIBPMEM)
 	endif()
 endfunction()
