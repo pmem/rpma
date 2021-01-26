@@ -1954,6 +1954,9 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
 #define RPMA_F_COMPLETION_ON_ERROR	(1 << 0)
 /* generate operation completion regardless of its result */
 #define RPMA_F_COMPLETION_ALWAYS	(1 << 1 | RPMA_F_COMPLETION_ON_ERROR)
+/* generate operation completion on success */
+#define RPMA_F_COMPLETION_ON_SUCCESS \
+	(RPMA_F_COMPLETION_ALWAYS & ~RPMA_F_COMPLETION_ON_ERROR)
 
 /** 3
  * rpma_read - initiate the read operation

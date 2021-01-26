@@ -38,10 +38,6 @@
 STATIC_ASSERT(USAGE_ALL_ALLOWED < (1 << (8 * sizeof(uint8_t))),
 		usage_too_small);
 
-/* generate operation completion on success */
-#define RPMA_F_COMPLETION_ON_SUCCESS \
-	(RPMA_F_COMPLETION_ALWAYS & ~RPMA_F_COMPLETION_ON_ERROR)
-
 struct rpma_mr_local {
 	struct ibv_mr *ibv_mr; /* an IBV memory registration object */
 	int usage; /* usage of the memory region */
