@@ -19,12 +19,14 @@ SEARCHPATH = 'templates'
 
 # all used SEARCHPATH/*.md files
 CONTENTS = ['audience', 'authors', 'bios', 'configuration_common', \
-    'configuration_target', 'report', 'security']
+    'configuration_target', 'header', 'report', 'security']
 
 # all variables on a per-content basis
 CONTENTS_VARIABLES = { \
+    'header': [ \
+        'release'], \
     'report': [ \
-        'release', 'test_date', 'audience', 'authors', 'bios', \
+        'test_date', 'audience', 'authors', 'bios', \
         'configuration_common', 'configuration_target', 'security'] \
 }
 
