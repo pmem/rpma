@@ -254,5 +254,5 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} CASE 0)
+	add_test_generic(NAME ${target} GROUP_SCRIPT)
 endfunction()
