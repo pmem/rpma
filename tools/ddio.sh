@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -100,6 +100,7 @@ tphdis_bit=$((1 << 0))
 function _log()
 {
 	[ "x$DDIO_LOG" != "x" ] && echo "$1" >> $DDIO_LOG
+	true # do not fail if [ "x$DDIO_LOG" == "x" ]
 }
 
 
@@ -302,6 +303,7 @@ function ddio_set()
 	# write the new registers value
 	[ "$pcs0_mod" -eq "1" ] && _register_set "$perfctrlsts_0_reg" "$pcs0"
 	[ "$pcs1_mod" -eq "1" ] && _register_set "$perfctrlsts_1_reg" "$pcs1"
+	true # do not fail if [ $pcs1_mod -ne 1 ]
 }
 
 
