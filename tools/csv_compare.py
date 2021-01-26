@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -48,6 +48,14 @@ layouts = {
         'x': 'bs',
         'columns': [
             'lat_avg'
+        ]
+    },
+    'lat_pctls': {
+        'nrows': 1,
+        'ncols': 2,
+        'x': 'bs',
+        'columns': [
+            'lat_pctl_99.9', 'lat_pctl_99.999'
         ]
     },
     'lat_pctls_999': {
