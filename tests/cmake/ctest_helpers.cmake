@@ -198,6 +198,8 @@ function(add_test_generic)
 		if("${TEST_CASE}" STREQUAL "")
 			set(TEST_CASE "0")
 			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/run_default.cmake)
+		elseif("${TEST_NAME}" MATCHES "multithreaded.*" AND "${TEST_CASE}" STREQUAL "0")
+			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../run_case_${TEST_CASE}.cmake)
 		else()
 			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}_${TEST_CASE}.cmake)
 		endif()
@@ -219,7 +221,7 @@ endfunction()
 
 function(add_multithreaded)
 	set(options USE_LIBIBVERBS)
-	set(oneValueArgs NAME BIN)
+	set(oneValueArgs NAME BIN CASE)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(MULTITHREADED
 		"${options}"
