@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|write|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
 	echo "       $0 --env - show environment variables used by the script"
 	echo
 	echo "Notes:"
@@ -169,10 +169,10 @@ function benchmark_one() {
 	local RW_OPS=(read write)
 	# set indexes (INDS) for arrays: RW_OPS and OUTPUT
 	case $OP in
-	read)
+	read|randread)
 		INDS=0 # read
 		;;
-	write)
+	write|randwrite)
 		INDS=1 # write
 		;;
 	rw|randrw)
@@ -180,7 +180,7 @@ function benchmark_one() {
 		;;
 	esac
 	case $OP in
-	read|write)
+	read|randread|write|randwrite)
 		OUTPUT=(${NAME}.csv ${NAME}.csv) # the same names
 		;;
 	rw|randrw)
@@ -309,10 +309,10 @@ all)
 esac
 
 case $OPS in
-read|write|rw|randrw)
+read|randread|write|randwrite|rw|randrw)
 	;;
 all)
-	OPS="read write rw randrw"
+	OPS="read randread write randwrite rw randrw"
 	;;
 *)
 	usage "Wrong operation: $OPS"
@@ -334,7 +334,7 @@ for p in $P_MODES; do
 	for o in $OPS; do
 		if [ "$p" == "gpspm" ]; then
 			case "$o" in
-			read|rw|randrw)
+			read|randread|rw|randrw)
 				continue
 				;;
 			esac
