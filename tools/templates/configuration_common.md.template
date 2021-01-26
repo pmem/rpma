@@ -4,8 +4,11 @@
 |---|---|
 |Server Platform|<i>The name of the platform</i>|
 |CPU|<i>Producer&reg; Name A.BGHz</i>|
-|Memory|<i>Cx DGB Producer&reg; Model, DDRE, FMT/s</i><br/><i>Gx HGB Producer&reg; Model Persistent Memory, IMT/s</i><br/><i>Total of JGB DRAM + KGB PMem</i><br/>|
-|Operating System|Distribution Linux L.M|
+|Memory|<i>Cx DGB Producer&reg; Model, DDRE, FMT/s</i><br/><i>Total of JGB DRAM</i><br/>|
+|Persistent Memory|<i>Gx HGB Producer&reg; Model Persistent Memory, IMT/s</i><br/><i>Total of KGB PMem</i><br/><br/><i>Source of PMem and its size</i>|
+|RDMA-capable NIC|<i>XGbps Producer&reg; Name MTU Y Protocol</i>|
+|Storage|<i>XGB Producer&reg; Name</i>|
+|Operating System|<i>Distribution Linux L.M</i>|
 |BIOS|<i>N</i>|
 |Linux kernel version|<i>version-patch.architecture</i>|
 |librpma|<i>major.minor-patch-hash</i>|
