@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -180,7 +180,7 @@ function _require_device()
 {
 	[ -z "$device" ] && usage "device required: $device" 
 	setpci -s "$device" "$perfctrlsts_0_reg" 2>&1 > /dev/null
-	[ "$?" -ne "0" ] && usage "invalid device: $device"
+	[ $? -ne 0 ] && usage "invalid device: $device"
 }
 
 
@@ -189,7 +189,7 @@ function _require_device()
 #
 function _require_root()
 {
-	[ "$EUID" -ne "0" ] && usage "root privileges required"
+	[ $EUID -ne 0 ] && usage "root privileges required"
 }
 
 #
@@ -211,20 +211,20 @@ function ddio_query()
 
 	ddio_on="DDIO is enabled"
 	ddio_off="DDIO is disabled"
-	[ "$use_alloacting_flow_wr" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "$ddio_on: use_allocating_flow_wr != 0" 1>&2
+	[ $use_alloacting_flow_wr -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "$ddio_on: use_allocating_flow_wr != 0" 1>&2
 		return 1
 	}
-	[ "$nosnoopopwren" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "$ddio_on: nosnoopopwren != 0" 1>&2
+	[ $nosnoopopwren -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "$ddio_on: nosnoopopwren != 0" 1>&2
 		return 1
 	}
-	[ "$tphdis" -eq "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "$ddio_on: TPHDIS == 0" 1>&2
+	[ $tphdis -eq 0 ] && {
+		[ $verbose -eq 1 ] && echo "$ddio_on: TPHDIS == 0" 1>&2
 		return 1
 	}
 	
-	[ "$verbose" -eq "1" ] && echo "$ddio_off" 1>&2
+	[ $verbose -eq 1 ] && echo "$ddio_off" 1>&2
 	return 0
 }
 
@@ -234,18 +234,18 @@ function ddio_query()
 #
 function _ddio_set_disable()
 {
-	[ "$use_alloacting_flow_wr" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set use_allocating_flow_wr = 0" 1>&2
+	[ $use_alloacting_flow_wr -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "set use_allocating_flow_wr = 0" 1>&2
 		pcs0=$(_bit_disable "$pcs0" "$use_alloacting_flow_wr_bit")
 		pcs0_mod=1
 	}
-	[ "$nosnoopopwren" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set nosnoopopwren = 0" 1>&2
+	[ $nosnoopopwren -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "set nosnoopopwren = 0" 1>&2
 		pcs0=$(_bit_disable "$pcs0" "$nosnoopopwren_bit")
 		pcs0_mod=1
 	}
-	[ "$tphdis" -eq "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set TPHDIS = 1" 1>&2
+	[ $tphdis -eq 0 ] && {
+		[ $verbose -eq 1 ] && echo "set TPHDIS = 1" 1>&2
 		pcs1=$(_bit_enable "$pcs1" "$tphdis_bit")
 		pcs1_mod=1
 	}
@@ -258,18 +258,18 @@ function _ddio_set_disable()
 function _ddio_set_enable()
 {
 	def="(default)"
-	[ "$use_alloacting_flow_wr" -eq "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set use_allocating_flow_wr = 1 $def" 1>&2
+	[ $use_alloacting_flow_wr -eq 0 ] && {
+		[ $verbose -eq 1 ] && echo "set use_allocating_flow_wr = 1 $def" 1>&2
 		pcs0=$(_bit_enable "$pcs0" "$use_alloacting_flow_wr_bit")
 		pcs0_mod=1
 	}
-	[ "$nosnoopopwren" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set nosnoopopwren = 0 $def" 1>&2
+	[ $nosnoopopwren -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "set nosnoopopwren = 0 $def" 1>&2
 		pcs0=$(_bit_disable "$pcs0" "$nosnoopopwren_bit")
 		pcs0_mod=1
 	}
-	[ "$tphdis" -ne "0" ] && {
-		[ "$verbose" -eq "1" ] && echo "set TPHDIS = 0" 1>&2
+	[ $tphdis -ne 0 ] && {
+		[ $verbose -eq 1 ] && echo "set TPHDIS = 0" 1>&2
 		pcs1=$(_bit_disable "$pcs1" "$tphdis_bit")
 		pcs1_mod=1
 	}
@@ -300,8 +300,8 @@ function ddio_set()
 	_ddio_set_$ddio
 	
 	# write the new registers value
-	[ "$pcs0_mod" -eq "1" ] && _register_set "$perfctrlsts_0_reg" "$pcs0"
-	[ "$pcs1_mod" -eq "1" ] && _register_set "$perfctrlsts_1_reg" "$pcs1"
+	[ $pcs0_mod -eq 1 ] && _register_set "$perfctrlsts_0_reg" "$pcs0"
+	[ $pcs1_mod -eq 1 ] && _register_set "$perfctrlsts_1_reg" "$pcs1"
 }
 
 
