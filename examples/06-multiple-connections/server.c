@@ -110,7 +110,7 @@ server_fini(struct server_res *svr)
  * client_new -- find a slot for the incoming client
  */
 struct client_res *
-client_new(struct server_res *svr, struct rpma_conn_req *req)
+client_new(struct server_res *svr)
 {
 	/* find the first free slot */
 	struct client_res *clnt = NULL;
@@ -359,7 +359,7 @@ server_handle_incoming_client(struct custom_event *ce)
 
 	/* if no free slot is available */
 	struct client_res *clnt = NULL;
-	if ((clnt = client_new(svr, req)) == NULL) {
+	if ((clnt = client_new(svr)) == NULL) {
 		rpma_conn_req_delete(&req);
 		return;
 	}
