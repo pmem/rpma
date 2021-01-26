@@ -232,7 +232,8 @@ function benchmark_one() {
 		if [ "x$REMOTE_TRACER" == "x" ]; then
 			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
 		fi
-		sshpass -p "$REMOTE_PASS" -v ssh $REMOTE_USER@$SERVER_IP \
+		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+			$REMOTE_USER@$SERVER_IP \
 			"serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			$REMOTE_TRACER \
