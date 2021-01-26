@@ -73,12 +73,6 @@ fi
 
 if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
 	usage "Too few arguments"
-elif [ "$2" == "gpspm" ]; then
-	case "$3" in
-	read|rw|randrw)
-		usage "The 'gpspm' mode does not support the '$3' operation for now."
-		;;
-	esac
 elif [ -z "$JOB_NUMA" ]; then
 	usage "JOB_NUMA not set"
 elif [ -z "$REMOTE_USER" ]; then
@@ -91,6 +85,12 @@ elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ -z "$REMOTE_JOB_MEM_PATH" -a "$1" == "gpspm" ]; then
 	usage "REMOTE_JOB_MEM_PATH not set"
+elif [ "$2" == "gpspm" ]; then
+	case "$3" in
+	read|rw|randrw)
+		usage "The 'gpspm' mode does not support the '$3' operation for now."
+		;;
+	esac
 fi
 
 function benchmark_one() {
