@@ -35,7 +35,7 @@ function usage()
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
-	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required in case of the GPSPM mode)"
+	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
 	echo "export COMMENT=any_text_to_be_added_to_every_file_name"
 	echo
 	echo "Debug:"
@@ -89,8 +89,6 @@ elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; 
 	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
 elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
-elif [ -z "$REMOTE_JOB_MEM_PATH" -a "$1" == "gpspm" ]; then
-	usage "REMOTE_JOB_MEM_PATH not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
 	read|rw|randrw)
@@ -112,7 +110,7 @@ fi
 function benchmark_one() {
 
 	SERVER_IP=$1
-	P_MODE=$2 # persistency mode
+	PERSIST_MODE=$2 # persistency mode
 	OP=$3
 	MODE=$4
 	if [ -n "$COMMENT" ]; then
@@ -125,20 +123,20 @@ function benchmark_one() {
 		DDIO_MODE="disable"
 		DDIO_QUERY=0
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
-		if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-			REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
-		else
-			REMOTE_JOB_DEST="filename=malloc"
-		fi
 		;;
 	gpspm)
 		PERSIST_MODE="gpspm"
 		DDIO_MODE="enable"
 		DDIO_QUERY=1
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
-		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		;;
 	esac
+
+    if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
+        REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
+    else
+        REMOTE_JOB_DEST="filename=malloc"
+    fi
 
 	case $MODE in
 	bw-bs)
@@ -181,7 +179,7 @@ function benchmark_one() {
 	DEST="$(echo $REMOTE_JOB_DEST | cut -d'=' -f2- | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
-	NAME=rpma_fio_${P_MODE}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
+	NAME=rpma_fio_${PERSIST_MODE}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
 	DIR=/dev/shm
 	TEMP_JSON=${DIR}/${NAME}_temp.json
 	TEMP_CSV=${DIR}/${NAME}_temp.csv
@@ -210,7 +208,7 @@ function benchmark_one() {
 		;;
 	esac
 
-	echo "STARTING benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
+	echo "STARTING benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
 	echo "Output and errors (both sides): $LOG_ERR"
 	for i in $INDS; do
 		echo "Performance results of ${RW_OPS[i]}s: ${OUTPUT[i]}"
@@ -290,7 +288,7 @@ function benchmark_one() {
 		echo "Waiting 10 sec for server to start..."
 		sleep 10
 
-		echo "[mode: $P_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
+		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
 		if [ "x$TRACER" == "x" ]; then
 			TRACER="numactl -N $JOB_NUMA"
@@ -323,7 +321,7 @@ function benchmark_one() {
 		./csv2standardized.py --csv_type fio --output_file ${OUTPUT[i]} ${OUTPUT[i]}
 	done
 
-	echo "FINISHED benchmark for P_MODE=$P_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
+	echo "FINISHED benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
 	echo
 }
 
