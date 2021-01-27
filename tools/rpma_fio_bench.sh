@@ -342,7 +342,7 @@ for p in $P_MODES; do
 		fi
 
 		for m in $MODES; do
-			benchmark_one $SERVER_IP $p $o $m $5
+			benchmark_one $SERVER_IP $p $o $m
 		done
 	done
 done
