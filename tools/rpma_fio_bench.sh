@@ -30,6 +30,8 @@ function usage()
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
+	echo "export REMOTE_SUDO_NO_NOPASSWD=0/1"
+	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
@@ -54,6 +56,8 @@ function show_environment() {
 	echo "export REMOTE_USER=$REMOTE_USER"
 	echo "export REMOTE_PASS=$REMOTE_PASS"
 	echo "export REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA"
+	echo "export REMOTE_SUDO_NO_NOPASSWD=$REMOTE_SUDO_NO_NOPASSWD"
+	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=$REMOTE_RNIC_PCIE_ROOT_PORT"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM"
 	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
@@ -81,6 +85,8 @@ elif [ -z "$REMOTE_PASS" ]; then
 	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
+elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; then
+	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
 elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ -z "$REMOTE_JOB_MEM_PATH" -a "$1" == "gpspm" ]; then
@@ -91,6 +97,16 @@ elif [ "$2" == "gpspm" ]; then
 		usage "The 'gpspm' mode does not support the '$3' operation for now."
 		;;
 	esac
+fi
+
+if [ "$REMOTE_SUDO_NO_NOPASSWD" != "1" ]; then
+	echo "WARNING: sudo (called on the remote side) will prompt for password!"
+	echo "         Toggling DDIO will be skipped!"
+	echo
+	echo "         In order to change it:"
+	echo "           1) set permissions of sudo to NOPASSWD in '/etc/sudoers' and"
+	echo "           2) set REMOTE_SUDO_NO_NOPASSWD=1"
+	echo
 fi
 
 function benchmark_one() {
@@ -106,6 +122,9 @@ function benchmark_one() {
 	case $P_MODE in
 	apm)
 		PERSIST_MODE="apm"
+		DDIO_MODE="disable"
+		DDIO_QUERY=0
+		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
 		if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
 			REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		else
@@ -114,6 +133,9 @@ function benchmark_one() {
 		;;
 	gpspm)
 		PERSIST_MODE="gpspm"
+		DDIO_MODE="enable"
+		DDIO_QUERY=1
+		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
 		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
 		;;
 	esac
@@ -224,6 +246,32 @@ function benchmark_one() {
 			;;
 		esac
 
+		if [ "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; then
+			# copy the ddio.sh script to the server
+			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+				./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
+			# set DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			# query DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			if [ $? -ne $DDIO_QUERY ]; then
+				echo "Error: setting DDIO to '$DDIO_MODE' failed"
+				exit 1
+			fi
+			REMOTE_DIRECT_WRITE_TO_PMEM=$REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM
+
+		elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+			echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
+			echo "Skipping..."
+			return
+		fi
+
 		# copy config to the server
 		sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
 			./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
@@ -237,7 +285,7 @@ function benchmark_one() {
 			"serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			$REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH > $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		# XXX having no retry procedure forces to wait as long as it may be required
 		echo "Waiting 10 sec for server to start..."
 		sleep 10
