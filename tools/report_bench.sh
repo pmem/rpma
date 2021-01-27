@@ -5,7 +5,8 @@
 #
 
 #
-# report_bench.sh -- XXX (EXPERIMENTAL)
+# report_bench.sh -- run all benchmarks required for the performance report
+#					 (EXPERIMENTAL)
 #
 
 function usage()
@@ -19,7 +20,7 @@ function usage()
 	exit 1
 }
 
-if [ "$#" -lt 1 ]; then
+if [ $# -lt 1 ]; then
 	usage "Too few arguments"
 elif [ -z "$REMOTE_JOB_MEM_PATH" ]; then
 	usage "REMOTE_JOB_MEM_PATH not set"
