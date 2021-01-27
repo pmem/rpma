@@ -1,3 +1,4 @@
 *.csv
 *.png
 report_*
+!report_bench.sh
