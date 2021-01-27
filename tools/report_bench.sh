@@ -39,4 +39,14 @@ echo "READ LAT"
     REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm randread lat
 )
 
+echo "READ BW"
+# The subshell and -x is used as cheap logging
+(set -x; \
+	for mode in bw-bs bw-th; do \
+		./ib_read.sh $SERVER_IP $mode &&
+		REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm read $mode && \
+		REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm read $mode; \
+	done
+)
+
 # XXX To be continued...
