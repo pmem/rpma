@@ -30,7 +30,7 @@ function usage()
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
-	echo "export REMOTE_SUDO_NO_NOPASSWD=0/1"
+	echo "export REMOTE_SUDO_NOPASSWD=0/1"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
 	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (forces setting REMOTE_DIRECT_WRITE_TO_PMEM to this value)"
@@ -57,7 +57,7 @@ function show_environment() {
 	echo "export REMOTE_USER=$REMOTE_USER"
 	echo "export REMOTE_PASS=$REMOTE_PASS"
 	echo "export REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA"
-	echo "export REMOTE_SUDO_NO_NOPASSWD=$REMOTE_SUDO_NO_NOPASSWD"
+	echo "export REMOTE_SUDO_NOPASSWD=$REMOTE_SUDO_NOPASSWD"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=$REMOTE_RNIC_PCIE_ROOT_PORT"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM"
 	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM"
@@ -87,9 +87,9 @@ elif [ -z "$REMOTE_PASS" ]; then
 	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
-elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; then
+elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
-elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NO_NOPASSWD" != "1" ]; then
+elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
@@ -99,16 +99,16 @@ elif [ "$2" == "gpspm" ]; then
 	esac
 fi
 
-if [ "$REMOTE_SUDO_NO_NOPASSWD" != "1" ]; then
+if [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
 	echo "WARNING: sudo (called on the remote side) will prompt for password!"
 	echo "         Toggling DDIO will be skipped!"
 	echo
 	echo "         In order to change it:"
 	echo "           1) set permissions of sudo to NOPASSWD in '/etc/sudoers' and"
-	echo "           2) set REMOTE_SUDO_NO_NOPASSWD=1"
+	echo "           2) set REMOTE_SUDO_NOPASSWD=1"
 	echo
 	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
-		echo "Error: FORCE_REMOTE_DIRECT_WRITE_TO_PMEM is set, but REMOTE_SUDO_NO_NOPASSWD does not equal 1."
+		echo "Error: FORCE_REMOTE_DIRECT_WRITE_TO_PMEM is set, but REMOTE_SUDO_NOPASSWD does not equal 1."
 		echo "       Change sudo permissions in order to force setting REMOTE_DIRECT_WRITE_TO_PMEM."
 		echo "Exiting..."
 		exit 1
@@ -266,7 +266,7 @@ function benchmark_one() {
 			;;
 		esac
 
-		if [ "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; then
+		if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 			# copy the ddio.sh script to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
 				./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR

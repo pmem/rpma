@@ -14,14 +14,21 @@ function usage()
 	echo "Error: $1"
 	echo
 	echo "Usage: $0 <server_ip>"
-    echo
-	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem (required)"
+	echo
+	echo "Requirements:"
+	echo "export REMOTE_SUDO_NOPASSWD=1"
+	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
+	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
 	echo
 	exit 1
 }
 
 if [ $# -lt 1 ]; then
 	usage "Too few arguments"
+elif [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
+	usage "REMOTE_SUDO_NOPASSWD!=1"
+elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" ]; then
+	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
 elif [ -z "$REMOTE_JOB_MEM_PATH" ]; then
 	usage "REMOTE_JOB_MEM_PATH not set"
 fi
