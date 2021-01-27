@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 from PIL import Image
 from textwrap import wrap
+from matplotlib.ticker import ScalarFormatter
 
 column_to_label = {
     'threads':  '# of threads',
@@ -48,7 +49,8 @@ layouts = {
         'x': 'bs',
         'columns': [
             'lat_avg'
-        ]
+        ],
+        'xscale': 'log',
     },
     'lat_pctls_999': {
         'nrows': 1,
@@ -56,7 +58,8 @@ layouts = {
         'x': 'bs',
         'columns': [
             'lat_pctl_99.0', 'lat_pctl_99.9'
-        ]
+        ],
+        'xscale': 'log',
     },
     'lat_pctls_99999': {
         'nrows': 1,
@@ -64,7 +67,8 @@ layouts = {
         'x': 'bs',
         'columns': [
             'lat_pctl_99.99', 'lat_pctl_99.999'
-        ]
+        ],
+        'xscale': 'log',
     },
     'lat_all': {
         'nrows': 4,
@@ -75,7 +79,8 @@ layouts = {
             'lat_min', 'lat_max', 
             'lat_pctl_99.0', 'lat_pctl_99.9',
             'lat_pctl_99.99', 'lat_pctl_99.999'
-        ]
+        ],
+        'xscale': 'log',
     },
     'bw': {
         'nrows': 1,
@@ -83,7 +88,8 @@ layouts = {
         'x': '<arg_axis>',
         'columns': [
             'bw_avg'
-        ]
+        ],
+        'xscale': '<arg_xscale>',
     },
 }
 
@@ -150,7 +156,7 @@ def dfs_all_values(dfs, column):
     # sorted() converts Set to List and sort the elements
     return sorted(set(values))
 
-def draw_plot(ax, dfs, legend, x, y):
+def draw_plot(ax, dfs, legend, x, y, xscale):
     """Draw multiple lines y(x) using data from the dfs list on the ax subplot.
 
     :param ax: an axes (subplot)
@@ -163,6 +169,8 @@ def draw_plot(ax, dfs, legend, x, y):
     :type x: str
     :param y: a column to be drawn on the y-axis
     :type y: str
+    :param xscale: a x-axis scale
+    :type xscale: str
     """
     xticks = dfs_all_values(dfs, x)
     # loop over all pandas.DataFrame objects
@@ -172,6 +180,12 @@ def draw_plot(ax, dfs, legend, x, y):
         df = df.set_index(x)
         # plot line on the subplot
         df[y].plot.line(ax=ax, rot=45, marker='.')
+
+    if xscale == "linear":
+        ax.set_xscale(xscale)
+    else:
+        ax.set_xscale(xscale, base=2)
+        ax.xaxis.set_major_formatter(ScalarFormatter())
 
     ax.set_xticks(xticks)
     ax.set_xlabel(get_label(x))
@@ -266,6 +280,8 @@ def main():
     parser.add_argument('--arg_axis', metavar='ARG_AXIS',
         choices=dimmensions, required=False,
         help='an axis for layouts which requires to pick one')
+    parser.add_argument('--arg_xscale', metavar='XSCALE',
+        choices=['linear', 'log'], required=False, help='an x-axis scale')
     parser.add_argument('--output_with_tables', action='store_true',
         help='an output file layout')
     parser.add_argument('--output_title', metavar='OUTPUT_TITLE',
@@ -303,13 +319,17 @@ def main():
     if args.output_layout == 'bw':
         if args.arg_axis is None:
             raise Exception('The bw layout requires --arg_axis')
+        elif args.arg_xscale is None:
+            raise Exception('The bw layout requires --arg_xscale')
         layout['x'] = args.arg_axis
+        layout['xscale'] = args.arg_xscale
 
     # get layout parameters
     columns = layout['columns']
     nrows = layout['nrows']
     ncols =  layout['ncols']
     x = layout['x']
+    xscale = layout['xscale']
 
     # prepare indices
     indices = list(range(1, len(columns) + 1))
@@ -352,7 +372,7 @@ def main():
         ax.title.set_text(title)
 
         # draw CSVs column as subplot
-        draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column)
+        draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column, xscale)
         if args.output_with_tables:
             # get a subplot just beneath the subplot with the chart
             ax = plt.subplot(nrows, ncols, index + ncols)
