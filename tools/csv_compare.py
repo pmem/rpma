@@ -52,6 +52,14 @@ layouts = {
         ],
         'xscale': 'log',
     },
+    'lat_pctls': {
+        'nrows': 1,
+        'ncols': 2,
+        'x': 'bs',
+        'columns': [
+            'lat_pctl_99.9', 'lat_pctl_99.999'
+        ]
+    },
     'lat_pctls_999': {
         'nrows': 1,
         'ncols': 2,
