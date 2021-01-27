@@ -47,9 +47,10 @@ echo "WRITE LAT/BW"
 set -x
 for mode in lat bw-bs bw-th; do
 	for op in write randwrite; do
-		# XXX the reference pipeline performance requires APM-style write but with
-		# DDIO=on which is not the default for APM benchmarking
-		REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
+		# The reference pipeline performance requires APM-style write but with
+		# DDIO=on which is not the default for APM benchmarking.
+		FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0 \
+			REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
 		REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
 		REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
 	done
