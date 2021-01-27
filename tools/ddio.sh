@@ -100,6 +100,7 @@ tphdis_bit=$((1 << 0))
 function _log()
 {
 	[ "x$DDIO_LOG" != "x" ] && echo "$1" >> $DDIO_LOG
+	true # do not fail if the above condition is not true
 }
 
 
@@ -181,6 +182,7 @@ function _require_device()
 	[ -z "$device" ] && usage "device required: $device" 
 	setpci -s "$device" "$perfctrlsts_0_reg" 2>&1 > /dev/null
 	[ $? -ne 0 ] && usage "invalid device: $device"
+	true # do not fail if the above condition is not true
 }
 
 
@@ -190,6 +192,7 @@ function _require_device()
 function _require_root()
 {
 	[ $EUID -ne 0 ] && usage "root privileges required"
+	true # do not fail if the above condition is not true
 }
 
 #
@@ -249,6 +252,7 @@ function _ddio_set_disable()
 		pcs1=$(_bit_enable "$pcs1" "$tphdis_bit")
 		pcs1_mod=1
 	}
+	true # do not fail if the above condition is not true
 }
 
 
@@ -273,6 +277,7 @@ function _ddio_set_enable()
 		pcs1=$(_bit_disable "$pcs1" "$tphdis_bit")
 		pcs1_mod=1
 	}
+	true # do not fail if the above condition is not true
 }
 
 
@@ -302,6 +307,7 @@ function ddio_set()
 	# write the new registers value
 	[ $pcs0_mod -eq 1 ] && _register_set "$perfctrlsts_0_reg" "$pcs0"
 	[ $pcs1_mod -eq 1 ] && _register_set "$perfctrlsts_1_reg" "$pcs1"
+	true # do not fail if the above condition is not true
 }
 
 
