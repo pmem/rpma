@@ -31,22 +31,39 @@ export SERVER_IP=$1
 export PMEM=$REMOTE_JOB_MEM_PATH
 export DRAM="malloc"
 
-echo "READ LAT"
+echo "READ LAT/BW"
 # The subshell and -x is used as cheap logging
 (set -x; \
-    ./ib_read.sh $SERVER_IP lat &&
-    REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm read lat && \
-    REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm randread lat
-)
-
-echo "READ BW"
-# The subshell and -x is used as cheap logging
-(set -x; \
-	for mode in bw-bs bw-th; do \
-		./ib_read.sh $SERVER_IP $mode &&
-		REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm read $mode && \
-		REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm read $mode; \
+	for mode in lat bw-bs bw-th; do \
+		./ib_read.sh $SERVER_IP $mode && \
+		for op in read randread; do \
+			REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode && \
+			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode; \
+		done \
 	done
 )
 
-# XXX To be continued...
+echo "WRITE LAT/BW"
+# The subshell and -x is used as cheap logging
+(set -x; \
+	for mode in lat bw-bs bw-th; do \
+		for op in write randwrite; do \
+			# XXX the reference pipeline performance requires APM-style write but with
+			# DDIO=on which is not the default for APM benchmarking
+			REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode && \
+			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode && \
+			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode; \
+		done \
+	done
+)
+
+echo "MIX LAT/BW"
+# The subshell and -x is used as cheap logging
+# To be compared with "PMEM apm read/randread" and "PMEM apm write/randwrite"
+(set -x; \
+	for mode in lat bw-bs bw-th; do \
+		for op in rw randrw; do \
+			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode; \
+		done \
+	done
+)
