@@ -117,7 +117,7 @@ function benchmark_one() {
 		COMMENT="__$COMMENT""__"
 	fi
 
-	case $P_MODE in
+	case $PERSIST_MODE in
 	apm)
 		PERSIST_MODE="apm"
 		DDIO_MODE="disable"
