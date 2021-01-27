@@ -141,7 +141,7 @@ function benchmark_one() {
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		;;
 	bw-th)
-		THREADS=(1 2 4 8 12 16)
+		THREADS=(1 2 4 8 12 16 32 64)
 		BLOCK_SIZE=4096
 		DEPTH=2
 		ITERATIONS=${#THREADS[@]}
