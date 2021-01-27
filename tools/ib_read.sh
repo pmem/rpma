@@ -34,6 +34,8 @@ function usage()
 	echo "export REMOTE_JOB_NUMA=0"
 	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
+	echo "Debug:"
+	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
 	exit 1
 }
 
@@ -207,6 +209,11 @@ function benchmark_one() {
 			DP_OPT=""
 			;;
 		esac
+
+		if [ "$SHORT_RUNTIME" == "1" ]; then
+			IT=100
+			IT_OPT="--iters $IT"
+		fi
 
 		# run the server
 		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
