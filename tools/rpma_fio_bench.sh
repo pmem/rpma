@@ -33,6 +33,7 @@ function usage()
 	echo "export REMOTE_SUDO_NO_NOPASSWD=0/1"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
+	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (forces setting REMOTE_DIRECT_WRITE_TO_PMEM to this value)"
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
@@ -59,6 +60,7 @@ function show_environment() {
 	echo "export REMOTE_SUDO_NO_NOPASSWD=$REMOTE_SUDO_NO_NOPASSWD"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=$REMOTE_RNIC_PCIE_ROOT_PORT"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM"
+	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM"
 	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
 	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
@@ -105,6 +107,12 @@ if [ "$REMOTE_SUDO_NO_NOPASSWD" != "1" ]; then
 	echo "           1) set permissions of sudo to NOPASSWD in '/etc/sudoers' and"
 	echo "           2) set REMOTE_SUDO_NO_NOPASSWD=1"
 	echo
+	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
+		echo "Error: FORCE_REMOTE_DIRECT_WRITE_TO_PMEM is set, but REMOTE_SUDO_NO_NOPASSWD does not equal 1."
+		echo "       Change sudo permissions in order to force setting REMOTE_DIRECT_WRITE_TO_PMEM."
+		echo "Exiting..."
+		exit 1
+	fi
 fi
 
 function benchmark_one() {
@@ -120,15 +128,29 @@ function benchmark_one() {
 	case $PERSIST_MODE in
 	apm)
 		PERSIST_MODE="apm"
-		DDIO_MODE="disable"
-		DDIO_QUERY=0
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
+		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
+		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+			DDIO_MODE="disable"
+			DDIO_QUERY=0
+		else
+			DDIO_MODE="enable"
+			DDIO_QUERY=1
+			REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
+		fi
 		;;
 	gpspm)
 		PERSIST_MODE="gpspm"
-		DDIO_MODE="enable"
-		DDIO_QUERY=1
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
+		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
+		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+			DDIO_MODE="enable"
+			DDIO_QUERY=1
+		else
+			DDIO_MODE="disable"
+			DDIO_QUERY=0
+			REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
+		fi
 		;;
 	esac
 
