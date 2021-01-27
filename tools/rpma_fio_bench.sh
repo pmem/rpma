@@ -132,11 +132,11 @@ function benchmark_one() {
 		;;
 	esac
 
-    if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-        REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
-    else
-        REMOTE_JOB_DEST="filename=malloc"
-    fi
+	if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
+		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
+	else
+		REMOTE_JOB_DEST="filename=malloc"
+	fi
 
 	case $MODE in
 	bw-bs)
