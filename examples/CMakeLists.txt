@@ -137,6 +137,10 @@ add_example(NAME 11-write-with-imm BIN server USE_LIBIBVERBS
 	SRCS 11-write-with-imm/server.c common/common-conn.c)
 add_example(NAME 11-write-with-imm BIN client USE_LIBIBVERBS
 	SRCS 11-write-with-imm/client.c common/common-conn.c)
+add_example(NAME 12-shared-receive-queue BIN server USE_LIBPMEM_IF_FOUND
+	SRCS 12-shared-receive-queue/server.c common/common-conn.c common/common-epoll.c)
+add_example(NAME 12-shared-receive-queue BIN client USE_LIBPMEM_IF_FOUND
+	SRCS 12-shared-receive-queue/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
