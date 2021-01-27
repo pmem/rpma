@@ -30,6 +30,8 @@ SERVER_IP=$1
 PMEM=$REMOTE_JOB_MEM_PATH
 DRAM="malloc"
 
+set -e # stop on the first error
+
 echo "READ LAT/BW"
 # -x is used as cheap logging
 set -x
