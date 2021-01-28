@@ -85,11 +85,11 @@ function benchmark_one() {
 		IB_TOOL=ib_read_bw
 		HEADER=$HEADER_BW
 		THREADS=1
-		BLOCK_SIZE=(256 1024 4096 8192 65536)
+		BLOCK_SIZE=(256 1024 4096 8192 16384 32768 65536)
 		DEPTH=2
 		# values measured empirically, so that duration was ~60s
 		# 100000000 is the maximum value of iterations
-		ITERATIONS=(25831474 23448108 15927940 12618268 5001135)
+		ITERATIONS=(48336720 48336720 34951167 24475088 23630690 8299603 5001135)
 		AUX_PARAMS="$AUX_PARAMS --report_gbits"
 		NAME="${MODE}-${THREADS}th"
 		verify_block_size
@@ -139,10 +139,10 @@ function benchmark_one() {
 		IB_TOOL=ib_read_lat
 		HEADER=$HEADER_LAT
 		THREADS=1
-		BLOCK_SIZE=(1024 4096 65536)
+		BLOCK_SIZE=(256 1024 4096 8192 16384 32768 65536)
 		DEPTH=1
 		# values measured empirically, so that duration was ~60s
-		ITERATIONS=(27678723 20255739 6002473)
+		ITERATIONS=(27678723 27678723 20255739 16778088 11423082 8138946 6002473)
 		AUX_PARAMS="$AUX_PARAMS --perform_warm_up"
 		NAME="${MODE}"
 		verify_block_size
