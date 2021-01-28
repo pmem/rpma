@@ -305,8 +305,8 @@ function benchmark_one() {
 			$REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		# XXX having no retry procedure forces to wait as long as it may be required
-		echo "Waiting 10 sec for server to start..."
-		sleep 10
+		echo "Waiting 15 sec for server to start..."
+		sleep 15
 
 		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
 		# run FIO
