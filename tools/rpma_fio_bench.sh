@@ -89,7 +89,7 @@ elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
 elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NO_NOPASSWD" == "1" ]; then
 	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
-elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
+elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NO_NOPASSWD" != "1" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
