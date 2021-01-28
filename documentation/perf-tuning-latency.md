@@ -17,8 +17,8 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
 
 * Platform and CPU related [[1.1]][opt-part-1]
     * Disable lower CPU power states: C-states[[1.2]][power-states], C1E, and memory and PCI-e power saving states. Settings vary from vendor to vendor so some of them may not be available for you e.g.:
-      * Power and Performance - Package C-State - **C0/C1 state**
-      * Power and Performance - C1E - **Disabled**
+      * Power and Performance - CPU C State Control - Package C-State - **C0/C1 state**
+      * Power and Performance - CPU C State Control - C1E - **Disabled**
     * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better) e.g.:
       * Power and Performance - CPU Power and Performance Policy - **Performance**
       * System Acoustic and Performance Configuration - Set Fan Profile - **Performance**
@@ -30,8 +30,8 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
 ### Not yet confirmed [[1.1]][opt-part-1]
 
 * Ensure that *Intel® Turbo Boost*[[1.4]][turbo] is on.
-  * Power and Performance - CPU P state control - Intel Turbo Boost Technology - **Enabled**
-  * Power and Performance - CPU P state control - Energy Efficient Turbo - **Disabled**
+  * Power and Performance - CPU P State Control - Intel Turbo Boost Technology - **Enabled**
+  * Power and Performance - CPU P State Control - Energy Efficient Turbo - **Disabled**
 * Disable hyper-threading to reduce variations in latency (jitter).
   * Processor Configuration - Intel(R) Hyper-Threading Tech - **Disabled**
 * Disable any virtualization options.
