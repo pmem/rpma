@@ -26,10 +26,9 @@ elif [ -z "$REMOTE_JOB_MEM_PATH" ]; then
 	usage "REMOTE_JOB_MEM_PATH not set"
 fi
 
-# export is required to access these variables from a subshell
-export SERVER_IP=$1
-export PMEM=$REMOTE_JOB_MEM_PATH
-export DRAM="malloc"
+SERVER_IP=$1
+PMEM=$REMOTE_JOB_MEM_PATH
+DRAM="malloc"
 
 echo "READ LAT/BW"
 # -x is used as cheap logging
