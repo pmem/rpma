@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * rpma.c -- entry points for librpma
@@ -127,6 +127,8 @@ rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)
 		return "Connection closed";
 	case RPMA_CONN_LOST:
 		return "Connection lost";
+	case RPMA_CONN_REJECTED:
+		return "Connection rejected";
 	default:
 		return "Unsupported connection event";
 	}
