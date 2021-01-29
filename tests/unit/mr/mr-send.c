@@ -16,6 +16,25 @@
 #include "mr-common.h"
 #include "test-common.h"
 
+#define MOCK_UNKNOWN_OP	((enum ibv_wr_opcode)(-1))
+
+/*
+ * send__failed_E_NOSUPP - rpma_mr_send failed with RPMA_E_NOSUPP
+ */
+static void
+send__failed_E_NOSUPP(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* run test */
+	int ret = rpma_mr_send(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
+			MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
+			MOCK_UNKNOWN_OP, 0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOSUPP);
+}
+
 /*
  * send__failed_E_PROVIDER - rpma_mr_send failed with RPMA_E_PROVIDER
  */
@@ -35,8 +54,8 @@ send__failed_E_PROVIDER(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_send(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
-				MOCK_OP_CONTEXT);
+			MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
+			IBV_WR_SEND, 0, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -61,8 +80,8 @@ send__success(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_send(MOCK_QP, mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT);
+			MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
+			IBV_WR_SEND, 0, MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -94,6 +113,9 @@ group_setup_mr_send(void **unused)
 
 static const struct CMUnitTest tests_mr_send[] = {
 	/* rpma_mr_send() unit tests */
+	cmocka_unit_test_setup_teardown(send__failed_E_NOSUPP,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(send__failed_E_PROVIDER,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
