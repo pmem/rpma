@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-next-event.c -- the connection next_event unit tests
@@ -99,17 +99,17 @@ next_event__get_cm_event_ENODATA(void **cstate_ptr)
 }
 
 /*
- * next_event__event_REJECTED -
- * RDMA_CM_EVENT_REJECTED is unexpected
+ * next_event__event_UNREACHABLE -
+ * RDMA_CM_EVENT_UNREACHABLE is unexpected
  */
 static void
-next_event__event_REJECTED(void **cstate_ptr)
+next_event__event_UNREACHABLE(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	struct rdma_cm_event event;
-	event.event = RDMA_CM_EVENT_REJECTED;
+	event.event = RDMA_CM_EVENT_UNREACHABLE;
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
@@ -125,18 +125,18 @@ next_event__event_REJECTED(void **cstate_ptr)
 }
 
 /*
- * next_event__event_REJECTED_ack_EINVAL -
+ * next_event__event_UNREACHABLE_ack_EINVAL -
  * rdma_ack_cm_event() fails with EINVAL after obtaining
- * an RDMA_CM_EVENT_REJECTED event
+ * an RDMA_CM_EVENT_UNREACHABLE event
  */
 static void
-next_event__event_REJECTED_ack_EINVAL(void **cstate_ptr)
+next_event__event_UNREACHABLE_ack_EINVAL(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	struct rdma_cm_event event;
-	event.event = RDMA_CM_EVENT_REJECTED;
+	event.event = RDMA_CM_EVENT_UNREACHABLE;
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
@@ -504,6 +504,31 @@ next_event__success_TIMEWAIT_EXIT(void **cstate_ptr)
 	assert_int_equal(c_event, RPMA_CONN_CLOSED);
 }
 
+/*
+ * next_event__success_REJECTED - happy day scenario
+ */
+static void
+next_event__success_REJECTED(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
+	struct rdma_cm_event event;
+	event.event = RDMA_CM_EVENT_REJECTED;
+	will_return(rdma_get_cm_event, &event);
+
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
+
+	/* run test */
+	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
+	int ret = rpma_conn_next_event(cstate->conn, &c_event);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_int_equal(c_event, RPMA_CONN_REJECTED);
+}
+
 static const struct CMUnitTest tests_next_event[] = {
 	/* rpma_conn_next_event() unit tests */
 	cmocka_unit_test(next_event__conn_NULL),
@@ -518,10 +543,10 @@ static const struct CMUnitTest tests_next_event[] = {
 		next_event__get_cm_event_ENODATA,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event__event_REJECTED,
+		next_event__event_UNREACHABLE,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event__event_REJECTED_ack_EINVAL,
+		next_event__event_UNREACHABLE_ack_EINVAL,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		next_event__data_store_ENOMEM,
@@ -549,6 +574,9 @@ static const struct CMUnitTest tests_next_event[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		next_event__success_TIMEWAIT_EXIT,
+		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test_setup_teardown(
+		next_event__success_REJECTED,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
