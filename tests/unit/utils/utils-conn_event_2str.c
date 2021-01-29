@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * utils-conn_event_2str.c -- a unit test for rpma_utils_conn_event_2str()
@@ -53,6 +53,17 @@ conn_event_2str__CONN_LOST(void **unused)
 }
 
 /*
+ * conn_event_2str__CONN_REJECTED - sanity test for
+ * rpma_utils_conn_event_2str()
+ */
+static void
+conn_event_2str__CONN_REJECTED(void **unused)
+{
+	assert_string_equal(rpma_utils_conn_event_2str(RPMA_CONN_REJECTED),
+		"Connection rejected");
+}
+
+/*
  * conn_event_2str__CONN_UNSUPPORTED - sanity test for
  * rpma_utils_conn_event_2str()
  */
@@ -72,6 +83,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(conn_event_2str__CONN_ESTABLISHED),
 		cmocka_unit_test(conn_event_2str__CONN_CLOSED),
 		cmocka_unit_test(conn_event_2str__CONN_LOST),
+		cmocka_unit_test(conn_event_2str__CONN_REJECTED),
 		cmocka_unit_test(conn_event_2str__CONN_UNSUPPORTED),
 	};
 

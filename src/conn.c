@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -172,6 +172,9 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		case RDMA_CM_EVENT_DISCONNECTED:
 		case RDMA_CM_EVENT_TIMEWAIT_EXIT:
 			*event = RPMA_CONN_CLOSED;
+			break;
+		case RDMA_CM_EVENT_REJECTED:
+			*event = RPMA_CONN_REJECTED;
 			break;
 		default:
 			RPMA_LOG_WARNING("%s: %s",
