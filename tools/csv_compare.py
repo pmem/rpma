@@ -398,11 +398,13 @@ def main():
     # split long files
     if args.output_layout == 'lat_all':
         name, ext = os.path.splitext(args.output_file)
+        output_file_1 = "{}_1{}".format(name, ext)
         output_file_2 = "{}_2{}".format(name, ext)
         split_in_half(args.output_file, output_file_2, 0.5)
         crop_to_content(output_file_2, layout['ncols'])
-        split_in_half(args.output_file, args.output_file, 0.0)
-        crop_to_content(args.output_file, layout['ncols'])
+        split_in_half(args.output_file, output_file_1, 0.0)
+        crop_to_content(output_file_1, layout['ncols'])
+        os.remove(args.output_file)
 
 if __name__ == "__main__":
     main()
