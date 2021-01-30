@@ -119,6 +119,8 @@ write_atomic__success(void **cstate_ptr)
 	expect_value(rpma_mr_write, src_offset, MOCK_LOCAL_OFFSET);
 	expect_value(rpma_mr_write, len, RPMA_ATOMIC_WRITE_ALIGNMENT);
 	expect_value(rpma_mr_write, flags, MOCK_FLAGS);
+	expect_value(rpma_mr_write, operation, IBV_WR_RDMA_WRITE);
+	expect_value(rpma_mr_write, imm, 0);
 	expect_value(rpma_mr_write, op_context, MOCK_OP_CONTEXT);
 	expect_value(rpma_mr_write, fence, MOCK_FENCE);
 	will_return(rpma_mr_write, MOCK_OK);

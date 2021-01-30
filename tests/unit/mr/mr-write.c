@@ -17,6 +17,24 @@
 #include "test-common.h"
 
 /*
+ * write__failed_E_NOSUPP - rpma_mr_write failed with RPMA_E_NOSUPP
+ */
+static void
+write__failed_E_NOSUPP(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* run test */
+	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ALWAYS, MOCK_UNKNOWN_OP,
+			0, MOCK_OP_CONTEXT, MOCK_NOFENCE);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_NOSUPP);
+}
+
+/*
  * write__COMPL_ALWAYS_failed_E_PROVIDER - rpma_mr_write failed
  * with RPMA_E_PROVIDER when send_flags == RPMA_F_COMPLETION_ON_SUCCESS
  */
@@ -36,9 +54,9 @@ write__COMPL_ALWAYS_failed_E_PROVIDER(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT, MOCK_NOFENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ALWAYS, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -66,9 +84,9 @@ write__COMPL_ALWAYS_FENCE_failed_E_PROVIDER(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT, MOCK_FENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ALWAYS, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_FENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -94,9 +112,9 @@ write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
-				MOCK_OP_CONTEXT, MOCK_NOFENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ON_ERROR, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -123,9 +141,9 @@ write__COMPL_ON_ERROR_FENCE_failed_E_PROVIDER(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ON_ERROR,
-				MOCK_OP_CONTEXT, MOCK_FENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ON_ERROR, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_FENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -150,9 +168,9 @@ write__success(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT, MOCK_NOFENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ALWAYS, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_NOFENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -178,9 +196,9 @@ write__FENCE_success(void **mrs_ptr)
 
 	/* run test */
 	int ret = rpma_mr_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
-				mrs->local, MOCK_SRC_OFFSET,
-				MOCK_LEN, RPMA_F_COMPLETION_ALWAYS,
-				MOCK_OP_CONTEXT, MOCK_FENCE);
+			mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+			RPMA_F_COMPLETION_ALWAYS, IBV_WR_RDMA_WRITE,
+			0, MOCK_OP_CONTEXT, MOCK_FENCE);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -212,6 +230,9 @@ group_setup_mr_write(void **unused)
 
 static const struct CMUnitTest tests_mr_write[] = {
 	/* rpma_mr_write() unit tests */
+	cmocka_unit_test_setup_teardown(write__failed_E_NOSUPP,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(
 			write__COMPL_ALWAYS_failed_E_PROVIDER,
 			setup__mr_local_and_remote,

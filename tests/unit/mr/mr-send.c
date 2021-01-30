@@ -17,8 +17,6 @@
 #include "mr-common.h"
 #include "test-common.h"
 
-#define MOCK_UNKNOWN_OP	((enum ibv_wr_opcode)(-1))
-
 /*
  * send__failed_E_NOSUPP - rpma_mr_send failed with RPMA_E_NOSUPP
  */
