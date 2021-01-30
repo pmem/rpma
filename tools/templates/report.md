@@ -13,3 +13,7 @@
 {{bios}}
 
 {{security}}
+
+<h2 id="introduction">Introduction to RPMA</h2>
+
+{{introduction}}
