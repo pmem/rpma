@@ -49,7 +49,7 @@ STATE_OK="state ACTIVE physical_state LINK_UP"
 
 function verify_SoftRoCE() {
 	SCRIPT_DIR=$(dirname $0)
-	$SCRIPT_DIR/config_softroce.sh verify
+	$SCRIPT_DIR/../tools/config_softroce.sh verify
 	[ $? -ne 0 ] && exit 1
 
 	if [ "$IP_ADDRESS" == "" ]; then
