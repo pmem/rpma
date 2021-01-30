@@ -257,7 +257,7 @@ function benchmark_one() {
 		if [ "$DUMP_CMDS" != "1" ]; then
 			# copy the ddio.sh script to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-				./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
+				../ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
 			# set DDIO on the server
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP \
