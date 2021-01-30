@@ -11,6 +11,7 @@
 import argparse
 import markdown2
 import os.path
+import shutil
 
 from jinja2 import Environment, FileSystemLoader, Template
 
@@ -19,16 +20,25 @@ SEARCHPATH = 'templates'
 
 # all used SEARCHPATH/*.md files
 CONTENTS = ['audience', 'authors', 'bios', 'configuration_common', \
-    'configuration_target', 'header', 'report', 'security']
+    'configuration_target', 'header', 'report', 'security', 'introduction']
 
 # all variables on a per-content basis
 CONTENTS_VARIABLES = { \
     'header': [ \
         'release'], \
+    'introduction': [ \
+        'hl_ext'], \
     'report': [ \
         'test_date', 'audience', 'authors', 'bios', \
-        'configuration_common', 'configuration_target', 'security'] \
+        'configuration_common', 'configuration_target', 'security', \
+        'introduction'] \
 }
+
+def is_a_file(parser, arg):
+    if not os.path.exists(arg):
+        parser.error(f"The file {arg} does not exist!")
+    else:
+        return arg
 
 def main():
     parser = argparse.ArgumentParser( \
@@ -38,10 +48,19 @@ def main():
         help='a figures directory')
     parser.add_argument('--release', required=True, help='e.g. 0.00')
     parser.add_argument('--test_date', required=True, help='e.g. December 2020')
+    parser.add_argument('--high_level_setup_figure', required=True, \
+        help='e.g. Figure_0.png', type=lambda x: is_a_file(parser, x))
     args = vars(parser.parse_args())
 
-    # convert content parts from markdown to HTML
     contents = {}
+
+    # copy the high-level setup figure
+    _, ext = os.path.splitext(args['high_level_setup_figure'])
+    hl_figure = os.path.join(args['report_dir'], f"Figure_0{ext}")
+    shutil.copyfile(args['high_level_setup_figure'], hl_figure)
+    contents['hl_ext'] = ext
+
+    # convert content parts from markdown to HTML
     for name in CONTENTS:
         if not os.path.isfile(f'{SEARCHPATH}/{name}.md'):
             contents[name] = f'<i>no {SEARCHPATH}/{name}.md</i><br/>'
