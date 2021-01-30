@@ -40,6 +40,7 @@
 #define MOCK_DST_OFFSET		(size_t)0xC413
 #define MOCK_SRC_OFFSET		(size_t)0xC414
 #define MOCK_LEN		(size_t)0xC415
+#define MOCK_UNKNOWN_OP		((enum ibv_wr_opcode)(-1))
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_DESC		(void *)0xC418
 
