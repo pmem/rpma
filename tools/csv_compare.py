@@ -253,6 +253,7 @@ def crop_to_content(file, ncols):
     top = 0
     right = width
     bottom = get_content_height(im, ncols)
+    bottom += 100
     # crop and save the output file
     im = im.crop((left, top, right, bottom))
     im.save(file)
