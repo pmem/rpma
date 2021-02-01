@@ -393,7 +393,7 @@ def main():
 
     # crop
     if args.output_layout in \
-            ['bw', 'lat_avg', 'lat_pctls_999', 'lat_pctls_99999']:
+            ['bw', 'lat_avg', 'lat_pctls', 'lat_pctls_999', 'lat_pctls_99999']:
         crop_to_content(args.output_file, layout['ncols'])
 
     # split long files
