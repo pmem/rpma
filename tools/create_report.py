@@ -20,14 +20,15 @@ SEARCHPATH = 'templates'
 
 # all used SEARCHPATH/*.md files
 CONTENTS = ['audience', 'authors', 'bios', 'configuration_common', \
-    'configuration_target', 'header', 'report', 'security', 'introduction',
-    'tc_config_dummy', 'tc1_read', 'tc2_write', 'tc3_mix' ]
+    'configuration_target', 'header', 'report', 'security', 'introduction', \
+    'tc_read_lat_config', 'tc_read_bw_config', 'tc1_read', 'tc2_write', \
+    'tc3_mix' ]
 
 # all variables on a per-content basis
 CONTENTS_VARIABLES = { \
     'header': [ 'release'], \
     'introduction': [ 'hl_ext'], \
-    'tc1_read': [ 'tc_config_dummy' ], \
+    'tc1_read': [ 'tc_read_lat_config', 'tc_read_bw_config' ], \
     'tc2_write': [ 'tc_config_dummy' ], \
     'tc3_mix': [ 'tc_config_dummy' ], \
     'report': [ \
