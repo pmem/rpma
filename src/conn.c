@@ -331,6 +331,26 @@ rpma_write(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_write_with_imm -- initiate the write operation with immediate data
+ */
+int
+rpma_write_with_imm(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	size_t len, int flags, uint32_t imm, const void *op_context)
+{
+	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+	return RPMA_E_INVAL;
+
+	return rpma_mr_write(conn->id->qp,
+			dst, dst_offset,
+			src, src_offset,
+			len, flags,
+			IBV_WR_RDMA_WRITE_WITH_IMM, imm,
+			op_context, false);
+}
+
+/*
  * rpma_write_atomic -- initiate the atomic write operation
  */
 int
@@ -350,6 +370,30 @@ rpma_write_atomic(struct rpma_conn *conn,
 			src, src_offset,
 			RPMA_ATOMIC_WRITE_ALIGNMENT, flags,
 			IBV_WR_RDMA_WRITE, 0,
+			op_context, true);
+}
+
+/*
+ * rpma_write_atomic_with_imm -- initiate the atomic write operation
+ * with immediate data
+ */
+int
+rpma_write_atomic_with_imm(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src,  size_t src_offset,
+	int flags, uint32_t imm, const void *op_context)
+{
+	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	if (dst_offset % RPMA_ATOMIC_WRITE_ALIGNMENT != 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_write(conn->id->qp,
+			dst, dst_offset,
+			src, src_offset,
+			RPMA_ATOMIC_WRITE_ALIGNMENT, flags,
+			IBV_WR_RDMA_WRITE_WITH_IMM, imm,
 			op_context, true);
 }
 
@@ -535,6 +579,9 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 	case IBV_WC_RECV:
 		cmpl->op = RPMA_OP_RECV;
 		break;
+	case IBV_WC_RECV_RDMA_WITH_IMM:
+		cmpl->op = RPMA_OP_RECV_RDMA_WITH_IMM;
+		break;
 	default:
 		RPMA_LOG_ERROR("unsupported wc.opcode == %d", wc.opcode);
 		return RPMA_E_NOSUPP;
@@ -550,8 +597,11 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 	 * The value of imm_data can only be placed in the receive Completion
 	 * Queue Element.
 	 */
-	if ((cmpl->op == RPMA_OP_RECV) && (cmpl->flags & IBV_WC_WITH_IMM))
-		cmpl->imm = ntohl(wc.imm_data);
+	if ((cmpl->op == RPMA_OP_RECV) ||
+		(cmpl->op == RPMA_OP_RECV_RDMA_WITH_IMM)) {
+		if (cmpl->flags & IBV_WC_WITH_IMM)
+			cmpl->imm = ntohl(wc.imm_data);
+	}
 
 	if (unlikely(wc.status != IBV_WC_SUCCESS)) {
 		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64

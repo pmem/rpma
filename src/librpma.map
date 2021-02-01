@@ -66,6 +66,8 @@ LIBRPMA_1.0 {
 		rpma_utils_ibv_context_is_odp_capable;
 		rpma_write;
 		rpma_write_atomic;
+		rpma_write_atomic_with_imm;
+		rpma_write_with_imm;
 	local:
 		*;
 };

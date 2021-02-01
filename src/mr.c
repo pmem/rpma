@@ -171,6 +171,9 @@ rpma_mr_write(struct ibv_qp *qp,
 	switch (wr.opcode) {
 	case IBV_WR_RDMA_WRITE:
 		break;
+	case IBV_WR_RDMA_WRITE_WITH_IMM:
+		wr.imm_data = htonl(imm);
+		break;
 	default:
 		RPMA_LOG_ERROR("unsupported wr.opcode == %d", wr.opcode);
 		return RPMA_E_NOSUPP;
