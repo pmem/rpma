@@ -1,3 +1,4 @@
 *.md
 !header.md
 !report.md
+!tc*.md
