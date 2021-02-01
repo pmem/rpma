@@ -46,7 +46,7 @@ $ sudo make install
 ### Latency
 
 Generate the baseline latency numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_lat` with various data sizes:
- - iterates over the block sizes (1024B, 4096B, 65536B)
+ - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - tx_depth = 1
 
@@ -74,6 +74,10 @@ $ export FIO_PATH=/custom/fio/path
 $ export REMOTE_USER=user
 $ export REMOTE_PASS=pass
 $ export REMOTE_JOB_NUMA=0
+$ export REMOTE_SUDO_NOPASSWD=0/1
+$ export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>
+$ export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)
+$ export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (forces setting REMOTE_DIRECT_WRITE_TO_PMEM to this value)
 $ export REMOTE_FIO_PATH=/custom/fio/path
 
 # optional, by default: /dev/shm/librpma-server-${TIMESTAMP}.fio
@@ -89,7 +93,7 @@ $ ./rpma_fio_bench.sh <SERVER_IP> apm read lat
 
 Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_bw` with various data sizes:
 
- - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 65536B)
+ - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
  - thread = 1
  - tx_depth = 2
 
@@ -131,7 +135,7 @@ Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_
 $ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-bs
 ```
 
- - iterates over the numbers of threads (1, 2, 4, 8, 12, 16)
+ - iterates over the numbers of threads (1, 2, 4, 8, 12, 16, 32, 64)
  - block size = 4096B
  - iodepth = 2
 
