@@ -20,13 +20,6 @@
 #define MAX_RETRY	10
 #define RETRY_DELAY	5
 
-static inline void
-conn_drop_and_delete(struct rpma_conn **conn_ptr)
-{
-	(void) rpma_conn_disconnect(*conn_ptr);
-	(void) rpma_conn_delete(conn_ptr);
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -73,39 +66,34 @@ main(int argc, char *argv[])
 		/* create a connection request */
 		ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
 		if (ret)
-			break;
+			goto err_peer_delete;
 
 		ret = rpma_conn_req_connect(&req, &pdata, &conn);
-		if (ret) {
-			if (req)
-				(void) rpma_conn_req_delete(&req);
-			break;
-		}
+		if (ret)
+			goto err_req_delete;
 
 		/* wait for the connection to establish */
 		ret = rpma_conn_next_event(conn, &conn_event);
 		if (ret) {
-			conn_drop_and_delete(&conn);
-			break;
+			goto err_conn_disconnect;
 		} else if (conn_event == RPMA_CONN_ESTABLISHED) {
 			break;
 		} else if (conn_event == RPMA_CONN_REJECTED) {
-			conn_drop_and_delete(&conn);
+			(void) rpma_conn_disconnect(conn);
+			(void) rpma_conn_delete(&conn);
 			if (retry < MAX_RETRY - 1) {
 				/* Wait for the server */
 				fprintf(stderr, "Retrying...\n");
 				sleep(RETRY_DELAY);
 			} else {
 				fprintf(stderr,
-						"The retry number exceeded. Closing.\n");
-				break;
+					"The retry number exceeded. Closing.\n");
 			}
 		} else {
 			fprintf(stderr,
 				"rpma_conn_next_event returned an unexpected event: %s\n",
 				rpma_utils_conn_event_2str(conn_event));
-			conn_drop_and_delete(&conn);
-			break;
+			goto err_conn_disconnect;
 		}
 	}
 
@@ -152,9 +140,10 @@ err_conn_disconnect:
 	(void) rpma_conn_disconnect(conn);
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
-err_peer_delete:
+err_req_delete:
 	if (req)
 		(void) rpma_conn_req_delete(&req);
+err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_exit:
