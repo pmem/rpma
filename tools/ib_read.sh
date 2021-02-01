@@ -37,6 +37,8 @@ function usage()
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
 	echo "export NONSTANDARD_OUT=1 (no standard post-processing will be applied)"
+	echo "export TRACER=echo"
+	echo "export REMOTE_TRACER=echo"
 	exit 1
 }
 
@@ -222,15 +224,21 @@ function benchmark_one() {
 		fi
 
 		# run the server
+		if [ "x$REMOTE_TRACER" == "x" ]; then
+			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
+		fi
 		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-			$REMOTE_USER@$SERVER_IP "numactl -N $REMOTE_JOB_NUMA \
+			$REMOTE_USER@$SERVER_IP "$REMOTE_TRACER \
 			${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT \
 			$REMOTE_AUX_PARAMS >> $LOG_ERR" 2>>$LOG_ERR &
 		sleep 1
 
 		# XXX --duration hides detailed statistics
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
-		numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
+		if [ "x$TRACER" == "x" ]; then
+			TRACER="numactl -N $JOB_NUMA"
+		fi
+		$TRACER ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
 			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR > $TEMP
 
 		if [ "$NONSTANDARD_OUT" != "1" ]; then
