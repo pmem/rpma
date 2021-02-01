@@ -6,7 +6,19 @@
     <link rel="stylesheet" href="https://purecss.io/css/pure/pure-min.css">
     <link rel="stylesheet" href="https://purecss.io/layouts/side-menu/styles.css">
     <style>
-        #menu {width: 200px;}
+        #menu {
+            margin-left: -250px; /* "#menu" width */
+            width: 250px;
+        }
+
+        @media (min-width: 48em) {
+            #layout {
+                padding-left: 250px; /* left col width "#menu" */
+            }
+            #menu {
+                left: 250px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -20,7 +32,22 @@
                 <li class="pure-menu-item"><a href="#target-cfg" class="pure-menu-link">Target Configuration</a></li>
                 <li class="pure-menu-item"><a href="#bios" class="pure-menu-link">BIOS Settings</a></li>
                 <li class="pure-menu-item"><a href="#security" class="pure-menu-link">Security</a></li>
-                <a class="pure-menu-heading" href="#introduction">Introduction</a>
+            </ul>
+            <a class="pure-menu-heading" href="#introduction">Introduction</a>
+            <a class="pure-menu-heading" href="#read">TC1: Read from PMem</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#read-lat" class="pure-menu-link">Latency</a></li>
+                <li class="pure-menu-item"><a href="#read-bw" class="pure-menu-link">Bandwidth</a></li>
+            </ul>
+            <a class="pure-menu-heading" href="#write">TC2: Write to PMem</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#write-lat" class="pure-menu-link">Latency</a></li>
+                <li class="pure-menu-item"><a href="#write-bw" class="pure-menu-link">Bandwidth</a></li>
+            </ul>
+            <a class="pure-menu-heading" href="#mix">TC3: Mix against PMem</a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#mix-lat" class="pure-menu-link">Latency</a></li>
+                <li class="pure-menu-item"><a href="#mix-bw" class="pure-menu-link">Bandwidth</a></li>
             </ul>
         </div>
     </div>
@@ -38,9 +65,14 @@
 <script src="https://purecss.io/js/ui.js"></script>
 <script>
 (function (window, document) {
+    // add class="pure-table pure-table-bordered" to all table objects
     var tabs = document.getElementsByTagName('table');
     for (var i = 0; i < tabs.length; ++i)
         tabs[i].className = 'pure-table pure-table-bordered'
+    // add styl="width: 100%"" to all img objects
+    var imgs = document.getElementsByTagName('img');
+    for (var i = 0; i < imgs.length; ++i)
+        imgs[i].style = 'width: 100%'
 }(this, this.document));
 </script>
 </body>
