@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the connection example
@@ -9,12 +9,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <librpma.h>
 
 #ifdef TEST_MOCK_MAIN
 #define main client_main
 #endif
+
+#define MAX_RETRY	10
+#define RETRY_DELAY	5
+
+static inline void
+conn_drop_and_delete(struct rpma_conn **conn_ptr)
+{
+	(void) rpma_conn_disconnect(*conn_ptr);
+	(void) rpma_conn_delete(conn_ptr);
+}
 
 int
 main(int argc, char *argv[])
@@ -52,29 +63,54 @@ main(int argc, char *argv[])
 	if (ret)
 		return ret;
 
-	/* create a connection request */
-	ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
-	if (ret)
-		goto err_peer_delete;
-
-	/* connect the connection request and obtain the connection object */
+	/* prepare a connection's private data */
 	const char *msg = "Hello server!";
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = (void *)msg;
 	pdata.len = (strlen(msg) + 1) * sizeof(char);
-	ret = rpma_conn_req_connect(&req, &pdata, &conn);
-	if (ret)
-		goto err_req_delete;
 
-	/* wait for the connection to establish */
-	ret = rpma_conn_next_event(conn, &conn_event);
-	if (ret) {
-		goto err_conn_delete;
-	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-				"rpma_conn_next_event returned an unexpected event\n");
-		goto err_conn_delete;
+	for (int retry = 0; retry < MAX_RETRY; retry++) {
+		/* create a connection request */
+		ret = rpma_conn_req_new(peer, addr, port, NULL, &req);
+		if (ret)
+			break;
+
+		ret = rpma_conn_req_connect(&req, &pdata, &conn);
+		if (ret) {
+			if (req)
+				(void) rpma_conn_req_delete(&req);
+			break;
+		}
+
+		/* wait for the connection to establish */
+		ret = rpma_conn_next_event(conn, &conn_event);
+		if (ret) {
+			conn_drop_and_delete(&conn);
+			break;
+		} else if (conn_event == RPMA_CONN_ESTABLISHED) {
+			break;
+		} else if (conn_event == RPMA_CONN_REJECTED) {
+			conn_drop_and_delete(&conn);
+			if (retry < MAX_RETRY - 1) {
+				/* Wait for the server */
+				fprintf(stderr, "Retrying...\n");
+				sleep(RETRY_DELAY);
+			} else {
+				fprintf(stderr,
+						"The retry number exceeded. Closing.\n");
+				break;
+			}
+		} else {
+			fprintf(stderr,
+				"rpma_conn_next_event returned an unexpected event: %s\n",
+				rpma_utils_conn_event_2str(conn_event));
+			conn_drop_and_delete(&conn);
+			break;
+		}
 	}
+
+	if (conn == NULL)
+		goto err_peer_delete;
 
 	/* here you can use the newly established connection */
 	(void) rpma_conn_get_private_data(conn, &pdata);
@@ -116,10 +152,9 @@ err_conn_disconnect:
 	(void) rpma_conn_disconnect(conn);
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
-err_req_delete:
+err_peer_delete:
 	if (req)
 		(void) rpma_conn_req_delete(&req);
-err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_exit:
