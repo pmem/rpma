@@ -36,6 +36,7 @@ function usage()
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
+	echo "export NONSTANDARD_OUT=1 (no standard post-processing will be applied)"
 	exit 1
 }
 
@@ -152,8 +153,11 @@ function benchmark_one() {
 		;;
 	esac
 
-	OUTPUT=ib_read_${NAME}-${TIMESTAMP}.csv
-	LOG_ERR=/dev/shm/ib_read_${NAME}-err-${TIMESTAMP}.log
+	NAME=ib_read_${NAME}-${TIMESTAMP}
+	OUTPUT=${NAME}.csv
+	DIR=/dev/shm
+	TEMP=${DIR}/${NAME}_temp.log
+	LOG_ERR=${DIR}/ib_read_${NAME}-err-${TIMESTAMP}.log
 
 	echo "STARTING benchmark for MODE=$MODE IP=$SERVER_IP ..."
 	echo "Performance results: $OUTPUT"
@@ -161,7 +165,9 @@ function benchmark_one() {
 	echo
 
 	rm -f $LOG_ERR
-	echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
+	if [ "$NONSTANDARD_OUT" != "1" ]; then
+		echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
+	fi
 
 	for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		case $MODE in
@@ -174,7 +180,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$NONSTANDARD_OUT" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-dp-exp|bw-dp-lin)
 			IT=${ITERATIONS[${i}]}
@@ -185,7 +191,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$NONSTANDARD_OUT" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-th)
 			IT=${ITERATIONS[${i}]}
@@ -196,7 +202,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$NONSTANDARD_OUT" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		lat)
 			IT=${ITERATIONS[${i}]}
@@ -225,15 +231,22 @@ function benchmark_one() {
 		# XXX --duration hides detailed statistics
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
 		numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
-			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR \
-			| grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
+			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR > $TEMP
+
+		if [ "$NONSTANDARD_OUT" != "1" ]; then
+			cat $TEMP | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
 			| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
+		else
+			cat $TEMP >> $OUTPUT
+		fi
 	done
 
 	CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
 
 	# convert to standardized-CSV
-	./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
+	if [ "$NONSTANDARD_OUT" != "1" ]; then
+		./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
+	fi
 
 	echo "FINISHED benchmark for MODE=$MODE IP=$SERVER_IP"
 	echo
