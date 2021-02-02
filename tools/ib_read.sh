@@ -36,6 +36,7 @@ function usage()
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
+	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
 	exit 1
 }
 
@@ -152,16 +153,25 @@ function benchmark_one() {
 		;;
 	esac
 
-	OUTPUT=ib_read_${NAME}-${TIMESTAMP}.csv
-	LOG_ERR=/dev/shm/ib_read_${NAME}-err-${TIMESTAMP}.log
-
+	NAME=ib_read_${NAME}-${TIMESTAMP}
 	echo "STARTING benchmark for MODE=$MODE IP=$SERVER_IP ..."
-	echo "Performance results: $OUTPUT"
-	echo "Output and errors (both sides): $LOG_ERR"
+	if [ "$DUMP_CMDS" != "1" ]; then
+		OUTPUT=${NAME}.csv
+		LOG_ERR=/dev/shm/${NAME}-err.log
+		echo "Performance results: $OUTPUT"
+		echo "Output and errors (both sides): $LOG_ERR"
+	else
+		SERVER_DUMP=${NAME}-server.log
+		CLIENT_DUMP=${NAME}-client.log
+		echo "Log commands [server]: $SERVER_DUMP"
+		echo "Log commands [client]: $CLIENT_DUMP"
+	fi
 	echo
 
-	rm -f $LOG_ERR
-	echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
+	if [ "$DUMP_CMDS" != "1" ]; then
+		rm -f $LOG_ERR
+		echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
+	fi
 
 	for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
 		case $MODE in
@@ -174,7 +184,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-dp-exp|bw-dp-lin)
 			IT=${ITERATIONS[${i}]}
@@ -185,7 +195,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-th)
 			IT=${ITERATIONS[${i}]}
@@ -196,7 +206,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		lat)
 			IT=${ITERATIONS[${i}]}
@@ -216,24 +226,34 @@ function benchmark_one() {
 		fi
 
 		# run the server
-		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-			$REMOTE_USER@$SERVER_IP "numactl -N $REMOTE_JOB_NUMA \
-			${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT $DP_OPT \
-			$REMOTE_AUX_PARAMS >> $LOG_ERR" 2>>$LOG_ERR &
-		sleep 1
+		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
+			$DP_OPT $REMOTE_AUX_PARAMS"
+		if [ "$DUMP_CMDS" != "1" ]; then
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP "$CMD >> $LOG_ERR" 2>>$LOG_ERR &
+			sleep 1
+		else
+			echo "$CMD" >> $SERVER_DUMP
+		fi
 
 		# XXX --duration hides detailed statistics
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
-		numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
-			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP 2>>$LOG_ERR \
-			| grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
-			| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
+		CMD="numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
+			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP"
+		if [ "$DUMP_CMDS" != "1" ]; then
+			$CMD 2>>$LOG_ERR | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
+				| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
+		else
+			echo "$CMD" >> $CLIENT_DUMP
+		fi
 	done
 
-	CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
+	if [ "$DUMP_CMDS" != "1" ]; then
+		CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
 
-	# convert to standardized-CSV
-	./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
+		# convert to standardized-CSV
+		./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
+	fi
 
 	echo "FINISHED benchmark for MODE=$MODE IP=$SERVER_IP"
 	echo
