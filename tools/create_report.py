@@ -20,7 +20,8 @@ PREREQUISITE = 'Before using this script generate report figures using ./create_
 SEARCHPATH = 'templates'
 
 # all used SEARCHPATH/*.md files
-CONTENTS = ['audience', 'authors', 'bios', 'configuration_common', \
+CONTENTS = [
+    'audience', 'authors', 'bios', 'configuration_common', \
     'configuration_target', 'header', 'report', 'security', 'introduction', \
     'tc_read_lat_config', 'tc_read_bw_config', 'tc1_read', \
     'tc_write_lat_config', 'tc_write_bw_config', 'tc2_write', \
@@ -39,6 +40,11 @@ CONTENTS_VARIABLES = { \
         'introduction', 'tc1_read', 'tc2_write', 'tc3_mix' ] \
 }
 
+# all used SEARCHPATH/*.html files
+CONTENTS_HTML = {
+    'report_menu'
+}
+
 def is_a_file(parser, arg):
     if not os.path.exists(arg):
         parser.error(f"The file {arg} does not exist!")
@@ -53,6 +59,12 @@ def report(args):
     hl_figure = os.path.join(args['report_dir'], f"Figure_000{ext}")
     shutil.copyfile(args['high_level_setup_figure'], hl_figure)
     contents['hl_ext'] = ext
+
+    # load the HTML content parts
+    env = Environment(loader=FileSystemLoader(SEARCHPATH))
+    for name in CONTENTS_HTML:
+        tmpl = env.get_template(f'{name}.html')
+        contents[name] = tmpl.render()
 
     # convert content parts from markdown to HTML
     for name in CONTENTS:
@@ -69,8 +81,10 @@ def report(args):
         tmpl_vars = {k: args.get(k, contents.get(k, 'no data')) for k in var_names}
         contents[name] = tmpl.render(tmpl_vars)
 
+    # attach the correct menu for the report
+    contents['menu'] = contents['report_menu']
+
     # render the report with the complete layout
-    env = Environment(loader=FileSystemLoader(SEARCHPATH))
     layout_tmpl = env.get_template('layout.html')
     report = layout_tmpl.render(contents)
 
