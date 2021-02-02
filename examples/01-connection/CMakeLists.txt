@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -13,6 +13,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
 find_package(PkgConfig QUIET)
 
