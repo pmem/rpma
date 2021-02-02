@@ -15,5 +15,4 @@
 |libibverbs|<i>major.minor-patch-hash</i>|
 |libpmem|<i>major.minor-patch-hash</i>|
 |FIO version|<i>fio-major.minor-patch-hash</i>|
-|NIC|<i>Ox PGbps Producer&reg; Model NIC</i>|
-|OFED|<i>major.minor-patch-hash</i>|
+|rdma-core|<i>major.minor-patch-hash</i>|
