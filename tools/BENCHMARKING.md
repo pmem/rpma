@@ -41,14 +41,13 @@ $ sudo make install
 
 *Note*: All of the scripts presented in the following sections must be run on the client side.
 
-## Comparing the RPMA read with the baseline
+## Running workloads
 
-### Latency
+You can choose from few tools with automate running RPMA related workloads:
 
-Generate the baseline latency numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_lat` with various data sizes:
- - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
- - thread = 1
- - tx_depth = 1
+### Example of `ib_read.sh` use
+
+Generate the baseline latency or bandwidth numbers using `./ib_read.sh` tool:
 
 ```sh
 $ export JOB_NUMA=0
@@ -63,10 +62,15 @@ $ export REMOTE_AUX_PARAMS='-d mlx5_0 -R'
 $ ./ib_read.sh <SERVER_IP> lat
 ```
 
-Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
- - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
- - thread = 1
- - iodepth = 1
+To see all available configuration workloads please take a look at the help:
+
+```sh
+$ ./ib_read.sh -h
+```
+
+### Example of `rpma_fio_bench.sh` use
+
+Generate latency or bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
 
 ```sh
 $ export JOB_NUMA=0
@@ -89,78 +93,17 @@ $ export REMOTE_JOB_MEM_PATH=/path/to/mem
 $ ./rpma_fio_bench.sh <SERVER_IP> apm read lat
 ```
 
-### Bandwidth
-
-Generate the baseline bandwidth numbers using `./ib_read.sh` tool which single-sidedly runs `ib_read_bw` with various data sizes:
-
- - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
- - thread = 1
- - tx_depth = 2
+To see all available configuration workloads please take a look at the help:
 
 ```sh
-$ ./ib_read.sh <SERVER_IP> bw-bs
+$ ./rpma_fio_bench.sh -h
 ```
 
- - iterates over the numbers of threads (1, 2, 4, 8, 12)
- - block size = 4096B
- - tx_depth = 2
+## Analyzing the results
 
-```sh
-$ ./ib_read.sh <SERVER_IP> bw-th
-```
+All of the benchmarking tools described above generates a standardized CSV format output files. Which can be further processed using `csv_compare.py` to generate a comparative charts.
 
- - iterates over the tx_depth values increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
- - thread = 1
- - block size = 4096B
-
-```sh
-$ ./ib_read.sh <SERVER_IP> bw-dp-lin
-```
-
- - iterates over the tx_depth values increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
- - thread = 1
- - block size = 4096B
-
-```sh
-$ ./ib_read.sh <SERVER_IP> bw-dp-exp
-```
-
-Generate bandwidth numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
-
- - iterates over the block sizes (256B, 1024B, 4096B, 8192B, 16384B, 32768B, 65536B)
- - thread = 1
- - iodepth = 2
-
-```sh
-$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-bs
-```
-
- - iterates over the numbers of threads (1, 2, 4, 8, 12, 16, 32, 64)
- - block size = 4096B
- - iodepth = 2
-
-```sh
-$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-th
-```
- - iterates over the iodepth values increasing linearly (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
- - thread = 1
- - block size = 4096B
-
-```sh
-$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-lin
-```
-
- - iterates over the iodepth values increasing exponentially (1, 2, 4, 8, 16, 32, 64, 128)
- - thread = 1
- - block size = 4096B
-
-```sh
-$ ./rpma_fio_bench.sh <SERVER_IP> apm read bw-dp-exp
-```
-
-### Comparison
-
-Generate a comparison using the `csv_compare.py` tool:
+### Example of comparing the obtained results
 
 ```sh
 $ ./csv_compare.py --output_layout [lat/bw] file-1.csv [... file-n.csv]
@@ -168,3 +111,31 @@ $ ./csv_compare.py --output_layout [lat/bw] file-1.csv [... file-n.csv]
 ```
 
 With the help of additional parameters, we can also adjust various aspects of the output.
+
+## Reporting
+
+Instead of running all separate workloads you can run a comprehensive set of workloads using the following set of commands and generate the RPMA performance report.
+
+Run all benchmarks required for the performance report:
+
+```sh
+$ export REMOTE_SUDO_NOPASSWD=1
+$ export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>
+$ export REMOTE_JOB_MEM_PATH=/path/to/mem
+
+$ ./reprt_bench.sh
+```
+
+Generate Figures and Appendix charts for a performance report:
+
+```sh
+$ export DATA_PATH=/custom/data/path
+
+$ ./create_report_figures.sh report|appendix
+```
+
+Generate the performance report and appendices:
+
+```sh
+$ ./create_report.py
+```
