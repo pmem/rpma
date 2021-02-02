@@ -43,6 +43,7 @@ function usage()
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
 	echo "export TRACER='gdbserver localhost:2345'"
 	echo "export REMOTE_TRACER='gdbserver localhost:2345'"
+	echo "export LOG_CMDS=1 (it does not the actual execution)"
 	echo
 	exit 1
 }
@@ -70,6 +71,7 @@ function show_environment() {
 	echo "export SHORT_RUNTIME=$SHORT_RUNTIME"
 	echo "export TRACER=$TRACER"
 	echo "export REMOTE_TRACER=$REMOTE_TRACER"
+	echo "export LOG_CMDS=$LOG_CMDS"
 	exit 0
 }
 
@@ -200,10 +202,17 @@ function benchmark_one() {
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
 	NAME=rpma_fio_${PERSIST_MODE}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
-	DIR=/dev/shm
-	TEMP_JSON=${DIR}/${NAME}_temp.json
-	TEMP_CSV=${DIR}/${NAME}_temp.csv
-	LOG_ERR=${DIR}/${NAME}.log
+	if [ "$LOG_CMDS" != "1" ]; then
+		DIR=/dev/shm
+		TEMP_JSON=${DIR}/${NAME}_temp.json
+		TEMP_CSV=${DIR}/${NAME}_temp.csv
+		LOG_ERR=${DIR}/${NAME}.log
+	else
+		SERVER=${NAME}-server.log
+		CLIENT=${NAME}-client.log
+		echo "Log commands [server]: $SERVER"
+		echo "Log commands [client]: $CLIENT"
+	fi
 	SUFFIX=$(echo $MODE | cut -d'-' -f1)
 
 	local RW_OPS=(read write)
@@ -219,25 +228,29 @@ function benchmark_one() {
 		INDS="0 1" # read write
 		;;
 	esac
-	case $OP in
-	read|randread|write|randwrite)
-		OUTPUT=(${NAME}.csv ${NAME}.csv) # the same names
-		;;
-	rw|randrw)
-		OUTPUT=(${NAME}_${RW_OPS[0]}.csv ${NAME}_${RW_OPS[1]}.csv)
-		;;
-	esac
 
 	echo "STARTING benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
-	echo "Output and errors (both sides): $LOG_ERR"
-	for i in $INDS; do
-		echo "Performance results of ${RW_OPS[i]}s: ${OUTPUT[i]}"
-		rm -f ${OUTPUT[i]}
-	done
-	rm -f $LOG_ERR
 
-	if [ -z "$REMOTE_JOB_PATH" ]; then
-		REMOTE_JOB_PATH=${DIR}/librpma_${PERSIST_MODE}-server-${TIMESTAMP}.fio
+	if [ "$LOG_CMDS" != "1" ]; then
+		case $OP in
+		read|randread|write|randwrite)
+			OUTPUT=(${NAME}.csv ${NAME}.csv) # the same names
+			;;
+		rw|randrw)
+			OUTPUT=(${NAME}_${RW_OPS[0]}.csv ${NAME}_${RW_OPS[1]}.csv)
+			;;
+		esac
+
+		echo "Output and errors (both sides): $LOG_ERR"
+		for i in $INDS; do
+			echo "Performance results of ${RW_OPS[i]}s: ${OUTPUT[i]}"
+			rm -f ${OUTPUT[i]}
+		done
+		rm -f $LOG_ERR
+
+		if [ -z "$REMOTE_JOB_PATH" ]; then
+			REMOTE_JOB_PATH=${DIR}/librpma_${PERSIST_MODE}-server-${TIMESTAMP}.fio
+		fi
 	fi
 
 	for i in $(seq 0 $(expr $ITERATIONS - 1)); do
@@ -265,78 +278,96 @@ function benchmark_one() {
 		esac
 
 		if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-			# copy the ddio.sh script to the server
-			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-				./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
-			# set DDIO on the server
-			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-				$REMOTE_USER@$SERVER_IP \
-				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
-				> $LOG_ERR 2>&1" 2>>$LOG_ERR
-			# query DDIO on the server
-			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-				$REMOTE_USER@$SERVER_IP \
-				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
-				> $LOG_ERR 2>&1" 2>>$LOG_ERR
-			if [ $? -ne $DDIO_QUERY ]; then
-				echo "Error: setting DDIO to '$DDIO_MODE' failed"
-				exit 1
+			if [ "$LOG_CMDS" != "1" ]; then
+				# copy the ddio.sh script to the server
+				sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+					./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
+				# set DDIO on the server
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP \
+					"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
+					> $LOG_ERR 2>&1" 2>>$LOG_ERR
+				# query DDIO on the server
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP \
+					"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
+					> $LOG_ERR 2>&1" 2>>$LOG_ERR
+				if [ $? -ne $DDIO_QUERY ]; then
+					echo "Error: setting DDIO to '$DDIO_MODE' failed"
+					exit 1
+				fi
 			fi
 			REMOTE_DIRECT_WRITE_TO_PMEM=$REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM
-
 		elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
 			echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
 			echo "Skipping..."
 			return
 		fi
-
-		# copy config to the server
-		sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-			./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
-			$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
-		# run the server
-		if [ "x$REMOTE_TRACER" == "x" ]; then
-			REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
+		
+		if [ "$LOG_CMDS" == "1" ]; then
+			echo "REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM" >> $SERVER
 		fi
-		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-			$REMOTE_USER@$SERVER_IP \
-			"serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} ${REMOTE_JOB_DEST} \
-			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
-			$REMOTE_TRACER \
+
+		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
+			${REMOTE_JOB_DEST} \
+			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM}"
+		if [ "$LOG_CMDS" != "1" ]; then
+			# copy config to the server
+			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+				./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
+				$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
+			# run the server
+			if [ "x$REMOTE_TRACER" == "x" ]; then
+				REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
+			fi
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+		else
+			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | $ENV envsubst >> $SERVER"
+		fi
 
 		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
-		# run FIO
-		if [ "x$TRACER" == "x" ]; then
-			TRACER="numactl -N $JOB_NUMA"
-		fi
-		serverip=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} readwrite=${OP} \
-			ramp_time=$RAMP_TIME runtime=$RUNTIME ioengine=librpma_${PERSIST_MODE}_client \
-			$TRACER ${FIO_PATH}fio \
-			./fio_jobs/librpma-client-${SUFFIX}.fio --output-format=json+ \
-			> $TEMP_JSON
-		if [ "$?" -ne 0 ]; then
-			echo "Error: FIO job failed"
-			exit 1
-		fi
+		ENV="serverip=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} \
+			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME \
+			ioengine=librpma_${PERSIST_MODE}_client"
+		if [ "$LOG_CMDS" != "1" ]; then
+			# run FIO
+			if [ "x$TRACER" == "x" ]; then
+				TRACER="numactl -N $JOB_NUMA"
+			fi
+			$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma-client-${SUFFIX}.fio \
+				--output-format=json+ > $TEMP_JSON
+			if [ "$?" -ne 0 ]; then
+				echo "Error: FIO job failed"
+				exit 1
+			fi
 
+			for i in $INDS; do
+				rm -f $TEMP_CSV
+				# convert JSON to CSV
+				./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV --op ${RW_OPS[i]}
+				# append CSV to the output
+				cat $TEMP_CSV >> ${OUTPUT[i]}
+			done
+		else
+			bash -c "cat ./fio_jobs/librpma-client-${SUFFIX}.fio \
+				| $ENV envsubst >> $CLIENT"
+			echo "---" >> $SERVER
+			echo "---" >> $CLIENT
+		fi
+	done
+
+	if [ "$LOG_CMDS" != "1" ]; then
 		for i in $INDS; do
-			rm -f $TEMP_CSV
-			# convert JSON to CSV
-			./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV --op ${RW_OPS[i]}
-			# append CSV to the output
-			cat $TEMP_CSV >> ${OUTPUT[i]}
+			# remove redundant headers
+			cat ${OUTPUT[i]} | head -1 > $TEMP_CSV
+			cat ${OUTPUT[i]} | grep -v 'lat' >> $TEMP_CSV
+			mv $TEMP_CSV ${OUTPUT[i]}
+			# convert to standardized-CSV
+			./csv2standardized.py --csv_type fio --output_file ${OUTPUT[i]} ${OUTPUT[i]}
 		done
-	done
-
-	for i in $INDS; do
-		# remove redundant headers
-		cat ${OUTPUT[i]} | head -1 > $TEMP_CSV
-		cat ${OUTPUT[i]} | grep -v 'lat' >> $TEMP_CSV
-		mv $TEMP_CSV ${OUTPUT[i]}
-		# convert to standardized-CSV
-		./csv2standardized.py --csv_type fio --output_file ${OUTPUT[i]} ${OUTPUT[i]}
-	done
+	fi
 
 	echo "FINISHED benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
 	echo
