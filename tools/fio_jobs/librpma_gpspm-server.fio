@@ -20,7 +20,6 @@ thread
 direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 iodepth=${iodepth}
-iomem_align=$pagesize
 size=100MiB
 filename=${filename}
 
