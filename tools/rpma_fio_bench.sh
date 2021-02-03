@@ -253,6 +253,38 @@ function benchmark_one() {
 		fi
 	fi
 
+	if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+		if [ "$DUMP_CMDS" != "1" ]; then
+			# copy the ddio.sh script to the server
+			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+				./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
+			# set DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			# query DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			if [ $? -ne $DDIO_QUERY ]; then
+				echo "Error: setting DDIO to '$DDIO_MODE' failed"
+				exit 1
+			fi
+		fi
+		REMOTE_DIRECT_WRITE_TO_PMEM=$REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM
+	elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+		echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
+		echo "Skipping..."
+		return
+	fi
+
+	if [ "$DUMP_CMDS" == "1" ]; then
+		echo "REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM" >> $SERVER_DUMP
+		echo >> $SERVER_DUMP
+	fi
+
 	for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 		case $MODE in
 		bw-bs)
@@ -276,38 +308,6 @@ function benchmark_one() {
 			DP="${DEPTH}"
 			;;
 		esac
-
-		if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-			if [ "$DUMP_CMDS" != "1" ]; then
-				# copy the ddio.sh script to the server
-				sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-					./ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
-				# set DDIO on the server
-				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP \
-					"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
-					> $LOG_ERR 2>&1" 2>>$LOG_ERR
-				# query DDIO on the server
-				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP \
-					"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
-					> $LOG_ERR 2>&1" 2>>$LOG_ERR
-				if [ $? -ne $DDIO_QUERY ]; then
-					echo "Error: setting DDIO to '$DDIO_MODE' failed"
-					exit 1
-				fi
-			fi
-			REMOTE_DIRECT_WRITE_TO_PMEM=$REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM
-		elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
-			echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
-			echo "Skipping..."
-			return
-		fi
-		
-		if [ "$DUMP_CMDS" == "1" ]; then
-			echo "REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM" >> $SERVER_DUMP
-			echo >> $SERVER_DUMP
-		fi
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			${REMOTE_JOB_DEST} \
