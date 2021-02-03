@@ -1,5 +1,8 @@
 *.md
-!header.md
+# XXX too many exclusions
+!appendices_header.md
+!appendices.md
+!report_header.md
 !report.md
 !tc1_read.md
 !tc2_write.md
