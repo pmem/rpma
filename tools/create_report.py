@@ -60,7 +60,7 @@ def main():
 
     # copy the high-level setup figure
     _, ext = os.path.splitext(args['high_level_setup_figure'])
-    hl_figure = os.path.join(args['report_dir'], f"Figure_0{ext}")
+    hl_figure = os.path.join(args['report_dir'], f"Figure_000{ext}")
     shutil.copyfile(args['high_level_setup_figure'], hl_figure)
     contents['hl_ext'] = ext
 

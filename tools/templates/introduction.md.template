@@ -8,5 +8,5 @@ For the sake of the measurements for this report, the FIO process is limited to 
 
 Figure 0 shows a high-level schematic of the systems used for testing in the rest of this report. The setup consists of two individual systems (one used as the initiator and one used as the target). The target system has six Intel&reg; Optane&trade; Persistent Memory devices connected to the respective NUMA node. Both the initiator and the target are equipped with 100Gbps Mellanox ConnectX-5 NICs. The initiator is connected to the target system directly using QSFP28 cables without any switches. From two ports available on NICs only one is in use during the measurements.
 
-![](./Figure_0{{hl_ext}})
+![](./Figure_000{{hl_ext}})
 **Figure 0**: High-Level RPMA performance testing setup
