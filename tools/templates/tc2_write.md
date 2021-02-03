@@ -2,7 +2,7 @@ XXX
 
 <h3 id="write-lat">Test Case 2A: Write to PMem: Latency</h3>
 
-{{tc\_config\_dummy}}
+{{tc\_write\_lat\_config}}
 
 ![](./Figure_009_apm_dram_vs_pmem_lat_avg.png)
 
@@ -14,7 +14,7 @@ XXX
 
 <h3 id="write-bw">Test Case 2B: Write to PMem: Bandwidth</h3>
 
-{{tc\_config\_dummy}}
+{{tc\_write\_bw\_config}}
 
 ![](./Figure_013_apm_dram_vs_pmem_bw-bs.png)
 
