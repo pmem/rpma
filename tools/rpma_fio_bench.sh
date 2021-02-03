@@ -338,8 +338,8 @@ function benchmark_one() {
 			if [ "x$TRACER" == "x" ]; then
 				TRACER="numactl -N $JOB_NUMA"
 			fi
-			$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma-client-${SUFFIX}.fio \
-				--output-format=json+ > $TEMP_JSON
+			bash -c "$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma-client-${SUFFIX}.fio \
+				--output-format=json+ > $TEMP_JSON"
 			if [ "$?" -ne 0 ]; then
 				echo "Error: FIO job failed"
 				exit 1
