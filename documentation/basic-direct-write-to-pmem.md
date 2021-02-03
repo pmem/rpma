@@ -3,21 +3,27 @@ title: basic-direct-write-to-pmem
 layout: pmdk
 ---
 
-# Direct write to PMem
+# Direct Write to PMem
 
-Direct write to PMem is a basic capability provided by the librpma library.
+*Direct Write to PMem* is a readiness of hardware and software configuration which allows effectively and persistently write data to PMem physically attached to one system from another system using RDMA-capable network. How to achive *Direct Write to PMem* capability may differs from system to system because of variety of potential 'interruptions' (e.g. caching) in data's way to be stored persistently on PMem.
 
-This guide is Work-in-progress.
+## 2nd Generation Intel&reg; Xeon&reg; Scalable Processors
 
-**XXX** elaborate
+For the 2nd Generation Intel&reg; Xeon&reg; Scalable Processors (**Cascade Lake**) the only configuration item one should take care of is Intel&reg; Data Direct I/O Technology (**DDIO**). **DDIO** assumes the good enough place to effectively store data comming from the RDMA (and any other DMA traffic) is the CPU LLC from which CPU can access it more easily than when it would be stored in DRAM or on PMem [[1]][ddio]. This is beneficial for any other DMA traffic but prevents from achiving *Direct Write to PMem*.
 
-## Intel® Data Direct I/O Technology (DDIO) [[1]][xxx-ddio]
+For the **Cascade Lake** processor **DDIO** can be turned off (at the same time enabling *Direct Write to PMem*) at least at two possible levels:
 
-**XXX** Here probably should go a part of the [DDIO - The journey to the datasheet and back][xxx-ddio] which describes why users may be very interested in turning DDIO off on the per-PCIe Root Port basis.
+- globally for all DMA traffic in the system or
 
-## Prepare for direct write to PMem
+- for a PCIe Root Port which affects only the DMA traffic coming from PCIe devices physically attached to this PCIe Root Port
 
-It is hard to show a general way to obtain an address of the PCIe Root Port you desire. Let’s assume you have a Mellanox RDMA-capable Network Adapter plugged into PCIe slot. How to find out an address of PCIe Root Port of the Mellanox RNIC? If you ask me I will argue the simplest way is as follows:
+Because having **DDIO** turned on is a desirable state for most of the workloads turning it off globally is not considered here. Nonetheless, if one would like to do this please contact your BIOS provider for details.
+
+For more information on **DDIO** and its configuration please see the list of references [[1]][ddio][[2]][dpdk].
+
+### Finding the right PCIe Root Port
+
+You can finding the PCIe Root Port of the network interface knowing its producer and model in a single query:
 
 ```sh
 $ lspci -vt | grep Mellanox
@@ -25,9 +31,11 @@ $ lspci -vt | grep Mellanox
  |           |            \-00.1  Mellanox Technologies MT27800 Family [ConnectX-5]
 ```
 
-The [lspci(8)](https://man7.org/linux/man-pages/man8/lspci.8.html) manual pages will tell you that -t show a tree-like diagram containing all buses, bridges, devices and connections between them whereas `-v` displays detailed information about all devices. So we end up with a tree-like structure of named devices which allows us track down the PCIe Root Port and its address. In this case it should be written as `0000:17:00.0`.
+The `lspci -vt` command shows a tree-like diagram containing all buses, bridges, devices and connections between them. The top most level of this tree is the PCIe Root Port address. In this case it should be written as `0000:17:00.0`. [[3]][lspci]
 
-For easy turning on and off DDIO on per-PCIe Root Port basis you can use [ddio.sh](https://github.com/pmem/rpma/blob/master/tools/ddio.sh) available in the RPMA repository.
+### Turning off DDIO
+
+For turning on and off DDIO on per-PCIe Root Port basis please use the [ddio.sh](https://github.com/pmem/rpma/blob/master/tools/ddio.sh) utility available in the librpma repository.
 
 ```sh
 $ PCIe_Root_Port=0000:17:00.0
@@ -36,7 +44,7 @@ $ echo $?
 1
 ```
 
-The `1` at the end of the output in this case means the DDIO feature is turned on for this PCIe Root Port which is the default for today Intel platforms. But you want to turn it off for each system with PMem if you want to write to PMem directly via RDMA. For details please see [rpma_peer_cfg_set_direct_write_to_pmem(3)](https://pmem.io/rpma/manpages/master/rpma_peer_cfg_set_direct_write_to_pmem.3) and [rpma_flush(3)](https://pmem.io/rpma/manpages/master/rpma_flush.3).
+The `1` at the end of the output in this case means the DDIO feature is turned on for this PCIe Root Port which is the default for the **Cascade Lake** platforms. In this case, it is required to turn it off for each **Cascade Lake** system with PMem if you want to have *Direct Write to PMem* capability via RDMA. For details please see [rpma_peer_cfg_set_direct_write_to_pmem(3)](https://pmem.io/rpma/manpages/master/rpma_peer_cfg_set_direct_write_to_pmem.3) and [rpma_flush(3)](https://pmem.io/rpma/manpages/master/rpma_flush.3).
 
 ```sh
 $ sudo ./ddio.sh -d $PCIe_Root_Port -s disable
@@ -47,6 +55,12 @@ $ echo $?
 
 ## References
 
-* [1] [XXX DDIO - The journey to the datasheet and back][xxx-ddio]
+* [1] [Intel&reg; Data Direct I/O Technology][ddio]
+* [2] [DPDK: Hardware-Level Performance Analysis of Platform I/O][dpdk]
+* [3] [lspci(8)][lspci]
 
-[xxx-ddio]: http://janekmi.github.io/2020/06/21/ddio.html
+[ddio]: https://www.intel.co.uk/content/www/uk/en/io/data-direct-i-o-technology.html
+
+[dpdk]: https://www.dpdk.org/wp-content/uploads/sites/35/2018/09/Roman-Sudarikov-DPDK_PRC_Summit_Sudarikov.pptx
+
+[lspci]: https://man7.org/linux/man-pages/man8/lspci.8.html
