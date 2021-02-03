@@ -25,7 +25,7 @@ $ lspci -vt | grep Mellanox
  |           |            \-00.1  Mellanox Technologies MT27800 Family [ConnectX-5]
 ```
 
-The [lspci(8)](https://man7.org/linux/man-pages/man8/lspci.8.html) manual pages will tell you that -t show a tree-like diagram containing all buses, bridges, devices and connections between them whereas `-v` displays detailed information about all devices. So we end up with a tree like structure of named devices which allows us track down the PCIe Root Port and its address. In this case it should be written as `0000:17:00.0`.
+The [lspci(8)](https://man7.org/linux/man-pages/man8/lspci.8.html) manual pages will tell you that -t show a tree-like diagram containing all buses, bridges, devices and connections between them whereas `-v` displays detailed information about all devices. So we end up with a tree-like structure of named devices which allows us track down the PCIe Root Port and its address. In this case it should be written as `0000:17:00.0`.
 
 For easy turning on and off DDIO on per-PCIe Root Port basis you can use [ddio.sh](https://github.com/pmem/rpma/blob/master/tools/ddio.sh) available in the RPMA repository.
 
