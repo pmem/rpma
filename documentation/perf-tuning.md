@@ -1,17 +1,15 @@
 ---
-title: perf-tuning-latency
+title: perf-tuning
 layout: pmdk
 ---
 
-# Performance - Tuning for latency (WIP)
+# Performance - Tuning
 
-A collection of the best methods, practices, and configuration values known for delivering the smallest possible latency in a consistent and predictable way for the workloads built on the librpma library.
-
-This guide is Work-in-progress.
+A collection of the best methods, practices, and configuration values known for delivering the best possible performance in a consistent and predictable way for the workloads built on the librpma library.
 
 ## Disclaimer
 
-The *Performance - Tuning for latency* aims to collect all tested and proven procedures with known beneficial effects on the latency of the workloads built on the librpma library. Nonetheless, each change of configuration should be set up and tested in a testing environment before being applied to a production system. Backing up all data and configuration settings prior to tuning is also recommended.
+The *Performance - Tuning* aims to collect all tested and proven procedures with known beneficial effects on the performance of the workloads built on the librpma library. Nonetheless, each change of configuration should be set up and tested in a testing environment before being applied to a production system. Backing up all data and configuration settings prior to tuning is also recommended.
 
 ## BIOS settings
 
@@ -54,11 +52,11 @@ The *Performance - Tuning for latency* aims to collect all tested and proven pr
 
 ## CPU
 
-**Note**: It is very probable this chapter will be updated in the near future.
+Disabling `intel_pstate` is recommended for latency sensitive workloads. [[2.1]][low-lat]
 
 ### CPU driver
 
-To disable `intel_pstate` CPU driver **[XXX why? the source is missing]** edit your `/etc/default/grub` and add the following to the kernel command line:
+To disable `intel_pstate` CPU driver edit your `/etc/default/grub` and add the following to the kernel command line:
 
 ```sh
 GRUB_CMDLINE_LINUX_DEFAULT="intel_pstate=disable"
@@ -105,11 +103,26 @@ sudo cpupower frequency-set --min $FREQ
 sudo cpupower frequency-set --max $FREQ
 ```
 
-## RDMA-capable network interface
+### References
 
-### PCIe [[3.1]][mlx-pcie]
+* [2.1] [Low Latency Performance Tuning for
+Red Hat Enterprise Linux 7][low-lat]
 
-[XXX TODO][mlx-pcie]
+[low-lat]: https://access.redhat.com/sites/default/files/attachments/201501-perf-brief-low-latency-tuning-rhel7-v2.1.pdf
+
+## RDMA-capable network interface (RNIC)
+
+### PCIe attributes [[3.1]][mlx-pcie]
+
+- Width - provide for the RNIC the maximum number of PCIe lanes it is capable of using
+
+- Speed - attach the RNIC to PCIe interface of maximum supported speed
+
+- Max Payload Size - learn what the Max Payload Size for your system is and adjust expectations accordingly
+
+- Max Read Request - configure the maximum available read request value
+
+Knowing all of these attributes you may calculate what is RNIC bandwidth limitation. For details pleas see "Understanding PCIe Configuration for Maximum Performance" Chapter ["Calculating PCIe Limitations"][mlx-pcie-limits].
 
 ### Link mode [[3.2]][mlx-port-speed]
 
@@ -125,7 +138,7 @@ Settings for ens785f0:
                                 100000baseSR4/Full
                                 100000baseCR4/Full
                                 100000baseLR4_ER4/Full
-#...
+# ...
 ```
 
 Set the maximum available value:
@@ -149,6 +162,7 @@ $ ifconfig ens785f0 mtu 4200
 * [3.3] [Mellanox: MTU Considerations for RoCE based Applications][mlx-mtu]
 
 [mlx-pcie]: https://community.mellanox.com/s/article/understanding-pcie-configuration-for-maximum-performance
+[mlx-pcie-limits]: https://community.mellanox.com/s/article/understanding-pcie-configuration-for-maximum-performance#Calculating-PCIe-Limitations
 [mlx-port-speed]: https://community.mellanox.com/s/article/howto-change-the-ethernet-port-speed-of-mellanox-adapters--linux-x
 [mlx-mtu]: https://community.mellanox.com/s/article/mtu-considerations-for-roce-based-applications
 

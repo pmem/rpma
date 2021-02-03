@@ -18,4 +18,4 @@ The documentation is available for:
 
 * [Basic - Direct write to PMem (WIP)](./documentation/basic-direct-write-to-pmem.html)
 * [Basic - HW & SW setup starting point](./documentation/basic-hw_sw_setup_starting_point.html)
-* [Performance - Tuning for latency (WIP)](./documentation/perf-tuning-latency.html)
+* [Performance - Tuning](./documentation/perf-tuning.html)
