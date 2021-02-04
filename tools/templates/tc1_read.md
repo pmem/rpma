@@ -16,7 +16,7 @@ Comparing the latency of `rpma_read()` from PMem on **the RPMA Target** to the l
 
 <h3 id="read-bw">Test Case 1B: Read from PMem: Bandwidth</h3>
 
-Comparing the bandwidth of `rpma_read()` from PMem on **the RPMA Target** to the bandwidth of `rpma_read()` from DRAM on **the RPMA Taraget** using the `ib_read_bw` as the baseline.
+Comparing the bandwidth of `rpma_read()` from PMem on **the RPMA Target** to the bandwidth of `rpma_read()` from DRAM on **the RPMA Target** using the `ib_read_bw` as the baseline.
 
 {{tc\_read\_bw\_config}}
 
