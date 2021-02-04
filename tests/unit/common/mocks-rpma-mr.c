@@ -106,7 +106,8 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 int
 rpma_mr_send(struct ibv_qp *qp,
 	const struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, const void *op_context)
+	size_t len, int flags, enum ibv_wr_opcode operation,
+	uint32_t imm, const void *op_context)
 {
 	assert_non_null(qp);
 	assert_non_null(src);
@@ -117,6 +118,8 @@ rpma_mr_send(struct ibv_qp *qp,
 	check_expected(offset);
 	check_expected(len);
 	check_expected(flags);
+	check_expected(operation);
+	check_expected(imm);
 	check_expected_ptr(op_context);
 
 	return mock_type(int);
