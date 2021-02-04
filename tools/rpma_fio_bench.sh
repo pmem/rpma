@@ -127,9 +127,16 @@ function benchmark_one() {
 		COMMENT="__$COMMENT""__"
 	fi
 
+	if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
+		REMOTE_JOB_DEST="$REMOTE_JOB_MEM_PATH"
+		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
+	else
+		REMOTE_JOB_DEST="malloc"
+		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
+	fi
+
 	case $PERSIST_MODE in
 	apm)
-		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
 		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
 		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
 			DDIO_MODE="disable"
@@ -141,7 +148,6 @@ function benchmark_one() {
 		fi
 		;;
 	gpspm)
-		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
 		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
 		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
 			DDIO_MODE="enable"
@@ -153,12 +159,6 @@ function benchmark_one() {
 		fi
 		;;
 	esac
-
-	if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-		REMOTE_JOB_DEST="$REMOTE_JOB_MEM_PATH"
-	else
-		REMOTE_JOB_DEST="malloc"
-	fi
 
 	case $MODE in
 	bw-bs)
