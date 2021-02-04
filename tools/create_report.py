@@ -19,7 +19,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 PREREQUISITE = 'Before using this script generate report figures using ./create_report_figures.sh'
 SEARCHPATH = 'templates'
 
-# all SEARCHPATH/*.md files used for the report
+# all *.md files used for the report
 REPORT_CONTENTS_MD = [ \
     'report_header', \
     'audience', 'authors', 'bios', 'configuration_common', \
@@ -28,19 +28,19 @@ REPORT_CONTENTS_MD = [ \
     'tc_write_lat_config', 'tc_write_bw_config', 'tc2_write', \
     'tc_mix_lat_config', 'tc_mix_bw_config', 'tc3_mix' ]
 
-# all SEARCHPATH/*.html files used for the report
-REPORT_CONTENTS_HTML = {
+# all *.html files used for the report
+REPORT_CONTENTS_HTML = [
     'report_menu'
-}
+]
 
-# all SEARCHPATH/*.md files used for the appendices
+# all *.md files used for the appendices
 APPENDICES_CONTENTS_MD = [ \
     'appendices_header', 'appendices' ]
 
-# all SEARCHPATH/*.html files used for the appendices
-APPENDICES_CONTENTS_HTML = {
+# all *.html files used for the appendices
+APPENDICES_CONTENTS_HTML = [
     'appendices_menu'
-}
+]
 
 # all variables on a per-content basis
 CONTENTS_VARIABLES = { \
@@ -64,18 +64,25 @@ def is_a_file(parser, arg):
 
 def populate_contents(contents, parts_html, parts_md, args):
     # load the HTML content parts
-    env = Environment(loader=FileSystemLoader(SEARCHPATH))
     for name in parts_html:
-        tmpl = env.get_template(f'{name}.html')
+        tmpl = args['env'].get_template(f'{name}.html')
         contents[name] = tmpl.render()
 
     # convert content parts from markdown to HTML
     for name in parts_md:
-        if not os.path.isfile(f'{SEARCHPATH}/{name}.md'):
-            contents[name] = f'<i>no {SEARCHPATH}/{name}.md</i><br/>'
-            continue
-        contents[name] = markdown2.markdown_path(f'{SEARCHPATH}/{name}.md', \
-                extras=['tables'])
+        # possible paths
+        paths = [ \
+            f'{args["report_dir"]}/{name}.md', \
+            f'{SEARCHPATH}/{name}.md' ]
+        # lookup
+        for path in paths:
+            if not os.path.isfile(path):
+                continue
+            # the file is found
+            contents[name] = markdown2.markdown_path(path, extras=['tables'])
+        # if the file is not found
+        if name not in contents.keys():
+            contents[name] = f'<i>no {name}.md</i><br/>'
 
     # replace the variables with appropriate values
     for name, var_names in CONTENTS_VARIABLES.items():
@@ -90,8 +97,7 @@ def populate_contents(contents, parts_html, parts_md, args):
 
 def render(contents, args, output):
     # render the report with the complete layout
-    env = Environment(loader=FileSystemLoader(SEARCHPATH))
-    layout_tmpl = env.get_template('layout.html')
+    layout_tmpl = args['env'].get_template('layout.html')
     report = layout_tmpl.render(contents)
 
     # prepare output file and write the result
@@ -153,6 +159,10 @@ def main():
 
     # parse the command line
     args = vars(parser.parse_args())
+
+    # a common env object
+    args['env'] = Environment(loader=FileSystemLoader( \
+        [SEARCHPATH, args['report_dir']]))
 
     # call a command-specific function by its name
     globals()[args['command']](args)

@@ -136,6 +136,14 @@ $ ./create_report_figures.sh report
 $ ./create_report_figures.sh appendix
 ```
 
+Prepare custom report parts (optional):
+
+```sh
+$ cp templates/*.copyme report_xyz/
+$ for f in report_xyz/*.copyme; do mv "$f" "${f/.copyme/}"; done
+# edit the report_xyz/*.md files to represent details of your configuration
+```
+
 Generate the performance report and appendices:
 
 ```sh
