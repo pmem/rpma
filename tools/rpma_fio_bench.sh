@@ -155,9 +155,9 @@ function benchmark_one() {
 	esac
 
 	if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-		REMOTE_JOB_DEST="filename=$REMOTE_JOB_MEM_PATH"
+		REMOTE_JOB_DEST="$REMOTE_JOB_MEM_PATH"
 	else
-		REMOTE_JOB_DEST="filename=malloc"
+		REMOTE_JOB_DEST="malloc"
 	fi
 
 	case $MODE in
@@ -198,7 +198,7 @@ function benchmark_one() {
 		;;
 	esac
 
-	DEST="$(echo $REMOTE_JOB_DEST | cut -d'=' -f2- | cut -d'/' -f2- | sed 's/\//_/g')"
+	DEST="$(echo $REMOTE_JOB_DEST | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
 	NAME=rpma_fio_${PERSIST_MODE}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
@@ -310,7 +310,7 @@ function benchmark_one() {
 		esac
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
-			${REMOTE_JOB_DEST} \
+			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			# copy config to the server
