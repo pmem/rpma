@@ -539,7 +539,8 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->byte_len = wc.byte_len;
 	cmpl->op_status = wc.status;
-	cmpl->flags = wc.wc_flags;
+	/* 'wc_flags' is of 'int' type in older versions of libibverbs */
+	cmpl->flags = (unsigned)wc.wc_flags;
 
 	/*
 	 * The value of imm_data can only be placed in the receive Completion
