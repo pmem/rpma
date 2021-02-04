@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-completion_get.c -- the rpma_conn_completion_get() unit tests
@@ -193,7 +193,11 @@ completion_get__success(void **cstate_ptr)
 		wc.byte_len = MOCK_LEN;
 		wc.status = MOCK_WC_STATUS;
 		if (flags[i] == IBV_WC_WITH_IMM) {
-			wc.wc_flags = flags[i];
+			/*
+			 * 'wc_flags' is of 'int' type
+			 * in older versions of libibverbs.
+			 */
+			wc.wc_flags = (typeof(wc.wc_flags))flags[i];
 			wc.imm_data = htonl(MOCK_IMM_DATA);
 		}
 		will_return(poll_cq, &wc);
