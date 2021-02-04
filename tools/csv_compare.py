@@ -40,7 +40,7 @@ column_default = {
     'bs':       None,
 }
 
-dimmensions = {'threads', 'iodepth', 'bs'}
+dimensions = {'threads', 'iodepth', 'bs'}
 
 layouts = {
     'lat_avg': {
@@ -288,7 +288,7 @@ def main():
     parser.add_argument('--output_layout', metavar='OUTPUT_LAYOUT',
         choices=layouts.keys(), required=True, help='an output file layout')
     parser.add_argument('--arg_axis', metavar='ARG_AXIS',
-        choices=dimmensions, required=False,
+        choices=dimensions, required=False,
         help='an axis for layouts which requires to pick one')
     parser.add_argument('--arg_xscale', metavar='XSCALE',
         choices=['linear', 'log'], required=False, help='an x-axis scale')

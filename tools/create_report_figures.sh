@@ -309,11 +309,11 @@ function bw_figures()
         legend=( $(files_to_machines $filter) )
     fi
 
-    axises=('bs' 'threads')
+    axes=('bs' 'threads')
     axis_filters=('bw-bs' 'bw-th')
 
-    for index in "${!axises[@]}"; do
-        axis="${axises[$index]}"
+    for index in "${!axes[@]}"; do
+        axis="${axes[$index]}"
         axis_filter="${axis_filters[$index]}"
         # replace '{axis}' with actual filter by axis
         eff_filter="${filter//\{axis\}/${axis_filter}}"
