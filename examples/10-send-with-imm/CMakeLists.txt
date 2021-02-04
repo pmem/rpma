@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2020 Fujitsu
+# Copyright 2021, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -37,7 +38,7 @@ function(add_example name)
 			${LIBRPMA_INCLUDE_DIRS}
 			${LIBIBVERBS_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES})
+	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)
