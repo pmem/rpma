@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * rpma_utils-get_ibv_context.c -- 'get ibv context' multithreaded test
@@ -78,7 +78,8 @@ main(int argc, char *argv[])
 
 	for (i = 0; i < thread_num; i++) {
 		threads_args[i].thread_num = i;
-		strcpy(threads_args[i].addr, addr);
+		strncpy(threads_args[i].addr, addr,
+			sizeof(threads_args[i].addr));
 		if ((ret = pthread_create(&p_threads[i], NULL, thread_main,
 				&threads_args[i])) != 0) {
 			fprintf(stderr, "Cannot start a thread #%d: %s\n",
