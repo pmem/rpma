@@ -7,7 +7,7 @@
 #
 # ib_read.sh -- a single-sided ib_read_lat/bw tool (EXPERIMENTAL)
 #
-# Spawns both server and the client, collects the results for multile data
+# Spawns both server and the client, collects the results for multiple data
 # sizes (1KiB, 4KiB, 64KiB) and generates a single CSV file with all
 # the resutls.
 #
