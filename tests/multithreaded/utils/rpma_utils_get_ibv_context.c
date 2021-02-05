@@ -74,6 +74,7 @@ main(int argc, char *argv[])
 	threads_args = calloc((size_t)thread_num, sizeof(struct thread_args));
 	if (threads_args == NULL) {
 		fprintf(stderr, "malloc failed");
+		ret = -1;
 		goto err_free_p_threads;
 	}
 
@@ -85,20 +86,25 @@ main(int argc, char *argv[])
 				&threads_args[i])) != 0) {
 			fprintf(stderr, "Cannot start a thread #%d: %s\n",
 				i, strerror(ret));
-			goto err_free_threads_args;
+			/*
+			 * Set thread_num to the number
+			 * of already created threads
+			 * to join them below.
+			 */
+			thread_num = i;
+			/* return -1 on error */
+			ret = -1;
+			break;
 		}
 	}
 
 	for (i = thread_num - 1; i >= 0; i--)
-		pthread_join(p_threads[i], NULL);
+		(void) pthread_join(p_threads[i], NULL);
 
-	return 0;
-
-err_free_threads_args:
 	free(threads_args);
 
 err_free_p_threads:
 	free(p_threads);
 
-	return -1;
+	return ret;
 }
