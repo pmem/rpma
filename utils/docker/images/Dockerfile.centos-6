@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -11,6 +11,24 @@
 # Pull base image
 FROM centos:6
 MAINTAINER tomasz.gromadzki@intel.com
+
+# Disable CentOS-6 Base repo (because CentOS-6 is EOL):
+# https://wiki.centos.org/About/Product
+RUN sed -i 's/gpgcheck=1/enabled=0/g' /etc/yum.repos.d/CentOS-Base.repo
+
+# Enable the CentOS-10 Vault repo:
+# https://vault.centos.org/6.10/
+ENV VAULT_REPO "/etc/yum.repos.d/CentOS-Vault.repo"
+# remove all 6.0-6.8 repos, leave 6.9 only
+RUN sed -i '0,/C6.9-base/d' $VAULT_REPO
+RUN sed -i '/name=CentOS-6.9 - Base/i [C6.9-base]' $VAULT_REPO
+# rename 6.9 repos to 6.10 (the newest one)
+RUN sed -i 's/6.9/6.10/g' $VAULT_REPO
+# enable all 6.10 repos
+RUN sed -i 's/enabled=0/enabled=1/g' $VAULT_REPO
+# print out the results
+RUN cat $VAULT_REPO
+RUN yum repolist enabled
 
 RUN yum update -y
 RUN yum install -y epel-release
