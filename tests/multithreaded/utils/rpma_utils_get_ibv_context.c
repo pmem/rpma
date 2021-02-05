@@ -63,13 +63,13 @@ main(int argc, char *argv[])
 	char *addr = argv[2];
 
 	pthread_t *p_threads;
-	p_threads = malloc(sizeof(pthread_t) * (unsigned int)thread_num);
+	p_threads = calloc(1, sizeof(pthread_t) * (unsigned int)thread_num);
 	if (p_threads == NULL) {
 		fprintf(stderr, "malloc failed");
 		exit(-1);
 	}
 
-	struct thread_args *threads_args = malloc(sizeof(struct thread_args)
+	struct thread_args *threads_args = calloc(1, sizeof(struct thread_args)
 						* (unsigned int)thread_num);
 	if (threads_args == NULL) {
 		fprintf(stderr, "malloc failed");
@@ -78,7 +78,8 @@ main(int argc, char *argv[])
 
 	for (i = 0; i < thread_num; i++) {
 		threads_args[i].thread_num = i;
-		strcpy(threads_args[i].addr, addr);
+		strncpy(threads_args[i].addr, addr,
+			sizeof(threads_args[i].addr) - 1);
 		if ((ret = pthread_create(&p_threads[i], NULL, thread_main,
 				&threads_args[i])) != 0) {
 			fprintf(stderr, "Cannot start a thread #%d: %s\n",
