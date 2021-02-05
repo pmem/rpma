@@ -57,20 +57,21 @@ main(int argc, char *argv[])
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	/* parameters */
+	pthread_t *p_threads;
+	struct thread_args *threads_args;
 	int ret = 0;
 	int i;
+
 	int thread_num = (int)strtoul(argv[1], NULL, 10);
 	char *addr = argv[2];
 
-	pthread_t *p_threads;
-	p_threads = malloc(sizeof(pthread_t) * (unsigned int)thread_num);
+	p_threads = calloc((size_t)thread_num, sizeof(pthread_t));
 	if (p_threads == NULL) {
 		fprintf(stderr, "malloc failed");
 		exit(-1);
 	}
 
-	struct thread_args *threads_args = malloc(sizeof(struct thread_args)
-						* (unsigned int)thread_num);
+	threads_args = calloc((size_t)thread_num, sizeof(struct thread_args));
 	if (threads_args == NULL) {
 		fprintf(stderr, "malloc failed");
 		goto err_free_p_threads;
@@ -78,7 +79,8 @@ main(int argc, char *argv[])
 
 	for (i = 0; i < thread_num; i++) {
 		threads_args[i].thread_num = i;
-		strcpy(threads_args[i].addr, addr);
+		strncpy(threads_args[i].addr, addr,
+			sizeof(threads_args[i].addr) - 1);
 		if ((ret = pthread_create(&p_threads[i], NULL, thread_main,
 				&threads_args[i])) != 0) {
 			fprintf(stderr, "Cannot start a thread #%d: %s\n",
