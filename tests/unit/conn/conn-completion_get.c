@@ -163,20 +163,23 @@ completion_get__success(void **cstate_ptr)
 			IBV_WC_RDMA_WRITE,
 			IBV_WC_SEND,
 			IBV_WC_RECV,
-			IBV_WC_RECV
+			IBV_WC_RECV,
+			IBV_WC_RECV_RDMA_WITH_IMM
 	};
 	enum rpma_op ops[] = {
 			RPMA_OP_READ,
 			RPMA_OP_WRITE,
 			RPMA_OP_SEND,
 			RPMA_OP_RECV,
-			RPMA_OP_RECV
+			RPMA_OP_RECV,
+			RPMA_OP_RECV_RDMA_WITH_IMM
 	};
 	unsigned flags[] = {
 		0,
 		0,
 		0,
 		0,
+		IBV_WC_WITH_IMM,
 		IBV_WC_WITH_IMM
 	};
 
