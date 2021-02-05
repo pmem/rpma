@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -15,7 +15,7 @@ MAINTAINER tomasz.gromadzki@intel.com
 RUN dnf update -y
 RUN dnf install -y epel-release
 RUN dnf install -y 'dnf-command(config-manager)'
-RUN dnf config-manager --set-enabled PowerTools
+RUN dnf config-manager --set-enabled powertools
 
 # base deps
 ENV BASE_DEPS "\
