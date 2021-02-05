@@ -2044,6 +2044,50 @@ int rpma_write(struct rpma_conn *conn,
 		const struct rpma_mr_local *src,  size_t src_offset,
 		size_t len, int flags, const void *op_context);
 
+/** 3
+ * rpma_write_with_imm - initiate the write operation with immediate data
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	struct rpma_mr_local;
+ *	struct rpma_mr_remote;
+ *	int rpma_write_with_imm(struct rpma_conn *conn,
+ *			struct rpma_mr_remote *dst, size_t dst_offset,
+ *			const struct rpma_mr_local *src,  size_t src_offset,
+ *			size_t len, int flags, uint32_t imm,
+ *			const void *op_context);
+ *
+ * DESCRIPTION
+ * rpma_write_with_imm() initiates the write operation with immediate data
+ * (transferring data from the local memory to the remote memory.
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation
+ *
+ * RETURN VALUE
+ * The rpma_write_with_imm() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_write_with_imm() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3),
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_write_with_imm(struct rpma_conn *conn,
+		struct rpma_mr_remote *dst, size_t dst_offset,
+		const struct rpma_mr_local *src,  size_t src_offset,
+		size_t len, int flags, uint32_t imm, const void *op_context);
+
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
 /** 3
@@ -2323,6 +2367,7 @@ enum rpma_op {
 	RPMA_OP_FLUSH,
 	RPMA_OP_SEND,
 	RPMA_OP_RECV,
+	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
 struct rpma_completion {
