@@ -84,7 +84,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* send a message with immediate data to the server */
-	fprintf(stdout, "send value %s with immediate data %u\n",
+	fprintf(stdout, "send a value %s with immediate data %u\n",
 		word, (uint32_t)imm);
 	strcpy(send, word);
 	ret = rpma_send_with_imm(conn, send_mr, 0, KILOBYTE,
@@ -106,6 +106,7 @@ main(int argc, char *argv[])
 			"an unexpected completion: %s\n",
 			ibv_wc_status_str(cmpl.op_status));
 		ret = -1;
+		goto err_conn_disconnect;
 	}
 
 	if (cmpl.op != RPMA_OP_SEND) {
