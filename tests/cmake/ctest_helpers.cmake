@@ -190,22 +190,33 @@ function(add_test_common name tracer testcase cmake_script)
 endfunction()
 
 function(add_test_generic)
-	set(oneValueArgs NAME CASE SCRIPT)
+	set(options GROUP_SCRIPT)
+	set(oneValueArgs NAME SCRIPT CASE)
 	set(multiValueArgs TRACERS)
-	cmake_parse_arguments(TEST "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	cmake_parse_arguments(TEST "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if("${TEST_SCRIPT}" STREQUAL "")
-		if("${TEST_CASE}" STREQUAL "")
-			set(TEST_CASE "0")
-			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/run_default.cmake)
-		else()
-			set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}_${TEST_CASE}.cmake)
-		endif()
+	if("${TEST_CASE}" STREQUAL "")
+		set(STR_TEST_CASE "")
 	else()
-		if("${TEST_CASE}" STREQUAL "")
-			set(TEST_CASE "0")
-		endif()
+		set(STR_TEST_CASE "_${TEST_CASE}")
+	endif()
+
+	if(NOT "${TEST_SCRIPT}" STREQUAL "")
+		# SCRIPT is set
 		set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_SCRIPT})
+	elseif(TEST_GROUP_SCRIPT)
+		# GROUP_SCRIPT is set
+		set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../run_group${STR_TEST_CASE}.cmake)
+	elseif(NOT "${TEST_CASE}" STREQUAL "")
+		# CASE is set
+		set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}${STR_TEST_CASE}.cmake)
+	else()
+		# none of: SCRIPT nor GROUP_SCRIPT nor CASE is set
+		set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/run_default.cmake)
+	endif()
+
+	if("${TEST_CASE}" STREQUAL "")
+		set(TEST_CASE "0") # TEST_CASE is required by add_test_common()
 	endif()
 
 	if("${TEST_TRACERS}" STREQUAL "")
