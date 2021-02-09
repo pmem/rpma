@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2016-2021, Intel Corporation
 #
 
 #
@@ -16,7 +16,6 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Additional parameters to build docker without building components
 ARG SKIP_SCRIPTS_DOWNLOAD
-ARG SKIP_PMDK_BUILD
 
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
@@ -33,31 +32,6 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
-# ndctl (optional if libndctl-dev and libdaxctl-dev >= 60.1, 64.1 preferred)
-ENV NDCTL_DEPS "\
-	automake \
-	bash-completion \
-	build-essential \
-	git \
-	libjson-c-dev \
-	libkeyutils-dev \
-	libkmod-dev \
-	libtool \
-	libudev-dev \
-	pkg-config \
-	systemd \
-	uuid-dev"
-
-# PMDK deps
-ENV PMDK_DEPS "\
-	debhelper \
-	devscripts \
-	pandoc"
-
-ENV EXAMPLES_DEPS "\
-	$NDCTL_DEPS \
-	$PMDK_DEPS"
-
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -73,7 +47,6 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
-	$EXAMPLES_DEPS \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
