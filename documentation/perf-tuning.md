@@ -169,4 +169,7 @@ $ ifconfig ens785f0 mtu 4200
 ## Running workloads
 
 In order to learn how to run the individual workloads, please visit:
-https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md
+[https://github.com/pmem/rpma/master/tools/perf/BENCHMARKING.md][perf-bench]
+
+[perf-bench]: [https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md]
+
