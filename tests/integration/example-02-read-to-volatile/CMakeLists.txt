@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -35,7 +35,7 @@ target_include_directories(${TARGET} PRIVATE
 
 set_target_properties(${TARGET}
        PROPERTIES
-       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf")
+       LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf,--wrap=mmap,--wrap=munmap")
 
 target_compile_definitions(${TARGET}
        PUBLIC TEST_MOCK_MAIN

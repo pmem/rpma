@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -22,7 +22,7 @@ function(add_test_flush name)
 
 	set_target_properties(${name}
 		PROPERTIES
-		LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=sysconf")
+		LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=mmap,--wrap=munmap,--wrap=sysconf")
 
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
