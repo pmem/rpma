@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks.h -- common mocks for integration tests
@@ -59,6 +59,10 @@ extern struct ibv_qp Ibv_qp;		/* mock IBV QP */
 extern struct ibv_odp_caps Ibv_odp_capable_caps;
 
 struct posix_memalign_args {
+	void *ptr;
+};
+
+struct mmap_args {
 	void *ptr;
 };
 
