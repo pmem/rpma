@@ -7,6 +7,17 @@ layout: pmdk
 
 *Direct Write to PMem* is a readiness of hardware and software configuration which allows effectively and persistently write data to PMem physically attached to one system from another system using RDMA-capable network. How to achive *Direct Write to PMem* capability may differs from system to system because of variety of potential 'interruptions' (e.g. caching) in data's way to be stored persistently on PMem.
 
+## Disclaimer
+*Performance varies by use, configuration and other factors.*
+
+*No product or component can be absolutely secure.*
+
+*Your costs and results may vary.*
+
+*Intel technologies may require enabled hardware, software or service activation.*
+
+*Intel disclaims all express and implied warranties, including without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement, as well as any warranty arising from course of performance, course of dealing, or usage in trade.*
+
 ## 2nd Generation Intel&reg; Xeon&reg; Scalable Processors
 
 For the 2nd Generation Intel&reg; Xeon&reg; Scalable Processors (**Cascade Lake**) the only configuration item one should take care of is Intel&reg; Data Direct I/O Technology (**DDIO**). **DDIO** assumes the good enough place to effectively store data comming from the RDMA (and any other DMA traffic) is the CPU LLC from which CPU can access it more easily than when it would be stored in DRAM or on PMem [[1]][ddio]. This is beneficial for any other DMA traffic but prevents from achiving *Direct Write to PMem*.
