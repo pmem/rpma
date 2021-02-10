@@ -7,7 +7,7 @@ layout: pmdk
 
 A collection of the best methods, practices, and configuration values known for delivering the best possible performance in a consistent and predictable way for the workloads built on the librpma library.
 
-## Disclaimer
+## General notes
 
 The *Performance - Tuning* aims to collect all tested and proven procedures with known beneficial effects on the performance of the workloads built on the librpma library. Nonetheless, each change of configuration should be set up and tested in a testing environment before being applied to a production system. Backing up all data and configuration settings prior to tuning is also recommended.
 
@@ -172,4 +172,16 @@ In order to learn how to run the individual workloads, please visit:
 [https://github.com/pmem/rpma/master/tools/perf/BENCHMARKING.md][perf-bench]
 
 [perf-bench]: https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md
+
+## Disclaimer
+
+Performance varies by use, configuration and other factors.
+
+No product or component can be absolutely secure.
+
+Your costs and results may vary.
+
+Intel technologies may require enabled hardware, software or service activation.
+
+Intel disclaims all express and implied warranties, including without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement, as well as any warranty arising from course of performance, course of dealing, or usage in trade.
 
