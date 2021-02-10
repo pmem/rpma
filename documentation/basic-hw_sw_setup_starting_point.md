@@ -3,7 +3,7 @@ title: hw-sw-setup-starting-point
 layout: pmdk
 ---
 
-## HW & SW setup starting point description
+# HW & SW setup starting point description
 
 In order to make the optimal use of your Remote Persistent Memory:
 
@@ -33,3 +33,15 @@ In order to make the optimal use of your Remote Persistent Memory:
 [start-3]: https://www.intel.com/content/dam/support/us/en/documents/memory-and-storage/data-center-persistent-mem/Intel-Optane-DC-Persistent-Memory-Quick-Start-Guide.pdf
 [start-4]: https://software.intel.com/content/www/us/en/develop/videos/provisioning-intel-optane-dc-persistent-memory-modules-in-linux.html
 [start-5]: https://pmem.io/rpma/documentation/basic-reqs-optimizing-memory-performance.html
+
+## Disclaimer
+
+Performance varies by use, configuration and other factors.
+
+No product or component can be absolutely secure.
+
+Your costs and results may vary.
+
+Intel technologies may require enabled hardware, software or service activation.
+
+Intel disclaims all express and implied warranties, including without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement, as well as any warranty arising from course of performance, course of dealing, or usage in trade.
