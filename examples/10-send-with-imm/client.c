@@ -117,15 +117,15 @@ main(int argc, char *argv[])
 	}
 
 err_conn_disconnect:
-	common_disconnect_and_wait_for_conn_close(&conn);
+	(void) common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
 	/* deregister the memory regions */
-	rpma_mr_dereg(&send_mr);
+	(void) rpma_mr_dereg(&send_mr);
 
 err_peer_delete:
 	/* delete the peer object */
-	rpma_peer_delete(&peer);
+	(void) rpma_peer_delete(&peer);
 
 err_mr_free:
 	/* free the memory */
