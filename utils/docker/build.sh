@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2017-2020, Intel Corporation
+# Copyright 2017-2021, Intel Corporation
 #
 
 #
@@ -14,7 +14,7 @@
 #   where the root of this project is on the host machine,
 # - set variables 'OS' and 'OS_VER' properly to a system you want to build this
 #   repo on (for proper values take a look on the list of Dockerfiles at the
-#   utils/docker/images directory), eg. OS=ubuntu, OS_VER=16.04.
+#   utils/docker/images directory), eg. OS=ubuntu, OS_VER=20.04.
 #
 
 set -e
