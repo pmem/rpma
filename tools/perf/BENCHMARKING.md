@@ -6,7 +6,7 @@ As a baseline the generally accepted tools like `ib_read_lat`, `ib_read_bw` etc.
 
 ## Requirements
 
-To use these tools, you must have several components installed in your system:
+To use the benchmarking tools (e.g. ib_read.sh, rpma_fio_bench.sh), you must have several components installed in your system:
  - python3
  - python3-pip
  - pandas
@@ -15,6 +15,7 @@ To use these tools, you must have several components installed in your system:
  - fio (supporting the librpma fio engine)
  - numactl
  - sshpass
+ - pciutils (for ddio.sh which may be invoked from rpmem_fio_bench.sh)
 
 *Note*: Currently only https://github.com/pmem/fio.git supports the librpma fio engine.
 
@@ -37,6 +38,18 @@ $ cd fio
 $ ./configure
 $ make
 $ sudo make install
+```
+
+To use the reporting tools (e.g. csv_compare.py, report_bench.sh, create_report_figures.sh, create_report.py, fio-histogram.py), you must additionally install:
+ - jinja2
+ - markdown2
+ - PIL
+
+```sh
+$ sudo yum install python3 python3-pip numactl sshpass
+$ pip3 install --user jinja2
+$ pip3 install --user markdown2
+$ pip3 install --user PIL
 ```
 
 *Note*: All of the scripts presented in the following sections must be run on the client side.
