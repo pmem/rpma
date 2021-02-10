@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks.c -- common mocks for integration tests
@@ -7,6 +7,8 @@
 
 #include <string.h>
 #include <librpma.h>
+#include <sys/types.h>
+#include <sys/mman.h>
 
 #include "cmocka_headers.h"
 #include "conn_cfg.h"
@@ -755,6 +757,44 @@ create_descriptor(void *desc,
 	buff += sizeof(uint32_t);
 
 	*((uint8_t *)buff) = usage;
+
+	return 0;
+}
+
+/*
+ * __wrap_mmap -- mmap() mock
+ */
+void *
+__wrap_mmap(void *__addr, size_t __len, int __prot,
+		int __flags, int __fd, off_t __offset)
+{
+	void *err = mock_type(void *);
+	if (err == MAP_FAILED)
+		return MAP_FAILED;
+
+	struct mmap_args *args = mock_type(struct mmap_args *);
+
+	void *memptr = __real__test_malloc(__len);
+
+	/*
+	 * Save the address and length of the allocated memory
+	 * in order to verify it later.
+	 */
+	args->addr = memptr;
+	args->len = __len;
+
+	return memptr;
+}
+
+/*
+ * __wrap_munmap -- munmap() mock
+ */
+int
+__wrap_munmap(void *__addr, size_t __len)
+{
+	(void) __len; /* unsused */
+
+	test_free(__addr);
 
 	return 0;
 }

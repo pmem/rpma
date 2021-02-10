@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * example-04-write-to-persistent.c -- 'write to persistent' integration tests
@@ -111,13 +111,14 @@ test_client__success(void **unused)
 	will_return(rdma_migrate_id, MOCK_OK);
 
 	/* allocate memory for the rpma_flush_apm_new */
-	struct posix_memalign_args flush = {0};
-	will_return(__wrap_posix_memalign, &flush);
+	struct mmap_args flush = {0};
+	will_return(__wrap_mmap, &flush);
+	will_return(__wrap_mmap, &flush);
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
 	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
-	will_return(ibv_reg_mr, &flush.ptr);
+	will_return(ibv_reg_mr, &flush.addr);
 	will_return(ibv_reg_mr, MOCK_MR_FLUSH);
 
 	expect_value(rdma_connect, id, &Cm_id);
@@ -341,13 +342,14 @@ test_server__success(void **unused)
 	expect_value(rdma_migrate_id, channel, MOCK_EVCH);
 	will_return(rdma_migrate_id, MOCK_OK);
 
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
+	will_return(__wrap_mmap, &allocated_raw);
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
 	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
-	will_return(ibv_reg_mr, &allocated_raw.ptr);
+	will_return(ibv_reg_mr, &allocated_raw.addr);
 	will_return(ibv_reg_mr, MOCK_MR_RAW);
 
 	/* configure mocks for rpma_conn_next_event() */
