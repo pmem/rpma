@@ -6,6 +6,7 @@ layout: pmdk
 # HW & SW setup starting point description
 
 ## Disclaimer
+
 *Performance varies by use, configuration and other factors.*
 
 *No product or component can be absolutely secure.*
