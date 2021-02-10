@@ -3,8 +3,20 @@ title: hw-sw-setup-starting-point
 layout: pmdk
 ---
 
-## HW & SW setup starting point description
+# HW & SW setup starting point description
 
+## Disclaimer
+*Performance varies by use, configuration and other factors.*
+
+*No product or component can be absolutely secure.*
+
+*Your costs and results may vary.*
+
+*Intel technologies may require enabled hardware, software or service activation.*
+
+*Intel disclaims all express and implied warranties, including without limitation, the implied warranties of merchantability, fitness for a particular purpose, and non-infringement, as well as any warranty arising from course of performance, course of dealing, or usage in trade.*
+
+##Remote Persistent Memory Optimized Access
 In order to make the optimal use of your Remote Persistent Memory:
 
 1) Make sure you have all following required HW components [[1]][start-1] and check: how many and what kind of those items do you have? Which socket/slot/channel are they located in?:
