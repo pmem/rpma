@@ -41,6 +41,14 @@ $ sudo make install
 
 *Note*: All of the scripts presented in the following sections must be run on the client side.
 
+To use the report generation tools, you must additionally install:
+ - jinja2
+ - markdown2
+ - shutil
+ - pil
+ - textwrap
+ - csv
+
 ## Running workloads
 
 There are a few tools that can be used for automatic running RPMA-related workloads:
