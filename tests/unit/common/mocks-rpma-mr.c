@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -99,8 +99,14 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	assert_non_null(mr_ptr);
 	check_expected_ptr(*mr_ptr);
 
+	int ret = mock_type(int);
+	/* XXX validate the errno handling */
+	if (ret == RPMA_E_PROVIDER)
+		errno = mock_type(int);
+
 	*mr_ptr = NULL;
-	return 0;
+
+	return ret;
 }
 
 /*

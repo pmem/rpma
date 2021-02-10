@@ -1637,7 +1637,7 @@ int rpma_conn_disconnect(struct rpma_conn *conn);
  *
  * ERRORS
  * rpma_conn_delete() can fail with the following errors:
- * - RPMA_E_INVAL - conn_ptr is NULL
+ * - RPMA_E_INVAL - conn_ptr is NULL or munmap() failed
  * - RPMA_E_PROVIDER - ibv_destroy_cq() or rdma_destroy_id() failed
  *
  * SEE ALSO
