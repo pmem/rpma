@@ -126,16 +126,19 @@ $ make test
 $ ctest
 ```
 
-## Supported OSes
+## OS support
 
 Known supported OSes:
 
 - CentOS >= 6
 - Debian >= 9
 - Fedora >= 27
-- Ubuntu >= 16.04
+- Ubuntu >= 18.04
 
 Known unsupported OSes:
 
 - Debian 8:     too old version of CMake (v3.0.2)
 - Ubuntu 14.04: too old version of CMake (v2.8.12.2)
+
+OSes not tested anymore:
+- Ubuntu 16.04

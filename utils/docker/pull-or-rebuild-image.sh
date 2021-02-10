@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2016-2021, Intel Corporation
 #
 
 #
@@ -64,7 +64,7 @@ fi
 
 if [[ -z "$OS" || -z "$OS_VER" ]]; then
 	echo "ERROR: The variables OS and OS_VER have to be set properly " \
-             "(eg. OS=ubuntu, OS_VER=16.04)."
+             "(eg. OS=ubuntu, OS_VER=20.04)."
 	exit 1
 fi
 
