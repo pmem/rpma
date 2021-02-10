@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * example-02-read-to-volatile.c -- 'read to volatile' integration tests
@@ -107,13 +107,14 @@ test_client__success(void **unused)
 	expect_value(rdma_migrate_id, channel, MOCK_EVCH);
 	will_return(rdma_migrate_id, MOCK_OK);
 
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
+	will_return(__wrap_mmap, &allocated_raw);
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
 	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
-	will_return(ibv_reg_mr, &allocated_raw.ptr);
+	will_return(ibv_reg_mr, &allocated_raw.addr);
 	will_return(ibv_reg_mr, MOCK_MR_RAW);
 
 	expect_value(rdma_connect, id, &Cm_id);
@@ -180,6 +181,8 @@ test_client__success(void **unused)
 	/* configure mocks for rpma_conn_delete() */
 	expect_value(ibv_dereg_mr, mr, MOCK_MR_RAW);
 	will_return(ibv_dereg_mr, MOCK_OK);
+	will_return(__wrap_munmap, &allocated_raw);
+	will_return(__wrap_munmap, MOCK_OK);
 
 	expect_value(rdma_destroy_qp, id, &Cm_id);
 
@@ -304,13 +307,14 @@ test_server__success(void **unused)
 	expect_value(rdma_migrate_id, channel, MOCK_EVCH);
 	will_return(rdma_migrate_id, MOCK_OK);
 
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
+	will_return(__wrap_mmap, &allocated_raw);
 
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, length, MOCK_RAW_SIZE);
 	expect_value(ibv_reg_mr, access, IBV_ACCESS_LOCAL_WRITE);
-	will_return(ibv_reg_mr, &allocated_raw.ptr);
+	will_return(ibv_reg_mr, &allocated_raw.addr);
 	will_return(ibv_reg_mr, MOCK_MR_RAW);
 
 	/* configure mocks for rpma_conn_next_event() */
@@ -343,6 +347,8 @@ test_server__success(void **unused)
 	/* configure mocks for rpma_conn_delete() */
 	expect_value(ibv_dereg_mr, mr, MOCK_MR_RAW);
 	will_return(ibv_dereg_mr, MOCK_OK);
+	will_return(__wrap_munmap, &allocated_raw);
+	will_return(__wrap_munmap, MOCK_OK);
 
 	expect_value(rdma_destroy_qp, id, &Cm_id);
 

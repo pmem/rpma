@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * flush.c -- librpma flush-related implementations
@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/mman.h>
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -40,6 +41,7 @@ struct rpma_flush_internal {
 
 struct flush_apm {
 	void *raw; /* buffer for read-after-write memory region */
+	size_t mmap_size; /* size of the mmap()'ed memory */
 	struct rpma_mr_local *raw_mr; /* read-after-write memory region */
 };
 
@@ -51,6 +53,8 @@ struct flush_apm {
 static int
 rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 {
+	int ret;
+
 	/* a memory registration has to be page-aligned */
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
@@ -59,29 +63,32 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 		return RPMA_E_PROVIDER;
 	}
 
+	size_t mmap_size = (size_t)pagesize;
+
 	/* allocate memory for the read-after-write buffer (RAW) */
-	void *raw = NULL;
-	int ret = posix_memalign(&raw, (size_t)pagesize, RAW_SIZE);
-	if (ret)
+	void *raw = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE,
+			MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	if (raw == MAP_FAILED)
 		return RPMA_E_NOMEM;
 
 	/* register the RAW buffer */
 	struct rpma_mr_local *raw_mr = NULL;
 	ret = rpma_mr_reg(peer, raw, RAW_SIZE, RPMA_MR_USAGE_READ_DST, &raw_mr);
 	if (ret) {
-		free(raw);
+		(void) munmap(raw, mmap_size);
 		return ret;
 	}
 
 	struct flush_apm *flush_apm = malloc(sizeof(struct flush_apm));
 	if (flush_apm == NULL) {
 		(void) rpma_mr_dereg(&raw_mr);
-		free(raw);
+		(void) munmap(raw, mmap_size);
 		return RPMA_E_NOMEM;
 	}
 
 	flush_apm->raw = raw;
 	flush_apm->raw_mr = raw_mr;
+	flush_apm->mmap_size = mmap_size;
 
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
@@ -102,12 +109,18 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 			(struct rpma_flush_internal *)flush;
 	struct flush_apm *flush_apm =
 			(struct flush_apm *)flush_internal->context;
-	int ret = rpma_mr_dereg(&flush_apm->raw_mr);
 
-	free(flush_apm->raw);
+	int ret_dereg = rpma_mr_dereg(&flush_apm->raw_mr);
+	int ret_unmap = munmap(flush_apm->raw, flush_apm->mmap_size);
 	free(flush_apm);
 
-	return ret;
+	if (ret_dereg)
+		return ret_dereg;
+
+	if (ret_unmap)
+		return RPMA_E_INVAL;
+
+	return 0;
 }
 
 /*
