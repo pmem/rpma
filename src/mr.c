@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -195,17 +195,21 @@ rpma_mr_send(struct ibv_qp *qp,
 	uint32_t imm, const void *op_context)
 {
 	struct ibv_send_wr wr;
-	struct ibv_sge sge;
 
 	/* source */
-	sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + offset);
-	sge.length = (uint32_t)len;
-	sge.lkey = src->ibv_mr->lkey;
+	if (src == NULL) {
+		wr.num_sge = 0;
+	} else {
+		struct ibv_sge sge;
+		sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + offset);
+		sge.length = (uint32_t)len;
+		sge.lkey = src->ibv_mr->lkey;
 
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
+		wr.sg_list = &sge;
+		wr.num_sge = 1;
+	}
+
 	wr.next = NULL;
-
 	wr.opcode = operation;
 	switch (wr.opcode) {
 	case IBV_WR_SEND:

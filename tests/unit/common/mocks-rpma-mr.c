@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -110,7 +110,6 @@ rpma_mr_send(struct ibv_qp *qp,
 	uint32_t imm, const void *op_context)
 {
 	assert_non_null(qp);
-	assert_non_null(src);
 	assert_int_not_equal(flags, 0);
 
 	check_expected_ptr(qp);

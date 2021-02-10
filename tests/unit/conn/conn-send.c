@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-send.c -- the rpma_send() unit tests
@@ -27,20 +27,6 @@ send__conn_NULL(void **unused)
 }
 
 /*
- * send__src_NULL -- NULL src is invalid
- */
-static void
-send__src_NULL(void **unused)
-{
-	/* run test */
-	int ret = rpma_send(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, MOCK_FLAGS, MOCK_OP_CONTEXT);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-}
-
-/*
  * send__flags_0 -- flags == 0 is invalid
  */
 static void
@@ -55,11 +41,11 @@ send__flags_0(void **unused)
 }
 
 /*
- * send__conn_src_NULL_flags_0 -- NULL conn, src
+ * send__conn_NULL_flags_0 -- NULL conn
  * and flags == 0 are invalid
  */
 static void
-send__conn_src_NULL_flags_0(void **unused)
+send__conn_NULL_flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_send(NULL, NULL, MOCK_LOCAL_OFFSET,
@@ -112,9 +98,8 @@ group_setup_send(void **unused)
 static const struct CMUnitTest tests_send[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(send__conn_NULL),
-	cmocka_unit_test(send__src_NULL),
 	cmocka_unit_test(send__flags_0),
-	cmocka_unit_test(send__conn_src_NULL_flags_0),
+	cmocka_unit_test(send__conn_NULL_flags_0),
 	cmocka_unit_test_setup_teardown(send__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)

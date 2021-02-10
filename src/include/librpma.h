@@ -2172,6 +2172,7 @@ int rpma_flush(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_send() initiates the send operation which transfers a message from
  * the local memory to other side of the connection.
+ * To send a 0 byte message, set src to NULL.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -2184,7 +2185,7 @@ int rpma_flush(struct rpma_conn *conn,
  * ERRORS
  * rpma_send() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn or src is NULL
+ * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
@@ -2213,6 +2214,7 @@ int rpma_send(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_send_with_imm() initiates the send operation with immediate data which
  * transfers a message from the local memory to other side of the connection.
+ * To send a 0 byte message, set src to NULL.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -2225,7 +2227,7 @@ int rpma_send(struct rpma_conn *conn,
  * ERRORS
  * rpma_send_with_imm() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn or src is NULL
+ * - RPMA_E_INVAL - conn is NULL
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
