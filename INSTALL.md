@@ -126,14 +126,14 @@ $ make test
 $ ctest
 ```
 
-## Supported OSes
+## OS support
 
 Known supported OSes:
 
 - CentOS >= 6
 - Debian >= 9
 - Fedora >= 27
-- Ubuntu >= 16.04
+- Ubuntu >= 18.04
 
 Known unsupported OSes:
 
