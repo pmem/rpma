@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mr.h -- librpma memory region-related internal definitions
@@ -42,7 +42,8 @@ int rpma_mr_write(struct ibv_qp *qp,
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && src != NULL && flags != 0
+ * - qp != NULL && flags != 0
+ * - if src == NULL then offset == 0 && len == 0
  *
  * ERRORS
  * rpma_mr_send() can fail with the following error:

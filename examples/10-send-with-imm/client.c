@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2020 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * client.c -- a client of the send-with-imm example
@@ -21,7 +22,7 @@ int
 main(int argc, char *argv[])
 {
 	/* validate parameters */
-	if (argc < 5) {
+	if (argc < 4) {
 		fprintf(stderr, USAGE_STR, argv[0]);
 		return -1;
 	}
@@ -33,9 +34,8 @@ main(int argc, char *argv[])
 	/* read common parameters */
 	char *addr = argv[1];
 	char *port = argv[2];
-	char *word = argv[3];
 
-	uint64_t imm = strtoul(argv[4], NULL, 10);
+	uint64_t imm = strtoul(argv[3], NULL, 10);
 	if (imm == ULONG_MAX && errno == ERANGE) {
 		fprintf(stderr, "strtoul() overflowed\n");
 		return -1;
@@ -50,27 +50,16 @@ main(int argc, char *argv[])
 
 	/* RPMA resources - general */
 	struct rpma_peer *peer = NULL;
-	struct rpma_mr_local *send_mr = NULL;
 	struct rpma_conn *conn = NULL;
 	struct rpma_completion cmpl;
 	int ret;
-
-	/* prepare memory */
-	char *send = malloc_aligned(KILOBYTE);
-	if (!send)
-		return -1;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
 	ret = client_peer_via_address(addr, &peer);
 	if (ret)
-		goto err_mr_free;
-
-	/* register the memory */
-	ret = rpma_mr_reg(peer, send, KILOBYTE, RPMA_MR_USAGE_SEND, &send_mr);
-	if (ret)
-		goto err_peer_delete;
+		return -1;
 
 	/*
 	 * establish a new connection to a server and send an immediate
@@ -81,14 +70,12 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(uint32_t);
 	ret = client_connect(peer, addr, port, &pdata, &conn);
 	if (ret)
-		goto err_mr_dereg;
+		goto err_peer_delete;
 
-	/* send a message with immediate data to the server */
-	fprintf(stdout, "send a value %s with immediate data %u\n",
-		word, (uint32_t)imm);
-	strcpy(send, word);
-	ret = rpma_send_with_imm(conn, send_mr, 0, KILOBYTE,
-		RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm, NULL);
+	/* send a 0B message with immediate data to the server */
+	fprintf(stdout, "send immediate data %u\n", (uint32_t)imm);
+	ret = rpma_send_with_imm(conn, NULL, 0, 0, RPMA_F_COMPLETION_ALWAYS,
+			(uint32_t)imm, NULL);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -119,17 +106,9 @@ main(int argc, char *argv[])
 err_conn_disconnect:
 	common_disconnect_and_wait_for_conn_close(&conn);
 
-err_mr_dereg:
-	/* deregister the memory regions */
-	rpma_mr_dereg(&send_mr);
-
 err_peer_delete:
 	/* delete the peer object */
 	rpma_peer_delete(&peer);
-
-err_mr_free:
-	/* free the memory */
-	free(send);
 
 	return ret;
 }
