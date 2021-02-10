@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * flush-new.c -- unit tests of the flush module
@@ -14,6 +14,7 @@
 #include "flush-common.h"
 #include "mocks-stdlib.h"
 #include "test-common.h"
+#include <sys/mman.h>
 
 /*
  * new__malloc_ENOMEM -- malloc() fail with ENOMEM
@@ -53,15 +54,15 @@ new__apm_sysconf_EINVAL(void **unused)
 }
 
 /*
- * new__apm_posix_memalign_ENOMEM -- malloc() fail with ENOMEM
+ * new__apm_mmap_ENOMEM -- malloc() fail with ENOMEM
  */
 static void
-new__apm_posix_memalign_ENOMEM(void **unused)
+new__apm_mmap_ENOMEM(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
 	will_return(__wrap_sysconf, MOCK_OK);
-	will_return(__wrap_posix_memalign, ENOMEM);
+	will_return(__wrap_mmap, MAP_FAILED);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
@@ -82,9 +83,9 @@ new__apm_mr_reg_RPMA_E_NOMEM(void **unused)
 	will_return_always(__wrap__test_malloc, MOCK_OK);
 	will_return(__wrap_sysconf, MOCK_OK);
 
-	will_return(__wrap_posix_memalign, MOCK_OK);
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	will_return(__wrap_mmap, MOCK_OK);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
 	expect_value(rpma_mr_reg, peer, MOCK_PEER);
 	expect_value(rpma_mr_reg, size, 8);
 	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
@@ -111,9 +112,9 @@ new__apm_malloc_ENOMEM(void **unused)
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return(__wrap_sysconf, MOCK_OK);
 
-	will_return(__wrap_posix_memalign, MOCK_OK);
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	will_return(__wrap_mmap, MOCK_OK);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
 	expect_value(rpma_mr_reg, peer, MOCK_PEER);
 	expect_value(rpma_mr_reg, size, 8);
 	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
@@ -150,7 +151,7 @@ main(int argc, char *argv[])
 		/* rpma__new() unit tests */
 		cmocka_unit_test(new__malloc_ENOMEM),
 		cmocka_unit_test(new__apm_sysconf_EINVAL),
-		cmocka_unit_test(new__apm_posix_memalign_ENOMEM),
+		cmocka_unit_test(new__apm_mmap_ENOMEM),
 		cmocka_unit_test(new__apm_mr_reg_RPMA_E_NOMEM),
 		cmocka_unit_test(new__apm_malloc_ENOMEM),
 		cmocka_unit_test_setup_teardown(new__apm_success,
