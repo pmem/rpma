@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * flush-common.c -- common part of unit tests of the flush module
@@ -21,9 +21,9 @@ setup__flush_new(void **fstate_ptr)
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
 	will_return(__wrap_sysconf, MOCK_OK);
-	will_return(__wrap_posix_memalign, MOCK_OK);
-	struct posix_memalign_args allocated_raw = {0};
-	will_return(__wrap_posix_memalign, &allocated_raw);
+	will_return(__wrap_mmap, MOCK_OK);
+	struct mmap_args allocated_raw = {0};
+	will_return(__wrap_mmap, &allocated_raw);
 	expect_value(rpma_mr_reg, peer, MOCK_PEER);
 	expect_value(rpma_mr_reg, size, 8);
 	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
@@ -50,6 +50,8 @@ teardown__flush_delete(void **fstate_ptr)
 {
 	/* configure mock */
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
+	will_return(rpma_mr_dereg, MOCK_OK);
+	will_return(__wrap_munmap, MOCK_OK);
 
 	/* delete the object */
 	struct flush_test_state *fstate = *fstate_ptr;
