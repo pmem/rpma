@@ -133,6 +133,10 @@ add_example(NAME 10-send-with-imm BIN server USE_LIBIBVERBS
 	SRCS 10-send-with-imm/server.c common/common-conn.c)
 add_example(NAME 10-send-with-imm BIN client USE_LIBIBVERBS
 	SRCS 10-send-with-imm/client.c common/common-conn.c)
+add_example(NAME 11-write-with-imm BIN server USE_LIBIBVERBS
+	SRCS 11-write-with-imm/server.c common/common-conn.c)
+add_example(NAME 11-write-with-imm BIN client USE_LIBIBVERBS
+	SRCS 11-write-with-imm/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
