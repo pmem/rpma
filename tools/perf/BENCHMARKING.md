@@ -2,19 +2,20 @@
 
 This document describes how to automate collection, processing and presentation of performance numbers (latency and bandwidth) from the RPMA-dedicated FIO engine.
 
-As a baseline the generally accepted tools like `ib_read_lat`, `ib_read_bw` etc. are used which execution, processing and presentation are also automated.
+As a baseline the generally accepted tools like `ib\_read\_lat`, `ib\_read\_bw` etc. are used which execution, processing and presentation are also automated.
 
 ## Requirements
 
-To use these tools, you must have several components installed in your system:
+To use the benchmarking tools (e.g. ib\_read.sh, rpma\_fio\_bench.sh), you must have several components installed in your system:
  - python3
  - python3-pip
  - pandas
  - matplotlib
- - perftest (providing ib tools like `ib_read_lat`, `ib_read_bw` etc)
+ - perftest (providing ib tools like `ib\_read\_lat`, `ib\_read\_bw` etc)
  - fio (supporting the librpma fio engine)
  - numactl
  - sshpass
+ - pciutils (for ddio.sh which may be invoked from rpmem\_fio\_bench.sh)
 
 *Note*: Currently only https://github.com/pmem/fio.git supports the librpma fio engine.
 
@@ -39,18 +40,30 @@ $ make
 $ sudo make install
 ```
 
+To use the reporting tools (e.g. csv\_compare.py, report\_bench.sh, create\_report\_figures.sh, create\_report.py, fio-histogram.py), you must additionally install:
+ - jinja2
+ - markdown2
+ - PIL
+
+```sh
+$ sudo yum install python3 python3-pip numactl sshpass
+$ pip3 install --user jinja2
+$ pip3 install --user markdown2
+$ pip3 install --user PIL
+```
+
 *Note*: All of the scripts presented in the following sections must be run on the client side.
 
 ## Running workloads
 
 There are a few tools that can be used for automatic running RPMA-related workloads:
 
-- `ib_read.sh` - a tool using `ib_read_lat` and `ib_read_bw` to benchmark the baseline performance of RDMA read operation
-- `rpma_fio_bench.sh` - a tool using librpma-dedicated FIO engines for benchmarking remote memory manipulation (reading, writing APM-style, writing GPSPM-style, mixed). These workloads can be run against PMem and DRAM as well.
+- `ib\_read.sh` - a tool using `ib\_read\_lat` and `ib\_read\_bw` to benchmark the baseline performance of RDMA read operation
+- `rpma\_fio\_bench.sh` - a tool using librpma-dedicated FIO engines for benchmarking remote memory manipulation (reading, writing APM-style, writing GPSPM-style, mixed). These workloads can be run against PMem and DRAM as well.
 
-### Example of `ib_read.sh` use
+### Example of `ib\_read.sh` use
 
-Generate the baseline latency numbers using `./ib_read.sh` tool:
+Generate the baseline latency numbers using `./ib\_read.sh` tool:
 
 ```sh
 $ export JOB_NUMA=0
@@ -67,9 +80,9 @@ To see all available configuration options please take a look at the help:
 $ ./ib_read.sh
 ```
 
-### Example of `rpma_fio_bench.sh` use
+### Example of `rpma\_fio\_bench.sh` use
 
-Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
+Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma\_fio\_bench.sh`:
 
 ```sh
 $ export JOB_NUMA=0
@@ -89,7 +102,7 @@ $ ./rpma_fio_bench.sh
 
 ## Analyzing the results
 
-All of the benchmarking tools described above generate standardized CSV format output files, which can be further processed using `csv_compare.py` to generate comparative charts.
+All of the benchmarking tools described above generate standardized CSV format output files, which can be further processed using `csv\_compare.py` to generate comparative charts.
 
 ### Example of comparing the obtained results
 
