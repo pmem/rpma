@@ -119,7 +119,6 @@ rpma_mr_send(struct ibv_qp *qp,
 	uint32_t imm, const void *op_context)
 {
 	assert_non_null(qp);
-	assert_non_null(src);
 	assert_int_not_equal(flags, 0);
 
 	check_expected_ptr(qp);

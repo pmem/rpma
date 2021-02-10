@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2020-2021 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * server.c -- a server of the send-with-imm example

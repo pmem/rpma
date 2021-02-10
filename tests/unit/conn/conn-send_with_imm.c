@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2020 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * conn-send_with_imm.c -- the rpma_send_with_imm() unit tests
@@ -13,6 +14,22 @@
 #include "mocks-rdma_cm.h"
 
 /*
+ * send_with_imm__src_NULL_offset_len_not_NULL -- NULL src
+ * and not NULL offset or len are invalid
+ */
+static void
+send_with_imm__src_NULL_offset_len_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_send_with_imm(MOCK_CONN, NULL,
+			MOCK_LOCAL_OFFSET, MOCK_LEN, MOCK_FLAGS,
+			MOCK_IMM_DATA, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * send_with_imm__conn_NULL -- NULL conn is invalid
  */
 static void
@@ -22,21 +39,6 @@ send_with_imm__conn_NULL(void **unused)
 	int ret = rpma_send_with_imm(NULL, MOCK_RPMA_MR_LOCAL,
 			MOCK_LOCAL_OFFSET, MOCK_LEN, MOCK_FLAGS,
 			MOCK_IMM_DATA, MOCK_OP_CONTEXT);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-}
-
-/*
- * send_with_imm__src_NULL -- NULL src is invalid
- */
-static void
-send_with_imm__src_NULL(void **unused)
-{
-	/* run test */
-	int ret = rpma_send_with_imm(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
-			MOCK_LEN, MOCK_FLAGS, MOCK_IMM_DATA,
-			MOCK_OP_CONTEXT);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -58,11 +60,11 @@ send_with_imm__flags_0(void **unused)
 }
 
 /*
- * send_with_imm__conn_src_NULL_flags_0 -- NULL conn, src
+ * send_with_imm__conn_NULL_flags_0 -- NULL conn, src
  * and flags == 0 are invalid
  */
 static void
-send_with_imm__conn_src_NULL_flags_0(void **unused)
+send_with_imm__conn_NULL_flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_send_with_imm(NULL, NULL, MOCK_LOCAL_OFFSET,
@@ -115,10 +117,10 @@ group_setup_send(void **unused)
 
 static const struct CMUnitTest tests_send_with_imm[] = {
 	/* rpma_read_with_imm() unit tests */
+	cmocka_unit_test(send_with_imm__src_NULL_offset_len_not_NULL),
 	cmocka_unit_test(send_with_imm__conn_NULL),
-	cmocka_unit_test(send_with_imm__src_NULL),
 	cmocka_unit_test(send_with_imm__flags_0),
-	cmocka_unit_test(send_with_imm__conn_src_NULL_flags_0),
+	cmocka_unit_test(send_with_imm__conn_NULL_flags_0),
 	cmocka_unit_test_setup_teardown(send_with_imm__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
