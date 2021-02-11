@@ -39,7 +39,7 @@ ERRORS
 
 **rpma\_conn\_delete**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn\_ptr is NULL
+-   RPMA\_E\_INVAL - conn\_ptr is NULL or **munmap**() failed
 
 -   RPMA\_E\_PROVIDER - **ibv\_destroy\_cq**() or
     **rdma\_destroy\_id**() failed
