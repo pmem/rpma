@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2020-2021 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * server.c -- a server of the send-with-imm example
@@ -147,7 +148,9 @@ main(int argc, char *argv[])
 			cmpl.imm, *exp_imm);
 		ret = -1;
 	} else {
-		printf("receive a value %s with immediate data %u\n", recv,
+		if (cmpl.byte_len == 0)
+			recv[0] = '\0';
+		printf("received value '%s' with immediate data %u\n", recv,
 			cmpl.imm);
 	}
 
