@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-new.c -- the connection new/delete unit tests
@@ -256,6 +256,38 @@ delete__flush_delete_E_PROVIDER(void **unused)
 }
 
 /*
+ * delete__flush_delete_E_INVAL - rpma_flush_delete()
+ * fails with RPMA_E_INVAL
+ */
+static void
+delete__flush_delete_E_INVAL(void **unused)
+{
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	struct conn_test_state *cstate;
+	int ret = setup__conn_new((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	will_return(rpma_flush_delete, RPMA_E_INVAL);
+	will_return_maybe(ibv_destroy_cq, EAGAIN);
+	will_return_maybe(ibv_destroy_comp_channel, MOCK_OK);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return_maybe(rdma_destroy_id, MOCK_OK);
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(cstate->conn);
+}
+
+/*
  * delete__destroy_cq_EAGAIN - ibv_destroy_cq() fails with EAGAIN
  */
 static void
@@ -439,6 +471,7 @@ static const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(delete__conn_ptr_NULL),
 	cmocka_unit_test(delete__conn_NULL),
 	cmocka_unit_test(delete__flush_delete_E_PROVIDER),
+	cmocka_unit_test(delete__flush_delete_E_INVAL),
 	cmocka_unit_test(delete__destroy_cq_EAGAIN),
 	cmocka_unit_test(delete__destroy_cq_EAGAIN_subsequent_EIO),
 	cmocka_unit_test(delete__destroy_comp_channel_EAGAIN),

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * flush-common.h -- header of the common part of unit tests
@@ -8,6 +8,8 @@
 
 #ifndef FLUSH_COMMON_H
 #define FLUSH_COMMON_H 1
+
+#include "mocks-stdlib.h"
 
 #define MOCK_RPMA_MR_REMOTE	(struct rpma_mr_remote *)0xC412
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
@@ -22,6 +24,7 @@
  */
 struct flush_test_state {
 	struct rpma_flush *flush;
+	struct mmap_args allocated_raw;
 };
 
 int setup__flush_new(void **fstate_ptr);
