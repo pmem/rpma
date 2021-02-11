@@ -3,7 +3,7 @@ layout: manual
 Content-Style: 'text/css'
 title: LIBRPMA
 collection: librpma
-date: rpma API version 0.0
+date: rpma API version 0.9.0
 ...
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
