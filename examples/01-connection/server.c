@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * server.c -- a server of the connection example
@@ -21,7 +21,7 @@ main(int argc, char *argv[])
 {
 	if (argc < 3) {
 		fprintf(stderr, "usage: %s <addr> <port>\n", argv[0]);
-		abort();
+		return -1;
 	}
 
 	/* configure logging thresholds to see more details */
