@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2021 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * client.c -- a client of the write-with-imm example
@@ -36,13 +37,13 @@ main(int argc, char *argv[])
 
 	uint64_t imm = strtoul(argv[3], NULL, 10);
 	if (imm == ULONG_MAX && errno == ERANGE) {
-		fprintf(stderr, "strtoul() overflowed\n");
+		fprintf(stderr, "strtoul() overflow\n");
 		return -1;
 	}
 
 	if (imm > UINT32_MAX) {
 		fprintf(stderr,
-			"the provided immediate data is too big(%lu > %u)\n",
+			"The provided immediate data is too big (%lu > %u)\n",
 			imm, UINT32_MAX);
 		return -1;
 	}
@@ -85,7 +86,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	if (pdata.len < sizeof(struct common_data)) {
 		fprintf(stderr,
-			"received connection's private data is too small (%u < %zu)\n",
+			"Received connection's private data is too small (%u < %zu)\n",
 			pdata.len, sizeof(struct common_data));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -99,7 +100,7 @@ main(int argc, char *argv[])
 
 	/* write a message with immediate data to the server */
 	memcpy(src, (uint32_t *)&imm, sizeof(uint32_t));
-	fprintf(stdout, "write a value %u with immediate data %u\n",
+	fprintf(stdout, "Writing value '%u' with immediate data '%u'\n",
 		*src, (uint32_t)imm);
 	ret = rpma_write_with_imm(conn, dst_mr, dst_data->data_offset, src_mr,
 			0, KILOBYTE, RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm,
@@ -118,7 +119,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
-			"an unexpected completion: %s\n",
+			"Received unexpected completion: %s\n",
 			ibv_wc_status_str(cmpl.op_status));
 		ret = -1;
 		goto err_mr_remote_delete;
@@ -126,7 +127,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op != RPMA_OP_WRITE) {
 		fprintf(stderr,
-			"an unexpected type of operation (%d != %d)\n",
+			"Received unexpected type of operation (%d != %d)\n",
 			cmpl.op, RPMA_OP_WRITE);
 		ret = -1;
 	}

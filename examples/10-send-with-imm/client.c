@@ -38,13 +38,13 @@ main(int argc, char *argv[])
 
 	uint64_t imm = strtoul(argv[3], NULL, 10);
 	if (imm == ULONG_MAX && errno == ERANGE) {
-		fprintf(stderr, "strtoul() overflowed\n");
+		fprintf(stderr, "strtoul() overflow\n");
 		return -1;
 	}
 
 	if (imm > UINT32_MAX) {
 		fprintf(stderr,
-			"the provided immediate data is too big(%lu > %u)\n",
+			"The provided immediate data is too big (%lu > %u)\n",
 			imm, UINT32_MAX);
 		return -1;
 	}
@@ -97,12 +97,12 @@ main(int argc, char *argv[])
 
 	if (word) {
 		/* send a message with immediate data to the server */
-		fprintf(stdout, "send a value %s with immediate data %u\n",
+		fprintf(stdout, "Sending value '%s' with immediate data '%u'\n",
 			word, (uint32_t)imm);
 		strncpy(send, word, KILOBYTE - 1);
 	} else {
 		/* send a 0B message with immediate data to the server */
-		fprintf(stdout, "send immediate data %u\n", (uint32_t)imm);
+		fprintf(stdout, "Sending immediate data '%u'\n", (uint32_t)imm);
 	}
 
 	ret = rpma_send_with_imm(conn, send_mr, 0, len,
@@ -121,7 +121,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
-			"an unexpected completion: %s\n",
+			"Received unexpected completion: %s\n",
 			ibv_wc_status_str(cmpl.op_status));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op != RPMA_OP_SEND) {
 		fprintf(stderr,
-			"an unexpected type of operation (%d != %d)\n",
+			"Received unexpected type of operation (%d != %d)\n",
 			cmpl.op, RPMA_OP_SEND);
 		ret = -1;
 	}

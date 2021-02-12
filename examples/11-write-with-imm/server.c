@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2021 Fujitsu */
+/* Copyright 2021, Intel Corporation */
 
 /*
  * server.c -- a server of the write-with-imm example
@@ -139,7 +140,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
-			"an unexpected completion %s\n",
+			"Received unexpected completion: %s\n",
 			ibv_wc_status_str(cmpl.op_status));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -147,7 +148,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op != RPMA_OP_RECV_RDMA_WITH_IMM) {
 		fprintf(stderr,
-			"an unexpected type of operation (%d != %d)\n",
+			"Received unexpected type of operation (%d != %d)\n",
 			cmpl.op, RPMA_OP_RECV_RDMA_WITH_IMM);
 		ret = -1;
 		goto err_conn_disconnect;
@@ -155,7 +156,7 @@ main(int argc, char *argv[])
 
 	if (!(cmpl.flags & IBV_WC_WITH_IMM)) {
 		fprintf(stderr,
-			"an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
+			"Received an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
@@ -163,11 +164,11 @@ main(int argc, char *argv[])
 	uint32_t *exp_imm = dst;
 	if (cmpl.imm != *exp_imm) {
 		fprintf(stderr,
-			"an unexpected immediate data (%u != %u)\n",
+			"Received unexpected immediate data (%u != %u)\n",
 			cmpl.imm, *exp_imm);
 		ret = -1;
 	} else {
-		printf("a value %u written with immediate data %u\n",
+		printf("Received value '%u' with immediate data '%u'\n",
 			*exp_imm, cmpl.imm);
 	}
 

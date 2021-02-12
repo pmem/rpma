@@ -91,7 +91,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-			"rpma_conn_next_event returned an unexptected event\n");
+			"rpma_conn_next_event() returned an unexptected event\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
@@ -103,7 +103,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	if (pdata.len < sizeof(uint32_t)) {
 		fprintf(stderr,
-			"received connection's private data is too small (%u < %zu)\n",
+			"Received connection's private data is too small (%u < %zu)\n",
 			pdata.len, sizeof(uint32_t));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -121,7 +121,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
-			"an unexpected completion %s\n",
+			"Received unexpected completion: %s\n",
 			ibv_wc_status_str(cmpl.op_status));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -129,7 +129,7 @@ main(int argc, char *argv[])
 
 	if (cmpl.op != RPMA_OP_RECV) {
 		fprintf(stderr,
-			"an unexpected type of operation (%d != %d)\n",
+			"Received unexpected type of operation (%d != %d)\n",
 			cmpl.op, RPMA_OP_RECV);
 		ret = -1;
 		goto err_conn_disconnect;
@@ -137,20 +137,20 @@ main(int argc, char *argv[])
 
 	if (!(cmpl.flags & IBV_WC_WITH_IMM)) {
 		fprintf(stderr,
-			"an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
+			"Received unexpected completion flag (no IBV_WC_WITH_IMM)\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (cmpl.imm != *exp_imm) {
 		fprintf(stderr,
-			"an unexpected immediate data (%u != %u)\n",
+			"Received unexpected immediate data (%u != %u)\n",
 			cmpl.imm, *exp_imm);
 		ret = -1;
 	} else {
 		if (cmpl.byte_len == 0)
 			recv[0] = '\0';
-		printf("received value '%s' with immediate data %u\n", recv,
+		printf("Received value '%s' with immediate data '%u'\n", recv,
 			cmpl.imm);
 	}
 
