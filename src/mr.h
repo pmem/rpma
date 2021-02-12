@@ -14,7 +14,9 @@
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && dst != NULL && src != NULL && flags != 0
+ * - qp != NULL && flags != 0
+ * - (src != NULL && dst != NULL && len != 0) ||
+ *   (src == NULL && dst == NULL && offset = 0 && len == 0)
  *
  * ERRORS
  * rpma_mr_read() can fail with the following error:

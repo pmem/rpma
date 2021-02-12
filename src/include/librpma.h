@@ -1976,6 +1976,8 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * DESCRIPTION
  * rpma_read() initiates transferring data from the remote memory
  * to the local memory.
+ * To read a 0 bytes message, set src and dst to NULL
+ * and src_offset, dst_offset and len to 0.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -1989,6 +1991,10 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * rpma_read() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - dst == NULL && (src != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
+ * - RPMA_E_INVAL - src == NULL && (dst != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
