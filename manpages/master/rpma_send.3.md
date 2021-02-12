@@ -29,7 +29,8 @@ DESCRIPTION
 ===========
 
 **rpma\_send**() initiates the send operation which transfers a message
-from the local memory to other side of the connection. The attribute
+from the local memory to other side of the connection. To send a 0 byte
+message, set src to NULL and both offset and len to 0. The attribute
 flags set the completion notification indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
@@ -48,7 +49,7 @@ ERRORS
 
 **rpma\_send**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn or src is NULL
+-   RPMA\_E\_INVAL - conn is NULL
 
 -   RPMA\_E\_INVAL - flags are not set
 
