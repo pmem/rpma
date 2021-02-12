@@ -58,7 +58,7 @@ function verify_SoftRoCE() {
 	fi
 
 	if [ "$PORT" == "" ]; then
-		PORT="8765"
+		PORT="7204"
 	fi
 
 	echo "Running examples for IP address $IP_ADDRESS and port $PORT"
