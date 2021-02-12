@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-read.c -- the rpma_read() unit tests
@@ -42,11 +42,70 @@ read__dst_NULL(void **unused)
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
+
 /*
- * read__src_NULL - NULL src is invalid
+ * read__src_NULL_dst_not_NULL -- NULL src and not NULL dst are invalid
  */
 static void
-read__src_NULL(void **unused)
+read__src_NULL_dst_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, 0, NULL, 0, 0,
+				MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * read__src_NULL_dst_offset_not_NULL -- NULL src and
+ * dst_offset != 0 are invalid
+ */
+static void
+read__src_NULL_dst_offset_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET, NULL, 0, 0,
+				MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * read__src_NULL_src_offset_not_NULL -- NULL src and
+ * src_offset != 0 are invalid
+ */
+static void
+read__src_NULL_src_offset_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, NULL, 0, NULL, MOCK_REMOTE_OFFSET,
+				0, MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * read__src_NULL_len_not_NULL -- NULL src and len != 0 are invalid
+ */
+static void
+read__src_NULL_len_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, NULL, 0, NULL, 0, MOCK_LEN,
+				MOCK_FLAGS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * read__src_NULL_dst_offsets_len_not_NULL - NULL src is invalid
+ */
+static void
+read__src_NULL_dst_offsets_len_not_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
@@ -73,15 +132,15 @@ read__flags_0(void **unused)
 }
 
 /*
- * read__conn_dst_src_NULL_flags_0 - NULL conn, dst, src
+ * read__conn_dst_NULL_flags_0 - NULL conn, dst
  * and flags == 0 are invalid
  */
 static void
-read__conn_dst_src_NULL_flags_0(void **unused)
+read__conn_dst_NULL_flags_0(void **unused)
 {
 	/* run test */
 	int ret = rpma_read(NULL, NULL, MOCK_LOCAL_OFFSET,
-				NULL, MOCK_REMOTE_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
 				MOCK_LEN, 0, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -132,9 +191,13 @@ static const struct CMUnitTest tests_read[] = {
 	/* rpma_read() unit tests */
 	cmocka_unit_test(read__conn_NULL),
 	cmocka_unit_test(read__dst_NULL),
-	cmocka_unit_test(read__src_NULL),
+	cmocka_unit_test(read__src_NULL_dst_not_NULL),
+	cmocka_unit_test(read__src_NULL_dst_offset_not_NULL),
+	cmocka_unit_test(read__src_NULL_src_offset_not_NULL),
+	cmocka_unit_test(read__src_NULL_len_not_NULL),
+	cmocka_unit_test(read__src_NULL_dst_offsets_len_not_NULL),
 	cmocka_unit_test(read__flags_0),
-	cmocka_unit_test(read__conn_dst_src_NULL_flags_0),
+	cmocka_unit_test(read__conn_dst_NULL_flags_0),
 	cmocka_unit_test_setup_teardown(read__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
