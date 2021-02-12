@@ -23,7 +23,8 @@ SEARCHPATH = 'templates'
 REPORT_CONTENTS_MD = [ \
     'report_header', \
     'audience', 'authors', 'bios', 'configuration_common', \
-    'configuration_target', 'report', 'security', 'introduction', \
+    'configuration_target', 'disclaimer', 'report', 'security', \
+    'introduction', \
     'tc_read_lat_config', 'tc_read_bw_config', 'tc1_read', \
     'tc_write_lat_config', 'tc_write_bw_config', 'tc2_write', \
     'tc_mix_lat_config', 'tc_mix_bw_config', 'tc3_mix' ]
@@ -50,7 +51,7 @@ CONTENTS_VARIABLES = { \
     'tc2_write': [ 'tc_write_lat_config', 'tc_write_bw_config' ], \
     'tc3_mix': [ 'tc_mix_lat_config', 'tc_mix_bw_config' ], \
     'report': [ \
-        'test_date', 'audience', 'authors', 'bios', \
+        'test_date', 'audience', 'disclaimer', 'authors', 'bios', \
         'configuration_common', 'configuration_target', 'security', \
         'introduction', 'tc1_read', 'tc2_write', 'tc3_mix' ], \
     'appendices_header': [ 'release'], \

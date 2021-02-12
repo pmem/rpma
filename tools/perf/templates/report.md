@@ -4,6 +4,8 @@
 
 {{audience}}
 
+{{disclaimer}}
+
 <h2 id="test-setup">Test Setup</h2>
 
 {{configuration_common}}
