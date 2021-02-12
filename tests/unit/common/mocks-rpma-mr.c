@@ -23,7 +23,6 @@ rpma_mr_read(struct ibv_qp *qp,
 {
 	assert_non_null(qp);
 	assert_non_null(dst);
-	assert_non_null(src);
 	assert_int_not_equal(flags, 0);
 
 	check_expected_ptr(qp);
