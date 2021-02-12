@@ -153,16 +153,27 @@ rpma_mr_write(struct ibv_qp *qp,
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
 
-	/* source */
-	sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + src_offset);
-	sge.length = (uint32_t)len;
-	sge.lkey = src->ibv_mr->lkey;
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
+	if (src == NULL) {
+		/* destination */
+		wr.wr.rdma.remote_addr = 0;
+		wr.wr.rdma.rkey = 0;
 
-	/* destination */
-	wr.wr.rdma.remote_addr = dst->raddr + dst_offset;
-	wr.wr.rdma.rkey = dst->rkey;
+		wr.sg_list = NULL;
+		wr.num_sge = 0;
+	} else {
+		/* source */
+		sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr +
+				src_offset);
+		sge.length = (uint32_t)len;
+		sge.lkey = src->ibv_mr->lkey;
+
+		/* destination */
+		wr.wr.rdma.remote_addr = dst->raddr + dst_offset;
+		wr.wr.rdma.rkey = dst->rkey;
+
+		wr.sg_list = &sge;
+		wr.num_sge = 1;
+	}
 
 	wr.wr_id = (uint64_t)op_context;
 	wr.next = NULL;

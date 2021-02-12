@@ -28,7 +28,9 @@ int rpma_mr_read(struct ibv_qp *qp,
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && dst != NULL && src != NULL && flags != 0
+ * - qp != NULL && flags != 0
+ * - (src != NULL && dst != NULL && len != 0) ||
+ *   (src == NULL && dst == NULL && offset = 0 && len == 0)
  *
  * ERRORS
  * rpma_mr_write() can fail with the following error:
@@ -45,7 +47,8 @@ int rpma_mr_write(struct ibv_qp *qp,
 /*
  * ASSUMPTIONS
  * - qp != NULL && flags != 0
- * - if src == NULL then offset == 0 && len == 0
+ * - (src != NULL && dst != NULL && len != 0) ||
+ *   (src == NULL && dst == NULL && offset = 0 && len == 0)
  *
  * ERRORS
  * rpma_mr_send() can fail with the following error:
