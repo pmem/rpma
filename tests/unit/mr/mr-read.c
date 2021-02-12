@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mr-read.c -- rpma_mr_read() unit tests
@@ -100,6 +100,29 @@ read__success(void **mrs_ptr)
 }
 
 /*
+ * read_0B_message__success - happy day scenario
+ */
+static void
+read_0B_message__success(void **mrs_ptr)
+{
+	/* configure mocks */
+	struct ibv_post_send_mock_args args;
+	args.qp = MOCK_QP;
+	args.opcode = IBV_WR_RDMA_READ;
+	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.ret = MOCK_OK;
+	will_return(ibv_post_send_mock, &args);
+
+	/* run test */
+	int ret = rpma_mr_read(MOCK_QP, NULL, 0, NULL, 0, 0,
+				RPMA_F_COMPLETION_ALWAYS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+}
+
+/*
  * group_setup_mr_read -- prepare resources for all tests in the group
  */
 static int
@@ -134,6 +157,9 @@ static const struct CMUnitTest tests_mr_read[] = {
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(read__success,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(read_0B_message__success,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
 	cmocka_unit_test(NULL)
