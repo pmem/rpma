@@ -2019,6 +2019,8 @@ int rpma_read(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write() initiates transferring data from the local memory
  * to the remote memory.
+ * To write a 0 bytes message, set src and dst to NULL
+ * and src_offset, dst_offset and len to 0.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -2031,8 +2033,11 @@ int rpma_read(struct rpma_conn *conn,
  * ERRORS
  * rpma_write() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn, dst or src is NULL
- * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_INVAL - conn == NULL || flags == 0
+ * - RPMA_E_INVAL - dst == NULL && (src != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
+ * - RPMA_E_INVAL - src == NULL && (dst != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
@@ -2063,6 +2068,8 @@ int rpma_write(struct rpma_conn *conn,
  * DESCRIPTION
  * rpma_write_with_imm() initiates the write operation with immediate data
  * (transferring data from the local memory to the remote memory.
+ * To write a 0 bytes message, set src and dst to NULL
+ * and src_offset, dst_offset and len to 0.
  * The attribute flags set the completion notification indicator:
  * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
  * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
@@ -2075,8 +2082,11 @@ int rpma_write(struct rpma_conn *conn,
  * ERRORS
  * rpma_write_with_imm() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn, dst or src is NULL
- * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_INVAL - conn == NULL || flags == 0
+ * - RPMA_E_INVAL - dst == NULL && (src != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
+ * - RPMA_E_INVAL - src == NULL && (dst != NULL || src_offset != 0
+ *                  || dst_offset != 0 || len != 0)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
