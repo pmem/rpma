@@ -14,6 +14,36 @@
 #include "mocks-rdma_cm.h"
 
 /*
+ * send_with_imm__src_NULL_offset_not_NULL -- NULL src
+ * and not NULL offset is invalid
+ */
+static void
+send_with_imm__src_NULL_offset_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_send_with_imm(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET, 0,
+			MOCK_FLAGS, MOCK_IMM_DATA, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * send_with_imm__src_NULL_len_not_NULL -- NULL src
+ * and not NULL len is invalid
+ */
+static void
+send_with_imm__src_NULL_len_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_send_with_imm(MOCK_CONN, NULL, 0, MOCK_LEN,
+			MOCK_FLAGS, MOCK_IMM_DATA, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * send_with_imm__src_NULL_offset_len_not_NULL -- NULL src
  * and not NULL offset or len are invalid
  */
@@ -117,6 +147,8 @@ group_setup_send(void **unused)
 
 static const struct CMUnitTest tests_send_with_imm[] = {
 	/* rpma_read_with_imm() unit tests */
+	cmocka_unit_test(send_with_imm__src_NULL_offset_not_NULL),
+	cmocka_unit_test(send_with_imm__src_NULL_len_not_NULL),
 	cmocka_unit_test(send_with_imm__src_NULL_offset_len_not_NULL),
 	cmocka_unit_test(send_with_imm__conn_NULL),
 	cmocka_unit_test(send_with_imm__flags_0),
