@@ -129,7 +129,7 @@ rpma_mr_read(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
-			"ibv_post_send(src_addr=0x%x, rkey=0x%x, dst_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_READ, send_flags=%s)",
+			"ibv_post_send(dst_addr=0x%x, rkey=0x%x, src_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_READ, send_flags=%s)",
 			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
 			sge.addr, sge.length, sge.lkey, wr.wr_id,
 			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
@@ -187,7 +187,7 @@ rpma_mr_write(struct ibv_qp *qp,
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
-			"ibv_post_send(src_addr=0x%x, rkey=0x%x, dst_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_WRITE, send_flags=%s)",
+			"ibv_post_send(dst_addr=0x%x, rkey=0x%x, src_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_WRITE, send_flags=%s)",
 			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
 			sge.addr, sge.length, sge.lkey, wr.wr_id,
 			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
