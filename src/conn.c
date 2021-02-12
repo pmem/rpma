@@ -319,7 +319,9 @@ rpma_write(struct rpma_conn *conn,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
-	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+	if (conn == NULL || dst == NULL || flags == 0 ||
+	    (src == NULL && (dst != NULL || dst_offset != 0 ||
+	    src_offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
 
 	return rpma_mr_write(conn->id->qp,
@@ -339,7 +341,9 @@ rpma_write_with_imm(struct rpma_conn *conn,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, uint32_t imm, const void *op_context)
 {
-	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
+	if (conn == NULL || dst == NULL || flags == 0 ||
+	    (src == NULL && (dst != NULL || dst_offset != 0 ||
+	    src_offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
 
 	return rpma_mr_write(conn->id->qp,
