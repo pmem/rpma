@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks-ibverbs.h -- the ibverbs mocks' header
@@ -40,6 +40,8 @@ struct ibv_post_send_mock_args {
 	enum ibv_wr_opcode opcode;
 	unsigned send_flags;
 	uint64_t wr_id;
+	uint64_t remote_addr;
+	uint32_t rkey;
 	uint32_t imm_data;
 	int ret;
 };

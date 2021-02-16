@@ -50,6 +50,8 @@ write__COMPL_ALWAYS_failed_E_PROVIDER(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_WRITE;
 	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -80,6 +82,8 @@ write__COMPL_ALWAYS_FENCE_failed_E_PROVIDER(void **mrs_ptr)
 	/* for RPMA_F_COMPLETION_ALWAYS and fence is true */
 	args.send_flags = IBV_SEND_SIGNALED | IBV_SEND_FENCE;
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -108,6 +112,8 @@ write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_WRITE;
 	args.send_flags = 0; /* for RPMA_F_COMPLETION_ON_ERROR */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -137,6 +143,8 @@ write__COMPL_ON_ERROR_FENCE_failed_E_PROVIDER(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_WRITE;
 	args.send_flags = IBV_SEND_FENCE; /* for fence is true */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -177,6 +185,8 @@ write__success(void **mrs_ptr)
 		/* for RPMA_F_COMPLETION_ALWAYS */
 		args.send_flags = IBV_SEND_SIGNALED;
 		args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+		args.rkey = MOCK_RKEY;
 		if (opcodes[i] == IBV_WR_RDMA_WRITE_WITH_IMM)
 			args.imm_data = htonl(MOCK_IMM_DATA);
 		args.ret = MOCK_OK;
@@ -208,6 +218,8 @@ write__FENCE_success(void **mrs_ptr)
 	/* for RPMA_F_COMPLETION_ALWAYS and fence is true */
 	args.send_flags = IBV_SEND_SIGNALED | IBV_SEND_FENCE;
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_OK;
 	will_return(ibv_post_send_mock, &args);
 
@@ -246,6 +258,8 @@ write_0B_message__success(void **mrs_ptr)
 		/* for RPMA_F_COMPLETION_ALWAYS */
 		args.send_flags = IBV_SEND_SIGNALED;
 		args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		args.remote_addr = 0;
+		args.rkey = 0;
 		if (opcodes[i] == IBV_WR_RDMA_WRITE_WITH_IMM)
 			args.imm_data = htonl(MOCK_IMM_DATA);
 		args.ret = MOCK_OK;
