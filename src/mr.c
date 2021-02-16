@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -26,7 +27,7 @@
 		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
 		RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |\
 		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
-		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT | RPMA_MR_USAGE_ATOMIC)
 
 /*
  * Make sure the size of the usage field is big enough
@@ -35,7 +36,7 @@
 #define STATIC_ASSERT(cond, msg)\
 	typedef char static_assertion_##msg[(cond) ? 1 : -1]
 
-STATIC_ASSERT(USAGE_ALL_ALLOWED < (1 << (8 * sizeof(uint8_t))),
+STATIC_ASSERT(USAGE_ALL_ALLOWED < (1 << (9 * sizeof(uint8_t))),
 		usage_too_small);
 
 /* generate operation completion on success */
@@ -86,6 +87,13 @@ usage_to_access(int usage)
 
 	if (usage & RPMA_MR_USAGE_RECV)
 		access |= IBV_ACCESS_LOCAL_WRITE;
+
+	if (usage & RPMA_MR_USAGE_ATOMIC)
+		/*
+		 * If IBV_ACCESS_REMOTE_ATOMIC is set, then
+		 * IBV_ACCESS_LOCAL_WRITE must be set too.
+		 */
+		access |= IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_LOCAL_WRITE;
 
 	/*
 	 * There is no IBV_ACCESS_* value to be set for RPMA_MR_USAGE_SEND.
