@@ -467,7 +467,7 @@ rpma_recv(struct rpma_conn *conn,
     struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
-	if (conn == NULL || dst == NULL)
+	if (conn == NULL || (dst == NULL && (offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
 
 	return rpma_mr_recv(conn->id->qp,

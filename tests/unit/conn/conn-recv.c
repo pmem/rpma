@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-recv.c -- the rpma_recv() unit tests
@@ -27,13 +27,29 @@ recv__conn_NULL(void **unused)
 }
 
 /*
- * recv__dst_NULL - NULL dst is invalid
+ * recv__dst_NULL_offset_not_NULL - NULL dst
+ * and not NULL offset is invalid
  */
 static void
-recv__dst_NULL(void **unused)
+recv__dst_NULL_offset_not_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_recv(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
+			0, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * recv__dst_NULL_len_not_NULL - NULL dst
+ * and not NULL len is invalid
+ */
+static void
+recv__dst_NULL_len_not_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_recv(MOCK_CONN, NULL, 0,
 			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -41,13 +57,14 @@ recv__dst_NULL(void **unused)
 }
 
 /*
- * recv__conn_dst_src_NULL - NULL conn and dst are invalid
+ * recv__dst_NULL_offset_len_not_NULL - NULL dst
+ * and not NULL offset or len are invalid
  */
 static void
-recv__conn_dst_src_NULL(void **unused)
+recv__dst_NULL_offset_len_not_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_recv(NULL, NULL, MOCK_LOCAL_OFFSET,
+	int ret = rpma_recv(MOCK_CONN, NULL, MOCK_LOCAL_OFFSET,
 			MOCK_LEN, MOCK_OP_CONTEXT);
 
 	/* verify the results */
@@ -93,8 +110,9 @@ group_setup_recv(void **unused)
 static const struct CMUnitTest tests_recv[] = {
 	/* rpma_recv() unit tests */
 	cmocka_unit_test(recv__conn_NULL),
-	cmocka_unit_test(recv__dst_NULL),
-	cmocka_unit_test(recv__conn_dst_src_NULL),
+	cmocka_unit_test(recv__dst_NULL_offset_not_NULL),
+	cmocka_unit_test(recv__dst_NULL_len_not_NULL),
+	cmocka_unit_test(recv__dst_NULL_offset_len_not_NULL),
 	cmocka_unit_test_setup_teardown(recv__success,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
