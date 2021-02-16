@@ -24,14 +24,14 @@ $ sudo yum install python3 python3-pip numactl sshpass
 $ pip3 install --user pandas
 $ pip3 install --user matplotlib
 
+$ sudo yum install perftest
+or
 $ git clone https://github.com/linux-rdma/perftest.git
 $ cd perftest
 $ ./autogen.sh
 $ ./configure
 $ make
 $ sudo make install
-or
-$ sudo yum install perftest
 
 $ git clone https://github.com/pmem/fio.git
 $ cd fio
