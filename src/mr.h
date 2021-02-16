@@ -65,12 +65,13 @@ int rpma_mr_send(struct ibv_qp *qp,
 
 /*
  * ASSUMPTIONS
- * - qp != NULL && dst != NULL
+ * - qp != NULL
+ * if dst == NULL then offset == 0 && len == 0
  *
  * ERRORS
  * rpma_mr_recv() can fail with the following error:
  *
- * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
 int rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
