@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn_req-connect.c -- the rpma_conn_req_connect() unit tests
@@ -417,11 +417,6 @@ connect_via_connect__connect_EAGAIN(void **unused)
 	will_return(rdma_connect, EAGAIN);
 	expect_value(rpma_conn_delete, conn, MOCK_CONN);
 	will_return(rpma_conn_delete, MOCK_OK);
-	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -454,11 +449,6 @@ connect_via_connect__connect_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_delete, conn, MOCK_CONN);
 	will_return(rpma_conn_delete, RPMA_E_PROVIDER);
 	will_return(rpma_conn_delete, EIO); /* second error */
-	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO); /* third error */
-	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
-	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO); /* fifth error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;

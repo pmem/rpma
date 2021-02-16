@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn_req.c -- librpma connection-request-related implementations
@@ -189,28 +189,22 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 
 	struct rpma_conn *conn = NULL;
 	ret = rpma_conn_new(req->peer, req->id, req->cq, &conn);
-	if (ret)
-		goto err_conn_req_delete;
+	if (ret) {
+		rdma_destroy_qp(req->id);
+		(void) ibv_destroy_cq(req->cq);
+		(void) ibv_destroy_comp_channel(req->channel);
+		(void) rdma_destroy_id(req->id);
+		return ret;
+	}
 
 	if (rdma_connect(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_connect()");
-		ret = RPMA_E_PROVIDER;
-		goto err_conn_delete;
+		(void) rpma_conn_delete(&conn);
+		return RPMA_E_PROVIDER;
 	}
 
 	*conn_ptr = conn;
 	return 0;
-
-err_conn_delete:
-	(void) rpma_conn_delete(&conn);
-
-err_conn_req_delete:
-	rdma_destroy_qp(req->id);
-	(void) ibv_destroy_cq(req->cq);
-	(void) ibv_destroy_comp_channel(req->channel);
-	(void) rdma_destroy_id(req->id);
-
-	return ret;
 }
 
 /*
