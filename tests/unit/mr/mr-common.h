@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mr-common.h -- the memory region unit tests's common definitions
@@ -43,6 +43,8 @@
 #define MOCK_UNKNOWN_OP		((enum ibv_wr_opcode)(-1))
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_DESC		(void *)0xC418
+#define MOCK_RADDR		(uint64_t)0x01020304050607
+#define MOCK_RKEY		(uint32_t)0x10111213
 
 /* a state used for rpma_mr_read/_write tests */
 struct mrs {
