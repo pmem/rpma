@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * client.c -- a client of the atomic-write example
@@ -12,7 +13,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define USAGE_STR "usage: %s <server_address> <port> <word1> [<word2>] [..]\n"
+#define USAGE_STR "usage: %s <server_address> <port> <write|write_cmp_swp> \
+	<word1> [<word2>] [..]\n"
 
 #include "common-conn.h"
 
@@ -23,7 +25,7 @@ int
 main(int argc, char *argv[])
 {
 	/* validate parameters */
-	if (argc < 4) {
+	if (argc < 5) {
 		fprintf(stderr, USAGE_STR, argv[0]);
 		return -1;
 	}
@@ -35,7 +37,14 @@ main(int argc, char *argv[])
 	/* read common parameters */
 	char *addr = argv[1];
 	char *port = argv[2];
+	char *operation = argv[3];
 	int ret;
+
+	if (strcmp(operation, "write") && strcmp(operation, "write_cmp_swp")) {
+		fprintf(stderr,
+			"Only write or write_cmp_swp operation is supported\n");
+		return -1;
+	}
 
 	/* resources - memory region */
 	void *mr_ptr = NULL;
@@ -143,7 +152,7 @@ main(int argc, char *argv[])
 	else
 		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 
-	for (int i = 3; i < argc; ++i) {
+	for (int i = 4; i < argc; ++i) {
 		char *word = mr_ptr;
 		strcpy(word, argv[i]);
 		size_t word_size = strlen(word) + 1;
@@ -157,13 +166,24 @@ main(int argc, char *argv[])
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		used_value += word_size;
-		*(uint64_t *)mr_ptr = used_value;
+		if (strcmp(operation, "write") == 0) {
+			used_value += word_size;
+			*(uint64_t *)mr_ptr = used_value;
 
-		if ((ret = rpma_write_atomic(conn, remote_mr, used_offset,
-				local_mr, 0, RPMA_F_COMPLETION_ON_ERROR,
-				NULL)))
-			break;
+			if ((ret = rpma_write_atomic(conn, remote_mr,
+					used_offset, local_mr, 0,
+					RPMA_F_COMPLETION_ON_ERROR, NULL)))
+				break;
+		} else {
+			uint64_t prev_value = used_value;
+			used_value += word_size;
+
+			if ((ret = rpma_write_atomic_cmp_swp(conn, remote_mr,
+					used_offset, local_mr, 0,
+					RPMA_F_COMPLETION_ON_ERROR, prev_value,
+					used_value, NULL)))
+				break;
+		}
 
 		if ((ret = rpma_flush(conn, remote_mr, used_offset,
 				sizeof(uint64_t), flush_type,
