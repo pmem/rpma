@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
+# Copyright (c) 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -46,4 +47,5 @@ add_test_conn(send)
 add_test_conn(send_with_imm)
 add_test_conn(write)
 add_test_conn(write_atomic)
+add_test_conn(write_atomic_cmp_swp)
 add_test_conn(write_with_imm)
