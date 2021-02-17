@@ -47,13 +47,13 @@ jobs:
                  "N=Debian9      OS=debian  OS_VER=9",
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # Rolling/testing/experimental distributions:
-                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling        REBUILD_ALWAYS=YES",
-                 "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide        REBUILD_ALWAYS=YES",
-                 "N=Debian_Testing       OS=debian               OS_VER=testing        REBUILD_ALWAYS=YES",
-                 "N=Debian_Experimental  OS=debian               OS_VER=experimental   REBUILD_ALWAYS=YES",
-                 "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest         REBUILD_ALWAYS=YES",
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest         REBUILD_ALWAYS=YES",
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest         REBUILD_ALWAYS=YES"]
+                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
+                 "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
+                 "N=Debian_Testing       OS=debian               OS_VER=testing",
+                 "N=Debian_Experimental  OS=debian               OS_VER=experimental",
+                 "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest",
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
