@@ -23,6 +23,9 @@ rpma_mr_read(struct ibv_qp *qp,
 {
 	assert_non_null(qp);
 	assert_int_not_equal(flags, 0);
+	assert_true((src != NULL && dst != NULL) ||
+		(src == NULL && dst == NULL &&
+		dst_offset == 0 && src_offset == 0 && len == 0));
 
 	check_expected_ptr(qp);
 	check_expected_ptr(dst);
@@ -48,6 +51,9 @@ rpma_mr_write(struct ibv_qp *qp,
 {
 	assert_non_null(qp);
 	assert_int_not_equal(flags, 0);
+	assert_true((src != NULL && dst != NULL) ||
+		(src == NULL && dst == NULL &&
+		dst_offset == 0 && src_offset == 0 && len == 0));
 
 	check_expected_ptr(qp);
 	check_expected_ptr(dst);
@@ -116,6 +122,7 @@ rpma_mr_send(struct ibv_qp *qp,
 {
 	assert_non_null(qp);
 	assert_int_not_equal(flags, 0);
+	assert_true(src != NULL || (offset == 0 && len == 0));
 
 	check_expected_ptr(qp);
 	check_expected_ptr(src);
