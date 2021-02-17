@@ -2244,9 +2244,8 @@ int rpma_flush(struct rpma_conn *conn,
  * ERRORS
  * rpma_send() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn is NULL
- * - RPMA_E_INVAL - flags are not set
- * - RPMA_E_INVAL - src is NULL and (offset or len != 0)
+ * - RPMA_E_INVAL - conn == NULL || flags == 0
+ * - RPMA_E_INVAL - src == NULL && (offset != 0 || len != 0)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
@@ -2287,9 +2286,8 @@ int rpma_send(struct rpma_conn *conn,
  * ERRORS
  * rpma_send_with_imm() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn is NULL
- * - RPMA_E_INVAL - flags are not set
- * - RPMA_E_INVAL - src is NULL and (offset or len != 0)
+ * - RPMA_E_INVAL - conn == NULL || flags == 0
+ * - RPMA_E_INVAL - src == NULL && (offset != 0 || len != 0)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO
@@ -2337,7 +2335,7 @@ int rpma_send_with_imm(struct rpma_conn *conn,
  * ERRORS
  * rpma_recv() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn is NULL
+ * - RPMA_E_INVAL - conn == NULL
  * - RPMA_E_INVAL - dst == NULL && (offset != 0 || len != 0)
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  *
