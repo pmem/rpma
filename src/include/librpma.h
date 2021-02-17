@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2019-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * librpma.h -- definitions of librpma entry points
@@ -818,6 +819,7 @@ struct rpma_mr_remote;
 #define RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT	(1 << 5)
 #define RPMA_MR_USAGE_SEND			(1 << 6)
 #define RPMA_MR_USAGE_RECV			(1 << 7)
+#define RPMA_MR_USAGE_ATOMIC			(1 << 8)
 
 /** 3
  * rpma_mr_reg - create a local memory registration object
@@ -847,6 +849,7 @@ struct rpma_mr_remote;
  * persistent flush operation
  * - RPMA_MR_USAGE_SEND - memory used for send operation
  * - RPMA_MR_USAGE_RECV - memory used for receive operation
+ * - RPMA_MR_USAGE_ATOMIC - memory used as a destination of the atomic operation
  *
  * RETURN VALUE
  * The rpma_mr_reg() function returns 0 on success or a negative error code
