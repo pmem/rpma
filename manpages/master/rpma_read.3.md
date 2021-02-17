@@ -31,8 +31,9 @@ DESCRIPTION
 ===========
 
 **rpma\_read**() initiates transferring data from the remote memory to
-the local memory. The attribute flags set the completion notification
-indicator:
+the local memory. To read a 0 bytes message, set src and dst to NULL and
+src\_offset, dst\_offset and len to 0. The attribute flags set the
+completion notification indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
 
@@ -50,9 +51,13 @@ ERRORS
 
 **rpma\_read**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn, dst or src is NULL
+-   RPMA\_E\_INVAL - conn == NULL \|\| flags == 0
 
--   RPMA\_E\_INVAL - flags are not set
+-   RPMA\_E\_INVAL - dst == NULL && (src != NULL \|\| src\_offset != 0
+    \|\| dst\_offset != 0 \|\| len != 0)
+
+-   RPMA\_E\_INVAL - src == NULL && (dst != NULL \|\| src\_offset != 0
+    \|\| dst\_offset != 0 \|\| len != 0)
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
 
