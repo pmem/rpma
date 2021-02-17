@@ -31,6 +31,8 @@ read__COMPL_ALWAYS_failed_E_PROVIDER(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_SRC_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -59,6 +61,8 @@ read__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = 0; /* for RPMA_F_COMPLETION_ON_ERROR */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_SRC_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_ERRNO;
 	will_return(ibv_post_send_mock, &args);
 
@@ -86,6 +90,8 @@ read__success(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_SRC_OFFSET;
+	args.rkey = MOCK_RKEY;
 	args.ret = MOCK_OK;
 	will_return(ibv_post_send_mock, &args);
 
@@ -111,6 +117,8 @@ read_0B_message__success(void **mrs_ptr)
 	args.opcode = IBV_WR_RDMA_READ;
 	args.send_flags = IBV_SEND_SIGNALED; /* for RPMA_F_COMPLETION_ALWAYS */
 	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = 0;
+	args.rkey = 0;
 	args.ret = MOCK_OK;
 	will_return(ibv_post_send_mock, &args);
 
