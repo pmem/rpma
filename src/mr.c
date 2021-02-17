@@ -286,12 +286,18 @@ rpma_mr_recv(struct ibv_qp *qp,
 	struct ibv_sge sge;
 
 	/* source */
-	sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + offset);
-	sge.length = (uint32_t)len;
-	sge.lkey = dst->ibv_mr->lkey;
+	if (dst == NULL) {
+		wr.sg_list = NULL;
+		wr.num_sge = 0;
+	} else {
+		sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + offset);
+		sge.length = (uint32_t)len;
+		sge.lkey = dst->ibv_mr->lkey;
 
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
+		wr.sg_list = &sge;
+		wr.num_sge = 1;
+	}
+
 	wr.next = NULL;
 	wr.wr_id = (uint64_t)op_context;
 

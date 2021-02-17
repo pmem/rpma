@@ -138,7 +138,7 @@ rpma_mr_recv(struct ibv_qp *qp,
 	size_t len, const void *op_context)
 {
 	assert_non_null(qp);
-	assert_non_null(dst);
+	assert_true(dst != NULL || (offset == 0 && len == 0));
 
 	check_expected_ptr(qp);
 	check_expected_ptr(dst);
