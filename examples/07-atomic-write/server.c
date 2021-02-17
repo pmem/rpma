@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * server.c -- a server of the atomic-write example
@@ -153,7 +154,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
+	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_ATOMIC |
 			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC |
 			(is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
