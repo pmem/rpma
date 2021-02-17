@@ -22,8 +22,6 @@ rpma_mr_read(struct ibv_qp *qp,
 	size_t len, int flags, const void *op_context)
 {
 	assert_non_null(qp);
-	assert_non_null(dst);
-	assert_non_null(src);
 	assert_int_not_equal(flags, 0);
 
 	check_expected_ptr(qp);
@@ -49,8 +47,6 @@ rpma_mr_write(struct ibv_qp *qp,
 	uint32_t imm, const void *op_context, bool fence)
 {
 	assert_non_null(qp);
-	assert_non_null(dst);
-	assert_non_null(src);
 	assert_int_not_equal(flags, 0);
 
 	check_expected_ptr(qp);
