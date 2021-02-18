@@ -231,6 +231,54 @@ rpma_mr_write(struct ibv_qp *qp,
 }
 
 /*
+ * rpma_mr_atomic_cmp_swp post an RDMA atomic from src to dst
+ */
+int
+rpma_mr_atomic_cmp_swp(struct ibv_qp *qp,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src, size_t src_offset,
+	size_t len, int flags, uint64_t compare, uint64_t swap,
+	const void *op_context)
+{
+	struct ibv_send_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + src_offset);
+	sge.length = (uint32_t)len;
+	sge.lkey = src->ibv_mr->lkey;
+	wr.sg_list = &sge;
+	wr.num_sge = 1;
+
+	/* destination */
+	wr.wr.atomic.remote_addr = dst->raddr + dst_offset;
+	wr.wr.atomic.compare_add = compare;
+	wr.wr.atomic.swap = swap;
+	wr.wr.atomic.rkey = dst->rkey;
+	wr.wr_id = (uint64_t)op_context;
+	wr.next = NULL;
+	wr.opcode = IBV_WR_ATOMIC_CMP_AND_SWP;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+		IBV_SEND_SIGNALED : 0;
+	wr.send_flags |= IBV_SEND_FENCE;
+
+	struct ibv_send_wr *bad_wr;
+	int ret = ibv_post_send(qp, &wr, &bad_wr);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret,
+			"ibv_post_send(dst_addr=0x%x, rkey=0x%x, compare=0x%u, swap=0x%u, src_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_ATOMIC_CMP_AND_SWP, send_flags=%s)",
+			wr.wr.atomic.remote_addr, wr.wr.atomic.rkey,
+			wr.wr.atomic.compare_add, wr.wr.atomic.swap,
+			sge.addr, sge.length, sge.lkey, wr.wr_id,
+			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+				"IBV_SEND_SIGNALED" : "0");
+			return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
+/*
  * rpma_mr_send -- post an RDMA send from src
  */
 int
