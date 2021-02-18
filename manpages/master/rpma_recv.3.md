@@ -58,7 +58,7 @@ ERRORS
 
 **rpma\_recv**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn is NULL
+-   RPMA\_E\_INVAL - conn == NULL
 
 -   RPMA\_E\_INVAL - dst == NULL && (offset != 0 \|\| len != 0)
 

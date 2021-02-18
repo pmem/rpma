@@ -49,11 +49,9 @@ ERRORS
 
 **rpma\_send**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn is NULL
+-   RPMA\_E\_INVAL - conn == NULL \|\| flags == 0
 
--   RPMA\_E\_INVAL - flags are not set
-
--   RPMA\_E\_INVAL - src is NULL and (offset or len != 0)
+-   RPMA\_E\_INVAL - src == NULL && (offset != 0 \|\| len != 0)
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
 
