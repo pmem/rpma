@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * error.c -- unit tests for error-handling rpma-err module
@@ -10,6 +10,15 @@
 
 #include "cmocka_headers.h"
 #include "librpma.h"
+
+/*
+ * err_2str__SUCCESS - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__SUCCESS(void **unused)
+{
+	assert_string_equal(rpma_err_2str(0), "Success");
+}
 
 /*
  * err_2str__E_NOSUPP - sanity test for rpma_err_2str()
@@ -81,6 +90,7 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(err_2str__SUCCESS),
 		cmocka_unit_test(err_2str__E_NOSUPP),
 		cmocka_unit_test(err_2str__E_PROVIDER),
 		cmocka_unit_test(err_2str__E_NOMEM),

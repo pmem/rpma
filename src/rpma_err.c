@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2019-2020, Intel Corporation */
+/* Copyright 2019-2021, Intel Corporation */
 
 /*
  * rpma_err.c -- error-handling related librpma definitions
@@ -17,6 +17,8 @@ const char *
 rpma_err_2str(int ret)
 {
 	switch (ret) {
+	case 0:
+		return "Success";
 	case RPMA_E_NOSUPP:
 		return "Not supported";
 	case RPMA_E_PROVIDER:
