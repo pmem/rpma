@@ -73,7 +73,7 @@ main(int argc, char *argv[])
 	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
 				&dev);
 	if (ret) {
-		fprintf(stderr, "get ibv context failed");
+		fprintf(stderr, "rpma_utils_get_ibv_context() failed");
 		return -1;
 	}
 
@@ -81,21 +81,22 @@ main(int argc, char *argv[])
 	int is_odp_supported = 0;
 	ret = rpma_utils_ibv_context_is_odp_capable(dev, &is_odp_supported);
 	if (ret) {
-		fprintf(stderr, "check odp capability failed");
+		fprintf(stderr,
+			"rpma_utils_ibv_context_is_odp_capable() failed");
 		return -1;
 	}
 
 	pthread_t *p_threads;
 	p_threads = malloc(sizeof(pthread_t) * (unsigned int)thread_num);
 	if (p_threads == NULL) {
-		fprintf(stderr, "malloc failed");
+		fprintf(stderr, "malloc() failed");
 		return -1;
 	}
 
 	struct thread_args *threads_args = malloc(sizeof(struct thread_args)
 				* (unsigned int)thread_num);
 	if (threads_args == NULL) {
-		fprintf(stderr, "malloc failed");
+		fprintf(stderr, "malloc() failed");
 		ret = -1;
 		goto err_free_p_threads;
 	}
@@ -109,7 +110,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < thread_num; i++) {
 		if ((ret = pthread_create(&p_threads[i], NULL, thread_main,
 				&threads_args[i])) != 0) {
-			fprintf(stderr, "Cannot start a thread #%d: %s\n",
+			fprintf(stderr, "Cannot start the thread #%d: %s\n",
 				i, strerror(ret));
 			/*
 			 * Set thread_num to the number
