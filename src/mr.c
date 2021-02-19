@@ -18,6 +18,12 @@
 #include "cmocka_alloc.h"
 #endif
 
+#define STATIC_ASSERT(cond, msg)\
+	typedef char static_assertion_##msg[(cond) ? 1 : -1]
+
+#define SIZEOF_IN_BITS(type)	(8 * sizeof(type))
+#define MAX_VALUE_OF(type)	((1 << SIZEOF_IN_BITS(type)) - 1)
+
 #define RPMA_MR_DESC_SIZE (2 * sizeof(uint64_t) + sizeof(uint32_t) \
 			+ sizeof(uint8_t))
 
@@ -29,14 +35,11 @@
 		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
 
 /*
- * Make sure the size of the usage field is big enough
- * to store all allowed values.
+ * Make sure the size of the usage field in the rpma_mr_get_descriptor()
+ * and rpma_mr_remote_from_descriptor() functions ('uint8_t' as for now)
+ * is big enough to store all possible 'RPMA_MR_USAGE_*' values.
  */
-#define STATIC_ASSERT(cond, msg)\
-	typedef char static_assertion_##msg[(cond) ? 1 : -1]
-
-STATIC_ASSERT(USAGE_ALL_ALLOWED < (1 << (8 * sizeof(uint8_t))),
-		usage_too_small);
+STATIC_ASSERT(USAGE_ALL_ALLOWED <= MAX_VALUE_OF(uint8_t), usage_too_small);
 
 /* generate operation completion on success */
 #define RPMA_F_COMPLETION_ON_SUCCESS \
