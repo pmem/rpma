@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * test-common.h -- a test's common header
@@ -15,6 +16,8 @@
 #define MOCK_TIMEOUT_MS		5678
 #define MOCK_Q_SIZE		123
 #define MOCK_IMM_DATA		0x87654321
+#define MOCK_COMPARE		0xffedcba987654321
+#define MOCK_SWAP		0xf123456789abcdef
 
 /* random values */
 #define MOCK_RPMA_MR_LOCAL	(struct rpma_mr_local *)0xC411
