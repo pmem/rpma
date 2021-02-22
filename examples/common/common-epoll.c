@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * common-epoll.c -- common epoll functions for examples
  */
 
+#include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -20,13 +21,17 @@ int
 fd_set_nonblock(int fd)
 {
 	int ret = fcntl(fd, F_GETFL);
-	if (ret < 0)
+	if (ret < 0) {
+		perror("fcntl");
 		return errno;
+	}
 
 	int flags = ret | O_NONBLOCK;
 	ret = fcntl(fd, F_SETFL, flags);
-	if (ret < 0)
+	if (ret < 0) {
+		perror("fcntl");
 		return errno;
+	}
 
 	return 0;
 }
