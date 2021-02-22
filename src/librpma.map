@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2019-2020, Intel Corporation
+# Copyright 2021 (c), Fujitsu
 #
 
 #
@@ -66,6 +67,7 @@ LIBRPMA_1.0 {
 		rpma_utils_ibv_context_is_odp_capable;
 		rpma_write;
 		rpma_write_atomic;
+		rpma_write_atomic_cmp_swp;
 		rpma_write_with_imm;
 	local:
 		*;
