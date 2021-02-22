@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
-
+/* Copyright (c) 2021 Fujitsu */
 /*
  * mr-descriptor.c -- the memory region serialization unit tests
  *
@@ -211,10 +211,10 @@ static void
 remote_from_descriptor__buff_usage_equal_zero(void **unused)
 {
 	char desc_invalid[MR_DESC_SIZE];
-	memset(desc_invalid, 0xff, MR_DESC_SIZE - 1);
+	memset(desc_invalid, 0xff, MR_DESC_SIZE - 2);
 
 	/* set usage to 0 */
-	desc_invalid[MR_DESC_SIZE - 1] = 0;
+	memset(&desc_invalid[MR_DESC_SIZE - 2], 0x00, 2);
 
 	/* configure mock */
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);

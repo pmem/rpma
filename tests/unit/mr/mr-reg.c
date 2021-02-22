@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mr-reg.c -- the memory region registration/deregistration unit tests
@@ -45,12 +46,15 @@ static struct prestate prestates[] = {
 	/* values used in reg_dereg__success called with (prestates + 8) */
 	{RPMA_MR_USAGE_SEND, 0, NULL},
 	/* values used in reg_dereg__success called with (prestates + 9) */
+	{RPMA_MR_USAGE_ATOMIC,
+		(IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_LOCAL_WRITE), NULL},
+	/* values used in reg_dereg__success called with (prestates + 10) */
 	{(RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |
 	RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |
 	RPMA_MR_USAGE_RECV | RPMA_MR_USAGE_SEND |
-	RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+	RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT | RPMA_MR_USAGE_ATOMIC),
 		(IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE |
-		IBV_ACCESS_LOCAL_WRITE), NULL},
+		IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC), NULL},
 };
 
 /*
@@ -303,8 +307,10 @@ static const struct CMUnitTest tests_reg[] = {
 		setup__reg_success, teardown__dereg_success, prestates + 7},
 	{ "reg_dereg__USAGE_SEND", reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates + 8},
-	{ "reg_dereg__USAGE_ALL", reg_dereg__success,
+	{ "reg_dereg__USAGE_ATOMIC", reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates + 9},
+	{ "reg_dereg__USAGE_ALL", reg_dereg__success,
+		setup__reg_success, teardown__dereg_success, prestates + 10},
 
 	/* rpma_mr_dereg() unit tests */
 	cmocka_unit_test(dereg__NULL_mr_ptr),
