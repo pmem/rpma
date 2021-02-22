@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -66,6 +67,33 @@ rpma_mr_write(struct ibv_qp *qp,
 	check_expected(imm);
 	check_expected_ptr(op_context);
 	check_expected(fence);
+
+	return mock_type(int);
+}
+
+/*
+ * rpma_mr_atomic_cmp_swp -- rpma_mr_atomic_cmp_swp() mock
+ */
+int
+rpma_mr_atomic_cmp_swp(struct ibv_qp *qp,
+	struct rpma_mr_remote *swap_dst, size_t swap_dst_offset,
+	struct rpma_mr_local *read_dst, size_t read_dst_offset,
+	int flags, uint64_t compare, uint64_t swap, const void *op_context)
+{
+	assert_non_null(qp);
+	assert_non_null(swap_dst);
+	assert_non_null(read_dst);
+	assert_int_not_equal(flags, 0);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(swap_dst);
+	check_expected(swap_dst_offset);
+	check_expected_ptr(read_dst);
+	check_expected(read_dst_offset);
+	check_expected(flags);
+	check_expected(compare);
+	check_expected(swap);
+	check_expected_ptr(op_context);
 
 	return mock_type(int);
 }

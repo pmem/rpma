@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mr.h -- librpma memory region-related internal definitions
@@ -47,6 +48,20 @@ int rpma_mr_write(struct ibv_qp *qp,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, enum ibv_wr_opcode operation,
 	uint32_t imm, const void *op_context, bool fence);
+
+/*
+ * ASSUMPTIONS
+ * - qp != NULL && read_dst != NULL && swap_dst != NULL && flags != 0
+ *
+ * ERRORS
+ * rpma_mr_atomic_cmp_swp() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ */
+int rpma_mr_atomic_cmp_swp(struct ibv_qp *qp,
+	struct rpma_mr_remote *swap_dst, size_t swap_dst_offset,
+	struct rpma_mr_local *read_dst, size_t read_dst_offset,
+	int flags, uint64_t compare, uint64_t swap, const void *op_context);
 
 /*
  * ASSUMPTIONS

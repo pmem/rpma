@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -383,6 +384,27 @@ rpma_write_atomic(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_write_atomic_cmp_swp -- initiate the RDMA Compare & Swap operation
+ */
+int
+rpma_write_atomic_cmp_swp(struct rpma_conn *conn,
+	struct rpma_mr_remote *swap_dst, size_t swap_dst_offset,
+	struct rpma_mr_local *read_dst, size_t read_dst_offset,
+	int flags, uint64_t compare, uint64_t swap, const void *op_context)
+{
+	if (conn == NULL || swap_dst == NULL || read_dst == NULL || flags == 0)
+		return RPMA_E_INVAL;
+
+	if (swap_dst_offset % RPMA_ATOMIC_WRITE_ALIGNMENT != 0)
+		return RPMA_E_INVAL;
+
+	return rpma_mr_atomic_cmp_swp(conn->id->qp,
+			swap_dst, swap_dst_offset,
+			read_dst, read_dst_offset,
+			flags, compare, swap, op_context);
+}
+
+/*
  * rpma_flush -- initiate the flush operation
  */
 int
@@ -562,6 +584,9 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 		break;
 	case IBV_WC_SEND:
 		cmpl->op = RPMA_OP_SEND;
+		break;
+	case IBV_WC_COMP_SWAP:
+		cmpl->op = RPMA_OP_COMP_SWAP;
 		break;
 	case IBV_WC_RECV:
 		cmpl->op = RPMA_OP_RECV;
