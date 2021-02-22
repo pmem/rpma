@@ -500,7 +500,7 @@ rpma_conn_completion_wait(struct rpma_conn *conn)
 		return RPMA_E_INVAL;
 
 	/* wait for the completion event */
-	struct ibv_cq *ev_cq;	/* unused */
+	struct ibv_cq *ev_cq;
 	void *ev_ctx;		/* unused */
 	if (ibv_get_cq_event(conn->channel, &ev_cq, &ev_ctx))
 		return RPMA_E_NO_COMPLETION;
@@ -511,7 +511,7 @@ rpma_conn_completion_wait(struct rpma_conn *conn)
 	 * XXX for performance reasons, it may be beneficial to ACK more than
 	 * one CQ event at the same time.
 	 */
-	ibv_ack_cq_events(conn->cq, 1 /* # of CQ events */);
+	ibv_ack_cq_events(ev_cq, 1 /* # of CQ events */);
 
 	/* request for the next event on the CQ channel */
 	errno = ibv_req_notify_cq(conn->cq,
