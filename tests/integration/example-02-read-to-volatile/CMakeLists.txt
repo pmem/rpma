@@ -38,6 +38,7 @@ set_target_properties(${TARGET}
        LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=posix_memalign,--wrap=fprintf,--wrap=mmap,--wrap=munmap")
 
 target_compile_definitions(${TARGET}
+       PUBLIC TEST_USE_CMOCKA
        PUBLIC TEST_MOCK_MAIN
        PRIVATE TEST_MOCK_ALLOC
        PRIVATE SRCVERSION="0.0")

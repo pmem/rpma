@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * server.c -- a server of the write-to-persistent example
@@ -21,9 +21,12 @@
 
 #include "common-conn.h"
 
-#ifdef TEST_MOCK_MAIN
+#ifdef TEST_USE_CMOCKA
 #include "cmocka_headers.h"
 #include "cmocka_alloc.h"
+#endif
+
+#ifdef TEST_MOCK_MAIN
 #define main server_main
 #endif
 
