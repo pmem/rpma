@@ -36,6 +36,10 @@ capable to use pmem at all) it uses DRAM instead.
 transferred via connection's private data. In general, it can be transferred via
 an out-of-band or the in-band channel.
 
+**Note**: The client supports two kind of atomic operations(write,
+write_cmp_swp), write is based on normal RDMA Write with 8 bytes and
+write_cmp_swp is based on the sequence of RDMA Read and RDMA Compare & Swap.
+
 ## Usage
 
 ```bash
@@ -43,5 +47,5 @@ an out-of-band or the in-band channel.
 ```
 
 ```bash
-[user@client]$ ./client $server_address $port $word1 [<word2>] [<...>]
+[user@client]$ ./client $server_address $port <write|write_cmp_swp> $word1 [<word2>] [<...>]
 ```
