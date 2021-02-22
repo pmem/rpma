@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2021, Intel Corporation
+# Copyright (c) 2021, Fujitsu
 
 #
 # run-all-on-SoftRoCE.sh - run all examples on SoftRoCE (optionally under valgrind)
@@ -87,7 +88,7 @@ function run_example() {
 		;;
 	07-atomic-write)
 		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1st_word" "2nd_word" "3rd_word"
+		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "write" "1st_word" "2nd_word" "3rd_word"
 		RV=$?
 		;;
 	08-messages-ping-pong)
