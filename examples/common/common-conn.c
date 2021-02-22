@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * common-conn.c -- a common connection functions used by examples
@@ -86,7 +86,7 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event\n");
+				"rpma_conn_next_event returned an unexpected event\n");
 		goto err_conn_delete;
 	}
 
@@ -129,7 +129,7 @@ server_accept_connection(struct rpma_ep *ep,
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
 	if (!ret && conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event\n");
+				"rpma_conn_next_event returned an unexpected event\n");
 		ret = -1;
 	}
 
@@ -152,7 +152,7 @@ common_wait_for_conn_close_verbose(struct rpma_conn *conn)
 	int ret = rpma_conn_next_event(conn, &conn_event);
 	if (!ret && conn_event != RPMA_CONN_CLOSED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event\n");
+				"rpma_conn_next_event returned an unexpected event\n");
 	}
 
 	return ret;
