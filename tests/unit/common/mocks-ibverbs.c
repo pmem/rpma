@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -261,8 +262,14 @@ ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 	assert_int_equal(wr->opcode, args->opcode);
 	assert_int_equal(wr->send_flags, args->send_flags);
 	assert_int_equal(wr->wr_id, args->wr_id);
-	if (args->opcode != IBV_WR_SEND &&
-	    args->opcode != IBV_WR_SEND_WITH_IMM) {
+	if (args->opcode == IBV_WR_ATOMIC_CMP_AND_SWP) {
+		assert_int_equal(wr->wr.atomic.remote_addr, args->remote_addr);
+		assert_int_equal(wr->wr.atomic.rkey, args->rkey);
+		assert_int_equal(wr->wr.atomic.compare_add, args->compare);
+		assert_int_equal(wr->wr.atomic.swap, args->swap);
+	} else if (args->opcode == IBV_WR_RDMA_READ ||
+	    args->opcode == IBV_WR_RDMA_WRITE ||
+	    args->opcode == IBV_WR_RDMA_WRITE_WITH_IMM) {
 		assert_int_equal(wr->wr.rdma.remote_addr, args->remote_addr);
 		assert_int_equal(wr->wr.rdma.rkey, args->rkey);
 	}

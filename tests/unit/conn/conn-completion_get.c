@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * conn-completion_get.c -- the rpma_conn_completion_get() unit tests
@@ -162,6 +163,7 @@ completion_get__success(void **cstate_ptr)
 			IBV_WC_RDMA_READ,
 			IBV_WC_RDMA_WRITE,
 			IBV_WC_SEND,
+			IBV_WC_COMP_SWAP,
 			IBV_WC_RECV,
 			IBV_WC_RECV,
 			IBV_WC_RECV_RDMA_WITH_IMM
@@ -170,11 +172,13 @@ completion_get__success(void **cstate_ptr)
 			RPMA_OP_READ,
 			RPMA_OP_WRITE,
 			RPMA_OP_SEND,
+			RPMA_OP_COMP_SWAP,
 			RPMA_OP_RECV,
 			RPMA_OP_RECV,
 			RPMA_OP_RECV_RDMA_WITH_IMM
 	};
 	unsigned flags[] = {
+		0,
 		0,
 		0,
 		0,
