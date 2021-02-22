@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the write-to-persistent example
@@ -243,7 +243,7 @@ main(int argc, char *argv[])
 	if (cmpl.op != RPMA_OP_READ) {
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value (%d != %d)\n",
-				cmpl.op, (RPMA_OP_READ | RPMA_OP_WRITE));
+				cmpl.op, RPMA_OP_READ);
 		goto err_mr_remote_delete;
 	}
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
