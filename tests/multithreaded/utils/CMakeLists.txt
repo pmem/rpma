@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
