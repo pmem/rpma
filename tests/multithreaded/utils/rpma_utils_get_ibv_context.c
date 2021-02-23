@@ -13,7 +13,7 @@
 
 #include <librpma.h>
 
-#define MAX_ADDR (4 * 4 - 1)
+#define MAX_ADDR (4 * 4)
 
 struct thread_args {
 	int thread_num;
