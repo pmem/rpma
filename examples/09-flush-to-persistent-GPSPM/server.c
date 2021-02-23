@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * server.c -- a server of the flush-to-persistent-GPSPM example
@@ -221,7 +221,7 @@ main(int argc, char *argv[])
 	ret = rpma_conn_next_event(conn, &conn_event);
 	if (!ret && conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexptected event\n");
+				"rpma_conn_next_event returned an unexpected event\n");
 		ret = -1;
 	}
 	if (ret)

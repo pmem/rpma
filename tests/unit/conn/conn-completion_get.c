@@ -127,7 +127,7 @@ completion_get__poll_cq_2(void **cstate_ptr)
 
 /*
  * completion_get__poll_cq_opcode_IBV_WC_BIND_MW - ibv_poll_cq() returns
- * IBV_WC_BIND_MW (an unexptected opcode)
+ * IBV_WC_BIND_MW (an unexpected opcode)
  */
 static void
 completion_get__poll_cq_opcode_IBV_WC_BIND_MW(void **cstate_ptr)

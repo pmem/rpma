@@ -91,7 +91,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-			"rpma_conn_next_event() returned an unexptected event\n");
+			"rpma_conn_next_event() returned an unexpected event\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
