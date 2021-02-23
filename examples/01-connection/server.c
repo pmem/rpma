@@ -80,7 +80,8 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexpected event\n");
+			"rpma_conn_next_event returned an unexpected event: %s\n",
+			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_delete;
 	}
 
@@ -104,7 +105,8 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_CLOSED) {
 		fprintf(stderr,
-				"rpma_conn_next_event returned an unexpected event\n");
+			"rpma_conn_next_event returned an unexpected event: %s\n",
+			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_delete;
 	}
 
