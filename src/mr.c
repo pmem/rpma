@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -25,21 +26,22 @@
 #define MAX_VALUE_OF(type)	((1 << SIZEOF_IN_BITS(type)) - 1)
 
 #define RPMA_MR_DESC_SIZE (2 * sizeof(uint64_t) + sizeof(uint32_t) \
-			+ sizeof(uint8_t))
+			+ sizeof(uint16_t))
 
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
 		RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_WRITE_DST |\
 		RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |\
 		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
-		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT |\
+		RPMA_MR_USAGE_ATOMIC)
 
 /*
  * Make sure the size of the usage field in the rpma_mr_get_descriptor()
- * and rpma_mr_remote_from_descriptor() functions ('uint8_t' as for now)
+ * and rpma_mr_remote_from_descriptor() functions ('uint16_t' as for now)
  * is big enough to store all possible 'RPMA_MR_USAGE_*' values.
  */
-STATIC_ASSERT(USAGE_ALL_ALLOWED <= MAX_VALUE_OF(uint8_t), usage_too_small);
+STATIC_ASSERT(USAGE_ALL_ALLOWED <= MAX_VALUE_OF(uint16_t), usage_too_small);
 
 /* generate operation completion on success */
 #define RPMA_F_COMPLETION_ON_SUCCESS \
@@ -89,6 +91,13 @@ usage_to_access(int usage)
 
 	if (usage & RPMA_MR_USAGE_RECV)
 		access |= IBV_ACCESS_LOCAL_WRITE;
+
+	if (usage & RPMA_MR_USAGE_ATOMIC)
+		/*
+		 * If IBV_ACCESS_REMOTE_ATOMIC is set, then
+		 * IBV_ACCESS_LOCAL_WRITE must be set too.
+		 */
+		access |= IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_LOCAL_WRITE;
 
 	/*
 	 * There is no IBV_ACCESS_* value to be set for RPMA_MR_USAGE_SEND.
@@ -398,7 +407,8 @@ rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc)
 	memcpy(buff, &rkey, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	*((uint8_t *)buff) = (uint8_t)mr->usage;
+	uint16_t usage = htole16((uint16_t)mr->usage);
+	memcpy(buff, &usage, sizeof(uint16_t));
 
 	return 0;
 }
@@ -419,6 +429,7 @@ rpma_mr_remote_from_descriptor(const void *desc,
 	uint64_t raddr;
 	uint64_t size;
 	uint32_t rkey;
+	uint16_t usage;
 
 	if (desc_size < RPMA_MR_DESC_SIZE) {
 		RPMA_LOG_ERROR(
@@ -436,7 +447,7 @@ rpma_mr_remote_from_descriptor(const void *desc,
 	memcpy(&rkey, buff, sizeof(uint32_t));
 	buff += sizeof(uint32_t);
 
-	uint8_t usage = *(uint8_t *)buff;
+	memcpy(&usage, buff, sizeof(uint16_t));
 
 	if (usage == 0) {
 		RPMA_LOG_ERROR("usage type of memory is not set");
@@ -450,11 +461,11 @@ rpma_mr_remote_from_descriptor(const void *desc,
 	mr->raddr = le64toh(raddr);
 	mr->size = le64toh(size);
 	mr->rkey = le32toh(rkey);
-	mr->usage = usage;
+	mr->usage = le16toh(usage);
 	*mr_ptr = mr;
 
 	RPMA_LOG_INFO("new rpma_mr_remote(raddr=0x%" PRIx64 ", size=%" PRIu64
-			", rkey=0x%" PRIx32 ", usage=0x%" PRIx8 ")",
+			", rkey=0x%" PRIx32 ", usage=0x%" PRIx16 ")",
 			raddr, size, rkey, usage);
 
 	return 0;
