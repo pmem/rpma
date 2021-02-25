@@ -483,7 +483,7 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
 }
 
 /*
- * rpma_conn_req_get_private_data - get a pointer to the incoming connection's
+ * rpma_conn_req_get_private_data -- get a pointer to the incoming connection's
  * private data
  */
 int
