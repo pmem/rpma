@@ -1960,7 +1960,7 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * DESCRIPTION
  * rpma_conn_req_get_private_data() obtains the pointer to the connection's
  * private data given by the other side of the connection before the connection
- * is fully established.
+ * is established.
  *
  * NOTE
  * The pdata pointer becomes invalid after the connection is established.
@@ -1979,13 +1979,11 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * - RPMA_E_INVAL - req or pdata is NULL
  *
  * SEE ALSO
- * rpma_conn_get_private_data(3), rpma_ep_next_conn_req(3), librpma(7)
+ * rpma_conn_get_private_data(), rpma_ep_next_conn_req(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
 		struct rpma_conn_private_data *pdata);
-
-
 
 /* remote memory access functions */
 
