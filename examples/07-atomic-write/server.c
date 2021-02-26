@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * server.c -- a server of the atomic-write example
@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* calculate data for the client write */
-	struct common_data data;
+	struct common_data data = {0};
 	data.data_offset = offsetof(struct log, used);
 	data.mr_desc_size = mr_desc_size;
 
