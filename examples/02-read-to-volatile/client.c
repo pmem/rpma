@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the read-to-volatile example
@@ -15,9 +15,12 @@
 
 #include "common-conn.h"
 
-#ifdef TEST_MOCK_MAIN
+#ifdef TEST_USE_CMOCKA
 #include "cmocka_headers.h"
 #include "cmocka_alloc.h"
+#endif
+
+#ifdef TEST_MOCK_MAIN
 #define main client_main
 #endif
 

@@ -37,9 +37,12 @@ translate(struct hello_t *hello)
 	write_hello_str(hello, lang);
 }
 
-#ifdef TEST_MOCK_MAIN
+#ifdef TEST_USE_CMOCKA
 #include "cmocka_headers.h"
 #include "cmocka_alloc.h"
+#endif
+
+#ifdef TEST_MOCK_MAIN
 #define main client_main
 #endif
 
