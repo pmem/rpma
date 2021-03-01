@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the read-to-persistent example
@@ -164,7 +164,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* calculate data for the server read */
-	struct common_data data;
+	struct common_data data = {0};
 	data.data_offset = data_offset + offsetof(struct hello_t, str);
 	data.mr_desc_size = mr_desc_size;
 

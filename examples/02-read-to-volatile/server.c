@@ -88,7 +88,7 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_dereg;
 
-	struct common_data data;
+	struct common_data data = {0};
 	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
