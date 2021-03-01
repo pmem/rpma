@@ -1,5 +1,5 @@
 [global]
-ioengine=${ioengine}
+ioengine=librpma_gpspm_client
 create_serialize=0 # (required) forces specific initiation sequence
 serverip=${serverip}
 port=7204
@@ -12,7 +12,10 @@ percentile_list=99.0:99.9:99.99:99.999
 # a connection.
 
 [client]
-sync=1
+sync=${sync}
+numjobs=${numjobs}
+group_reporting=1
+iodepth=${iodepth}
 readwrite=${readwrite}
 rwmixread=70 # valid only for the 'rw' and 'randrw' readwrite modes
 blocksize=${blocksize}
