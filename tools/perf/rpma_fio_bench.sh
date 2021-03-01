@@ -17,12 +17,13 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm|aof [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
 	echo "       $0 --env - show environment variables used by the script"
 	echo
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
 	echo " - the 'gpspm' mode does not support the 'read' operation for now."
+	echo " - the 'aof' mode does not support the 'read' and 'rand' operation for now."
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -95,8 +96,14 @@ elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; th
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
-	read|rw|randrw)
+	read|randread|rw|randrw)
 		usage "The 'gpspm' mode does not support the '$3' operation for now."
+		;;
+	esac
+elif [ "$2" == "aof" ]; then
+	case "$3" in
+	randwrite|read|randread|rw|randrw)
+		usage "The 'aof' mode does not support the '$3' operation for now."
 		;;
 	esac
 fi
@@ -140,7 +147,7 @@ function benchmark_one() {
 			REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
 		fi
 		;;
-	gpspm)
+	gpspm|aof)
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
 		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
 		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
@@ -395,10 +402,10 @@ fi
 echo
 
 case $P_MODES in
-apm|gpspm)
+apm|gpspm|aof)
 	;;
 all)
-	P_MODES="apm gpspm"
+	P_MODES="apm gpspm aof"
 	;;
 *)
 	usage "Wrong persistency mode: $P_MODES"
@@ -432,6 +439,14 @@ for p in $P_MODES; do
 		if [ "$p" == "gpspm" ]; then
 			case "$o" in
 			read|randread|rw|randrw)
+				continue
+				;;
+			esac
+		fi
+
+		if [ "$p" == "aof" ]; then
+			case "$o" in
+			randwrite|read|randread|rw|randrw)
 				continue
 				;;
 			esac
