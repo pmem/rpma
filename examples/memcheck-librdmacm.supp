@@ -34,13 +34,5 @@
    Memcheck:Param
    write(buf)
    fun:write
-   fun:rdma_accept
-}
-
-{
-   XXX CMA_INIT_CMD() should initialize the whole buffer
-   Memcheck:Param
-   write(buf)
-   fun:write
    fun:rdma_connect
 }
