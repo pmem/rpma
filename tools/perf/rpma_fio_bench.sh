@@ -17,12 +17,13 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
 	echo "       $0 --env - show environment variables used by the script"
 	echo
 	echo "Notes:"
 	echo " - 'all' is the default value for missing arguments"
 	echo " - the 'gpspm' mode does not support the 'read' operation for now."
+	echo " - the 'aof_*' mode does not support the 'read', 'randread', 'randwrite', 'rw' and 'randrw' operations."
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
@@ -95,8 +96,14 @@ elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; th
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
-	read|rw|randrw)
+	read|randread|rw|randrw)
 		usage "The 'gpspm' mode does not support the '$3' operation for now."
+		;;
+	esac
+elif [ "$2" == "aof_sw" ] || [ "$2" == "aof_hw" ]; then
+	case "$3" in
+	read|randread|randwrite|rw|randrw)
+		usage "The '$2' mode does not support the '$3' operation."
 		;;
 	esac
 fi
@@ -128,7 +135,7 @@ function benchmark_one() {
 	fi
 
 	case $PERSIST_MODE in
-	apm)
+	apm|aof_hw)
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
 		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
 		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
@@ -140,7 +147,7 @@ function benchmark_one() {
 			REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
 		fi
 		;;
-	gpspm)
+	gpspm|aof_sw)
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
 		if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
 		   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
@@ -167,6 +174,7 @@ function benchmark_one() {
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		DEPTH=2
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
+		SYNC=1
 		;;
 	bw-dp-exp)
 		THREADS=1
@@ -174,6 +182,7 @@ function benchmark_one() {
 		DEPTH=(1 2 4 8 16 32 64 128)
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
+		SYNC=1
 		;;
 	bw-dp-lin)
 		THREADS=1
@@ -181,6 +190,7 @@ function benchmark_one() {
 		DEPTH=(1 2 3 4 5 6 7 8 9 10)
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
+		SYNC=1
 		;;
 	bw-th)
 		THREADS=(1 2 4 8 12 16 32 64)
@@ -188,6 +198,7 @@ function benchmark_one() {
 		DEPTH=2
 		ITERATIONS=${#THREADS[@]}
 		NAME_SUFFIX=bs${BLOCK_SIZE}_dp${DEPTH}
+		SYNC=1
 		;;
 	lat)
 		THREADS=1
@@ -195,6 +206,7 @@ function benchmark_one() {
 		DEPTH=1
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
+		SYNC=0
 		;;
 	esac
 
@@ -329,16 +341,15 @@ function benchmark_one() {
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
 		fi
 
-		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP]"
-		ENV="serverip=$SERVER_IP blocksize=$BS numjobs=$TH iodepth=${DP} \
-			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME \
-			ioengine=librpma_${PERSIST_MODE}_client"
+		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP sync: $SYNC]"
+		ENV="serverip=$SERVER_IP blocksize=$BS sync=$SYNC numjobs=$TH iodepth=${DP} \
+			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			# run FIO
 			if [ "x$TRACER" == "x" ]; then
 				TRACER="numactl -N $JOB_NUMA"
 			fi
-			bash -c "$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma-client-${SUFFIX}.fio \
+			bash -c "$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma_${PERSIST_MODE}-client.fio \
 				--output-format=json+ > $TEMP_JSON"
 			if [ "$?" -ne 0 ]; then
 				echo "Error: FIO job failed"
@@ -353,7 +364,7 @@ function benchmark_one() {
 				cat $TEMP_CSV >> ${OUTPUT[i]}
 			done
 		else
-			bash -c "cat ./fio_jobs/librpma-client-${SUFFIX}.fio | \
+			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-client.fio | \
 				grep -v '^#' | $ENV envsubst >> $CLIENT_DUMP"
 			echo "---" >> $SERVER_DUMP
 			echo "---" >> $CLIENT_DUMP
@@ -395,10 +406,10 @@ fi
 echo
 
 case $P_MODES in
-apm|gpspm)
+apm|gpspm|aof_sw|aof_hw)
 	;;
 all)
-	P_MODES="apm gpspm"
+	P_MODES="apm gpspm aof_sw aof_hw"
 	;;
 *)
 	usage "Wrong persistency mode: $P_MODES"
@@ -432,6 +443,12 @@ for p in $P_MODES; do
 		if [ "$p" == "gpspm" ]; then
 			case "$o" in
 			read|randread|rw|randrw)
+				continue
+				;;
+			esac
+		elif [ "$p" == "aof_sw" ] || [ "$p" == "aof_hw" ]; then
+			case "$o" in
+			read|randread|randwrite|rw|randrw)
 				continue
 				;;
 			esac

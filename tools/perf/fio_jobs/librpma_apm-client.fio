@@ -1,5 +1,5 @@
 [global]
-ioengine=${ioengine}
+ioengine=librpma_apm_client
 create_serialize=0 # (required) forces specific initiation sequence
 serverip=${serverip}
 port=7204
@@ -12,6 +12,7 @@ percentile_list=99.0:99.9:99.99:99.999
 # a connection.
 
 [client]
+sync=${sync}
 numjobs=${numjobs}
 group_reporting=1
 iodepth=${iodepth}
