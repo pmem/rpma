@@ -95,7 +95,7 @@ elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; th
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
-	read|rw|randrw)
+	read|randread|rw|randrw)
 		usage "The 'gpspm' mode does not support the '$3' operation for now."
 		;;
 	esac
