@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * server.c -- a server of the multiple-connections example
@@ -448,6 +448,7 @@ main(int argc, char *argv[])
 			continue;
 
 		(void) rpma_conn_disconnect(svr.clients[i].conn);
+		(void) rpma_conn_delete(&svr.clients[i].conn);
 	}
 
 	if (ret == 0)
