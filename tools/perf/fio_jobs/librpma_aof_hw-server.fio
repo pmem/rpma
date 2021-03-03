@@ -22,7 +22,3 @@ direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 size=100MiB
 filename=${filename}
-
-# The client will terminate the server when the client will end up its job.
-time_based
-runtime=365d
