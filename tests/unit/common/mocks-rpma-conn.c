@@ -64,10 +64,10 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 }
 
 /*
- * rpma_conn_set_private_data -- rpma_conn_set_private_data() mock
+ * rpma_conn_transfer_private_data -- rpma_conn_transfer_private_data() mock
  */
 int
-rpma_conn_set_private_data(struct rpma_conn *conn,
+rpma_conn_transfer_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
 	assert_non_null(conn);
@@ -75,6 +75,4 @@ rpma_conn_set_private_data(struct rpma_conn *conn,
 	check_expected(conn);
 	check_expected(pdata->ptr);
 	check_expected(pdata->len);
-
-	return mock_type(int);
 }

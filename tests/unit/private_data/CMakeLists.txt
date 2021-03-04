@@ -22,5 +22,4 @@ function (add_test_private_data name)
        add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_private_data(copy)
 add_test_private_data(store)
