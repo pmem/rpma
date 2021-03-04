@@ -279,27 +279,26 @@ next_event__success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
-	/* configure mocks for rpma_conn_set_private_data() */
+	/* configure mocks for rpma_conn_transfer_private_data() */
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
-	/* set private data in the connection */
-	int ret = rpma_conn_set_private_data(cstate->conn, &data);
+	/* transfer the private data to the connection (a take over) */
+	rpma_conn_transfer_private_data(cstate->conn, &data);
 
-	/* verify the results of rpma_conn_set_private_data() */
-	assert_int_equal(ret, MOCK_OK);
+	/* verify the source of the private data is zeroed */
+	assert_ptr_equal(data.ptr, NULL);
+	assert_int_equal(data.len, 0);
 
 	/* get the private data */
 	struct rpma_conn_private_data check_data;
-	ret = rpma_conn_get_private_data(cstate->conn, &check_data);
+	int ret = rpma_conn_get_private_data(cstate->conn, &check_data);
 
 	/* verify the results of rpma_conn_get_private_data() */
 	assert_int_equal(ret, MOCK_OK);
-	assert_ptr_equal(check_data.ptr, data.ptr);
-	assert_int_equal(check_data.len, data.len);
+	assert_ptr_equal(check_data.ptr, MOCK_PRIVATE_DATA);
+	assert_int_equal(check_data.len, MOCK_PDATA_LEN);
 
 	/* configure mocks for rpma_conn_next_event() */
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
@@ -346,27 +345,26 @@ next_event__success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
-	/* configure mocks for rpma_conn_set_private_data() */
+	/* configure mocks for rpma_conn_transfer_private_data() */
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
-	/* set private data in the connection */
-	int ret = rpma_conn_set_private_data(cstate->conn, &data);
+	/* transfer the private data to the connection (a take over) */
+	rpma_conn_transfer_private_data(cstate->conn, &data);
 
-	/* verify the results of rpma_conn_set_private_data() */
-	assert_int_equal(ret, MOCK_OK);
+	/* verify the source of the private data is zeroed */
+	assert_ptr_equal(data.ptr, NULL);
+	assert_int_equal(data.len, 0);
 
 	/* get the private data */
 	struct rpma_conn_private_data check_data;
-	ret = rpma_conn_get_private_data(cstate->conn, &check_data);
+	int ret = rpma_conn_get_private_data(cstate->conn, &check_data);
 
 	/* verify the results of rpma_conn_get_private_data() */
 	assert_int_equal(ret, MOCK_OK);
-	assert_ptr_equal(check_data.ptr, data.ptr);
-	assert_int_equal(check_data.len, data.len);
+	assert_ptr_equal(check_data.ptr, MOCK_PRIVATE_DATA);
+	assert_int_equal(check_data.len, MOCK_PDATA_LEN);
 
 	/* configure mocks for rpma_conn_next_event() */
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);

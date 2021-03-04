@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn.h -- librpma connection-related internal definitions
@@ -25,18 +25,13 @@ int rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_cq *cq, struct rpma_conn **conn_ptr);
 
 /*
- * rpma_conn_set_private_data -- allocate a buffer and fill
- * the private data of the CM ID
+ * rpma_conn_transfer_private_data -- transfer the private data to
+ * the connection (a take over).
  *
  * ASSUMPTIONS
  * - conn != NULL && pdata != NULL
- *
- * ERRORS
- * rpma_conn_set_private_data() can fail with the following error:
- *
- * - RPMA_E_NOMEM - out of memory
  */
-int rpma_conn_set_private_data(struct rpma_conn *conn,
+void rpma_conn_transfer_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata);
 
 #endif /* LIBRPMA_CONN_H */

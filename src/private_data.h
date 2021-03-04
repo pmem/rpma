@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * private_data.h -- a store for connections' private data (definitions)
@@ -27,20 +27,6 @@
  */
 int rpma_private_data_store(struct rdma_cm_event *edata,
 		struct rpma_conn_private_data *pdata);
-
-/*
- * ASSUMPTIONS
- * - src != NULL && dst != NULL
- * - dst == {NULL, 0}
- * - src == {NULL, 0} || (src->ptr != NULL && src->len != 0)
- *
- * ERRORS
- * rpma_private_data_copy() can fail with the following error:
- *
- * - RPMA_E_NOMEM - out of memory
- */
-int rpma_private_data_copy(struct rpma_conn_private_data *dst,
-		struct rpma_conn_private_data *src);
 
 /*
  * ASSUMPTIONS

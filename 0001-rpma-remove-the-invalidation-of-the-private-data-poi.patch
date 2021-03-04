@@ -1,0 +1,60 @@
+From 37e1194bd3286873c091312522b90055a023ce37 Mon Sep 17 00:00:00 2001
+From: "Wang, Long" <long1.wang@intel.com>
+Date: Thu, 4 Mar 2021 09:57:22 +0800
+Subject: [PATCH] rpma: remove the invalidation of the private data pointer
+
+---
+ examples/01-connection/server.c | 4 ++++
+ src/conn.c                      | 8 +++++++-
+ src/conn_req.c                  | 1 -
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/examples/01-connection/server.c b/examples/01-connection/server.c
+index 6e5a840..88b3f93 100644
+--- a/examples/01-connection/server.c
++++ b/examples/01-connection/server.c
+@@ -62,6 +62,10 @@ main(int argc, char *argv[])
+ 	if (ret)
+ 		goto err_ep_shutdown;
+ 
++	/* get private data */
++	struct rpma_conn_private_data prc_data;
++	ret = rpma_conn_req_get_private_data(req, &prc_data);
++
+ 	/*
+ 	 * connect / accept the connection request and obtain the connection
+ 	 * object
+diff --git a/src/conn.c b/src/conn.c
+index a5fd6d6..9e042b2 100644
+--- a/src/conn.c
++++ b/src/conn.c
+@@ -105,7 +105,13 @@ int
+ rpma_conn_set_private_data(struct rpma_conn *conn,
+ 		struct rpma_conn_private_data *pdata)
+ {
+-	return rpma_private_data_copy(&conn->data, pdata);
++	if (pdata->ptr == NULL)
++		return 0;
++
++	conn->data.ptr = pdata->ptr;
++	conn->data.len = pdata->len;
++
++	return 0;
+ }
+ 
+ /* public librpma API */
+diff --git a/src/conn_req.c b/src/conn_req.c
+index bedc3d7..17d179d 100644
+--- a/src/conn_req.c
++++ b/src/conn_req.c
+@@ -154,7 +154,6 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
+ 	if (ret)
+ 		goto err_conn_delete;
+ 
+-	rpma_private_data_discard(&req->data);
+ 	*conn_ptr = conn;
+ 	return 0;
+ 
+-- 
+2.27.0.windows.1
+
