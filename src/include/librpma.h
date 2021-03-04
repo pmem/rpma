@@ -1396,7 +1396,22 @@ int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 
 /* connection */
 
-struct rpma_conn;
+struct rpma_conn_private_data {
+	void *ptr;
+	uint8_t len;
+};
+
+struct rpma_conn {
+	struct rdma_cm_id *id; /* a CM ID of the connection */
+	struct rdma_event_channel *evch; /* event channel of the CM ID */
+	struct ibv_comp_channel *channel; /* completion event channel */
+	struct ibv_cq *cq; /* completion queue of the CM ID */
+
+	struct rpma_conn_private_data data; /* private data of the CM ID */
+	struct rpma_flush *flush; /* flushing object */
+
+	bool direct_write_to_pmem; /* direct write to pmem is supported */
+};
 
 /** 3
  * rpma_conn_get_event_fd - get an event file descriptor of the connection
@@ -1512,11 +1527,6 @@ int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
  * rpma_conn_next_event(3), librpma(7) and https://pmem.io/rpma/
  */
 const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
-
-struct rpma_conn_private_data {
-	void *ptr;
-	uint8_t len;
-};
 
 /** 3
  * rpma_conn_get_private_data - get a pointer to the connection's private data

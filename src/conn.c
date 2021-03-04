@@ -19,18 +19,6 @@
 #include "cmocka_alloc.h"
 #endif
 
-struct rpma_conn {
-	struct rdma_cm_id *id; /* a CM ID of the connection */
-	struct rdma_event_channel *evch; /* event channel of the CM ID */
-	struct ibv_comp_channel *channel; /* completion event channel */
-	struct ibv_cq *cq; /* completion queue of the CM ID */
-
-	struct rpma_conn_private_data data; /* private data of the CM ID */
-	struct rpma_flush *flush; /* flushing object */
-
-	bool direct_write_to_pmem; /* direct write to pmem is supported */
-};
-
 /* internal librpma API */
 
 /*
@@ -98,14 +86,18 @@ err_destroy_evch:
 }
 
 /*
- * rpma_conn_set_private_data -- allocate a buffer and fill
- * the private data of the CM ID
+ * rpma_conn_transfer_private_data -- transfer the private data to
+ * the connection (a take over).
  */
-int
-rpma_conn_set_private_data(struct rpma_conn *conn,
+void
+rpma_conn_transfer_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
-	return rpma_private_data_copy(&conn->data, pdata);
+	conn->data.ptr = pdata->ptr;
+	conn->data.len = pdata->len;
+
+	pdata->ptr = NULL;
+	pdata->len = 0;
 }
 
 /* public librpma API */

@@ -150,11 +150,8 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	if (ret)
 		goto err_conn_disconnect;
 
-	ret = rpma_conn_set_private_data(conn, &req->data);
-	if (ret)
-		goto err_conn_delete;
+	rpma_conn_transfer_private_data(conn, &req->data);
 
-	rpma_private_data_discard(&req->data);
 	*conn_ptr = conn;
 	return 0;
 
