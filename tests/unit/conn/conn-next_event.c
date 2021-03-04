@@ -283,8 +283,6 @@ next_event__success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
 	/* set private data in the connection */
 	int ret = rpma_conn_set_private_data(cstate->conn, &data);
@@ -350,8 +348,6 @@ next_event__success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 	struct rpma_conn_private_data data;
 	data.ptr = MOCK_PRIVATE_DATA;
 	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
 	/* set private data in the connection */
 	int ret = rpma_conn_set_private_data(cstate->conn, &data);

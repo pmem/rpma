@@ -98,14 +98,19 @@ err_destroy_evch:
 }
 
 /*
- * rpma_conn_set_private_data -- allocate a buffer and fill
- * the private data of the CM ID
+ * rpma_conn_set_private_data -- set the private data of the CM ID
  */
 int
 rpma_conn_set_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
-	return rpma_private_data_copy(&conn->data, pdata);
+	if (conn == NULL || pdata == NULL)
+		return RPMA_E_INVAL;
+
+	conn->data.ptr = pdata->ptr;
+	conn->data.len = pdata->len;
+
+	return 0;
 }
 
 /* public librpma API */

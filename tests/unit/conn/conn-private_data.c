@@ -56,11 +56,10 @@ get_private_data__conn_NULL_pdata_NULL(void **unused)
 }
 
 /*
- * set_private_data__failed_ENOMEM - rpma_conn_set_private_data() failed
- *                                       with RPMA_E_NOMEM
+ * set_private_data__failed_pdata_NULL - NULL pdata is invalid
  */
 static void
-set_private_data__failed_ENOMEM(void **cstate_ptr)
+set_private_data__failed_pdata_NULL(void **cstate_ptr)
 {
 	/*
 	 * Common things are done by setup__conn_new()
@@ -68,17 +67,11 @@ set_private_data__failed_ENOMEM(void **cstate_ptr)
 	 */
 	struct conn_test_state *cstate = *cstate_ptr;
 
-	/* configure mocks for rpma_conn_set_private_data() */
-	struct rpma_conn_private_data data;
-	data.ptr = MOCK_PRIVATE_DATA;
-	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, RPMA_E_NOMEM);
-
 	/* set private data */
-	int ret = rpma_conn_set_private_data(cstate->conn, &data);
+	int ret = rpma_conn_set_private_data(cstate->conn, NULL);
 
 	/* verify the results of rpma_conn_set_private_data() */
-	assert_int_equal(ret, RPMA_E_NOMEM);
+	assert_int_equal(ret, RPMA_E_INVAL);
 
 	/* get private data */
 	struct rpma_conn_private_data check_data;
@@ -88,6 +81,24 @@ set_private_data__failed_ENOMEM(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(check_data.ptr, NULL);
 	assert_int_equal(check_data.len, 0);
+}
+
+/*
+ * set_private_data__failed_conn_NULL - NULL conn is invalid
+ */
+static void
+set_private_data__failed_conn_NULL(void **cstate_ptr)
+{
+	/* configure mocks for rpma_conn_set_private_data() */
+	struct rpma_conn_private_data data;
+	data.ptr = MOCK_PRIVATE_DATA;
+	data.len = MOCK_PDATA_LEN;
+
+	/* set private data */
+	int ret = rpma_conn_set_private_data(NULL, &data);
+
+	/* verify the results of rpma_conn_set_private_data() */
+	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
@@ -105,8 +116,6 @@ set_private_data__success(void **cstate_ptr)
 	/* configure mocks for rpma_conn_set_private_data() */
 	cstate->data.ptr = MOCK_PRIVATE_DATA;
 	cstate->data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
 	/* set private data */
 	int ret = rpma_conn_set_private_data(cstate->conn, &cstate->data);
@@ -127,8 +136,11 @@ set_private_data__success(void **cstate_ptr)
 static const struct CMUnitTest tests_private_data[] = {
 	/* rpma_conn_set_private_data() unit tests */
 	cmocka_unit_test_setup_teardown(
-		set_private_data__failed_ENOMEM,
+		set_private_data__failed_pdata_NULL,
 		setup__conn_new, teardown__conn_delete),
+	cmocka_unit_test_setup_teardown(
+		set_private_data__failed_conn_NULL,
+		NULL, NULL),
 	cmocka_unit_test_setup_teardown(
 		set_private_data__success,
 		setup__conn_new, teardown__conn_delete),
