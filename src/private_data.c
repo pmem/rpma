@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * private_data.c -- a store for connections' private data
@@ -38,26 +38,6 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 
 	pdata->ptr = ptr_copy;
 	pdata->len = len;
-
-	return 0;
-}
-
-/*
- * rpma_private_data_copy -- copy private data from src to dst
- */
-int
-rpma_private_data_copy(struct rpma_conn_private_data *dst,
-		struct rpma_conn_private_data *src)
-{
-	if (src->ptr == NULL)
-		return 0;
-
-	dst->ptr = malloc(src->len);
-	if (dst->ptr == NULL)
-		return RPMA_E_NOMEM;
-
-	memcpy(dst->ptr, src->ptr, src->len);
-	dst->len = src->len;
 
 	return 0;
 }
