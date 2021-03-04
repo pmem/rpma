@@ -8,6 +8,9 @@ data to the server.
 The immediate data is compared with the expected immediate data sent
 by the client as the private data during establishing the connection.
 
+**Note**: The client sends 0B message with immediate data if the 'word'
+argument is not specified.
+
 ## Usage
 
 ```bash
@@ -15,5 +18,5 @@ by the client as the private data during establishing the connection.
 ```
 
 ```bash
-[user@client]$ ./client $server_address $port $word $imm
+[user@client]$ ./client $server_address $port $imm [word]
 ```
