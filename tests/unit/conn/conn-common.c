@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-common.c -- the connection unit tests common functions
@@ -37,35 +37,6 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 
 	pdata->ptr = (void *)edata->param.conn.private_data;
 	pdata->len = edata->param.conn.private_data_len;
-
-	return 0;
-}
-
-/*
- * rpma_private_data_copy -- rpma_private_data_copy() mock
- */
-int
-rpma_private_data_copy(struct rpma_conn_private_data *dst,
-		struct rpma_conn_private_data *src)
-{
-	assert_non_null(src);
-	assert_non_null(dst);
-	assert_null(dst->ptr);
-	assert_int_equal(dst->len, 0);
-	assert_true((src->ptr == NULL && src->len == 0) ||
-			(src->ptr != NULL && src->len != 0));
-
-	dst->len = 0;
-
-	int ret = mock_type(int);
-	if (ret) {
-		dst->ptr = NULL;
-		return ret;
-	}
-
-	dst->ptr = mock_type(void *);
-	if (dst->ptr)
-		dst->len = strlen(dst->ptr) + 1;
 
 	return 0;
 }
@@ -131,8 +102,10 @@ teardown__conn_delete(void **cstate_ptr)
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
-	expect_value(rpma_private_data_discard, pdata->ptr, cstate->data.ptr);
-	expect_value(rpma_private_data_discard, pdata->len, cstate->data.len);
+	expect_value(rpma_private_data_discard, pdata->ptr,
+				cstate->data.ptr);
+	expect_value(rpma_private_data_discard, pdata->len,
+				cstate->data.len);
 
 	/* delete the object */
 	int ret = rpma_conn_delete(&cstate->conn);

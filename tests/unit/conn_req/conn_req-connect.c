@@ -324,47 +324,6 @@ connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * connect_via_accept__set_private_data_ENOMEM -- rpma_conn_set_private_data()
- * fails with ENOMEM
- */
-static void
-connect_via_accept__set_private_data_ENOMEM(void **unused)
-{
-	/* WA for cmocka/issues#47 */
-	struct conn_req_test_state *cstate = NULL;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
-	assert_non_null(cstate);
-
-	/* configure mocks */
-	expect_value(rdma_accept, id, &cstate->id);
-	will_return(rdma_accept, MOCK_OK);
-	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, MOCK_OK);
-	expect_value(rpma_conn_new, id, &cstate->id);
-	will_return(rpma_conn_new, MOCK_CONN);
-	expect_value(rpma_conn_set_private_data, conn, MOCK_CONN);
-	expect_value(rpma_conn_set_private_data, pdata->ptr, MOCK_PRIVATE_DATA);
-	expect_value(rpma_conn_set_private_data, pdata->len, MOCK_PDATA_LEN);
-	will_return(rpma_conn_set_private_data, RPMA_E_NOMEM);
-	expect_value(rpma_conn_delete, conn, MOCK_CONN);
-	will_return(rpma_conn_delete, MOCK_OK);
-	expect_value(rdma_disconnect, id, &cstate->id);
-	will_return(rdma_disconnect, MOCK_OK);
-	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
-
-	/* run test */
-	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_req_connect(&cstate->req, NULL, &conn);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_NOMEM);
-	assert_null(cstate->req);
-	assert_null(conn);
-}
-
-/*
  * connect_via_accept__success_incoming -- rpma_conn_req_connect()
  * success (using an incoming connection request)
  */
@@ -383,11 +342,11 @@ connect_via_accept__success_incoming(void **unused)
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, MOCK_CONN);
-	expect_value(rpma_conn_set_private_data, conn, MOCK_CONN);
-	expect_value(rpma_conn_set_private_data, pdata->ptr, MOCK_PRIVATE_DATA);
-	expect_value(rpma_conn_set_private_data, pdata->len, MOCK_PDATA_LEN);
-	will_return(rpma_conn_set_private_data, 0);
-	expect_function_call(rpma_private_data_discard);
+	expect_value(rpma_conn_transfer_private_data, conn, MOCK_CONN);
+	expect_value(rpma_conn_transfer_private_data, pdata->ptr,
+				MOCK_PRIVATE_DATA);
+	expect_value(rpma_conn_transfer_private_data, pdata->len,
+				MOCK_PDATA_LEN);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -585,7 +544,6 @@ static const struct CMUnitTest test_connect[] = {
 		connect_via_accept__conn_new_EAGAIN),
 	cmocka_unit_test(
 		connect_via_accept__conn_new_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(connect_via_accept__set_private_data_ENOMEM),
 	cmocka_unit_test(connect_via_accept__success_incoming),
 	/* connect via rdma_connect() */
 	cmocka_unit_test(connect_via_connect__connect_EAGAIN),

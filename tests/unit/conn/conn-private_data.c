@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * conn-private-data.c -- the connection's private data unit tests
  *
  * APIs covered:
- * - rpma_conn_set_private_data()
+ * - rpma_conn_transfer_private_data()
  * - rpma_conn_get_private_data()
  */
 
@@ -56,11 +56,10 @@ get_private_data__conn_NULL_pdata_NULL(void **unused)
 }
 
 /*
- * set_private_data__failed_ENOMEM - rpma_conn_set_private_data() failed
- *                                       with RPMA_E_NOMEM
+ * transfer_private_data__success - rpma_conn_transfer_private_data() succeeds
  */
 static void
-set_private_data__failed_ENOMEM(void **cstate_ptr)
+transfer_private_data__success(void **cstate_ptr)
 {
 	/*
 	 * Common things are done by setup__conn_new()
@@ -68,69 +67,35 @@ set_private_data__failed_ENOMEM(void **cstate_ptr)
 	 */
 	struct conn_test_state *cstate = *cstate_ptr;
 
-	/* configure mocks for rpma_conn_set_private_data() */
-	struct rpma_conn_private_data data;
-	data.ptr = MOCK_PRIVATE_DATA;
-	data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, RPMA_E_NOMEM);
-
-	/* set private data */
-	int ret = rpma_conn_set_private_data(cstate->conn, &data);
-
-	/* verify the results of rpma_conn_set_private_data() */
-	assert_int_equal(ret, RPMA_E_NOMEM);
-
-	/* get private data */
-	struct rpma_conn_private_data check_data;
-	ret = rpma_conn_get_private_data(cstate->conn, &check_data);
-
-	/* verify the results of rpma_conn_get_private_data() */
-	assert_int_equal(ret, MOCK_OK);
-	assert_ptr_equal(check_data.ptr, NULL);
-	assert_int_equal(check_data.len, 0);
-}
-
-/*
- * set_private_data__success - rpma_conn_set_private_data() succeeds
- */
-static void
-set_private_data__success(void **cstate_ptr)
-{
-	/*
-	 * Common things are done by setup__conn_new()
-	 * and teardown__conn_delete().
-	 */
-	struct conn_test_state *cstate = *cstate_ptr;
-
-	/* configure mocks for rpma_conn_set_private_data() */
+	/* configure mocks for rpma_conn_transfer_private_data() */
 	cstate->data.ptr = MOCK_PRIVATE_DATA;
 	cstate->data.len = MOCK_PDATA_LEN;
-	will_return(rpma_private_data_copy, 0);
-	will_return(rpma_private_data_copy, MOCK_PRIVATE_DATA);
 
-	/* set private data */
-	int ret = rpma_conn_set_private_data(cstate->conn, &cstate->data);
+	/* transfer private data */
+	rpma_conn_transfer_private_data(cstate->conn, &cstate->data);
 
-	/* verify the results of rpma_conn_set_private_data() */
-	assert_int_equal(ret, MOCK_OK);
+	/* verify the source of the private data is zeroed */
+	assert_ptr_equal(cstate->data.ptr, NULL);
+	assert_int_equal(cstate->data.len, 0);
 
 	/* get private data */
 	struct rpma_conn_private_data check_data;
-	ret = rpma_conn_get_private_data(cstate->conn, &check_data);
+	int ret = rpma_conn_get_private_data(cstate->conn, &check_data);
 
 	/* verify the results of rpma_conn_get_private_data() */
 	assert_int_equal(ret, MOCK_OK);
-	assert_ptr_equal(check_data.ptr, cstate->data.ptr);
-	assert_int_equal(check_data.len, cstate->data.len);
+	assert_ptr_equal(check_data.ptr, MOCK_PRIVATE_DATA);
+	assert_int_equal(check_data.len, MOCK_PDATA_LEN);
+
+	/* set expected private data which will be used during teardown */
+	cstate->data.ptr = MOCK_PRIVATE_DATA;
+	cstate->data.len = MOCK_PDATA_LEN;
 }
 
 static const struct CMUnitTest tests_private_data[] = {
-	/* rpma_conn_set_private_data() unit tests */
+	/* rpma_conn_transfer_private_data() unit tests */
 	cmocka_unit_test_setup_teardown(
-		set_private_data__failed_ENOMEM,
-		setup__conn_new, teardown__conn_delete),
-	cmocka_unit_test_setup_teardown(
-		set_private_data__success,
+		transfer_private_data__success,
 		setup__conn_new, teardown__conn_delete),
 
 	/* rpma_conn_get_private_data() unit tests */
