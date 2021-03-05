@@ -413,6 +413,8 @@ thread-safe API calls:
 
 -   **rpma\_conn\_req\_delete**()
 
+-   **rpma\_conn\_req\_get\_private\_data**()
+
 -   **rpma\_conn\_req\_new**()
 
 -   **rpma\_ep\_listen**()
