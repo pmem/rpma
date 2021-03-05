@@ -19,6 +19,7 @@ rpma_conn_get_private_data.3
 rpma_conn_next_event.3
 rpma_conn_req_connect.3
 rpma_conn_req_delete.3
+rpma_conn_req_get_private_data.3
 rpma_conn_req_new.3
 rpma_conn_req_recv.3
 rpma_ep_get_fd.3
