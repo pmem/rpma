@@ -116,9 +116,11 @@ With the help of additional parameters, you can adjust various aspects of the ou
 
 ## Reporting
 
-Instead of running all separate workloads you can run a comprehensive set of workloads using the following set of commands and generate the RPMA performance report.
+Instead of running all separate workloads you can run a comprehensive set of workloads and generate the RPMA performance report.
 
-Run all benchmarks required for the performance report:
+To generate a report, follow these steps:
+
+### 1) Run all benchmarks required for the performance report:
 
 ```sh
 $ export REMOTE_SUDO_NOPASSWD=1
@@ -128,19 +130,19 @@ $ export REMOTE_JOB_MEM_PATH=/dev/dax1.0
 $ ./reprt_bench.sh $SERVER_IP
 ```
 
-Generate Figures and Appendix charts for the performance report:
+### 2) Generate Figures and Appendix charts for the performance report:
 
 ```sh
 $ mkdir -p results/MACHINE_A
 $ mv *.csv results/MACHINE_A
-$ export DATA_PATH=/results/MACHINE_A
+$ export DATA_PATH=results
 
-$ export READ_LAT_MACHINE=MACHINE_A
-$ export READ_BW_MACHINE=MACHINE_A
-$ export WRITE_LAT_MACHINE=MACHINE_A
-$ export WRITE_BW_MACHINE=MACHINE_A
-$ export MIX_BW_MACHINE=MACHINE_A
-$ export MIX_LAT_MACHINE=MACHINE_A
+$ export READ_LAT_MACHINE=A
+$ export READ_BW_MACHINE=A
+$ export WRITE_LAT_MACHINE=A
+$ export WRITE_BW_MACHINE=A
+$ export MIX_BW_MACHINE=A
+$ export MIX_LAT_MACHINE=A
 
 $ export STAMP=xyz
 
@@ -149,15 +151,16 @@ $ ./create_report_figures.sh report
 $ ./create_report_figures.sh appendix
 ```
 
-Prepare custom report parts (optional):
+### 3) Prepare custom report parts (optional):
 
 ```sh
 $ cp templates/*.copyme report_xyz/
 $ for f in report_xyz/*.copyme; do mv "$f" "${f/.copyme/}"; done
 # edit the report_xyz/*.md files to represent details of your configuration
+# prepare a high-level view of the performance test configuration (setup.png)
 ```
 
-Generate the performance report and appendices:
+### 4) Generate the performance report and appendices:
 
 ```sh
 # will create a report_xyz/report.html report_xyz/appendices.html
