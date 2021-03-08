@@ -199,6 +199,7 @@ def draw_plot(ax, dfs, legend, x, y, xscale):
     ax.set_xticks(xticks)
     ax.set_xlabel(get_label(x))
     ax.set_ylabel(get_label(y))
+    ax.set_ylim(bottom=0)
     ax.legend(legend)
     ax.grid(True)
 
