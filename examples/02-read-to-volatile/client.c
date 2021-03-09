@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * client.c -- a client of the read-to-volatile example
@@ -75,6 +76,21 @@ main(int argc, char *argv[])
 				&dst_mr);
 	if (ret)
 		goto err_mr_free;
+
+	/*
+	 * use rpma_mr_get_mm_ptr() and rpma_mr_get_size() to verify
+	 * if the raw memory address and size are registered successfully
+	 */
+	size_t get_size = 0;
+	void *get_dst_ptr = NULL;
+
+	ret = rpma_mr_get_mm_ptr(dst_mr, &get_dst_ptr);
+	if (ret || get_dst_ptr != dst_ptr)
+		goto err_mr_dereg;
+
+	ret = rpma_mr_get_size(dst_mr, &get_size);
+	if (ret || get_size != KILOBYTE)
+		goto err_mr_dereg;
 
 	/* establish a new connection to a server listening at addr:port */
 	ret = client_connect(peer, addr, port, NULL, &conn);
