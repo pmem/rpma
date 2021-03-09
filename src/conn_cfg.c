@@ -53,7 +53,8 @@ rpma_conn_cfg_default()
 /*
  * rpma_conn_cfg_get_cqe -- ibv_create_cq(..., int cqe, ...) compatible variant
  * of rpma_conn_cfg_get_cq_size(). Round down the cq_size when it is too big
- * for storing into an int type of value. Convert otherwise.
+ * for storing into an int type of value. Round up the cq_size when it is zero.
+ * Convert otherwise.
  */
 int
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
@@ -68,6 +69,8 @@ rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 
 	if (cq_size > INT_MAX)
 		*cqe = INT_MAX;
+	else if (cq_size == 0)
+		*cqe = 1;
 	else
 		*cqe = (int)cq_size;
 

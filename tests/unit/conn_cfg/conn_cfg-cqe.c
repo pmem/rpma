@@ -81,6 +81,25 @@ cqe__clipped(void **cstate_ptr)
 	assert_int_equal(cqe, INT_MAX);
 }
 
+/*
+ * cqe__increased -- cq_size = 0
+ */
+static void
+cqe__increased(void **cstate_ptr)
+{
+	struct conn_cfg_test_state *cstate = *cstate_ptr;
+
+	/* run test */
+	int ret = rpma_conn_cfg_set_cq_size(cstate->cfg, 0);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	int cqe;
+	ret = rpma_conn_cfg_get_cqe(cstate->cfg, &cqe);
+	assert_int_equal(ret, MOCK_OK);
+	assert_int_equal(cqe, 1);
+}
+
 static const struct CMUnitTest test_cqe[] = {
 	cmocka_unit_test(get__cfg_NULL),
 	cmocka_unit_test_setup_teardown(get__cqe_NULL,
@@ -90,7 +109,9 @@ static const struct CMUnitTest test_cqe[] = {
 	cmocka_unit_test_setup_teardown(cqe__lifecycle,
 		setup__conn_cfg, teardown__conn_cfg),
 	cmocka_unit_test_setup_teardown(cqe__clipped,
-			setup__conn_cfg, teardown__conn_cfg),
+		setup__conn_cfg, teardown__conn_cfg),
+	cmocka_unit_test_setup_teardown(cqe__increased,
+		setup__conn_cfg, teardown__conn_cfg),
 };
 
 int
