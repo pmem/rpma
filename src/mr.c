@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -470,6 +471,34 @@ rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr, size_t *desc_size)
 		return RPMA_E_INVAL;
 
 	*desc_size = RPMA_MR_DESC_SIZE;
+
+	return 0;
+}
+
+/*
+ * rpma_mr_get_mm_ptr -- get a local registered memory address
+ */
+int
+rpma_mr_get_mm_ptr(const struct rpma_mr_local *mr, void **mm_ptr)
+{
+	if (mr == NULL || mm_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*mm_ptr = mr->ibv_mr->addr;
+
+	return 0;
+}
+
+/*
+ * rpma_mr_get_size -- get a local registered memory size
+ */
+int
+rpma_mr_get_size(const struct rpma_mr_local *mr, size_t *size)
+{
+	if (mr == NULL || size == NULL)
+		return RPMA_E_INVAL;
+
+	*size = mr->ibv_mr->length;
 
 	return 0;
 }
