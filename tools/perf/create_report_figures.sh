@@ -37,6 +37,8 @@ function usage()
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
     echo
+    echo "For 'report':"
+    echo "export REPORT_MACHINE=<machine>"
     echo "export READ_LAT_MACHINE=<machine>"
     echo "export READ_BW_MACHINE=<machine>"
     echo "export WRITE_LAT_MACHINE=<machine>"
@@ -338,6 +340,15 @@ function figures_report()
 {
     # a global Figure indexer
     figno=1
+
+    if [ -n "$REPORT_MACHINE" ]; then
+        READ_LAT_MACHINE="$REPORT_MACHINE"
+        READ_BW_MACHINE="$REPORT_MACHINE"
+        WRITE_LAT_MACHINE="$REPORT_MACHINE"
+        WRITE_BW_MACHINE="$REPORT_MACHINE"
+        MIX_LAT_MACHINE="$REPORT_MACHINE"
+        MIX_BW_MACHINE="$REPORT_MACHINE"
+    fi
 
     echo "READ LAT"
     set_data_path READ_LAT_MACHINE

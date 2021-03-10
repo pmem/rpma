@@ -136,14 +136,7 @@ $ ./reprt_bench.sh $SERVER_IP
 $ mkdir -p results/MACHINE_A
 $ mv *.csv results/MACHINE_A
 $ export DATA_PATH=results
-
-$ export READ_LAT_MACHINE=A
-$ export READ_BW_MACHINE=A
-$ export WRITE_LAT_MACHINE=A
-$ export WRITE_BW_MACHINE=A
-$ export MIX_BW_MACHINE=A
-$ export MIX_LAT_MACHINE=A
-
+$ export REPORT_MACHINE=A
 $ export STAMP=xyz
 
 # charts will be produced to the report_xyz directory
