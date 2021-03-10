@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|appendix"
+    echo "usage: $0 report|appendix|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -45,6 +45,12 @@ function usage()
     echo "export WRITE_BW_MACHINE=<machine>"
     echo "export MIX_LAT_MACHINE=<machine>"
     echo "export MIX_BW_MACHINE=<machine>"
+    echo
+    echo "For 'cmp':"
+    echo "export A_MACHINE=<machine>"
+    echo "export B_MACHINE=<machine>"
+    echo "export CMP_LAT_YAXIS_MAX=<y_max>"
+    echo "export CMP_BW_YAXIS_MAX=<y_max>"
     exit 1
 }
 
@@ -55,7 +61,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|appendix)
+report|appendix|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -454,6 +460,151 @@ function figures_report()
     else
         figno=$((figno + 4))
     fi
+}
+
+function lat_cmp()
+{
+    filter="$1"
+    title="$2"
+    output="$3"
+    shift 3
+
+    if [ $# -gt 0 ]; then
+        legend=( "$@" )
+    else
+        legend=( $(files_to_machines $filter) )
+    fi
+
+    if [ -n "$CMP_LAT_YAXIS_MAX" ]; then
+        yaxis_max="--yaxis_max $CMP_LAT_YAXIS_MAX"
+    fi
+
+    echo "- $title"
+    echo_filter $filter
+    layouts=('lat_avg' 'lat_pctl_99999')
+    title_prefixes=( \
+        'Latency' \
+        'Latency (99.999% percentiles)')
+    for index in "${!layouts[@]}"; do
+        layout="${layouts[$index]}"
+        title_prefix="${title_prefixes[$index]}"
+        printf -v figno_name "%0${N_DIGITS}d" $figno
+        $TOOLS_PATH/csv_compare.py \
+            --output_title "Fig. $title_prefix: $title" \
+            --output_layout "$layout" \
+            $ylim_top \
+            --output_with_table \
+            --legend "${legend[@]}" \
+            --output_file "Figure_${figno_name}_${output}_${layout}.png" \
+            $filter
+        figno=$((figno + 1))
+    done
+    echo
+}
+
+function bw_cmp()
+{
+    filter="$1"
+    title="$2"
+    output="$3"
+    shift 3
+
+    if [ $# -gt 0 ]; then
+        legend=( "$@" )
+    else
+        legend=( $(files_to_machines $filter) )
+    fi
+
+    if [ -n "$CMP_BW_YAXIS_MAX" ]; then
+        yaxis_max="--yaxis_max $CMP_BW_YAXIS_MAX"
+    fi
+
+    axes=('bs' 'threads')
+    axis_filters=('bw-bs' 'bw-th')
+
+    for index in "${!axes[@]}"; do
+        axis="${axes[$index]}"
+        axis_filter="${axis_filters[$index]}"
+        # replace '{axis}' with actual filter by axis
+        eff_filter="${filter//\{axis\}/${axis_filter}}"
+        echo "- $title - bw($axis)"
+        printf -v figno_name "%0${N_DIGITS}d" $figno
+        echo_filter $eff_filter
+        $TOOLS_PATH/csv_compare.py \
+            --output_title "Fig. Bandwidth: $title" \
+            --output_layout 'bw' \
+            --arg_axis "$axis" \
+            --arg_xscale 'log' \
+            $ylim_top \
+            --output_with_table \
+            --legend "${legend[@]}" \
+            --output_file "Figure_${figno_name}_${output}_${axis_filter}.png" \
+            $eff_filter
+        figno=$((figno + 1))
+    done
+    echo
+}
+
+function figures_cmp()
+{
+    # a global Figure indexer
+    figno=1
+
+    if [ -z "$A_MACHINE" ]; then
+        echo "SKIP: A_MACHINE not set"
+        exit 1
+    fi
+
+    if [ -z "$B_MACHINE" ]; then
+        echo "SKIP: B_MACHINE not set"
+        exit 1
+    fi
+
+    echo "'$A_MACHINE' vs '$B_MACHINE'"
+    a_data_path="$DATA_PATH/MACHINE_$A_MACHINE"
+    b_data_path="$DATA_PATH/MACHINE_$B_MACHINE"
+
+    lat_cmp \
+        "$a_data_path/*apm_*randread_lat*dram* $b_data_path/*apm_*randread_lat*dram*" \
+        'random rpma_read() from DRAM' \
+        'rpma_read_dram' \
+        "$A_MACHINE" "$B_MACHINE"
+
+    for machine in $A_MACHINE $B_MACHINE; do
+        lat_cmp \
+            "$DATA_PATH/MACHINE_$machine/*randwrite_lat*dax*" \
+            "${machine}: APM to PMEM vs GPSPM to PMEM" \
+            "${machine}_apm_vs_gpspm_pmem" \
+            'APM' 'GPSPM'
+
+        bw_cmp \
+            "$DATA_PATH/MACHINE_$machine/*randwrite_{axis}*dax*" \
+            "${machine}: APM to PMEM vs GPSPM to PMEM" \
+            "${machine}_apm_vs_gpspm_pmem" \
+            'APM' 'GPSPM'
+
+        bw_cmp \
+            "$DATA_PATH/MACHINE_$machine/*apm_randwrite_{axis}*dram* $DATA_PATH/MACHINE_$machine/*apm_randwrite_{axis}*dax*" \
+            "${machine}: APM to DRAM (DDIO=ON) vs to PMEM" \
+            "${machine}_apm_dram_vs_pmem" \
+            'DRAM' 'PMEM'
+    done
+
+    for pm in apm gpspm; do
+        PM=${pm^^}
+
+        lat_cmp \
+            "$a_data_path/*${pm}_*randwrite_lat*dax* $b_data_path/*${pm}_*randwrite_lat*dax*" \
+            "${PM} to PMEM" \
+            "${pm}_pmem" \
+            "$A_MACHINE" "$B_MACHINE"
+
+        bw_cmp \
+            "$a_data_path/*${pm}_*randwrite_{axis}*dax* $b_data_path/*${pm}_*randwrite_{axis}*dax*" \
+            "${PM} to PMEM" \
+            "${pm}_pmem" \
+            "$A_MACHINE" "$B_MACHINE"
+    done
 }
 
 TOOLS_PATH=$(pwd)
