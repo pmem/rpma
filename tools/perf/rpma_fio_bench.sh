@@ -27,6 +27,7 @@ function usage()
 	echo
 	echo "export JOB_NUMA=0"
 	echo "export FIO_PATH=/custom/fio/path/"
+	echo "export COMMENT=any_text_to_be_added_to_every_file_name"
 	echo
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
@@ -38,7 +39,10 @@ function usage()
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
-	echo "export COMMENT=any_text_to_be_added_to_every_file_name"
+	echo
+	echo "export REMOTE_ANOTHER_NUMA=1"
+	echo "export REMOTE_CMD_PRE='rm -f sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o sar.dat 5 > /dev/null'"
+	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} sar.dat > sar.csv'"
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
@@ -55,6 +59,7 @@ function show_environment() {
 	echo
 	echo "export JOB_NUMA=$JOB_NUMA"
 	echo "export FIO_PATH=$FIO_PATH"
+	echo "export COMMENT=$COMMENT"
 	echo
 	echo "export REMOTE_USER=$REMOTE_USER"
 	echo "export REMOTE_PASS=$REMOTE_PASS"
@@ -66,7 +71,10 @@ function show_environment() {
 	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
 	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
-	echo "export COMMENT=$COMMENT"
+	echo
+	echo "export REMOTE_ANOTHER_NUMA=$REMOTE_ANOTHER_NUMA"
+	echo "export REMOTE_CMD_PRE='$REMOTE_CMD_PRE'"
+	echo "export REMOTE_CMD_POST='$REMOTE_CMD_POST'"
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=$SHORT_RUNTIME"
@@ -325,6 +333,11 @@ function benchmark_one() {
 			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM}"
 		if [ "$DUMP_CMDS" != "1" ]; then
+			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
+				echo "$REMOTE_CMD_PRE"
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE" 2>>$LOG_ERR &
+			fi
 			# copy config to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
 				./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
@@ -354,6 +367,12 @@ function benchmark_one() {
 			if [ "$?" -ne 0 ]; then
 				echo "Error: FIO job failed"
 				exit 1
+			fi
+
+			if [ "x$REMOTE_CMD_POST" != "x" ]; then
+				echo "$REMOTE_CMD_POST"
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST" 2>>$LOG_ERR
 			fi
 
 			for i in $INDS; do
@@ -437,6 +456,15 @@ all)
 	usage "Wrong mode: $MODES"
 	;;
 esac
+
+# get cpulist of the remote job NUMA
+export REMOTE_JOB_NUMA_CPULIST=$( \
+	sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+	$REMOTE_USER@$SERVER_IP \
+	"cat /sys/devices/system/node/node${REMOTE_JOB_NUMA}/cpulist")
+
+REMOTE_CMD_PRE=$(echo "$REMOTE_CMD_PRE" | envsubst)
+REMOTE_CMD_POST=$(echo "$REMOTE_CMD_POST" | envsubst)
 
 for p in $P_MODES; do
 	for o in $OPS; do
