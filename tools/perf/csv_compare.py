@@ -79,6 +79,15 @@ layouts = {
         ],
         'xscale': 'log',
     },
+    'lat_pctl_99999': {
+        'nrows': 1,
+        'ncols': 1,
+        'x': 'bs',
+        'columns': [
+            'lat_pctl_99.999'
+        ],
+        'xscale': 'log',
+    },
     'lat_all': {
         'nrows': 4,
         'ncols': 2,
@@ -402,7 +411,7 @@ def main():
 
     # crop
     if args.output_layout in \
-            ['bw', 'lat_avg', 'lat_pctls', 'lat_pctls_999', 'lat_pctls_99999']:
+            ['bw', 'lat_avg', 'lat_pctls', 'lat_pctls_999', 'lat_pctls_99999', 'lat_pctl_99999']:
         crop_to_content(args.output_file, layout['ncols'])
 
     # split long files
