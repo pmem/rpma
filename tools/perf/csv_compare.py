@@ -209,7 +209,7 @@ def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
     ax.set_xlabel(get_label(x))
     ax.set_ylabel(get_label(y))
     ax.set_ylim(bottom=0)
-    if ylim_top is not None:
+    if yaxis_max is not None:
         ax.set_ylim(top=float(yaxis_max))
     ax.legend(legend)
     ax.grid(True)
