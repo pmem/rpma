@@ -165,7 +165,7 @@ def dfs_all_values(dfs, column):
     # sorted() converts Set to List and sort the elements
     return sorted(set(values))
 
-def draw_plot(ax, dfs, legend, x, y, xscale):
+def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
     """Draw multiple lines y(x) using data from the dfs list on the ax subplot.
 
     :param ax: an axes (subplot)
@@ -200,6 +200,8 @@ def draw_plot(ax, dfs, legend, x, y, xscale):
     ax.set_xlabel(get_label(x))
     ax.set_ylabel(get_label(y))
     ax.set_ylim(bottom=0)
+    if ylim_top is not None:
+        ax.set_ylim(top=float(yaxis_max))
     ax.legend(legend)
     ax.grid(True)
 
@@ -291,6 +293,8 @@ def main():
     parser.add_argument('--arg_axis', metavar='ARG_AXIS',
         choices=dimensions, required=False,
         help='an axis for layouts which requires to pick one')
+    parser.add_argument('--yaxis_max', metavar='YMAX',
+        default=None, help='a y-axis max value')
     parser.add_argument('--arg_xscale', metavar='XSCALE',
         choices=['linear', 'log'], required=False, help='an x-axis scale')
     parser.add_argument('--output_with_tables', action='store_true',
@@ -385,7 +389,8 @@ def main():
         ax.title.set_text(title)
 
         # draw CSVs column as subplot
-        draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column, xscale)
+        draw_plot(ax, dfs_filtered, dfs_names_filtered, x, column, xscale, \
+            args.yaxis_max)
         if args.output_with_tables:
             # get a subplot just beneath the subplot with the chart
             ax = plt.subplot(nrows, ncols, index + ncols)
