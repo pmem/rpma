@@ -72,7 +72,6 @@ function show_environment() {
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
 	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
 	echo
-	echo "export REMOTE_ANOTHER_NUMA=$REMOTE_ANOTHER_NUMA"
 	echo "export REMOTE_CMD_PRE='$REMOTE_CMD_PRE'"
 	echo "export REMOTE_CMD_POST='$REMOTE_CMD_POST'"
 	echo
