@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|lat|lat-cpu]"
 	echo "       $0 --env - show environment variables used by the script"
 	echo
 	echo "Notes:"
@@ -183,6 +183,7 @@ function benchmark_one() {
 		DEPTH=2
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		SYNC=0
+		CPU_LOAD=0
 		;;
 	bw-dp-exp)
 		THREADS=1
@@ -191,6 +192,7 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
+		CPU_LOAD=0
 		;;
 	bw-dp-lin)
 		THREADS=1
@@ -199,6 +201,7 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
+		CPU_LOAD=0
 		;;
 	bw-th)
 		THREADS=(1 2 4 8 12 16 32 64)
@@ -207,6 +210,17 @@ function benchmark_one() {
 		ITERATIONS=${#THREADS[@]}
 		NAME_SUFFIX=bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=0
+		CPU_LOAD=0
+		;;
+	bw-cpu)
+		BUSY_WAIT_POLLING=0
+		THREADS=24
+		BLOCK_SIZE=4096
+		DEPTH=2
+		CPU_LOAD=(10 20 30 40 50)
+		ITERATIONS=${#CPU_LOAD[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
+		SYNC=0
 		;;
 	lat)
 		THREADS=1
@@ -214,6 +228,17 @@ function benchmark_one() {
 		DEPTH=1
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
+		SYNC=1
+		CPU_LOAD=0
+		;;
+	lat-cpu)
+		BUSY_WAIT_POLLING=0
+		THREADS=1
+		BLOCK_SIZE=4096
+		DEPTH=1
+		CPU_LOAD=(10 20 30 40 50)
+		ITERATIONS=${#CPU_LOAD[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=1
 		;;
 	esac
@@ -311,27 +336,44 @@ function benchmark_one() {
 			BS="${BLOCK_SIZE[${i}]}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
+			CPU="${CPU_LOAD}"
 			;;
 		bw-dp-exp|bw-dp-lin)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS}"
 			DP="${DEPTH[${i}]}"
+			CPU="${CPU_LOAD}"
 			;;
 		bw-th)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS[${i}]}"
 			DP="${DEPTH}"
+			CPU="${CPU_LOAD}"
+			;;
+		bw-cpu)
+			BS="${BLOCK_SIZE}"
+			TH="${THREADS}"
+			DP="${DEPTH}"
+			CPU="${CPU_LOAD[${i}]}"
 			;;
 		lat)
 			BS="${BLOCK_SIZE[${i}]}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
+			CPU="${CPU_LOAD}"
+			;;
+		lat-cpu)
+			BS="${BLOCK_SIZE}"
+			TH="${THREADS}"
+			DP="${DEPTH}"
+			CPU="${CPU_LOAD[${i}]}"
 			;;
 		esac
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
-			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM}"
+			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
+			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
@@ -355,7 +397,7 @@ function benchmark_one() {
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
 		fi
 
-		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP sync: $SYNC]"
+		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP sync: $SYNC cpuload: $CPU]"
 		ENV="serverip=$SERVER_IP blocksize=$BS sync=$SYNC numjobs=$TH iodepth=${DP} \
 			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME"
 		if [ "$DUMP_CMDS" != "1" ]; then
@@ -448,10 +490,10 @@ all)
 esac
 
 case $MODES in
-bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat)
+bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|lat|lat-cpu)
 	;;
 all)
-	MODES="lat bw-bs bw-th bw-dp-lin bw-dp-exp"
+	MODES="lat lat-cpu bw-bs bw-cpu bw-th bw-dp-lin bw-dp-exp"
 	;;
 *)
 	usage "Wrong mode: $MODES"
