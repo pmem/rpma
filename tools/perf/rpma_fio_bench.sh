@@ -17,7 +17,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat]"
+	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|bw-cpu-mt|lat|lat-cpu]"
 	echo "       $0 --env - show environment variables used by the script"
 	echo
 	echo "Notes:"
@@ -39,6 +39,7 @@ function usage()
 	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
+	echo "export BUSY_WAIT_POLLING=0/1"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
 	echo "export REMOTE_CMD_PRE='rm -f sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o sar.dat 5 > /dev/null'"
@@ -71,6 +72,7 @@ function show_environment() {
 	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
 	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
 	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
+	echo "export BUSY_WAIT_POLLING=$BUSY_WAIT_POLLING"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=$REMOTE_ANOTHER_NUMA"
 	echo "export REMOTE_CMD_PRE='$REMOTE_CMD_PRE'"
@@ -102,6 +104,8 @@ elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NOPASSWD" == "1" ]; the
 	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
 elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
 	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
+elif [ -z "$BUSY_WAIT_POLLING" ]; then
+	BUSY_WAIT_POLLING=1
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
 	read|randread|rw|randrw)
@@ -183,6 +187,7 @@ function benchmark_one() {
 		DEPTH=2
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		SYNC=0
+		SECTION="--section server"
 		;;
 	bw-dp-exp)
 		THREADS=1
@@ -191,6 +196,7 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
+		SECTION="--section server"
 		;;
 	bw-dp-lin)
 		THREADS=1
@@ -199,6 +205,7 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
+		SECTION="--section server"
 		;;
 	bw-th)
 		THREADS=(1 2 4 8 12 16 32 64)
@@ -207,6 +214,27 @@ function benchmark_one() {
 		ITERATIONS=${#THREADS[@]}
 		NAME_SUFFIX=bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=0
+		SECTION="--section server"
+		;;
+	bw-cpu)
+		THREADS=1
+		BLOCK_SIZE=65536
+		DEPTH=2
+		CPU_LOAD=(0 25 50 75 100)
+		ITERATIONS=${#CPU_LOAD[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
+		SYNC=0
+		SECTION=""
+		;;
+	bw-cpu-mt)
+		THREADS=32
+		BLOCK_SIZE=4096
+		DEPTH=2
+		CPU_LOAD=(0 25 50 75 100)
+		ITERATIONS=${#CPU_LOAD[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
+		SYNC=0
+		SECTION=""
 		;;
 	lat)
 		THREADS=1
@@ -215,6 +243,17 @@ function benchmark_one() {
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		SYNC=1
+		SECTION="--section server"
+		;;
+	lat-cpu)
+		THREADS=1
+		BLOCK_SIZE=4096
+		DEPTH=1
+		CPU_LOAD=(0 25 50 75 100)
+		ITERATIONS=${#CPU_LOAD[@]}
+		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
+		SYNC=1
+		SECTION=""
 		;;
 	esac
 
@@ -322,16 +361,35 @@ function benchmark_one() {
 			TH="${THREADS[${i}]}"
 			DP="${DEPTH}"
 			;;
+		bw-cpu)
+			BS="${BLOCK_SIZE}"
+			TH="${THREADS}"
+			DP="${DEPTH}"
+			CPU="${CPU_LOAD[${i}]}"
+			;;
+		bw-cpu-mt)
+			BS="${BLOCK_SIZE}"
+			TH="${THREADS}"
+			DP="${DEPTH}"
+			CPU="${CPU_LOAD[${i}]}"
+			;;
 		lat)
 			BS="${BLOCK_SIZE[${i}]}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
 			;;
+		lat-cpu)
+			BS="${BLOCK_SIZE}"
+			TH="${THREADS}"
+			DP="${DEPTH}"
+			CPU="${CPU_LOAD[${i}]}"
+			;;
 		esac
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
-			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM}"
+			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
+			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
@@ -349,13 +407,13 @@ function benchmark_one() {
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $SECTION >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		else
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
 		fi
 
-		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP sync: $SYNC]"
+		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP, sync: $SYNC, cpuload: $CPU]"
 		ENV="serverip=$SERVER_IP blocksize=$BS sync=$SYNC numjobs=$TH iodepth=${DP} \
 			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME"
 		if [ "$DUMP_CMDS" != "1" ]; then
@@ -448,10 +506,10 @@ all)
 esac
 
 case $MODES in
-bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat)
+bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|bw-cpu-mt|lat|lat-cpu)
 	;;
 all)
-	MODES="lat bw-bs bw-th bw-dp-lin bw-dp-exp"
+	MODES="lat lat-cpu bw-bs bw-cpu bw-cpu-mt bw-th bw-dp-lin bw-dp-exp"
 	;;
 *)
 	usage "Wrong mode: $MODES"
