@@ -20,3 +20,9 @@ direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 size=100MiB
 filename=${filename}
+
+[cpuio]
+ioengine=cpuio
+cpuload=${cpuload}
+# XXX - set the actual number of cores
+numjobs=24
