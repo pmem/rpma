@@ -22,7 +22,14 @@ numjobs=${numjobs}
 iodepth=${iodepth}
 size=100MiB
 filename=${filename}
+busy_wait_polling=${busy_wait_polling}
 
 # The client will terminate the server when the client will end up its job.
 time_based
 runtime=365d
+
+[cpuio]
+ioengine=cpuio
+cpuload=${cpuload}
+# XXX - set the actual number of cores
+numjobs=24
