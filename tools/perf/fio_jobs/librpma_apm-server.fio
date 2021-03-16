@@ -24,5 +24,4 @@ filename=${filename}
 [cpuio]
 ioengine=cpuio
 cpuload=${cpuload}
-# XXX - set the actual number of cores
-numjobs=24
+numjobs=${core_per_socket}
