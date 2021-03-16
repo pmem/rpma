@@ -121,12 +121,18 @@ function report_asvah
 	echo "AOF LAT/BW"
 	# -x is used as cheap logging
 	set -x
-	for mode in lat bw-bs bw-th; do
+	for mode in lat bw-bs bw-th lat-cpu bw-cpu bw-cpu-mt; do
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP aof_hw write $mode
+			# BUSY_WAIT_POLLING does not affect the AOF_HW server
+			# since it does not wait for completions in any way.
+			BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+				./rpma_fio_bench.sh $SERVER_IP aof_hw write $mode
 		fi
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "0" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-			REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP aof_sw write $mode
+			BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+				./rpma_fio_bench.sh $SERVER_IP aof_sw write $mode
+			BUSY_WAIT_POLLING=1 REMOTE_JOB_MEM_PATH=$PMEM \
+				./rpma_fio_bench.sh $SERVER_IP aof_sw write $mode
 		fi
 	done
 	set +x
