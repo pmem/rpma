@@ -195,7 +195,6 @@ function benchmark_one() {
 		DEPTH=2
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		SYNC=0
-		FILTER="--section server" # no CPU load
 		;;
 	bw-dp-exp)
 		THREADS=1
@@ -204,7 +203,6 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
-		FILTER="--section server" # no CPU load
 		;;
 	bw-dp-lin)
 		THREADS=1
@@ -213,7 +211,6 @@ function benchmark_one() {
 		ITERATIONS=${#DEPTH[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}
 		SYNC=0
-		FILTER="--section server" # no CPU load
 		;;
 	bw-th)
 		THREADS=(1 2 4 8 12 16 32 64)
@@ -222,7 +219,6 @@ function benchmark_one() {
 		ITERATIONS=${#THREADS[@]}
 		NAME_SUFFIX=bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=0
-		FILTER="--section server" # no CPU load
 		;;
 	bw-cpu)
 		THREADS=1
@@ -232,7 +228,6 @@ function benchmark_one() {
 		ITERATIONS=${#CPU_LOAD[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=0
-		FILTER="" # no section filtering so CPU load will be included
 		;;
 	bw-cpu-mt)
 		THREADS=32
@@ -242,7 +237,6 @@ function benchmark_one() {
 		ITERATIONS=${#CPU_LOAD[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=0
-		FILTER="" # no section filtering so CPU load will be included
 		;;
 	lat)
 		THREADS=1
@@ -251,7 +245,6 @@ function benchmark_one() {
 		ITERATIONS=${#BLOCK_SIZE[@]}
 		NAME_SUFFIX=th${THREADS}_dp${DEPTH}
 		SYNC=1
-		FILTER="--section server" # no CPU load
 		;;
 	lat-cpu)
 		THREADS=1
@@ -261,7 +254,6 @@ function benchmark_one() {
 		ITERATIONS=${#CPU_LOAD[@]}
 		NAME_SUFFIX=th${THREADS}_bs${BLOCK_SIZE}_dp${DEPTH}
 		SYNC=1
-		FILTER="" # no section filtering so CPU load will be included
 		;;
 	esac
 
@@ -387,6 +379,12 @@ function benchmark_one() {
 			CPU="${CPU_LOAD[${i}]}"
 			;;
 		esac
+
+		if [ -z "$CPU" -o "$CPU" == "0" ]; then
+			FILTER="--section server" # no CPU load
+		else
+			FILTER="" # no section filtering so CPU load will be included
+		fi
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
