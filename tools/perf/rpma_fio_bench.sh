@@ -128,6 +128,10 @@ else
 	POLLING="no-busy-wait"
 fi
 
+CORE_PER_SOCKET=$(sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+			$REMOTE_USER@$SERVER_IP \
+			"lscpu | egrep 'Core' | sed 's/[^0-9]*//g'")
+
 if [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
 	echo "WARNING: sudo (called on the remote side) will prompt for password!"
 	echo "         Toggling DDIO will be skipped!"
@@ -389,7 +393,8 @@ function benchmark_one() {
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
-			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU}"
+			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
+			core_per_socket=${CORE_PER_SOCKET}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
