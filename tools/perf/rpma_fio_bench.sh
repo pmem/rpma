@@ -391,7 +391,8 @@ function benchmark_one() {
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
-			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU}"
+			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
+			cores_per_socket=${CORES_PER_SOCKET}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
@@ -529,6 +530,16 @@ export REMOTE_JOB_NUMA_CPULIST=$( \
 if [ -z "${BASH_REMATCH[0]}" ]; then
 	echo "Obtained remote cpulist for the provided \
 		REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA is invalid: $REMOTE_JOB_NUMA_CPULIST"
+	exit 1
+fi
+
+export CORES_PER_SOCKET=$(sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+			$REMOTE_USER@$SERVER_IP \
+			"lscpu | egrep 'Core' | sed 's/[^0-9]*//g'")
+# validate the output
+[[ "$CORES_PER_SOCKET" =~ ^[,0-9\\-]+$ ]]
+if [ -z "${BASH_REMATCH[0]}" ]; then
+	echo "Invalid value: CORES_PER_SOCKET=$CORES_PER_SOCKET"
 	exit 1
 fi
 
