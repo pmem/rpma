@@ -93,6 +93,27 @@ function report_apvgp
 		fi
 	done
 	set +x
+
+	echo "CPU-load tests"
+	# -x is used as cheap logging
+	set -x
+	for mode in lat-cpu bw-cpu bw-cpu-mt; do
+		for op in write randwrite; do
+			if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+				# BUSY_WAIT_POLLING does not affect the APM server
+				# since it does not wait for completions in any way.
+				BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP apm $op $mode
+			fi
+			if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "0" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+				BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
+				BUSY_WAIT_POLLING=1 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
+			fi
+		done
+	done
+	set +x
 }
 
 function report_asvah
