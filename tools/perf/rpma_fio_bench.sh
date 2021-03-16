@@ -391,7 +391,8 @@ function benchmark_one() {
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
-			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU}"
+			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
+			core_per_socket=${CORE_PER_SOCKET}"
 		if [ "$DUMP_CMDS" != "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
@@ -531,6 +532,10 @@ if [ -z "${BASH_REMATCH[0]}" ]; then
 		REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA is invalid: $REMOTE_JOB_NUMA_CPULIST"
 	exit 1
 fi
+
+export CORE_PER_SOCKET=$(sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+			$REMOTE_USER@$SERVER_IP \
+			"lscpu | egrep 'Core' | sed 's/[^0-9]*//g'")
 
 REMOTE_CMD_PRE=$(echo "$REMOTE_CMD_PRE" | envsubst)
 REMOTE_CMD_POST=$(echo "$REMOTE_CMD_POST" | envsubst)
