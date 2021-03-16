@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -11,6 +11,7 @@
 import argparse
 import csv
 import json
+import yaml
 
 def main():
     parser = argparse.ArgumentParser(
@@ -20,6 +21,8 @@ def main():
     parser.add_argument('--op', metavar='OP',
         choices=['read', 'write'], default='read',
         help='a FIO operation to extract')
+    parser.add_argument('--extra', type=yaml.safe_load,
+        help='additional key:value pairs to append to the output in form of yaml dictionary e.g. "{key: value}"')
     parser.add_argument('--output_file', metavar='CSV_FILE',
         default='output.csv', help='an output file')
     args = parser.parse_args()
@@ -55,6 +58,11 @@ def main():
         for column in bw_columns:
             csv_columns.append(column)
             csv_data[column] = op[column]
+        # append extra key:value pairs
+        if args.extra is not None:
+            for k, v in args.extra.items():
+                csv_columns.append(k)
+                csv_data[k] = v
         # write CSV file
         writer = csv.DictWriter(csv_file, fieldnames=csv_columns)
         writer.writeheader()
