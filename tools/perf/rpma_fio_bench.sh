@@ -443,7 +443,7 @@ function benchmark_one() {
 				rm -f $TEMP_CSV
 				# convert JSON to CSV
 				./fio_json2csv.py $TEMP_JSON --output_file $TEMP_CSV \
-					--op ${RW_OPS[i]} --extra "{cpuload: ${CPU-0}"
+					--op ${RW_OPS[i]} --extra "{cpuload: ${CPU-0}}"
 				# append CSV to the output
 				cat $TEMP_CSV >> ${OUTPUT[i]}
 			done
