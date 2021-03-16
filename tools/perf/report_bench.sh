@@ -50,9 +50,10 @@ function report_apvgp
 {
 	echo "READ LAT/BW"
 	# -x is used as cheap logging
+	export BUSY_WAIT_POLLING=0
 	set -x
-	for mode in lat bw-bs bw-th; do
-		./ib_read.sh $SERVER_IP $mode
+	for mode in lat bw-bs bw-th lat-cpu bw-cpu bw-cpu-mt; do
+		[[ "$mode" =~ "cpu" ]] || ./ib_read.sh $SERVER_IP $mode
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 			for op in read randread; do
 				REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
@@ -65,17 +66,21 @@ function report_apvgp
 	echo "WRITE LAT/BW"
 	# -x is used as cheap logging
 	set -x
-	for mode in lat bw-bs bw-th; do
+	for mode in lat bw-bs bw-th lat-cpu bw-cpu bw-cpu-mt; do
 		for op in write randwrite; do
 			if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-				REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
+				BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP apm $op $mode
 			fi
 			if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "0" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 				# The reference pipeline performance requires APM-style write but with
 				# DDIO=on which is not the default for APM benchmarking.
-				FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0 \
-					REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
-				REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
+				BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$DRAM FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0 \
+					./rpma_fio_bench.sh $SERVER_IP apm $op $mode
+				BUSY_WAIT_POLLING=0 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
+				BUSY_WAIT_POLLING=1 REMOTE_JOB_MEM_PATH=$PMEM \
+					./rpma_fio_bench.sh $SERVER_IP gpspm $op $mode
 			fi
 		done
 	done
@@ -84,8 +89,9 @@ function report_apvgp
 	echo "MIX LAT/BW"
 	# -x is used as cheap logging
 	# To be compared with "PMEM apm read/randread" and "PMEM apm write/randwrite"
+	export BUSY_WAIT_POLLING=0
 	set -x
-	for mode in lat bw-bs bw-th; do
+	for mode in lat bw-bs bw-th lat-cpu bw-cpu bw-cpu-mt; do
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 			for op in rw randrw; do
 				REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
