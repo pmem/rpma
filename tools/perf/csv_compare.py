@@ -214,7 +214,7 @@ def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
     ax.set_ylim(bottom=0)
     if yaxis_max is not None:
         ax.set_ylim(top=float(yaxis_max))
-    ax.legend(legend)
+    ax.legend(legend, fontsize=6)
     ax.grid(True)
 
 def draw_table(ax, dfs, legend, x, y):
