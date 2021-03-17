@@ -43,7 +43,12 @@ function usage()
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
 	echo "export REMOTE_CMD_PRE='rm -f sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o sar.dat 5 > /dev/null'"
-	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} sar.dat > sar.csv'"
+	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} sar.dat > sar_\${RUN_NAME}.csv'"
+	echo
+	echo "Note:"
+	echo "The 'REMOTE_CMD_PRE' and 'REMOTE_CMD_POST' environment variables"
+	echo "can use the 'RUN_NAME' environment variable internally,"
+	echo "which contains a unique name of each run."
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
@@ -351,36 +356,42 @@ function benchmark_one() {
 			TH="${THREADS}"
 			DP="${DEPTH}"
 			CPU=0
+			ITER=bs${BS}
 			;;
 		bw-dp-exp|bw-dp-lin)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS}"
 			DP="${DEPTH[${i}]}"
 			CPU=0
+			ITER=dp${DP}
 			;;
 		bw-th)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS[${i}]}"
 			DP="${DEPTH}"
 			CPU=0
+			ITER=th${TH}
 			;;
 		bw-cpu|bw-cpu-mt)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
 			CPU="${CPU_LOAD[${i}]}"
+			ITER=cpu${CPU}
 			;;
 		lat)
 			BS="${BLOCK_SIZE[${i}]}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
 			CPU=0
+			ITER=bs${BS}
 			;;
 		lat-cpu)
 			BS="${BLOCK_SIZE}"
 			TH="${THREADS}"
 			DP="${DEPTH}"
 			CPU="${CPU_LOAD[${i}]}"
+			ITER=cpu${CPU}
 			;;
 		esac
 
@@ -390,16 +401,22 @@ function benchmark_one() {
 			FILTER="" # no section filtering so CPU load will be included
 		fi
 
+		export RUN_NAME=${NAME}_${ITER}
+		echo "Name of this run: ${RUN_NAME}"
+
+		REMOTE_CMD_PRE_SUBST=$(echo "$REMOTE_CMD_PRE" | envsubst)
+		REMOTE_CMD_POST_SUBST=$(echo "$REMOTE_CMD_POST" | envsubst)
+
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
 			cores_per_socket=${CORES_PER_SOCKET}"
 		if [ "$DUMP_CMDS" != "1" ]; then
-			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
-				echo "$REMOTE_CMD_PRE"
+			if [ "x$REMOTE_CMD_PRE_SUBST" != "x" ]; then
+				echo "$REMOTE_CMD_PRE_SUBST"
 				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE" 2>>$LOG_ERR &
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE_SUBST" 2>>$LOG_ERR &
 			fi
 
 			# copy config to the server
@@ -433,10 +450,10 @@ function benchmark_one() {
 				exit 1
 			fi
 
-			if [ "x$REMOTE_CMD_POST" != "x" ]; then
-				echo "$REMOTE_CMD_POST"
+			if [ "x$REMOTE_CMD_POST_SUBST" != "x" ]; then
+				echo "$REMOTE_CMD_POST_SUBST"
 				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST" 2>>$LOG_ERR
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST_SUBST" 2>>$LOG_ERR
 			fi
 
 			for i in $INDS; do
