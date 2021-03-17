@@ -143,7 +143,7 @@ if [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
 	echo "           1) set permissions of sudo to NOPASSWD in '/etc/sudoers' and"
 	echo "           2) set REMOTE_SUDO_NOPASSWD=1"
 	echo
-	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
+	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" -a "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" != "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
 		echo "Error: FORCE_REMOTE_DIRECT_WRITE_TO_PMEM is set, but REMOTE_SUDO_NOPASSWD does not equal 1."
 		echo "       Change sudo permissions in order to force setting REMOTE_DIRECT_WRITE_TO_PMEM."
 		echo "Exiting..."
