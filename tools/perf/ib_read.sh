@@ -153,7 +153,7 @@ function benchmark_one() {
 		;;
 	esac
 
-	NAME=ib_read_${NAME}-${TIMESTAMP}
+	NAME=ib_read_${NAME}_${TIMESTAMP}
 	echo "STARTING benchmark for MODE=$MODE IP=$SERVER_IP ..."
 	if [ "$DUMP_CMDS" != "1" ]; then
 		OUTPUT=${NAME}.csv
