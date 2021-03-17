@@ -267,7 +267,7 @@ function benchmark_one() {
 	DEST="$(echo $REMOTE_JOB_DEST | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
-	NAME=rpma_fio_${PERSIST_MODE}_${OP}_${MODE}_${POLLING}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
+	NAME=rpma_fio_${PERSIST_MODE}_${POLLING}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
 	if [ "$DO_RUN" == 1 ]; then
 		DIR=/dev/shm
 		TEMP_JSON=${DIR}/${NAME}_temp.json
