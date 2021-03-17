@@ -459,8 +459,8 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
-            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
+            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
 
         lat_figures \
             "$data_path/*apm_*write_lat-cpu_*dax* $data_path/*gpspm_*write_lat-cpu_*dax*" \
@@ -468,8 +468,8 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
-            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
+            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
@@ -490,16 +490,16 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
-            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
+            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
 
         bw_cpu_figures \
             "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
-            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
+            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
@@ -510,14 +510,14 @@ function figures_report()
     set_data_path MIX_LAT_MACHINE
     if [ "$data_path" != 'skip' ]; then
         lat_figures \
-            "$data_path/*apm_read_lat_*dax* $data_path/*apm_write_lat_*dax* $data_path/*apm_rw_lat_*dax*" \
+            "$data_path/*apm_*_read_lat_*dax* $data_path/*apm_*_write_lat_*dax* $data_path/*apm_*_rw_lat_*dax*" \
             'bs' \
             'MIX against PMEM vs rpma_read() + APM to PMEM (seq)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
 
         lat_figures \
-            "$data_path/*apm_randread_lat_*dax* $data_path/*apm_randwrite_lat_*dax* $data_path/*apm_randrw_lat_*dax*" \
+            "$data_path/*apm_*_randread_lat_*dax* $data_path/*apm_*_randwrite_lat_*dax* $data_path/*apm_*_randrw_lat_*dax*" \
             'bs' \
             'MIX against PMEM vs rpma_read() + APM to PMEM (rand)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
@@ -530,12 +530,12 @@ function figures_report()
     set_data_path MIX_BW_MACHINE
     if [ "$data_path" != 'skip' ]; then
         bw_figures \
-            "$data_path/*apm_read_{axis}*dax* $data_path/*apm_write_{axis}*dax* $data_path/*apm_rw_{axis}*dax*" \
+            "$data_path/*apm_*_read_{axis}*dax* $data_path/*apm_*_write_{axis}*dax* $data_path/*apm_*_rw_{axis}*dax*" \
             'MIX against PMEM vs rpma_read() + APM to PMEM (seq)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
         bw_figures \
-            "$data_path/*apm_randread_{axis}*dax* $data_path/*apm_randwrite_{axis}*dax* $data_path/*apm_randrw_{axis}*dax*" \
+            "$data_path/*apm_*_randread_{axis}*dax* $data_path/*apm_*_randwrite_{axis}*dax* $data_path/*apm_*_randrw_{axis}*dax*" \
             'MIX against PMEM vs rpma_read() + APM to PMEM (rand)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
