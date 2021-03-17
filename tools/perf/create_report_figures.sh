@@ -459,8 +459,8 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
-            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
+            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM rand' 'GPSPM seq'
 
         lat_figures \
             "$data_path/*apm_*write_lat-cpu_*dax* $data_path/*gpspm_*write_lat-cpu_*dax*" \
@@ -468,8 +468,8 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
-            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
+            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM rand' 'GPSPM seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
@@ -490,16 +490,16 @@ function figures_report()
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
-            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
+            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM rand' 'GPSPM seq'
 
         bw_cpu_figures \
             "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM busy-wait rand' 'GPSPM busy-wait seq' \
-            'GPSPM no-busy-wait rand' 'GPSPM no-busy-wait seq'
+            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM rand' 'GPSPM seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
