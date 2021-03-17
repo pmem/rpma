@@ -36,6 +36,7 @@ function usage()
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
+	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
 	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
 	exit 1
 }
@@ -160,7 +161,7 @@ function benchmark_one() {
 		LOG_ERR=/dev/shm/${NAME}-err.log
 		echo "Performance results: $OUTPUT"
 		echo "Output and errors (both sides): $LOG_ERR"
-	else
+	elif [ "$DUMP_CMDS" == "1" ]; then
 		SERVER_DUMP=${NAME}-server.log
 		CLIENT_DUMP=${NAME}-client.log
 		echo "Log commands [server]: $SERVER_DUMP"
@@ -168,9 +169,11 @@ function benchmark_one() {
 	fi
 	echo
 
-	if [ "$DUMP_CMDS" != "1" ]; then
+	if [ "$DO_RUN" == "1" ]; then
 		rm -f $LOG_ERR
 		echo "$HEADER" | sed 's/% /%_/g' | sed -r 's/[[:blank:]]+/,/g' > $OUTPUT
+	elif [ "$DO_NOTHING" == "1" ]; then
+		touch $OUTPUT
 	fi
 
 	for i in $(seq 0 $(expr ${#ITERATIONS[@]} - 1)); do
@@ -184,7 +187,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-dp-exp|bw-dp-lin)
 			IT=${ITERATIONS[${i}]}
@@ -195,7 +198,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-th)
 			IT=${ITERATIONS[${i}]}
@@ -206,7 +209,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
-			[ "$DUMP_CMDS" != "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
+			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		lat)
 			IT=${ITERATIONS[${i}]}
@@ -228,11 +231,11 @@ function benchmark_one() {
 		# run the server
 		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
 			$DP_OPT $REMOTE_AUX_PARAMS"
-		if [ "$DUMP_CMDS" != "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$CMD >> $LOG_ERR" 2>>$LOG_ERR &
 			sleep 1
-		else
+		elif [ "$DUMP_CMDS" == "1" ]; then
 			echo "$CMD" >> $SERVER_DUMP
 		fi
 
@@ -240,15 +243,15 @@ function benchmark_one() {
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
 		CMD="numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
 			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP"
-		if [ "$DUMP_CMDS" != "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
 			$CMD 2>>$LOG_ERR | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
 				| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
-		else
+		elif [ "$DUMP_CMDS" == "1" ]; then
 			echo "$CMD" >> $CLIENT_DUMP
 		fi
 	done
 
-	if [ "$DUMP_CMDS" != "1" ]; then
+	if [ "$DO_RUN" == "1" ]; then
 		CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
 
 		# convert to standardized-CSV
@@ -261,6 +264,12 @@ function benchmark_one() {
 
 SERVER_IP=$1
 MODES=$2
+
+if [ "$DUMP_CMDS" != "1" -a "$DO_NOTHING" != "1" ]; then
+	DO_RUN="1"
+else
+	DO_RUN="0"
+fi
 
 case $MODES in
 bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat)
