@@ -49,6 +49,7 @@ function usage()
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
 	echo "export TRACER='gdbserver localhost:2345'"
 	echo "export REMOTE_TRACER='gdbserver localhost:2345'"
+	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
 	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
 	echo
 	exit 1
@@ -82,6 +83,7 @@ function show_environment() {
 	echo "export SHORT_RUNTIME=$SHORT_RUNTIME"
 	echo "export TRACER=$TRACER"
 	echo "export REMOTE_TRACER=$REMOTE_TRACER"
+	echo "export DO_NOTHING=$DO_NOTHING"
 	echo "export DUMP_CMDS=$DUMP_CMDS"
 	exit 0
 }
@@ -261,12 +263,12 @@ function benchmark_one() {
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
 	NAME=rpma_fio_${PERSIST_MODE}_${OP}_${MODE}_${POLLING}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
-	if [ "$DUMP_CMDS" != "1" ]; then
+	if [ "$DO_RUN" == 1 ]; then
 		DIR=/dev/shm
 		TEMP_JSON=${DIR}/${NAME}_temp.json
 		TEMP_CSV=${DIR}/${NAME}_temp.csv
 		LOG_ERR=${DIR}/${NAME}.log
-	else
+	elif [ "$DUMP_CMDS" == "1" ]; then
 		SERVER_DUMP=${NAME}-server.log
 		CLIENT_DUMP=${NAME}-client.log
 		echo "Log commands [server]: $SERVER_DUMP"
@@ -313,7 +315,7 @@ function benchmark_one() {
 	fi
 
 	if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-		if [ "$DUMP_CMDS" != "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
 			# copy the ddio.sh script to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
 				../ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
@@ -395,7 +397,7 @@ function benchmark_one() {
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
 			cores_per_socket=${CORES_PER_SOCKET}"
-		if [ "$DUMP_CMDS" != "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
 			if [ "x$REMOTE_CMD_PRE" != "x" ]; then
 				echo "$REMOTE_CMD_PRE"
 				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
@@ -413,7 +415,7 @@ function benchmark_one() {
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
-		else
+		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
 		fi
@@ -421,7 +423,7 @@ function benchmark_one() {
 		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP, sync: $SYNC, cpuload: $CPU]"
 		ENV="serverip=$SERVER_IP blocksize=$BS sync=$SYNC numjobs=$TH iodepth=${DP} \
 			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME"
-		if [ "$DUMP_CMDS" != "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
 			# run FIO
 			if [ "x$TRACER" == "x" ]; then
 				TRACER="numactl -N $JOB_NUMA"
@@ -447,7 +449,11 @@ function benchmark_one() {
 				# append CSV to the output
 				cat $TEMP_CSV >> ${OUTPUT[i]}
 			done
-		else
+		elif [ "$DO_NOTHING" == "1" ]; then
+			for i in $INDS; do
+				touch ${OUTPUT[i]}
+			done
+		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-client.fio | \
 				grep -v '^#' | $ENV envsubst >> $CLIENT_DUMP"
 			echo "---" >> $SERVER_DUMP
@@ -455,7 +461,7 @@ function benchmark_one() {
 		fi
 	done
 
-	if [ "$DUMP_CMDS" != "1" ]; then
+	if [ "$DO_RUN" == "1" ]; then
 		for i in $INDS; do
 			# remove redundant headers
 			cat ${OUTPUT[i]} | head -1 > $TEMP_CSV
@@ -485,6 +491,12 @@ if [ "$SHORT_RUNTIME" == "1" ]; then
 else
 	RAMP_TIME=15
 	RUNTIME=60
+fi
+
+if [ "$DUMP_CMDS" != "1" -a "$DO_NOTHING" != "1" ]; then
+	DO_RUN="1"
+else
+	DO_RUN="0"
 fi
 
 echo
