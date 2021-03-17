@@ -42,8 +42,9 @@ function usage()
 	echo "export BUSY_WAIT_POLLING=0/1"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
-	echo "export REMOTE_CMD_PRE='rm -f sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o sar.dat 5 > /dev/null'"
-	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} sar.dat > sar_\${RUN_NAME}.csv'"
+	echo "export REMOTE_SAR_RESULTS_DIR=/tmp/"
+	echo "export REMOTE_CMD_PRE='rm -f \${REMOTE_SAR_RESULTS_DIR}sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o \${REMOTE_SAR_RESULTS_DIR}sar.dat 5 > /dev/null'"
+	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} \${REMOTE_SAR_RESULTS_DIR}sar.dat > \${REMOTE_SAR_RESULTS_DIR}sar_\${RUN_NAME}.csv'"
 	echo
 	echo "Note:"
 	echo "The 'REMOTE_CMD_PRE' and 'REMOTE_CMD_POST' environment variables"
