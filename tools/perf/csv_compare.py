@@ -40,26 +40,26 @@ column_default = {
     'bs':       None,
 }
 
-dimensions = {'threads', 'iodepth', 'bs'}
+dimensions = {'threads', 'iodepth', 'bs', 'cpuload'}
 
 layouts = {
     'lat_avg': {
         'nrows': 1,
         'ncols': 1,
-        'x': 'bs',
+        'x': '<arg_axis>',
         'columns': [
             'lat_avg'
         ],
-        'xscale': 'log',
+        'xscale': '<arg_xscale>',
     },
     'lat_pctls': {
         'nrows': 1,
         'ncols': 2,
-        'x': 'bs',
+        'x': '<arg_axis>',
         'columns': [
             'lat_pctl_99.9', 'lat_pctl_99.999'
         ],
-        'xscale': 'log',
+        'xscale': '<arg_xscale>',
     },
     'lat_pctls_999': {
         'nrows': 1,
@@ -347,11 +347,11 @@ def main():
     layout = layouts[args.output_layout]
 
     # fill out an optional axis with the provided argument
-    if args.output_layout == 'bw':
+    if args.output_layout in ['bw', 'lat_avg', 'lat_pctls']:
         if args.arg_axis is None:
-            raise Exception('The bw layout requires --arg_axis')
+            raise Exception('The layout requires --arg_axis')
         elif args.arg_xscale is None:
-            raise Exception('The bw layout requires --arg_xscale')
+            raise Exception('The layout requires --arg_xscale')
         layout['x'] = args.arg_axis
         layout['xscale'] = args.arg_xscale
 

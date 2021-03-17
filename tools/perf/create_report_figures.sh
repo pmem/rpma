@@ -272,15 +272,25 @@ function set_data_path()
 function lat_figures()
 {
     filter="$1"
-    title="$2"
-    output="$3"
-    shift 3
+    arg_axis="$2"
+    title="$3"
+    output="$4"
+    shift 4
 
     if [ $# -gt 0 ]; then
         legend=( "$@" )
     else
         legend=( $(files_to_machines $filter) )
     fi
+
+    case "$arg_axis" in
+    bs)
+        arg_xscale='log'
+        ;;
+    cpuload)
+        arg_xscale='linear'
+        ;;
+    esac
 
     echo "- $title"
     echo_filter $filter
@@ -295,6 +305,8 @@ function lat_figures()
         $TOOLS_PATH/csv_compare.py \
             --output_title "Figure $figno. $title_prefix: $title" \
             --output_layout "$layout" \
+            --arg_axis $arg_axis \
+            --arg_xscale $arg_xscale \
             --output_with_table \
             --legend "${legend[@]}" \
             --output_file "Figure_${figno_name}_${output}_${layout}.png" \
@@ -342,6 +354,44 @@ function bw_figures()
     echo
 }
 
+function bw_cpu_figures()
+{
+    filter="$1"
+    title="$2"
+    output="$3"
+    shift 3
+
+    if [ $# -gt 0 ]; then
+        legend=( "$@" )
+    else
+        legend=( $(files_to_machines $filter) )
+    fi
+
+    axes=('cpuload' 'cpuload')
+    axis_filters=('bw-cpu' 'bw-cpu-mt')
+
+    for index in "${!axes[@]}"; do
+        axis="${axes[$index]}"
+        axis_filter="${axis_filters[$index]}"
+        # replace '{axis}' with actual filter by axis
+        eff_filter="${filter//\{axis\}/${axis_filter}}"
+        echo "- $title - bw($axis)"
+        printf -v figno_name "%0${N_DIGITS}d" $figno
+        echo_filter $eff_filter
+        $TOOLS_PATH/csv_compare.py \
+            --output_title "Figure $figno. Bandwidth: $title" \
+            --output_layout 'bw' \
+            --arg_axis "$axis" \
+            --arg_xscale 'linear' \
+            --output_with_table \
+            --legend "${legend[@]}" \
+            --output_file "Figure_${figno_name}_${output}_${axis_filter}.png" \
+            $eff_filter
+        figno=$((figno + 1))
+    done
+    echo
+}
+
 function figures_report()
 {
     # a global Figure indexer
@@ -360,13 +410,15 @@ function figures_report()
     set_data_path READ_LAT_MACHINE
     if [ "$data_path" != 'skip' ]; then
         lat_figures \
-            "$data_path/ib_read_lat* $data_path/*apm_*read_lat*dram*" \
+            "$data_path/ib_read_lat_* $data_path/*apm_*read_lat_*dram*" \
+            'bs' \
             'ib_read_lat vs rpma_read() from DRAM' \
             'ib_read_lat_vs_rpma_read_dram' \
             'ib_read_lat' 'rpma_read() rand' 'rpma_read() seq'
 
         lat_figures \
-            "$data_path/*read_lat*dram* $data_path/*read_lat*dax*" \
+            "$data_path/*read_lat_*dram* $data_path/*read_lat_*dax*" \
+            'bs' \
             'rpma_read() from DRAM vs from PMEM' \
             'rpma_read_dram_vs_pmem' \
             'DRAM rand' 'DRAM seq' 'PMEM rand' 'PMEM seq'
@@ -395,48 +447,78 @@ function figures_report()
     set_data_path WRITE_LAT_MACHINE
     if [ "$data_path" != 'skip' ]; then
         lat_figures \
-            "$data_path/*apm_*write_lat*dram* $data_path/*apm_*write_lat*dax*" \
+            "$data_path/*apm_*write_lat_*dram* $data_path/*apm_*write_lat_*dax*" \
+            'bs' \
             'APM to DRAM (DDIO=ON) vs to PMEM' \
             'apm_dram_vs_pmem' \
             'DRAM rand' 'DRAM seq' 'PMEM rand' 'PMEM seq'
 
         lat_figures \
-            "$data_path/*apm_*write_lat*dax* $data_path/*gpspm_*write_lat*dax*" \
+            "$data_path/*apm_*write_lat_*dax* $data_path/*gpspm_*write_lat_*dax*" \
+            'bs' \
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
-            'APM rand' 'APM seq' 'GPSPM rand' 'GPSPM seq'
+            'APM rand' 'APM seq' \
+            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
+            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+
+        lat_figures \
+            "$data_path/*apm_*write_lat-cpu_*dax* $data_path/*gpspm_*write_lat-cpu_*dax*" \
+            'cpuload' \
+            'APM to PMEM vs GPSPM to PMEM' \
+            'apm_pmem_vs_gpspm_pmem_cpuload' \
+            'APM rand' 'APM seq' \
+            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
+            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+
+        figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
-        figno=$((figno + 4))
+        figno=$((figno + 2 * 3))
     fi
 
     echo "WRITE BW"
     set_data_path WRITE_BW_MACHINE
     if [ "$data_path" != 'skip' ]; then
         bw_figures \
-            "$data_path/*apm_*write_{axis}*dram* $data_path/*apm_*write_{axis}*dax*" \
+            "$data_path/*apm_*write_{axis}_*dram* $data_path/*apm_*write_{axis}_*dax*" \
             'APM to DRAM (DDIO=ON) vs to PMEM' \
             'apm_dram_vs_pmem' \
             'DRAM rand' 'DRAM seq' 'PMEM rand' 'PMEM seq'
+
         bw_figures \
-            "$data_path/*apm_*write_{axis}*dax* $data_path/*gpspm_*write_{axis}*dax*" \
+            "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
             'APM to PMEM vs GPSPM to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
-            'APM rand' 'APM seq' 'GPSPM rand' 'GPSPM seq'
+            'APM rand' 'APM seq' \
+            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
+            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+
+        bw_cpu_figures \
+            "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
+            'APM to PMEM vs GPSPM to PMEM' \
+            'apm_pmem_vs_gpspm_pmem_cpuload' \
+            'APM rand' 'APM seq' \
+            'GPSPM rand busy-wait' 'GPSPM rand no-busy-wait' \
+            'GPSPM seq busy-wait' 'GPSPM seq no-busy-wait'
+
+        figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
-        figno=$((figno + 4))
+        figno=$((figno + 2 * 3))
     fi
 
     echo 'MIX LAT'
     set_data_path MIX_LAT_MACHINE
     if [ "$data_path" != 'skip' ]; then
         lat_figures \
-            "$data_path/*apm_read_lat*dax* $data_path/*apm_write_lat*dax* $data_path/*apm_rw_lat*dax*" \
+            "$data_path/*apm_read_lat_*dax* $data_path/*apm_write_lat_*dax* $data_path/*apm_rw_lat_*dax*" \
+            'bs' \
             'MIX against PMEM vs rpma_read() + APM to PMEM (seq)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
 
         lat_figures \
-            "$data_path/*apm_randread_lat*dax* $data_path/*apm_randwrite_lat*dax* $data_path/*apm_randrw_lat*dax*" \
+            "$data_path/*apm_randread_lat_*dax* $data_path/*apm_randwrite_lat_*dax* $data_path/*apm_randrw_lat_*dax*" \
+            'bs' \
             'MIX against PMEM vs rpma_read() + APM to PMEM (rand)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
@@ -492,6 +574,8 @@ function lat_cmp()
         $TOOLS_PATH/csv_compare.py \
             --output_title "Fig. $title_prefix: $title" \
             --output_layout "$layout" \
+            --arg_axis 'bw' \
+            --arg_xscale 'log' \
             $yaxis_max \
             --output_with_table \
             --legend "${legend[@]}" \
