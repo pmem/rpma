@@ -111,6 +111,9 @@ layouts = {
     },
 }
 
+empty = {'lat_avg': [0], 'lat_pctl_99.9': [0], 'lat_pctl_99.999': [0], \
+    'bs': [1], 'bw_avg': [0], 'threads': [1]}
+
 def get_label(column):
     """Find a text label for an axis describing a provided CSV column.
 
@@ -333,8 +336,12 @@ def main():
     # read all CSV files
     dfs = []
     for csv_file in args.csv_files:
-        df = pd.read_csv(csv_file)
-        dfs.append(df)
+        try:
+            df = pd.read_csv(csv_file)
+            dfs.append(df)
+        except:
+            dfs.append(pd.DataFrame.from_dict(empty))
+
 
     # get a layout
     layout = layouts[args.output_layout]
