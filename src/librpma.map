@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2019-2020, Intel Corporation
-#
+# Copyright (c) 2021 Fujitsu
 
 #
 # src/librpma.map -- linker link file for librpma
@@ -44,6 +44,8 @@ LIBRPMA_1.0 {
 		rpma_mr_dereg;
 		rpma_mr_get_descriptor;
 		rpma_mr_get_descriptor_size;
+		rpma_mr_get_ptr;
+		rpma_mr_get_size;
 		rpma_mr_reg;
 		rpma_mr_remote_delete;
 		rpma_mr_remote_from_descriptor;

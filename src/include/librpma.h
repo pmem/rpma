@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2019-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * librpma.h -- definitions of librpma entry points
@@ -1000,6 +1001,64 @@ int rpma_mr_remote_from_descriptor(const void *desc,
  */
 int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr,
 		size_t *desc_size);
+
+/** 3
+ * rpma_mr_get_ptr - get a memory region pointer from the local memory
+ * registration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_mr_local;
+ *	int rpma_mr_get_ptr(const struct rpma_mr_local *mr, void **ptr);
+ *
+ * DESCRIPTION
+ * rpma_mr_get_ptr() gets a memory region pointer from the local memory
+ * registration object.
+ *
+ * RETURN VALUE
+ * The rpma_mr_get_ptr() function returns 0 on success or a negative error
+ * code on failure. rpma_mr_get_ptr() does not set *ptr value on failure.
+ *
+ * ERRORS
+ * rpma_mr_get_ptr() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_mr_get_ptr(const struct rpma_mr_local *mr, void **ptr);
+
+/** 3
+ * rpma_mr_get_size - get a memory region size from the local memory
+ * registration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_mr_local;
+ *	int rpma_mr_get_size(const struct rpma_mr_local *mr, size_t *size);
+ *
+ * DESCRIPTION
+ * rpma_mr_get_size() gets a memory region size from the local memory
+ * registration object.
+ *
+ * RETURN VALUE
+ * The rpma_mr_get_size() function returns 0 on success or a negative error
+ * code on failure. rpma_mr_get_size() does not set *size value on failure.
+ *
+ * ERRORS
+ * rpma_mr_get_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - mr or size is NULL
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_mr_get_size(const struct rpma_mr_local *mr, size_t *size);
 
 /** 3
  * rpma_mr_remote_get_size - get a remote memory region size
