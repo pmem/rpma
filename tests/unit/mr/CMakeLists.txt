@@ -28,6 +28,7 @@ endfunction()
 
 add_test_mr(descriptor)
 add_test_mr(get_flush_type)
+add_test_mr(local)
 add_test_mr(read)
 add_test_mr(recv)
 add_test_mr(reg)
