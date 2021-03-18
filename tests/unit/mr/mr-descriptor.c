@@ -40,9 +40,10 @@ get_descriptor_size__mr_NULL(void **unused)
  * get_descriptor_size__desc_size_NULL - NULL desc_size is invalid
  */
 static void
-get_descriptor_size__desc_size_NULL(void **mr_ptr)
+get_descriptor_size__desc_size_NULL(void **pprestate)
 {
-	struct rpma_mr_local *mr = *mr_ptr;
+	struct prestate *prestate = *pprestate;
+	struct rpma_mr_local *mr = prestate->mr;
 
 	/* run test */
 	int ret = rpma_mr_get_descriptor_size(mr, NULL);
@@ -69,9 +70,10 @@ get_descriptor_size__mr_desc_size_NULL(void **unused)
  * get_descriptor_size__success - happy day scenario
  */
 static void
-get_descriptor_size__success(void **mr_ptr)
+get_descriptor_size__success(void **pprestate)
 {
-	struct rpma_mr_local *mr = *mr_ptr;
+	struct prestate *prestate = *pprestate;
+	struct rpma_mr_local *mr = prestate->mr;
 	size_t desc_size;
 
 	/* run test */
@@ -101,9 +103,10 @@ get_descriptor__mr_NULL(void **unused)
  * get_descriptor__desc_NULL - NULL desc is invalid
  */
 static void
-get_descriptor__desc_NULL(void **mr_ptr)
+get_descriptor__desc_NULL(void **pprestate)
 {
-	struct rpma_mr_local *mr = *mr_ptr;
+	struct prestate *prestate = *pprestate;
+	struct rpma_mr_local *mr = prestate->mr;
 
 	/* run test */
 	int ret = rpma_mr_get_descriptor(mr, NULL);
