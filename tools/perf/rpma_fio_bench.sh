@@ -568,7 +568,7 @@ fi
 
 export CORES_PER_SOCKET=$(sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 			$REMOTE_USER@$SERVER_IP \
-			"lscpu | egrep 'Core' | sed 's/[^0-9]*//g'")
+			"lscpu | egrep 'Core\(s\) per socket:' | sed 's/[^0-9]*//g'")
 # validate the output
 [[ "$CORES_PER_SOCKET" =~ ^[0-9]+$ ]]
 if [ -z "${BASH_REMATCH[0]}" ]; then
