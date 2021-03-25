@@ -1969,12 +1969,6 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  * private data given by the other side of the connection before the connection
  * is established.
  *
- * NOTE
- * The pdata pointer becomes invalid after the connection is established.
- * Use rpma_conn_get_private_data(3) to get a pointer to the connection's
- * private data if access to it is still required after the connection is
- * established.
- *
  * RETURN VALUE
  * The rpma_conn_req_get_private_data() function returns 0 on success or
  * a negative error code on failure. rpma_conn_req_get_private_data() does not
