@@ -32,14 +32,6 @@ DESCRIPTION
 connection\'s private data given by the other side of the connection
 before the connection is established.
 
-NOTE
-====
-
-The pdata pointer becomes invalid after the connection is established.
-Use **rpma\_conn\_get\_private\_data**(3) to get a pointer to the
-connection\'s private data if access to it is still required after the
-connection is established.
-
 RETURN VALUE
 ============
 
