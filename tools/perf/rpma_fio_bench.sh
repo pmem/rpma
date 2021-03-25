@@ -42,9 +42,13 @@ function usage()
 	echo "export BUSY_WAIT_POLLING=0/1"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
-	echo "export REMOTE_SAR_RESULTS_DIR=/tmp/"
+	echo "export REMOTE_RESULTS_DIR=/tmp/"
 	echo "export REMOTE_CMD_PRE='rm -f \${REMOTE_SAR_RESULTS_DIR}sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o \${REMOTE_SAR_RESULTS_DIR}sar.dat 5 > /dev/null'"
 	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} \${REMOTE_SAR_RESULTS_DIR}sar.dat > \${REMOTE_SAR_RESULTS_DIR}sar_\${RUN_NAME}.csv'"
+	echo
+	echo "export EVENT_LIST=/path/to/edp/events/list"
+	echo "export REMOTE_CMD_PRE='source /opt/intel/sep/sep_vars.sh; numactl -N \${REMOTE_ANOTHER_NUMA} emon -i \${EVENT_LIST} > \${REMOTE_RESULTS_DIR}\${RUN_NAME}_emon.dat'"
+	echo "export REMOTE_CMD_POST='sleep 5; emon -stop'"
 	echo
 	echo "Note:"
 	echo "The 'REMOTE_CMD_PRE' and 'REMOTE_CMD_POST' environment variables"
@@ -325,7 +329,7 @@ function benchmark_one() {
 		if [ "$DO_RUN" == "1" ]; then
 			# copy the ddio.sh script to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
-				../ddio.sh $REMOTE_USER@$SERVER_IP:$DIR
+				../ddio.sh $REMOTE_USER@$SERVER_IP:$DIR 2>>$LOG_ERR
 			# set DDIO on the server
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP \
@@ -426,7 +430,7 @@ function benchmark_one() {
 			# copy config to the server
 			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
 				./fio_jobs/librpma_${PERSIST_MODE}-server.fio \
-				$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH
+				$REMOTE_USER@$SERVER_IP:$REMOTE_JOB_PATH 2>>$LOG_ERR
 			# run the server
 			if [ "x$REMOTE_TRACER" == "x" ]; then
 				REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
@@ -575,9 +579,6 @@ if [ -z "${BASH_REMATCH[0]}" ]; then
 	echo "Invalid value: CORES_PER_SOCKET=$CORES_PER_SOCKET"
 	exit 1
 fi
-
-REMOTE_CMD_PRE=$(echo "$REMOTE_CMD_PRE" | envsubst)
-REMOTE_CMD_POST=$(echo "$REMOTE_CMD_POST" | envsubst)
 
 for p in $P_MODES; do
 	for o in $OPS; do
