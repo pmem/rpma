@@ -39,7 +39,7 @@ ramp_time=15
 time_based
 runtime=60
 </pre></td></tr>
-<tr><td valign=top>GPSPM Server - FIO engine configuration</td>
+<tr><td valign=top>GPSPM(-RT) Server - FIO engine configuration</td>
 <td><pre>
 [global]
 ioengine=librpma_gpspm_server
@@ -55,11 +55,12 @@ numjobs=1
 iodepth=1
 size=100MiB
 filename=/dev/dax/path
+busy_wait_polling={0, 1} # 1 for GPSPM-RT
 
 time_based
 runtime=365d
 </pre></td></tr>
-<tr><td valign=top>GPSPM Client - FIO engine configuration</td>
+<tr><td valign=top>GPSPM(-RT) Client - FIO engine configuration</td>
 <td><pre>
 [global]
 ioengine=librpma_gpspm_client
