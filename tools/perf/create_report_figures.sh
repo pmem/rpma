@@ -230,18 +230,18 @@ function figures_appendix
 {
     echo 'Appendix A ib_read_lat'
     lat_appendix \
-        "$DATA_PATH/*/ib_read_lat-*" \
+        "$DATA_PATH/*/ib_read_lat_*" \
         'A' 'ib_read_lat from DRAM' 'single' \
         'Appendix_A_ib_read_lat'
 
     echo 'Appendix B ib_read_bw bw(bs) bw(th)'
     bw_appendix \
-        "$DATA_PATH/*/ib_read_bw-bs-*" \
+        "$DATA_PATH/*/ib_read_bw-bs_*" \
         'B1' 'ib_read_bw from DRAM' \
         'bs' 'single' \
         'Appendix_B1_ib_read_bw_bs'
     bw_appendix \
-        "$DATA_PATH/*/ib_read_bw-th-*" \
+        "$DATA_PATH/*/ib_read_bw-th_*" \
         'B2' 'ib_read_bw from DRAM' \
         'threads' 'single' \
         'Appendix_B2_ib_read_bw_th'
@@ -250,10 +250,11 @@ function figures_appendix
     appendix_set '*apm_*read' 'dax' 'D' 'rpma_read()'
     appendix_set '*apm_*write' 'dram' 'E' 'rpma_write()' '(DDIO=ON)'
     appendix_set '*apm_*write' 'dax' 'F' 'APM'
-    appendix_set '*gpspm_*write' 'dax' 'G' 'GPSPM'
+    appendix_set '*gpspm_busy-wait_*write' 'dax' 'G' 'GPSPM-RT'
+    appendix_set '*gpspm_no-busy-wait_*write' 'dax' 'H' 'GPSPM'
     mix_desc='70% read, 30% write'
-    appendix_set '*apm_rw' 'dax' 'H' 'MIX' "($mix_desc, seq)" 'rw'
-    appendix_set '*apm_randrw' 'dax' 'I' 'MIX' "($mix_desc, rand)" 'rw'
+    appendix_set '*apm_*_rw' 'dax' 'I' 'MIX' "($mix_desc, seq)" 'rw'
+    appendix_set '*apm_*_randrw' 'dax' 'J' 'MIX' "($mix_desc, rand)" 'rw'
 }
 
 function set_data_path()
@@ -456,19 +457,19 @@ function figures_report()
         lat_figures \
             "$data_path/*apm_*write_lat_*dax* $data_path/*gpspm_*write_lat_*dax*" \
             'bs' \
-            'APM to PMEM vs GPSPM to PMEM' \
+            'APM to PMEM vs GPSPM(-RT) to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
 
         lat_figures \
             "$data_path/*apm_*write_lat-cpu_*dax* $data_path/*gpspm_*write_lat-cpu_*dax*" \
             'cpuload' \
-            'APM to PMEM vs GPSPM to PMEM' \
+            'APM to PMEM vs GPSPM(-RT) to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
@@ -487,18 +488,18 @@ function figures_report()
 
         bw_figures \
             "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
-            'APM to PMEM vs GPSPM to PMEM' \
+            'APM to PMEM vs GPSPM(-RT) to PMEM' \
             'apm_pmem_vs_gpspm_pmem' \
             'APM rand' 'APM seq' \
-            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
 
         bw_cpu_figures \
             "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
-            'APM to PMEM vs GPSPM to PMEM' \
+            'APM to PMEM vs GPSPM(-RT) to PMEM' \
             'apm_pmem_vs_gpspm_pmem_cpuload' \
             'APM rand' 'APM seq' \
-            'GPSPM-rt rand' 'GPSPM-rt seq' \
+            'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
 
         figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
