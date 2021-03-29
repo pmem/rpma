@@ -5,19 +5,83 @@
 <tbody>
 <tr><td valign=top>APM Server - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_apm_server
+create_serialize=0
+kb_base=1000
+serverip=$serverip
+port=7204
+thread
+
+[server]
+direct_write_to_pmem=1
+numjobs=$numjobs
+size=100MiB
+filename={malloc, /dev/dax/path}
 </pre></td></tr>
 <tr><td valign=top>APM Client - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_apm_client
+create_serialize=0
+serverip=$serverip
+port=7204
+thread
+disable_clat=1
+lat_percentiles=1
+percentile_list=99.0:99.9:99.99:99.999
+
+[client]
+numjobs=$numjobs
+group_reporting=1
+iodepth=2
+readwrite={write, randwrite}
+blocksize=$blocksize
+ramp_time=15
+time_based
+runtime=60
 </pre></td></tr>
 <tr><td valign=top>GPSPM Server - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_gpspm_server
+create_serialize=0
+kb_base=1000
+serverip=$serverip
+port=7204
+thread
+
+[server]
+direct_write_to_pmem=0
+numjobs=$numjobs
+iodepth=2
+size=100MiB
+filename=/dev/dax/path
+
+time_based
+runtime=365d
 </pre></td></tr>
 <tr><td valign=top>GPSPM Client - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_gpspm_client
+create_serialize=0
+serverip=$serverip
+port=7204
+thread
+disable_clat=1
+lat_percentiles=1
+percentile_list=99.0:99.9:99.99:99.999
+
+[client]
+numjobs=$numjobs
+group_reporting=1
+iodepth=2
+readwrite={write, randwrite}
+blocksize=$blocksize
+ramp_time=15
+time_based
+runtime=60
 </pre></td></tr>
 </tbody>
 </table>
