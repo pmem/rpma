@@ -5,11 +5,40 @@
 <tbody>
 <tr><td valign=top>Server - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_apm_server
+create_serialize=0
+kb_base=1000
+serverip=$serverip
+port=7204
+thread
+
+[server]
+direct_write_to_pmem=1
+numjobs=1
+size=100MiB
+filename=/dev/dax/path
 </pre></td></tr>
 <tr><td valign=top>Client - FIO engine configuration</td>
 <td><pre>
-...
+[global]
+ioengine=librpma_apm_client
+create_serialize=0
+serverip=$serverip
+port=7204
+thread
+disable_clat=1
+lat_percentiles=1
+percentile_list=99.0:99.9:99.99:99.999
+
+[client]
+sync=1
+readwrite={read, write, rw, randread, randwrite, randrw}
+rwmixread=70 # valid only for the 'rw' and 'randrw' readwrite modes
+blocksize=$blocksize
+ramp_time=15
+time_based
+runtime=60
 </pre></td></tr>
 </tbody>
 </table>
