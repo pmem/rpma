@@ -34,6 +34,18 @@ function usage()
 	echo "export REMOTE_JOB_NUMA=0"
 	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
+	echo
+	echo "export REMOTE_ANOTHER_NUMA=1"
+	echo "export REMOTE_RESULTS_DIR=/tmp/"
+	echo "export EVENT_LIST=/path/to/edp/events/list"
+	echo "export REMOTE_CMD_PRE='source /opt/intel/sep/sep_vars.sh; numactl -N \${REMOTE_ANOTHER_NUMA} emon -i \${EVENT_LIST} > \${REMOTE_RESULTS_DIR}\${RUN_NAME}_emon.dat'"
+	echo "export REMOTE_CMD_POST='sleep 10; source /opt/intel/sep/sep_vars.sh; emon -stop'"
+	echo
+	echo "Note:"
+	echo "The 'REMOTE_CMD_PRE' and 'REMOTE_CMD_POST' environment variables"
+	echo "can use the 'RUN_NAME' environment variable internally,"
+	echo "which contains a unique name of each run."
+	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
 	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
@@ -187,6 +199,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
+			ITER=bs${BS}
 			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-dp-exp|bw-dp-lin)
@@ -198,6 +211,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
+			ITER=dp${DP}
 			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		bw-th)
@@ -209,6 +223,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT="--qp $TH"
 			DP_OPT="--tx-depth=${DP}"
+			ITER=th${TH}
 			[ "$DO_RUN" == "1" ] && echo -n "${TH},${DP}," >> $OUTPUT
 			;;
 		lat)
@@ -220,6 +235,7 @@ function benchmark_one() {
 			BS_OPT="--size $BS"
 			QP_OPT=""
 			DP_OPT=""
+			ITER=bs${BS}
 			;;
 		esac
 
@@ -228,10 +244,23 @@ function benchmark_one() {
 			IT_OPT="--iters $IT"
 		fi
 
+		export RUN_NAME=${NAME}_${ITER}
+		echo "Name of this run: ${RUN_NAME}"
+
+		REMOTE_CMD_PRE_SUBST=$(echo "$REMOTE_CMD_PRE" | envsubst)
+		REMOTE_CMD_POST_SUBST=$(echo "$REMOTE_CMD_POST" | envsubst)
+
 		# run the server
 		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
 			$DP_OPT $REMOTE_AUX_PARAMS"
+
 		if [ "$DO_RUN" == "1" ]; then
+			if [ "x$REMOTE_CMD_PRE_SUBST" != "x" ]; then
+				echo "$REMOTE_CMD_PRE_SUBST"
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE_SUBST" 2>>$LOG_ERR &
+			fi
+
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$CMD >> $LOG_ERR" 2>>$LOG_ERR &
 			sleep 1
@@ -246,6 +275,13 @@ function benchmark_one() {
 		if [ "$DO_RUN" == "1" ]; then
 			$CMD 2>>$LOG_ERR | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
 				| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
+
+			if [ "x$REMOTE_CMD_POST_SUBST" != "x" ]; then
+				echo "$REMOTE_CMD_POST_SUBST"
+				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST_SUBST" 2>>$LOG_ERR
+			fi
+
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			echo "$CMD" >> $CLIENT_DUMP
 		fi
