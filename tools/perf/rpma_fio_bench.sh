@@ -246,7 +246,7 @@ function benchmark_one() {
 		SYNC=0
 		;;
 	bw-cpu-mt)
-		THREADS=32
+		THREADS=$CORES_PER_SOCKET
 		BLOCK_SIZE=4096
 		DEPTH=2
 		CPU_LOAD=(0 25 50 75 100)
@@ -573,9 +573,10 @@ if [ -z "${BASH_REMATCH[0]}" ]; then
 	exit 1
 fi
 
-export CORES_PER_SOCKET=$(sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-			$REMOTE_USER@$SERVER_IP \
-			"lscpu | egrep 'Core\(s\) per socket:' | sed 's/[^0-9]*//g'")
+export CORES_PER_SOCKET=$( \
+	sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+	$REMOTE_USER@$SERVER_IP \
+	"lscpu | egrep 'Core\(s\) per socket:' | sed 's/[^0-9]*//g'")
 # validate the output
 [[ "$CORES_PER_SOCKET" =~ ^[0-9]+$ ]]
 if [ -z "${BASH_REMATCH[0]}" ]; then
