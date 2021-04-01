@@ -34,6 +34,10 @@ function usage()
 	echo "export REMOTE_JOB_NUMA=0"
 	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
 	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
+	echo "export REMOTE_SUDO_NOPASSWD=0/1"
+	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
+	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
+	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (forces setting REMOTE_DIRECT_WRITE_TO_PMEM to this value)"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
 	echo "export REMOTE_RESULTS_DIR=/tmp/"
@@ -63,6 +67,27 @@ elif [ -z "$REMOTE_PASS" ]; then
 	usage "REMOTE_PASS not set"
 elif [ -z "$REMOTE_JOB_NUMA" ]; then
 	usage "REMOTE_JOB_NUMA not set"
+elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+	usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
+elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
+	usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
+fi
+
+if [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
+	echo "WARNING: sudo (called on the remote side) will prompt for password!"
+	echo "         Toggling DDIO will be skipped!"
+	echo
+	echo "         In order to change it:"
+	echo "           1) set permissions of sudo to NOPASSWD in '/etc/sudoers' and"
+	echo "           2) set REMOTE_SUDO_NOPASSWD=1"
+	echo
+	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" -a "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" != "$REMOTE_DIRECT_WRITE_TO_PMEM" ]; then
+		echo "Error: FORCE_REMOTE_DIRECT_WRITE_TO_PMEM != REMOTE_DIRECT_WRITE_TO_PMEM ($FORCE_REMOTE_DIRECT_WRITE_TO_PMEM != $REMOTE_DIRECT_WRITE_TO_PMEM),"
+		echo "       and REMOTE_SUDO_NOPASSWD does not equal 1."
+		echo "       Change sudo permissions in order to force setting REMOTE_DIRECT_WRITE_TO_PMEM."
+		echo "Exiting..."
+		exit 1
+	fi
 fi
 
 function verify_block_size()
@@ -93,6 +118,17 @@ function benchmark_one() {
 
 	SERVER_IP=$1
 	MODE=$2
+
+	REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=1
+	if [ -z "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] || \
+	   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -eq $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+		DDIO_MODE="disable"
+		DDIO_QUERY=0
+	else
+		DDIO_MODE="enable"
+		DDIO_QUERY=1
+		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
+	fi
 
 	case $MODE in
 	bw-bs)
@@ -180,6 +216,38 @@ function benchmark_one() {
 		echo "Log commands [client]: $CLIENT_DUMP"
 	fi
 	echo
+
+	if [ "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+		if [ "$DO_RUN" == "1" ]; then
+			# copy the ddio.sh script to the server
+			sshpass -p "$REMOTE_PASS" scp -o StrictHostKeyChecking=no \
+				../ddio.sh $REMOTE_USER@$SERVER_IP:$DIR 2>>$LOG_ERR
+			# set DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -s $DDIO_MODE \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			# query DDIO on the server
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP \
+				"sudo $DIR/ddio.sh -d $REMOTE_RNIC_PCIE_ROOT_PORT -q \
+				> $LOG_ERR 2>&1" 2>>$LOG_ERR
+			if [ $? -ne $DDIO_QUERY ]; then
+				echo "Error: setting DDIO to '$DDIO_MODE' failed"
+				exit 1
+			fi
+		fi
+		REMOTE_DIRECT_WRITE_TO_PMEM=$REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM
+	elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
+		echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
+		echo "Skipping..."
+		return
+	fi
+
+	if [ "$DUMP_CMDS" == "1" ]; then
+		echo "REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM" >> $SERVER_DUMP
+		echo >> $SERVER_DUMP
+	fi
 
 	if [ "$DO_RUN" == "1" ]; then
 		rm -f $LOG_ERR
