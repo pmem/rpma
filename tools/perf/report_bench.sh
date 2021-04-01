@@ -53,8 +53,8 @@ function report_apvgp
 	set -x
 	for mode in lat bw-bs bw-th; do
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+			./ib_read.sh $SERVER_IP $mode
 			for op in read randread; do
-				./ib_read.sh $SERVER_IP $mode
 				REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
 				REMOTE_JOB_MEM_PATH=$PMEM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode
 			done
