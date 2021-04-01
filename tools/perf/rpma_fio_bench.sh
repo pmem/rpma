@@ -45,8 +45,8 @@ function usage()
 	echo "export REMOTE_RESULTS_DIR=/tmp/"
 	echo
 	echo "In case you would like to collect sar data:"
-	echo "export REMOTE_CMD_PRE='rm -f \${REMOTE_SAR_RESULTS_DIR}sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o \${REMOTE_SAR_RESULTS_DIR}sar.dat 5 > /dev/null'"
-	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} \${REMOTE_SAR_RESULTS_DIR}sar.dat > \${REMOTE_SAR_RESULTS_DIR}sar_\${RUN_NAME}.csv'"
+	echo "export REMOTE_CMD_PRE='rm -f \${REMOTE_RESULTS_DIR}sar.dat; numactl -N \${REMOTE_ANOTHER_NUMA} sar -u -P \${REMOTE_JOB_NUMA_CPULIST} -o \${REMOTE_RESULTS_DIR}sar.dat 5 > /dev/null'"
+	echo "export REMOTE_CMD_POST='sleep 10; killall -9 sar; sadf -d -- -u -P \${REMOTE_JOB_NUMA_CPULIST} \${REMOTE_RESULTS_DIR}sar.dat > \${REMOTE_RESULTS_DIR}sar_\${RUN_NAME}.csv'"
 	echo
 	echo "In case you would like to collect emon data:"
 	echo "export EVENT_LIST=/path/to/edp/events/list"
