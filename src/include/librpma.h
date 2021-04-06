@@ -2472,11 +2472,11 @@ int rpma_recv(struct rpma_conn *conn,
 int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
 
 enum rpma_op {
-	RPMA_OP_READ,
-	RPMA_OP_WRITE,
-	RPMA_OP_FLUSH,
 	RPMA_OP_SEND,
-	RPMA_OP_RECV,
+	RPMA_OP_WRITE,
+	RPMA_OP_READ,
+	RPMA_OP_FLUSH = 1 << 3,
+	RPMA_OP_RECV = 1 << 7,
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
@@ -2530,11 +2530,11 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *	struct rpma_conn;
  *	struct rpma_completion;
  *	enum rpma_op {
- *		RPMA_OP_READ,
- *		RPMA_OP_WRITE,
- *		RPMA_OP_FLUSH,
  *		RPMA_OP_SEND,
- *		RPMA_OP_RECV,
+ *		RPMA_OP_WRITE,
+ *		RPMA_OP_READ,
+ *		RPMA_OP_FLUSH = 1 << 3,
+ *		RPMA_OP_RECV = 1 << 7,
  *		RPMA_OP_RECV_RDMA_WITH_IMM,
  *	};
  *
@@ -2547,10 +2547,10 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * error. The operations posted with the **RPMA_F_COMPLETION_ALWAYS** flag
  * also generate a completion on success.
  * The following operations are available:
- * - RPMA_OP_READ - RMA read operation
- * - RPMA_OP_WRITE - RMA write operation
- * - RPMA_OP_FLUSH - RMA flush operation
  * - RPMA_OP_SEND - messaging send operation
+ * - RPMA_OP_WRITE - RMA write operation
+ * - RPMA_OP_READ - RMA read operation
+ * - RPMA_OP_FLUSH - RMA flush operation
  * - RPMA_OP_RECV - messaging receive operation
  * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
  *   RMA write operation with immediate data
