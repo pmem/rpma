@@ -2535,6 +2535,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *		RPMA_OP_FLUSH,
  *		RPMA_OP_SEND,
  *		RPMA_OP_RECV,
+ *		RPMA_OP_RECV_RDMA_WITH_IMM,
  *	};
  *
  *	int rpma_conn_completion_get(struct rpma_conn *conn,
@@ -2551,6 +2552,8 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - RPMA_OP_FLUSH - RMA flush operation
  * - RPMA_OP_SEND - messaging send operation
  * - RPMA_OP_RECV - messaging receive operation
+ * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
+ *   RMA write operation with immediate data
  *
  * RETURN VALUE
  * The rpma_conn_completion_get() function returns 0 on success
