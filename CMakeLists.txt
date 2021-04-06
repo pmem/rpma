@@ -251,3 +251,6 @@ add_custom_target(config_softroce
 
 add_custom_target(run_all_examples
 	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-on-SoftRoCE.sh ${CMAKE_BINARY_DIR}/examples)
+
+add_custom_target(run_all_examples_under_valgrind
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-on-SoftRoCE.sh ${CMAKE_BINARY_DIR}/examples --valgrind)
