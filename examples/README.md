@@ -13,5 +13,5 @@ to examples and man pages.
 
 This directory contains also the 'run-all-on-SoftRoCE.sh' script
 for running all examples on SoftRoCE (it can be also run
-from the CMake build directory using 'make test_softroce').
-To enable SoftRoCE '../tools/configure_softroce.sh' script can be used.
+from the CMake build directory using 'make run_all_examples').
+The '../tools/configure_softroce.sh' script can be used to enable SoftRoCE.
