@@ -26,6 +26,10 @@ MODULE="rdma_rxe"
 DIR="/lib/modules/$(uname -r)"
 STATE_OK="state ACTIVE physical_state LINK_UP"
 
+# BASH_ENV is used by CircleCI:
+# https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-shell-command
+[ "$BASH_ENV" == "" ] && BASH_ENV=/dev/null
+
 function get_IP4() {
 	NET_IF=$1
 	ip -4 -j -p a show $NET_IF | grep -e local | cut -d'"' -f4
@@ -37,6 +41,8 @@ function print_IP4_of() {
 	IP=$(get_IP4 $NET_IF)
 	if [ "$IP" != "" ]; then
 		echo "been assigned the following IP address: $IP"
+		# set RPMA_SOFT_ROCE_IP for CircleCI
+		echo "export RPMA_SOFT_ROCE_IP=$IP" >> $BASH_ENV
 	else
 		echo "no IP address assigned"
 	fi
@@ -49,6 +55,8 @@ function print_IP4_all() {
 		IP=$(get_IP4 $NET_IF)
 		if [ "$IP" != "" ]; then
 			echo "- network interface: $NET_IF, IP address: $IP"
+			# set RPMA_SOFT_ROCE_IP for CircleCI
+			echo "export RPMA_SOFT_ROCE_IP=$IP" >> $BASH_ENV
 		else
 			echo "- network interface: $NET_IF, no IP address assigned"
 		fi

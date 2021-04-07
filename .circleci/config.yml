@@ -1,0 +1,35 @@
+version: 2.1
+workflows:
+  main:
+    jobs:
+      - build
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+      - checkout
+      - run:
+          name: Install required packages
+          command: .circleci/install-pkgs-ubuntu.sh
+      - run:
+          name: Install cmocka
+          command: utils/docker/images/install-cmocka.sh
+      - run:
+          name: Build rpma
+          command: mkdir build && cd build && cmake .. && make -j$(nproc)
+      - run:
+          # Configure SoftRoCE and read the RPMA_SOFT_ROCE_IP environment variable
+          name: Configure SoftRoCE
+          command: cd build && make config_softroce && source $BASH_ENV
+      - run:
+          name: Run tests
+          command: cd build && ctest --output-on-failure
+      - run:
+          name: Run all examples
+          command: cd build && make run_all_examples
+
+# XXX uncomment when valgrind suppressions are correct
+#      - run:
+#          name: Run all examples under valgrind
+#          command: cd build && make run_all_examples_under_valgrind
