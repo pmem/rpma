@@ -110,18 +110,26 @@ main(int argc, char *argv[])
 	while (1) {
 		do {
 			/* prepare completions, get one and validate it */
-			if ((ret = rpma_conn_completion_wait(conn))) {
+			ret = rpma_conn_completion_get(conn, &cmpl);
+			if (ret && ret != RPMA_E_NO_COMPLETION)
 				break;
-			} else if ((ret = rpma_conn_completion_get(conn,
-					&cmpl))) {
-				break;
-			} else if (cmpl.op_status != IBV_WC_SUCCESS) {
 
+			if (ret == RPMA_E_NO_COMPLETION) {
+				if ((ret = rpma_conn_completion_wait(conn))) {
+					break;
+				} else if ((ret = rpma_conn_completion_get(conn,
+						&cmpl))) {
+					if (ret == RPMA_E_NO_COMPLETION)
+						continue;
+					break;
+				}
+			}
+
+			if (cmpl.op_status != IBV_WC_SUCCESS) {
 				(void) fprintf(stderr,
 					"operation %d failed: %s\n",
 					cmpl.op,
 					ibv_wc_status_str(cmpl.op_status));
-
 				ret = -1;
 				break;
 			}
