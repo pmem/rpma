@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the messages-ping-pong example
@@ -114,13 +114,22 @@ main(int argc, char *argv[])
 
 		do {
 			/* prepare completions, get one and validate it */
-			if ((ret = rpma_conn_completion_wait(conn))) {
+			ret = rpma_conn_completion_get(conn, &cmpl);
+			if (ret && ret != RPMA_E_NO_COMPLETION)
 				break;
-			} else if ((ret = rpma_conn_completion_get(conn,
-					&cmpl))) {
-				break;
-			} else if (cmpl.op_status != IBV_WC_SUCCESS) {
 
+			if (ret == RPMA_E_NO_COMPLETION) {
+				if ((ret = rpma_conn_completion_wait(conn))) {
+					break;
+				} else if ((ret = rpma_conn_completion_get(conn,
+						&cmpl))) {
+					if (ret == RPMA_E_NO_COMPLETION)
+						continue;
+					break;
+				}
+			}
+
+			if (cmpl.op_status != IBV_WC_SUCCESS) {
 				(void) fprintf(stderr,
 					"Shutting down the client due to the unsuccessful completion of an operation.\n");
 				ret = -1;
