@@ -49,6 +49,7 @@ option(TESTS_SOFT_ROCE "enable tests that require a SoftRoCE-configured network 
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
 option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
+option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
 option(TESTS_LONG "enable long running tests" OFF)
 option(TESTS_USE_FAULT_INJECTION "run tests with fault injection" OFF)
 
@@ -215,7 +216,10 @@ if(VALGRIND_FOUND)
 	add_flag(-DVG_HELGRIND_ENABLED=1)
 
 	include_directories(${VALGRIND_INCLUDE_DIRS})
-	find_pmemcheck()
+
+	if(TESTS_USE_VALGRIND_PMEMCHECK)
+		find_pmemcheck()
+	endif()
 
 	if(VALGRIND_PMEMCHECK_FOUND)
 		add_flag(-DVG_PMEMCHECK_ENABLED=1)
