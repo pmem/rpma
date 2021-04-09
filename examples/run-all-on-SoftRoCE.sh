@@ -39,7 +39,7 @@ if [ x"$VLD_TEST" == x"--valgrind" ]; then
 	VLD_CLOG="--log-file=${VLD_CLOG_FILE}"
 	VLD_CCMD="${VLD_CMD} ${VLD_SUPP} ${VLD_CLOG}"
 	VLD_MSG="(under Valgrind)"
-	echo "Running examples with Valgrind is tuned for Fedora 32 and rdma-core v33.0 debug build (EXPERIMENTAL)"
+	echo "Running examples with Valgrind is tuned for debug build of librpma on Ubuntu 20.04 (see the CircleCI build)."
 	echo "It may fail for any other OS, OS version, rdma-core version and for the release build."
 	echo
 fi
