@@ -1,0 +1,4 @@
+deb http://ddebs.ubuntu.com focal main restricted universe multiverse
+deb http://ddebs.ubuntu.com focal-updates main restricted universe multiverse
+deb http://ddebs.ubuntu.com focal-proposed main restricted universe multiverse
+
