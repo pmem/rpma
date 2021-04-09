@@ -34,8 +34,7 @@ RPMA_DEPS="\
 	librdmacm-dev \
 	libunwind-dev \
 	linux-modules-extra-$(uname -r) \
-	pandoc \
-	rdma-core"
+	pandoc"
 
 # Install all required packages
 sudo apt-get update
