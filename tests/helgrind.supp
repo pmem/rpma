@@ -1,0 +1,57 @@
+{
+   <rpma_log_default_function() -> syslog()>
+   Helgrind:Race
+   ...
+   fun:syslog
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   <rpma_log_default_function() -> get_timestamp_prefix()>
+   Helgrind:Race
+   fun:strcmp
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   <rdma_getaddrinfo()>
+   Helgrind:Race
+   ...
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_create_id()>
+   Helgrind:Race
+   ...
+   fun:rdma_create_id*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_bind_addr()>
+   Helgrind:Race
+   ...
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_destroy_id()>
+   Helgrind:Race
+   ...
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
