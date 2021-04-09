@@ -1,0 +1,62 @@
+#
+# The following suppressions are suited for debug build
+# of librpma on Ubuntu 20.04 used in the CircleCI.
+# They may not work for any other OS, OS version,
+# rdma-core version and for the release build.
+#
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   ...
+   fun:syslog
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   ...
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   <rdma_getaddrinfo()>
+   drd:ConflictingAccess
+   ...
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_create_id()>
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_id*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_bind_addr()>
+   drd:ConflictingAccess
+   ...
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   <rdma_destroy_id()>
+   drd:ConflictingAccess
+   ...
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
