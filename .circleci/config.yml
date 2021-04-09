@@ -29,12 +29,9 @@ jobs:
       - run:
           name: Run tests
           command: cd build && ctest --output-on-failure
-
       - run:
           name: Run all examples
           command: cd build && make run_all_examples
-
-# XXX uncomment when valgrind suppressions are correct
-#      - run:
-#          name: Run all examples under valgrind
-#          command: cd build && make run_all_examples_under_valgrind
+      - run:
+          name: Run all examples under valgrind
+          command: cd build && make run_all_examples_under_valgrind
