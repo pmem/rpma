@@ -19,22 +19,6 @@
 }
 
 {
-   XXX CMA_INIT_CMD() should initialize the whole buffer
-   Memcheck:Param
-   write(buf)
-   fun:write
-   fun:rdma_accept
-}
-
-{
-   XXX CMA_INIT_CMD() should initialize the whole buffer
-   Memcheck:Param
-   write(buf)
-   fun:write
-   fun:rdma_connect
-}
-
-{
    Verbs device, once it is opened, it is never closed.
    Memcheck:Leak
    match-leak-kinds: possible
