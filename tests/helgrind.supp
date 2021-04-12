@@ -15,17 +15,6 @@
 }
 
 {
-   <rpma_log_default_function() -> get_timestamp_prefix()>
-   Helgrind:Race
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-
-{
    <rdma_getaddrinfo()>
    Helgrind:Race
    ...

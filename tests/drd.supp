@@ -15,15 +15,6 @@
 }
 
 {
-   <rpma_log_default_function() -> get_timestamp_prefix()>
-   drd:ConflictingAccess
-   ...
-   fun:get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-
-{
    <rdma_getaddrinfo()>
    drd:ConflictingAccess
    ...
