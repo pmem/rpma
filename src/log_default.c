@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * log_default.c -- the default logging function with support for logging either
@@ -46,7 +46,7 @@ static const int rpma_log_level_syslog_severity[] = {
 static void
 get_timestamp_prefix(char *buf, size_t buf_size)
 {
-	struct tm *info;
+	struct tm info;
 	char date[24];
 	struct timespec ts;
 	long usec;
@@ -54,13 +54,13 @@ get_timestamp_prefix(char *buf, size_t buf_size)
 	const char error_message[] = "[time error] ";
 
 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
-	    (NULL == (info = localtime(&ts.tv_sec)))) {
+	    (NULL == localtime_r(&ts.tv_sec, &info))) {
 		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
 
 	usec = ts.tv_nsec / 1000;
-	if (!strftime(date, sizeof(date), "%b %d %H:%M:%S", info)) {
+	if (!strftime(date, sizeof(date), "%b %d %H:%M:%S", &info)) {
 		memcpy(buf, error_message, sizeof(error_message));
 		return;
 	}
