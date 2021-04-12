@@ -82,7 +82,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* calculate data for the client write */
-	struct common_data dst_data;
+	struct common_data dst_data = {0};
 	dst_data.data_offset = 0;
 	dst_data.mr_desc_size = mr_desc_size;
 
