@@ -30,14 +30,26 @@ RPMA_DEPS="\
 	gawk \
 	groff \
 	graphviz \
+	ibverbs-providers-dbgsym \
 	libibverbs-dev \
+	libibverbs1-dbgsym \
 	librdmacm-dev \
+	librdmacm1-dbgsym \
 	libunwind-dev \
 	linux-modules-extra-$(uname -r) \
 	pandoc"
 
-# Install all required packages
+# Update existing packages
 sudo apt-get update
+
+# Install lsb-release (will be needed by /etc/apt/sources.list.d/ddebs.list)
+sudo apt-get install --assume-yes --no-install-recommends lsb-release
+
+# Enable repositories with debug symbols packages (-dbgsym)
+sudo apt-get install ubuntu-dbgsym-keyring
+sudo cp .circleci/ddebs.list /etc/apt/sources.list.d/ddebs.list
+sudo apt-get update
+
 sudo apt-get install --assume-yes --no-install-recommends \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
