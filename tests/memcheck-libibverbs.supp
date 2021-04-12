@@ -1,0 +1,50 @@
+#
+# The following suppressions are suited for debug build
+# of librpma on Ubuntu 20.04 used in the CircleCI.
+# They may not work for any other OS, OS version,
+# rdma-core version and for the release build.
+#
+
+{
+   Verbs context, once it is opened, it is never closed (RXE variant).
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:_verbs_init_and_alloc_context
+   fun:rxe_alloc_context
+   fun:verbs_open_device
+   ...
+   fun:ucma_init_device
+}
+
+{
+   Verbs device, once it is opened, it is never closed.
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:try_driver
+   fun:try_drivers
+   fun:try_all_drivers
+   fun:ibverbs_get_device_list
+   fun:ibv_get_device_list*
+   fun:ucma_init
+   ...
+}
+
+{
+   Sysfs device, once it is allocated, is not freed.
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:find_sysfs_devs_nl_cb
+   fun:nl_recvmsgs_report
+   fun:nl_recvmsgs
+   fun:rdmanl_get_devices
+   fun:find_sysfs_devs_nl
+   fun:ibverbs_get_device_list
+   fun:ibv_get_device_list*
+   fun:ucma_init
+   ...
+}
