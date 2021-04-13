@@ -177,6 +177,15 @@ main(int argc, char *argv[])
 		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 			break;
 
+		if (cmpl.op_context != FLUSH_ID) {
+			(void) fprintf(stderr,
+				"unexpected cmpl.op_context value "
+				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+				(uintptr_t)cmpl.op_context,
+				(uintptr_t)FLUSH_ID);
+			break;
+		}
+
 		if (cmpl.op_status != IBV_WC_SUCCESS) {
 			(void) fprintf(stderr, "rpma_flush failed with %d\n",
 					cmpl.op_status);
