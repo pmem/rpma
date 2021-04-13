@@ -245,5 +245,5 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} GROUP_SCRIPT)
+	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
 endfunction()
