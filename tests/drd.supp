@@ -1,0 +1,330 @@
+#
+# The following suppressions are suited for debug build
+# of librpma on Ubuntu 20.04 used in the CircleCI.
+# They may not work for any other OS, OS version,
+# rdma-core version and for the release build.
+#
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   ...
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:__vsyslog_internal
+   fun:syslog
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   fun:strcmp
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ucma_init
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:idm_clear
+   fun:ucma_remove_id
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:idm_clear
+   fun:ucma_remove_id
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:list_empty_
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:list_add_after_
+   fun:insert_cma_dev
+   fun:sync_devices_list
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:list_empty_
+   fun:ucma_init
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:ucma_set_af_ib_support
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:list_empty_
+   fun:ucma_init
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 1
+   drd:ConflictingAccess
+   fun:__strlen_sse2
+   fun:__vfprintf_internal
+   fun:__vasprintf_internal
+   fun:asprintf
+   fun:open_cdev
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:ucma_init
+   fun:rdma_create_id2
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:ucma_init
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 1
+   drd:ConflictingAccess
+   fun:strlen
+   fun:__vfprintf_internal
+   fun:__vasprintf_internal
+   fun:__asprintf_chk
+   fun:asprintf
+   fun:open_cdev
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:ucma_get_device
+   fun:ucma_query_route
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 4
+   drd:ConflictingAccess
+   fun:ucma_get_device
+   fun:ucma_query_addr
+   fun:rdma_bind_addr2
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:idm_clear
+   fun:ucma_remove_id
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
