@@ -135,17 +135,6 @@ function(add_testcase name tracer testcase cmake_script)
 		set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
 				FAIL_REGULAR_EXPRESSION "CMake Error")
 	endif()
-
-	if (${tracer} STREQUAL pmemcheck)
-		set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
-				COST 100)
-	elseif(${tracer} IN_LIST vg_tracers)
-		set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
-				COST 50)
-	else()
-		set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
-				COST 10)
-	endif()
 endfunction()
 
 function(skip_test name message)
