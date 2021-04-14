@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * client.c -- a client of the atomic-write example
@@ -110,11 +110,17 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	ret = rpma_conn_completion_get(conn, &cmpl);
+	if (ret && ret != RPMA_E_NO_COMPLETION)
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
-		goto err_mr_remote_delete;
+	if (ret == RPMA_E_NO_COMPLETION) {
+		if ((ret = rpma_conn_completion_wait(conn)))
+			goto err_mr_remote_delete;
+
+		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+			goto err_mr_remote_delete;
+	}
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read failed with %d\n",
@@ -171,11 +177,20 @@ main(int argc, char *argv[])
 			break;
 
 		/* wait for the completion to be ready */
-		if ((ret = rpma_conn_completion_wait(conn)))
+		ret = rpma_conn_completion_get(conn, &cmpl);
+		if (ret && ret != RPMA_E_NO_COMPLETION)
 			break;
 
-		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
-			break;
+		if (ret == RPMA_E_NO_COMPLETION) {
+			if ((ret = rpma_conn_completion_wait(conn))) {
+				break;
+			} else if ((ret = rpma_conn_completion_get(conn,
+					&cmpl))) {
+				if (ret == RPMA_E_NO_COMPLETION)
+					continue;
+				break;
+			}
+		}
 
 		if (cmpl.op_context != FLUSH_ID) {
 			(void) fprintf(stderr,
