@@ -3,5 +3,6 @@
 # Copyright 2020-2021, Intel Corporation
 #
 
-add_subdirectory(utils)
+add_subdirectory(example)
 add_subdirectory(peer)
+add_subdirectory(utils)
