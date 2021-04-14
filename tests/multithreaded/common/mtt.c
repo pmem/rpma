@@ -34,6 +34,13 @@ struct mtt_thread_args {
 };
 
 /*
+ * call either init or fini function (func) using the provided test object
+ * (test), the thread arguments (ta), and the thread result object (tr).
+ */
+#define MTT_CALL_INIT_FINI(test, func, ta, tr) \
+	(test)->func((ta)->id, (test)->prestate, &(ta)->state, (tr))
+
+/*
  * mtt_thread_main -- wait for the synchronization conditional and run the test
  */
 static void *
@@ -46,7 +53,7 @@ mtt_thread_main(void *arg)
 	int result;
 
 	if (test->thread_init_func) {
-		test->thread_init_func(ta->id, test->prestate, &ta->state, tr);
+		MTT_CALL_INIT_FINI(test, thread_init_func, ta, tr);
 		if (tr->ret) {
 			/* unblock the main thread waiting for this one */
 			++mtt_sync.threads_num_waiting;
@@ -75,14 +82,15 @@ mtt_thread_main(void *arg)
 		return tr;
 	}
 
-	ta->test->thread_func(ta->id, test->prestate, ta->state, tr);
+	test->thread_func(ta->id, test->prestate, ta->state, tr);
 
 	if (test->thread_fini_func) {
 		/*
 		 * if the thread result is already non-zero provide tr_dummy
 		 * instead to avoid overwriting the result
 		 */
-		test->thread_fini_func(&ta->state, (tr->ret ? &tr_dummy : tr));
+		MTT_CALL_INIT_FINI(test, thread_fini_func, ta,
+				(tr->ret ? &tr_dummy : tr));
 	}
 
 	return tr;
@@ -216,6 +224,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	struct mtt_thread_args *threads_args;
 	struct mtt_thread_args *ta;
 	struct mtt_thread_result *tr;
+	struct mtt_thread_result tr_fini = {0};
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
 
@@ -247,10 +256,13 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		ta->test = test;
 
 		if (test->thread_seq_init_func) {
-			result = test->thread_seq_init_func(ta->id,
-					test->prestate, &ta->state);
-			if (result)
+			MTT_CALL_INIT_FINI(test, thread_seq_init_func, ta,
+					&ta->ret);
+			if (ta->ret.ret) {
+				result = ta->ret.ret;
+				MT_TEST_ERR(ta->id, "%s", ta->ret.errmsg);
 				goto err_fini_threads_args;
+			}
 		}
 
 		++threads_num_to_fini;
@@ -303,10 +315,14 @@ err_fini_threads_args:
 	/* clean up threads' arguments */
 	if (test->thread_seq_fini_func) {
 		for (i = 0; i < threads_num_to_fini; i++) {
-			ret = test->thread_seq_fini_func(
-					&threads_args[i].state);
-			if (ret)
-				result = ret;
+			ta = &threads_args[i];
+			MTT_CALL_INIT_FINI(test, thread_seq_fini_func, ta,
+					&tr_fini);
+			if (tr_fini.ret) {
+				MT_TEST_ERR(i, "%s", tr_fini.errmsg);
+				result = tr_fini.ret;
+				tr_fini.ret = 0;
+			}
 		}
 	}
 
