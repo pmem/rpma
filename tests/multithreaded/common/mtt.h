@@ -26,21 +26,27 @@ struct mtt_result {
 	char errmsg[MTT_ERRMSG_MAX];
 };
 
-/* on error populate the result and the error string */
-#define MTT_THREAD_ERR(result, func, err) \
-	do { \
-		(result)->ret = err; \
-		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
-			"%s() failed: %s", func, strerror(err)); \
-	} while (0)
+/*
+ * mtt_err -- on error populate the result and the error string
+ */
+static inline void
+mtt_err(struct mtt_result *result, const char *func, int err)
+{
+	result->ret = err;
+	snprintf(result->errmsg, MTT_ERRMSG_MAX - 1, "%s() failed: %s", func,
+			strerror(err));
+}
 
-/* on librpma error populate the result and the error string */
-#define MTT_THREAD_RPMA_ERR(result, func, err) \
-	do { \
-		(result)->ret = err; \
-		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
-			"%s() failed: %s", func, rpma_err_2str(err)); \
-	} while (0)
+/*
+ * mtt_rpma_err -- on librpma populate the result and the error string
+ */
+static inline void
+mtt_rpma_err(struct mtt_result *result, const char *func, int err)
+{
+	result->ret = err;
+	snprintf(result->errmsg, MTT_ERRMSG_MAX - 1, "%s() failed: %s", func,
+			strerror(err));
+}
 
 typedef void (*mtt_thread_init_fini)(unsigned id, void *prestate,
 		void **state_ptr, struct mtt_result *result);

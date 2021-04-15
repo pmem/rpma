@@ -29,7 +29,7 @@ get_ibv_context__thread(unsigned id, void *prestate, void *state,
 	ret = rpma_utils_get_ibv_context(ps->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
 			&dev);
 	if (ret) {
-		MTT_THREAD_RPMA_ERR(result, "rpma_utils_get_ibv_context", ret);
+		mtt_rpma_err(result, "rpma_utils_get_ibv_context", ret);
 	}
 }
 
