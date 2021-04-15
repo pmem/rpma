@@ -78,32 +78,6 @@
 }
 
 {
-   Possible data race during write of size 8
-   Helgrind:Race
-   fun:idm_clear
-   fun:ucma_remove_id
-   fun:ucma_free_id
-   fun:rdma_destroy_id
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:list_empty_
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
    Possible data race during read of size 8
    Helgrind:Race
    fun:idm_set
@@ -119,123 +93,11 @@
 }
 
 {
-   Possible data race during write of size 8
-   Helgrind:Race
-   fun:list_add_after_
-   fun:insert_cma_dev
-   fun:sync_devices_list
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during write of size 4
-   Helgrind:Race
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:list_empty_
-   fun:ucma_init
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during write of size 8
-   Helgrind:Race
-   fun:idm_set
-   fun:ucma_insert_id
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:list_empty_
-   fun:ucma_init
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 1
-   Helgrind:Race
-   fun:__strlen_sse2
-   fun:__vfprintf_internal
-   fun:__vasprintf_internal
-   fun:asprintf
-   fun:open_cdev
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during write of size 8
-   Helgrind:Race
-   fun:idm_set
-   fun:ucma_insert_id
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
    Possible data race during read of size 4
    Helgrind:Race
    fun:ucma_init
    fun:rdma_create_id2
    fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:ucma_init
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
    fun:rpma_utils_get_ibv_context
    ...
 }
