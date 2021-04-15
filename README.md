@@ -1,7 +1,7 @@
 # **librpma: Remote Persistent Memory Access Library**
 
-[![Travis build status](https://travis-ci.org/pmem/rpma.svg?branch=master)](https://travis-ci.org/pmem/rpma)
 [![GHA build status](https://github.com/pmem/rpma/workflows/RPMA/badge.svg?branch=master)](https://github.com/pmem/rpma/actions)
+[![CircleCI build status](https://circleci.com/gh/pmem/rpma.svg?style=svg)](https://app.circleci.com/pipelines/github/pmem/rpma)
 [![librpma version](https://img.shields.io/github/tag/pmem/rpma.svg)](https://github.com/pmem/rpma/releases/latest)
 [![Coverage Status](https://codecov.io/github/pmem/rpma/coverage.svg?branch=master)](https://codecov.io/gh/pmem/rpma/branch/master)
 
