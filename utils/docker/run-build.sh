@@ -17,6 +17,9 @@ CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 
+# turn off sanitizers only if (CI_SANITS == OFF)
+[ "$CI_SANITS" != "OFF" ] && CI_SANITS=ON
+
 if [ "$WORKDIR" == "" ]; then
 	echo "Error: WORKDIR is not set"
 	exit 1
@@ -146,8 +149,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
 	-DTESTS_SOFT_ROCE=OFF \
 	-DDEVELOPER_MODE=1 \
-	-DUSE_ASAN=ON \
-	-DUSE_UBSAN=ON
+	-DUSE_ASAN=${CI_SANITS} \
+	-DUSE_UBSAN=${CI_SANITS}
 
 make -j$(nproc)
 ctest --output-on-failure
