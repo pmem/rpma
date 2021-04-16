@@ -5,6 +5,12 @@
 # rdma-core version and for the release build.
 #
 
+#
+# Assesment: XXX required
+#
+# Probably these suppressions do not indicate a lack of MT safety.
+#
+
 {
    Race while reading the name of time zone ("GMT").
    drd:ConflictingAccess
@@ -28,26 +34,54 @@
    ...
 }
 
+#
+# Assesment: These suppressions do not indicate a lack of MT safety.
+#
+# cma_dev_cnt was a global counter of elements populating the global array of
+# devices detected by librdmacm. It was used as an indicator of already done
+# initialization. It was checked before locking a mutex required to make any
+# changes to the global array and changing the counter itself as follows:
+# 
+# static int cma_dev_cnt;
+# ...
+# int ucma_init(void)
+# {
+#     if (cma_dev_cnt)
+#         return 0;
+#
+#     pthread_mutex_lock(&mut);
+#     if (cma_dev_cnt) {
+#         pthread_mutex_unlock(&mut);
+#         return 0;
+#     }
+# ...
+#     cma_dev_cnt = dev_cnt;
+# ...
+#     pthread_mutex_unlock(&mut);
+# ...
+# }
+#
+# But having a race, in this case, should do no harm since the counter is also
+# checked after locking the mutex. So, even writing a new value to the counter
+# even if it will be torn and read partially by another thread it won't lead
+# to abnormal behaviour.
+#
+# Note: This issue is no longer the case for rdma-core >= v30.0 since there
+# instead of a global array is a global list. But the logic seems to be
+# the same: a quick check (a comparison) followed by the mutex lock and
+# recheck of the condition so the final assessment should be the same.
+#
+
 {
-   Conflicting store of size 4
+   Conflicting store/load of size 4
    drd:ConflictingAccess
    fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
    ...
 }
 
-{
-   Conflicting store of size 4
-   drd:ConflictingAccess
-   fun:ucma_init
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
+#
+# Assesment: XXX required
+#
 
 {
    Conflicting store of size 4
@@ -88,27 +122,6 @@
    fun:ucma_init
    fun:rdma_getaddrinfo
    fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_init
-   fun:rdma_create_id2
-   fun:rdma_create_id
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_init
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
    fun:rpma_utils_get_ibv_context
    ...
 }
