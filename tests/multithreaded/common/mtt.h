@@ -62,7 +62,7 @@ mtt_base_file_name(const char *file_name)
 			func, rpma_err_2str(err)); \
 	} while (0)
 
-typedef void (*mtt_thread_init_fini)(unsigned id, void *prestate,
+typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
 		void **state_ptr, struct mtt_result *result);
 typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
 		struct mtt_result *result);
@@ -77,13 +77,13 @@ struct mtt_test {
 	/*
 	 * a function called for each of threads before spawning it (sequential)
 	 */
-	mtt_thread_init_fini thread_seq_init_func;
+	mtt_thread_init_fini_func thread_seq_init_func;
 
 	/*
 	 * a function called at the beginning of each thread
 	 * (parallel but before synchronizing all threads)
 	 */
-	mtt_thread_init_fini thread_init_func;
+	mtt_thread_init_fini_func thread_init_func;
 
 	/*
 	 * a thread main function (parallel and after synchronizing all threads)
@@ -91,13 +91,13 @@ struct mtt_test {
 	mtt_thread_func thread_func;
 
 	/* a function called at the end of each thread (parallel) */
-	mtt_thread_init_fini thread_fini_func;
+	mtt_thread_init_fini_func thread_fini_func;
 
 	/*
 	 * a function called for each of threads after its termination
 	 * (sequential)
 	 */
-	mtt_thread_init_fini thread_seq_fini_func;
+	mtt_thread_init_fini_func thread_seq_fini_func;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);
