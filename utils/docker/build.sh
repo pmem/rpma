@@ -104,6 +104,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env CI_BRANCH=$CI_BRANCH \
 	--env CI_EVENT_TYPE=$CI_EVENT_TYPE \
 	--env CI_RUN=$CI_RUN \
+	--env CI_SANITS=$CI_SANITS \
 	--env TRAVIS=$TRAVIS \
 	--env COVERITY_SCAN_TOKEN=$COVERITY_SCAN_TOKEN \
 	--env COVERITY_SCAN_NOTIFICATION_EMAIL=$COVERITY_SCAN_NOTIFICATION_EMAIL \

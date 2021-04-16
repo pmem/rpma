@@ -1,0 +1,41 @@
+
+# This build is run at 00:00 UTC every day
+name: Nightly_Experimental
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+env:
+    GITHUB_REPO: pmem/rpma
+    # use GitHub Container Registry as a repository of docker images
+    GH_CR_ADDR:  ghcr.io
+    DOCKER_REPO: ghcr.io/pmem/rpma
+    # use org's Private Access Token to log in to GitHub Container Registry
+    GH_CR_USER:  ${{ secrets.GH_CR_USER }}
+    GH_CR_PAT:   ${{ secrets.GH_CR_PAT }}
+    DOC_UPDATE_GITHUB_TOKEN: ${{ secrets.DOC_UPDATE_GITHUB_TOKEN }}
+    HOST_WORKDIR: /home/runner/work/rpma/rpma
+    WORKDIR:      utils/docker
+    TYPE:         normal
+
+jobs:
+  experimental:
+    name: experimental
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        CONFIG: ["N=Fedora_Rawhide_ASAN  OS=fedora  OS_VER=rawhide  CC=clang  CI_SANITS=ON  PUSH_IMAGE=0"]
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v1
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./build.sh
+
+       - name: Push the image
+         run: cd $WORKDIR && source ./set-vars.sh && ${{ matrix.CONFIG }} /bin/bash -c "if [[ -f ${CI_FILE_PUSH_IMAGE_TO_REPO} ]]; then images/push-image.sh; fi"

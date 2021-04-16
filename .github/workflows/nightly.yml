@@ -94,7 +94,8 @@ jobs:
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # Rolling/testing/experimental distributions:
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
-                 "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
+                 # the build Fedora_Rawhide with sanitizers was moved to Nightly_Experimental
+                 "N=Fedora_Rawhide_no_SANITS  OS=fedora          OS_VER=rawhide  CI_SANITS=OFF",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest",
