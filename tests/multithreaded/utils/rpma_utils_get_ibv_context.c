@@ -14,12 +14,12 @@ struct prestate {
 };
 
 /*
- * get_ibv_context__thread -- try to get an ibv_context based on a shared
- * network interface address string
+ * thread -- try to get an ibv_context based on a shared network interface
+ * address string
  */
 static void
-get_ibv_context__thread(unsigned id, void *prestate, void *state,
-		struct mtt_thread_result *tr)
+thread(unsigned id, void *prestate, void *state,
+		struct mtt_result *result)
 {
 	struct prestate *ps = (struct prestate *)prestate;
 	struct ibv_context *dev = NULL;
@@ -28,10 +28,8 @@ get_ibv_context__thread(unsigned id, void *prestate, void *state,
 	/* obtain an IBV context for a local IP address */
 	ret = rpma_utils_get_ibv_context(ps->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
 			&dev);
-	if (ret) {
-		MTT_THREAD_RPMA_ERR(tr, "rpma_utils_get_ibv_context",
-				ret);
-	}
+	if (ret)
+		MTT_RPMA_ERR(result, "rpma_utils_get_ibv_context", ret);
 }
 
 int
@@ -48,7 +46,7 @@ main(int argc, char *argv[])
 			&prestate,
 			NULL,
 			NULL,
-			get_ibv_context__thread,
+			thread,
 			NULL,
 			NULL
 	};

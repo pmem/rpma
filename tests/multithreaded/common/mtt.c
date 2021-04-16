@@ -30,8 +30,16 @@ struct mtt_thread_args {
 	unsigned id; /* a thread id */
 	void *state; /* a thread-specific state */
 	struct mtt_test *test;
-	struct mtt_thread_result ret; /* a thread return object */
+	struct mtt_result ret; /* a thread return object */
 };
+
+/*
+ * call either init or fini function (func) using the provided test object
+ * (test), the thread arguments, and the result object.
+ */
+#define MTT_CALL_INIT_FINI(test, func, thread_args, result) \
+	(test)->func((thread_args)->id, (test)->prestate, \
+		&(thread_args)->state, (result))
 
 /*
  * mtt_thread_main -- wait for the synchronization conditional and run the test
@@ -41,12 +49,12 @@ mtt_thread_main(void *arg)
 {
 	struct mtt_thread_args *ta = (struct mtt_thread_args *)arg;
 	struct mtt_test *test = ta->test;
-	struct mtt_thread_result *tr = &ta->ret;
-	struct mtt_thread_result tr_dummy = {0};
+	struct mtt_result *tr = &ta->ret;
+	struct mtt_result tr_dummy = {0};
 	int result;
 
 	if (test->thread_init_func) {
-		test->thread_init_func(ta->id, test->prestate, &ta->state, tr);
+		MTT_CALL_INIT_FINI(test, thread_init_func, ta, tr);
 		if (tr->ret) {
 			/* unblock the main thread waiting for this one */
 			++mtt_sync.threads_num_waiting;
@@ -57,7 +65,7 @@ mtt_thread_main(void *arg)
 	/* wait for all threads to start */
 	result = pthread_mutex_lock(&mtt_sync.mtx);
 	if (result) {
-		MTT_THREAD_ERR(tr, "pthread_mutex_lock", result);
+		MTT_ERR(tr, "pthread_mutex_lock", result);
 		return tr;
 	}
 
@@ -66,30 +74,31 @@ mtt_thread_main(void *arg)
 	result = pthread_cond_timedwait(&mtt_sync.cond, &mtt_sync.mtx,
 			&mtt_sync.timeout);
 	if (result) {
-		MTT_THREAD_ERR(tr, "pthread_cond_timedwait", result);
+		MTT_ERR(tr, "pthread_cond_timedwait", result);
 		(void) pthread_mutex_unlock(&mtt_sync.mtx);
 		return tr;
 	}
 	if ((result = pthread_mutex_unlock(&mtt_sync.mtx))) {
-		MTT_THREAD_ERR(tr, "pthread_mutex_unlock", result);
+		MTT_ERR(tr, "pthread_mutex_unlock", result);
 		return tr;
 	}
 
-	ta->test->thread_func(ta->id, test->prestate, ta->state, tr);
+	test->thread_func(ta->id, test->prestate, ta->state, tr);
 
 	if (test->thread_fini_func) {
 		/*
 		 * if the thread result is already non-zero provide tr_dummy
 		 * instead to avoid overwriting the result
 		 */
-		test->thread_fini_func(&ta->state, (tr->ret ? &tr_dummy : tr));
+		MTT_CALL_INIT_FINI(test, thread_fini_func, ta,
+				(tr->ret ? &tr_dummy : tr));
 	}
 
 	return tr;
 }
 
 /* print an error message for errors not related to any specific thread */
-#define MTT_ERR(fmt, ...) \
+#define MTT_INTERNAL_ERR(fmt, ...) \
 	fprintf(stderr, "error: " fmt "\n", ##__VA_ARGS__)
 
 /*
@@ -104,7 +113,7 @@ mtt_threads_sync_unblock(unsigned threads_num)
 
 	do {
 		if ((ret = pthread_mutex_lock(&mtt_sync.mtx))) {
-			MTT_ERR("pthread_mutex_lock() failed: %s",
+			MTT_INTERNAL_ERR("pthread_mutex_lock() failed: %s",
 					strerror(ret));
 			return ret;
 		}
@@ -112,7 +121,7 @@ mtt_threads_sync_unblock(unsigned threads_num)
 		if (mtt_sync.threads_num_waiting == threads_num) {
 			ret = pthread_cond_broadcast(&mtt_sync.cond);
 			if (ret) {
-				MTT_ERR(
+				MTT_INTERNAL_ERR(
 					"pthread_cond_broadcast() failed: %s",
 					strerror(ret));
 			}
@@ -126,7 +135,7 @@ mtt_threads_sync_unblock(unsigned threads_num)
 		}
 
 		if ((ret = pthread_mutex_unlock(&mtt_sync.mtx))) {
-			MTT_ERR("pthread_mutex_unlock() failed: %s",
+			MTT_INTERNAL_ERR("pthread_mutex_unlock() failed: %s",
 					strerror(ret));
 			return ret;
 		}
@@ -144,17 +153,19 @@ mtt_init()
 	int ret;
 
 	if ((ret = pthread_mutex_init(&mtt_sync.mtx, NULL))) {
-		MTT_ERR("pthread_mutex_init() failed: %s", strerror(ret));
+		MTT_INTERNAL_ERR("pthread_mutex_init() failed: %s",
+				strerror(ret));
 		return ret;
 	}
 	if ((ret = pthread_cond_init(&mtt_sync.cond, NULL))) {
-		MTT_ERR("pthread_cond_init() failed: %s", strerror(ret));
+		MTT_INTERNAL_ERR("pthread_cond_init() failed: %s",
+				strerror(ret));
 		(void) pthread_mutex_destroy(&mtt_sync.mtx);
 		return ret;
 	}
 
 	if ((ret = clock_gettime(CLOCK_REALTIME, &mtt_sync.timeout))) {
-		MTT_ERR("clock_gettime() failed: %s", strerror(errno));
+		MTT_INTERNAL_ERR("clock_gettime() failed: %s", strerror(errno));
 		(void) pthread_cond_destroy(&mtt_sync.cond);
 		(void) pthread_mutex_destroy(&mtt_sync.mtx);
 		return ret;
@@ -202,8 +213,8 @@ mtt_parse_args(int argc, char *argv[], struct mtt_args *args)
 }
 
 /* print an error message prepended with thread's number */
-#define MT_TEST_ERR(thread_num, fmt, ...) \
-	fprintf(stderr, "[thread #%d] error: " fmt "\n", \
+#define MTT_TEST_ERR(thread_num, fmt, ...) \
+	fprintf(stderr, "[thread #%d] " fmt "\n", \
 			thread_num, ##__VA_ARGS__)
 
 /*
@@ -215,7 +226,8 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	pthread_t *threads;
 	struct mtt_thread_args *threads_args;
 	struct mtt_thread_args *ta;
-	struct mtt_thread_result *tr;
+	struct mtt_result *tr;
+	struct mtt_result tr_fini = {0};
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
 
@@ -230,12 +242,12 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	/* allocate threads and their arguments */
 	threads = calloc(threads_num, sizeof(pthread_t));
 	if (threads == NULL) {
-		MTT_ERR("calloc failed");
+		MTT_INTERNAL_ERR("calloc failed");
 		return -1;
 	}
 	threads_args = calloc(threads_num, sizeof(struct mtt_thread_args));
 	if (threads_args == NULL) {
-		MTT_ERR("calloc failed");
+		MTT_INTERNAL_ERR("calloc failed");
 		result = -1;
 		goto err_free_threads;
 	}
@@ -247,10 +259,13 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		ta->test = test;
 
 		if (test->thread_seq_init_func) {
-			result = test->thread_seq_init_func(ta->id,
-					test->prestate, &ta->state);
-			if (result)
+			MTT_CALL_INIT_FINI(test, thread_seq_init_func, ta,
+					&ta->ret);
+			if (ta->ret.ret) {
+				result = ta->ret.ret;
+				MTT_TEST_ERR(ta->id, "%s", ta->ret.errmsg);
 				goto err_fini_threads_args;
+			}
 		}
 
 		++threads_num_to_fini;
@@ -269,7 +284,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		result = pthread_create(&threads[i], NULL, mtt_thread_main,
 				&threads_args[i]);
 		if (result != 0) {
-			MT_TEST_ERR(i, "pthread_create() failed: %s",
+			MTT_TEST_ERR(i, "pthread_create() failed: %s",
 					strerror(result));
 			break;
 		}
@@ -284,14 +299,14 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	for (i = 0; i < threads_num_to_join; i++) {
 		ret = pthread_join(threads[i], (void **)&tr);
 		if (ret != 0) {
-			MT_TEST_ERR(i, "pthread_join() failed: %s",
+			MTT_TEST_ERR(i, "pthread_join() failed: %s",
 					strerror(ret));
 			result = ret;
 		} else if (tr == NULL) {
-			MT_TEST_ERR(i, "returned a NULL result");
+			MTT_TEST_ERR(i, "returned a NULL result");
 			result = -1;
 		} else if (tr->ret != 0) {
-			MT_TEST_ERR(i, "%s", tr->errmsg);
+			MTT_TEST_ERR(i, "%s", tr->errmsg);
 			result = tr->ret;
 		}
 	}
@@ -303,10 +318,14 @@ err_fini_threads_args:
 	/* clean up threads' arguments */
 	if (test->thread_seq_fini_func) {
 		for (i = 0; i < threads_num_to_fini; i++) {
-			ret = test->thread_seq_fini_func(
-					&threads_args[i].state);
-			if (ret)
-				result = ret;
+			ta = &threads_args[i];
+			MTT_CALL_INIT_FINI(test, thread_seq_fini_func, ta,
+					&tr_fini);
+			if (tr_fini.ret) {
+				MTT_TEST_ERR(i, "%s", tr_fini.errmsg);
+				result = tr_fini.ret;
+				tr_fini.ret = 0;
+			}
 		}
 	}
 
