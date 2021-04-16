@@ -17,6 +17,9 @@ CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 
+# turn off ASAN only if (CI_ASAN == OFF)
+[ "$CI_ASAN" == "OFF" ] && USE_ASAN=OFF || USE_ASAN=ON
+
 if [ "$WORKDIR" == "" ]; then
 	echo "Error: WORKDIR is not set"
 	exit 1
@@ -146,7 +149,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
 	-DTESTS_SOFT_ROCE=OFF \
 	-DDEVELOPER_MODE=1 \
-	-DUSE_ASAN=ON \
+	-DUSE_ASAN=${USE_ASAN} \
 	-DUSE_UBSAN=ON
 
 make -j$(nproc)
