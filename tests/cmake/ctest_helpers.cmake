@@ -220,6 +220,7 @@ endfunction()
 
 function(add_multithreaded)
 	set(options USE_LIBIBVERBS)
+	set(options USE_SERVER)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(MULTITHREADED
@@ -245,5 +246,19 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
+	if(MULTITHREADED_USE_SERVER)
+		add_executable(${stub} ${TEST_MT_COMMON_DIR}/server.c)
+		target_include_directories(${stub} PRIVATE
+			${TEST_MT_COMMON_DIR} ${LIBRPMA_INCLUDE_DIRS})
+		set_target_properties(${stub} PROPERTIES
+			OUTPUT_NAME multithreaded-stub)
+		target_link_libraries(${stub} ${LIBRPMA_LIBRARIES} pthread)
+
+		set(cmake_script ${CMAKE_CURRENT_SOURCE_DIR}/../run_server.cmake)
+
+		add_test_common(${stub} none "0" ${cmake_script})
+		add_test_generic(NAME ${target} CASE 1 GROUP_SCRIPT TRACERS none drd helgrind)
+	else()
+		add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
+	endif()
 endfunction()
