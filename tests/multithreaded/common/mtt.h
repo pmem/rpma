@@ -62,8 +62,47 @@ mtt_base_file_name(const char *file_name)
 			func, rpma_err_2str(err)); \
 	} while (0)
 
+/*
+ * mtt_thread_init_fini_func -- a type for a function used for all
+ * initialization and cleanup steps
+ *
+ * Arguments:
+ * - id        - a thread identifier. It is constant for the whole life of
+ *               the thread including sequential initialization and sequential
+ *               cleanup.
+ * - prestate  - a pointer to test-provided data passed to all threads on all
+ *               steps. It is shared in a non-thread-safe way.
+ * - state_ptr - a pointer to thread-related data. The test can at any point
+ *               allocate and store here their specific data. Accessing it is
+ *               always thread-safe. Once the data is stored the test is also
+ *               responsible for freeing it.
+ * - result    - the result. On error the test is responsible for providing
+ *               the error details (using e.g. MTT_ERR or MTT_RPMA_ERR macros),
+ *               the test should not print anything to stdout nor stderr during
+ *               parallel steps of the test (thread_init_func, thread_func,
+ *               and thread_fini_func).
+ */
 typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
 		void **state_ptr, struct mtt_result *result);
+
+/*
+ * mtt_thread_func -- a type for the function used for the main execution step
+ *
+ * Arguments:
+ * - id       - a thread identifier. It is constant for the whole life of
+ *              the thread including sequential initialization and sequential
+ *              cleanup.
+ * - prestate - a pointer to test-provided data passed to all threads on all
+ *              steps. It is shared in a non-thread-safe way.
+ * - state    - a pointer to thread-related data. At this point, it is available
+ *              as long as it was prepared during one of the initialization
+ *              steps. Note it should not be freed during this step.
+ * - result   - the result. On error the test is responsible for providing
+ *              the error details (using e.g. MTT_ERR or MTT_RPMA_ERR macros),
+ *              the test should not print anything to stdout nor stderr during
+ *              parallel steps of the test (thread_init_func, thread_func,
+ *              and thread_fini_func).
+ */
 typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
 		struct mtt_result *result);
 
