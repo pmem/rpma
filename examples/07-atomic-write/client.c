@@ -109,19 +109,18 @@ main(int argc, char *argv[])
 			sizeof(uint64_t), RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
 
-	/* try to get a completion */
-	ret = rpma_conn_completion_get(conn, &cmpl);
-	if (ret && ret != RPMA_E_NO_COMPLETION)
-		goto err_mr_remote_delete;
+	do {
+		/* try to get a completion */
+		ret = rpma_conn_completion_get(conn, &cmpl);
+		if (ret == 0)
+			break; /* success - we got a completion */
+		if (ret != RPMA_E_NO_COMPLETION)
+			goto err_mr_remote_delete;
 
-	if (ret == RPMA_E_NO_COMPLETION) {
 		/* wait for the completion to be ready */
 		if ((ret = rpma_conn_completion_wait(conn)))
 			goto err_mr_remote_delete;
-
-		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
-			goto err_mr_remote_delete;
-	}
+	} while (1); /* no completion available */
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read failed with %d\n",
@@ -177,18 +176,18 @@ main(int argc, char *argv[])
 				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
 			break;
 
-		/* try to get a completion */
-		ret = rpma_conn_completion_get(conn, &cmpl);
-		if (ret && ret != RPMA_E_NO_COMPLETION)
-			break;
+		do {
+			/* try to get a completion */
+			ret = rpma_conn_completion_get(conn, &cmpl);
+			if (ret == 0)
+				break; /* success - we got a completion */
+			if (ret != RPMA_E_NO_COMPLETION)
+				goto err_mr_remote_delete;
 
-		if (ret == RPMA_E_NO_COMPLETION) {
 			/* wait for the completion to be ready */
 			if ((ret = rpma_conn_completion_wait(conn)))
-				break;
-			else if ((ret = rpma_conn_completion_get(conn, &cmpl)))
-				break;
-		}
+				goto err_mr_remote_delete;
+		} while (1); /* no completion available */
 
 		if (cmpl.op_context != FLUSH_ID) {
 			(void) fprintf(stderr,
