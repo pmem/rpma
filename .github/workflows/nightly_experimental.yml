@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Fedora_Rawhide_ASAN  OS=fedora  OS_VER=rawhide  CC=clang  CI_SANITS=ON  PUSH_IMAGE=0"]
+        CONFIG: ["N=Fedora_Rawhide_SANITS  OS=fedora  OS_VER=rawhide  CC=clang  CI_SANITS=ON  PUSH_IMAGE=0"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
