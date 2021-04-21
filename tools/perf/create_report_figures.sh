@@ -298,7 +298,7 @@ function lat_figures()
     layouts=('lat_avg' 'lat_pctls')
     title_prefixes=( \
         'Latency' \
-        'Latency (99.9% and 99.999% percentiles)')
+        'Latency (99.9% and 99.99% percentiles)')
     for index in "${!layouts[@]}"; do
         layout="${layouts[$index]}"
         title_prefix="${title_prefixes[$index]}"

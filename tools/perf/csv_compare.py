@@ -57,7 +57,7 @@ layouts = {
         'ncols': 2,
         'x': '<arg_axis>',
         'columns': [
-            'lat_pctl_99.9', 'lat_pctl_99.999'
+            'lat_pctl_99.9', 'lat_pctl_99.99'
         ],
         'xscale': '<arg_xscale>',
     },
