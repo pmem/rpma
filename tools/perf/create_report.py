@@ -51,10 +51,11 @@ CONTENTS_VARIABLES = { \
     'tc2_write': [ 'tc_write_lat_config', 'tc_write_bw_config' ], \
     'tc3_mix': [ 'tc_mix_lat_config', 'tc_mix_bw_config' ], \
     'report': [ \
-        'test_date', 'audience', 'disclaimer', 'authors', 'bios', \
+        'test_date', 'ref', 'audience', 'disclaimer', 'authors', 'bios', \
         'configuration_common', 'configuration_target', 'security', \
         'introduction', 'tc1_read', 'tc2_write', 'tc3_mix' ], \
     'appendices_header': [ 'release'], \
+    'appendices': [ 'ref' ] \
 }
 
 def is_a_file(parser, arg):
@@ -152,11 +153,13 @@ def main():
     # report-specifc arguments
     parser_r = subparsers.add_parser('report', help='generate the report')
     parser_r.add_argument('--test_date', required=True, help='e.g. December 2020')
+    parser_r.add_argument('--ref', required=True, help='e.g. 2021_04_21_CLX')
     parser_r.add_argument('--high_level_setup_figure', required=True, \
         help='e.g. Figure_0.png', type=lambda x: is_a_file(parser, x))
 
     # appendices-specifc arguments
     parser_a = subparsers.add_parser('appendices', help='generate the appendices')
+    parser_a.add_argument('--ref', required=True, help='e.g. 2021_04_21_CLX')
 
     # parse the command line
     args = vars(parser.parse_args())
