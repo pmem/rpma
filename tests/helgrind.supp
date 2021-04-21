@@ -5,6 +5,12 @@
 # rdma-core version and for the release build.
 #
 
+#
+# Assesment: XXX required
+#
+# Probably these suppressions do not indicate a lack of MT safety.
+#
+
 {
    Race while reading the name of time zone ("GMT").
    Helgrind:Race
@@ -28,26 +34,23 @@
    ...
 }
 
-{
-   Possible data race during write of size 4
-   Helgrind:Race
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
+#
+# Assesment: These suppressions do not indicate a lack of MT safety.
+#
+# For details please see drd.supp.
+#
 
 {
    Possible data race during write of size 4
    Helgrind:Race
    fun:ucma_init
    fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
    ...
 }
+
+#
+# Assesment: XXX required
+#
 
 {
    Possible data race during write of size 4
@@ -88,16 +91,6 @@
    fun:ucma_init
    fun:rdma_getaddrinfo
    fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:ucma_init
-   fun:rdma_create_id2
-   fun:rdma_create_id
    fun:rpma_utils_get_ibv_context
    ...
 }
