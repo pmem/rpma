@@ -220,7 +220,7 @@ endfunction()
 
 function(add_multithreaded)
 	set(options USE_LIBIBVERBS)
-	set(oneValueArgs NAME BIN)
+	set(oneValueArgs NAME BIN CASE)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(MULTITHREADED
 		"${options}"
@@ -245,5 +245,5 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
+	add_test_generic(NAME ${target} CASE ${MULTITHREADED_CASE} GROUP_SCRIPT TRACERS none drd helgrind)
 endfunction()

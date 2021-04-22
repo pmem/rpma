@@ -14,10 +14,12 @@
 struct mtt_args {
 	unsigned threads_num;
 	char *addr;
+	char *port;
 };
 
 int mtt_parse_args(int argc, char *argv[], struct mtt_args *args);
 
+#define MTT_PORTDIGITS_MAX 5
 #define MTT_ERRMSG_MAX 512
 
 /* a store for any thread error message and the return value */

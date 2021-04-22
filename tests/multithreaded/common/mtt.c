@@ -208,6 +208,8 @@ mtt_parse_args(int argc, char *argv[], struct mtt_args *args)
 
 	args->threads_num = strtoul(argv[1], NULL, 10);
 	args->addr = argv[2];
+	if (argc > 3)
+		args->port = argv[3];
 
 	return 0;
 }
