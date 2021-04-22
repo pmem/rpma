@@ -32,18 +32,7 @@ struct mtt_result {
 /*
  * mtt_base_file_name -- extract the exact file name from a file name with path
  */
-static const char *
-mtt_base_file_name(const char *file_name)
-{
-	const char *base_file_name = strrchr(file_name, '/');
-	if (!base_file_name)
-		base_file_name = file_name;
-	else
-		/* skip '/' */
-		base_file_name++;
-
-	return base_file_name;
-}
+const char *mtt_base_file_name(const char *file_name);
 
 /* on error populate the result and the error string */
 #define MTT_ERR(result, func, err) \

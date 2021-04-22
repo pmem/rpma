@@ -212,6 +212,25 @@ mtt_parse_args(int argc, char *argv[], struct mtt_args *args)
 	return 0;
 }
 
+/*
+ * mtt_base_file_name -- find the first character of the file name in the full
+ * file path by tracking the '/' characters. This allows extracting the file
+ * name from the path in-situ and using the file name without introducing any
+ * additional resources.
+ */
+const char *
+mtt_base_file_name(const char *file_name)
+{
+	const char *base_file_name = strrchr(file_name, '/');
+	if (!base_file_name)
+		base_file_name = file_name;
+	else
+		/* skip '/' */
+		base_file_name++;
+
+	return base_file_name;
+}
+
 /* print an error message prepended with thread's number */
 #define MTT_TEST_ERR(thread_num, fmt, ...) \
 	fprintf(stderr, "[thread #%d] " fmt "\n", \
