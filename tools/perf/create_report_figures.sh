@@ -296,9 +296,11 @@ function lat_figures()
     echo "- $title"
     echo_filter $filter
     layouts=('lat_avg' 'lat_pctls')
+    # XXX When 99.999 percentile will be stabilized 99.99 can be replaced with
+    # 99.999.
     title_prefixes=( \
         'Latency' \
-        'Latency (99.9% and 99.999% percentiles)')
+        'Latency (99.9% and 99.99% percentiles)')
     for index in "${!layouts[@]}"; do
         layout="${layouts[$index]}"
         title_prefix="${title_prefixes[$index]}"
