@@ -202,12 +202,15 @@ int
 mtt_parse_args(int argc, char *argv[], struct mtt_args *args)
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <threads_num> <addr>\n", argv[0]);
+		fprintf(stderr,
+		"usage: %s <threads_num> <addr> [<base_port>]\n", argv[0]);
 		return -1;
 	}
 
 	args->threads_num = strtoul(argv[1], NULL, 10);
 	args->addr = argv[2];
+	if (argc > 3)
+		args->port = strtoul(argv[3], NULL, 10);
 
 	return 0;
 }

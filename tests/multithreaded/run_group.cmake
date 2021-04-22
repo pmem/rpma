@@ -15,6 +15,12 @@ else()
 	set(SOFT_ROCE_IP $ENV{RPMA_SOFT_ROCE_IP})
 endif()
 
-execute(${TEST_EXECUTABLE} ${THREADS} ${SOFT_ROCE_IP})
+if("$ENV{RPMA_SOFT_ROCE_PORT}" STREQUAL "")
+	set(SOFT_ROCE_PORT "7204")
+else()
+	set(SOFT_ROCE_PORT $ENV{RPMA_SOFT_ROCE_PORT})
+endif()
+
+execute(${TEST_EXECUTABLE} ${THREADS} ${SOFT_ROCE_IP} ${SOFT_ROCE_PORT})
 
 finish()
