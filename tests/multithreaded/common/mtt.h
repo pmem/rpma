@@ -14,9 +14,17 @@
 struct mtt_args {
 	unsigned threads_num;
 	char *addr;
+	char *port;
 };
 
 int mtt_parse_args(int argc, char *argv[], struct mtt_args *args);
+
+#define MTT_PORT_STR_MAX 6
+#define MTT_PORT_STR _mtt_port_str
+#define MTT_PORT_INIT char _mtt_port_str[MTT_PORT_STR_MAX]
+
+#define MTT_PORT_SET(base_port, thread_id) \
+    snprintf(MTT_PORT_STR, MTT_PORT_STR_MAX, "%u", (base_port) + (thread_id))
 
 #define MTT_ERRMSG_MAX 512
 
