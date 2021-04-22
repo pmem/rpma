@@ -372,7 +372,8 @@ def main():
     # set output file size, padding and title
     fig = plt.figure(figsize=[6.4 * ncols, 4.8 * nrows], dpi=200, \
         tight_layout={'pad': 6})
-    fig.suptitle("\n".join(wrap(args.output_title, 60 * ncols)), \
+    fig.suptitle("\n".join(wrap(args.output_title, \
+        (60 if ncols < 2 else 50 * ncols))), \
         fontsize=('xx-large' if ncols > 1 else 'medium'), \
         y=(0.90 if nrows < 4 else 0.98))
 
