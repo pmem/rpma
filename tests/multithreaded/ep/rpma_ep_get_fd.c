@@ -2,7 +2,7 @@
 /* Copyright 2021, Intel Corporation */
 
 /*
- * rpma_ep_listen.c -- rpma_ep_listen multithreaded test
+ * rpma_ep_get_fd.c -- rpma_ep_get_fd multithreaded test
  */
 
 #include <stdlib.h>
@@ -15,15 +15,14 @@ struct prestate {
 	unsigned port;
 	struct ibv_context *dev;
 	struct rpma_peer *peer;
-};
-
-struct state {
 	struct rpma_ep *ep;
+	int ep_fd_exp;
 };
 
 /*
- * prestate_init -- obtain an ibv_context for a local IP address
- * and create a new peer object
+ * prestate_init -- obtain an ibv_context for a local IP address,
+ * create a new peer object, start a listening endpoint and
+ * get the endpoint's event file descriptor
  */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -37,70 +36,58 @@ prestate_init(void *prestate, struct mtt_result *tr)
 		return;
 	}
 
-	if ((ret = rpma_peer_new(pr->dev, &pr->peer)))
+	if ((ret = rpma_peer_new(pr->dev, &pr->peer))) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
-}
-
-/*
- * init -- allocate state
- */
-void
-init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct state *st = (struct state *)calloc(1, sizeof(struct state));
-	if (!st) {
-		MTT_ERR(tr, "calloc", errno);
 		return;
 	}
 
-	*state_ptr = st;
+	MTT_PORT_INIT;
+	MTT_PORT_SET(pr->port, 0);
+	if ((ret = rpma_ep_listen(pr->peer, pr->addr, MTT_PORT_STR, &pr->ep))) {
+		MTT_RPMA_ERR(tr, "rpma_ep_listen", ret);
+		(void) rpma_peer_delete(&pr->peer);
+		return;
+	}
+
+	if ((ret = rpma_ep_get_fd(pr->ep, &pr->ep_fd_exp))) {
+		MTT_RPMA_ERR(tr, "rpma_ep_get_fd", ret);
+		(void) rpma_ep_shutdown(&pr->ep);
+		(void) rpma_peer_delete(&pr->peer);
+	}
 }
 
 /*
- * thread -- start a listening endpoint
+ * thread -- get the endpoint's event file descriptor
  */
 static void
 thread(unsigned id, void *prestate, void *state,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	struct state *st = (struct state *)state;
+	int ep_fd;
 
-	MTT_PORT_INIT;
-	MTT_PORT_SET(pr->port, id);
+	int ret = rpma_ep_get_fd(pr->ep, &ep_fd);
+	if (ret) {
+		MTT_RPMA_ERR(result, "rpma_ep_get_fd", ret);
+		return;
+	}
 
-	int ret = rpma_ep_listen(pr->peer, pr->addr, MTT_PORT_STR, &st->ep);
-	if (ret)
-		MTT_RPMA_ERR(result, "rpma_ep_listen", ret);
+	if (ep_fd != pr->ep_fd_exp)
+		MTT_ERR(result,
+		"rpma_ep_get_fd returned an unexpected value", EINVAL);
 }
 
 /*
- * fini -- shutdown the endpoint and free the state
- */
-static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct state *st = (struct state *)*state_ptr;
-
-	/* shutdown the endpoint */
-	int ret = rpma_ep_shutdown(&st->ep);
-	if (ret)
-		MTT_RPMA_ERR(tr, "rpma_ep_shutdown", ret);
-
-	free(st);
-	*state_ptr = NULL;
-}
-
-/*
- * prestate_fini -- delete the peer object
+ * prestate_fini -- shutdown the endpoint and delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
+
+	if ((ret = rpma_ep_shutdown(&pr->ep)))
+		MTT_RPMA_ERR(tr, "rpma_ep_shutdown", ret);
 
 	if ((ret = rpma_peer_delete(&pr->peer)))
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
@@ -120,9 +107,9 @@ main(int argc, char *argv[])
 			&prestate,
 			prestate_init,
 			NULL,
-			init,
+			NULL,
 			thread,
-			fini,
+			NULL,
 			NULL,
 			prestate_fini
 	};
