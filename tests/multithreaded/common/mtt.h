@@ -66,6 +66,19 @@ mtt_base_file_name(const char *file_name)
 	} while (0)
 
 /*
+ * mtt_prestate_init_fini_func -- a function type used for initialization and
+ * cleanup of prestate. Run once.
+ *
+ * Arguments:
+ * - prestate  - a pointer to test-provided data. It is the only function type
+ *               in which the prestate is expected to be modified.
+ * - result    - the result. On error the test is responsible for providing
+ *               the error details (using e.g. MTT_ERR or MTT_RPMA_ERR macros).
+ */
+typedef void (*mtt_prestate_init_fini_func)(void *prestate,
+		struct mtt_result *result);
+
+/*
  * mtt_thread_init_fini_func -- a function type used for all initialization and
  * cleanup steps
  *
@@ -119,6 +132,12 @@ struct mtt_test {
 	void *prestate;
 
 	/*
+	 * a function called only once before the sequential threads
+	 * initialization and dedicated to initializing the prestate
+	 */
+	mtt_prestate_init_fini_func prestate_init_func;
+
+	/*
 	 * a function called for each of threads before spawning it (sequential)
 	 */
 	mtt_thread_init_fini_func thread_seq_init_func;
@@ -142,6 +161,12 @@ struct mtt_test {
 	 * (sequential)
 	 */
 	mtt_thread_init_fini_func thread_seq_fini_func;
+
+	/*
+	 * a function called only once after the sequential threads clean up
+	 * and dedicated to cleaning up the prestate
+	 */
+	mtt_prestate_init_fini_func prestate_fini_func;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);

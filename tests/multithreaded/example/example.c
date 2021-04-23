@@ -8,15 +8,17 @@
  * The test itself does a very simple thing of rewriting input to the output
  * using an intermediate temp variable (of course it is nonsensical).
  * The test runs as follow:
- * - example__seq_init - sequentially allocates and initializes states for all
- *                       of the threads
- * - example__init     - in parallel all of the threads allocate a temp variable
- *                       for themselves
- * - example__thread   - rewrite input to the temp variable
- * - example__fini     - in parallel rewrites temp to the output and frees
- *                       the temp variable
- * - example__seq_fini - sequentially prints the output of each of the threads
- *                       and frees their states
+ * - prestate_init - picks an arbitrary seed
+ * - seq_init      - sequentially allocates and initializes states for all of
+ *                   the threads
+ * - init          - in parallel all of the threads allocate a temp variable for
+ *                   themselves
+ * - thread        - rewrite input to the temp variable
+ * - fini          - in parallel rewrites temp to the output and frees the temp
+ *                   variable
+ * - seq_fini      - sequentially prints the output of each of the threads and
+ *                   frees their states
+ * - prestate_fini - zero out the seed
  */
 
 #include <errno.h>
@@ -52,6 +54,16 @@ struct state {
 	uint64_t *temp;
 	uint64_t output;
 };
+
+/*
+ * prestate_init -- a called once for all threads prestate initialization
+ */
+static void
+prestate_init(void *prestate, struct mtt_result *tr)
+{
+	struct prestate *pr = (struct prestate *)prestate;
+	pr->seed = 5; /* an arbitrary seed */
+}
 
 /*
  * seq_init -- a sequential step of initialization
@@ -137,6 +149,16 @@ seq_fini(unsigned id, void *prestate, void **state_ptr,
 	*state_ptr = NULL;
 }
 
+/*
+ * prestate_fini -- a called once for all threads prestate cleanup
+ */
+static void
+prestate_fini(void *prestate, struct mtt_result *tr)
+{
+	struct prestate *pr = (struct prestate *)prestate;
+	pr->seed = 0; /* zero out the seed */
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -145,15 +167,17 @@ main(int argc, char *argv[])
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
 
-	struct prestate prestate = {5}; /* an arbitrary seed */
+	struct prestate prestate = {0};
 
 	struct mtt_test test = {
 			&prestate,
+			prestate_init,
 			seq_init,
 			init,
 			thread,
 			fini,
-			seq_fini
+			seq_fini,
+			prestate_fini
 	};
 
 	return mtt_run(&test, args.threads_num);
