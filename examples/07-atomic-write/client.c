@@ -177,18 +177,29 @@ main(int argc, char *argv[])
 				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
 			break;
 
-		/* try to get a completion */
-		ret = rpma_conn_completion_get(conn, &cmpl);
-		if (ret && ret != RPMA_E_NO_COMPLETION)
-			break;
+		/*
+		 * Since completions are collected in the for-loop it may happen
+		 * that the completion is collected (rpma_conn_completion_get())
+		 * before the event indicating its arrival occurs
+		 * (rpma_conn_completion_wait()). So, when the next iteration
+		 * comes, the next completion may not be ready yet
+		 * and despite rpma_conn_completion_wait() indicates
+		 * the next completion is ready, in fact it is not,
+		 * because this event is related to the completion
+		 * that had already been consumed in the previous iteration.
+		 */
+		do {
+			/* try to get a completion */
+			ret = rpma_conn_completion_get(conn, &cmpl);
+			if (ret == 0)
+				break; /* success - we got a completion */
+			if (ret != RPMA_E_NO_COMPLETION)
+				goto err_mr_remote_delete;
 
-		if (ret == RPMA_E_NO_COMPLETION) {
-			/* wait for the completion to be ready */
 			if ((ret = rpma_conn_completion_wait(conn)))
-				break;
-			else if ((ret = rpma_conn_completion_get(conn, &cmpl)))
-				break;
-		}
+				goto err_mr_remote_delete;
+		/* loop until rpma_conn_completion_get() succeeds */
+		} while (1);
 
 		if (cmpl.op_context != FLUSH_ID) {
 			(void) fprintf(stderr,
