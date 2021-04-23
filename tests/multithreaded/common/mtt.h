@@ -66,6 +66,19 @@ mtt_base_file_name(const char *file_name)
 	} while (0)
 
 /*
+ * mtt_prestate_init_fini_func -- a function type used for initialization and
+ * cleanup of prestate. Run once.
+ *
+ * Arguments:
+ * - prestate  - a pointer to the test-provided data. It is the only function
+ *               type in which the prestate is expected to be modified.
+ * - result    - the result. On error the test is responsible for providing
+ *               the error details (using e.g. MTT_ERR or MTT_RPMA_ERR macros).
+ */
+typedef void (*mtt_prestate_init_fini_func)(void *prestate,
+		struct mtt_result *result);
+
+/*
  * mtt_thread_init_fini_func -- a function type used for all initialization and
  * cleanup steps
  *
@@ -73,8 +86,8 @@ mtt_base_file_name(const char *file_name)
  * - id        - a thread identifier. It is constant for the whole life of
  *               the thread including sequential initialization and sequential
  *               cleanup.
- * - prestate  - a pointer to test-provided data passed to all threads in all
- *               steps. It is shared in a non-thread-safe way.
+ * - prestate  - a pointer to the test-provided data passed to all threads in
+ *               all steps. It is shared in a non-thread-safe way.
  * - state_ptr - a pointer to thread-related data. The test can allocate and
  *               store their specific data here at any point. Accessing it is
  *               always thread-safe. Once the data is stored the test is also
@@ -95,7 +108,7 @@ typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
  * - id       - a thread identifier. It is constant for the whole life of
  *              the thread including sequential initialization and sequential
  *              cleanup.
- * - prestate - a pointer to test-provided data passed to all threads in all
+ * - prestate - a pointer to the test-provided data passed to all threads in all
  *              steps. It is shared in a non-thread-safe way.
  * - state    - a pointer to thread-related data. At this point, it is available
  *              as long as it was prepared during one of the initialization
@@ -117,6 +130,12 @@ struct mtt_test {
 	 * (both sequential and parallel) and also on thread_func
 	 */
 	void *prestate;
+
+	/*
+	 * A function called only once before the sequential initialization of
+	 * all threads. It is dedicated to initializing the prestate.
+	 */
+	mtt_prestate_init_fini_func prestate_init_func;
 
 	/*
 	 * a function called for each of threads before spawning it (sequential)
@@ -142,6 +161,12 @@ struct mtt_test {
 	 * (sequential)
 	 */
 	mtt_thread_init_fini_func thread_seq_fini_func;
+
+	/*
+	 * A function called only once after the sequential clean up of all
+	 * threads. It is dedicated to cleaning up the prestate.
+	 */
+	mtt_prestate_init_fini_func prestate_fini_func;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);

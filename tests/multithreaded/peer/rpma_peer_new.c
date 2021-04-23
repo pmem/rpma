@@ -16,12 +16,26 @@
 #include "mtt.h"
 
 struct prestate {
+	char *addr;
 	struct ibv_context *dev;
 };
 
 struct state {
 	struct rpma_peer *peer;
 };
+
+/*
+ * prestate_init -- obtain an ibv_context for a remote IP address
+ */
+static void
+prestate_init(void *prestate, struct mtt_result *tr)
+{
+	struct prestate *pr = (struct prestate *)prestate;
+	int ret = rpma_utils_get_ibv_context(pr->addr,
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->dev);
+	if (ret)
+		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
+}
 
 /*
  * init -- allocate state
@@ -82,21 +96,16 @@ main(int argc, char *argv[])
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
 
-	/* obtain an IBV context for a remote IP address */
-	struct prestate prestate;
-	int ret = rpma_utils_get_ibv_context(args.addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &prestate.dev);
-	if (ret) {
-		fprintf(stderr, "rpma_utils_get_ibv_context() failed\n");
-		return -1;
-	}
+	struct prestate prestate = {args.addr, NULL};
 
 	struct mtt_test test = {
 			&prestate,
+			prestate_init,
 			init,
 			NULL,
 			thread,
 			fini,
+			NULL,
 			NULL
 	};
 

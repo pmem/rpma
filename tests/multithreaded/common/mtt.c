@@ -227,7 +227,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	struct mtt_thread_args *threads_args;
 	struct mtt_thread_args *ta;
 	struct mtt_result *tr;
-	struct mtt_result tr_fini = {0};
+	struct mtt_result tr_local = {0};
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
 
@@ -239,11 +239,21 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
+	/* initialize the prestate */
+	if (test->prestate_init_func) {
+		test->prestate_init_func(test->prestate, &tr_local);
+		if (tr_local.ret) {
+			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
+			return tr_local.ret;
+		}
+	}
+
 	/* allocate threads and their arguments */
 	threads = calloc(threads_num, sizeof(pthread_t));
 	if (threads == NULL) {
 		MTT_INTERNAL_ERR("calloc failed");
-		return -1;
+		result = -1;
+		goto err_cleanup_prestate;
 	}
 	threads_args = calloc(threads_num, sizeof(struct mtt_thread_args));
 	if (threads_args == NULL) {
@@ -320,11 +330,11 @@ err_fini_threads_args:
 		for (i = 0; i < threads_num_to_fini; i++) {
 			ta = &threads_args[i];
 			MTT_CALL_INIT_FINI(test, thread_seq_fini_func, ta,
-					&tr_fini);
-			if (tr_fini.ret) {
-				MTT_TEST_ERR(i, "%s", tr_fini.errmsg);
-				result = tr_fini.ret;
-				tr_fini.ret = 0;
+					&tr_local);
+			if (tr_local.ret) {
+				MTT_TEST_ERR(i, "%s", tr_local.errmsg);
+				result = tr_local.ret;
+				tr_local.ret = 0;
 			}
 		}
 	}
@@ -333,6 +343,16 @@ err_fini_threads_args:
 
 err_free_threads:
 	free(threads);
+
+err_cleanup_prestate:
+	/* clean up the prestate */
+	if (test->prestate_fini_func) {
+		test->prestate_fini_func(test->prestate, &tr_local);
+		if (tr_local.ret) {
+			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
+			return tr_local.ret;
+		}
+	}
 
 	return result;
 }
