@@ -44,7 +44,6 @@
    Possible data race during write of size 4
    Helgrind:Race
    fun:ucma_init
-   fun:ucma_init
    ...
 }
 
