@@ -46,7 +46,9 @@ main(int argc, char *argv[])
 			&prestate,
 			NULL,
 			NULL,
+			NULL,
 			thread,
+			NULL,
 			NULL,
 			NULL
 	};
