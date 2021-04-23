@@ -5,12 +5,7 @@
  * rpma_peer_new.c -- rpma_peer_new multithreaded test
  */
 
-#include <errno.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <librpma.h>
 
 #include "mtt.h"
