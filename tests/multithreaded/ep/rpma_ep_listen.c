@@ -127,6 +127,7 @@ main(int argc, char *argv[])
 			NULL,
 			init,
 			thread,
+			NULL,
 			fini,
 			NULL,
 			prestate_fini

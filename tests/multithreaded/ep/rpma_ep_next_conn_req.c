@@ -2,13 +2,16 @@
 /* Copyright 2021, Intel Corporation */
 
 /*
- * rpma_ep_get_fd.c -- rpma_ep_get_fd multithreaded test
+ * rpma_ep_next_conn_req.c -- rpma_ep_next_conn_req multithreaded test
  */
 
 #include <stdlib.h>
+#include <pthread.h>
 #include <librpma.h>
 
 #include "mtt.h"
+
+#define TIMEOUT_USECONDS 100000
 
 struct prestate {
 	char *addr;
@@ -16,17 +19,15 @@ struct prestate {
 	struct ibv_context *dev;
 	struct rpma_peer *peer;
 	struct rpma_ep *ep;
-	int exp_ep_fd;
 };
 
 struct state {
-	int ep_fd;
+	struct rpma_conn_req *req;
 };
 
 /*
  * prestate_init -- obtain an ibv_context for a remote IP address,
- * create a new peer object, start a listening endpoint and
- * get the endpoint's event file descriptor
+ * create a new peer object and start a listening endpoint
  */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -45,9 +46,6 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	MTT_PORT_SET(pr->port, 0);
 	if ((ret = rpma_ep_listen(pr->peer, pr->addr, MTT_PORT_STR, &pr->ep)))
 		MTT_RPMA_ERR(tr, "rpma_ep_listen", ret);
-
-	if ((ret = rpma_ep_get_fd(pr->ep, &pr->exp_ep_fd)))
-		MTT_RPMA_ERR(tr, "rpma_ep_get_fd", ret);
 }
 
 /*
@@ -57,6 +55,7 @@ void
 init(unsigned id, void *prestate, void **state_ptr,
 		struct mtt_result *tr)
 {
+	struct prestate *pr = (struct prestate *)prestate;
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
 	if (!st) {
 		MTT_ERR(tr, "calloc", errno);
@@ -67,7 +66,7 @@ init(unsigned id, void *prestate, void **state_ptr,
 }
 
 /*
- * thread -- get the endpoint's event file descriptor
+ * thread -- start a listening endpoint
  */
 static void
 thread(unsigned id, void *prestate, void *state,
@@ -76,13 +75,16 @@ thread(unsigned id, void *prestate, void *state,
 	struct prestate *pr = (struct prestate *)prestate;
 	struct state *st = (struct state *)state;
 
-	int ret = rpma_ep_get_fd(pr->ep, &st->ep_fd);
-	if (ret)
-		MTT_RPMA_ERR(result, "rpma_ep_get_fd", ret);
+	/* free the state when thread is cancelled */
+	pthread_cleanup_push((void *)free, (void *)st);
 
-	if (st->ep_fd != pr->exp_ep_fd)
-		MTT_RPMA_ERR(result,
-		"rpma_ep_get_fd returned an unexpected value", st->ep_fd);
+	int ret = rpma_ep_next_conn_req(pr->ep, NULL, &st->req);
+	if (ret) {
+		MTT_RPMA_ERR(result, "rpma_ep_next_conn_req", ret);
+		return;
+	}
+
+	pthread_cleanup_pop(0);
 }
 
 /*
@@ -99,7 +101,7 @@ fini(unsigned id, void *prestate, void **state_ptr,
 }
 
 /*
- * prestate_fini -- shutdown the endpoint and delete the peer object
+ * prestate_fini -- delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
@@ -107,6 +109,7 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
+	/* shutdown the endpoint */
 	if ((ret = rpma_ep_shutdown(&pr->ep)))
 		MTT_RPMA_ERR(tr, "rpma_ep_shutdown", ret);
 
@@ -122,7 +125,10 @@ main(int argc, char *argv[])
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
 
-	struct prestate prestate = {args.addr, args.port, NULL, NULL};
+	struct prestate prestate = {args.addr, args.port, NULL, NULL, NULL};
+
+	struct mtt_thread_cancel trcancel;
+	trcancel.useconds = TIMEOUT_USECONDS;
 
 	struct mtt_test test = {
 			&prestate,
@@ -130,7 +136,7 @@ main(int argc, char *argv[])
 			NULL,
 			init,
 			thread,
-			NULL,
+			&trcancel,
 			fini,
 			NULL,
 			prestate_fini

@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <time.h>
 
 #include <librpma.h>
 
@@ -327,13 +328,26 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	if ((ret = mtt_threads_sync_unblock(threads_num_to_join)))
 			result = ret;
 
+	if (test->thread_cancel)
+		usleep(test->thread_cancel->useconds);
+
 	/* wait for threads to join */
 	for (i = 0; i < threads_num_to_join; i++) {
-		ret = pthread_join(threads[i], (void **)&tr);
+		if (test->thread_cancel) {
+			ret = pthread_tryjoin_np(threads[i], (void **)&tr);
+			if (ret == EBUSY) {
+				pthread_cancel(threads[i]);
+				ret = pthread_join(threads[i], (void **)&tr);
+			}
+		} else {
+			ret = pthread_join(threads[i], (void **)&tr);
+		}
 		if (ret != 0) {
 			MTT_TEST_ERR(i, "pthread_join() failed: %s",
 					strerror(ret));
 			result = ret;
+		} else if (tr == PTHREAD_CANCELED) {
+			/* do nothing */
 		} else if (tr == NULL) {
 			MTT_TEST_ERR(i, "returned a NULL result");
 			result = -1;

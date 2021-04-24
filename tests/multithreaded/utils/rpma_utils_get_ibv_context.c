@@ -50,6 +50,7 @@ main(int argc, char *argv[])
 			thread,
 			NULL,
 			NULL,
+			NULL,
 			NULL
 	};
 

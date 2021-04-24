@@ -104,6 +104,7 @@ main(int argc, char *argv[])
 			init,
 			NULL,
 			thread,
+			NULL,
 			fini,
 			NULL,
 			NULL

@@ -175,6 +175,7 @@ main(int argc, char *argv[])
 			seq_init,
 			init,
 			thread,
+			NULL,
 			fini,
 			seq_fini,
 			prestate_fini

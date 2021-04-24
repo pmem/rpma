@@ -121,6 +121,10 @@ typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
 typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
 		struct mtt_result *result);
 
+struct mtt_thread_cancel {
+	int useconds;
+};
+
 struct mtt_test {
 	/*
 	 * a pointer to test-provided data passed on all initialization steps
@@ -149,6 +153,11 @@ struct mtt_test {
 	 * a thread main function (parallel and after synchronizing all threads)
 	 */
 	mtt_thread_func thread_func;
+
+	/*
+	 * enable main thread to cancel child threads in blocking mode test
+	 */
+	struct mtt_thread_cancel *thread_cancel;
 
 	/* a function called at the end of each thread (parallel) */
 	mtt_thread_init_fini_func thread_fini_func;
