@@ -52,7 +52,9 @@ function report_apvgp
 	# -x is used as cheap logging
 	set -x
 	for mode in lat bw-bs bw-th; do
-		./ib_read.sh $SERVER_IP $mode
+		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "0" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
+			./ib_read.sh $SERVER_IP $mode
+		fi
 		if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
 			for op in read randread; do
 				REMOTE_JOB_MEM_PATH=$DRAM ./rpma_fio_bench.sh $SERVER_IP apm $op $mode

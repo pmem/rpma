@@ -12,58 +12,22 @@
 # the resutls.
 #
 
+source $(dirname $0)/bench_common.sh
+
 HEADER_LAT="#bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]"
 HEADER_BW="#threads #bytes     #iterations    BW_peak[Gb/sec]    BW_average[Gb/sec]   MsgRate[Mpps]"
 
-TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
-
 echo "This tool is EXPERIMENTAL"
 
-function usage()
-{
-	echo "Error: $1"
-	echo
-	echo "usage: $0 <server_ip> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat>"
-	echo
-	echo "export JOB_NUMA=0"
-	echo "export AUX_PARAMS='-d mlx5_0 -R'"
-	echo "export IB_PATH=/custom/ib tool/path/"
-	echo
-	echo "export REMOTE_USER=user"
-	echo "export REMOTE_PASS=pass"
-	echo "export REMOTE_JOB_NUMA=0"
-	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
-	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
-	echo
-	echo "export REMOTE_ANOTHER_NUMA=1"
-	echo "export REMOTE_RESULTS_DIR=/tmp/"
-	echo "export EVENT_LIST=/path/to/edp/events/list"
-	echo "export REMOTE_CMD_PRE='source /opt/intel/sep/sep_vars.sh; numactl -N \${REMOTE_ANOTHER_NUMA} emon -i \${EVENT_LIST} > \${REMOTE_RESULTS_DIR}\${RUN_NAME}_emon.dat'"
-	echo "export REMOTE_CMD_POST='sleep 10; source /opt/intel/sep/sep_vars.sh; emon -stop'"
-	echo
-	echo "Note:"
-	echo "The 'REMOTE_CMD_PRE' and 'REMOTE_CMD_POST' environment variables"
-	echo "can use the 'RUN_NAME' environment variable internally,"
-	echo "which contains a unique name of each run."
-	echo
-	echo "Debug:"
-	echo "export SHORT_RUNTIME=1 (adequate for functional verification only)"
-	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
-	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
-	exit 1
-}
+if [ "$1" == "--env" ]; then
+	show_environment
+fi
 
 if [ "$#" -lt 2 ]; then
-	usage "Too few arguments"
-elif [ -z "$JOB_NUMA" ]; then
-	usage "JOB_NUMA not set"
-elif [ -z "$REMOTE_USER" ]; then
-	usage "REMOTE_USER not set"
-elif [ -z "$REMOTE_PASS" ]; then
-	usage "REMOTE_PASS not set"
-elif [ -z "$REMOTE_JOB_NUMA" ]; then
-	usage "REMOTE_JOB_NUMA not set"
+	ib_usage "Too few arguments"
 fi
+
+check_env
 
 function verify_block_size()
 {
@@ -162,7 +126,7 @@ function benchmark_one() {
 		verify_block_size
 		;;
 	*)
-		usage "Wrong mode: $MODE"
+		ib_usage "Wrong mode: $MODE"
 		;;
 	esac
 
@@ -180,6 +144,13 @@ function benchmark_one() {
 		echo "Log commands [client]: $CLIENT_DUMP"
 	fi
 	echo
+
+	# By default, Direct Write to PMem is impossible due to DDIO=on
+	# which forces writing to cache instead of PMem directly.
+	# This test requires restoring the default settings.
+	REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
+
+	set_ddio
 
 	if [ "$DO_RUN" == "1" ]; then
 		rm -f $LOG_ERR
@@ -244,22 +215,14 @@ function benchmark_one() {
 			IT_OPT="--iters $IT"
 		fi
 
-		export RUN_NAME=${NAME}_${ITER}
-		echo "Name of this run: ${RUN_NAME}"
-
-		REMOTE_CMD_PRE_SUBST=$(echo "$REMOTE_CMD_PRE" | envsubst)
-		REMOTE_CMD_POST_SUBST=$(echo "$REMOTE_CMD_POST" | envsubst)
+		prepare_RUN_NAME_and_CMP__SUBST
 
 		# run the server
 		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
 			$DP_OPT $REMOTE_AUX_PARAMS"
 
 		if [ "$DO_RUN" == "1" ]; then
-			if [ "x$REMOTE_CMD_PRE_SUBST" != "x" ]; then
-				echo "$REMOTE_CMD_PRE_SUBST"
-				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE_SUBST" 2>>$LOG_ERR &
-			fi
+			remote_command --pre
 
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$CMD >> $LOG_ERR" 2>>$LOG_ERR &
@@ -276,11 +239,7 @@ function benchmark_one() {
 			$CMD 2>>$LOG_ERR | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
 				| sed 's/[ ]*$//' | sed -r 's/[[:blank:]]+/,/g' >> $OUTPUT
 
-			if [ "x$REMOTE_CMD_POST_SUBST" != "x" ]; then
-				echo "$REMOTE_CMD_POST_SUBST"
-				sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-					$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST_SUBST" 2>>$LOG_ERR
-			fi
+			remote_command --post
 
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			echo "$CMD" >> $CLIENT_DUMP
@@ -314,7 +273,7 @@ all)
 	MODES="bw-bs bw-dp-exp bw-dp-lin bw-th lat"
 	;;
 *)
-	usage "Wrong mode: $MODES"
+	ib_usage "Wrong mode: $MODES"
 	;;
 esac
 
