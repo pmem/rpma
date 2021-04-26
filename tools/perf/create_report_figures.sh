@@ -698,6 +698,7 @@ TOOLS_PATH=$(pwd)
 
 # prepare a report directory
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
+DATA_PATH=$(realpath $DATA_PATH)
 STAMP=${STAMP:-$TIMESTAMP}
 REPORT_DIR=report_$STAMP
 mkdir -p $REPORT_DIR
