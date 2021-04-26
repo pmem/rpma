@@ -26,6 +26,7 @@ column_to_label = {
     'bs':       'block size [B]',
     'lat':      'latency [usec]',
     'bw':       'bandwidth [Gb/s]',
+    'cpuload':  'CPU load [%]'
 }
 
 column_to_description = {
