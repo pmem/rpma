@@ -30,7 +30,7 @@ store__data_NULL(void **edata_ptr)
 	int ret = rpma_private_data_store(*edata_ptr, &pdata);
 
 	/* verify the result */
-	assert_int_equal(ret, SUCCESS);
+	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(pdata.ptr, NULL);
 	assert_int_equal(pdata.len, 0);
 }
@@ -50,7 +50,7 @@ store__data_len_0(void **edata_ptr)
 	int ret = rpma_private_data_store(*edata_ptr, &pdata);
 
 	/* verify the result */
-	assert_int_equal(ret, SUCCESS);
+	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(pdata.ptr, NULL);
 	assert_int_equal(pdata.len, 0);
 }
@@ -71,7 +71,7 @@ store__data_NULL_data_len_0(void **edata_ptr)
 	int ret = rpma_private_data_store(*edata_ptr, &pdata);
 
 	/* verify the result */
-	assert_int_equal(ret, SUCCESS);
+	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(pdata.ptr, NULL);
 	assert_int_equal(pdata.len, 0);
 }
