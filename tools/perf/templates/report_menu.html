@@ -21,3 +21,10 @@
     <li class="pure-menu-item"><a href="#mix-lat" class="pure-menu-link">Latency</a></li>
     <li class="pure-menu-item"><a href="#mix-bw" class="pure-menu-link">Bandwidth</a></li>
 </ul>
+{% if cpu is true %}
+<a class="pure-menu-heading" href="#cpu">TC4: CPU load impact</a>
+<ul class="pure-menu-list">
+    <li class="pure-menu-item"><a href="#cpu-lat" class="pure-menu-link">Latency</a></li>
+    <li class="pure-menu-item"><a href="#cpu-bw" class="pure-menu-link">Bandwidth</a></li>
+</ul>
+{% endif %}
