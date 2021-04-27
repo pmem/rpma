@@ -151,6 +151,15 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 #endif
 }
 
+/*
+ * rpma_peer_get -- get IBV_TRANSPORT from the ibv_context
+ */
+enum ibv_transport_type
+rpma_peer_get_transport_type(struct rpma_peer *peer)
+{
+	return peer->pd->context->device->transport_type;
+}
+
 /* public librpma API */
 
 /*

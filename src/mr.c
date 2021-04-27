@@ -66,8 +66,9 @@ struct rpma_mr_remote {
  * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
  */
 static int
-usage_to_access(int usage)
+usage_to_access(struct rpma_peer *peer, int usage)
 {
+	enum ibv_transport_type type = rpma_peer_get_transport_type(peer);
 	int access = 0;
 
 	if (usage & (RPMA_MR_USAGE_READ_SRC |\
@@ -75,8 +76,13 @@ usage_to_access(int usage)
 			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
 		access |= IBV_ACCESS_REMOTE_READ;
 
-	if (usage & RPMA_MR_USAGE_READ_DST)
+	if (usage & RPMA_MR_USAGE_READ_DST) {
 		access |= IBV_ACCESS_LOCAL_WRITE;
+
+		/* XXX */
+		if (type == IBV_TRANSPORT_IWARP)
+			access |= IBV_ACCESS_REMOTE_WRITE;
+	}
 
 	if (usage & RPMA_MR_USAGE_WRITE_SRC)
 		access |= IBV_ACCESS_LOCAL_WRITE;
@@ -337,7 +343,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 
 	struct ibv_mr *ibv_mr;
 	int ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size,
-			usage_to_access(usage));
+			usage_to_access(peer, usage));
 	if (ret) {
 		free(mr);
 		return ret;

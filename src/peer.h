@@ -35,4 +35,9 @@ int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 int rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int access);
 
+/*
+ * XXX
+ */
+enum ibv_transport_type rpma_peer_get_transport_type(struct rpma_peer *peer);
+
 #endif /* LIBRPMA_PEER_H */
