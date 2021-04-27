@@ -68,7 +68,12 @@ def populate_contents(contents, parts_html, parts_md, args):
     # load the HTML content parts
     for name in parts_html:
         tmpl = args['env'].get_template(f'{name}.html')
-        contents[name] = tmpl.render()
+        tmpl_vars = {}
+        if name in CONTENTS_VARIABLES.keys():
+            var_names = CONTENTS_VARIABLES[name]
+            # get variable values from args
+            tmpl_vars = {k: args.get(k, 'no data') for k in var_names}
+        contents[name] = tmpl.render(tmpl_vars)
 
     # convert content parts from markdown to HTML
     for name in parts_md:
@@ -88,7 +93,9 @@ def populate_contents(contents, parts_html, parts_md, args):
 
     # replace the variables with appropriate values
     for name, var_names in CONTENTS_VARIABLES.items():
-        if name not in contents.keys():
+        # if name is not in contents there is nothing to render
+        # if name is in parts_html it was already rendered
+        if name not in contents.keys() or name in parts_html:
             continue
         tmpl = Template(contents[name])
         # get variable values from either args or contents
