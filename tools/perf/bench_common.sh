@@ -93,6 +93,7 @@ function common_usage()
 	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
 	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
 	echo "export BUSY_WAIT_POLLING=0/1"
+	echo "export CPU_LOAD_RANGE=00_100/75_100"
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
 	echo "export REMOTE_RESULTS_DIR=/tmp/"
