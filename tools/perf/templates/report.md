@@ -32,4 +32,10 @@
 
 {{tc3_mix}}
 
+{% if cpu is true %}
+<h2 id="cpu">Test Case 4: CPU load impact</h2>
+
+{{tc4_cpu}}
+{% endif %}
+
 **Ref**: {{ref}}
