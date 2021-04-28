@@ -5,5 +5,6 @@
 
 add_subdirectory(ep)
 add_subdirectory(example)
+add_subdirectory(mr)
 add_subdirectory(peer)
 add_subdirectory(utils)
