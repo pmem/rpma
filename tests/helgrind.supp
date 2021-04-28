@@ -172,6 +172,12 @@
    ...
 }
 
+#
+# Assesment: XXX required
+#
+# Probably these suppressions do not indicate a lack of MT safety.
+#
+
 {
    Possible data race during read of size 8
    Helgrind:Race
@@ -180,5 +186,25 @@
    fun:ucma_free_id
    fun:rdma_destroy_id
    fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Possible data race during read of size 4
+   Helgrind:Race
+   fun:ibv_dontfork_range
+   fun:ibv_reg_mr_iova*
+   fun:__ibv_reg_mr
+   fun:rpma_peer_mr_reg
+   fun:rpma_mr_reg
+   ...
+}
+
+{
+   Possible data race during read of size 4
+   Helgrind:Race
+   fun:ibv_dofork_range
+   fun:ibv_dereg_mr*
+   fun:rpma_mr_dereg
    ...
 }

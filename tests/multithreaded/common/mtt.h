@@ -42,6 +42,8 @@ struct mtt_result {
  */
 const char *mtt_base_file_name(const char *file_name);
 
+void *mtt_malloc_aligned(size_t size);
+
 /* on error populate the result and the error string */
 #define MTT_ERR(result, func, err) \
 	do { \
