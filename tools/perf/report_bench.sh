@@ -13,7 +13,7 @@ function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "Usage: $0 <server_ip> <apvgp|asvah>"
+	echo "Usage: $0 <server_ip> <apm_gpspm|apm_gpspm_cpu|aof>"
 	echo
 	echo "Requirements:"
 	echo "export REMOTE_SUDO_NOPASSWD=0/1"
@@ -46,7 +46,7 @@ else
 	echo "Run all workloads possible when Direct Write to PMem = $REMOTE_DIRECT_WRITE_TO_PMEM"
 fi
 
-function report_apvgp
+function report_apm_gpspm
 {
 	echo "READ LAT/BW"
 	# -x is used as cheap logging
@@ -98,7 +98,10 @@ function report_apvgp
 		fi
 	done
 	set +x
+}
 
+function report_apm_gpspm_cpu
+{
 	echo "CPU-load tests"
 	# -x is used as cheap logging
 	set -x
@@ -128,7 +131,7 @@ function report_apvgp
 	set +x
 }
 
-function report_asvah
+function report_aof
 {
 	echo "AOF LAT/BW"
 	# -x is used as cheap logging
@@ -151,7 +154,7 @@ function report_asvah
 }
 
 case "$2" in
-apvgp|asvah)
+apm_gpspm|apm_gpspm_cpu|aof)
 	report_${2}
 	;;
 *)
