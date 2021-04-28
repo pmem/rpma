@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include <librpma.h>
 
@@ -232,6 +233,29 @@ mtt_base_file_name(const char *file_name)
 		base_file_name++;
 
 	return base_file_name;
+}
+
+/*
+ * mtt_malloc_aligned -- allocate an aligned chunk of memory
+ */
+void *
+mtt_malloc_aligned(size_t size, struct mtt_result *tr)
+{
+	long pagesize = sysconf(_SC_PAGESIZE);
+	if (pagesize < 0) {
+		MTT_ERR(tr, "sysconf", errno);
+		return NULL;
+	}
+
+	/* allocate a page size aligned local memory pool */
+	void *mem;
+	int ret = posix_memalign(&mem, (size_t)pagesize, size);
+	if (ret) {
+		MTT_ERR(tr, "posix_memalign", errno);
+		return NULL;
+	}
+
+	return mem;
 }
 
 /* print an error message prepended with thread's number */
