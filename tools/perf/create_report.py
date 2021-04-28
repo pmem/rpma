@@ -27,7 +27,8 @@ REPORT_CONTENTS_MD = [ \
     'introduction', \
     'tc_read_lat_config', 'tc_read_bw_config', 'tc1_read', \
     'tc_write_lat_config', 'tc_write_bw_config', 'tc2_write', \
-    'tc_mix_lat_config', 'tc_mix_bw_config', 'tc3_mix' ]
+    'tc_mix_lat_config', 'tc_mix_bw_config', 'tc3_mix', \
+    'tc_cpu_lat_config', 'tc_cpu_bw_config', 'tc4_cpu' ]
 
 # all *.html files used for the report
 REPORT_CONTENTS_HTML = [
@@ -50,12 +51,20 @@ CONTENTS_VARIABLES = { \
     'tc1_read': [ 'tc_read_lat_config', 'tc_read_bw_config' ], \
     'tc2_write': [ 'tc_write_lat_config', 'tc_write_bw_config' ], \
     'tc3_mix': [ 'tc_mix_lat_config', 'tc_mix_bw_config' ], \
+    'tc4_cpu': [ 'tc_cpu_lat_config', 'tc_cpu_bw_config' ], \
+    'report_menu': [ 'cpu' ], \
     'report': [ \
         'test_date', 'ref', 'audience', 'disclaimer', 'authors', 'bios', \
         'configuration_common', 'configuration_target', 'security', \
-        'introduction', 'tc1_read', 'tc2_write', 'tc3_mix' ], \
+        'introduction', 'tc1_read', 'tc2_write', 'tc3_mix', \
+        'cpu', 'tc4_cpu' ], \
     'appendices_header': [ 'release'], \
     'appendices': [ 'ref' ] \
+}
+
+# defaults
+VARIABLES_DEFAULTS = {
+    'cpu': False
 }
 
 def is_a_file(parser, arg):
@@ -71,8 +80,9 @@ def populate_contents(contents, parts_html, parts_md, args):
         tmpl_vars = {}
         if name in CONTENTS_VARIABLES.keys():
             var_names = CONTENTS_VARIABLES[name]
-            # get variable values from args
-            tmpl_vars = {k: args.get(k, 'no data') for k in var_names}
+            # get variable values from either args or defaults
+            tmpl_vars = {k: args.get(k, VARIABLES_DEFAULTS.get(k, 'no data')) \
+                for k in var_names}
         contents[name] = tmpl.render(tmpl_vars)
 
     # convert content parts from markdown to HTML
@@ -98,8 +108,9 @@ def populate_contents(contents, parts_html, parts_md, args):
         if name not in contents.keys() or name in parts_html:
             continue
         tmpl = Template(contents[name])
-        # get variable values from either args or contents
-        tmpl_vars = {k: args.get(k, contents.get(k, 'no data')) for k in var_names}
+        # get variable values from either args or contents or defaults
+        tmpl_vars = {k: args.get(k, contents.get(k, \
+            VARIABLES_DEFAULTS.get(k, 'no data'))) for k in var_names}
         contents[name] = tmpl.render(tmpl_vars)
 
     return contents
@@ -163,6 +174,7 @@ def main():
     parser_r.add_argument('--ref', required=True, help='e.g. 2021_04_21_CLX')
     parser_r.add_argument('--high_level_setup_figure', required=True, \
         help='e.g. Figure_0.png', type=lambda x: is_a_file(parser, x))
+    parser_r.add_argument('--include_cpu_load', dest='cpu', action='store_true')
 
     # appendices-specifc arguments
     parser_a = subparsers.add_parser('appendices', help='generate the appendices')
