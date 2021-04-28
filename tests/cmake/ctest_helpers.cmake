@@ -10,6 +10,7 @@
 set(TEST_ROOT_DIR ${PROJECT_SOURCE_DIR}/tests)
 set(TEST_UNIT_COMMON_DIR ${TEST_ROOT_DIR}/unit/common)
 set(TEST_MT_COMMON_DIR ${TEST_ROOT_DIR}/multithreaded/common)
+set(EXAMPLES_COMMON_DIR ${CMAKE_SOURCE_DIR}/examples/common)
 
 set(GLOBAL_TEST_ARGS
 	-DPERL_EXECUTABLE=${PERL_EXECUTABLE}
@@ -231,10 +232,10 @@ function(add_multithreaded)
 	set(target multithreaded-${MULTITHREADED_NAME}-${MULTITHREADED_BIN})
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
-	add_executable(${target} ${TEST_MT_COMMON_DIR}/mtt.c
+	add_executable(${target} ${TEST_MT_COMMON_DIR}/mtt.c ${EXAMPLES_COMMON_DIR}/common-conn.c
 		${MULTITHREADED_SRCS})
 	target_include_directories(${target} PRIVATE
-		${TEST_MT_COMMON_DIR} ${LIBRPMA_INCLUDE_DIRS})
+		${TEST_MT_COMMON_DIR} ${EXAMPLES_COMMON_DIR} ${LIBRPMA_INCLUDE_DIRS})
 	set_target_properties(${target} PROPERTIES
 		OUTPUT_NAME ${MULTITHREADED_BIN})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} pthread)
