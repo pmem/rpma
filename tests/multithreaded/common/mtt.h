@@ -62,6 +62,16 @@ const char *mtt_base_file_name(const char *file_name);
 			func, rpma_err_2str(err)); \
 	} while (0)
 
+/* on error populate the result and the error message */
+#define MTT_ERR_MSG(result, msg, err) \
+	do { \
+		(result)->ret = err; \
+		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
+			"%s:%d %s() -> %s", \
+			mtt_base_file_name(__FILE__), __LINE__, __func__, \
+			msg); \
+	} while (0)
+
 /*
  * mtt_prestate_init_fini_func -- a function type used for initialization and
  * cleanup of prestate. Run once.
