@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include <librpma.h>
 
@@ -240,6 +243,29 @@ mtt_base_file_name(const char *file_name)
 			thread_num, ##__VA_ARGS__)
 
 /*
+ * mtt_start_server_in_bg -- start the server function in the background
+ *                           (as a forked child process)
+ */
+static int
+mtt_start_server_in_bg(mtt_server_func server_func, void *prestate)
+{
+	int pid;
+	int ret;
+
+	switch ((pid = fork())) {
+	case 0: /* the child runs the server function */
+		ret = server_func(prestate);
+		exit(ret);
+	case -1: /* fork failed */
+		perror("fork");
+		return -1;
+	}
+
+	/* the parent returns PID of server */
+	return pid;
+}
+
+/*
  * mtt_run -- run the provided test using provided number of threads
  */
 int
@@ -252,6 +278,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	struct mtt_result tr_local = {0};
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
+	int pid_server = 0;
 
 	int ret;
 	unsigned i;
@@ -261,12 +288,22 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
+	if (test->server_func) {
+		pid_server = mtt_start_server_in_bg(test->server_func,
+					test->server_prestate);
+		if (pid_server == -1) {
+			MTT_INTERNAL_ERR("starting server failed");
+			return -1;
+		}
+	}
+
 	/* initialize the prestate */
 	if (test->prestate_init_func) {
 		test->prestate_init_func(test->prestate, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
-			return tr_local.ret;
+			result = tr_local.ret;
+			goto err_kill_server;
 		}
 	}
 
@@ -372,7 +409,17 @@ err_cleanup_prestate:
 		test->prestate_fini_func(test->prestate, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
-			return tr_local.ret;
+			result = tr_local.ret;
+		}
+	}
+
+err_kill_server:
+	if (pid_server) {
+		/* check if the server is still running */
+		if (kill(pid_server, 0) == 0) {
+			/* kill the server process */
+			if (kill(pid_server, SIGTERM))
+				(void) kill(pid_server, SIGKILL);
 		}
 	}
 
