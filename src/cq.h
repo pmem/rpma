@@ -1,0 +1,72 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* Copyright 2021, Fujitsu */
+
+/*
+ * cq.h -- librpma completion-queue-related internal definitions
+ */
+
+#ifndef LIBRPMA_CQ_H
+#define LIBRPMA_CQ_H
+
+#include <infiniband/verbs.h>
+#include <rdma/rdma_cma.h>
+
+#include "librpma.h"
+
+struct rpma_cq {
+	struct ibv_comp_channel *channel; /* completion event channel */
+	struct ibv_cq *cq; /* completion queue */
+};
+
+/*
+ * ERRORS
+ * rpma_cq_get_fd() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - cq or fd is NULL
+ */
+int rpma_cq_get_fd(struct rpma_cq *cq, int *fd);
+
+/*
+ * ERRORS
+ * rpma_cq_wait() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - cq is NULL
+ * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
+ * - RPMA_E_NO_COMPLETION - no completions available
+ */
+int rpma_cq_wait(struct rpma_cq *cq);
+
+/*
+ * ERRORS
+ * rpma_cq_get() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - cq or cmpl is NULL
+ * - RPMA_E_NO_COMPLETION - no completions available
+ * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
+ * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
+ * - RPMA_E_NOSUPP - not supported opcode
+ */
+int rpma_cq_get(struct rpma_cq *cq, struct rpma_completion *cmpl);
+
+/*
+ * ERRORS
+ * rpma_cq_create() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - verbs or cq_ptr is NULL
+ * - RPMA_E_PROVIDER - ibv_create_comp_channel(3), ibv_create_cq(3) or
+ * ibv_req_notify_cq(3) failed with a provider error
+ * - RPMA_E_NOMEM - out of memory
+ */
+int rpma_cq_create(struct ibv_context *verbs, int cqe, struct rpma_cq **cq_ptr);
+
+/*
+ * ERRORS
+ * rpma_cq_destroy() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - cq_ptr is NULL
+ * - RPMA_E_PROVIDER - ibv_destroy_cq(3) or ibv_destroy_comp_channel(3)
+ * failed with a provider error
+ */
+int rpma_cq_destroy(struct rpma_cq **cq_ptr);
+
+#endif /* LIBRPMA_CQ_H */
