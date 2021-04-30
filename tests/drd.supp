@@ -223,3 +223,23 @@
    fun:rdma_create_id2.part.0
    ...
 }
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dontfork_range
+   fun:ibv_reg_mr_iova*
+   fun:__ibv_reg_mr
+   fun:rpma_peer_mr_reg
+   fun:rpma_mr_reg
+   ...
+}
+
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dofork_range
+   fun:ibv_dereg_mr*
+   fun:rpma_mr_dereg
+   ...
+}
