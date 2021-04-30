@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn-common.c -- the connection unit tests common functions
@@ -76,7 +77,7 @@ setup__conn_new(void **cstate_ptr)
 
 	/* prepare an object */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_IBV_CQ, &cstate.conn);
+			MOCK_RPMA_CQ, &cstate.conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -98,8 +99,7 @@ teardown__conn_delete(void **cstate_ptr)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_destroy, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr,

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn_req-connect.c -- the rpma_conn_req_connect() unit tests
@@ -137,8 +138,7 @@ connect_via_accept__accept_EAGAIN(void **unused)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_destroy, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -153,7 +153,7 @@ connect_via_accept__accept_EAGAIN(void **unused)
 /*
  * connect_via_accept__accept_EAGAIN_subsequent_EIO -- rdma_accept()
  * fails with EAGAIN whereas subsequent (rdma_ack_cm_event(),
- * ibv_destroy_cq()) fail with EIO
+ * rpma_cq_destroy()) fail with EIO
  */
 static void
 connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
@@ -169,8 +169,8 @@ connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO); /* third error */
-	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
+	will_return(rpma_cq_destroy, RPMA_E_PROVIDER);
+	will_return(rpma_cq_destroy, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -201,8 +201,7 @@ connect_via_accept__ack_EAGAIN(void **unused)
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_destroy, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -216,7 +215,7 @@ connect_via_accept__ack_EAGAIN(void **unused)
 
 /*
  * connect_via_accept__ack_EAGAIN_subsequent_EIO -- rdma_ack_cm_event()
- * fails with EAGAIN whereas subsequent (rdma_disconnect(), ibv_destroy_cq())
+ * fails with EAGAIN whereas subsequent (rdma_disconnect(), rpma_cq_destroy())
  * fail with EIO
  */
 static void
@@ -235,8 +234,8 @@ connect_via_accept__ack_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO); /* third error */
-	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
+	will_return(rpma_cq_destroy, RPMA_E_PROVIDER);
+	will_return(rpma_cq_destroy, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -272,8 +271,7 @@ connect_via_accept__conn_new_EAGAIN(void **unused)
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_destroy, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -288,7 +286,7 @@ connect_via_accept__conn_new_EAGAIN(void **unused)
 /*
  * connect_via_accept__conn_new_EAGAIN_subsequent_EIO --
  * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN
- * whereas subsequent (rdma_disconnect(), ibv_destroy_cq()) fail with EIO
+ * whereas subsequent (rdma_disconnect(), rpma_cq_destroy()) fail with EIO
  */
 static void
 connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
@@ -310,8 +308,8 @@ connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, EIO); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO); /* third error */
-	will_return(ibv_destroy_comp_channel, EIO); /* fourth error */
+	will_return(rpma_cq_destroy, RPMA_E_PROVIDER);
+	will_return(rpma_cq_destroy, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -389,7 +387,7 @@ connect_via_connect__connect_EAGAIN(void **unused)
 
 /*
  * connect_via_connect__connect_EAGAIN_subsequent_EIO -- rdma_connect()
- * fails with EAGAIN whereas subsequent (ibv_destroy_cq(), rdma_destroy_id())
+ * fails with EAGAIN whereas subsequent (rpma_cq_destroy(), rdma_destroy_id())
  * fail with EIO
  */
 static void
@@ -437,8 +435,7 @@ connect_via_connect__conn_new_EAGAIN(void **unused)
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, EAGAIN);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_destroy, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -455,7 +452,7 @@ connect_via_connect__conn_new_EAGAIN(void **unused)
 /*
  * connect_via_connect__conn_new_EAGAIN_subsequent_EIO --
  * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN whereas subsequent
- * (rdma_disconnect(), ibv_destroy_cq(), rdma_destroy_id()) fail with EIO
+ * (rdma_disconnect(), rpma_cq_destroy(), rdma_destroy_id()) fail with EIO
  */
 static void
 connect_via_connect__conn_new_EAGAIN_subsequent_EIO(void **unused)
@@ -471,10 +468,10 @@ connect_via_connect__conn_new_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, EAGAIN); /* first error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, EIO); /* second error */
-	will_return(ibv_destroy_comp_channel, EIO); /* third error */
+	will_return(rpma_cq_destroy, RPMA_E_PROVIDER);
+	will_return(rpma_cq_destroy, EIO); /* second error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO); /* fourth error */
+	will_return(rdma_destroy_id, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -563,5 +560,5 @@ main(int argc, char *argv[])
 	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
 			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
 
-	return cmocka_run_group_tests(test_connect, group_setup_conn_req, NULL);
+	return cmocka_run_group_tests(test_connect, NULL, NULL);
 }
