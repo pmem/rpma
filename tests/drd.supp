@@ -214,3 +214,12 @@
    fun:rpma_utils_get_ibv_context
    ...
 }
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   ...
+}
