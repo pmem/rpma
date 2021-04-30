@@ -3,6 +3,7 @@
 # Copyright 2020-2021, Intel Corporation
 #
 
+add_subdirectory(conn)
 add_subdirectory(ep)
 add_subdirectory(example)
 add_subdirectory(peer)
