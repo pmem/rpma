@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include <librpma.h>
 
@@ -240,6 +243,29 @@ mtt_base_file_name(const char *file_name)
 			thread_num, ##__VA_ARGS__)
 
 /*
+ * mtt_start_child_process -- start the child process
+ */
+static int
+mtt_start_child_process(mtt_child_process_func child_process_func,
+			void *prestate)
+{
+	int pid;
+	int ret;
+
+	switch ((pid = fork())) {
+	case 0: /* this is the child */
+		ret = child_process_func(prestate);
+		exit(ret);
+	case -1: /* fork failed */
+		perror("fork");
+		return -1;
+	}
+
+	/* the parent returns a PID of the child process */
+	return pid;
+}
+
+/*
  * mtt_run -- run the provided test using provided number of threads
  */
 int
@@ -252,6 +278,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	struct mtt_result tr_local = {0};
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
+	int child_pid = 0;
 
 	int ret;
 	unsigned i;
@@ -261,12 +288,22 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
+	if (test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1) {
+			MTT_INTERNAL_ERR("starting child process failed");
+			return -1;
+		}
+	}
+
 	/* initialize the prestate */
 	if (test->prestate_init_func) {
 		test->prestate_init_func(test->prestate, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
-			return tr_local.ret;
+			result = tr_local.ret;
+			goto err_kill_child;
 		}
 	}
 
@@ -372,7 +409,17 @@ err_cleanup_prestate:
 		test->prestate_fini_func(test->prestate, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
-			return tr_local.ret;
+			result = tr_local.ret;
+		}
+	}
+
+err_kill_child:
+	if (child_pid) {
+		/* check if the child process is still running */
+		if (kill(child_pid, 0) == 0) {
+			/* kill the child process */
+			if (kill(child_pid, SIGTERM))
+				(void) kill(child_pid, SIGKILL);
 		}
 	}
 
