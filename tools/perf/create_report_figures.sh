@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|appendix|cmp"
+    echo "usage: $0 report|appendix|appendix_cpu|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -61,7 +61,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|appendix|cmp)
+report|appendix|appendix_cpu|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -126,9 +126,10 @@ function lat_appendix()
     local filter="$1"
     local no="$2"
     local title="$3"
-    local mode="$4"
-    local output="$5"
-    shift 5
+    local arg_axis="$4"
+    local mode="$5"
+    local output="$6"
+    shift 6
 
     if [ $# -gt 0 ]; then
         local legend=( "$@" )
@@ -136,12 +137,21 @@ function lat_appendix()
         local legend=( $(files_to_machines $mode $filter) )
     fi
 
+    case "$arg_axis" in
+    bs)
+        xscale="log"
+        ;;
+    cpuload)
+        xscale="linear"
+        ;;
+    esac
+
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
         --output_title "Appendix $no. Latency: $title (all platforms)" \
         --output_layout 'lat_all' \
-        --arg_axis 'bs' \
-        --arg_xscale 'log' \
+        --arg_axis "$arg_axis" \
+        --arg_xscale "$xscale" \
         --output_with_table \
         --legend "${legend[@]}" \
         --output_file "$output.png" \
@@ -160,12 +170,21 @@ function bw_appendix()
 
     local legend=( $(files_to_machines $mode $filter) )
 
+    case "$arg_axis" in
+    bs|threads)
+        xscale="log"
+        ;;
+    cpuload)
+        xscale="linear"
+        ;;
+    esac
+
     echo_filter $filter
     $TOOLS_PATH/csv_compare.py \
         --output_title "Appendix $no. Bandwidth: $title (all platforms)" \
         --output_layout 'bw' \
         --arg_axis "$arg_axis" \
-        --arg_xscale 'log' \
+        --arg_xscale "$xscale" \
         --output_with_table \
         --legend "${legend[@]}" \
         --output_file "$output.png" \
@@ -214,7 +233,7 @@ function appendix_set()
     echo "Appendix $letter $OP $dir $SRC $suffix"
     lat_appendix \
         "$DATA_PATH/*/${filter}_lat*${memtype}*" \
-        "${letter}1" "$OP $dir $SRC $suffix" "$mode" \
+        "${letter}1" "$OP $dir $SRC $suffix" 'bs' "$mode" \
         "Appendix_${letter}1_${op}_${src}_lat"
     bw_appendix \
         "$DATA_PATH/*/${filter}_bw-bs*${memtype}*" \
@@ -233,7 +252,7 @@ function figures_appendix
     echo 'Appendix A ib_read_lat'
     lat_appendix \
         "$DATA_PATH/*/ib_read_lat_*" \
-        'A' 'ib_read_lat from DRAM' 'single' \
+        'A' 'ib_read_lat from DRAM' 'bs' 'single' \
         'Appendix_A_ib_read_lat'
 
     echo 'Appendix B ib_read_bw bw(bs) bw(th)'
@@ -257,6 +276,82 @@ function figures_appendix
     mix_desc='70% read, 30% write'
     appendix_set '*apm_*_rw' 'dax' 'I' 'MIX' "($mix_desc, seq)" 'rw'
     appendix_set '*apm_*_randrw' 'dax' 'J' 'MIX' "($mix_desc, rand)" 'rw'
+}
+
+function appendix_set_cpu()
+{
+    local filter="$1"
+    local memtype="$2"
+    local letter="$3"
+    local OP="$4" # APM, GPSPM, rpma_read(), rpma_write()
+    local suffix="$5"
+    local mode=${6-seqrand}
+
+    case "$memtype" in
+    dram)
+        src="dram"
+        ;;
+    dax)
+        src="pmem"
+        ;;
+    esac
+
+    # uppercase
+    SRC=${src^^}
+
+    case "$OP" in
+     *read*)
+        dir='from'
+        ;;
+     *MIX*)
+        dir='against'
+        ;;
+    *)
+        dir='to'
+        ;;
+    esac
+
+    # lowercase and drop parentheses
+    op=${OP,,}
+    op=${op/(/}
+    op=${op/)/}
+
+    echo "Appendix $letter $OP $dir $SRC $suffix"
+    lat_appendix \
+        "$DATA_PATH/*/${filter}_lat*_cpu00_100_*${memtype}*" \
+        "${letter}1" "$OP $dir $SRC $suffix" 'cpuload' "$mode" \
+        "Appendix_${letter}1_${op}_${src}_lat"
+    lat_appendix \
+        "$DATA_PATH/*/${filter}_lat*_cpu75_100_*${memtype}*" \
+        "${letter}2" "$OP $dir $SRC $suffix" 'cpuload' "$mode" \
+        "Appendix_${letter}2_${op}_${src}_lat"
+    bw_appendix \
+        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu00_100_*${memtype}*" \
+        "${letter}3" "$OP $dir $SRC $suffix" \
+        'cpuload' "$mode" \
+        "Appendix_${letter}3_${op}_${src}_bw-cpu_cpu00_100"
+    bw_appendix \
+        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu75_100_*${memtype}*" \
+        "${letter}4" "$OP $dir $SRC $suffix" \
+        'cpuload' "$mode" \
+        "Appendix_${letter}4_${op}_${src}_bw-cpu_cpu75_100"
+    bw_appendix \
+        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu00_100_*${memtype}*" \
+        "${letter}5" "$OP $dir $SRC $suffix" \
+        'cpuload' "$mode" \
+        "Appendix_${letter}5_${op}_${src}_bw-cpu-mt_cpu00_100"
+    bw_appendix \
+        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu75_100_*${memtype}*" \
+        "${letter}6" "$OP $dir $SRC $suffix" \
+        'cpuload' "$mode" \
+        "Appendix_${letter}6_${op}_${src}_bw-cpu-mt_cpu75_100"
+}
+
+function figures_appendix_cpu
+{
+    appendix_set_cpu '*apm_*write' 'dax' 'K' 'APM'
+    appendix_set_cpu '*gpspm_busy-wait_*write' 'dax' 'L' 'GPSPM-RT'
+    appendix_set_cpu '*gpspm_no-busy-wait_*write' 'dax' 'M' 'GPSPM'
 }
 
 function set_data_path()
