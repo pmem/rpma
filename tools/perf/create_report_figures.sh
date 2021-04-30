@@ -140,6 +140,8 @@ function lat_appendix()
     $TOOLS_PATH/csv_compare.py \
         --output_title "Appendix $no. Latency: $title (all platforms)" \
         --output_layout 'lat_all' \
+        --arg_axis 'bs' \
+        --arg_xscale 'log' \
         --output_with_table \
         --legend "${legend[@]}" \
         --output_file "$output.png" \
