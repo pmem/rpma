@@ -121,6 +121,15 @@ typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
 typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
 		struct mtt_result *result);
 
+/*
+ * mtt_child_process_func -- a function type used for the child process
+ *                           e.g. as another side of the connection
+ *
+ * Arguments:
+ * - prestate - a pointer to the test-provided data.
+ */
+typedef int (*mtt_child_process_func)(void *prestate);
+
 struct mtt_test {
 	/*
 	 * a pointer to test-provided data passed on all initialization steps
@@ -164,6 +173,18 @@ struct mtt_test {
 	 * threads. It is dedicated to cleaning up the prestate.
 	 */
 	mtt_prestate_init_fini_func prestate_fini_func;
+
+	/*
+	 * A function of the child process.
+	 * If it is not NULL, the child process is started
+	 * using fork() at the very beginning of the test.
+	 */
+	mtt_child_process_func child_process_func;
+
+	/*
+	 * A pointer to test-provided data passed to the child process function.
+	 */
+	void *child_prestate;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);
