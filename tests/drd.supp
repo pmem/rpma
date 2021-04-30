@@ -216,6 +216,16 @@
 }
 
 {
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:idm_clear
+   fun:ucma_remove_id
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   ...
+}
+
+{
    Conflicting store of size 8
    drd:ConflictingAccess
    fun:idm_set
