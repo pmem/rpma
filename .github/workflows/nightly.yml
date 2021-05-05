@@ -51,7 +51,7 @@ jobs:
                  "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest",
+                 "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
@@ -98,7 +98,7 @@ jobs:
                  "N=Fedora_Rawhide_no_SANITS  OS=fedora          OS_VER=rawhide  CI_SANITS=OFF",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 "N=Arch_Linux_Latest    OS=archlinux-base       OS_VER=latest",
+                 "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
