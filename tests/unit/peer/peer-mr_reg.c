@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * peer-mr_reg.c -- a peer unit test
@@ -37,7 +37,7 @@ mr_reg__fail_ENOMEM(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -63,7 +63,7 @@ mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -99,7 +99,7 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -124,7 +124,7 @@ mr_reg__success(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -158,7 +158,7 @@ mr_reg__success_odp(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 #ifdef ON_DEMAND_PAGING_SUPPORTED
