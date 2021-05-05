@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * peer-common.h -- the header of the common part of the peer unit test
@@ -20,6 +20,12 @@
  * registration type.
  */
 #define MOCK_ACCESS		(unsigned)7
+
+/*
+ * The test usage value is a combination of all possible
+ * RPMA_MR_USAGE_* values.
+ */
+#define MOCK_USAGE		(unsigned)255
 
 extern int OdpCapable;
 extern int OdpIncapable;

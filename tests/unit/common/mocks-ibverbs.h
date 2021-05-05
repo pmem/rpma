@@ -13,6 +13,9 @@
 /* mocked IBV entities */
 extern struct verbs_context Verbs_context;
 extern struct ibv_comp_channel Ibv_comp_channel;
+extern struct ibv_context Ibv_context;
+extern struct ibv_device Ibv_device;
+extern struct ibv_pd Ibv_pd;
 extern struct ibv_cq Ibv_cq;
 extern struct ibv_qp Ibv_qp;
 extern struct ibv_mr Ibv_mr;
@@ -21,7 +24,7 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_VERBS		(&Verbs_context.context)
 #define MOCK_COMP_CHANNEL	(struct ibv_comp_channel *)&Ibv_comp_channel
 #define MOCK_IBV_CQ		(struct ibv_cq *)&Ibv_cq
-#define MOCK_IBV_PD		(struct ibv_pd *)0x00D0
+#define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
 
