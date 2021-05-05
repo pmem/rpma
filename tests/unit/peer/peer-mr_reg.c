@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * peer-mr_reg.c -- a peer unit test
@@ -17,6 +17,54 @@
 #include "peer.h"
 #include "peer-common.h"
 #include "test-common.h"
+
+struct usage2access_s {
+	enum ibv_transport_type transport_type;
+	int usage;
+	unsigned access;
+};
+
+static struct usage2access_s usage2access[] = {
+	/* 1) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		(RPMA_MR_USAGE_READ_SRC |
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+			IBV_ACCESS_REMOTE_READ},
+	{IBV_TRANSPORT_IWARP,
+		(RPMA_MR_USAGE_READ_SRC |
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+			IBV_ACCESS_REMOTE_READ},
+	/* 2) non-iWARP and iWARP differs */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_READ_DST,
+			IBV_ACCESS_LOCAL_WRITE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_READ_DST,
+			IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_WRITE},
+	/* 3) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_WRITE_SRC,
+			IBV_ACCESS_LOCAL_WRITE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_WRITE_SRC,
+			IBV_ACCESS_LOCAL_WRITE},
+	/* 4) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_WRITE_DST,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_WRITE_DST,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE},
+	/* 5) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_RECV,
+			IBV_ACCESS_LOCAL_WRITE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_RECV,
+			IBV_ACCESS_LOCAL_WRITE},
+};
 
 /*
  * mr_reg__fail_ENOMEM -- ibv_reg_mr() failed with ENOMEM
@@ -37,7 +85,7 @@ mr_reg__fail_ENOMEM(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -63,7 +111,7 @@ mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -99,7 +147,7 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr = NULL;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -113,22 +161,31 @@ static void
 mr_reg__success(void **peer_ptr)
 {
 	struct rpma_peer *peer = *peer_ptr;
+	struct ibv_pd *mock_ibv_pd = MOCK_IBV_PD;
 
-	/* configure mocks */
-	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
-	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
-	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
-	will_return(ibv_reg_mr, MOCK_MR);
+	int n_iters = sizeof(usage2access) / sizeof(struct usage2access_s);
+	int i;
 
-	/* run test */
-	struct ibv_mr *mr;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+	/* iterate over different access/usage values */
+	for (i = 0; i < n_iters; i++) {
+		/* configure mocks */
+		mock_ibv_pd->context->device->transport_type =
+			usage2access[i].transport_type;
+		expect_value(ibv_reg_mr, pd, mock_ibv_pd);
+		expect_value(ibv_reg_mr, addr, MOCK_ADDR);
+		expect_value(ibv_reg_mr, length, MOCK_LEN);
+		expect_value(ibv_reg_mr, access, usage2access[i].access);
+		will_return(ibv_reg_mr, MOCK_MR);
 
-	/* verify the results */
-	assert_int_equal(ret, MOCK_OK);
-	assert_ptr_equal(mr, MOCK_MR);
+		/* run test */
+		struct ibv_mr *mr;
+		int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+					MOCK_LEN, usage2access[i].usage);
+
+		/* verify the results */
+		assert_int_equal(ret, MOCK_OK);
+		assert_ptr_equal(mr, MOCK_MR);
+	}
 }
 
 /*
@@ -158,7 +215,7 @@ mr_reg__success_odp(void **peer_ptr)
 	/* run test */
 	struct ibv_mr *mr;
 	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
-				MOCK_LEN, MOCK_ACCESS);
+				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
 #ifdef ON_DEMAND_PAGING_SUPPORTED

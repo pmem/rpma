@@ -15,6 +15,9 @@
 /* mocked IBV entities */
 struct verbs_context Verbs_context;
 struct ibv_comp_channel Ibv_comp_channel;
+struct ibv_device Ibv_device;
+struct ibv_context Ibv_context = {&Ibv_device};
+struct ibv_pd Ibv_pd = {&Ibv_context, 0};
 struct ibv_cq Ibv_cq;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;

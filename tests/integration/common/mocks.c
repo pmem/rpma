@@ -23,6 +23,10 @@ struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
 struct rdma_cm_id Cm_id;	/* mock CM ID */
 struct ibv_qp Ibv_qp;		/* mock IBV QP */
 
+struct ibv_device Ibv_device = {{0}, 0, IBV_TRANSPORT_IB};
+struct ibv_context Ibv_context = {&Ibv_device};
+struct ibv_pd Ibv_pd = {&Ibv_context, 0};
+
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 /* predefined IBV On-demand Paging caps */
 struct ibv_odp_caps Ibv_odp_capable_caps = {
