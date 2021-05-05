@@ -94,14 +94,14 @@ layouts = {
     'lat_all': {
         'nrows': 4,
         'ncols': 2,
-        'x': 'bs',
+        'x': '<arg_axis>',
         'columns': [
             'lat_avg', 'lat_stdev',
             'lat_min', 'lat_max', 
             'lat_pctl_99.0', 'lat_pctl_99.9',
             'lat_pctl_99.99', 'lat_pctl_99.999'
         ],
-        'xscale': 'log',
+        'xscale': '<arg_xscale>',
     },
     'bw': {
         'nrows': 1,
@@ -350,7 +350,7 @@ def main():
     layout = layouts[args.output_layout]
 
     # fill out an optional axis with the provided argument
-    if args.output_layout in ['bw', 'lat_avg', 'lat_pctls']:
+    if args.output_layout in ['bw', 'lat_avg', 'lat_pctls', 'lat_all']:
         if args.arg_axis is None:
             raise Exception('The layout requires --arg_axis')
         elif args.arg_xscale is None:
