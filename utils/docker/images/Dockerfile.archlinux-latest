@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM archlinux/base:latest
+FROM archlinux:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Do full system upgrade
@@ -45,7 +45,8 @@ ENV RPMA_DEPS "\
 RUN pacman -S --noconfirm \
 	$BASE_DEPS \
 	$RDMA_DEPS \
-	$RPMA_DEPS
+	$RPMA_DEPS \
+&& rm -rf /var/cache/pacman/pkg/*
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
@@ -79,11 +80,8 @@ RUN ./install-archlinux-aur.sh rdma-core
 # Switch to user
 USER $USER
 
-# Clean the cache of packages
-RUN rm -rf /var/cache/pacman/pkg/*
-
 # Set required environment variables
-ENV OS archlinux-base
+ENV OS archlinux
 ENV OS_VER latest
 ENV PACKAGE_MANAGER none
 ENV NOTTY 1
