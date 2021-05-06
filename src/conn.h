@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn.h -- librpma connection-related internal definitions
@@ -9,6 +10,7 @@
 #define LIBRPMA_CONN_H
 
 #include "librpma.h"
+#include "cq.h"
 
 #include <rdma/rdma_cma.h>
 
@@ -22,7 +24,7 @@
  * - RPMA_E_NOMEM - out of memory
  */
 int rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq, struct rpma_conn **conn_ptr);
+		struct rpma_cq *cq, struct rpma_conn **conn_ptr);
 
 /*
  * rpma_conn_transfer_private_data -- transfer the private data to
