@@ -10,8 +10,6 @@
 
 #include "mtt.h"
 
-#define KILOBYTE 1024
-
 struct prestate {
 	char *addr;
 	unsigned port;
