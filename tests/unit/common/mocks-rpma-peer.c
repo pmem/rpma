@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * mocks-rpma-peer.c -- librpma peer.c module mocks
@@ -38,7 +38,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  */
 int
 rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
-		void *addr, size_t length, int access)
+		void *addr, size_t length, int usage)
 {
 	/*
 	 * rpma_peer_mr_reg() and malloc() may be called in any order.
@@ -51,7 +51,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	assert_ptr_equal(peer, MOCK_PEER);
 	assert_ptr_equal(addr, MOCK_PTR);
 	assert_int_equal(length, MOCK_SIZE);
-	assert_int_equal(access, args->access);
+	assert_int_equal(usage, args->usage);
 
 	*ibv_mr_ptr = args->mr;
 	if (*ibv_mr_ptr == NULL) {
