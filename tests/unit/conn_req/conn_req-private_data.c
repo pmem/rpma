@@ -23,8 +23,7 @@ get_private_data__success(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
@@ -71,8 +70,7 @@ get_private_data__pdata_NULL(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
@@ -99,6 +97,5 @@ static const struct CMUnitTest test_private_data[] = {
 int
 main(int argc, char *argv[])
 {
-	return cmocka_run_group_tests(test_private_data, group_setup_conn_req,
-			NULL);
+	return cmocka_run_group_tests(test_private_data, NULL, NULL);
 }

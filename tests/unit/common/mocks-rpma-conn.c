@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * mocks-rpma-conn.c -- librpma conn.c module mocks
@@ -11,17 +12,18 @@
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 #include "test-common.h"
+#include "mocks-rpma-cq.h"
 
 /*
  * rpma_conn_new -- rpma_conn_new()  mock
  */
 int
 rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq, struct rpma_conn **conn_ptr)
+		struct rpma_cq *cq, struct rpma_conn **conn_ptr)
 {
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
-	assert_ptr_equal(cq, MOCK_IBV_CQ);
+	assert_ptr_equal(cq, MOCK_RPMA_CQ);
 
 	assert_non_null(conn_ptr);
 
