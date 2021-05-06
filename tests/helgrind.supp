@@ -64,37 +64,6 @@
 }
 
 {
-   Possible data race during write of size 8
-   Helgrind:Race
-   fun:idm_clear
-   fun:ucma_remove_id
-   fun:ucma_free_id
-   fun:rdma_destroy_id
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:idm_set
-   fun:ucma_insert_id
-   fun:rdma_create_id2.part.0
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
    Possible data race during read of size 8
    Helgrind:Race
    fun:rdma_create_event_channel
@@ -114,13 +83,16 @@
    ...
 }
 
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+# - rpma_ep_listen
+# - rpma_info_new (ucma_set_af_ib_support)
 {
    Possible data race during read of size 8
    Helgrind:Race
    fun:idm_set
    fun:ucma_insert_id
    fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
    ...
 }
 
@@ -172,6 +144,10 @@
    ...
 }
 
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+# - rpma_ep_shutdown
+# - rpma_info_new (ucma_set_af_ib_support)
 {
    Possible data race during read of size 8
    Helgrind:Race
@@ -179,7 +155,6 @@
    fun:ucma_remove_id
    fun:ucma_free_id
    fun:rdma_destroy_id
-   fun:rpma_utils_get_ibv_context
    ...
 }
 
