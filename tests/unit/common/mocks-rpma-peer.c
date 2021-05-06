@@ -11,6 +11,7 @@
 #include "cmocka_headers.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-peer.h"
+#include "mocks-rpma-cq.h"
 #include "test-common.h"
 
 /*
@@ -18,11 +19,11 @@
  */
 int
 rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq, const struct rpma_conn_cfg *cfg)
+		struct rpma_cq *cq, const struct rpma_conn_cfg *cfg)
 {
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
-	assert_ptr_equal(cq, MOCK_IBV_CQ);
+	assert_ptr_equal(cq, MOCK_RPMA_CQ);
 	check_expected_ptr(cfg);
 
 	int result = mock_type(int);
