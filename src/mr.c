@@ -58,46 +58,6 @@ struct rpma_mr_remote {
 	int usage; /* usage of the memory region */
 };
 
-/* helper functions */
-
-/*
- * usage_to_access -- convert usage to access
- *
- * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
- */
-static int
-usage_to_access(int usage)
-{
-	int access = 0;
-
-	if (usage & (RPMA_MR_USAGE_READ_SRC |\
-			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
-			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
-		access |= IBV_ACCESS_REMOTE_READ;
-
-	if (usage & RPMA_MR_USAGE_READ_DST)
-		access |= IBV_ACCESS_LOCAL_WRITE;
-
-	if (usage & RPMA_MR_USAGE_WRITE_SRC)
-		access |= IBV_ACCESS_LOCAL_WRITE;
-
-	if (usage & RPMA_MR_USAGE_WRITE_DST)
-		/*
-		 * If IBV_ACCESS_REMOTE_WRITE is set, then
-		 * IBV_ACCESS_LOCAL_WRITE must be set too.
-		 */
-		access |= IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE;
-
-	if (usage & RPMA_MR_USAGE_RECV)
-		access |= IBV_ACCESS_LOCAL_WRITE;
-
-	/*
-	 * There is no IBV_ACCESS_* value to be set for RPMA_MR_USAGE_SEND.
-	 */
-
-	return access;
-}
-
 /* internal librpma API */
 
 /*
@@ -324,6 +284,8 @@ int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		struct rpma_mr_local **mr_ptr)
 {
+	int ret;
+
 	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -336,9 +298,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		return RPMA_E_NOMEM;
 
 	struct ibv_mr *ibv_mr;
-	int ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size,
-			usage_to_access(usage));
-	if (ret) {
+	if ((ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size, usage))) {
 		free(mr);
 		return ret;
 	}

@@ -12,15 +12,15 @@
 #define MOCK_PORT		"1234"
 #define MOCK_MR			(&Ibv_mr)
 #define MOCK_MR_RAW		(&Ibv_mr_raw)
-#define MOCK_MR_FLUSH	(&Ibv_mr_flush)
+#define MOCK_MR_FLUSH		(&Ibv_mr_flush)
 #define MOCK_RAW_SIZE		8 /* memory region size */
 #define MOCK_COMP_CHANNEL	(&Ibv_comp_channel)
+#define MOCK_IBV_PD		(&Ibv_pd)
 #define MOCK_CQ			(&Ibv_cq)
 #define MOCK_VERBS		(&Verbs_context.context)
 #define MOCK_EVCH		((struct rdma_event_channel *)0xE4C4)
 #define MOCK_SRC_ADDR		((struct sockaddr *)0x0ADD)
 #define MOCK_DST_ADDR		((struct sockaddr *)0x0ADE)
-#define MOCK_IBV_PD		((struct ibv_pd *)0x00D0)
 #define MOCK_QP			((struct ibv_qp *)0xD56A)
 #define MOCK_OP_CONTEXT		((void *)0xC417)
 #define MOCK_RKEY		((uint32_t)0x10111213)
@@ -48,12 +48,15 @@ struct common_data {
 extern struct verbs_context Verbs_context;
 /* mock IBV completion channel */
 extern struct ibv_comp_channel Ibv_comp_channel;
+extern struct ibv_context Ibv_context;	/* mock IBV context */
+extern struct ibv_device Ibv_device;	/* mock IBV device */
 extern struct ibv_cq Ibv_cq;		/* mock IBV CQ */
 extern struct ibv_mr Ibv_mr;		/* mock IBV MR */
 extern struct ibv_mr Ibv_mr_raw;	/* mock IBV MR RAW */
 extern struct ibv_mr Ibv_mr_flush;	/* mock IBV MR FLUSH */
-extern struct rdma_cm_id Cm_id;	/* mock CM ID */
+extern struct rdma_cm_id Cm_id;		/* mock CM ID */
 extern struct ibv_qp Ibv_qp;		/* mock IBV QP */
+extern struct ibv_pd Ibv_pd;		/* mock IBV PD */
 
 /* predefined IBV On-demand Paging caps */
 extern struct ibv_odp_caps Ibv_odp_capable_caps;
