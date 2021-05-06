@@ -2,7 +2,7 @@
 /* Copyright 2021, Intel Corporation */
 
 /*
- * rpma_mr_reg.c -- rpma_mr_reg multithreaded test
+ * rpma_mr_get_descriptor.c -- rpma_mr_get_descriptor multithreaded test
  */
 
 #include <stdlib.h>
@@ -12,19 +12,15 @@
 
 struct prestate {
 	char *addr;
-	unsigned port;
 	struct ibv_context *dev;
 	struct rpma_peer *peer;
-};
-
-struct state {
 	void *mr_ptr;
 	struct rpma_mr_local *mr;
 };
 
 /*
- * prestate_init -- obtain an ibv_context for a local IP address
- * and create a new peer object
+ * prestate_init -- obtain an ibv_context for a local IP address,
+ * create a new peer object, allocate and register memory region
  */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -38,76 +34,68 @@ prestate_init(void *prestate, struct mtt_result *tr)
 		return;
 	}
 
-	if ((ret = rpma_peer_new(pr->dev, &pr->peer)))
+	if ((ret = rpma_peer_new(pr->dev, &pr->peer))) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
-}
-
-/*
- * init -- allocate state and memory region
- */
-void
-init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct state *st = (struct state *)calloc(1, sizeof(struct state));
-	if (!st) {
-		MTT_ERR(tr, "calloc", errno);
 		return;
 	}
 
-	st->mr_ptr = mtt_malloc_aligned(KILOBYTE, tr);
-	if (st->mr_ptr == NULL) {
-		free(st);
+	pr->mr_ptr = mtt_malloc_aligned(KILOBYTE, tr);
+	if (pr->mr_ptr == NULL) {
+		MTT_ERR(tr, "mtt_malloc_aligned()", errno);
+		if ((ret = rpma_peer_delete(&pr->peer)))
+			MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 		return;
 	}
 
-	*state_ptr = st;
+	if ((ret = rpma_mr_reg(pr->peer, pr->mr_ptr, KILOBYTE,
+			RPMA_MR_USAGE_READ_SRC, &pr->mr))) {
+		MTT_RPMA_ERR(tr, "rpma_mr_reg", ret);
+		free(pr->mr_ptr);
+		if ((ret = rpma_peer_delete(&pr->peer)))
+			MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
+	}
 }
 
 /*
- * thread -- register the memory
+ * thread -- get the memory region's descriptor
  */
 static void
 thread(unsigned id, void *prestate, void *state,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	struct state *st = (struct state *)state;
-
-	int ret = rpma_mr_reg(pr->peer, st->mr_ptr, KILOBYTE,
-			RPMA_MR_USAGE_READ_SRC, &st->mr);
-	if (ret)
-		MTT_RPMA_ERR(result, "rpma_mr_reg", ret);
-}
-
-/*
- * fini -- deregister the memory region and free the state
- */
-static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct state *st = (struct state *)*state_ptr;
 	int ret;
 
-	if (st->mr) {
-		if ((ret = rpma_mr_dereg(&st->mr)))
-			MTT_RPMA_ERR(tr, "rpma_mr_dereg", ret);
+	size_t mr_desc_size;
+	if ((ret = rpma_mr_get_descriptor_size(pr->mr, &mr_desc_size))) {
+		MTT_RPMA_ERR(result, "rpma_mr_get_descriptor_size", ret);
+		return;
 	}
 
-	free(st->mr_ptr);
-	free(st);
-	*state_ptr = NULL;
+	if (mr_desc_size > KILOBYTE) {
+		MTT_ERR_MSG(result, "mr_desc_size > KILOBYTE", -1);
+		return;
+	}
+
+	char descriptor[KILOBYTE];
+	if ((ret = rpma_mr_get_descriptor(pr->mr, &descriptor[0])))
+		MTT_RPMA_ERR(result, "rpma_mr_get_descriptor", ret);
 }
 
 /*
- * prestate_fini -- delete the peer object
+ * prestate_fini -- deregister and free the memory region,
+ * and delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
+
+	if ((ret = rpma_mr_dereg(&pr->mr)))
+		MTT_RPMA_ERR(tr, "rpma_mr_dereg", ret);
+
+	free(pr->mr_ptr);
 
 	if ((ret = rpma_peer_delete(&pr->peer)))
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
@@ -127,9 +115,9 @@ main(int argc, char *argv[])
 			&prestate,
 			prestate_init,
 			NULL,
-			init,
+			NULL,
 			thread,
-			fini,
+			NULL,
 			NULL,
 			prestate_fini
 	};

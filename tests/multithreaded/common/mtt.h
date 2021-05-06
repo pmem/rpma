@@ -13,6 +13,8 @@
 
 #include <stddef.h>
 
+#define KILOBYTE 1024
+
 /* arguments coming from the command line */
 struct mtt_args {
 	unsigned threads_num;
