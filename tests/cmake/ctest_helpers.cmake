@@ -219,9 +219,7 @@ function(add_test_generic)
 endfunction()
 
 function(add_multithreaded)
-	# XXX USE_EXAMPLES is required only as a proof of concept.
-	# Please do not use examples for any other future tests.
-	set(options USE_LIBIBVERBS USE_EXAMPLES)
+	set(options USE_LIBIBVERBS)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(MULTITHREADED
@@ -245,15 +243,6 @@ function(add_multithreaded)
 		target_include_directories(${target}
 			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
-	endif()
-
-	# XXX USE_EXAMPLES is required only as a proof of concept.
-	# Please do not use examples for any other future tests.
-	if(MULTITHREADED_USE_EXAMPLES)
-		target_compile_definitions(${target}
-			PUBLIC TEST_MOCK_MAIN)
-		target_include_directories(${target}
-			PRIVATE ${CMAKE_SOURCE_DIR}/examples/common/)
 	endif()
 
 	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)

@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <librpma.h>
 
-#include "common-conn.h"
 #include "mtt.h"
 
 /* the client's part */
@@ -164,28 +163,23 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 /* the server's part */
 
 struct server_prestate {
-	int argc;
-	char **argv;
+	char *addr;
+	unsigned port;
 };
 
 /*
  * server_main -- the main function of the server
- *                of the 02-read-to-volatile example
  */
-int server_main(int argc, char *argv[]);
+int server_main(char *addr, unsigned port);
 
 /*
  * server_func -- the server function of this test
- *
- * XXX Temporarily and for the simplicity sake
- * the server is taken directly
- * from the 02-read-to-volatile example.
  */
 int
 server_func(void *prestate)
 {
 	struct server_prestate *pst = prestate;
-	return server_main(pst->argc, pst->argv);
+	return server_main(pst->addr, pst->port);
 }
 
 int
@@ -196,10 +190,8 @@ main(int argc, char *argv[])
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
 
-	/* skip the 1st argument (<threads_num>) */
-	struct server_prestate server_prestate = {argc - 1, argv + 1};
-
 	struct prestate client_prestate = {args.addr, args.port};
+	struct server_prestate server_prestate = {args.addr, args.port};
 
 	struct mtt_test test = {
 			&client_prestate,
