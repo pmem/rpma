@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * private_data-common.h -- the private_data unit tests common functions
@@ -15,6 +16,7 @@
 #include "cmocka_headers.h"
 #include "private_data.h"
 #include "librpma.h"
+#include "test-common.h"
 
 /*
  * Both RDMA_CM_EVENT_CONNECT_REQUEST and RDMA_CM_EVENT_ESTABLISHED are valid.
@@ -24,8 +26,6 @@
 
 #define DEFAULT_VALUE	"The default one"
 #define DEFAULT_LEN	(strlen(DEFAULT_VALUE) + 1)
-
-#define SUCCESS		0
 
 int setup__cm_event(void **edata_ptr);
 
