@@ -228,16 +228,18 @@ function remote_command()
 {
 	case "$1" in
 	--pre)
-		REMOTE_CMD=$REMOTE_CMD_PRE_SUBST
+		if [ "x$REMOTE_CMD_PRE_SUBST" != "x" ]; then
+			echo "$REMOTE_CMD_PRE_SUBST"
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_PRE_SUBST" 2>>$LOG_ERR &
+		fi
 		;;
 	--post)
-		REMOTE_CMD=$REMOTE_CMD_POST_SUBST
+		if [ "x$REMOTE_CMD_POST_SUBST" != "x" ]; then
+			echo "$REMOTE_CMD_POST_SUBST"
+			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
+				$REMOTE_USER@$SERVER_IP "$REMOTE_CMD_POST_SUBST" 2>>$LOG_ERR
+		fi
 		;;
 	esac
-
-	if [ "x$REMOTE_CMD" != "x" ]; then
-		echo "$REMOTE_CMD"
-		sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-			$REMOTE_USER@$SERVER_IP "$REMOTE_CMD" 2>>$LOG_ERR &
-	fi
 }
