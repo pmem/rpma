@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|appendix|appendix_cpu|cmp"
+    echo "usage: $0 report|report_cpu|appendix|appendix_cpu|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -61,7 +61,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|appendix|appendix_cpu|cmp)
+report|report_cpu|appendix|appendix_cpu|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -561,19 +561,8 @@ function figures_report()
             'APM rand' 'APM seq' \
             'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
-
-        lat_figures \
-            "$data_path/*apm_*write_lat-cpu_*dax* $data_path/*gpspm_*write_lat-cpu_*dax*" \
-            'cpuload' \
-            'APM to PMEM vs GPSPM(-RT) to PMEM' \
-            'apm_pmem_vs_gpspm_pmem_cpuload' \
-            'APM rand' 'APM seq' \
-            'GPSPM-RT rand' 'GPSPM-RT seq' \
-            'GPSPM rand' 'GPSPM seq'
-
-        figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
-        figno=$((figno + 2 * 3))
+        figno=$((figno + 2 * 2))
     fi
 
     echo "WRITE BW"
@@ -592,18 +581,8 @@ function figures_report()
             'APM rand' 'APM seq' \
             'GPSPM-RT rand' 'GPSPM-RT seq' \
             'GPSPM rand' 'GPSPM seq'
-
-        bw_cpu_figures \
-            "$data_path/*apm_*write_{axis}_*dax* $data_path/*gpspm_*write_{axis}_*dax*" \
-            'APM to PMEM vs GPSPM(-RT) to PMEM' \
-            'apm_pmem_vs_gpspm_pmem_cpuload' \
-            'APM rand' 'APM seq' \
-            'GPSPM-RT rand' 'GPSPM-RT seq' \
-            'GPSPM rand' 'GPSPM seq'
-
-        figno=$((figno - 2)) # XXX remove when cpuload will be added to the report
     else
-        figno=$((figno + 2 * 3))
+        figno=$((figno + 2 * 2))
     fi
 
     echo 'MIX LAT'
@@ -639,6 +618,50 @@ function figures_report()
             'MIX against PMEM vs rpma_read() + APM to PMEM (rand)' \
             'mix_pmem_vs_rpma_read_apm_pmem' \
             'rpma_read()' 'APM to PMEM' 'MIX read' 'MIX write'
+    else
+        figno=$((figno + 4))
+    fi
+}
+
+function figures_report_cpu()
+{
+    # a global Figure indexer
+    figno=25
+
+    if [ -n "$REPORT_MACHINE" ]; then
+        WRITE_LAT_MACHINE="$REPORT_MACHINE"
+        WRITE_BW_MACHINE="$REPORT_MACHINE"
+    fi
+
+    echo "WRITE LAT"
+    set_data_path WRITE_LAT_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            lat_figures \
+                "$data_path/*apm_*write_lat*cpu${min}_100_*dax* $data_path/*gpspm_*write_lat*cpu${min}_100*dax*" \
+                'cpuload' \
+                'APM to PMEM vs GPSPM(-RT) to PMEM' \
+                "apm_pmem_vs_gpspm_pmem_cpu_${min}_100" \
+                'APM rand' 'APM seq' \
+                'GPSPM-RT rand' 'GPSPM-RT seq' \
+                'GPSPM rand' 'GPSPM seq'
+        done
+    else
+        figno=$((figno + 4))
+    fi
+
+    echo "WRITE BW"
+    set_data_path WRITE_BW_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            bw_cpu_figures \
+                "$data_path/*apm_*write_{axis}_*_cpu${min}_100_*dax* $data_path/*gpspm_*write_{axis}_*_cpu${min}_100_*dax*" \
+                'APM to PMEM vs GPSPM(-RT) to PMEM' \
+                "apm_pmem_vs_gpspm_pmem_cpu_${min}_100" \
+                'APM rand' 'APM seq' \
+                'GPSPM-RT rand' 'GPSPM-RT seq' \
+                'GPSPM rand' 'GPSPM seq'
+        done
     else
         figno=$((figno + 4))
     fi
