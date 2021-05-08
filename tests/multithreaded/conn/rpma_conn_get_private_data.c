@@ -28,7 +28,7 @@ struct prestate {
  * and save it in order to verify it later.
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	struct ibv_context *dev;
@@ -103,7 +103,7 @@ err_peer_delete:
  * thread -- get and verify the private data
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
@@ -136,7 +136,7 @@ thread(unsigned id, void *prestate, void *state,
  * prestate_fini -- disconnect and delete the peer object
  */
 static void
-prestate_fini(void *prestate, struct mtt_result *tr)
+prestate_fini(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
@@ -182,7 +182,7 @@ int server_main(int argc, char *argv[]);
  * from the 02-read-to-volatile example.
  */
 int
-server_func(void *prestate)
+server_func(void *prestate, sem_t **sems)
 {
 	struct server_prestate *pst = prestate;
 	return server_main(pst->argc, pst->argv);
@@ -214,5 +214,5 @@ main(int argc, char *argv[])
 			&server_prestate
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }

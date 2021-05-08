@@ -25,7 +25,7 @@ struct prestate {
  * get the endpoint's event file descriptor
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
@@ -60,7 +60,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * thread -- get the endpoint's event file descriptor
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
@@ -81,7 +81,7 @@ thread(unsigned id, void *prestate, void *state,
  * prestate_fini -- shutdown the endpoint and delete the peer object
  */
 static void
-prestate_fini(void *prestate, struct mtt_result *tr)
+prestate_fini(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
@@ -114,5 +114,5 @@ main(int argc, char *argv[])
 			prestate_fini
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }
