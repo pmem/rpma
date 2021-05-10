@@ -45,6 +45,7 @@ function usage()
     echo "export WRITE_BW_MACHINE=<machine>"
     echo "export MIX_LAT_MACHINE=<machine>"
     echo "export MIX_BW_MACHINE=<machine>"
+    echo "export LAT_YAXIS_MAX=<y_max>"
     echo
     echo "For 'cmp':"
     echo "export A_MACHINE=<machine>"
@@ -390,6 +391,10 @@ function lat_figures()
         ;;
     esac
 
+    if [ -n "$LAT_YAXIS_MAX" ]; then
+        yaxis_max="--yaxis_max $LAT_YAXIS_MAX"
+    fi
+
     echo "- $title"
     echo_filter $filter
     layouts=('lat_avg' 'lat_pctls')
@@ -407,6 +412,7 @@ function lat_figures()
             --output_layout "$layout" \
             --arg_axis $arg_axis \
             --arg_xscale $arg_xscale \
+            $yaxis_max \
             --output_with_table \
             --legend "${legend[@]}" \
             --output_file "Figure_${figno_name}_${output}_${layout}.png" \
