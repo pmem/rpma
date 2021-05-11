@@ -59,7 +59,7 @@ CONTENTS_VARIABLES = { \
         'introduction', 'tc1_read', 'tc2_write', 'tc3_mix', \
         'cpu', 'tc4_cpu' ], \
     'appendices_header': [ 'release'], \
-    'appendices': [ 'ref' ] \
+    'appendices': [ 'ref', 'cpu' ] \
 }
 
 # defaults
@@ -179,6 +179,7 @@ def main():
     # appendices-specifc arguments
     parser_a = subparsers.add_parser('appendices', help='generate the appendices')
     parser_a.add_argument('--ref', required=True, help='e.g. 2021_04_21_CLX')
+    parser_a.add_argument('--include_cpu_load', dest='cpu', action='store_true')
 
     # parse the command line
     args = vars(parser.parse_args())
