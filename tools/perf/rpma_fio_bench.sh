@@ -45,9 +45,9 @@ else
 	POLLING="no-busy-wait"
 fi
 
-CPU_LOAD_00_100="0 25 50 75 100"
-CPU_LOAD_75_100="75 80 85 90 95 99 100"
-CPU_LOAD_RANGE=${CPU_LOAD_RANGE-00_100} # the default value
+CPU_LOAD_00_99="0 25 50 75 99"
+CPU_LOAD_75_99="75 80 85 90 95 99"
+CPU_LOAD_RANGE=${CPU_LOAD_RANGE-00_99} # the default value
 CPU_LOAD_RANGE_VALUES="CPU_LOAD_$CPU_LOAD_RANGE"
 
 function benchmark_one() {

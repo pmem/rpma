@@ -106,7 +106,7 @@ function report_apm_gpspm_cpu
 	# -x is used as cheap logging
 	set -x
 	for mode in lat-cpu bw-cpu bw-cpu-mt; do
-		for load_range in 00_100 75_100; do
+		for load_range in 00_99 75_99; do
 			for op in write randwrite; do
 				if [ "$REMOTE_DIRECT_WRITE_TO_PMEM" == "1" -o \
 						"$REMOTE_SUDO_NOPASSWD" == "1" ]; then
