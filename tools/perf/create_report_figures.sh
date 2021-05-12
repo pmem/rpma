@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|report_cpu|appendix|appendix_cpu|cmp"
+    echo "usage: $0 report|report_cpu|report_aof|appendix|appendix_cpu|appendix_aof|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -45,6 +45,11 @@ function usage()
     echo "export WRITE_BW_MACHINE=<machine>"
     echo "export MIX_LAT_MACHINE=<machine>"
     echo "export MIX_BW_MACHINE=<machine>"
+    echo "export LAT_YAXIS_MAX=<y_max>"
+    echo
+    echo "For 'report_aof':"
+    echo "export AOF_LAT_MACHINE=<machine>"
+    echo "export AOF_BW_MACHINE=<machine>"
     echo "export LAT_YAXIS_MAX=<y_max>"
     echo
     echo "For 'cmp':"
@@ -62,7 +67,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|report_cpu|appendix|appendix_cpu|cmp)
+report|report_cpu|report_aof|appendix|appendix_cpu|appendix_aof|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -83,6 +88,9 @@ function echo_filter()
 function mode_seqrand()
 {
     case "$1" in
+    *aof*)
+        echo # AoF is always sequential
+        ;;
     *rand*)
         echo '_rand'
         ;;
@@ -198,7 +206,7 @@ function appendix_set()
     local filter="$1"
     local memtype="$2"
     local letter="$3"
-    local OP="$4" # APM, GPSPM, rpma_read(), rpma_write()
+    local OP="$4" # APM, GPSPM, rpma_read(), rpma_write(), AoF*
     local suffix="$5"
     local mode=${6-seqrand}
 
@@ -233,7 +241,7 @@ function appendix_set()
 
     echo "Appendix $letter $OP $dir $SRC $suffix"
     lat_appendix \
-        "$DATA_PATH/*/${filter}_lat*${memtype}*" \
+        "$DATA_PATH/*/${filter}_lat_*${memtype}*" \
         "${letter}1" "$OP $dir $SRC $suffix" 'bs' "$mode" \
         "Appendix_${letter}1_${op}_${src}_lat"
     bw_appendix \
@@ -353,6 +361,16 @@ function figures_appendix_cpu
     appendix_set_cpu '*apm_*write' 'dax' 'K' 'APM'
     appendix_set_cpu '*gpspm_busy-wait_*write' 'dax' 'L' 'GPSPM-RT'
     appendix_set_cpu '*gpspm_no-busy-wait_*write' 'dax' 'M' 'GPSPM'
+}
+
+function figures_appendix_aof
+{
+    appendix_set '*_aof_hw_*' 'dax' 'A' 'AoF-HW'
+    appendix_set '*_aof_sw_busy-wait_*' 'dax' 'B' 'AoF-SW-RT'
+    appendix_set '*_aof_sw_no-busy-wait_*' 'dax' 'C' 'AoF-SW'
+    appendix_set_cpu '*_aof_hw_*' 'dax' 'D' 'AoF-HW'
+    appendix_set_cpu '*_aof_sw_busy-wait_*' 'dax' 'E' 'AoF-SW-RT'
+    appendix_set_cpu '*_aof_sw_no-busy-wait_*' 'dax' 'F' 'AoF-SW'
 }
 
 function set_data_path()
@@ -670,6 +688,71 @@ function figures_report_cpu()
         done
     else
         figno=$((figno + 4))
+    fi
+}
+
+function figures_report_aof()
+{
+    # a global Figure indexer
+    figno=1
+
+    if [ -n "$REPORT_MACHINE" ]; then
+        AOF_LAT_MACHINE="$REPORT_MACHINE"
+        AOF_BW_MACHINE="$REPORT_MACHINE"
+    fi
+
+    echo 'AOF LAT'
+    set_data_path AOF_LAT_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        lat_figures \
+            "$data_path/*_aof_*_lat_*" \
+            'bs' \
+            'AoF' \
+            'aof' \
+            'hw' 'sw-RT' 'sw'
+    else
+        figno=$((figno + 2))
+    fi
+
+    echo "AOF BW"
+    set_data_path AOF_BW_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        bw_figures \
+            "$data_path/*_aof_*_{axis}*" \
+            'AoF' \
+            'aof' \
+            'hw' 'sw-RT' 'sw'
+    else
+        figno=$((figno + 2))
+    fi
+
+    echo 'AOF LAT'
+    set_data_path AOF_LAT_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            lat_figures \
+                "$data_path/*_aof_*_lat*cpu${min}_99*" \
+                'cpuload' \
+                'AoF' \
+                "aof_cpu_${min}_99" \
+                'hw' 'sw-RT' 'sw'
+        done
+    else
+        figno=$((figno + 2 * 2))
+    fi
+
+    echo 'AOF BW'
+    set_data_path AOF_BW_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            bw_cpu_figures \
+                "$data_path/*_aof_*_{axis}_*cpu${min}_99*" \
+                'AoF' \
+                "aof_cpu_${min}_99" \
+                'hw' 'sw-RT' 'sw'
+        done
+    else
+        figno=$((figno + 2 * 2))
     fi
 }
 
