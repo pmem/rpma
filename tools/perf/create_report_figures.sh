@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|report_cpu|report_aof|appendix|appendix_cpu|cmp"
+    echo "usage: $0 report|report_cpu|report_aof|appendix|appendix_cpu|appendix_aof|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -67,7 +67,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|report_cpu|report_aof|appendix|appendix_cpu|cmp)
+report|report_cpu|report_aof|appendix|appendix_cpu|appendix_aof|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -88,6 +88,9 @@ function echo_filter()
 function mode_seqrand()
 {
     case "$1" in
+    *aof*)
+        echo # AoF is always sequential
+        ;;
     *rand*)
         echo '_rand'
         ;;
@@ -203,7 +206,7 @@ function appendix_set()
     local filter="$1"
     local memtype="$2"
     local letter="$3"
-    local OP="$4" # APM, GPSPM, rpma_read(), rpma_write()
+    local OP="$4" # APM, GPSPM, rpma_read(), rpma_write(), AoF*
     local suffix="$5"
     local mode=${6-seqrand}
 
@@ -238,7 +241,7 @@ function appendix_set()
 
     echo "Appendix $letter $OP $dir $SRC $suffix"
     lat_appendix \
-        "$DATA_PATH/*/${filter}_lat*${memtype}*" \
+        "$DATA_PATH/*/${filter}_lat_*${memtype}*" \
         "${letter}1" "$OP $dir $SRC $suffix" 'bs' "$mode" \
         "Appendix_${letter}1_${op}_${src}_lat"
     bw_appendix \
@@ -358,6 +361,16 @@ function figures_appendix_cpu
     appendix_set_cpu '*apm_*write' 'dax' 'K' 'APM'
     appendix_set_cpu '*gpspm_busy-wait_*write' 'dax' 'L' 'GPSPM-RT'
     appendix_set_cpu '*gpspm_no-busy-wait_*write' 'dax' 'M' 'GPSPM'
+}
+
+function figures_appendix_aof
+{
+    appendix_set '*_aof_hw_*' 'dax' 'A' 'AoF-HW'
+    appendix_set '*_aof_sw_busy-wait_*' 'dax' 'B' 'AoF-SW-RT'
+    appendix_set '*_aof_sw_no-busy-wait_*' 'dax' 'C' 'AoF-SW'
+    appendix_set_cpu '*_aof_hw_*' 'dax' 'D' 'AoF-HW'
+    appendix_set_cpu '*_aof_sw_busy-wait_*' 'dax' 'E' 'AoF-SW-RT'
+    appendix_set_cpu '*_aof_sw_no-busy-wait_*' 'dax' 'F' 'AoF-SW'
 }
 
 function set_data_path()
