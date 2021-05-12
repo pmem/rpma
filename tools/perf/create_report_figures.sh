@@ -319,33 +319,33 @@ function appendix_set_cpu()
 
     echo "Appendix $letter $OP $dir $SRC $suffix"
     lat_appendix \
-        "$DATA_PATH/*/${filter}_lat*_cpu00_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_lat*_cpu00_99_*${memtype}*" \
         "${letter}1" "$OP $dir $SRC $suffix" 'cpuload' "$mode" \
         "Appendix_${letter}1_${op}_${src}_lat"
     lat_appendix \
-        "$DATA_PATH/*/${filter}_lat*_cpu75_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_lat*_cpu75_99_*${memtype}*" \
         "${letter}2" "$OP $dir $SRC $suffix" 'cpuload' "$mode" \
         "Appendix_${letter}2_${op}_${src}_lat"
     bw_appendix \
-        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu00_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu00_99_*${memtype}*" \
         "${letter}3" "$OP $dir $SRC $suffix" \
         'cpuload' "$mode" \
-        "Appendix_${letter}3_${op}_${src}_bw-cpu_cpu00_100"
+        "Appendix_${letter}3_${op}_${src}_bw-cpu_cpu00_99"
     bw_appendix \
-        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu75_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_bw-cpu_*_cpu75_99_*${memtype}*" \
         "${letter}4" "$OP $dir $SRC $suffix" \
         'cpuload' "$mode" \
-        "Appendix_${letter}4_${op}_${src}_bw-cpu_cpu75_100"
+        "Appendix_${letter}4_${op}_${src}_bw-cpu_cpu75_99"
     bw_appendix \
-        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu00_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu00_99_*${memtype}*" \
         "${letter}5" "$OP $dir $SRC $suffix" \
         'cpuload' "$mode" \
-        "Appendix_${letter}5_${op}_${src}_bw-cpu-mt_cpu00_100"
+        "Appendix_${letter}5_${op}_${src}_bw-cpu-mt_cpu00_99"
     bw_appendix \
-        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu75_100_*${memtype}*" \
+        "$DATA_PATH/*/${filter}_bw-cpu-mt_*_cpu75_99_*${memtype}*" \
         "${letter}6" "$OP $dir $SRC $suffix" \
         'cpuload' "$mode" \
-        "Appendix_${letter}6_${op}_${src}_bw-cpu-mt_cpu75_100"
+        "Appendix_${letter}6_${op}_${src}_bw-cpu-mt_cpu75_99"
 }
 
 function figures_appendix_cpu
@@ -644,10 +644,10 @@ function figures_report_cpu()
     if [ "$data_path" != 'skip' ]; then
         for min in 00 75; do
             lat_figures \
-                "$data_path/*apm_*write_lat*cpu${min}_100_*dax* $data_path/*gpspm_*write_lat*cpu${min}_100*dax*" \
+                "$data_path/*apm_*write_lat*cpu${min}_99_*dax* $data_path/*gpspm_*write_lat*cpu${min}_99*dax*" \
                 'cpuload' \
                 'APM to PMEM vs GPSPM(-RT) to PMEM' \
-                "apm_pmem_vs_gpspm_pmem_cpu_${min}_100" \
+                "apm_pmem_vs_gpspm_pmem_cpu_${min}_99" \
                 'APM rand' 'APM seq' \
                 'GPSPM-RT rand' 'GPSPM-RT seq' \
                 'GPSPM rand' 'GPSPM seq'
@@ -661,9 +661,9 @@ function figures_report_cpu()
     if [ "$data_path" != 'skip' ]; then
         for min in 00 75; do
             bw_cpu_figures \
-                "$data_path/*apm_*write_{axis}_*_cpu${min}_100_*dax* $data_path/*gpspm_*write_{axis}_*_cpu${min}_100_*dax*" \
+                "$data_path/*apm_*write_{axis}_*_cpu${min}_99_*dax* $data_path/*gpspm_*write_{axis}_*_cpu${min}_99_*dax*" \
                 'APM to PMEM vs GPSPM(-RT) to PMEM' \
-                "apm_pmem_vs_gpspm_pmem_cpu_${min}_100" \
+                "apm_pmem_vs_gpspm_pmem_cpu_${min}_99" \
                 'APM rand' 'APM seq' \
                 'GPSPM-RT rand' 'GPSPM-RT seq' \
                 'GPSPM rand' 'GPSPM seq'

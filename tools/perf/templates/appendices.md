@@ -81,13 +81,13 @@
 
 ![](./Appendix_K2_apm_pmem_lat_2.png)
 
-![](./Appendix_K3_apm_pmem_bw-cpu_cpu00_100.png)
+![](./Appendix_K3_apm_pmem_bw-cpu_cpu00_99.png)
 
-![](./Appendix_K4_apm_pmem_bw-cpu_cpu75_100.png)
+![](./Appendix_K4_apm_pmem_bw-cpu_cpu75_99.png)
 
-![](./Appendix_K5_apm_pmem_bw-cpu-mt_cpu00_100.png)
+![](./Appendix_K5_apm_pmem_bw-cpu-mt_cpu00_99.png)
 
-![](./Appendix_K6_apm_pmem_bw-cpu-mt_cpu75_100.png)
+![](./Appendix_K6_apm_pmem_bw-cpu-mt_cpu75_99.png)
 
 ![](./Appendix_L1_gpspm-rt_pmem_lat_1.png)
 
@@ -97,13 +97,13 @@
 
 ![](./Appendix_L2_gpspm-rt_pmem_lat_2.png)
 
-![](./Appendix_L3_gpspm-rt_pmem_bw-cpu_cpu00_100.png)
+![](./Appendix_L3_gpspm-rt_pmem_bw-cpu_cpu00_99.png)
 
-![](./Appendix_L4_gpspm-rt_pmem_bw-cpu_cpu75_100.png)
+![](./Appendix_L4_gpspm-rt_pmem_bw-cpu_cpu75_99.png)
 
-![](./Appendix_L5_gpspm-rt_pmem_bw-cpu-mt_cpu00_100.png)
+![](./Appendix_L5_gpspm-rt_pmem_bw-cpu-mt_cpu00_99.png)
 
-![](./Appendix_L6_gpspm-rt_pmem_bw-cpu-mt_cpu75_100.png)
+![](./Appendix_L6_gpspm-rt_pmem_bw-cpu-mt_cpu75_99.png)
 
 ![](./Appendix_M1_gpspm_pmem_lat_1.png)
 
@@ -113,11 +113,11 @@
 
 ![](./Appendix_M2_gpspm_pmem_lat_2.png)
 
-![](./Appendix_M3_gpspm_pmem_bw-cpu_cpu00_100.png)
+![](./Appendix_M3_gpspm_pmem_bw-cpu_cpu00_99.png)
 
-![](./Appendix_M4_gpspm_pmem_bw-cpu_cpu75_100.png)
+![](./Appendix_M4_gpspm_pmem_bw-cpu_cpu75_99.png)
 
-![](./Appendix_M5_gpspm_pmem_bw-cpu-mt_cpu00_100.png)
+![](./Appendix_M5_gpspm_pmem_bw-cpu-mt_cpu00_99.png)
 
-![](./Appendix_M6_gpspm_pmem_bw-cpu-mt_cpu75_100.png)
+![](./Appendix_M6_gpspm_pmem_bw-cpu-mt_cpu75_99.png)
 {% endif %}

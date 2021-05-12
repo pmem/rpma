@@ -8,14 +8,13 @@ Comparing the latency of **APM** to PMem on **the RPMA Target** vs the latency o
 
 {{tc\_cpu\_lat\_config}}
 
-![](./Figure_025_apm_pmem_vs_gpspm_pmem_cpu_00_100_lat_avg.png)
+![](./Figure_025_apm_pmem_vs_gpspm_pmem_cpu_00_99_lat_avg.png)
 
-![](./Figure_026_apm_pmem_vs_gpspm_pmem_cpu_00_100_lat_pctls.png)
+![](./Figure_026_apm_pmem_vs_gpspm_pmem_cpu_00_99_lat_pctls.png)
 
-![](./Figure_027_apm_pmem_vs_gpspm_pmem_cpu_75_100_lat_avg.png)
+![](./Figure_027_apm_pmem_vs_gpspm_pmem_cpu_75_99_lat_avg.png)
 
-
-![](./Figure_028_apm_pmem_vs_gpspm_pmem_cpu_75_100_lat_pctls.png)
+![](./Figure_028_apm_pmem_vs_gpspm_pmem_cpu_75_99_lat_pctls.png)
 
 <h3 id="cpu-bw">Test Case 4B: CPU load impact: Bandwidth</h3>
 
@@ -23,10 +22,10 @@ Comparing the bandwidth of **APM** to PMem on **the RPMA Target** vs the bandwid
 
 {{tc\_cpu\_bw\_config}}
 
-![](./Figure_029_apm_pmem_vs_gpspm_pmem_cpu_00_100_bw-cpu.png)
+![](./Figure_029_apm_pmem_vs_gpspm_pmem_cpu_00_99_bw-cpu.png)
 
-![](./Figure_030_apm_pmem_vs_gpspm_pmem_cpu_00_100_bw-cpu-mt.png)
+![](./Figure_030_apm_pmem_vs_gpspm_pmem_cpu_00_99_bw-cpu-mt.png)
 
-![](./Figure_031_apm_pmem_vs_gpspm_pmem_cpu_75_100_bw-cpu.png)
+![](./Figure_031_apm_pmem_vs_gpspm_pmem_cpu_75_99_bw-cpu.png)
 
-![](./Figure_032_apm_pmem_vs_gpspm_pmem_cpu_75_100_bw-cpu-mt.png)
+![](./Figure_032_apm_pmem_vs_gpspm_pmem_cpu_75_99_bw-cpu-mt.png)
