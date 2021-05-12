@@ -32,7 +32,7 @@ function usage()
 {
     echo "Error: $1"
     echo
-    echo "usage: $0 report|report_cpu|appendix|appendix_cpu|cmp"
+    echo "usage: $0 report|report_cpu|report_aof|appendix|appendix_cpu|cmp"
     echo
     echo "export DATA_PATH=/custom/data/path"
     echo "export STAMP=CUSTOM_REPORT_STAMP"
@@ -45,6 +45,11 @@ function usage()
     echo "export WRITE_BW_MACHINE=<machine>"
     echo "export MIX_LAT_MACHINE=<machine>"
     echo "export MIX_BW_MACHINE=<machine>"
+    echo "export LAT_YAXIS_MAX=<y_max>"
+    echo
+    echo "For 'report_aof':"
+    echo "export AOF_LAT_MACHINE=<machine>"
+    echo "export AOF_BW_MACHINE=<machine>"
     echo "export LAT_YAXIS_MAX=<y_max>"
     echo
     echo "For 'cmp':"
@@ -62,7 +67,7 @@ elif [ -z "$DATA_PATH" ]; then
 fi
 
 case "$1" in
-report|report_cpu|appendix|appendix_cpu|cmp)
+report|report_cpu|report_aof|appendix|appendix_cpu|cmp)
     ;;
 *)
     usage "Unknown mode: $1"
@@ -670,6 +675,71 @@ function figures_report_cpu()
         done
     else
         figno=$((figno + 4))
+    fi
+}
+
+function figures_report_aof()
+{
+    # a global Figure indexer
+    figno=1
+
+    if [ -n "$REPORT_MACHINE" ]; then
+        AOF_LAT_MACHINE="$REPORT_MACHINE"
+        AOF_BW_MACHINE="$REPORT_MACHINE"
+    fi
+
+    echo 'AOF LAT'
+    set_data_path AOF_LAT_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        lat_figures \
+            "$data_path/*_aof_*_lat_*" \
+            'bs' \
+            'AoF' \
+            'aof' \
+            'hw' 'sw-RT' 'sw'
+    else
+        figno=$((figno + 2))
+    fi
+
+    echo "AOF BW"
+    set_data_path AOF_BW_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        bw_figures \
+            "$data_path/*_aof_*_{axis}*" \
+            'AoF' \
+            'aof' \
+            'hw' 'sw-RT' 'sw'
+    else
+        figno=$((figno + 2))
+    fi
+
+    echo 'AOF LAT'
+    set_data_path AOF_LAT_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            lat_figures \
+                "$data_path/*_aof_*_lat*cpu${min}_99*" \
+                'cpuload' \
+                'AoF' \
+                "aof_cpu_${min}_99" \
+                'hw' 'sw-RT' 'sw'
+        done
+    else
+        figno=$((figno + 2 * 2))
+    fi
+
+    echo 'AOF BW'
+    set_data_path AOF_BW_MACHINE
+    if [ "$data_path" != 'skip' ]; then
+        for min in 00 75; do
+            bw_cpu_figures \
+                "$data_path/*_aof_*_{axis}_*cpu${min}_99*" \
+                'AoF' \
+                "aof_cpu_${min}_99" \
+                'hw' 'sw-RT' 'sw'
+        done
+    else
+        figno=$((figno + 2 * 2))
     fi
 }
 
