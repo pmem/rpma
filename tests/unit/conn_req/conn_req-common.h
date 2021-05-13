@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn_req-common.c -- the conn_req unit tests common definitions
@@ -11,6 +12,7 @@
 #include "cmocka_headers.h"
 #include "conn_req.h"
 #include "mocks-rpma-conn_cfg.h"
+#include "mocks-rpma-cq.h"
 #include "test-common.h"
 
 #define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410

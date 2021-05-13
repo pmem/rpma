@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn_req-recv.c -- the rpma_conn_req_recv() unit tests
@@ -99,5 +100,5 @@ main(int argc, char *argv[])
 	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
 			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
 
-	return cmocka_run_group_tests(tests_recv, group_setup_conn_req, NULL);
+	return cmocka_run_group_tests(tests_recv, NULL, NULL);
 }
