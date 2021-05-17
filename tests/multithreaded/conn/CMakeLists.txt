@@ -15,3 +15,5 @@ add_multithreaded(NAME conn BIN rpma_conn_get_private_data
 		${CMAKE_SOURCE_DIR}/examples/02-read-to-volatile/server.c
 		${CMAKE_SOURCE_DIR}/examples/common/common-conn.c
 	USE_EXAMPLES)
+add_multithreaded(NAME conn BIN rpma_conn_req_new
+	SRCS rpma_conn_req_new.c)
