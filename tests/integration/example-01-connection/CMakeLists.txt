@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2021, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -15,6 +16,7 @@ build_test_src(NAME ${TARGET} SRCS
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_cfg.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c
+	${LIBRPMA_SOURCE_DIR}/cq.c
 	${LIBRPMA_SOURCE_DIR}/flush.c
 	${LIBRPMA_SOURCE_DIR}/ep.c
 	${LIBRPMA_SOURCE_DIR}/info.c
