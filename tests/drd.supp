@@ -208,3 +208,14 @@
    fun:rpma_mr_dereg
    ...
 }
+
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_conn_req_from_id
+{
+   Conflicting load/store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:_execute_ioctl_fallback
+   ...
+}
