@@ -177,3 +177,14 @@
    fun:rpma_mr_dereg
    ...
 }
+
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_conn_req_from_id
+{
+   Possible data race during read/write of size 8
+   Helgrind:Race
+   ...
+   fun:_execute_ioctl_fallback
+   ...
+}
