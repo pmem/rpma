@@ -177,3 +177,19 @@
    fun:rpma_mr_dereg
    ...
 }
+
+{
+   Possible data race during read of size 8
+   Helgrind:Race
+   ...
+   fun:_execute_ioctl_fallback
+   ...
+}
+
+{
+   Possible data race during write of size 8
+   Helgrind:Race
+   fun:bitmap_set_bit
+   fun:_execute_ioctl_fallback
+   ...
+}
