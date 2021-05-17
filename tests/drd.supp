@@ -208,3 +208,19 @@
    fun:rpma_mr_dereg
    ...
 }
+
+{
+   Conflicting load of size 8
+   drd:ConflictingAccess
+   fun:bitmap_test_bit
+   fun:_execute_ioctl_fallback
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:bitmap_set_bit
+   fun:_execute_ioctl_fallback
+   ...
+}
