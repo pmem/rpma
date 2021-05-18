@@ -1,0 +1,202 @@
+{
+    "parts": [
+        "read"
+    ],
+    "figures":
+    [
+        {
+            "output": {
+                "common": "Figures with parameters will be flatten out and effectively all figures will have their own separate definitions",
+                "y": ["lat_avg", "lat_pctl_999", "lat_pctl_9999"],
+                "x": "bs",
+                "output_title": "Latency ({y_infix}): ib_read_lat vs rpma_read() from DRAM",
+                "output_file": "ib_read_vs_rpma_read_dram",
+                "key": "{y}",
+                "done": false
+            },
+            "data": [
+                {
+                    "hash": "hash_001",
+                    "label": "ib_read_lat"
+                },
+                {
+                    "hash": "hash_002",
+                    "label": "rpma_read() rand"
+                },
+                {
+                    "hash": "hash_003",
+                    "label": "rpma_read() seq"
+                }
+            ]
+        },
+        {
+            "figure": {
+                "y": ["lat_avg", "lat_pctl_999", "lat_pctl_9999"],
+                "x": "bs",
+                "output_title": "Latency ({y_infix}): rpma_read() from DRAM vs from PMEM",
+                "output_file": "rpma_read_dram_vs_pmem",
+                "key": "{y}",
+                "done": false
+            },
+            "data": [
+                {
+                    "hash": "hash_003",
+                    "label": "DRAM rand"
+                },
+                {
+                    "hash": "hash_004",
+                    "label": "DRAM seq"
+                },
+                {
+                    "hash": "hash_005",
+                    "label": "PMEM rand"
+                },
+                {
+                    "hash": "hash_006",
+                    "label": "PMEM seq"
+                }
+            ]
+        },
+        {
+            "figure": {
+                "y": "bw",
+                "x": "bs",
+                "output_title": "Bandwidth: ib_read_lat vs rpma_read() from DRAM - bw(bs)",
+                "output_file": "ib_read_bw_vs_rpma_read_dram_bw",
+                "key": "bs",
+                "done": false
+            },
+            "data": [
+                {
+                    "hash": "hash_007",
+                    "label": "ib_read_lat"
+                },
+                {
+                    "hash": "hash_008",
+                    "label": "rpma_read() rand"
+                },
+                {
+                    "hash": "hash_009",
+                    "label": "rpma_read() seq"
+                }
+            ]
+        },
+        {
+            "figure": {
+                "y": "bw",
+                "x": "threads",
+                "output_title": "Bandwidth: ib_read_lat vs rpma_read() from DRAM - bw(threads)",
+                "output_file": "ib_read_bw_vs_rpma_read_dram_bw",
+                "key": "threads",
+                "done": false
+            },
+            "data": [
+                {
+                    "hash": "hash_014",
+                    "label": "ib_read_lat"
+                },
+                {
+                    "hash": "hash_013",
+                    "label": "rpma_read() rand"
+                },
+                {
+                    "hash": "hash_012",
+                    "label": "rpma_read() seq"
+                }
+            ]
+        }
+    ],
+    "config": {
+        "comment": "If we want to can continue the benchmarking base on only this file I believe we have also to copy here the content of config.json provided at the begining of the benchmarking to report_bench.py."
+    },
+    "benchmarks":
+    {
+        "hash_001": {
+            "filetype": "malloc",
+            "mode": "lat",
+            "tool": "ib_read_lat",
+            "done": false
+        },
+        "hash_002": {
+            "filetype": "malloc",
+            "mode": "lat",
+            "tool": "fio/rpma",
+            "rw": "randread",
+            "done": false
+        },
+        "hash_003": {
+            "filetype": "malloc",
+            "mode": "lat",
+            "tool": "fio/rpma",
+            "rw": "read",
+            "done": false
+        },
+        "hash_004": {
+            "tool": "fio/rpma",
+            "mode": "lat",
+            "filetype": "malloc",
+            "rw": "read",
+            "done": false
+        },
+        "hash_005": {
+            "tool": "fio/rpma",
+            "mode": "lat",
+            "filetype": "devdax",
+            "rw": "randread",
+            "done": false
+        },
+        "hash_006": {
+            "tool": "fio/rpma",
+            "mode": "lat",
+            "filetype": "devdax",
+            "rw": "read",
+            "done": false
+        },
+        "hash_007": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "bs",
+            "tool": "ib_read_lat",
+            "done": false
+        },
+        "hash_008": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "bs",
+            "tool": "fio/rpma",
+            "rw": "randread",
+            "done": false
+        },
+        "hash_009": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "bs",
+            "tool": "fio/rpma",
+            "rw": "read",
+            "done": false
+        },
+        "hash_010": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "threads",
+            "tool": "ib_read_lat",
+            "done": false
+        },
+        "hash_011": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "threads",
+            "tool": "fio/rpma",
+            "rw": "randread",
+            "done": false
+        },
+        "hash_012": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "threads",
+            "tool": "fio/rpma",
+            "rw": "read",
+            "done": false
+        }
+    }
+}

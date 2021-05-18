@@ -1,0 +1,113 @@
+[
+    {
+        "output": {
+            "comment": "XXX requires manual or automatic flattening",
+            "title": "Latency ({layout_infix}): ib_read_lat vs rpma_read() from DRAM",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_999", "lat_pctl_9999"],
+            "file": "ib_read_vs_rpma_read_dram",
+            "key": "{y}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "malloc",
+            "mode": "lat"
+        },
+        "series": [
+            {
+                "tool": "ib_read_lat",
+                "label": "ib_read_lat"
+            },
+            {
+                "tool": "fio/rpma",
+                "rw": ["randread", "read"],
+                "label": "rpma_read() {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Latency ({y_infix}): rpma_read() from DRAM vs from PMEM",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_999", "lat_pctl_9999"],
+            "file": "rpma_read_dram_vs_pmem",
+            "key": "{y}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "tool": "fio/rpma",
+            "mode": "lat"
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "rw": ["randread", "read"],
+                "label": "DRAM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "filetype": "devdax",
+                "rw": ["randread", "read"],
+                "label": "PMEM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Bandwidth: ib_read_lat vs rpma_read() from DRAM - bw({arg_axis})",
+            "x": ["bs", "threads"],
+            "y": "bw",
+            "file": "ib_read_bw_vs_rpma_read_dram_bw",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "malloc",
+            "mode": "bw",
+            "mode_arg": "{x}"
+        },
+        "series": [
+            {
+                "tool": "ib_read_lat",
+                "label": "ib_read_lat"
+            },
+            {
+                "tool": "fio/rpma",
+                "rw": ["randread", "read"],
+                "label": "rpma_read() {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Bandwidth: rpma_read() from DRAM vs from PMEM - bw({arg_axis})",
+            "x": ["bs", "threads"],
+            "y": "bw",
+            "file": "rpma_read_dram_vs_pmem_bw",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "tool": "fio/rpma",
+            "mode": "bw",
+            "mode_arg": "{x}"
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "rw": ["randread", "read"],
+                "label": "DRAM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "filetype": "devdax",
+                "rw": ["randread", "read"],
+                "label": "PMEM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    }
+]

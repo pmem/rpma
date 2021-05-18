@@ -1,0 +1,21 @@
+{
+    "comment": "It is aimed to provide a template and guidelines how to prepare variables for the part_read.md template. It is 'an almost' ready to use object but it has to be populate by values read from various files in various form e.g.",
+    "config": {
+        "lat": {
+            "comment": "It indicates to read the content of this variable from file named part_read_config_lat.html as a HTML file.",
+            "ext": "html"
+        },
+        "bw": {
+            "ext": "html"
+        }
+    },
+    "figures" : {
+        "ib_read_vs_rpma_read_dram_lat": {
+            "comment": "The 'ext': 'json' may be implicit; Reading a JSON means read the object from the figures_ib_read_vs_rpma_read_dram_lat.json file and set it here.",
+            "ext": "json"
+        },
+        "rpma_read_dram_vs_pmem_lat": {},
+        "ib_read_vs_rpma_read_dram_bw": {},
+        "rpma_read_dram_vs_pmem_bw": {}
+    }
+}

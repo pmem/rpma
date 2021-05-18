@@ -1,0 +1,6 @@
+{
+    "JOB_NUMA": 0,
+    "FIO_PATH": "path",
+    "REMOTE_JOB_NUMA": 0,
+    "...": "..."
+}
