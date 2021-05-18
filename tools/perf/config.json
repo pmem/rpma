@@ -1,0 +1,7 @@
+{
+    "_comment": "A configuration file providing all information describing the system which are necessary to run ./rpma_fio_bench.sh and ./ib_read.sh.",
+    "JOB_NUMA": 0,
+    "FIO_PATH": "path",
+    "REMOTE_JOB_NUMA": 0,
+    "XXX": "XXX"
+}

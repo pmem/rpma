@@ -1,0 +1,37 @@
+[
+    {
+        "output": {
+            "_comment": "XXX flattened manualy",
+            "title": "Latency (lat_avg): ib_read_lat vs rpma_read() from DRAM",
+            "x": "bs",
+            "y": "lat_avg",
+            "file": "ib_read_vs_rpma_read_dram",
+            "key": "lat_avg"
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "mode": "lat",
+                "tool": "ib_read_lat",
+                "label": "ib_read_lat",
+                "hash": "XXX_01"
+            },
+            {
+                "filetype": "malloc",
+                "mode": "lat",
+                "tool": "fio/rpma",
+                "rw": "randread",
+                "label": "rpma_read() rand",
+                "hash": "XXX_02"
+            },
+            {
+                "filetype": "malloc",
+                "mode": "lat",
+                "tool": "fio/rpma",
+                "rw": "read",
+                "label": "rpma_read() seq",
+                "hash": "XXX_03"
+            }
+        ]
+    }
+]
