@@ -1,4 +1,6 @@
 *.csv
 *.png
 report_*
+!report_bench.py
 !report_bench.sh
+!report_figures.py
