@@ -87,18 +87,18 @@ listen__peer_addr_port_ep_ptr_NULL(void **unused)
 }
 
 /*
- * listen__create_evch_EAGAIN - rdma_create_event_channel() fails
- * with EAGAIN
+ * listen__create_evch_ERRNO - rdma_create_event_channel() fails
+ * with MOCK_ERRNO
  */
 static void
-listen__create_evch_EAGAIN(void **unused)
+listen__create_evch_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks for:
 	 * - constructing:
 	 */
 	will_return(rdma_create_event_channel, NULL);
-	will_return(rdma_create_event_channel, EAGAIN);
+	will_return(rdma_create_event_channel, MOCK_ERRNO);
 	/* - things which may happen: */
 	will_return_maybe(rpma_info_new, MOCK_INFO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
@@ -113,10 +113,10 @@ listen__create_evch_EAGAIN(void **unused)
 }
 
 /*
- * listen__create_id_EAGAIN - rdma_create_id() fails with EAGAIN
+ * listen__create_id_ERRNO - rdma_create_id() fails with MOCK_ERRNO
  */
 static void
-listen__create_id_EAGAIN(void **unused)
+listen__create_id_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -125,7 +125,7 @@ listen__create_id_EAGAIN(void **unused)
 	struct rdma_event_channel evch;
 	will_return(rdma_create_event_channel, &evch);
 	will_return(rdma_create_id, NULL);
-	will_return(rdma_create_id, EAGAIN);
+	will_return(rdma_create_id, MOCK_ERRNO);
 	/* - things which may happen: */
 	will_return_maybe(rpma_info_new, MOCK_INFO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
@@ -140,8 +140,7 @@ listen__create_id_EAGAIN(void **unused)
 }
 
 /*
- * listen__info_new_E_NOMEM - rpma_info_new() fails with
- * RPMA_E_NOMEM
+ * listen__info_new_E_NOMEM - rpma_info_new() returns RPMA_E_NOMEM
  */
 static void
 listen__info_new_E_NOMEM(void **unused)
@@ -169,8 +168,8 @@ listen__info_new_E_NOMEM(void **unused)
 }
 
 /*
- * listen__info_bind_addr_E_PROVIDER - rpma_info_bind_addr() fails
- * with RPMA_E_PROVIDER
+ * listen__info_bind_addr_E_PROVIDER - rpma_info_bind_addr() returns
+ * RPMA_E_PROVIDER
  */
 static void
 listen__info_bind_addr_E_PROVIDER(void **unused)
@@ -198,10 +197,10 @@ listen__info_bind_addr_E_PROVIDER(void **unused)
 }
 
 /*
- * listen__listen_EAGAIN - rdma_listen() fails with EAGAIN
+ * listen__listen_ERRNO - rdma_listen() fails with MOCK_ERRNO
  */
 static void
-listen__listen_EAGAIN(void **unused)
+listen__listen_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks for:
@@ -213,7 +212,7 @@ listen__listen_EAGAIN(void **unused)
 	will_return(rdma_create_id, &id);
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rpma_info_bind_addr, MOCK_OK);
-	will_return(rdma_listen, EAGAIN);
+	will_return(rdma_listen, MOCK_ERRNO);
 	/* - deconstructing */
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -227,16 +226,16 @@ listen__listen_EAGAIN(void **unused)
 }
 
 /*
- * listen__malloc_ENOMEM - malloc() fails with ENOMEM
+ * listen__malloc_ERRNO - malloc() fails with MOCK_ERRNO
  */
 static void
-listen__malloc_ENOMEM(void **unused)
+listen__malloc_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks for:
 	 * - constructing
 	 */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	/* - things which may happen: */
 	struct rdma_event_channel evch;
 	will_return_maybe(rdma_create_event_channel, &evch);
@@ -257,14 +256,15 @@ listen__malloc_ENOMEM(void **unused)
 }
 
 /*
- * listen__malloc_ENOMEM_destroy_id_EAGAIN - malloc() fails with ENOMEM
- * rdma_destroy_id() fails consequently during the handling of the first error
+ * listen__malloc_ERRNO_destroy_id_ERRNO2 - malloc() fails with MOCK_ERRNO
+ * rdma_destroy_id() fails with MOCK_ERRNO2 consequently during the handling
+ * of the first error
  *
  * Note: test assumes rdma_create_id() is called before the first failing
  * malloc()
  */
 static void
-listen__malloc_ENOMEM_destroy_id_EAGAIN(void **unused)
+listen__malloc_ERRNO_destroy_id_ERRNO2(void **unused)
 {
 	/*
 	 * configure mocks for:
@@ -277,9 +277,9 @@ listen__malloc_ENOMEM_destroy_id_EAGAIN(void **unused)
 	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rpma_info_bind_addr, MOCK_OK);
 	will_return(rdma_listen, MOCK_OK);
-	will_return(__wrap__test_malloc, ENOMEM); /* first error */
+	will_return(__wrap__test_malloc, MOCK_ERRNO); /* first error */
 	/* - deconstructing */
-	will_return(rdma_destroy_id, MOCK_ERRNO); /* second error */
+	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -331,16 +331,16 @@ ep__lifecycle(void **unused)
 }
 
 /*
- * shutdown__destroy_id_EAGAIN -- rdma_destroy_id() fails with EAGAIN
+ * shutdown__destroy_id_ERRNO -- rdma_destroy_id() fails with MOCK_ERRNO
  */
 static void
-shutdown__destroy_id_EAGAIN(void **estate_ptr)
+shutdown__destroy_id_ERRNO(void **estate_ptr)
 {
 	struct ep_test_state *estate = *estate_ptr;
 
 	/* configure mocks */
 	expect_value(rdma_destroy_id, id, &estate->cmid);
-	will_return(rdma_destroy_id, EAGAIN);
+	will_return(rdma_destroy_id, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_ep_shutdown(&estate->ep);
@@ -368,14 +368,14 @@ main(int argc, char *argv[])
 		cmocka_unit_test(listen__port_NULL),
 		cmocka_unit_test(listen__ep_ptr_NULL),
 		cmocka_unit_test(listen__peer_addr_port_ep_ptr_NULL),
-		cmocka_unit_test(listen__create_evch_EAGAIN),
-		cmocka_unit_test(listen__create_id_EAGAIN),
+		cmocka_unit_test(listen__create_evch_ERRNO),
+		cmocka_unit_test(listen__create_id_ERRNO),
 		cmocka_unit_test(listen__info_new_E_NOMEM),
 		cmocka_unit_test(listen__info_bind_addr_E_PROVIDER),
-		cmocka_unit_test(listen__listen_EAGAIN),
-		cmocka_unit_test(listen__malloc_ENOMEM),
+		cmocka_unit_test(listen__listen_ERRNO),
+		cmocka_unit_test(listen__malloc_ERRNO),
 		cmocka_unit_test(
-			listen__malloc_ENOMEM_destroy_id_EAGAIN),
+			listen__malloc_ERRNO_destroy_id_ERRNO2),
 
 		/* rpma_ep_listen()/_shutdown() lifecycle */
 		cmocka_unit_test_prestate_setup_teardown(ep__lifecycle,
@@ -386,7 +386,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(shutdown__ep_ptr_NULL),
 		cmocka_unit_test(shutdown__ep_NULL),
 		cmocka_unit_test_prestate_setup_teardown(
-			shutdown__destroy_id_EAGAIN,
+			shutdown__destroy_id_ERRNO,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 	};
