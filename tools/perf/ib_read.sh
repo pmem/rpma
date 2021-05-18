@@ -250,6 +250,8 @@ function benchmark_one() {
 		CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
 
 		# convert to standardized-CSV
+		# XXX allow forcing OUTPUT name
+		# XXX produce both CSV and JSON or one of them on cammand
 		./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
 	fi
 

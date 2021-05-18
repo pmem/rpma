@@ -96,6 +96,7 @@ def main():
         df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
             if x.name in fio_KiBps_2_Gbps_names else x)
         df = df.reindex(columns=fio_output_names)
+    # XXX produce both CSV and JSON or one of them on cammand
     df.to_csv(args.output_file, index=False)
 
 if __name__ == "__main__":
