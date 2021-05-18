@@ -324,6 +324,8 @@ function benchmark_one() {
 			cat ${OUTPUT[i]} | grep -v 'lat' >> $TEMP_CSV
 			mv $TEMP_CSV ${OUTPUT[i]}
 			# convert to standardized-CSV
+			# XXX allow forcing OUTPUT name
+			# XXX produce both CSV and JSON or one of them on cammand
 			./csv2standardized.py --csv_type fio --output_file ${OUTPUT[i]} ${OUTPUT[i]}
 		done
 	fi
