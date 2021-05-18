@@ -249,10 +249,15 @@ function benchmark_one() {
 	if [ "$DO_RUN" == "1" ]; then
 		CSV_MODE=$(echo ${IB_TOOL} | sed 's/_read//')
 
-		# convert to standardized-CSV
-		# XXX allow forcing OUTPUT name
-		# XXX produce both CSV and JSON or one of them on cammand
-		./csv2standardized.py --csv_type ${CSV_MODE} --output_file $OUTPUT $OUTPUT
+		# prepare output file name
+		output_file=${OUTPUT_FILE-$OUTPUT}
+		# convert to standardized-CSV/JSON
+		./csv2standardized.py --csv_type ${CSV_MODE} \
+			--output_file $output_file $OUTPUT
+
+		if [ "$output_file" != "$OUTPUT" ]; then
+			rm -f $OUTPUT
+		fi
 	fi
 
 	echo "FINISHED benchmark for MODE=$MODE IP=$SERVER_IP"

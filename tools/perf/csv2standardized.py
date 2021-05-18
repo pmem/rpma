@@ -7,12 +7,12 @@
 #
 # csv2standardized.py -- standardize a CSV (EXPERIMENTAL)
 #
-# Convert a variety of CSV files into standardized-CSV format.
+# Convert a variety of CSV files into standardized-CSV or JSON format.
 # The conversion includes:
 # - renaming headers
 # - converting units
 #
-# The standardized-CSV format columns are (in order):
+# The standardized format columns are (in order):
 # - threads - number of threads [1] (optional)
 # - iodepth - number of operations submitted at once [1] (optional)
 # - bs - block size [B]
@@ -34,6 +34,7 @@
 #
 
 import argparse
+import os.path
 import pandas as pd
 
 fio_input_names = [
@@ -76,7 +77,7 @@ def main():
     parser.add_argument('--csv_type', metavar='CSV_TYPE', required=True,
         choices=['ib_lat', 'ib_bw', 'fio'], help='a type of the CSV file')
     parser.add_argument('--output_file', metavar='OUTPUT_FILE',
-        default='output.csv', help='an output file')
+        default='output.csv', help='an output file')        
     args = parser.parse_args()
 
     if args.csv_type == 'ib_lat':
@@ -96,8 +97,14 @@ def main():
         df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
             if x.name in fio_KiBps_2_Gbps_names else x)
         df = df.reindex(columns=fio_output_names)
-    # XXX produce both CSV and JSON or one of them on cammand
-    df.to_csv(args.output_file, index=False)
+    
+    _, ext = os.path.splitext(args.output_file)
+    if ext == '.csv':
+        df.to_csv(args.output_file, index=False)
+    elif ext == '.json':
+        df.to_json(args.output_file, orient='records')
+    else:
+        raise Exception(f"Unsupported output file extension: {ext}")
 
 if __name__ == "__main__":
     main()
