@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * test-common.h -- a test's common header
@@ -35,6 +36,7 @@
 
 #define MOCK_OK			0
 #define MOCK_ERRNO		123456
+#define MOCK_ERRNO2		234567
 
 #define MOCK_PASSTHROUGH	0
 #define MOCK_VALIDATE		1
