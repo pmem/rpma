@@ -177,7 +177,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
 	pdata.len = sizeof(struct common_data);
-	ret = client_connect(peer, addr, port, &pdata, &conn);
+	ret = client_connect(peer, addr, port, NULL, &pdata, &conn);
 	if (ret)
 		goto err_mr_dereg;
 
