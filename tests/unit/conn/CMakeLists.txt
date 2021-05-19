@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -12,6 +13,7 @@ function(add_test_conn name)
 		conn-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-cq.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-peer_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-flush.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
