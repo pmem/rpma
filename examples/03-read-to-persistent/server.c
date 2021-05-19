@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
 	 */
-	ret = server_accept_connection(ep, NULL, &conn);
+	ret = server_accept_connection(ep, NULL, NULL, &conn);
 	if (ret)
 		goto err_mr_dereg;
 

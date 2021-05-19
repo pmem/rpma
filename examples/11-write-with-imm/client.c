@@ -75,7 +75,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* establish a new connection to a server */
-	ret = client_connect(peer, addr, port, NULL, &conn);
+	ret = client_connect(peer, addr, port, NULL, NULL, &conn);
 	if (ret)
 		goto err_mr_dereg;
 
