@@ -13,33 +13,35 @@ import sys
 from .common import *
 from .Benchmark import *
 from .Figure import *
+from .Requirement import *
 
 class Bench:
     """A benchmarking control object"""
 
-    def __init__(self, config, figures, benchmarks, result_dir):
+    def __init__(self, config, figures, requirements, result_dir):
         self.config = config
         self.figures = figures
-        self.benchmarks = benchmarks
+        self.requirements = requirements
         self.result_dir = result_dir
 
     @classmethod
     def new(cls, config, figures, result_dir):
         figures = Figure.flatten(figures)
         benchmarks = Benchmark.uniq(figures)
-        return cls(config, figures, benchmarks, result_dir)
+        requirements = Requirement.uniq(benchmarks)
+        return cls(config, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, bench):
         figures = [Figure(f, bench['result_dir']) for f in bench['figures']]
-        benchmarks = {id: Benchmark(b) for id, b in bench['benchmarks'].items()}
-        return cls(bench['config'], figures, benchmarks, bench['result_dir'])
+        requirements = {id: Requirement(r) for id, r in bench['requirements'].items()}
+        return cls(bench['config'], figures, requirements, bench['result_dir'])
 
-    def _cache(self):
+    def cache(self):
         output = {
             'config': self.config,
             'figures': [f.cache() for f in self.figures],
-            'benchmarks': {id: b.cache() for id, b in self.benchmarks.items()},
+            'requirements': {id: r.cache() for id, r in self.requirements.items()},
             'result_dir': self.result_dir
         }
 
@@ -48,28 +50,36 @@ class Bench:
             json.dump(output, file, indent=4)
 
     def run(self):
-        self._cache()
+        self.cache()
 
         # XXX should be generated from the config
         env = {}
 
         # run all benchmarks one-by-one
-        for _, b in self.benchmarks.items():
-            if b.is_done():
+        skip = False
+        for _, req in self.requirements.items():
+            if req.is_done():
                 continue
-            b.run(env)
-            self._cache()
+            if not req.is_met(env):
+                skip = True
+                print('Skip: the requirement is not met: ' + str(req))
+                continue
+            req.run_benchmarks(env, self)
+
+        # in case of a skip, not all results are ready
+        if skip:
+            return
 
         # collect data required for all scheduled figures
         for f in self.figures:
             if f.is_done():
                 continue
             f.prepare_series(self.result_dir)
-            self._cache()
+            self.cache()
 
     def check_completed(self):
-        for _,b in self.benchmarks.items():
-            if not b.is_done():
+        for _, req in self.requirements.items():
+            if not req.is_done():
                 raise Exception('Benchmarking not completed. Please use report_bench.py.')
         for f in self.figures:
             if not f.is_done():

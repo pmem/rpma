@@ -13,7 +13,10 @@
                 "filetype": "malloc",
                 "mode": "lat",
                 "tool": "ib_read.sh",
-                "label": "ib_read_lat"
+                "label": "ib_read_lat",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                }
             },
             {
                 "filetype": "malloc",
@@ -21,7 +24,10 @@
                 "tool": "rpma_fio_bench.sh",
                 "tool_mode": "apm",
                 "rw": "randread",
-                "label": "rpma_read() rand"
+                "label": "rpma_read() rand",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                }
             },
             {
                 "filetype": "malloc",
@@ -29,7 +35,10 @@
                 "tool": "rpma_fio_bench.sh",
                 "tool_mode": "apm",
                 "rw": "read",
-                "label": "rpma_read() seq"
+                "label": "rpma_read() seq",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                }
             }
         ]
     }
