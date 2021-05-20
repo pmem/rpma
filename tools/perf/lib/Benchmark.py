@@ -11,12 +11,20 @@
 import json
 import subprocess
 
+from .common import *
+
 class Benchmark:
     """A single benchmark object"""
 
     def __init__(self, oneseries):
         oneseries['done'] = oneseries.get('done', False)
         self.oneseries = oneseries
+        if 'requirements' in oneseries.keys():
+            self.req = oneseries['requirements']
+            # remove the remaining duplicate
+            oneseries.pop('requirements')
+        else:
+            self.req = {}
 
     def __repr__(self):
         """A string representation of the object"""
@@ -43,25 +51,17 @@ class Benchmark:
     @classmethod
     def uniq(cls, figures):
         """Generate a set of unique benchmarks"""
-        output = {}
-        id = 0
-        for f in figures:
-            for oneseries in f.series:
-                b = Benchmark(oneseries)
-                duplicate = False
-                # look up for duplicates
-                for oid, o in output.items():
-                    if b == o:
-                        # creating a series-benchmark relationship
-                        b.set_id(oid)
-                        duplicate = True
-                        break
-                # a new benchmark found
-                if not duplicate:
-                    b.set_id(id)
-                    output[id] = b
-                    id += 1
-        return output
+        output = [cls(oneseries)
+            for f in figures
+                for oneseries in f.series
+        ]
+        return uniq(output)
+
+    def set_requirements(self):
+        return self.req
+
+    def get_requirements(self):
+        return self.req
 
     def cache(self):
         return self.oneseries
