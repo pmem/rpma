@@ -31,3 +31,23 @@ def json_from_file(string):
         data = json.load(read_file)
     # return the content of the file
     return data
+
+def uniq(elems):
+    """Generate a set of unique objects"""
+    output = {}
+    id = 0
+    for elem in elems:
+        duplicate = False
+        # look up for duplicates
+        for oid, other in output.items():
+            if elem == other:
+                # creating a relationship
+                elem.set_id(oid)
+                duplicate = True
+                break
+        # a new benchmark found
+        if not duplicate:
+            elem.set_id(id)
+            output[id] = elem
+            id += 1
+    return output
