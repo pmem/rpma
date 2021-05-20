@@ -2,16 +2,19 @@
     {
         "output": {
             "_comment": "XXX flattened manualy",
-            "title": "Latency (lat_avg): ib_read_lat vs rpma_read() from DRAM",
+            "title": "Latency ({y}): ib_read_lat vs rpma_read() from DRAM",
             "x": "bs",
-            "y": "lat_avg",
+            "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "ib_read_vs_rpma_read_dram",
-            "key": "lat_avg"
+            "key": "{y}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "malloc",
+            "mode": "lat"
         },
         "series": [
             {
-                "filetype": "malloc",
-                "mode": "lat",
                 "tool": "ib_read.sh",
                 "label": "ib_read_lat",
                 "requirements": {
@@ -19,26 +22,14 @@
                 }
             },
             {
-                "filetype": "malloc",
-                "mode": "lat",
                 "tool": "rpma_fio_bench.sh",
                 "tool_mode": "apm",
-                "rw": "randread",
-                "label": "rpma_read() rand",
+                "rw": ["randread", "read"],
+                "label": "rpma_read() {rw_order}",
                 "requirements": {
                     "direct_write_to_pmem": true
-                }
-            },
-            {
-                "filetype": "malloc",
-                "mode": "lat",
-                "tool": "rpma_fio_bench.sh",
-                "tool_mode": "apm",
-                "rw": "read",
-                "label": "rpma_read() seq",
-                "requirements": {
-                    "direct_write_to_pmem": true
-                }
+                },
+                "fstrings": ["label"]
             }
         ]
     }

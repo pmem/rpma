@@ -13,6 +13,7 @@ import os.path
 
 from textwrap import wrap
 from .common import *
+from .flat import *
 from .Benchmark import *
 
 class Figure:
@@ -46,22 +47,36 @@ class Figure:
     def is_done(self):
         return self.output['done']
 
+    @staticmethod
+    def get_figure_desc(figure):
+        """Getter for accessing the core descriptor of a figure"""
+        return figure['output']
+
+    @staticmethod
+    def get_oneseries_desc(oneseries):
+        """Getter for accessing the core descriptor of a series"""
+        return oneseries
+
+    @staticmethod
+    def oneseries_derivatives(oneseries):
+        """Generate all derived variables of a series"""
+        output = {}
+        if 'rw' in oneseries.keys():
+            output['rw_order'] = 'rand' if oneseries['rw'] else 'seq'
+        return output
+
     @classmethod
     def flatten(cls, figures):
-        """Flatten the descriptors list to a list of figures"""
-        # XXX
-        # - Prepare an empty set B == all benchmarks to be run
-        # - Loop over all figure files provided
-        #     - Loop over all figures in each of the files
-        #         - Loop over all possible combinations of layout and arg_axis
-        #             - Generate output_title and output_file (if required)
-        #             - Generate filter (if required)
-        #             - Loop over all data points defined for the figure
-        #                 - Create all possible combinations of the data point keys
-        #                 - Loop over all data combinations
-        #                     - Populate the B set
+        """Flatten the figures list"""
+        figures = make_flat(figures, cls.get_figure_desc)
+        figures = process_fstrings(figures, cls.get_figure_desc)
         output = []
         for f in figures:
+            # flatten series
+            common = f.get('series_common', {})
+            f['series'] = make_flat(f['series'], cls.get_oneseries_desc, common)
+            f['series'] = process_fstrings(f['series'], cls.get_oneseries_desc,
+                cls.oneseries_derivatives)
             output.append(cls(f))
         return output
 
