@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn_req-common.c -- the conn_req unit tests common functions
@@ -46,11 +47,9 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	};
 
 	/* configure mocks */
-	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(rpma_conn_cfg_get_cqe, &get_cqe);
-	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
-	will_return(ibv_create_cq, MOCK_IBV_CQ);
-	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+	expect_value(rpma_cq_new, cqe, MOCK_CQ_SIZE_DEFAULT);
+	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate.id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
@@ -81,8 +80,7 @@ teardown__conn_req_from_cm_event(void **cstate_ptr)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
@@ -120,11 +118,9 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	expect_value(rdma_resolve_route, timeout_ms, cstate->get_t.timeout_ms);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
-	expect_value(ibv_create_cq, cqe, cstate->get_cqe.q_size);
-	will_return(ibv_create_cq, MOCK_IBV_CQ);
-	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+	expect_value(rpma_cq_new, cqe, cstate->get_cqe.q_size);
+	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	expect_value(rpma_peer_create_qp, id, &cstate->id);
 	expect_value(rpma_peer_create_qp, cfg, cstate->get_cqe.cfg);
 	will_return(rpma_peer_create_qp, MOCK_OK);
@@ -157,8 +153,7 @@ teardown__conn_req_new(void **cstate_ptr)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
-	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);
 	expect_function_call(rpma_private_data_discard);
@@ -171,19 +166,6 @@ teardown__conn_req_new(void **cstate_ptr)
 	assert_null(cstate->req);
 
 	*cstate_ptr = NULL;
-
-	return 0;
-}
-
-/*
- * group_setup_conn_req -- prepare resources for all tests in the group
- */
-int
-group_setup_conn_req(void **unused)
-{
-	/* set the req_notify_cq callback in mock of IBV CQ */
-	MOCK_VERBS->ops.req_notify_cq = ibv_req_notify_cq_mock;
-	Ibv_cq.context = MOCK_VERBS;
 
 	return 0;
 }
