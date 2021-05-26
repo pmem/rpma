@@ -1,7 +1,11 @@
 {
     "_comment": "A configuration file providing all information describing the system which are necessary to run ./rpma_fio_bench.sh and ./ib_read.sh.",
+    "platform_generation": "Cascade Lake",
     "JOB_NUMA": 0,
     "FIO_PATH": "path",
     "REMOTE_JOB_NUMA": 0,
+    "REMOTE_SUDO_NOPASSWD": true,
+    "REMOTE_RNIC_PCIE_ROOT_PORT": "0000:17:00.0",
+    "REMOTE_DIRECT_WRITE_TO_PMEM": true,
     "_comment": "XXX"
 }

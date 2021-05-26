@@ -82,10 +82,47 @@ class Requirement:
         self.req['done'] = True
         return True
 
+    def is_met_Cascade_Lake(req, config):
+        # For the CLX generation, it is possible to configure Direct Write
+        # to PMem from the OS level.
+        if config['REMOTE_SUDO_NOPASSWD'] and \
+                len(config['REMOTE_RNIC_PCIE_ROOT_PORT']):
+            # If there are available: passwordless sudo access and
+            # the PCIe Root Port of the RNIC on the remote side
+            # the configuration can be adjusted automatically.
+            config['FORCE_REMOTE_DIRECT_WRITE_TO_PMEM'] = \
+                req['direct_write_to_pmem']
+            return True
+        else:
+            # Otherwise, the remote Direct Write to PMem configuration
+            # has to match the requirement.
+            return req['direct_write_to_pmem'] == \
+                config['REMOTE_DIRECT_WRITE_TO_PMEM']
+
+    def is_met_Ice_Lake(req, config):
+        # For the ICX generation, there is no way of toggling Direct Write
+        # to PMem from the OS level. The configuration has to be adjusted
+        # manually on the BIOS level.
+        return req['direct_write_to_pmem'] == \
+            config['REMOTE_DIRECT_WRITE_TO_PMEM']
+
+    # mapping 'platform_generation' values to platform-specifc is_met()
+    # implementations
+    is_met_impl = {
+        "Cascade Lake": is_met_Cascade_Lake,
+        "Ice Lake": is_met_Ice_Lake
+    }
+
     def is_met(self, config):
         """Is the requirement met"""
-        # XXX
-        return True
+        gen = config['platform_generation']
+        if gen in Requirement.is_met_impl.keys():
+            # call the generation-specific implementation
+            return Requirement.is_met_impl[gen](self.req, config)
+        else:
+            raise ValueError(f"Unsupported 'platform_generation': '{gen}'. "
+                + "Where supported values are: '"
+                + "', '".join(Requirement.is_met_impl.keys()) + "'.")
 
     def run_benchmarks(self, env, ctx):
         """Run all benchmarks"""

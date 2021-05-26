@@ -61,7 +61,7 @@ class Bench:
         for _, req in self.requirements.items():
             if req.is_done():
                 continue
-            if not req.is_met(env):
+            if not req.is_met(self.config):
                 skip = True
                 print('Skip: the requirement is not met: ' + str(req))
                 continue
