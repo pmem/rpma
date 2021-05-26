@@ -77,5 +77,5 @@ class Benchmark:
     def run(self, env):
         args = self._benchmark_args()
         process = subprocess.run(args, env=env)
-        # XXX validate process.returncode and fail with a nice error
+        process.check_returncode()
         self.oneseries['done'] = True
