@@ -8,6 +8,7 @@
 # Bench.py -- control the banchmarking process (EXPERIMENTAL)
 #
 
+import os
 import sys
 
 from .common import *
@@ -50,11 +51,11 @@ class Bench:
         with open(output_path, 'w') as file:
             json.dump(output, file, indent=4)
 
+    def get_config(self):
+        return self.config
+
     def run(self):
         self.cache()
-
-        # XXX should be generated from the config
-        env = {}
 
         # run all benchmarks one-by-one
         skip = False
@@ -65,7 +66,7 @@ class Bench:
                 skip = True
                 print('Skip: the requirement is not met: ' + str(req))
                 continue
-            req.run_benchmarks(env, self)
+            req.run_benchmarks(self, self.result_dir)
 
         # in case of a skip, not all results are ready
         if skip:
