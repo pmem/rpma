@@ -9,6 +9,7 @@
 #
 
 import json
+import os
 import subprocess
 
 from .common import *
@@ -48,6 +49,10 @@ class Benchmark:
         """Set an instance id"""
         self.oneseries['id'] = id
 
+    def get_id(self):
+        """Get the instance id"""
+        return self.oneseries.get('id', None)
+
     @classmethod
     def uniq(cls, figures):
         """Generate a set of unique benchmarks"""
@@ -67,13 +72,36 @@ class Benchmark:
     def is_done(self):
         return self.oneseries['done']
 
-    def _benchmark_args(self):
-        # - generate a commnd line base on the "b" values
-        # - save results in the benchmark_{id}.json file
-        return ['echo', 'XXX']
+    def _get_env_value(value):
+        if type(value) is bool:
+            return '1' if value else '0'
+        else:
+            return str(value)
+    
+    def _get_env(self, config, result_dir):
+        """Construct the benchmarking environment"""
+        # make sure all values are strings
+        env = {k: Benchmark._get_env_value(v) for k, v in config.items()}
+        output_file = os.path.join(result_dir,
+            'benchmark_' + str(self.get_id()) + '.json')
+        # include:
+        # - the parent process environment
+        # - the user-provided configuration
+        # - the output file path
+        return dict(os.environ, **env, **{'OUTPUT_FILE': output_file})
 
-    def run(self, env):
-        args = self._benchmark_args()
+    def _benchmark_args(self, env):
+        args = ['./' + self.oneseries['tool'], env['server_ip']]
+        if 'tool_mode' in self.oneseries.keys():
+            args.append(self.oneseries['tool_mode'])
+        if 'rw' in self.oneseries.keys():
+            args.append(self.oneseries['rw'])
+        args.append(self.oneseries['mode'])
+        return args
+
+    def run(self, config, result_dir):
+        args = self._benchmark_args(config)
+        env = self._get_env(config, result_dir)
         process = subprocess.run(args, env=env)
         process.check_returncode()
         self.oneseries['done'] = True

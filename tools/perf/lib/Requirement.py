@@ -87,12 +87,12 @@ class Requirement:
         # XXX
         return True
 
-    def run_benchmarks(self, env, ctx):
+    def run_benchmarks(self, ctx, result_dir):
         """Run all benchmarks"""
         for _, b in self.benchmarks.items():
             if b.is_done():
                 continue
-            b.run(env)
+            b.run(ctx.get_config(), result_dir)
             ctx.cache() # store to a disk the current state of execution
         self.req['done'] = True
         ctx.cache() # store to a disk the final state of execution
