@@ -45,6 +45,8 @@ function show_environment() {
 	echo "export REMOTE_TRACER=$REMOTE_TRACER"
 	echo "export DO_NOTHING=$DO_NOTHING"
 	echo "export DUMP_CMDS=$DUMP_CMDS"
+	echo
+	echo "export OUTPUT_FILE=$OUTPUT_FILE"
 	exit 0
 }
 
@@ -119,6 +121,8 @@ function common_usage()
 	echo "export REMOTE_TRACER='gdbserver localhost:2345'"
 	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
 	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
+	echo
+	echo "export OUTPUT_FILE=output_file.csv (or .json)"
 	exit 1
 }
 
