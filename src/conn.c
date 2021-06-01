@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2021 Fujitsu */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -557,27 +558,13 @@ rpma_conn_completion_get(struct rpma_conn *conn,
 		return RPMA_E_UNKNOWN;
 	}
 
-	switch (wc.opcode) {
-	case IBV_WC_RDMA_READ:
-		cmpl->op = RPMA_OP_READ;
-		break;
-	case IBV_WC_RDMA_WRITE:
-		cmpl->op = RPMA_OP_WRITE;
-		break;
-	case IBV_WC_SEND:
-		cmpl->op = RPMA_OP_SEND;
-		break;
-	case IBV_WC_RECV:
-		cmpl->op = RPMA_OP_RECV;
-		break;
-	case IBV_WC_RECV_RDMA_WITH_IMM:
-		cmpl->op = RPMA_OP_RECV_RDMA_WITH_IMM;
-		break;
-	default:
+	if ((wc.opcode > IBV_WC_RDMA_READ && wc.opcode < IBV_WC_RECV) ||
+			wc.opcode > IBV_WC_RECV_RDMA_WITH_IMM) {
 		RPMA_LOG_ERROR("unsupported wc.opcode == %d", wc.opcode);
 		return RPMA_E_NOSUPP;
 	}
 
+	cmpl->op = (enum rpma_op)wc.opcode;
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->byte_len = wc.byte_len;
 	cmpl->op_status = wc.status;
