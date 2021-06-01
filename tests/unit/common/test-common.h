@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * test-common.h -- a test's common header
@@ -31,7 +32,8 @@
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_NOFENCE		false
-#define MOCK_FENCE			true
+#define MOCK_FENCE		true
+#define MOCK_COMPLETION_FD	0x00FE
 
 #define MOCK_OK			0
 #define MOCK_ERRNO		123456
