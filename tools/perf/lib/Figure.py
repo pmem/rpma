@@ -123,6 +123,10 @@ class Figure:
         # XXX
         return column
 
+    def png_path(self, result_dir):
+        output = self.file + '_' + self.key + '.png'
+        return os.path.join(result_dir, output)
+
     def to_png(self, result_dir):
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
@@ -151,12 +155,17 @@ class Figure:
         ax.legend(fontsize=6)
         ax.grid(True)
 
-        output = self.file + '_' + self.key + '.png'
-        plt.savefig(os.path.join(result_dir, output))
+        plt.savefig(self.png_path(result_dir))
+
+    def html_data_table(self):
+        """
+        Create an HTML snippet string with a table containing the Figure data.
+        """
+        return "XXX"
+
 
     def to_html(self, result_dir):
-        """
-        Create an HTML snippet file with a table containing the Figure data.
-        """
-        # XXX
-        pass
+        """Combine a Figure's png and data table into a single HTML snippet"""
+        png_path = self.png_path(result_dir)
+        data_table = self.html_data_table()
+        return "XXX figure html"

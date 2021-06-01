@@ -25,7 +25,6 @@ def main():
     figures = bench.figures
     for f in figures:
         f.to_png(bench.result_dir)
-        f.to_html(bench.result_dir)
     print('Done.')
 
 if __name__ == '__main__':

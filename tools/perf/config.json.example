@@ -8,5 +8,13 @@
     "REMOTE_SUDO_NOPASSWD": true,
     "REMOTE_RNIC_PCIE_ROOT_PORT": "0000:17:00.0",
     "REMOTE_DIRECT_WRITE_TO_PMEM": true,
-    "_comment": "XXX"
+    "_comment": "XXX",
+    "report": {
+        "_comment": "high_level_setup_figure requires making the path absolute",
+        "subtitle": "",
+        "high_level_setup_figure": "Figure_0.png",
+        "release": "0.00",
+        "test_date": "December 2020",
+        "ref": "2021_04_21_CLX"
+    }
 }

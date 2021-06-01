@@ -20,6 +20,12 @@ class Bench:
     """A benchmarking control object"""
 
     def __init__(self, config, figures, requirements, result_dir):
+        # XXX The list of parts has to emerge from the list of provided figures
+        # The following quick and dirty WA works only because as of now only
+        # a single definition of part/figure exists.
+        # Note: The list of parts also has to be stored and restored from
+        # the bench.json file.
+        self.parts = ['read']
         self.config = config
         self.figures = figures
         self.requirements = requirements
