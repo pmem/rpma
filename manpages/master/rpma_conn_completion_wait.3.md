@@ -12,7 +12,7 @@ date: rpma API version 0.9.0
 NAME
 ====
 
-**rpma\_conn\_completion\_wait** - wait for completions
+**rpma\_conn\_completion\_wait** - wait for a completion
 
 SYNOPSIS
 ========
@@ -25,8 +25,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_completion\_wait**() waits for incoming completions. If it
-succeeds the completions can be collected using
+**rpma\_conn\_completion\_wait**() waits for an incoming completion. If
+it succeeds the completion can be collected using
 **rpma\_conn\_completion\_get**().
 
 RETURN VALUE
