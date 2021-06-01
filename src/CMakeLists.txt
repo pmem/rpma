@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 add_cstyle(src
@@ -15,6 +16,7 @@ set(SOURCES
 	conn.c
 	conn_cfg.c
 	conn_req.c
+	cq.c
 	ep.c
 	flush.c
 	info.c

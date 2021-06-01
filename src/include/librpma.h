@@ -2490,7 +2490,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_completion_wait - wait for completions
+ * rpma_conn_completion_wait - wait for a completion
  *
  * SYNOPSIS
  *
@@ -2500,8 +2500,8 @@ struct rpma_completion {
  *	int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  * DESCRIPTION
- * rpma_conn_completion_wait() waits for incoming completions. If it
- * succeeds the completions can be collected using rpma_conn_completion_get().
+ * rpma_conn_completion_wait() waits for an incoming completion. If it
+ * succeeds the completion can be collected using rpma_conn_completion_get().
  *
  * RETURN VALUE
  * The rpma_conn_completion_wait() function returns 0 on success
