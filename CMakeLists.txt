@@ -35,7 +35,7 @@ include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
 option(BUILD_EXAMPLES "build examples" ON)
-option(BUILD_TESTS "build tests" ON)
+option(BUILD_TESTS "build tests" OFF)
 option(BUILD_DOC "build documentation" ON)
 
 option(COVERAGE "run coverage test" OFF)

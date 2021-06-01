@@ -3,12 +3,16 @@ rpma_conn_cfg_delete.3
 rpma_conn_cfg_get_cq_size.3
 rpma_conn_cfg_get_rq_size.3
 rpma_conn_cfg_get_sq_size.3
+rpma_conn_cfg_get_srq_limit.3
 rpma_conn_cfg_get_timeout.3
+rpma_conn_cfg_get_use_srq.3
 rpma_conn_cfg_new.3
 rpma_conn_cfg_set_cq_size.3
 rpma_conn_cfg_set_rq_size.3
 rpma_conn_cfg_set_sq_size.3
+rpma_conn_cfg_set_srq_limit.3
 rpma_conn_cfg_set_timeout.3
+rpma_conn_cfg_set_use_srq.3
 rpma_conn_completion_get.3
 rpma_conn_completion_wait.3
 rpma_conn_delete.3
