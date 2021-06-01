@@ -20,6 +20,7 @@ class Bench:
     """A benchmarking control object"""
 
     def __init__(self, config, figures, requirements, result_dir):
+        self.parts = ['read'] # XXX
         self.config = config
         self.figures = figures
         self.requirements = requirements
