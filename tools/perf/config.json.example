@@ -5,5 +5,8 @@
     "JOB_NUMA": 0,
     "FIO_PATH": "path",
     "REMOTE_JOB_NUMA": 0,
+    "REMOTE_SUDO_NOPASSWD": true,
+    "REMOTE_RNIC_PCIE_ROOT_PORT": "0000:17:00.0",
+    "REMOTE_DIRECT_WRITE_TO_PMEM": true,
     "_comment": "XXX"
 }
