@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer.h -- librpma peer-related internal definitions
@@ -9,6 +10,7 @@
 #define LIBRPMA_PEER_H
 
 #include "librpma.h"
+#include "cq.h"
 
 #include <rdma/rdma_cma.h>
 
@@ -20,7 +22,7 @@
  * - RPMA_E_PROVIDER - allocating a QP failed
  */
 int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct ibv_cq *cq, const struct rpma_conn_cfg *cfg);
+		struct rpma_cq *cq, const struct rpma_conn_cfg *cfg);
 
 /*
  * ASSUMPTIONS
