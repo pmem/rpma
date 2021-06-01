@@ -121,7 +121,7 @@ class Figure:
     def _label(self, column):
         """Translate the name of a column to a label with a unit"""
         # XXX
-        return arg
+        return column
 
     def to_png(self, result_dir):
         # set output file size, padding and title
