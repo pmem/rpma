@@ -24,6 +24,12 @@ EXAMPLES_DEPS="\
 	libprotobuf-c-dev \
 	valgrind"
 
+TOOLS_DEPS="\
+	python3-jinja2"
+
+TESTS_DEPS="\
+	pylint3"
+
 RPMA_DEPS="\
 	cmake \
 	curl \
@@ -53,4 +59,6 @@ sudo apt-get update
 sudo apt-get install --assume-yes --no-install-recommends \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
+	$TOOLS_DEPS \
+	$TESTS_DEPS \
 	$RPMA_DEPS
