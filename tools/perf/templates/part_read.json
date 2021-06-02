@@ -1,0 +1,83 @@
+{
+    "common": {
+        "server": [
+            "[global]",
+            "ioengine=librpma_apm_server",
+            "create_serialize=0",
+            "kb_base=1000",
+            "serverip=$serverip",
+            "port=7204",
+            "thread",
+            "",
+            "[server]",
+            "direct_write_to_pmem={0, 1} # 1 for Device DAX",
+            "numjobs=1",
+            "size=100MiB",
+            "filename={malloc, /dev/dax/path}"
+        ],
+        "client_global": [
+            "[global]",
+            "ioengine=librpma_apm_client",
+            "create_serialize=0",
+            "serverip=$serverip",
+            "port=7204",
+            "thread",
+            "disable_clat=1",
+            "lat_percentiles=1",
+            "percentile_list=99.0:99.9:99.99:99.999"
+        ],
+        "client_common": [
+            "readwrite={read, randread}",
+            "blocksize=$blocksize",
+            "ramp_time=15",
+            "time_based",
+            "runtime=60"
+        ]
+    },
+    "config": {
+        "lat": {
+            "type": "kvtable",
+            "Server - ib_read_lat configuration": [
+                "--size $blocksize"
+            ],
+            "Client - ib_read_lat configuration": [
+                "--iters $iters --size $blocksize --perform_warm_up $serverip"
+            ],
+            "Server - FIO engine configuration": [
+                "{server}"
+            ],
+            "Client - FIO engine configuration": [
+                "{client_global}",
+                "",
+                "[client]",
+                "sync=1",
+                "{client_common}"
+            ]
+        },
+        "bw": {
+            "type": "kvtable",
+            "Server - ib_read_bw configuration": [
+                "--size $blocksize --qp 1 --tx-depth=2",
+                "--size 4096 --qp $threads --tx-depth=2"
+            ],
+            "Client - ib_read_bw configuration": [
+                "--iters $iters --size $blocksize --qp 1 --tx-depth=2 \\",
+                "    --report_gbits $serverip",
+                "--iters $iters --size 4096 --qp $threads --tx-depth=2 \\",
+                "    --report_gbits $serverip"
+            ],
+            "Server - FIO engine configuration": [
+                "{server}"
+            ],
+            "Client - FIO engine configuration": [
+                "{client_global}",
+                "",
+                "[client]",
+                "numjobs=$numjobs",
+                "group_reporting=1",
+                "iodepth=2",
+                "{client_common}"
+            ]
+        }
+    }
+}

@@ -4,7 +4,8 @@
             "title": "Latency ({y}): ib_read_lat vs rpma_read() from DRAM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "ib_read_vs_rpma_read_dram",
+            "_comment": "XXX the following definition is obviously incorrect",
+            "file": ["ib_read_vs_rpma_read_dram", "rpma_read_dram_vs_pmem"],
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
@@ -29,6 +30,28 @@
                     "direct_write_to_pmem": true
                 },
                 "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "XXX the following definition is obviously incorrect",
+            "title": "XXX ({x}): dummy",
+            "x": ["bs", "threads"],
+            "y": "bw",
+            "file": ["ib_read_bw_vs_rpma_read_dram", "rpma_read_dram_vs_pmem_bw"],
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "mode": "lat",
+                "tool": "ib_read.sh",
+                "label": "ib_read_lat",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                }
             }
         ]
     }
