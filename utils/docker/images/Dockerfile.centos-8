@@ -29,6 +29,12 @@ ENV BASE_DEPS "\
 	sudo \
 	which"
 
+ENV TOOLS_DEPS "\
+	python3-jinja2"
+
+ENV TESTS_DEPS "\
+	python3-pylint"
+
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -44,6 +50,8 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
+	$TOOLS_DEPS \
+	$TESTS_DEPS \
 	$RPMA_DEPS \
 && dnf clean all
 
