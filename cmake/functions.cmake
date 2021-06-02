@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2020, Intel Corporation
+# Copyright 2018-2021, Intel Corporation
 #
 
 #
@@ -87,6 +87,38 @@ function(add_cstyle name)
 
 	add_custom_target(cstyle-${name}
 			DEPENDS ${CMAKE_BINARY_DIR}/cstyle-${name}-status)
+	add_dependencies(cstyle cstyle-${name})
+endfunction()
+
+# Generates pep8-$name target and attaches it as a dependency of the global
+# "cstyle" target. pep8-$name target verifies adherence to PEP8 Style Guide
+# for Python Code of files in current source dir. If more arguments are used,
+# they are used as files to be checked instead. ${name} must be unique.
+function(add_cstyle_pep8 name)
+	set(PYLINT_RCFILE "${CMAKE_SOURCE_DIR}/utils/pylint.rc")
+	set(PYLINT_ARGS "--rcfile=${PYLINT_RCFILE}")
+
+	if(${ARGC} EQUAL 1)
+		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
+			DEPENDS ${PYLINT_RCFILE}
+			COMMAND
+				${PYLINT_EXECUTABLE} ${PYLINT_ARGS}
+					${CMAKE_CURRENT_SOURCE_DIR}/*.py
+			COMMAND
+				${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/pep8-${name}-status
+			)
+	else()
+		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
+			DEPENDS ${PYLINT_RCFILE}
+			COMMAND
+				${PYLINT_EXECUTABLE} ${PYLINT_ARGS} ${ARGN}
+			COMMAND
+				${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/pep8-${name}-status
+			)
+	endif()
+
+	add_custom_target(cstyle-${name}
+			DEPENDS ${CMAKE_BINARY_DIR}/pep8-${name}-status)
 	add_dependencies(cstyle cstyle-${name})
 endfunction()
 

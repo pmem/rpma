@@ -52,6 +52,7 @@ option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
 option(TESTS_LONG "enable long running tests" OFF)
 option(TESTS_USE_FAULT_INJECTION "run tests with fault injection" OFF)
+option(TEST_PYTHON_TOOLS "run tests for Python tools" ON)
 
 # Do not treat include directories from the interfaces
 # of consumed Imported Targets as SYSTEM by default.
@@ -244,6 +245,11 @@ endif()
 
 if(BUILD_EXAMPLES)
 	add_subdirectory(examples)
+endif()
+
+if(TEST_PYTHON_TOOLS)
+	find_package(PYLINT REQUIRED pylint)
+	add_subdirectory(tools/perf)
 endif()
 
 if(NOT "${CPACK_GENERATOR}" STREQUAL "")
