@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the flush-to-persistent-GPSPM example
@@ -181,8 +182,15 @@ main(int argc, char *argv[])
 	if ((ret = client_peer_via_address(addr, &peer)))
 		goto err_free;
 
+	struct rpma_conn_cfg *cfg = NULL;
+	if ((ret = rpma_conn_cfg_new(&cfg)))
+		goto err_free;
+
+	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, 10)))
+		goto err_cfg_delete;
+
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, NULL, NULL, &conn)))
+	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
 		goto err_peer_delete;
 
 	/* register the memory RDMA write */
@@ -250,16 +258,40 @@ main(int argc, char *argv[])
 
 	/* send the flush message */
 	if ((ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_req_size,
-			RPMA_F_COMPLETION_ON_ERROR, NULL)))
+			RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* wait for the sending completion to be ready */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_mr_remote_delete;
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	if ((ret = rpma_cq_wait(cq)))
+		goto err_mr_remote_delete;
+	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
 		goto err_mr_remote_delete;
 
-	/* validate the completion */
+	/* validate the sending completion */
+	if (cmpl.op_status != IBV_WC_SUCCESS)
+		goto err_mr_remote_delete;
+	if (cmpl.op != RPMA_OP_SEND) {
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value "
+				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+				(uintptr_t)cmpl.op,
+				(uintptr_t)RPMA_OP_SEND);
+		goto err_mr_remote_delete;
+	}
+
+	/* wait for the receiving completion to be ready */
+	struct rpma_cq *rcq = NULL;
+	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
+		goto err_mr_remote_delete;
+	if ((ret = rpma_cq_wait(rcq)))
+		goto err_mr_remote_delete;
+	if ((ret = rpma_cq_get_completion(rcq, &cmpl)))
+		goto err_mr_remote_delete;
+
+	/* validate the receiving completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS)
 		goto err_mr_remote_delete;
 	if (cmpl.op != RPMA_OP_RECV) {
@@ -315,6 +347,9 @@ err_conn_disconnect:
 err_peer_delete:
 	/* delete the peer */
 	(void) rpma_peer_delete(&peer);
+
+err_cfg_delete:
+	(void) rpma_conn_cfg_delete(&cfg);
 
 err_free:
 	free(msg_ptr);
