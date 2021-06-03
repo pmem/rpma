@@ -18,9 +18,10 @@ static struct conn_cfg_get_timeout_mock_args Get_t = {
 	.timeout_ms = RPMA_DEFAULT_TIMEOUT_MS
 };
 
-static struct conn_cfg_get_q_size_mock_args Get_cqe = {
+static struct conn_cfg_get_cq_size_mock_args Get_cqe = {
 		.cfg = MOCK_CONN_CFG_DEFAULT,
-		.q_size = MOCK_CQ_SIZE_DEFAULT
+		.cq_size = MOCK_CQ_SIZE_DEFAULT,
+		.rcq_size = MOCK_RCQ_SIZE_DEFAULT
 };
 
 /*
@@ -216,36 +217,43 @@ new__resolve_route_EAGAIN(void **unused)
  * new__cq_new_EAGAIN -- rpma_cq_new() fails with EAGAIN
  */
 static void
-new__cq_new_EAGAIN(void **unused)
+new__cq_new_EAGAIN(void **cstate_ptr)
 {
-	struct rdma_cm_id id = {0};
-	id.verbs = MOCK_VERBS;
+	struct conn_req_new_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks */
-	will_return(rpma_conn_cfg_get_timeout, &Get_t);
+	will_return(rpma_conn_cfg_get_timeout, &cstate->get_t);
 	will_return(rpma_info_new, MOCK_INFO);
-	will_return(rdma_create_id, &id);
-	expect_value(rpma_info_resolve_addr, id, &id);
+	will_return(rdma_create_id, &cstate->id);
+	expect_value(rpma_info_resolve_addr, id, &cstate->id);
 	expect_value(rpma_info_resolve_addr, timeout_ms,
-				RPMA_DEFAULT_TIMEOUT_MS);
+				cstate->get_t.timeout_ms);
 	will_return(rpma_info_resolve_addr, MOCK_OK);
 	/*
 	 * XXX rdma_resolve_route() mock assumes all its expects comes from
 	 * another mock. The following expect breaks this assumption.
 	 */
-	expect_value(rdma_resolve_route, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
+	expect_value(rdma_resolve_route, timeout_ms, cstate->get_t.timeout_ms);
 	will_return(rdma_resolve_route, MOCK_OK);
-	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
-	expect_value(rpma_cq_new, cqe, MOCK_CQ_SIZE_DEFAULT);
+	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
+	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
+	if (cstate->get_cqe.rcq_size) {
+		will_return(rpma_cq_new, MOCK_RPMA_CQ);
+		expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
+	}
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
 	will_return(rpma_cq_new, EAGAIN);
+	if (cstate->get_cqe.rcq_size)
+		will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
-	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL,
+	struct rpma_conn_cfg *cfg =
+			(cstate->get_cqe.cfg == MOCK_CONN_CFG_DEFAULT ?
+					NULL : cstate->get_cqe.cfg);
+	int ret = rpma_conn_req_new(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, cfg,
 			&req);
 
 	/* verify the results */
@@ -284,6 +292,7 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -329,6 +338,7 @@ new__malloc_ENOMEM(void **unused)
 	will_return(__wrap__test_malloc, ENOMEM);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
@@ -373,6 +383,7 @@ new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, ENOMEM); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, EAGAIN); /* second error */
 	will_return(rdma_destroy_id, EAGAIN); /* third error */
 
@@ -412,7 +423,10 @@ static const struct CMUnitTest test_new[] = {
 	cmocka_unit_test(new__create_id_EAGAIN),
 	cmocka_unit_test(new__resolve_addr_E_PROVIDER_EAGAIN),
 	cmocka_unit_test(new__resolve_route_EAGAIN),
-	cmocka_unit_test(new__cq_new_EAGAIN),
+	{"new__conn_cfg_default_cq_new_EAGAIN", new__cq_new_EAGAIN,
+		NULL, NULL, &prestate_conn_cfg_default},
+	{"new__conn_cfg_custom_cq_new_EAGAIN", new__cq_new_EAGAIN,
+		NULL, NULL, &prestate_conn_cfg_custom},
 	cmocka_unit_test(new__peer_create_qp_E_PROVIDER_EAGAIN),
 	cmocka_unit_test(new__malloc_ENOMEM),
 	cmocka_unit_test(new__malloc_ENOMEM_subsequent_EAGAIN),
@@ -430,11 +444,13 @@ main(int argc, char *argv[])
 {
 	/* prepare prestate - default conn_cfg */
 	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
-			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
+			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT,
+			MOCK_RCQ_SIZE_DEFAULT);
 
 	/* prepare prestate - custom conn_cfg */
 	prestate_init(&prestate_conn_cfg_custom, MOCK_CONN_CFG_CUSTOM,
-			MOCK_TIMEOUT_MS_CUSTOM, MOCK_CQ_SIZE_CUSTOM);
+			MOCK_TIMEOUT_MS_CUSTOM, MOCK_CQ_SIZE_CUSTOM,
+			MOCK_RCQ_SIZE_CUSTOM);
 
 	return cmocka_run_group_tests(test_new, NULL, NULL);
 }

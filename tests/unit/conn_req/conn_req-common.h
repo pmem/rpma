@@ -34,14 +34,15 @@ int teardown__conn_req_from_cm_event(void **cstate_ptr);
  */
 struct conn_req_new_test_state {
 	struct conn_cfg_get_timeout_mock_args get_t;
-	struct conn_cfg_get_q_size_mock_args get_cqe;
+	struct conn_cfg_get_cq_size_mock_args get_cqe;
 
 	struct rdma_cm_id id;
 	struct rpma_conn_req *req;
 };
 
 void prestate_init(struct conn_req_new_test_state *prestate,
-		struct rpma_conn_cfg *cfg, int timeout_ms, uint32_t cq_size);
+		struct rpma_conn_cfg *cfg, int timeout_ms,
+		uint32_t cq_size, uint32_t rcq_size);
 
 int setup__conn_req_new(void **cstate_ptr);
 int teardown__conn_req_new(void **cstate_ptr);

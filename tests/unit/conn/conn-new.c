@@ -23,7 +23,8 @@ new__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(NULL, MOCK_CM_ID, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(NULL, MOCK_CM_ID, MOCK_RPMA_CQ,
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -38,7 +39,8 @@ new__id_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, NULL, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, NULL, MOCK_RPMA_CQ,
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -53,7 +55,8 @@ new__cq_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, NULL, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, NULL,
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -67,7 +70,8 @@ static void
 new__conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ,
+			NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -81,7 +85,7 @@ static void
 new__peer_id_cq_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(NULL, NULL, NULL, NULL);
+	int ret = rpma_conn_new(NULL, NULL, NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -101,7 +105,8 @@ new__create_evch_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ,
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -123,7 +128,8 @@ new__migrate_id_EAGAIN(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ,
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -144,7 +150,8 @@ new__flush_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ,
+		NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -167,7 +174,8 @@ new__malloc_ENOMEM(void **unused)
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ,
+		NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -243,7 +251,8 @@ delete__flush_delete_E_PROVIDER(void **unused)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_PROVIDER);
 	will_return(rpma_flush_delete, MOCK_ERRNO);
-	will_return_maybe(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
 
@@ -274,7 +283,8 @@ delete__flush_delete_E_INVAL(void **unused)
 
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_INVAL);
-	will_return_maybe(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
 
@@ -287,7 +297,40 @@ delete__flush_delete_E_INVAL(void **unused)
 }
 
 /*
- * delete__cq_delete_EAGAIN - rpma_cq_delete() fails with EAGAIN
+ * delete__rcq_delete_EAGAIN - rpma_cq_delete(&conn->rcq) fails with EAGAIN
+ */
+static void
+delete__rcq_delete_EAGAIN(void **unused)
+{
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	struct conn_test_state *cstate;
+	int ret = setup__conn_new((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	will_return(rpma_flush_delete, MOCK_OK);
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
+	will_return(rpma_cq_delete, EAGAIN);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, MOCK_OK);
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(cstate->conn);
+}
+
+/*
+ * delete__cq_delete_EAGAIN - rpma_cq_delete(&conn->cq) fails with EAGAIN
  */
 static void
 delete__cq_delete_EAGAIN(void **unused)
@@ -305,6 +348,7 @@ delete__cq_delete_EAGAIN(void **unused)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, EAGAIN);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
@@ -319,11 +363,12 @@ delete__cq_delete_EAGAIN(void **unused)
 }
 
 /*
- * delete__cq_delete_EAGAIN_subsequent_EIO -- rdma_destroy_id()
- * fails with EIO after rpma_cq_delete() fails with EAGAIN
+ * delete__rcq_delete_EAGAIN_subsequent_EIO -- rpma_cq_delete(&conn->cq)
+ * and rdma_destroy_id() fail with EIO after rpma_cq_delete(&conn->rcq)
+ * fails with EAGAIN
  */
 static void
-delete__cq_delete_EAGAIN_subsequent_EIO(void **unused)
+delete__rcq_delete_EAGAIN_subsequent_EIO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -340,8 +385,10 @@ delete__cq_delete_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, EAGAIN); /* first error */
+	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
+	will_return(rpma_cq_delete, EIO); /* second error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
-	will_return(rdma_destroy_id, EIO); /* second error */
+	will_return(rdma_destroy_id, EIO); /* third error */
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -370,6 +417,7 @@ delete__destroy_id_EAGAIN(void **unused)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, EAGAIN);
@@ -403,8 +451,9 @@ static const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(delete__conn_NULL),
 	cmocka_unit_test(delete__flush_delete_E_PROVIDER),
 	cmocka_unit_test(delete__flush_delete_E_INVAL),
+	cmocka_unit_test(delete__rcq_delete_EAGAIN),
 	cmocka_unit_test(delete__cq_delete_EAGAIN),
-	cmocka_unit_test(delete__cq_delete_EAGAIN_subsequent_EIO),
+	cmocka_unit_test(delete__rcq_delete_EAGAIN_subsequent_EIO),
 	cmocka_unit_test(delete__destroy_id_EAGAIN),
 	cmocka_unit_test(NULL)
 };

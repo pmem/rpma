@@ -147,6 +147,7 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, EAGAIN);
 	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -160,8 +161,8 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 
 /*
  * from_cm_event__create_qp_EAGAIN_subsequent_EIO -- rpma_peer_create_qp()
- * fails with RPMA_E_PROVIDER+EAGAIN followed by rpma_cq_delete() fails
- * with EIO
+ * fails with RPMA_E_PROVIDER+EAGAIN followed by rpma_cq_delete(&rcq) and
+ * rpma_cq_delete(&cq) fail with EIO
  */
 static void
 from_cm_event__create_qp_EAGAIN_subsequent_EIO(
@@ -181,6 +182,8 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 	will_return(rpma_peer_create_qp, EAGAIN);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, EIO); /* second error */
+	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
+	will_return(rpma_cq_delete, EIO); /* third error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -212,6 +215,7 @@ from_cm_event__malloc_ENOMEM(void **unused)
 	will_return(__wrap__test_malloc, ENOMEM);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -225,7 +229,8 @@ from_cm_event__malloc_ENOMEM(void **unused)
 
 /*
  * from_cm_event__malloc_ENOMEM_subsequent_EAGAIN -- malloc() fail with
- * ENOMEM followed by rpma_cq_delete() fails with EAGAIN
+ * ENOMEM followed by rpma_cq_delete(&rcq) and rpmna_cq_delete(&cq)
+ * fail with EAGAIN
  */
 static void
 from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
@@ -245,6 +250,8 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, EAGAIN); /* second error */
+	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
+	will_return(rpma_cq_delete, EAGAIN); /* third error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -279,6 +286,8 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, EAGAIN); /* second error */
+	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
+	will_return(rpma_cq_delete, EAGAIN); /* third error */
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);

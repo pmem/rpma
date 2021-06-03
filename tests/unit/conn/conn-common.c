@@ -77,7 +77,7 @@ setup__conn_new(void **cstate_ptr)
 
 	/* prepare an object */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_RPMA_CQ, &cstate.conn);
+			MOCK_RPMA_CQ, NULL, &cstate.conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -99,6 +99,7 @@ teardown__conn_delete(void **cstate_ptr)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
