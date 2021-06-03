@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * server.c -- a server of the flush-to-persistent-GPSPM example
@@ -194,6 +195,13 @@ main(int argc, char *argv[])
 	if ((ret = rpma_mr_get_descriptor(mr, &data.descriptors[0])))
 		goto err_mr_dereg;
 
+	struct rpma_conn_cfg *cfg = NULL;
+	if ((ret = rpma_conn_cfg_new(&cfg)))
+		goto err_mr_dereg;
+
+	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, 10)))
+		goto err_cfg_delete;
+
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
@@ -203,7 +211,7 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(struct common_data);
 
 	/* receive an incoming connection request */
-	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
+	if ((ret = rpma_ep_next_conn_req(ep, cfg, &req)))
 		goto err_mr_dereg;
 
 	/* prepare buffer for a flush request */
@@ -228,11 +236,26 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* wait for the receiving completion to be ready */
+	struct rpma_cq *rcq = NULL;
+	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	if ((ret = rpma_cq_wait(rcq)))
 		goto err_conn_delete;
+	if ((ret = rpma_cq_get_completion(rcq, &cmpl)))
+		goto err_conn_delete;
+
+	/* validate the receiving completion */
+	if (cmpl.op_status != IBV_WC_SUCCESS)
+		goto err_conn_delete;
+	if (cmpl.op != RPMA_OP_RECV) {
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value "
+				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+				(uintptr_t)cmpl.op,
+				(uintptr_t)RPMA_OP_RECV);
+		goto err_conn_delete;
+	}
 
 	/* unpack a flush request from the received buffer */
 	flush_req = gpspm_flush_request__unpack(NULL, cmpl.byte_len, recv_ptr);
@@ -271,13 +294,16 @@ main(int argc, char *argv[])
 			RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_conn_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* wait for the sending completion to be ready */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	if ((ret = rpma_cq_wait(cq)))
+		goto err_conn_delete;
+	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
 		goto err_conn_delete;
 
-	/* validate the completion */
+	/* validate the sending completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS)
 		goto err_conn_delete;
 	if (cmpl.op != RPMA_OP_SEND) {
@@ -304,6 +330,9 @@ err_conn_delete:
 
 err_req_delete:
 	(void) rpma_conn_req_delete(&req);
+
+err_cfg_delete:
+	(void) rpma_conn_cfg_delete(&cfg);
 
 err_mr_dereg:
 	(void) rpma_mr_dereg(&msg_mr);
