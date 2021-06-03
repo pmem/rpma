@@ -30,6 +30,8 @@ struct rpma_conn_req {
 	struct rdma_cm_id *id;
 	/* rpma_cq object */
 	struct rpma_cq *cq;
+	/* receiving rpma_cq object */
+	struct rpma_cq *rcq;
 
 	/* private data of the CM ID (incoming only) */
 	struct rpma_conn_private_data data;
@@ -51,19 +53,26 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 {
 	int ret = 0;
 
-	/* read CQ size from the configuration */
-	int cqe;
-	(void) rpma_conn_cfg_get_cqe(cfg, &cqe);
+	/* read CQ size and receiving CQ size from the configuration */
+	int cqe, recv_cqe;
+	(void) rpma_conn_cfg_get_cqe(cfg, &cqe, &recv_cqe);
 
 	struct rpma_cq *cq = NULL;
 	ret = rpma_cq_new(id->verbs, cqe, &cq);
 	if (ret)
 		return ret;
 
+	struct rpma_cq *rcq = NULL;
+	if (recv_cqe) {
+		ret = rpma_cq_new(id->verbs, recv_cqe, &rcq);
+		if (ret)
+			goto err_rpma_cq_delete;
+	}
+
 	/* create a QP */
-	ret = rpma_peer_create_qp(peer, id, cq, cfg);
+	ret = rpma_peer_create_qp(peer, id, cq, rcq, cfg);
 	if (ret)
-		goto err_rpma_cq_delete;
+		goto err_rpma_rcq_delete;
 
 	*req_ptr = (struct rpma_conn_req *)malloc(sizeof(struct rpma_conn_req));
 	if (*req_ptr == NULL) {
@@ -74,6 +83,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	(*req_ptr)->edata = NULL;
 	(*req_ptr)->id = id;
 	(*req_ptr)->cq = cq;
+	(*req_ptr)->rcq = rcq;
 	(*req_ptr)->data.ptr = NULL;
 	(*req_ptr)->data.len = 0;
 	(*req_ptr)->peer = peer;
@@ -82,6 +92,9 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 err_destroy_qp:
 	rdma_destroy_qp(id);
+
+err_rpma_rcq_delete:
+	(void) rpma_cq_delete(&rcq);
 
 err_rpma_cq_delete:
 	(void) rpma_cq_delete(&cq);
@@ -119,7 +132,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	}
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, &conn);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -133,6 +146,7 @@ err_conn_disconnect:
 
 err_conn_req_delete:
 	rdma_destroy_qp(req->id);
+	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
 
 	return ret;
@@ -154,9 +168,10 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	int ret = 0;
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, &conn);
 	if (ret) {
 		rdma_destroy_qp(req->id);
+		(void) rpma_cq_delete(&req->rcq);
 		(void) rpma_cq_delete(&req->cq);
 		(void) rdma_destroy_id(req->id);
 		return ret;
@@ -181,7 +196,12 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 static int
 rpma_conn_req_reject(struct rpma_conn_req *req)
 {
-	int ret = rpma_cq_delete(&req->cq);
+	int ret = rpma_cq_delete(&req->rcq);
+
+	if (!ret)
+		ret = rpma_cq_delete(&req->cq);
+	else
+		(void) rpma_cq_delete(&req->cq);
 
 	if (rdma_reject(req->id,
 			NULL /* private data */,
@@ -211,7 +231,12 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 static int
 rpma_conn_req_destroy(struct rpma_conn_req *req)
 {
-	int ret = rpma_cq_delete(&req->cq);
+	int ret = rpma_cq_delete(&req->rcq);
+
+	if (!ret)
+		ret = rpma_cq_delete(&req->cq);
+	else
+		(void) rpma_cq_delete(&req->cq);
 
 	if (rdma_destroy_id(req->id)) {
 		if (!ret) {

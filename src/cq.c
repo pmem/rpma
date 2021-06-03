@@ -23,49 +23,33 @@ struct rpma_cq {
 	struct ibv_cq *cq; /* completion queue */
 };
 
-/* internal librpma API */
+/* public librpma API */
 
 /*
  * rpma_cq_get_fd -- get a file descriptor of the completion event channel
  * from the rpma_cq object
- *
- * XXX this function does not follow the rpma_cq_get_ibv_cq() schema
- * because it is planned to be made public in the near future so it
- * will have to handle cq and fd validation on its own.
- *
- * ASSUMPTIONS
- * - cq != NULL && fd != NULL
  */
 int
 rpma_cq_get_fd(const struct rpma_cq *cq, int *fd)
 {
+	if (cq == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
 	*fd = cq->channel->fd;
 
 	return 0;
 }
 
 /*
- * rpma_cq_get_ibv_cq -- get the CQ member from the rpma_cq object
- *
- * ASSUMPTIONS
- * - cq != NULL
- */
-struct ibv_cq *
-rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
-{
-	return cq->cq;
-}
-
-/*
  * rpma_cq_wait -- wait for a completion event from the rpma_cq object
  * and ack the completion event
- *
- * ASSUMPTIONS
- * - cq != NULL
  */
 int
 rpma_cq_wait(struct rpma_cq *cq)
 {
+	if (cq == NULL)
+		return RPMA_E_INVAL;
+
 	/* wait for the completion event */
 	struct ibv_cq *ev_cq;	/* unused */
 	void *ev_ctx;		/* unused */
@@ -93,13 +77,13 @@ rpma_cq_wait(struct rpma_cq *cq)
 /*
  * rpma_cq_get_completion -- receive an operation completion from
  * the rpma_cq object
- *
- * ASSUMPTIONS
- * - cq != NULL && cmpl != NULL
  */
 int
 rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 {
+	if (cq == NULL || cmpl == NULL)
+		return RPMA_E_INVAL;
+
 	struct ibv_wc wc = {0};
 	int result = ibv_poll_cq(cq->cq, 1 /* num_entries */, &wc);
 	if (result == 0) {
@@ -164,6 +148,20 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 	}
 
 	return 0;
+}
+
+/* internal librpma API */
+
+/*
+ * rpma_cq_get_ibv_cq -- get the CQ member from the rpma_cq object
+ *
+ * ASSUMPTIONS
+ * - cq != NULL
+ */
+struct ibv_cq *
+rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
+{
+	return cq->cq;
 }
 
 /*
@@ -236,6 +234,10 @@ rpma_cq_delete(struct rpma_cq **cq_ptr)
 {
 	struct rpma_cq *cq = *cq_ptr;
 	int ret = 0;
+
+	/* it is possible for cq to be NULL (e.g. rcq) */
+	if (cq == NULL)
+		return ret;
 
 	errno = ibv_destroy_cq(cq->cq);
 	if (errno) {
