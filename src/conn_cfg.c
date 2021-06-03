@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn_cfg.c -- librpma connection-configuration-related implementations
@@ -24,9 +25,15 @@
  */
 #define RPMA_DEFAULT_Q_SIZE 10
 
+/*
+ * The default size of rcq is 0 - no separate receiving CQ
+ */
+#define RPMA_DEFAULT_RCQ_SIZE	0
+
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
 	uint32_t cq_size;	/* CQ size */
+	uint32_t rcq_size;	/* receiving CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
 };
@@ -34,6 +41,7 @@ struct rpma_conn_cfg {
 static struct rpma_conn_cfg Conn_cfg_default  = {
 	.timeout_ms = RPMA_DEFAULT_TIMEOUT_MS,
 	.cq_size = RPMA_DEFAULT_Q_SIZE,
+	.rcq_size = RPMA_DEFAULT_RCQ_SIZE,
 	.sq_size = RPMA_DEFAULT_Q_SIZE,
 	.rq_size = RPMA_DEFAULT_Q_SIZE
 };
@@ -51,25 +59,36 @@ rpma_conn_cfg_default()
 }
 
 /*
- * rpma_conn_cfg_get_cqe -- ibv_create_cq(..., int cqe, ...) compatible variant
- * of rpma_conn_cfg_get_cq_size(). Round down the cq_size when it is too big
- * for storing into an int type of value. Convert otherwise.
+ * Round down the cq_size when it is too big for storing
+ * into an int type of value. Convert otherwise.
+ */
+static int rpma_round_down_size(uint32_t size)
+{
+	if (size > INT_MAX)
+		return INT_MAX;
+
+	return (int)size;
+}
+
+/*
+ * rpma_conn_cfg_get_cqe -- Get cq_size and rcq_size and pass them
+ * into ibv_create_cq() as the argument cqe.
  */
 int
-rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
+rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe, int *recv_cqe)
 {
-	if (cqe == NULL)
+	if (cfg == NULL || cqe == NULL || recv_cqe == NULL)
 		return RPMA_E_INVAL;
 
 	uint32_t cq_size;
-	int ret = rpma_conn_cfg_get_cq_size(cfg, &cq_size);
-	if (ret)
-		return ret;
+	(void) rpma_conn_cfg_get_cq_size(cfg, &cq_size);
 
-	if (cq_size > INT_MAX)
-		*cqe = INT_MAX;
-	else
-		*cqe = (int)cq_size;
+	*cqe = rpma_round_down_size(cq_size);
+
+	uint32_t rcq_size;
+	(void) rpma_conn_cfg_get_rcq_size(cfg, &rcq_size);
+
+	*recv_cqe = rpma_round_down_size(rcq_size);
 
 	return 0;
 }
@@ -164,6 +183,34 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 		return RPMA_E_INVAL;
 
 	*cq_size = cfg->cq_size;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_rcq_size -- set receiving CQ size for the connection
+ */
+int
+rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+
+	cfg->rcq_size = rcq_size;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_rcq_size -- get receiving CQ size for the connection
+ */
+int
+rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
+{
+	if (cfg == NULL || rcq_size == NULL)
+		return RPMA_E_INVAL;
+
+	*rcq_size = cfg->rcq_size;
 
 	return 0;
 }

@@ -24,6 +24,7 @@ struct rpma_conn {
 	struct rdma_cm_id *id; /* a CM ID of the connection */
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
 	struct rpma_cq *cq; /* rpma_cq object */
+	struct rpma_cq *rcq; /* receiving rpma_cq object */
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
 	struct rpma_flush *flush; /* flushing object */
@@ -42,7 +43,8 @@ struct rpma_conn {
  */
 int
 rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_cq *cq, struct rpma_conn **conn_ptr)
+		struct rpma_cq *cq, struct rpma_cq *rcq,
+		struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -75,6 +77,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	conn->id = id;
 	conn->evch = evch;
 	conn->cq = cq;
+	conn->rcq = rcq;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
 	conn->flush = flush;
@@ -248,9 +251,13 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	ret = rpma_flush_delete(&conn->flush);
 	if (ret)
-		goto err_rpma_cq_delete;
+		goto err_rpma_rcq_delete;
 
 	rdma_destroy_qp(conn->id);
+
+	ret = rpma_cq_delete(&conn->rcq);
+	if (ret)
+		goto err_rpma_cq_delete;
 
 	ret = rpma_cq_delete(&conn->cq);
 	if (ret)
@@ -270,6 +277,8 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 
 	return 0;
 
+err_rpma_rcq_delete:
+	(void) rpma_cq_delete(&conn->rcq);
 err_rpma_cq_delete:
 	(void) rpma_cq_delete(&conn->cq);
 err_destroy_id:
@@ -464,6 +473,34 @@ rpma_recv(struct rpma_conn *conn,
 	return rpma_mr_recv(conn->id->qp,
 			dst, offset, len,
 			op_context);
+}
+
+/*
+ * rpma_conn_get_cq -- get a rpma_cq object from the connection
+ */
+int
+rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr)
+{
+	if (conn == NULL || cq_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*cq_ptr = conn->cq;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_get_rcq -- get a receiving rpma_cq object from the connection
+ */
+int
+rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr)
+{
+	if (conn == NULL || rcq_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*rcq_ptr = conn->rcq;
+
+	return 0;
 }
 
 /*
