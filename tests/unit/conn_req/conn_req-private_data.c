@@ -25,6 +25,7 @@ get_private_data__success(void **unused)
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
@@ -71,6 +72,7 @@ get_private_data__pdata_NULL(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);

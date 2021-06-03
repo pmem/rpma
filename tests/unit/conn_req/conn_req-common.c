@@ -18,7 +18,8 @@ const char Private_data[] = "Random data";
  */
 void
 prestate_init(struct conn_req_new_test_state *prestate,
-		struct rpma_conn_cfg *cfg, int timeout_ms, uint32_t cq_size)
+		struct rpma_conn_cfg *cfg, int timeout_ms,
+		uint32_t cq_size, uint32_t rcq_size)
 {
 	memset(prestate, 0, sizeof(struct conn_req_new_test_state));
 	prestate->id.verbs = MOCK_VERBS;
@@ -26,7 +27,8 @@ prestate_init(struct conn_req_new_test_state *prestate,
 	prestate->get_t.cfg = cfg;
 	prestate->get_t.timeout_ms = timeout_ms;
 	prestate->get_cqe.cfg = cfg;
-	prestate->get_cqe.q_size = cq_size;
+	prestate->get_cqe.cq_size = cq_size;
+	prestate->get_cqe.rcq_size = rcq_size;
 }
 
 /*
@@ -41,9 +43,10 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	cstate.event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	cstate.event.id = &cstate.id;
 	cstate.id.verbs = MOCK_VERBS;
-	struct conn_cfg_get_q_size_mock_args get_cqe = {
+	struct conn_cfg_get_cq_size_mock_args get_cqe = {
 			.cfg = MOCK_CONN_CFG_DEFAULT,
-			.q_size = MOCK_CQ_SIZE_DEFAULT
+			.cq_size = MOCK_CQ_SIZE_DEFAULT,
+			.rcq_size = MOCK_RCQ_SIZE_DEFAULT
 	};
 
 	/* configure mocks */
@@ -80,6 +83,7 @@ teardown__conn_req_from_cm_event(void **cstate_ptr)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
@@ -119,8 +123,12 @@ setup__conn_req_new(void **cstate_ptr)
 	expect_value(rdma_resolve_route, timeout_ms, cstate->get_t.timeout_ms);
 	will_return(rdma_resolve_route, MOCK_OK);
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
-	expect_value(rpma_cq_new, cqe, cstate->get_cqe.q_size);
+	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
+	if (cstate->get_cqe.rcq_size) {
+		expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
+		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
+	}
 	expect_value(rpma_peer_create_qp, id, &cstate->id);
 	expect_value(rpma_peer_create_qp, cfg, cstate->get_cqe.cfg);
 	will_return(rpma_peer_create_qp, MOCK_OK);
@@ -153,6 +161,7 @@ teardown__conn_req_new(void **cstate_ptr)
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
+	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);

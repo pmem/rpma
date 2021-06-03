@@ -88,7 +88,7 @@ rpma_cq_delete(struct rpma_cq **cq_ptr)
 	assert_non_null(cq_ptr);
 
 	struct rpma_cq *cq = *cq_ptr;
-	assert_ptr_equal(cq, MOCK_RPMA_CQ);
+	assert_true(cq == MOCK_RPMA_CQ || cq == MOCK_RPMA_RCQ || cq == NULL);
 
 	int result = mock_type(int);
 	/* XXX validate the errno handling */
@@ -106,7 +106,7 @@ rpma_cq_delete(struct rpma_cq **cq_ptr)
 struct ibv_cq *
 rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
 {
-	assert_ptr_equal(cq, MOCK_RPMA_CQ);
+	assert_true(cq == MOCK_RPMA_CQ || cq == MOCK_RPMA_RCQ);
 
 	return mock_type(struct ibv_cq *);
 }

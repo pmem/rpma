@@ -192,6 +192,21 @@ test_lifecycle(void **unused)
 }
 
 /*
+ * delete__cq_NULL - *cq_ptr NULL should cause quick exit
+ */
+static void
+delete__cq_NULL(void **unused)
+{
+	struct rpma_cq *cq = NULL;
+
+	/* run test */
+	int ret = rpma_cq_delete(&cq);
+
+	/* verify the results */
+	assert_int_equal(ret, 0);
+}
+
+/*
  * delete__destroy_cq_ERRNO -- ibv_destroy_cq() fails with MOCK_ERRNO
  */
 static void
@@ -275,6 +290,7 @@ static const struct CMUnitTest tests_new_delete[] = {
 		setup__cq_new, teardown__cq_delete),
 
 	/* rpma_cq_delete() unit tests */
+	cmocka_unit_test(delete__cq_NULL),
 	cmocka_unit_test(delete__destroy_cq_ERRNO),
 	cmocka_unit_test(delete__destroy_cq_ERRNO_subsequent_EIO),
 	cmocka_unit_test(delete__destroy_comp_channel_ERRNO),
