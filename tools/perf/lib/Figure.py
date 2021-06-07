@@ -120,8 +120,18 @@ class Figure:
 
     def _label(self, column):
         """Translate the name of a column to a label with a unit"""
-        # XXX
-        return column
+        label_by_column={
+            'threads': '# of threads',
+            'iodepth': 'iodepth',
+            'bs': 'block size [B]',
+            'lat_avg': 'latency [usec]',
+            'lat_pctl_99.9': 'latency [usec]',
+            'lat_pctl_99.99': 'latency [usec]',
+            'bw': 'bandwidth [Gb/s]',
+            'cpuload': 'CPU load [%]'
+        }
+        # If the column is not in the dictionary the default return value is the raw name of the column.
+        return label_by_column.get(column, column)
 
     def png_path(self, result_dir):
         output = self.file + '_' + self.key + '.png'
