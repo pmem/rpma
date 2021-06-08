@@ -41,7 +41,7 @@ def main():
     elif args.command == "continue":
         bench = Bench.carry_on(args.bench)
     else:
-        raise ValueError(f"Unsupported command: {args.command}")
+        raise ValueError("Unsupported command")
     bench.run()
     print('Done.')
 
