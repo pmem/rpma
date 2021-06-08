@@ -34,7 +34,7 @@ ENV TOOLS_DEPS "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
-	pylint3"
+	pylint"
 
 # RPMA deps
 ENV RPMA_DEPS "\

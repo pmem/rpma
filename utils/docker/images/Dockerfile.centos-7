@@ -53,6 +53,9 @@ RUN yum install -y \
 	$RPMA_DEPS \
 && yum clean all
 
+# Create a symlink for pylint
+RUN ln -s /usr/bin/pylint-3 /usr/bin/pylint
+
 # run cmake3 as cmake
 RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 RUN ln -s /usr/bin/ctest3 /usr/bin/ctest

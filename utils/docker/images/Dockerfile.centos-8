@@ -55,6 +55,9 @@ RUN dnf install -y \
 	$RPMA_DEPS \
 && dnf clean all
 
+# Create a symlink for pylint
+RUN ln -s /usr/bin/pylint-3 /usr/bin/pylint
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh

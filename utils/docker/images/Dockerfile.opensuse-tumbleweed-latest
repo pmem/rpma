@@ -29,10 +29,10 @@ ENV BASE_DEPS "\
 	which"
 
 ENV TOOLS_DEPS "\
-	python3-jinja2"
+	python3-Jinja2"
 
 ENV TESTS_DEPS "\
-	pylint3"
+	python3-pylint"
 
 # RPMA deps
 ENV RPMA_DEPS "\
