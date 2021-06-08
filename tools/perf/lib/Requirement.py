@@ -124,7 +124,7 @@ class Requirement:
                 + "Where supported values are: '"
                 + "', '".join(Requirement.is_met_impl.keys()) + "'.")
 
-    def run_benchmarks(self, ctx, result_dir):
+    def benchmarks_run(self, ctx, result_dir):
         """Run all benchmarks"""
         for _, b in self.benchmarks.items():
             if b.is_done():

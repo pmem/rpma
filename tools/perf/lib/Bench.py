@@ -70,7 +70,7 @@ class Bench:
                 skip = True
                 print('Skip: the requirement is not met: ' + str(req))
                 continue
-            req.run_benchmarks(self, self.result_dir)
+            req.benchmarks_run(self, self.result_dir)
 
         # in case of a skip, not all results are ready
         if skip:
