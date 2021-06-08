@@ -83,6 +83,17 @@ class Bench:
             f.prepare_series(self.result_dir)
             self.cache()
 
+    def dump(self):
+        for _, req in self.requirements.items():
+            if req.is_done():
+                status = "done"
+            elif req.is_met(self.config):
+                status = "met"
+            else:
+                status = "not met"
+            print(f"Requirement: {req} {status}\n")
+            req.benchmarks_dump(self, self.result_dir)
+
     def check_completed(self):
         for _, req in self.requirements.items():
             if not req.is_done():
