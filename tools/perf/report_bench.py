@@ -38,6 +38,7 @@ def main():
     args = Parser.parse_args()
     if args.command == "run":
         bench = Bench.new(args.config, args.figure, args.result_dir)
+        bench.cache()
     elif args.command == "continue":
         bench = Bench.carry_on(args.bench)
     else:

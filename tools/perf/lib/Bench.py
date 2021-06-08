@@ -61,8 +61,6 @@ class Bench:
         return self.config
 
     def run(self):
-        self.cache()
-
         # run all benchmarks one-by-one
         skip = False
         for _, req in self.requirements.items():
