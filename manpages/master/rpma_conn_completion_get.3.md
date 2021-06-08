@@ -27,6 +27,7 @@ SYNOPSIS
                   RPMA_OP_FLUSH,
                   RPMA_OP_SEND,
                   RPMA_OP_RECV,
+                  RPMA_OP_RECV_RDMA_WITH_IMM,
           };
 
           int rpma_conn_completion_get(struct rpma_conn *conn,
@@ -50,6 +51,9 @@ success. The following operations are available:
 -   RPMA\_OP\_SEND - messaging send operation
 
 -   RPMA\_OP\_RECV - messaging receive operation
+
+-   RPMA\_OP\_RECV\_RDMA\_WITH\_IMM - messaging receive operation for
+    RMA write operation with immediate data
 
 RETURN VALUE
 ============
