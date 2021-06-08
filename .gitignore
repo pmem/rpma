@@ -1,4 +1,5 @@
 .*
+!.circleci
 !.gitignore
 !.gitattributes
 build/
