@@ -88,7 +88,10 @@ class Benchmark:
         # - the parent process environment
         # - the user-provided configuration
         # - the output file path
-        return dict(os.environ, **env, **{'OUTPUT_FILE': output_file})
+        output = {**os.environ, **env, **{'OUTPUT_FILE': output_file}}
+        output.pop('_comment', None)
+        output.pop('report', None)
+        return output
 
     def _benchmark_args(self, env):
         args = ['./' + self.oneseries['tool'], env['server_ip']]
