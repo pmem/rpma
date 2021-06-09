@@ -120,7 +120,7 @@ class Requirement:
             # call the generation-specific implementation
             return Requirement.is_met_impl[gen](self.req, config)
         else:
-            raise ValueError(f"Unsupported 'platform_generation': '{gen}'. "
+            raise ValueError("Unsupported 'platform_generation': '{}'. ".format(gen)
                 + "Where supported values are: '"
                 + "', '".join(Requirement.is_met_impl.keys()) + "'.")
 

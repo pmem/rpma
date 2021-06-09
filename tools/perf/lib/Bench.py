@@ -91,7 +91,7 @@ class Bench:
                 status = "met"
             else:
                 status = "not met"
-            print(f"Requirement: {req} {status}\n")
+            print("Requirement: {} {}\n".format(req, status))
             req.benchmarks_dump(self, self.result_dir)
 
     def check_completed(self):

@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2016-2021, Intel Corporation
 #
 
 #
@@ -35,6 +35,12 @@ ENV EXAMPLES_DEPS "\
 	libpmem-dev \
 	libprotobuf-c-dev"
 
+ENV TOOLS_DEPS "\
+	python3-jinja2"
+
+ENV TESTS_DEPS "\
+	pylint3"
+
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -51,6 +57,8 @@ ENV RPMA_DEPS "\
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
+	$TOOLS_DEPS \
+	$TESTS_DEPS \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 

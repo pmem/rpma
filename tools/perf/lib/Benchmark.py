@@ -115,7 +115,7 @@ class Benchmark:
         env = self._get_env(config, result_dir, include_environ=False)
         id = self.get_id()
         done = 'done' if self.is_done() else 'not done'
-        print(f"Benchmark[{id}]: {done}")
+        print("Benchmark[{}]: {}".format(id, done))
         print('- Environment:')
-        print("\n".join([f"{k}=\"{v}\"" for k, v in env.items()]))
+        print("\n".join(["{}=\"{}\"".format(k, v) for k, v in env.items()]))
         print('- Command: ' + ' '.join(args))
