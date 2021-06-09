@@ -32,6 +32,14 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
+ENV TOOLS_DEPS "\
+	file \
+	python3 \
+	python3-jinja2"
+
+ENV TESTS_DEPS "\
+	pylint3"
+
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -47,6 +55,8 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
+	$TOOLS_DEPS \
+	$TESTS_DEPS \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
