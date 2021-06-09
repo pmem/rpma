@@ -1,0 +1,158 @@
+[
+    {
+        "output": {
+            "title": "Latency ({y}): APM to DRAM (DDIO=ON) vs PMEM",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "file": "apm_dram_vs_pmem",
+            "key": "{y}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "lat",
+            "tool_mode": "apm",
+            "tool": "rpma_fio_bench.sh",
+            "rw": ["randwrite", "write"]
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "DRAM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "file": "apm_pmem_vs_gpspm_pmem",
+            "key": "{y}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "pmem",
+            "mode": "lat",
+            "tool": "rpma_fio_bench.sh",
+            "rw": ["randwrite", "write"],
+        },
+        "series": [
+            {
+                "tool_mode": "apm",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "APM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": true,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM-RT {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": false,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Bandwidth ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
+            "x": ["bs", "threads"],
+            "y": "bw",
+            "file": "apm_dram_vs_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw",
+            "tool_mode": "apm",
+            "tool": "rpma_fio_bench.sh",
+            "rw": ["randwrite", "write"],
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "DRAM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "title": "Bandwidth ({x}): APM to PMEM vs GPSPM(-RT) to PMEM",
+            "x": ["bs", "threads"],
+            "y": "bw",
+            "file": "apm_pmem_vs_gpspm_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "pmem",
+            "mode": "bw",
+            "tool": "rpma_fio_bench.sh",
+            "rw": ["randwrite", "write"],
+        },
+        "series": [
+            {
+                "tool_mode": "apm",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "APM {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": true,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM-RT {rw_order}",
+                "fstrings": ["label"]
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": false,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    }
+]
