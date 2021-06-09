@@ -130,7 +130,7 @@ $ ctest
 
 Known supported OSes:
 
-- CentOS >= 6
+- CentOS >= 7
 - Debian >= 9
 - Fedora >= 27
 - Ubuntu >= 18.04

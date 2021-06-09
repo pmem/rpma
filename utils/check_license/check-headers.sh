@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2020, Intel Corporation
+# Copyright 2016-2021, Intel Corporation
 
 # check-headers.sh - check copyright and license in source files
 
@@ -36,7 +36,7 @@ if [ "$1" == "-h" -o "$1" == "--help" ]; then
 fi
 
 #
-# "git -C ${SOURCE_ROOT}" is not supported on CentOS-6 and CentOS-7,
+# "git -C ${SOURCE_ROOT}" is not supported on CentOS-7,
 # so let's do it using the 'cd' command.
 # Leave 'export GIT="git"' for consistency with the PMDK's version.
 #
