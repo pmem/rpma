@@ -4,27 +4,28 @@
 # Copyright 2021, Intel Corporation
 #
 
-#
-# report_figures.py -- generate figures (EXPERIMENTAL)
-#
+"""report_figures.py -- generate figures (EXPERIMENTAL)"""
 
 import argparse
 
-from lib.common import *
-from lib.Bench import *
+from lib.common import json_from_file
+from lib.Bench import Bench
 
-Parser = argparse.ArgumentParser(
+PARSER = argparse.ArgumentParser(
     description='Generate figures (EXPERIMENTAL)')
-Parser.add_argument('--bench', type=json_from_file, required=True,
-    help='a bench.json file of a completed benchmark')
+PARSER.add_argument('--bench', type=json_from_file, required=True,
+                    help='a bench.json file of a completed benchmark')
 
 def main():
-    args = Parser.parse_args()
+    """
+    Restore the Bench object, check whether it has completed the benchmarking,
+    and loop over all figures to generate their png representations.
+    """
+    args = PARSER.parse_args()
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
-    figures = bench.figures
-    for f in figures:
-        f.to_png(bench.result_dir)
+    for figure in bench.figures:
+        figure.to_png(bench.result_dir)
     print('Done.')
 
 if __name__ == '__main__':
