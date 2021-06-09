@@ -1,0 +1,13 @@
+[MESSAGES CONTROL]
+
+# Disable the message, report, category or checker with the given id(s). 
+disable=fixme
+
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=80
+
+# Maximum number of lines in a module.
+max-module-lines=500
