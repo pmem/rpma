@@ -78,17 +78,21 @@ class Benchmark:
         else:
             return str(value)
 
-    def _get_env(self, config, result_dir):
+    def _get_env(self, config, result_dir, include_environ=True):
         """Construct the benchmarking environment"""
         # make sure all values are strings
         env = {k: Benchmark._get_env_value(v) for k, v in config.items()}
         output_file = os.path.join(result_dir,
             'benchmark_' + str(self.get_id()) + '.json')
         # include:
-        # - the parent process environment
+        # - the parent process environment (optional)
         # - the user-provided configuration
         # - the output file path
-        return dict(os.environ, **env, **{'OUTPUT_FILE': output_file})
+        environ = os.environ if include_environ else {}
+        output = {**environ, **env, **{'OUTPUT_FILE': output_file}}
+        output.pop('_comment', None)
+        output.pop('report', None)
+        return output
 
     def _benchmark_args(self, env):
         args = ['./' + self.oneseries['tool'], env['server_ip']]
@@ -105,3 +109,13 @@ class Benchmark:
         process = subprocess.run(args, env=env)
         process.check_returncode()
         self.oneseries['done'] = True
+
+    def dump(self, config, result_dir):
+        args = self._benchmark_args(config)
+        env = self._get_env(config, result_dir, include_environ=False)
+        id = self.get_id()
+        done = 'done' if self.is_done() else 'not done'
+        print(f"Benchmark[{id}]: {done}")
+        print('- Environment:')
+        print("\n".join([f"{k}=\"{v}\"" for k, v in env.items()]))
+        print('- Command: ' + ' '.join(args))

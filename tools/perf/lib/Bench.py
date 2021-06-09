@@ -61,8 +61,6 @@ class Bench:
         return self.config
 
     def run(self):
-        self.cache()
-
         # run all benchmarks one-by-one
         skip = False
         for _, req in self.requirements.items():
@@ -72,7 +70,7 @@ class Bench:
                 skip = True
                 print('Skip: the requirement is not met: ' + str(req))
                 continue
-            req.run_benchmarks(self, self.result_dir)
+            req.benchmarks_run(self, self.result_dir)
 
         # in case of a skip, not all results are ready
         if skip:
@@ -84,6 +82,17 @@ class Bench:
                 continue
             f.prepare_series(self.result_dir)
             self.cache()
+
+    def dump(self):
+        for _, req in self.requirements.items():
+            if req.is_done():
+                status = "done"
+            elif req.is_met(self.config):
+                status = "met"
+            else:
+                status = "not met"
+            print(f"Requirement: {req} {status}\n")
+            req.benchmarks_dump(self, self.result_dir)
 
     def check_completed(self):
         for _, req in self.requirements.items():

@@ -17,6 +17,8 @@ from lib.Bench import *
 
 Parser = argparse.ArgumentParser(
     description='Run report-specific benchmarks (EXPERIMENTAL)')
+Parser.add_argument('--dump', dest='dump', action='store_true',
+    help='only print a dump')
 subparsers = Parser.add_subparsers(dest='command')
 # Python >= 3.7 accepts 'required' kwarg. For older versions, it is validated
 # manually.
@@ -38,12 +40,16 @@ def main():
     args = Parser.parse_args()
     if args.command == "run":
         bench = Bench.new(args.config, args.figure, args.result_dir)
+        bench.cache()
     elif args.command == "continue":
         bench = Bench.carry_on(args.bench)
     else:
         raise ValueError(f"Unsupported command: {args.command}") 
-    bench.run()
-    print('Done.')
+    if args.dump:
+        bench.dump()
+    else:
+        bench.run()
+        print('Done.')
 
 if __name__ == '__main__':
     main()
