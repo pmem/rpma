@@ -166,6 +166,7 @@ get_completion__success(void **cq_ptr)
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 		wc.byte_len = MOCK_LEN;
 		wc.status = MOCK_WC_STATUS;
+		wc.qp_num = MOCK_QP_NUM;
 		if (flags[i] == IBV_WC_WITH_IMM) {
 			/*
 			 * 'wc_flags' is of 'int' type
@@ -186,6 +187,7 @@ get_completion__success(void **cq_ptr)
 		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
 		assert_int_equal(cmpl.byte_len, MOCK_LEN);
 		assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
+		assert_int_equal(cmpl.qp_num, MOCK_QP_NUM);
 		if (flags[i] == IBV_WC_WITH_IMM) {
 			assert_int_equal(cmpl.flags, IBV_WC_WITH_IMM);
 			assert_int_equal(cmpl.imm, MOCK_IMM_DATA);
