@@ -43,7 +43,8 @@ jobs:
                  "N=CentOS8      OS=centos  OS_VER=8",
                  "N=CentOS7      OS=centos  OS_VER=7",
                  "N=Debian10     OS=debian  OS_VER=10",
-                 "N=Debian9      OS=debian  OS_VER=9",
+                 # Debian9 was moved to per-PR builds
+                 # because it has older Python v3.5.3
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # Rolling/testing/experimental distributions:
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
