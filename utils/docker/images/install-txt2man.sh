@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 #
@@ -19,4 +19,4 @@ git checkout txt2man-1.7.0
 make -j$(nproc)
 sudo make -j$(nproc) install prefix=/usr
 cd ..
-rm -r txt2man
+rm -rf txt2man
