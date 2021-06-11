@@ -183,7 +183,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
 	pdata.len = sizeof(struct common_data);
-	if ((ret = server_accept_connection(ep, &pdata, &conn)))
+	if ((ret = server_accept_connection(ep, NULL, &pdata, &conn)))
 		goto err_mr_dereg;
 
 	/*
