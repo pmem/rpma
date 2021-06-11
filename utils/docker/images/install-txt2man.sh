@@ -19,4 +19,4 @@ git checkout txt2man-1.7.0
 make -j$(nproc)
 sudo make -j$(nproc) install prefix=/usr
 cd ..
-rm -r txt2man
+rm -rf txt2man
