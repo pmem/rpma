@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2021, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -16,7 +16,7 @@ function(add_test_info name)
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/info.c)
-	
+
 	target_compile_definitions(${name} PRIVATE TEST_MOCK_ALLOC)
 
 	set_target_properties(${name}
