@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * ep-next_conn_req.c -- the endpoint unit tests
@@ -58,17 +59,17 @@ next_conn_req__ep_NULL_req_NULL(void **unused)
 }
 
 /*
- * next_conn_req__get_cm_event_EAGAIN -
- * rdma_get_cm_event() fails with EAGAIN
+ * next_conn_req__get_cm_event_ERRNO -
+ * rdma_get_cm_event() fails with MOCK_ERRNO
  */
 static void
-next_conn_req__get_cm_event_EAGAIN(void **estate_ptr)
+next_conn_req__get_cm_event_ERRNO(void **estate_ptr)
 {
 	struct ep_test_state *estate = *estate_ptr;
 
 	expect_value(rdma_get_cm_event, channel, &estate->evch);
 	will_return(rdma_get_cm_event, NULL);
-	will_return(rdma_get_cm_event, EAGAIN);
+	will_return(rdma_get_cm_event, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -128,12 +129,12 @@ next_conn_req__event_REJECTED(void **estate_ptr)
 }
 
 /*
- * next_conn_req__event_REJECTED_ack_EINVAL -
- * rdma_ack_cm_event() fails with EINVAL after obtaining
+ * next_conn_req__event_REJECTED_ack_ERRNO -
+ * rdma_ack_cm_event() fails with MOCK_ERRNO after obtaining
  * an RDMA_CM_EVENT_REJECTED event (!= RDMA_CM_EVENT_CONNECT_REQUEST)
  */
 static void
-next_conn_req__event_REJECTED_ack_EINVAL(void **estate_ptr)
+next_conn_req__event_REJECTED_ack_ERRNO(void **estate_ptr)
 {
 	struct ep_test_state *estate = *estate_ptr;
 
@@ -143,7 +144,7 @@ next_conn_req__event_REJECTED_ack_EINVAL(void **estate_ptr)
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
-	will_return(rdma_ack_cm_event, EINVAL);
+	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -155,11 +156,11 @@ next_conn_req__event_REJECTED_ack_EINVAL(void **estate_ptr)
 }
 
 /*
- * next_conn_req__conn_req_from_cm_event_ENOMEM -
- * rpma_conn_req_from_cm_event() fails with ENOMEM
+ * next_conn_req__from_cm_event_E_NOMEM -
+ * rpma_conn_req_from_cm_event() returns RPMA_E_NOMEM
  */
 static void
-next_conn_req__conn_req_from_cm_event_ENOMEM(void **estate_ptr)
+next_conn_req__from_cm_event_E_NOMEM(void **estate_ptr)
 {
 	struct ep_test_state *estate = *estate_ptr;
 
@@ -187,12 +188,12 @@ next_conn_req__conn_req_from_cm_event_ENOMEM(void **estate_ptr)
 }
 
 /*
- * next_conn_req__from_cm_event_ENOMEM_ack_EINVAL -
- * rpma_conn_req_from_cm_event() fails and
- * rdma_ack_cm_event() fails with EINVAL
+ * next_conn_req__from_cm_event_E_NOMEM_ack_ERRNO -
+ * rpma_conn_req_from_cm_event() returns RPMA_E_NOMEM
+ * and rdma_ack_cm_event() fails with MOCK_ERRNO
  */
 static void
-next_conn_req__from_cm_event_ENOMEM_ack_EINVAL(void **estate_ptr)
+next_conn_req__from_cm_event_E_NOMEM_ack_ERRNO(void **estate_ptr)
 {
 	struct ep_test_state *estate = *estate_ptr;
 
@@ -208,7 +209,7 @@ next_conn_req__from_cm_event_ENOMEM_ack_EINVAL(void **estate_ptr)
 	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
 
 	expect_value(rdma_ack_cm_event, event, &event);
-	will_return(rdma_ack_cm_event, EINVAL);
+	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -266,11 +267,11 @@ main(int argc, char *argv[])
 			&prestate_conn_cfg_default),
 		cmocka_unit_test(next_conn_req__ep_NULL_req_NULL),
 		cmocka_unit_test_prestate_setup_teardown(
-			next_conn_req__get_cm_event_ENODATA,
+			next_conn_req__get_cm_event_ERRNO,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		cmocka_unit_test_prestate_setup_teardown(
-			next_conn_req__get_cm_event_EAGAIN,
+			next_conn_req__get_cm_event_ENODATA,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		cmocka_unit_test_prestate_setup_teardown(
@@ -278,15 +279,15 @@ main(int argc, char *argv[])
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		cmocka_unit_test_prestate_setup_teardown(
-			next_conn_req__event_REJECTED_ack_EINVAL,
+			next_conn_req__event_REJECTED_ack_ERRNO,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		cmocka_unit_test_prestate_setup_teardown(
-			next_conn_req__conn_req_from_cm_event_ENOMEM,
+			next_conn_req__from_cm_event_E_NOMEM,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		cmocka_unit_test_prestate_setup_teardown(
-			next_conn_req__from_cm_event_ENOMEM_ack_EINVAL,
+			next_conn_req__from_cm_event_E_NOMEM_ack_ERRNO,
 			setup__ep_listen, teardown__ep_shutdown,
 			&prestate_conn_cfg_default),
 		{"next_conn_req__success_conn_cfg_default",
