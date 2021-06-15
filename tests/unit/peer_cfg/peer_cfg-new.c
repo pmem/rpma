@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer_cfg-new.c -- the rpma_peer_cfg_new() unit tests
@@ -28,13 +29,13 @@ new__pcfg_NULL(void **unused)
 }
 
 /*
- * new__malloc_ENOMEM -- malloc() fails with ENOMEM
+ * new__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-new__malloc_ENOMEM(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_peer_cfg *cfg = NULL;
@@ -57,7 +58,7 @@ new__success(void **cstate_ptr)
 static const struct CMUnitTest test_new[] = {
 	/* rpma_peer_cfg_new() unit tests */
 	cmocka_unit_test(new__pcfg_NULL),
-	cmocka_unit_test(new__malloc_ENOMEM),
+	cmocka_unit_test(new__malloc_ERRNO),
 	cmocka_unit_test_setup_teardown(new__success,
 			setup__peer_cfg, teardown__peer_cfg),
 };
