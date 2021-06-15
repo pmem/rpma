@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * info-common.h -- header of the common part of unit tests of the info module
@@ -11,6 +12,7 @@
 #include <stdlib.h>
 
 #include "cmocka_headers.h"
+#include "test-common.h"
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
