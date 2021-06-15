@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer-mr_reg.c -- a peer unit test
@@ -71,10 +72,10 @@ static struct prestate prestates[] = {
 };
 
 /*
- * mr_reg__fail_ENOMEM -- ibv_reg_mr() failed with ENOMEM
+ * mr_reg__fail_ERRNO -- ibv_reg_mr() failed with MOCK_ERRNO
  */
 static void
-mr_reg__fail_ENOMEM(void **peer_ptr)
+mr_reg__fail_ERRNO(void **peer_ptr)
 {
 	struct rpma_peer *peer = *peer_ptr;
 
@@ -84,7 +85,7 @@ mr_reg__fail_ENOMEM(void **peer_ptr)
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
 	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
 	will_return(ibv_reg_mr, NULL);
-	will_return(ibv_reg_mr, ENOMEM);
+	will_return(ibv_reg_mr, MOCK_ERRNO);
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
@@ -123,11 +124,11 @@ mr_reg__fail_EOPNOTSUPP_no_odp(void **peer_ptr)
 }
 
 /*
- * mr_reg__fail_EOPNOTSUPP_EAGAIN -- the first ibv_reg_mr() fails with
- * EOPNOTSUPP whereas the second one fails with EAGAIN
+ * mr_reg__fail_EOPNOTSUPP_ERRNO -- the first ibv_reg_mr() fails with
+ * EOPNOTSUPP whereas the second one fails with MOCK_ERRNO
  */
 static void
-mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
+mr_reg__fail_EOPNOTSUPP_ERRNO(void **peer_ptr)
 {
 	struct rpma_peer *peer = *peer_ptr;
 
@@ -145,7 +146,7 @@ mr_reg__fail_EOPNOTSUPP_EAGAIN(void **peer_ptr)
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
 	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
 	will_return(ibv_reg_mr, NULL);
-	will_return(ibv_reg_mr, EAGAIN);
+	will_return(ibv_reg_mr, MOCK_ERRNO);
 #endif
 
 	/* run test */
@@ -231,15 +232,15 @@ main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
 		/* rpma_peer_mr_reg() unit tests */
-		{ "mr_reg__fail_ENOMEM_no_odp", mr_reg__fail_ENOMEM,
+		{ "mr_reg__fail_ERRNO_no_odp", mr_reg__fail_ERRNO,
 				setup__peer, teardown__peer, &OdpIncapable},
-		{ "mr_reg__fail_ENOMEM_odp", mr_reg__fail_ENOMEM,
+		{ "mr_reg__fail_ERRNO_odp", mr_reg__fail_ERRNO,
 				setup__peer, teardown__peer, &OdpCapable},
 		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg__fail_EOPNOTSUPP_no_odp,
 				setup__peer, teardown__peer, &OdpIncapable),
 		cmocka_unit_test_prestate_setup_teardown(
-				mr_reg__fail_EOPNOTSUPP_EAGAIN,
+				mr_reg__fail_EOPNOTSUPP_ERRNO,
 				setup__peer, teardown__peer, &OdpCapable),
 		{ "mr_reg__USAGE_READ_SRC_IB", mr_reg__success,
 				setup__peer_prestates,

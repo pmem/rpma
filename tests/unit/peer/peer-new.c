@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer-new.c -- a peer unit test
@@ -104,11 +105,11 @@ new__alloc_pd_fail_ENOMEM(void **unused)
 }
 
 /*
- * new__alloc_pd_fail_EAGAIN -- ibv_alloc_pd() fails with EAGAIN
+ * new__alloc_pd_fail_ERRNO -- ibv_alloc_pd() fails with MOCK_ERRNO
  * (arbitrarily picked error which is not ENOMEM)
  */
 static void
-new__alloc_pd_fail_EAGAIN(void **unused)
+new__alloc_pd_fail_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -118,7 +119,7 @@ new__alloc_pd_fail_EAGAIN(void **unused)
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
-	will_return(ibv_alloc_pd, EAGAIN);
+	will_return(ibv_alloc_pd, MOCK_ERRNO);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -159,16 +160,16 @@ new__alloc_pd_fail_no_error(void **unused)
 }
 
 /*
- * new__odp_PROVIDER_EAGAIN -- rpma_utils_ibv_context_is_odp_capable()
- * fails with RPMA_E_PROVIDER (EAGAIN)
+ * new__odp_PROVIDER_ERRNO -- rpma_utils_ibv_context_is_odp_capable()
+ * fails with RPMA_E_PROVIDER (MOCK_ERRNO)
  */
 static void
-new__odp_PROVIDER_EAGAIN(void **unused)
+new__odp_PROVIDER_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERR_PENDING);
 	will_return(rpma_utils_ibv_context_is_odp_capable, RPMA_E_PROVIDER);
-	will_return(rpma_utils_ibv_context_is_odp_capable, EAGAIN);
+	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(ibv_alloc_pd, MOCK_IBV_PD);
 	will_return_maybe(ibv_dealloc_pd, MOCK_OK);
@@ -189,7 +190,7 @@ static void
 new__malloc_fail(void **unused)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	struct ibv_alloc_pd_mock_args alloc_args =
 		{MOCK_PASSTHROUGH, MOCK_IBV_PD};
 	will_return_maybe(ibv_alloc_pd, &alloc_args);
@@ -321,9 +322,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__peer_ptr_eq_NULL),
 		cmocka_unit_test(new__ibv_ctx_and_peer_ptr_eq_NULL),
 		cmocka_unit_test(new__alloc_pd_fail_ENOMEM),
-		cmocka_unit_test(new__alloc_pd_fail_EAGAIN),
+		cmocka_unit_test(new__alloc_pd_fail_ERRNO),
 		cmocka_unit_test(new__alloc_pd_fail_no_error),
-		cmocka_unit_test(new__odp_PROVIDER_EAGAIN),
+		cmocka_unit_test(new__odp_PROVIDER_ERRNO),
 		cmocka_unit_test(new__malloc_fail),
 		cmocka_unit_test(new__success),
 
