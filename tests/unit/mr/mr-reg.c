@@ -130,7 +130,7 @@ reg__wrong_usage(void **unused)
 }
 
 /*
- * reg__failed_E_NOMEM -- rpma_mr_reg fails with ENOMEM
+ * reg__failed_E_NOMEM -- rpma_mr_reg fails with MOCK_ERRNO
  */
 static void
 reg__failed_E_NOMEM(void **unused)
@@ -140,7 +140,7 @@ reg__failed_E_NOMEM(void **unused)
 	mr_reg_args.usage = RPMA_MR_USAGE_READ_SRC;
 	mr_reg_args.access = IBV_ACCESS_REMOTE_READ;
 	mr_reg_args.mr = MOCK_MR;
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return_maybe(rpma_peer_mr_reg, &mr_reg_args);
 	will_return_maybe(ibv_dereg_mr, MOCK_OK);
 
@@ -155,7 +155,8 @@ reg__failed_E_NOMEM(void **unused)
 }
 
 /*
- * reg__peer_mr_reg_failed_E_PROVIDER -- rpma_peer_mr_reg fails with ENOMEM
+ * reg__peer_mr_reg_failed_E_PROVIDER -- rpma_peer_mr_reg fails
+ * with MOCK_ERRNO
  */
 static void
 reg__peer_mr_reg_failed_E_PROVIDER(void **unused)
