@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer_cfg-direct_write_to_pmem.c -- the peer_cfg descriptor unit tests
@@ -155,7 +156,7 @@ static void
 from_desc__incorrect_desc_size(void **unused)
 {
 	/* configure mocks */
-	will_return_maybe(__wrap__test_malloc, ENOMEM);
+	will_return_maybe(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test of rpma_peer_cfg_from_descriptor() */
 	struct rpma_peer_cfg *pcfg = NULL;
@@ -168,13 +169,13 @@ from_desc__incorrect_desc_size(void **unused)
 }
 
 /*
- * from_desc__malloc_ENOMEM -- malloc() fails with ENOMEM
+ * from_desc__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-from_desc__malloc_ENOMEM(void **unused)
+from_desc__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test of rpma_peer_cfg_from_descriptor() */
 	struct rpma_peer_cfg *pcfg = NULL;
@@ -275,7 +276,7 @@ static const struct CMUnitTest test_direct_write_to_pmem[] = {
 	cmocka_unit_test(from_desc__pcfg_ptr_NULL),
 	cmocka_unit_test(from_desc__pcfg_ptr_desc_NULL),
 	cmocka_unit_test(from_desc__incorrect_desc_size),
-	cmocka_unit_test(from_desc__malloc_ENOMEM),
+	cmocka_unit_test(from_desc__malloc_ERRNO),
 	cmocka_unit_test(from_desc__success),
 
 	/* rpma_peer_cfg_get_descriptor() lifecycle */
