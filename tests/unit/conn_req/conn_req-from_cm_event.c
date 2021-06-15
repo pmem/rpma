@@ -101,10 +101,10 @@ from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR(void **unused)
 }
 
 /*
- * from_cm_event__cq_new_EAGAIN -- rpma_cq_new() fails with EAGAIN
+ * from_cm_event__cq_new_ERRNO -- rpma_cq_new() fails with MOCK_ERRNO
  */
 static void
-from_cm_event__cq_new_EAGAIN(void **unused)
+from_cm_event__cq_new_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -115,7 +115,7 @@ from_cm_event__cq_new_EAGAIN(void **unused)
 	expect_value(rpma_cq_new, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
-	will_return(rpma_cq_new, EAGAIN);
+	will_return(rpma_cq_new, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -128,11 +128,11 @@ from_cm_event__cq_new_EAGAIN(void **unused)
 }
 
 /*
- * from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN -- rpma_peer_create_qp()
- * fails with RPMA_E_PROVIDER+EAGAIN
+ * from_cm_event__peer_create_qp_ERRNO -- rpma_peer_create_qp()
+ * fails with MOCK_ERRNO
  */
 static void
-from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
+from_cm_event__peer_create_qp_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -145,7 +145,7 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
-	will_return(rpma_peer_create_qp, EAGAIN);
+	will_return(rpma_peer_create_qp, MOCK_ERRNO);
 	will_return(rpma_cq_delete, MOCK_OK);
 
 	/* run test */
@@ -159,13 +159,11 @@ from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * from_cm_event__create_qp_EAGAIN_subsequent_EIO -- rpma_peer_create_qp()
- * fails with RPMA_E_PROVIDER+EAGAIN followed by rpma_cq_delete() fails
- * with EIO
+ * from_cm_event__create_qp_ERRNO_subsequent_ERRNO2 -- rpma_peer_create_qp()
+ * fails with MOCK_ERRNO followed by rpma_cq_delete() fails with MOCK_ERRNO2
  */
 static void
-from_cm_event__create_qp_EAGAIN_subsequent_EIO(
-		void **unused)
+from_cm_event__create_qp_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -177,10 +175,10 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
-	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER); /* first error */
-	will_return(rpma_peer_create_qp, EAGAIN);
+	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
+	will_return(rpma_peer_create_qp, MOCK_ERRNO); /* first error */
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EIO); /* second error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -193,10 +191,10 @@ from_cm_event__create_qp_EAGAIN_subsequent_EIO(
 }
 
 /*
- * from_cm_event__malloc_ENOMEM -- malloc() fails with ENOMEM
+ * from_cm_event__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-from_cm_event__malloc_ENOMEM(void **unused)
+from_cm_event__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -209,7 +207,7 @@ from_cm_event__malloc_ENOMEM(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, MOCK_OK);
 
@@ -224,11 +222,11 @@ from_cm_event__malloc_ENOMEM(void **unused)
 }
 
 /*
- * from_cm_event__malloc_ENOMEM_subsequent_EAGAIN -- malloc() fail with
- * ENOMEM followed by rpma_cq_delete() fails with EAGAIN
+ * from_cm_event__malloc_ERRNO_subsequent_ERRNO2 -- malloc() fails with
+ * MOCK_ERRNO followed by rpma_cq_delete() fails with MOCK_ERRNO2
  */
 static void
-from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
+from_cm_event__malloc_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -241,10 +239,10 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
-	will_return(__wrap__test_malloc, ENOMEM); /* first error */
+	will_return(__wrap__test_malloc, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EAGAIN); /* second error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -257,11 +255,11 @@ from_cm_event__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 }
 
 /*
- * from_cm_event__private_data_store_ENOMEM -- rpma_private_data_store()
+ * from_cm_event__private_data_store_E_NOMEM -- rpma_private_data_store()
  * fails with RPMA_E_NOMEM
  */
 static void
-from_cm_event__private_data_store_ENOMEM(void **unused)
+from_cm_event__private_data_store_E_NOMEM(void **unused)
 {
 	/* configure mocks */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
@@ -277,8 +275,7 @@ from_cm_event__private_data_store_ENOMEM(void **unused)
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return(rpma_private_data_store, NULL);
 	expect_value(rdma_destroy_qp, id, &id);
-	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EAGAIN); /* second error */
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &id);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
@@ -314,16 +311,16 @@ static const struct CMUnitTest test_from_cm_event[] = {
 		from_cm_event__peer_NULL_edata_NULL_req_ptr_NULL),
 	cmocka_unit_test(
 		from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR),
-	cmocka_unit_test(from_cm_event__cq_new_EAGAIN),
+	cmocka_unit_test(from_cm_event__cq_new_ERRNO),
 	cmocka_unit_test(
-		from_cm_event__peer_create_qp_E_PROVIDER_EAGAIN),
+		from_cm_event__peer_create_qp_ERRNO),
 	cmocka_unit_test(
-		from_cm_event__create_qp_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(from_cm_event__malloc_ENOMEM),
+		from_cm_event__create_qp_ERRNO_subsequent_ERRNO2),
+	cmocka_unit_test(from_cm_event__malloc_ERRNO),
 	cmocka_unit_test(
-		from_cm_event__malloc_ENOMEM_subsequent_EAGAIN),
+		from_cm_event__malloc_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(
-		from_cm_event__private_data_store_ENOMEM),
+		from_cm_event__private_data_store_E_NOMEM),
 	/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 	cmocka_unit_test_setup_teardown(conn_req_from_cm__lifecycle,
 		setup__conn_req_from_cm_event,
