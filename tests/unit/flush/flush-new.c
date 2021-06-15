@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * flush-new.c -- unit tests of the flush module
@@ -17,13 +18,13 @@
 #include <sys/mman.h>
 
 /*
- * new__malloc_ENOMEM -- malloc() fail with ENOMEM
+ * new__malloc_ERRNO -- malloc() fail with MOCK_ERRNO
  */
 static void
-new__malloc_ENOMEM(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
@@ -35,14 +36,14 @@ new__malloc_ENOMEM(void **unused)
 }
 
 /*
- * new__apm_sysconf_EINVAL -- sysconf() fail with EINVAL
+ * new__apm_sysconf_ERRNO -- sysconf() fail with MOCK_ERRNO
  */
 static void
-new__apm_sysconf_EINVAL(void **unused)
+new__apm_sysconf_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
-	will_return(__wrap_sysconf, EINVAL);
+	will_return(__wrap_sysconf, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
@@ -54,10 +55,10 @@ new__apm_sysconf_EINVAL(void **unused)
 }
 
 /*
- * new__apm_mmap_ENOMEM -- mmap() fails with ENOMEM
+ * new__apm_mmap_E_NOMEM -- mmap() fails
  */
 static void
-new__apm_mmap_ENOMEM(void **unused)
+new__apm_mmap_E_NOMEM(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
@@ -74,10 +75,10 @@ new__apm_mmap_ENOMEM(void **unused)
 }
 
 /*
- * new__apm_mr_reg_RPMA_E_NOMEM -- malloc() fail with ENOMEM
+ * new__apm_mr_reg_E_NOMEM -- rpma_mr_reg() fails with RPMA_E_NOMEM
  */
 static void
-new__apm_mr_reg_RPMA_E_NOMEM(void **unused)
+new__apm_mr_reg_E_NOMEM(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
@@ -93,7 +94,7 @@ new__apm_mr_reg_RPMA_E_NOMEM(void **unused)
 	will_return(rpma_mr_reg, NULL);
 	will_return(rpma_mr_reg, RPMA_E_NOMEM);
 	will_return(__wrap_munmap, &allocated_raw);
-	will_return(__wrap_munmap, EINVAL);
+	will_return(__wrap_munmap, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
@@ -105,10 +106,10 @@ new__apm_mr_reg_RPMA_E_NOMEM(void **unused)
 }
 
 /*
- * new__apm_malloc_ENOMEM -- malloc() fail with ENOMEM
+ * new__apm_malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-new__apm_malloc_ENOMEM(void **unused)
+new__apm_malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return(__wrap__test_malloc, MOCK_OK);
@@ -122,7 +123,7 @@ new__apm_malloc_ENOMEM(void **unused)
 	expect_value(rpma_mr_reg, usage, RPMA_MR_USAGE_READ_DST);
 	will_return(rpma_mr_reg, &allocated_raw.addr);
 	will_return(rpma_mr_reg, MOCK_RPMA_MR_LOCAL);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return(rpma_mr_dereg, MOCK_OK);
 	will_return(__wrap_munmap, &allocated_raw);
 	will_return(__wrap_munmap, MOCK_OK);
@@ -175,7 +176,7 @@ delete__apm_dereg_E_PROVIDER(void **unused)
 }
 
 /*
- * delete__apm_munmap_E_INVAL -- munmap() failed with EINVAL
+ * delete__apm_munmap_E_INVAL -- munmap() fails with MOCK_ERRNO
  */
 static void
 delete__apm_munmap_E_INVAL(void **unused)
@@ -188,7 +189,7 @@ delete__apm_munmap_E_INVAL(void **unused)
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
 	will_return_maybe(rpma_mr_dereg, MOCK_OK);
 	will_return(__wrap_munmap, &fstate->allocated_raw);
-	will_return(__wrap_munmap, EINVAL);
+	will_return(__wrap_munmap, MOCK_ERRNO);
 
 	/* delete the object */
 	int ret = rpma_flush_delete(&fstate->flush);
@@ -203,11 +204,11 @@ main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
 		/* rpma_flush_new() unit tests */
-		cmocka_unit_test(new__malloc_ENOMEM),
-		cmocka_unit_test(new__apm_sysconf_EINVAL),
-		cmocka_unit_test(new__apm_mmap_ENOMEM),
-		cmocka_unit_test(new__apm_mr_reg_RPMA_E_NOMEM),
-		cmocka_unit_test(new__apm_malloc_ENOMEM),
+		cmocka_unit_test(new__malloc_ERRNO),
+		cmocka_unit_test(new__apm_sysconf_ERRNO),
+		cmocka_unit_test(new__apm_mmap_E_NOMEM),
+		cmocka_unit_test(new__apm_mr_reg_E_NOMEM),
+		cmocka_unit_test(new__apm_malloc_ERRNO),
 		cmocka_unit_test_setup_teardown(new__apm_success,
 			setup__flush_new, teardown__flush_delete),
 
