@@ -88,14 +88,14 @@ new__peer_id_cq_conn_ptr_NULL(void **unused)
 }
 
 /*
- * new__create_evch_EAGAIN - rdma_create_event_channel() fails with EAGAIN
+ * new__create_evch_ERRNO - rdma_create_event_channel() fails with MOCK_ERRNO
  */
 static void
-new__create_evch_EAGAIN(void **unused)
+new__create_evch_ERRNO(void **unused)
 {
 	/* configure mock */
 	will_return(rdma_create_event_channel, NULL);
-	will_return(rdma_create_event_channel, EAGAIN);
+	will_return(rdma_create_event_channel, MOCK_ERRNO);
 	will_return_maybe(rpma_flush_new, MOCK_OK);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -109,15 +109,15 @@ new__create_evch_EAGAIN(void **unused)
 }
 
 /*
- * new__migrate_id_EAGAIN - rdma_migrate_id() fails with EAGAIN
+ * new__migrate_id_ERRNO - rdma_migrate_id() fails with MOCK_ERRNO
  */
 static void
-new__migrate_id_EAGAIN(void **unused)
+new__migrate_id_ERRNO(void **unused)
 {
 	/* configure mock */
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
-	will_return(rdma_migrate_id, EAGAIN);
+	will_return(rdma_migrate_id, MOCK_ERRNO);
 	will_return_maybe(rpma_flush_new, MOCK_OK);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -131,10 +131,10 @@ new__migrate_id_EAGAIN(void **unused)
 }
 
 /*
- * new__flush_ENOMEM - rpma_flush_new() fails with ENOMEM
+ * new__flush_E_NOMEM - rpma_flush_new() fails with RPMA_E_NOMEM
  */
 static void
-new__flush_ENOMEM(void **unused)
+new__flush_E_NOMEM(void **unused)
 {
 	/* configure mock */
 	will_return(rpma_flush_new, RPMA_E_NOMEM);
@@ -152,13 +152,13 @@ new__flush_ENOMEM(void **unused)
 }
 
 /*
- * new__malloc_ENOMEM - malloc() fails with ENOMEM
+ * new__malloc_ERRNO - malloc() fails with MOCK_ERRNO
  */
 static void
-new__malloc_ENOMEM(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	/* configure mock */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return_maybe(rdma_migrate_id, MOCK_OK);
@@ -224,11 +224,10 @@ delete__conn_NULL(void **unused)
 }
 
 /*
- * delete__flush_delete_E_PROVIDER - rpma_flush_delete()
- * fails with RPMA_E_PROVIDER
+ * delete__flush_delete_ERRNO - rpma_flush_delete() fails with MOCK_ERRNO
  */
 static void
-delete__flush_delete_E_PROVIDER(void **unused)
+delete__flush_delete_ERRNO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -287,10 +286,10 @@ delete__flush_delete_E_INVAL(void **unused)
 }
 
 /*
- * delete__cq_delete_EAGAIN - rpma_cq_delete() fails with EAGAIN
+ * delete__cq_delete_ERRNO - rpma_cq_delete() fails with MOCK_ERRNO
  */
 static void
-delete__cq_delete_EAGAIN(void **unused)
+delete__cq_delete_ERRNO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -306,7 +305,7 @@ delete__cq_delete_EAGAIN(void **unused)
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EAGAIN);
+	will_return(rpma_cq_delete, MOCK_ERRNO);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -319,11 +318,11 @@ delete__cq_delete_EAGAIN(void **unused)
 }
 
 /*
- * delete__cq_delete_EAGAIN_subsequent_EIO -- rdma_destroy_id()
- * fails with EIO after rpma_cq_delete() fails with EAGAIN
+ * delete__cq_delete_ERRNO_subsequent_ERRNO2 -- rdma_destroy_id()
+ * fails with MOCK_ERRNO2 after rpma_cq_delete() fails with MOCK_ERRNO
  */
 static void
-delete__cq_delete_EAGAIN_subsequent_EIO(void **unused)
+delete__cq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -339,9 +338,9 @@ delete__cq_delete_EAGAIN_subsequent_EIO(void **unused)
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EAGAIN); /* first error */
+	will_return(rpma_cq_delete, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
-	will_return(rdma_destroy_id, EIO); /* second error */
+	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -352,10 +351,10 @@ delete__cq_delete_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * delete__destroy_id_EAGAIN -- rdma_destroy_id() fails with EAGAIN
+ * delete__destroy_id_ERRNO -- rdma_destroy_id() fails with MOCK_ERRNO
  */
 static void
-delete__destroy_id_EAGAIN(void **unused)
+delete__destroy_id_ERRNO(void **unused)
 {
 	/*
 	 * Cmocka does not allow freeing an object in a test if the object was
@@ -372,7 +371,7 @@ delete__destroy_id_EAGAIN(void **unused)
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
-	will_return(rdma_destroy_id, EAGAIN);
+	will_return(rdma_destroy_id, MOCK_ERRNO);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -389,10 +388,10 @@ static const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(new__cq_NULL),
 	cmocka_unit_test(new__conn_ptr_NULL),
 	cmocka_unit_test(new__peer_id_cq_conn_ptr_NULL),
-	cmocka_unit_test(new__create_evch_EAGAIN),
-	cmocka_unit_test(new__migrate_id_EAGAIN),
-	cmocka_unit_test(new__flush_ENOMEM),
-	cmocka_unit_test(new__malloc_ENOMEM),
+	cmocka_unit_test(new__create_evch_ERRNO),
+	cmocka_unit_test(new__migrate_id_ERRNO),
+	cmocka_unit_test(new__flush_E_NOMEM),
+	cmocka_unit_test(new__malloc_ERRNO),
 
 	/* rpma_conn_new()/_delete() lifecycle */
 	cmocka_unit_test_setup_teardown(conn_test_lifecycle,
@@ -401,11 +400,11 @@ static const struct CMUnitTest tests_new[] = {
 	/* rpma_conn_delete() unit tests */
 	cmocka_unit_test(delete__conn_ptr_NULL),
 	cmocka_unit_test(delete__conn_NULL),
-	cmocka_unit_test(delete__flush_delete_E_PROVIDER),
+	cmocka_unit_test(delete__flush_delete_ERRNO),
 	cmocka_unit_test(delete__flush_delete_E_INVAL),
-	cmocka_unit_test(delete__cq_delete_EAGAIN),
-	cmocka_unit_test(delete__cq_delete_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(delete__destroy_id_EAGAIN),
+	cmocka_unit_test(delete__cq_delete_ERRNO),
+	cmocka_unit_test(delete__cq_delete_ERRNO_subsequent_ERRNO2),
+	cmocka_unit_test(delete__destroy_id_ERRNO),
 	cmocka_unit_test(NULL)
 };
 

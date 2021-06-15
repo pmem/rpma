@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn-next-event.c -- the connection next_event unit tests
@@ -55,17 +56,17 @@ next_event__conn_NULL_event_NULL(void **unused)
 }
 
 /*
- * next_event__get_cm_event_EAGAIN -
- * rdma_get_cm_event() fails with EAGAIN
+ * next_event__get_cm_event_ERRNO -
+ * rdma_get_cm_event() fails with MOCK_ERRNO
  */
 static void
-next_event__get_cm_event_EAGAIN(void **cstate_ptr)
+next_event__get_cm_event_ERRNO(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	expect_value(rdma_get_cm_event, channel, MOCK_EVCH);
 	will_return(rdma_get_cm_event, NULL);
-	will_return(rdma_get_cm_event, EAGAIN);
+	will_return(rdma_get_cm_event, MOCK_ERRNO);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -125,12 +126,12 @@ next_event__event_UNREACHABLE(void **cstate_ptr)
 }
 
 /*
- * next_event__event_UNREACHABLE_ack_EINVAL -
- * rdma_ack_cm_event() fails with EINVAL after obtaining
+ * next_event__event_UNREACHABLE_ack_ERRNO -
+ * rdma_ack_cm_event() fails with MOCK_ERRNO after obtaining
  * an RDMA_CM_EVENT_UNREACHABLE event
  */
 static void
-next_event__event_UNREACHABLE_ack_EINVAL(void **cstate_ptr)
+next_event__event_UNREACHABLE_ack_ERRNO(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -140,7 +141,7 @@ next_event__event_UNREACHABLE_ack_EINVAL(void **cstate_ptr)
 	will_return(rdma_get_cm_event, &event);
 
 	expect_value(rdma_ack_cm_event, event, &event);
-	will_return(rdma_ack_cm_event, EINVAL);
+	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
@@ -155,11 +156,11 @@ next_event__event_UNREACHABLE_ack_EINVAL(void **cstate_ptr)
 }
 
 /*
- * next_event__data_store_ENOMEM - rpma_private_data_store fails
+ * next_event__data_store_E_NOMEM - rpma_private_data_store fails
  * with RPMA_E_NOMEM
  */
 static void
-next_event__data_store_ENOMEM(void **cstate_ptr)
+next_event__data_store_E_NOMEM(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
@@ -535,7 +536,7 @@ static const struct CMUnitTest tests_next_event[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(next_event__conn_NULL_event_NULL),
 	cmocka_unit_test_setup_teardown(
-		next_event__get_cm_event_EAGAIN,
+		next_event__get_cm_event_ERRNO,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		next_event__get_cm_event_ENODATA,
@@ -544,10 +545,10 @@ static const struct CMUnitTest tests_next_event[] = {
 		next_event__event_UNREACHABLE,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event__event_UNREACHABLE_ack_EINVAL,
+		next_event__event_UNREACHABLE_ack_ERRNO,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
-		next_event__data_store_ENOMEM,
+		next_event__data_store_E_NOMEM,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		next_event__success_no_data_ESTABLISHED_no_data,
