@@ -60,12 +60,12 @@ new__create_cq_ERRNO(void **unused)
 }
 
 /*
- * new__create_cq_ERRNO_subsequent_EIO -- ibv_create_cq() fails
+ * new__create_cq_ERRNO_subsequent_ERRNO2 -- ibv_create_cq() fails
  * with MOCK_ERRNO whereas subsequent ibv_destroy_comp_channel()
- * fails with EIO
+ * fails with MOCK_ERRNO2
  */
 static void
-new__create_cq_ERRNO_subsequent_EIO(void **unused)
+new__create_cq_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	struct rpma_cq *cq = NULL;
 
@@ -74,7 +74,7 @@ new__create_cq_ERRNO_subsequent_EIO(void **unused)
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, NULL);
 	will_return(ibv_create_cq, MOCK_ERRNO);
-	will_return(ibv_destroy_comp_channel, EIO);
+	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
 	/* run test */
 	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
@@ -107,12 +107,12 @@ new__req_notify_cq_ERRNO(void **unused)
 }
 
 /*
- * new__req_notify_cq_ERRNO_subsequent_EIO -- ibv_req_notify_cq()
+ * new__req_notify_cq_ERRNO_subsequent_ERRNO2 -- ibv_req_notify_cq()
  * fails with MOCK_ERRNO whereas subsequent ibv_destroy_cq() and
- * ibv_destroy_comp_channel() fail with EIO
+ * ibv_destroy_comp_channel() fail with MOCK_ERRNO2
  */
 static void
-new__req_notify_cq_ERRNO_subsequent_EIO(void **unused)
+new__req_notify_cq_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	struct rpma_cq *cq = NULL;
 
@@ -121,8 +121,8 @@ new__req_notify_cq_ERRNO_subsequent_EIO(void **unused)
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, EIO);
+	will_return(ibv_destroy_cq, MOCK_ERRNO2);
+	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
 	/* run test */
 	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
@@ -156,11 +156,12 @@ new__malloc_ERRNO(void **unused)
 }
 
 /*
- * new__malloc_ERRNO_subsequent_EIO -- malloc() fails with MOCK_ERRNO whereas
- * subsequent ibv_destroy_cq() and ibv_destroy_comp_channel() fail with EIO
+ * new__malloc_ERRNO_subsequent_ERRNO2 -- malloc() fails with MOCK_ERRNO
+ * whereas subsequent ibv_destroy_cq() and ibv_destroy_comp_channel() fail
+ * with MOCK_ERRNO2
  */
 static void
-new__malloc_ERRNO_subsequent_EIO(void **unused)
+new__malloc_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	struct rpma_cq *cq = NULL;
 
@@ -170,8 +171,8 @@ new__malloc_ERRNO_subsequent_EIO(void **unused)
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
-	will_return(ibv_destroy_cq, EIO);
-	will_return(ibv_destroy_comp_channel, EIO);
+	will_return(ibv_destroy_cq, MOCK_ERRNO2);
+	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
 	/* run test */
 	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
@@ -214,12 +215,12 @@ delete__destroy_cq_ERRNO(void **unused)
 }
 
 /*
- * delete__destroy_cq_ERRNO_subsequent_EIO -- ibv_destroy_cq()
+ * delete__destroy_cq_ERRNO_subsequent_ERRNO2 -- ibv_destroy_cq()
  * fails with MOCK_ERRNO whereas subsequent ibv_destroy_comp_channel()
- * fails with EIO
+ * fails with MOCK_ERRNO2
  */
 static void
-delete__destroy_cq_ERRNO_subsequent_EIO(void **unused)
+delete__destroy_cq_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	struct rpma_cq *cq = NULL;
 
@@ -228,7 +229,7 @@ delete__destroy_cq_ERRNO_subsequent_EIO(void **unused)
 
 	/* configure mocks */
 	will_return(ibv_destroy_cq, MOCK_ERRNO);
-	will_return(ibv_destroy_comp_channel, EIO);
+	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
 	/* run test */
 	int ret = rpma_cq_delete(&cq);
@@ -264,11 +265,11 @@ static const struct CMUnitTest tests_new_delete[] = {
 	/* rpma_cq_new() unit tests */
 	cmocka_unit_test(new__create_comp_channel_ERRNO),
 	cmocka_unit_test(new__create_cq_ERRNO),
-	cmocka_unit_test(new__create_cq_ERRNO_subsequent_EIO),
+	cmocka_unit_test(new__create_cq_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(new__req_notify_cq_ERRNO),
-	cmocka_unit_test(new__req_notify_cq_ERRNO_subsequent_EIO),
+	cmocka_unit_test(new__req_notify_cq_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(new__malloc_ERRNO),
-	cmocka_unit_test(new__malloc_ERRNO_subsequent_EIO),
+	cmocka_unit_test(new__malloc_ERRNO_subsequent_ERRNO2),
 
 	/* rpma_cq_new()/delete() lifecycle */
 	cmocka_unit_test_setup_teardown(test_lifecycle,
@@ -276,7 +277,7 @@ static const struct CMUnitTest tests_new_delete[] = {
 
 	/* rpma_cq_delete() unit tests */
 	cmocka_unit_test(delete__destroy_cq_ERRNO),
-	cmocka_unit_test(delete__destroy_cq_ERRNO_subsequent_EIO),
+	cmocka_unit_test(delete__destroy_cq_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(delete__destroy_comp_channel_ERRNO),
 
 	cmocka_unit_test(NULL)
