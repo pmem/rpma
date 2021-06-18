@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * conn-disconnect.c -- the connection disconnect unit tests
@@ -25,16 +26,16 @@ disconnect__conn_NULL(void **unused)
 }
 
 /*
- * disconnect__rdma_disconnect_EINVAL -
- * rdma_disconnect() fails with EINVAL
+ * disconnect__rdma_disconnect_ERRNO -
+ * rdma_disconnect() fails with MOCK_ERRNO
  */
 static void
-disconnect__rdma_disconnect_EINVAL(void **cstate_ptr)
+disconnect__rdma_disconnect_ERRNO(void **cstate_ptr)
 {
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	expect_value(rdma_disconnect, id, MOCK_CM_ID);
-	will_return(rdma_disconnect, EINVAL);
+	will_return(rdma_disconnect, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_conn_disconnect(cstate->conn);
@@ -65,7 +66,7 @@ static const struct CMUnitTest tests_disconnect[] = {
 	/* rpma_conn_disconnect() unit tests */
 	cmocka_unit_test(disconnect__conn_NULL),
 	cmocka_unit_test_setup_teardown(
-		disconnect__rdma_disconnect_EINVAL,
+		disconnect__rdma_disconnect_ERRNO,
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_setup_teardown(
 		disconnect__success,
