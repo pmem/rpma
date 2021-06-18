@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * info-new.c -- unit tests of the info module
@@ -78,11 +79,11 @@ new__addr_port_info_ptr_NULL(void **unused)
 }
 
 /*
- * new__getaddrinfo_EAGAIN_ACTIVE -- rdma_getaddrinfo() fails with
- * EAGAIN when side == RPMA_INFO_ACTIVE
+ * new__getaddrinfo_ERRNO_ACTIVE -- rdma_getaddrinfo() fails with
+ * MOCK_ERRNO when side == RPMA_INFO_ACTIVE
  */
 static void
-new__getaddrinfo_EAGAIN_ACTIVE(void **unused)
+new__getaddrinfo_ERRNO_ACTIVE(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -92,7 +93,7 @@ new__getaddrinfo_EAGAIN_ACTIVE(void **unused)
 	struct rdma_addrinfo_args get_args = {MOCK_VALIDATE, NULL};
 	will_return(rdma_getaddrinfo, &get_args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
-	will_return(rdma_getaddrinfo, EAGAIN);
+	will_return(rdma_getaddrinfo, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -106,11 +107,11 @@ new__getaddrinfo_EAGAIN_ACTIVE(void **unused)
 }
 
 /*
- * new__getaddrinfo_EAGAIN_PASSIVE -- rdma_getaddrinfo() fails with
- * EAGAIN when side == RPMA_INFO_PASSIVE
+ * new__getaddrinfo_ERRNO_PASSIVE -- rdma_getaddrinfo() fails with
+ * MOCK_ERRNO when side == RPMA_INFO_PASSIVE
  */
 static void
-new__getaddrinfo_EAGAIN_PASSIVE(void **unused)
+new__getaddrinfo_ERRNO_PASSIVE(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -120,7 +121,7 @@ new__getaddrinfo_EAGAIN_PASSIVE(void **unused)
 	struct rdma_addrinfo_args get_args = {MOCK_VALIDATE, NULL};
 	will_return(rdma_getaddrinfo, &get_args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	will_return(rdma_getaddrinfo, EAGAIN);
+	will_return(rdma_getaddrinfo, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -134,17 +135,17 @@ new__getaddrinfo_EAGAIN_PASSIVE(void **unused)
 }
 
 /*
- * new__malloc_ENOMEM -- malloc() fail with ENOMEM
+ * new__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-new__malloc_ENOMEM(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rdma_addrinfo rai = {0};
 	struct rdma_addrinfo_args args = {MOCK_PASSTHROUGH, &rai};
 	will_return_maybe(rdma_getaddrinfo, &args);
 	will_return_maybe(rdma_freeaddrinfo, &args);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_info *info = NULL;
@@ -243,9 +244,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__addr_NULL),
 		cmocka_unit_test(new__info_ptr_NULL),
 		cmocka_unit_test(new__addr_port_info_ptr_NULL),
-		cmocka_unit_test(new__getaddrinfo_EAGAIN_ACTIVE),
-		cmocka_unit_test(new__getaddrinfo_EAGAIN_PASSIVE),
-		cmocka_unit_test(new__malloc_ENOMEM),
+		cmocka_unit_test(new__getaddrinfo_ERRNO_ACTIVE),
+		cmocka_unit_test(new__getaddrinfo_ERRNO_PASSIVE),
+		cmocka_unit_test(new__malloc_ERRNO),
 
 		/* rpma_info_delete() unit tests */
 		cmocka_unit_test(delete__info_ptr_NULL),
