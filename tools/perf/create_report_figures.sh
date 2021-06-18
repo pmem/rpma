@@ -555,9 +555,9 @@ function figures_report()
     if [ "$data_path" != 'skip' ]; then
         bw_figures \
             "$data_path/ib_read_{axis}* $data_path/*apm_*read_{axis}*dram*" \
-            'ib_read_lat vs rpma_read() from DRAM' \
+            'ib_read_bw vs rpma_read() from DRAM' \
             'ib_read_bw_vs_rpma_read_dram' \
-            'ib_read_lat' 'rpma_read() rand' 'rpma_read() seq'
+            'ib_read_bw' 'rpma_read() rand' 'rpma_read() seq'
         bw_figures \
             "$data_path/*read_{axis}*dram* $data_path/*read_{axis}*dax*" \
             'rpma_read() from DRAM vs from PMEM' \
