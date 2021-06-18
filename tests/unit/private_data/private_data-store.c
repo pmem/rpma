@@ -78,13 +78,13 @@ store__data_NULL_data_len_0(void **edata_ptr)
 }
 
 /*
- * store__malloc_ENOMEM -- malloc() fail with ENOMEM
+ * store__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-store__malloc_ENOMEM(void **edata_ptr)
+store__malloc_ERRNO(void **edata_ptr)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_conn_private_data pdata = {0};
@@ -116,7 +116,7 @@ static const struct CMUnitTest test_store[] = {
 		setup__cm_event, NULL),
 	cmocka_unit_test_setup_teardown(store__data_NULL_data_len_0,
 		setup__cm_event, NULL),
-	cmocka_unit_test_setup_teardown(store__malloc_ENOMEM,
+	cmocka_unit_test_setup_teardown(store__malloc_ERRNO,
 		setup__cm_event, NULL),
 
 	/* rpma_private_data_store()/_discard() lifecycle */
