@@ -98,11 +98,10 @@ new__all_NULL(void **unused)
 }
 
 /*
- * new__info_new_E_PROVIDER_EAGAIN -- rpma_info_new() fails with
- * RPMA_E_PROVIDER+EAGAIN
+ * new__info_new_ERRNO -- rpma_info_new() fails with MOCK_ERRNO
  */
 static void
-new__info_new_E_PROVIDER_EAGAIN(void **unused)
+new__info_new_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 
@@ -110,7 +109,7 @@ new__info_new_E_PROVIDER_EAGAIN(void **unused)
 	will_return(rpma_conn_cfg_get_timeout, &Get_t);
 	will_return(rpma_info_new, NULL);
 	will_return(rpma_info_new, RPMA_E_PROVIDER);
-	will_return(rpma_info_new, EAGAIN);
+	will_return(rpma_info_new, MOCK_ERRNO);
 	will_return_maybe(rdma_create_id, &id);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
 
@@ -125,15 +124,15 @@ new__info_new_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * new__create_id_EAGAIN -- rdma_create_id() fails with EAGAIN
+ * new__create_id_ERRNO -- rdma_create_id() fails with MOCK_ERRNO
  */
 static void
-new__create_id_EAGAIN(void **unused)
+new__create_id_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_conn_cfg_get_timeout, &Get_t);
 	will_return(rdma_create_id, NULL);
-	will_return(rdma_create_id, EAGAIN);
+	will_return(rdma_create_id, MOCK_ERRNO);
 	will_return_maybe(rpma_info_new, MOCK_INFO);
 
 	/* run test */
@@ -147,11 +146,11 @@ new__create_id_EAGAIN(void **unused)
 }
 
 /*
- * new__resolve_addr_E_PROVIDER_EAGAIN -- rpma_info_resolve_addr() fails
- * with RPMA_E_PROVIDER+EAGAIN
+ * new__resolve_addr_ERRNO -- rpma_info_resolve_addr() fails
+ * with MOCK_ERRNO
  */
 static void
-new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
+new__resolve_addr_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -164,7 +163,7 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_info_resolve_addr, timeout_ms,
 			RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rpma_info_resolve_addr, RPMA_E_PROVIDER);
-	will_return(rpma_info_resolve_addr, EAGAIN);
+	will_return(rpma_info_resolve_addr, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
@@ -178,10 +177,10 @@ new__resolve_addr_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * new__resolve_route_EAGAIN -- rdma_resolve_route() fails with EAGAIN
+ * new__resolve_route_ERRNO -- rdma_resolve_route() fails with MOCK_ERRNO
  */
 static void
-new__resolve_route_EAGAIN(void **unused)
+new__resolve_route_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -199,7 +198,7 @@ new__resolve_route_EAGAIN(void **unused)
 	 * another mock. The following expect breaks this assumption.
 	 */
 	expect_value(rdma_resolve_route, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
-	will_return(rdma_resolve_route, EAGAIN);
+	will_return(rdma_resolve_route, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
@@ -213,10 +212,10 @@ new__resolve_route_EAGAIN(void **unused)
 }
 
 /*
- * new__cq_new_EAGAIN -- rpma_cq_new() fails with EAGAIN
+ * new__cq_new_ERRNO -- rpma_cq_new() fails with MOCK_ERRNO
  */
 static void
-new__cq_new_EAGAIN(void **unused)
+new__cq_new_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -239,7 +238,7 @@ new__cq_new_EAGAIN(void **unused)
 	expect_value(rpma_cq_new, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
-	will_return(rpma_cq_new, EAGAIN);
+	will_return(rpma_cq_new, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
 	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
 
@@ -254,11 +253,11 @@ new__cq_new_EAGAIN(void **unused)
 }
 
 /*
- * new__peer_create_qp_E_PROVIDER_EAGAIN -- rpma_peer_create_qp() fails
- * with RPMA_E_PROVIDER+EAGAIN
+ * new__peer_create_qp_ERRNO -- rpma_peer_create_qp() fails
+ * with MOCK_ERRNO
  */
 static void
-new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
+new__peer_create_qp_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -283,7 +282,7 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
-	will_return(rpma_peer_create_qp, EAGAIN);
+	will_return(rpma_peer_create_qp, MOCK_ERRNO);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
 
@@ -298,10 +297,10 @@ new__peer_create_qp_E_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * new__malloc_ENOMEM -- malloc() fails with ENOMEM
+ * new__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-new__malloc_ENOMEM(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -326,7 +325,7 @@ new__malloc_ENOMEM(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	expect_value(rdma_destroy_qp, id, &id);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
@@ -342,11 +341,11 @@ new__malloc_ENOMEM(void **unused)
 }
 
 /*
- * new__malloc_ENOMEM_subsequent_EAGAIN -- malloc() fails with ENOMEM
- * whereas subsequent calls fail with EAGAIN
+ * new__malloc_ERRNO_subsequent_ERRNO2 -- malloc() fails with MOCK_ERRNO
+ * whereas subsequent calls fail with MOCK_ERRNO2
  */
 static void
-new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
+new__malloc_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
@@ -371,10 +370,10 @@ new__malloc_ENOMEM_subsequent_EAGAIN(void **unused)
 	expect_value(rpma_peer_create_qp, id, &id);
 	expect_value(rpma_peer_create_qp, cfg, MOCK_CONN_CFG_DEFAULT);
 	will_return(rpma_peer_create_qp, MOCK_OK);
-	will_return(__wrap__test_malloc, ENOMEM); /* first error */
+	will_return(__wrap__test_malloc, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_qp, id, &id);
-	will_return(rpma_cq_delete, EAGAIN); /* second error */
-	will_return(rdma_destroy_id, EAGAIN); /* third error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
+	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -408,14 +407,14 @@ static const struct CMUnitTest test_new[] = {
 	cmocka_unit_test(new__port_NULL),
 	cmocka_unit_test(new__req_ptr_NULL),
 	cmocka_unit_test(new__all_NULL),
-	cmocka_unit_test(new__info_new_E_PROVIDER_EAGAIN),
-	cmocka_unit_test(new__create_id_EAGAIN),
-	cmocka_unit_test(new__resolve_addr_E_PROVIDER_EAGAIN),
-	cmocka_unit_test(new__resolve_route_EAGAIN),
-	cmocka_unit_test(new__cq_new_EAGAIN),
-	cmocka_unit_test(new__peer_create_qp_E_PROVIDER_EAGAIN),
-	cmocka_unit_test(new__malloc_ENOMEM),
-	cmocka_unit_test(new__malloc_ENOMEM_subsequent_EAGAIN),
+	cmocka_unit_test(new__info_new_ERRNO),
+	cmocka_unit_test(new__create_id_ERRNO),
+	cmocka_unit_test(new__resolve_addr_ERRNO),
+	cmocka_unit_test(new__resolve_route_ERRNO),
+	cmocka_unit_test(new__cq_new_ERRNO),
+	cmocka_unit_test(new__peer_create_qp_ERRNO),
+	cmocka_unit_test(new__malloc_ERRNO),
+	cmocka_unit_test(new__malloc_ERRNO_subsequent_ERRNO2),
 	{"new__conn_cfg_default_success",
 		new__success, setup__conn_req_new, teardown__conn_req_new,
 		&prestate_conn_cfg_default},

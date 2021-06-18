@@ -122,10 +122,10 @@ connect__pdata_NULL_pdata_ptr_NULL_len_0(void **cstate_ptr)
 }
 
 /*
- * connect_via_accept__accept_EAGAIN -- rdma_accept() fails with EAGAIN
+ * connect_via_accept__accept_ERRNO -- rdma_accept() fails with MOCK_ERRNO
  */
 static void
-connect_via_accept__accept_EAGAIN(void **unused)
+connect_via_accept__accept_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -134,7 +134,7 @@ connect_via_accept__accept_EAGAIN(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_accept, id, &cstate->id);
-	will_return(rdma_accept, EAGAIN);
+	will_return(rdma_accept, MOCK_ERRNO);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
@@ -151,12 +151,12 @@ connect_via_accept__accept_EAGAIN(void **unused)
 }
 
 /*
- * connect_via_accept__accept_EAGAIN_subsequent_EIO -- rdma_accept()
- * fails with EAGAIN whereas subsequent (rdma_ack_cm_event(),
- * rpma_cq_delete()) fail with EIO
+ * connect_via_accept__accept_ERRNO_subsequent_ERRNO2 -- rdma_accept()
+ * fails with MOCK_ERRNO whereas subsequent (rdma_ack_cm_event(),
+ * rpma_cq_delete()) fail with MOCK_ERRNO2
  */
 static void
-connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
+connect_via_accept__accept_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -165,12 +165,12 @@ connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
 
 	/* configure mocks */
 	expect_value(rdma_accept, id, &cstate->id);
-	will_return(rdma_accept, EAGAIN); /* first error */
+	will_return(rdma_accept, MOCK_ERRNO); /* first error */
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EIO); /* second error */
+	will_return(rdma_ack_cm_event, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EIO); /* third error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -183,10 +183,10 @@ connect_via_accept__accept_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * connect_via_accept__ack_EAGAIN -- rdma_ack_cm_event() fails with EAGAIN
+ * connect_via_accept__ack_ERRNO -- rdma_ack_cm_event() fails with MOCK_ERRNO
  */
 static void
-connect_via_accept__ack_EAGAIN(void **unused)
+connect_via_accept__ack_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -197,7 +197,7 @@ connect_via_accept__ack_EAGAIN(void **unused)
 	expect_value(rdma_accept, id, &cstate->id);
 	will_return(rdma_accept, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EAGAIN);
+	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
@@ -214,12 +214,12 @@ connect_via_accept__ack_EAGAIN(void **unused)
 }
 
 /*
- * connect_via_accept__ack_EAGAIN_subsequent_EIO -- rdma_ack_cm_event()
- * fails with EAGAIN whereas subsequent (rdma_disconnect(), rpma_cq_delete())
- * fail with EIO
+ * connect_via_accept__ack_ERRNO_subsequent_ERRNO2 -- rdma_ack_cm_event()
+ * fails with MOCK_ERRNO whereas subsequent (rdma_disconnect(),
+ * rpma_cq_delete()) fail with MOCK_ERRNO2
  */
 static void
-connect_via_accept__ack_EAGAIN_subsequent_EIO(void **unused)
+connect_via_accept__ack_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -230,12 +230,12 @@ connect_via_accept__ack_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rdma_accept, id, &cstate->id);
 	will_return(rdma_accept, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
-	will_return(rdma_ack_cm_event, EAGAIN); /* first error */
+	will_return(rdma_ack_cm_event, MOCK_ERRNO); /* first error */
 	expect_value(rdma_disconnect, id, &cstate->id);
-	will_return(rdma_disconnect, EIO); /* second error */
+	will_return(rdma_disconnect, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EIO); /* third error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -248,11 +248,11 @@ connect_via_accept__ack_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * connect_via_accept__conn_new_EAGAIN -- rpma_conn_new() fails with
- * RPMA_E_PROVIDER + EAGAIN
+ * connect_via_accept__conn_new_ERRNO -- rpma_conn_new() fails with
+ * MOCK_ERRNO
  */
 static void
-connect_via_accept__conn_new_EAGAIN(void **unused)
+connect_via_accept__conn_new_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -267,7 +267,7 @@ connect_via_accept__conn_new_EAGAIN(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN);
+	will_return(rpma_conn_new, MOCK_ERRNO);
 	expect_value(rdma_disconnect, id, &cstate->id);
 	will_return(rdma_disconnect, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
@@ -284,12 +284,12 @@ connect_via_accept__conn_new_EAGAIN(void **unused)
 }
 
 /*
- * connect_via_accept__conn_new_EAGAIN_subsequent_EIO --
- * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN
- * whereas subsequent (rdma_disconnect(), rpma_cq_delete()) fail with EIO
+ * connect_via_accept__conn_new_ERRNO_subsequent_ERRNO2 --
+ * rpma_conn_new() fails with MOCK_ERRNO whereas subsequent (rdma_disconnect(),
+ * rpma_cq_delete()) fail with MOCK_ERRNO2
  */
 static void
-connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
+connect_via_accept__conn_new_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = NULL;
@@ -304,12 +304,12 @@ connect_via_accept__conn_new_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN); /* first error */
+	will_return(rpma_conn_new, MOCK_ERRNO); /* first error */
 	expect_value(rdma_disconnect, id, &cstate->id);
-	will_return(rdma_disconnect, EIO); /* second error */
+	will_return(rdma_disconnect, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EIO); /* third error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -357,10 +357,10 @@ connect_via_accept__success_incoming(void **unused)
 }
 
 /*
- * connect_via_connect__connect_EAGAIN -- rdma_connect() fails with EAGAIN
+ * connect_via_connect__connect_ERRNO -- rdma_connect() fails with MOCK_ERRNO
  */
 static void
-connect_via_connect__connect_EAGAIN(void **unused)
+connect_via_connect__connect_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
@@ -371,7 +371,7 @@ connect_via_connect__connect_EAGAIN(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
-	will_return(rdma_connect, EAGAIN);
+	will_return(rdma_connect, MOCK_ERRNO);
 	expect_value(rpma_conn_delete, conn, MOCK_CONN);
 	will_return(rpma_conn_delete, MOCK_OK);
 
@@ -386,12 +386,12 @@ connect_via_connect__connect_EAGAIN(void **unused)
 }
 
 /*
- * connect_via_connect__connect_EAGAIN_subsequent_EIO -- rdma_connect()
- * fails with EAGAIN whereas subsequent (rpma_cq_delete(), rdma_destroy_id())
- * fail with EIO
+ * connect_via_connect__connect_ERRNO_subsequent_ERRNO2 -- rdma_connect()
+ * fails with MOCK_ERRNO whereas subsequent (rpma_cq_delete(),
+ * rdma_destroy_id()) fail with MOCK_ERRNO2
  */
 static void
-connect_via_connect__connect_EAGAIN_subsequent_EIO(void **unused)
+connect_via_connect__connect_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
@@ -402,10 +402,10 @@ connect_via_connect__connect_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
-	will_return(rdma_connect, EAGAIN); /* first error */
+	will_return(rdma_connect, MOCK_ERRNO); /* first error */
 	expect_value(rpma_conn_delete, conn, MOCK_CONN);
 	will_return(rpma_conn_delete, RPMA_E_PROVIDER);
-	will_return(rpma_conn_delete, EIO); /* second error */
+	will_return(rpma_conn_delete, MOCK_ERRNO2); /* second error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -418,11 +418,11 @@ connect_via_connect__connect_EAGAIN_subsequent_EIO(void **unused)
 }
 
 /*
- * connect_via_connect__conn_new_EAGAIN -- rpma_conn_new() fails with
- * RPMA_E_PROVIDER + EAGAIN
+ * connect_via_connect__conn_new_ERRNO -- rpma_conn_new() fails with
+ * MOCK_ERRNO
  */
 static void
-connect_via_connect__conn_new_EAGAIN(void **unused)
+connect_via_connect__conn_new_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
@@ -433,7 +433,7 @@ connect_via_connect__conn_new_EAGAIN(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN);
+	will_return(rpma_conn_new, MOCK_ERRNO);
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
@@ -450,12 +450,13 @@ connect_via_connect__conn_new_EAGAIN(void **unused)
 }
 
 /*
- * connect_via_connect__conn_new_EAGAIN_subsequent_EIO --
- * rpma_conn_new() fails with RPMA_E_PROVIDER + EAGAIN whereas subsequent
- * (rdma_disconnect(), rpma_cq_delete(), rdma_destroy_id()) fail with EIO
+ * connect_via_connect__conn_new_ERRNO_subsequent_ERRNO2 --
+ * rpma_conn_new() fails with MOCK_ERRNO whereas subsequent
+ * (rdma_disconnect(), rpma_cq_delete(), rdma_destroy_id()) fail
+ * with MOCK_ERRNO2
  */
 static void
-connect_via_connect__conn_new_EAGAIN_subsequent_EIO(void **unused)
+connect_via_connect__conn_new_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_new_test_state *cstate = &prestate_conn_cfg_default;
@@ -466,12 +467,12 @@ connect_via_connect__conn_new_EAGAIN_subsequent_EIO(void **unused)
 	expect_value(rpma_conn_new, id, &cstate->id);
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
-	will_return(rpma_conn_new, EAGAIN); /* first error */
+	will_return(rpma_conn_new, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
-	will_return(rpma_cq_delete, EIO); /* second error */
+	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
-	will_return(rdma_destroy_id, EIO); /* third error */
+	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -531,24 +532,24 @@ static const struct CMUnitTest test_connect[] = {
 		setup__conn_req_from_cm_event,
 		teardown__conn_req_from_cm_event),
 	/* connect via rdma_accept() */
-	cmocka_unit_test(connect_via_accept__accept_EAGAIN),
+	cmocka_unit_test(connect_via_accept__accept_ERRNO),
 	cmocka_unit_test(
-		connect_via_accept__accept_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(connect_via_accept__ack_EAGAIN),
+		connect_via_accept__accept_ERRNO_subsequent_ERRNO2),
+	cmocka_unit_test(connect_via_accept__ack_ERRNO),
 	cmocka_unit_test(
-		connect_via_accept__ack_EAGAIN_subsequent_EIO),
+		connect_via_accept__ack_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(
-		connect_via_accept__conn_new_EAGAIN),
+		connect_via_accept__conn_new_ERRNO),
 	cmocka_unit_test(
-		connect_via_accept__conn_new_EAGAIN_subsequent_EIO),
+		connect_via_accept__conn_new_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(connect_via_accept__success_incoming),
 	/* connect via rdma_connect() */
-	cmocka_unit_test(connect_via_connect__connect_EAGAIN),
+	cmocka_unit_test(connect_via_connect__connect_ERRNO),
 	cmocka_unit_test(
-		connect_via_connect__connect_EAGAIN_subsequent_EIO),
-	cmocka_unit_test(connect_via_connect__conn_new_EAGAIN),
+		connect_via_connect__connect_ERRNO_subsequent_ERRNO2),
+	cmocka_unit_test(connect_via_connect__conn_new_ERRNO),
 	cmocka_unit_test(
-		connect_via_connect__conn_new_EAGAIN_subsequent_EIO),
+		connect_via_connect__conn_new_ERRNO_subsequent_ERRNO2),
 	cmocka_unit_test(connect_via_connect__success_outgoing),
 	cmocka_unit_test(NULL)
 };
