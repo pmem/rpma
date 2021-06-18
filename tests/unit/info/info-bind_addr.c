@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * info-bind_addr.c -- unit tests of the info module
@@ -12,6 +13,7 @@
 #include <string.h>
 
 #include "cmocka_headers.h"
+#include "test-common.h"
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
@@ -64,11 +66,11 @@ bind_addr__id_info_NULL(void **unused)
 }
 
 /*
- * bind_addr__bind_addr_EAGAIN -- rpma_info_bind_addr() fails
- * with EAGAIN
+ * bind_addr__bind_addr_ERRNO -- rpma_info_bind_addr() fails
+ * with MOCK_ERRNO
  */
 static void
-bind_addr__bind_addr_EAGAIN(void **info_state_ptr)
+bind_addr__bind_addr_ERRNO(void **info_state_ptr)
 {
 	struct info_state *istate = *info_state_ptr;
 
@@ -76,7 +78,7 @@ bind_addr__bind_addr_EAGAIN(void **info_state_ptr)
 	struct rdma_cm_id cmid = {0};
 	expect_value(rdma_bind_addr, id, &cmid);
 	expect_value(rdma_bind_addr, addr, MOCK_SRC_ADDR);
-	will_return(rdma_bind_addr, EAGAIN);
+	will_return(rdma_bind_addr, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_info_bind_addr(istate->info, &cmid);
@@ -117,7 +119,7 @@ main(int argc, char *argv[])
 				setup__new_passive, teardown__delete),
 		cmocka_unit_test(bind_addr__info_NULL),
 		cmocka_unit_test(bind_addr__id_info_NULL),
-		cmocka_unit_test_setup_teardown(bind_addr__bind_addr_EAGAIN,
+		cmocka_unit_test_setup_teardown(bind_addr__bind_addr_ERRNO,
 				setup__new_passive, teardown__delete),
 		cmocka_unit_test_setup_teardown(bind_addr__success,
 				setup__new_passive, teardown__delete),
