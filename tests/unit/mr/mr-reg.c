@@ -130,17 +130,17 @@ reg__wrong_usage(void **unused)
 }
 
 /*
- * reg__failed_E_NOMEM -- rpma_mr_reg fails with ENOMEM
+ * reg__malloc_ERRNO -- malloc() fails with MOCK_ERRNO
  */
 static void
-reg__failed_E_NOMEM(void **unused)
+reg__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rpma_peer_mr_reg_args mr_reg_args;
 	mr_reg_args.usage = RPMA_MR_USAGE_READ_SRC;
 	mr_reg_args.access = IBV_ACCESS_REMOTE_READ;
 	mr_reg_args.mr = MOCK_MR;
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return_maybe(rpma_peer_mr_reg, &mr_reg_args);
 	will_return_maybe(ibv_dereg_mr, MOCK_OK);
 
@@ -155,10 +155,10 @@ reg__failed_E_NOMEM(void **unused)
 }
 
 /*
- * reg__peer_mr_reg_failed_E_PROVIDER -- rpma_peer_mr_reg fails with ENOMEM
+ * reg__peer_mr_reg_ERRNO -- rpma_peer_mr_reg() fails with MOCK_ERRNO
  */
 static void
-reg__peer_mr_reg_failed_E_PROVIDER(void **unused)
+reg__peer_mr_reg_ERRNO(void **unused)
 {
 	/* configure mocks */
 	struct rpma_peer_mr_reg_args mr_reg_args;
@@ -221,10 +221,10 @@ dereg__NULL_mr(void **unused)
 }
 
 /*
- * dereg__failed_E_PROVIDER -- rpma_mr_dereg failed with RPMA_E_PROVIDER
+ * dereg__dereg_mr_ERRNO -- ibv_dereg_mr() fails with MOCK_ERRNO
  */
 static void
-dereg__failed_E_PROVIDER(void **pprestate)
+dereg__dereg_mr_ERRNO(void **pprestate)
 {
 	/*
 	 * Create a local memory registration object.
@@ -258,15 +258,15 @@ static const struct CMUnitTest tests_reg[] = {
 	cmocka_unit_test(reg__0_size),
 	cmocka_unit_test(reg__0_usage),
 	cmocka_unit_test(reg__wrong_usage),
-	cmocka_unit_test(reg__failed_E_NOMEM),
-	cmocka_unit_test(reg__peer_mr_reg_failed_E_PROVIDER),
+	cmocka_unit_test(reg__malloc_ERRNO),
+	cmocka_unit_test(reg__peer_mr_reg_ERRNO),
 	cmocka_unit_test_prestate_setup_teardown(reg_dereg__success,
 		setup__reg_success, teardown__dereg_success, prestates),
 
 	/* rpma_mr_dereg() unit tests */
 	cmocka_unit_test(dereg__NULL_mr_ptr),
 	cmocka_unit_test(dereg__NULL_mr),
-	cmocka_unit_test_prestate(dereg__failed_E_PROVIDER,
+	cmocka_unit_test_prestate(dereg__dereg_mr_ERRNO,
 		prestates + 1),
 	cmocka_unit_test(NULL)
 };
