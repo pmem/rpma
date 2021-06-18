@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * peer-new.c -- a peer unit test
@@ -77,10 +78,10 @@ new__ibv_ctx_and_peer_ptr_eq_NULL(void **unused)
 }
 
 /*
- * new__alloc_pd_fail_ENOMEM -- ibv_alloc_pd() fails with ENOMEM
+ * new__alloc_pd_ENOMEM -- ibv_alloc_pd() fails with ENOMEM
  */
 static void
-new__alloc_pd_fail_ENOMEM(void **unused)
+new__alloc_pd_ENOMEM(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -104,11 +105,10 @@ new__alloc_pd_fail_ENOMEM(void **unused)
 }
 
 /*
- * new__alloc_pd_fail_EAGAIN -- ibv_alloc_pd() fails with EAGAIN
- * (arbitrarily picked error which is not ENOMEM)
+ * new__alloc_pd_ERRNO -- ibv_alloc_pd() fails with MOCK_ERRNO
  */
 static void
-new__alloc_pd_fail_EAGAIN(void **unused)
+new__alloc_pd_ERRNO(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -118,7 +118,7 @@ new__alloc_pd_fail_EAGAIN(void **unused)
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, NULL};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
-	will_return(ibv_alloc_pd, EAGAIN);
+	will_return(ibv_alloc_pd, MOCK_ERRNO);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -132,10 +132,10 @@ new__alloc_pd_fail_EAGAIN(void **unused)
 }
 
 /*
- * new__alloc_pd_fail_no_error -- ibv_alloc_pd() fails without error
+ * new__alloc_pd_no_error -- ibv_alloc_pd() fails without error
  */
 static void
-new__alloc_pd_fail_no_error(void **unused)
+new__alloc_pd_no_error(void **unused)
 {
 	/*
 	 * configure mocks:
@@ -159,16 +159,16 @@ new__alloc_pd_fail_no_error(void **unused)
 }
 
 /*
- * new__odp_PROVIDER_EAGAIN -- rpma_utils_ibv_context_is_odp_capable()
- * fails with RPMA_E_PROVIDER (EAGAIN)
+ * new__odp_ERRNO -- rpma_utils_ibv_context_is_odp_capable()
+ * fails with MOCK_ERRNO
  */
 static void
-new__odp_PROVIDER_EAGAIN(void **unused)
+new__odp_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERR_PENDING);
 	will_return(rpma_utils_ibv_context_is_odp_capable, RPMA_E_PROVIDER);
-	will_return(rpma_utils_ibv_context_is_odp_capable, EAGAIN);
+	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(ibv_alloc_pd, MOCK_IBV_PD);
 	will_return_maybe(ibv_dealloc_pd, MOCK_OK);
@@ -183,13 +183,13 @@ new__odp_PROVIDER_EAGAIN(void **unused)
 }
 
 /*
- * new__malloc_fail -- malloc() fail
+ * new__malloc_ERRNO-- malloc() fails with MOCK_ERRNO
  */
 static void
-new__malloc_fail(void **unused)
+new__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
-	will_return(__wrap__test_malloc, ENOMEM);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	struct ibv_alloc_pd_mock_args alloc_args =
 		{MOCK_PASSTHROUGH, MOCK_IBV_PD};
 	will_return_maybe(ibv_alloc_pd, &alloc_args);
@@ -289,10 +289,10 @@ delete__null_peer(void **unused)
 }
 
 /*
- * delete__dealloc_pd_fail -- ibv_dealloc_pd() fail
+ * delete__dealloc_pd_ERRNO -- ibv_dealloc_pd() fails with MOCK_ERRNO
  */
 static void
-delete__dealloc_pd_fail(void **peer_ptr)
+delete__dealloc_pd_ERRNO(void **peer_ptr)
 {
 	struct rpma_peer *peer = *peer_ptr;
 
@@ -301,7 +301,8 @@ delete__dealloc_pd_fail(void **peer_ptr)
 	 * NOTE: it is not allowed to call ibv_alloc_pd() nor malloc() in
 	 * rpma_peer_delete().
 	 */
-	struct ibv_dealloc_pd_mock_args dealloc_args = {MOCK_VALIDATE, EBUSY};
+	struct ibv_dealloc_pd_mock_args dealloc_args = {MOCK_VALIDATE,
+			MOCK_ERRNO};
 	will_return(ibv_dealloc_pd, &dealloc_args);
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
@@ -320,18 +321,18 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__ibv_ctx_eq_NULL),
 		cmocka_unit_test(new__peer_ptr_eq_NULL),
 		cmocka_unit_test(new__ibv_ctx_and_peer_ptr_eq_NULL),
-		cmocka_unit_test(new__alloc_pd_fail_ENOMEM),
-		cmocka_unit_test(new__alloc_pd_fail_EAGAIN),
-		cmocka_unit_test(new__alloc_pd_fail_no_error),
-		cmocka_unit_test(new__odp_PROVIDER_EAGAIN),
-		cmocka_unit_test(new__malloc_fail),
+		cmocka_unit_test(new__alloc_pd_ENOMEM),
+		cmocka_unit_test(new__alloc_pd_ERRNO),
+		cmocka_unit_test(new__alloc_pd_no_error),
+		cmocka_unit_test(new__odp_ERRNO),
+		cmocka_unit_test(new__malloc_ERRNO),
 		cmocka_unit_test(new__success),
 
 		/* rpma_peer_delete() unit tests */
 		cmocka_unit_test(delete__invalid_peer_ptr),
 		cmocka_unit_test(delete__null_peer),
 		cmocka_unit_test_prestate_setup_teardown(
-				delete__dealloc_pd_fail,
+				delete__dealloc_pd_ERRNO,
 				setup__peer, teardown__peer, &OdpCapable),
 	};
 

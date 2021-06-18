@@ -77,10 +77,10 @@ create_qp__cq_NULL(void **peer_ptr)
 }
 
 /*
- * create_qp__rdma_create_qp_EAGAIN -- rdma_create_qp() fails with EAGAIN
+ * create_qp__rdma_create_qp_ERRNO -- rdma_create_qp() fails with MOCK_ERRNO
  */
 static void
-create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
+create_qp__rdma_create_qp_ERRNO(void **peer_ptr)
 {
 	struct rpma_peer *peer = *peer_ptr;
 
@@ -103,7 +103,7 @@ create_qp__rdma_create_qp_EAGAIN(void **peer_ptr)
 		RPMA_MAX_SGE);
 	expect_value(rdma_create_qp, qp_init_attr->cap.max_inline_data,
 		RPMA_MAX_INLINE_DATA);
-	will_return(rdma_create_qp, EAGAIN);
+	will_return(rdma_create_qp, MOCK_ERRNO);
 
 	/* run test */
 	struct rdma_cm_id *id = MOCK_CM_ID;
@@ -163,7 +163,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test_prestate_setup_teardown(create_qp__cq_NULL,
 				setup__peer, teardown__peer, &OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(
-				create_qp__rdma_create_qp_EAGAIN,
+				create_qp__rdma_create_qp_ERRNO,
 				setup__peer, teardown__peer, &OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__success,
 				setup__peer, teardown__peer, &OdpCapable),
