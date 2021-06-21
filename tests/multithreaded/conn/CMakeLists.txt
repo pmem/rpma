@@ -5,6 +5,8 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
+add_multithreaded(NAME conn BIN rpma_conn_cfg_get_cq_size
+	SRCS rpma_conn_cfg_get_cq_size.c)
 add_multithreaded(NAME conn BIN rpma_conn_cfg_new
 	SRCS rpma_conn_cfg_new.c)
 add_multithreaded(NAME conn BIN rpma_conn_cfg_set_timeout
