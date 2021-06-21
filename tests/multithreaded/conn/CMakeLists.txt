@@ -9,6 +9,8 @@ add_multithreaded(NAME conn BIN rpma_conn_cfg_new
 	SRCS rpma_conn_cfg_new.c)
 add_multithreaded(NAME conn BIN rpma_conn_cfg_set_cq_size
 	SRCS rpma_conn_cfg_set_cq_size.c rpma_conn_cfg_common.c)
+add_multithreaded(NAME conn BIN rpma_conn_cfg_set_rq_size
+	SRCS rpma_conn_cfg_set_rq_size.c rpma_conn_cfg_common.c)
 add_multithreaded(NAME conn BIN rpma_conn_cfg_set_timeout
 	SRCS rpma_conn_cfg_set_timeout.c)
 add_multithreaded(NAME conn BIN rpma_conn_get_private_data
