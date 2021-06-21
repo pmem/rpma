@@ -2,7 +2,7 @@
 /* Copyright 2021, Intel Corporation */
 
 /*
- * rpma_conn_cfg_set_cq_size.c -- rpma_conn_cfg_set_cq_size multithreaded test
+ * rpma_conn_cfg_set_sq_size.c -- rpma_conn_cfg_set_sq_size multithreaded test
  */
 
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #include "rpma_conn_cfg_common.h"
 
 /*
- * thread -- set connection establishment cq size and check if its value is
+ * thread -- set connection establishment sq size and check if its value is
  * as expected
  */
 static void
@@ -20,22 +20,22 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 {
 	struct rpma_conn_cfg_common_state *st =
 		(struct rpma_conn_cfg_common_state *)state;
-	uint32_t cq_size;
+	uint32_t sq_size;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_set_cq_size(st->cfg_ptr,
+	if ((ret = rpma_conn_cfg_set_sq_size(st->cfg_ptr,
 				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
-		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_cq_size", ret);
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_sq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_get_cq_size(st->cfg_ptr, &cq_size))) {
-		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_cq_size", ret);
+	if ((ret = rpma_conn_cfg_get_sq_size(st->cfg_ptr, &sq_size))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_sq_size", ret);
 		return;
 	}
 
-	if (cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP)
-		MTT_ERR(tr, "cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP",
+	if (sq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP)
+		MTT_ERR(tr, "sq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP",
 				EINVAL);
 }
 
