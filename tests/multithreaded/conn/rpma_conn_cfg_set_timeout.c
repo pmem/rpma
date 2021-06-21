@@ -54,7 +54,7 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	}
 
 	if ((ret = rpma_conn_cfg_get_timeout(st->cfg_ptr, &timeout_ms))) {
-		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_timeout", ret);
 		return;
 	}
 
