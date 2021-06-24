@@ -1,0 +1,13 @@
+version: 2.1
+workflows:
+  main:
+    jobs:
+      - nop
+jobs:
+  nop:
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+      - run:
+          name: NOP
+          command: echo "Nothing to do. Thank you."
