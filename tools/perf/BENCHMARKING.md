@@ -127,7 +127,7 @@ $ export REMOTE_SUDO_NOPASSWD=1
 $ export REMOTE_RNIC_PCIE_ROOT_PORT=$pcie_root_port
 $ export REMOTE_JOB_MEM_PATH=/dev/dax1.0
 
-$ ./reprt_bench.sh $SERVER_IP
+$ ./report_bench.sh $SERVER_IP
 ```
 
 ### 2) Generate Figures and Appendix charts for the performance report:
