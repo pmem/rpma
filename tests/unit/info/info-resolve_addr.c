@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * info-resolve_addr.c -- unit tests of the info module
@@ -12,6 +13,7 @@
 #include <string.h>
 
 #include "cmocka_headers.h"
+#include "test-common.h"
 #include "conn_req.h"
 #include "info.h"
 #include "librpma.h"
@@ -21,11 +23,11 @@
 #include <infiniband/verbs.h>
 
 /*
- * resolve_addr__resolve_addr_EAGAIN -- rdma_resolve_addr() fails
- * with EAGAIN
+ * resolve_addr__resolve_addr_ERRNO -- rdma_resolve_addr() fails
+ * with MOCK_ERRNO
  */
 static void
-resolve_addr__resolve_addr_EAGAIN(void **info_state_ptr)
+resolve_addr__resolve_addr_ERRNO(void **info_state_ptr)
 {
 	struct info_state *istate = *info_state_ptr;
 
@@ -35,7 +37,7 @@ resolve_addr__resolve_addr_EAGAIN(void **info_state_ptr)
 	expect_value(rdma_resolve_addr, src_addr, MOCK_SRC_ADDR);
 	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
 	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
-	will_return(rdma_resolve_addr, EAGAIN);
+	will_return(rdma_resolve_addr, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_info_resolve_addr(istate->info, &cmid,
@@ -77,7 +79,7 @@ main(int argc, char *argv[])
 	const struct CMUnitTest tests[] = {
 		/* rpma_info_resolve_addr() unit tests */
 		cmocka_unit_test_setup_teardown(
-				resolve_addr__resolve_addr_EAGAIN,
+				resolve_addr__resolve_addr_ERRNO,
 				setup__new_active, teardown__delete),
 		cmocka_unit_test_setup_teardown(resolve_addr__success,
 				setup__new_active, teardown__delete),

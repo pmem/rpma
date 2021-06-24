@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * mr-descriptor.c -- the memory region serialization unit tests
@@ -189,13 +190,13 @@ remote_from_descriptor__invalid_desc_size(void **unused)
 }
 
 /*
- * remote_from_descriptor__malloc_ENOMEM - malloc() fail with ENOMEM
+ * remote_from_descriptor__malloc_ERRNO - malloc() fails with MOCK_ERRNO
  */
 static void
-remote_from_descriptor__malloc_ENOMEM(void **unused)
+remote_from_descriptor__malloc_ERRNO(void **unused)
 {
 	/* configure mock */
-	will_return_maybe(__wrap__test_malloc, ENOMEM);
+	will_return_maybe(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
@@ -462,7 +463,7 @@ static const struct CMUnitTest tests_descriptor[] = {
 	cmocka_unit_test(
 		remote_from_descriptor__mr_ptr_NULL_desc_NULL),
 	cmocka_unit_test(remote_from_descriptor__invalid_desc_size),
-	cmocka_unit_test(remote_from_descriptor__malloc_ENOMEM),
+	cmocka_unit_test(remote_from_descriptor__malloc_ERRNO),
 	cmocka_unit_test(remote_from_descriptor__buff_usage_equal_zero),
 
 	/* rpma_mr_remote_delete() unit test */
