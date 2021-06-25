@@ -30,6 +30,14 @@ to generate the Markdown documentation.
 (see [CMake standard options](INSTALL.md#cmake-standard-options) and
 [Configuring CMake options](INSTALL.md#configuring-cmake-options)).
 
+### In order to test the Python tools you also need:
+
+- pylint
+
+**Note**: testing the Python tools can be turned off using the CMake 'TEST_PYTHON_TOOLS' option
+(see [CMake standard options](INSTALL.md#cmake-standard-options) and
+[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
+
 ### For some examples you also need:
 
 - libpmem-dev(el) >= 1.6
@@ -71,6 +79,7 @@ provided out of the box by CMake.
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
 | TEST_DIR | Working directory for tests | *dir path* | ./build/test |
+| TEST_PYTHON_TOOLS | Enable testing Python tools | ON/OFF | ON |
 | TRACE_TESTS | More verbose test outputs | ON/OFF | OFF |
 | USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
 | USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
