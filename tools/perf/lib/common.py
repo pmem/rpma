@@ -29,6 +29,8 @@ def json_from_file(string):
     # read the file
     with open(string, "r") as read_file:
         data = json.load(read_file)
+    # save path of the input file
+    data['input_file'] = string
     # return the content of the file
     return data
 
