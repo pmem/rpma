@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * utils-get_ibv_context.c -- a unit test for rpma_utils_get_ibv_context()
@@ -100,11 +101,6 @@ get_ibvc__info_new_failed_E_PROVIDER(void **unused)
 	will_return(rpma_info_new, RPMA_E_PROVIDER);
 	will_return(rpma_info_new, MOCK_ERRNO);
 
-	struct rdma_cm_id id;
-	id.verbs = MOCK_VERBS;
-	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rdma_destroy_id, 0);
-
 	/* run test */
 	struct ibv_context *dev = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
@@ -124,11 +120,6 @@ get_ibvc__info_new_failed_E_NOMEM(void **unused)
 	/* configure mocks */
 	will_return(rpma_info_new, NULL /* info_ptr */);
 	will_return(rpma_info_new, RPMA_E_NOMEM);
-
-	struct rdma_cm_id id;
-	id.verbs = MOCK_VERBS;
-	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rdma_destroy_id, 0);
 
 	/* run test */
 	struct ibv_context *dev = NULL;
@@ -154,7 +145,7 @@ get_ibvc__create_id_failed(void **unused)
 	 * Here we assume that if rpma_info_new() is called, it will succeed
 	 * for a local address (passive side).
 	 */
-	will_return_maybe(rpma_info_new, MOCK_INFO);
+	will_return(rpma_info_new, MOCK_INFO);
 	will_return(rdma_create_id, NULL);
 	will_return(rdma_create_id, MOCK_ERRNO);
 
