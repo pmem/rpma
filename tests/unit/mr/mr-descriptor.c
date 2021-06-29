@@ -196,7 +196,7 @@ static void
 remote_from_descriptor__malloc_ERRNO(void **unused)
 {
 	/* configure mock */
-	will_return_maybe(__wrap__test_malloc, MOCK_ERRNO);
+	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
@@ -219,9 +219,6 @@ remote_from_descriptor__buff_usage_equal_zero(void **unused)
 
 	/* set usage to 0 */
 	desc_invalid[MR_DESC_SIZE - 1] = 0;
-
-	/* configure mock */
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_mr_remote *mr = NULL;
