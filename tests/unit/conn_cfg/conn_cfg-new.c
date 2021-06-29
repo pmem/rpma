@@ -18,9 +18,6 @@
 static void
 new__cfg_ptr_NULL(void **unused)
 {
-	/* configure mocks */
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
-
 	/* run test */
 	int ret = rpma_conn_cfg_new(NULL);
 
