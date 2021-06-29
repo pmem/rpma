@@ -100,9 +100,6 @@ listen__create_evch_ERRNO(void **unused)
 	 */
 	will_return(rdma_create_event_channel, NULL);
 	will_return(rdma_create_event_channel, MOCK_ERRNO);
-	/* - things which may happen: */
-	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -127,9 +124,6 @@ listen__create_id_ERRNO(void **unused)
 	will_return(rdma_create_event_channel, &evch);
 	will_return(rdma_create_id, NULL);
 	will_return(rdma_create_id, MOCK_ERRNO);
-	/* - things which may happen: */
-	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -152,12 +146,11 @@ listen__info_new_E_NOMEM(void **unused)
 	 */
 	will_return(rpma_info_new, NULL);
 	will_return(rpma_info_new, RPMA_E_NOMEM);
-	/* - things which may happen: */
 	struct rdma_event_channel evch;
-	will_return_maybe(rdma_create_event_channel, &evch);
+	will_return(rdma_create_event_channel, &evch);
 	struct rdma_cm_id id;
-	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	will_return(rdma_create_id, &id);
+	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
@@ -237,15 +230,14 @@ listen__malloc_ERRNO(void **unused)
 	 * - constructing
 	 */
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
-	/* - things which may happen: */
 	struct rdma_event_channel evch;
-	will_return_maybe(rdma_create_event_channel, &evch);
+	will_return(rdma_create_event_channel, &evch);
 	struct rdma_cm_id id;
-	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rpma_info_new, MOCK_INFO);
-	will_return_maybe(rpma_info_bind_addr, MOCK_OK);
-	will_return_maybe(rdma_listen, MOCK_OK);
-	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	will_return(rdma_create_id, &id);
+	will_return(rpma_info_new, MOCK_INFO);
+	will_return(rpma_info_bind_addr, MOCK_OK);
+	will_return(rdma_listen, MOCK_OK);
+	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
