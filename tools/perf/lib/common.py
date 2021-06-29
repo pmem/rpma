@@ -30,7 +30,7 @@ def json_from_file(string):
     with open(string, "r") as read_file:
         data = json.load(read_file)
     # return the content of the file
-    return data
+    return {'input_file': string, 'json': data}
 
 def uniq(elems):
     """Generate a set of unique objects"""

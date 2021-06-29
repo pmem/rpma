@@ -33,13 +33,14 @@ class Bench:
 
     @classmethod
     def new(cls, config, figures, result_dir):
-        figures = Figure.flatten(figures)
+        figures = Figure.flatten(figures['json'])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
-        return cls(config, figures, requirements, result_dir)
+        return cls(config['json'], figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, bench):
+        bench = bench['json']
         figures = [Figure(f, bench['result_dir']) for f in bench['figures']]
         requirements = {id: Requirement(r) for id, r in bench['requirements'].items()}
         return cls(bench['config'], figures, requirements, bench['result_dir'])
