@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * function.c -- rpma_log_default_function() unit tests
@@ -105,7 +106,6 @@ function__vsnprintf_fail(void **unused)
 {
 	/* configure mocks */
 	will_return(__wrap_vsnprintf, MOCK_STDIO_ERROR);
-	will_return_maybe(__wrap_snprintf, MOCK_OK);
 
 	/* run test */
 	rpma_log_default_function(MOCK_LOG_LEVEL, MOCK_FILE_NAME,
