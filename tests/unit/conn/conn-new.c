@@ -96,8 +96,6 @@ new__create_evch_ERRNO(void **unused)
 	/* configure mock */
 	will_return(rdma_create_event_channel, NULL);
 	will_return(rdma_create_event_channel, MOCK_ERRNO);
-	will_return_maybe(rpma_flush_new, MOCK_OK);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -118,8 +116,6 @@ new__migrate_id_ERRNO(void **unused)
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return(rdma_migrate_id, MOCK_ERRNO);
-	will_return_maybe(rpma_flush_new, MOCK_OK);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -138,9 +134,9 @@ new__flush_E_NOMEM(void **unused)
 {
 	/* configure mock */
 	will_return(rpma_flush_new, RPMA_E_NOMEM);
-	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
+	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
-	will_return_maybe(rdma_migrate_id, MOCK_OK);
+	will_return_count(rdma_migrate_id, MOCK_OK, 2);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -159,9 +155,9 @@ new__malloc_ERRNO(void **unused)
 {
 	/* configure mock */
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
-	will_return_maybe(rdma_create_event_channel, MOCK_EVCH);
+	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
-	will_return_maybe(rdma_migrate_id, MOCK_OK);
+	will_return_count(rdma_migrate_id, MOCK_OK, 2);
 	will_return(rpma_flush_new, MOCK_OK);
 	will_return(rpma_flush_delete, MOCK_OK);
 
@@ -242,9 +238,9 @@ delete__flush_delete_ERRNO(void **unused)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_PROVIDER);
 	will_return(rpma_flush_delete, MOCK_ERRNO);
-	will_return_maybe(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
-	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -273,9 +269,9 @@ delete__flush_delete_E_INVAL(void **unused)
 
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_INVAL);
-	will_return_maybe(rpma_cq_delete, MOCK_OK);
+	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
-	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	will_return(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
