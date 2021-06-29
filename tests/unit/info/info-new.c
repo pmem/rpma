@@ -95,7 +95,6 @@ new__getaddrinfo_ERRNO_ACTIVE(void **unused)
 	will_return(rdma_getaddrinfo, &get_args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
 	will_return(rdma_getaddrinfo, MOCK_ERRNO);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_info *info = NULL;
@@ -123,7 +122,6 @@ new__getaddrinfo_ERRNO_PASSIVE(void **unused)
 	will_return(rdma_getaddrinfo, &get_args);
 	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
 	will_return(rdma_getaddrinfo, MOCK_ERRNO);
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
 	struct rpma_info *info = NULL;
@@ -144,8 +142,8 @@ new__malloc_ERRNO(void **unused)
 	/* configure mocks */
 	struct rdma_addrinfo rai = {0};
 	struct rdma_addrinfo_args args = {MOCK_PASSTHROUGH, &rai};
-	will_return_maybe(rdma_getaddrinfo, &args);
-	will_return_maybe(rdma_freeaddrinfo, &args);
+	will_return(rdma_getaddrinfo, &args);
+	will_return(rdma_freeaddrinfo, &args);
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
 
 	/* run test */
