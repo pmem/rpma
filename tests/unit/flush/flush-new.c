@@ -164,7 +164,7 @@ delete__apm_dereg_ERRNO(void **unused)
 	/* configure mocks */
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
 	will_return(__wrap_munmap, &fstate->allocated_raw);
-	will_return_maybe(__wrap_munmap, MOCK_OK);
+	will_return(__wrap_munmap, MOCK_OK);
 	will_return(rpma_mr_dereg, RPMA_E_PROVIDER);
 	will_return(rpma_mr_dereg, MOCK_ERRNO);
 
@@ -188,7 +188,7 @@ delete__apm_munmap_ERRNO(void **unused)
 
 	/* configure mocks */
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
-	will_return_maybe(rpma_mr_dereg, MOCK_OK);
+	will_return(rpma_mr_dereg, MOCK_OK);
 	will_return(__wrap_munmap, &fstate->allocated_raw);
 	will_return(__wrap_munmap, MOCK_ERRNO);
 
