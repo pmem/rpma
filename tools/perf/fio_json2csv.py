@@ -58,6 +58,11 @@ def main():
         for column in bw_columns:
             csv_columns.append(column)
             csv_data[column] = op[column]
+        # prepare iops for writing
+        bw_columns = ['iops', 'iops_min', 'iops_max']
+        for column in bw_columns:
+            csv_columns.append(column)
+            csv_data[column] = op[column]
         # append extra key:value pairs
         if args.extra is not None:
             for k, v in args.extra.items():

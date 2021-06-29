@@ -30,6 +30,10 @@
 #   - bw_min - min bandwidth [Gb/sec] (optional)
 #   - bw_max - max bandwidth [Gb/sec] (optional)
 #   - bw_avg - avg. bandwidth [Gb/sec]
+# - iops_* group (optional)
+#   - iops - avg. IOPS
+#   - iops_min - min IOPS (optional)
+#   - iops_max - max IOPS (optional)
 # - cpuload (optional)
 #
 
@@ -40,7 +44,8 @@ import pandas as pd
 fio_input_names = [
     'bs', 'iodepth', 'threads', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev',
     'ops', 'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99',
-    'lat_pctl_99.999', 'bw_avg', 'bw_min', 'bw_max', 'cpuload']
+    'lat_pctl_99.999', 'bw_avg', 'bw_min', 'bw_max',
+    'iops', 'iops_min', 'iops_max', 'cpuload']
 
 fio_nsec_2_usec_names = [
     'lat_min', 'lat_max', 'lat_avg', 'lat_stdev', 'lat_pctl_99.0',
@@ -53,7 +58,8 @@ KiBpbs_2_Gbps = 1024 * 8 / 1000 / 1000 / 1000
 fio_output_names = [
     'threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg',
     'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9', 'lat_pctl_99.99',
-    'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg', 'cpuload']
+    'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg',
+    'iops', 'iops_min', 'iops_max', 'cpuload']
 
 ib_lat_input_names = [
     'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
