@@ -103,15 +103,11 @@ new__all_NULL(void **unused)
 static void
 new__info_new_ERRNO(void **unused)
 {
-	struct rdma_cm_id id = {0};
-
 	/* configure mocks */
 	will_return(rpma_conn_cfg_get_timeout, &Get_t);
 	will_return(rpma_info_new, NULL);
 	will_return(rpma_info_new, RPMA_E_PROVIDER);
 	will_return(rpma_info_new, MOCK_ERRNO);
-	will_return_maybe(rdma_create_id, &id);
-	will_return_maybe(rdma_destroy_id, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -133,7 +129,7 @@ new__create_id_ERRNO(void **unused)
 	will_return(rpma_conn_cfg_get_timeout, &Get_t);
 	will_return(rdma_create_id, NULL);
 	will_return(rdma_create_id, MOCK_ERRNO);
-	will_return_maybe(rpma_info_new, MOCK_INFO);
+	will_return(rpma_info_new, MOCK_INFO);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -240,7 +236,6 @@ new__cq_new_ERRNO(void **unused)
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
 	will_return(rpma_cq_new, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
-	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
