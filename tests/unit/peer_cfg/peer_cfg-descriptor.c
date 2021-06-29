@@ -155,9 +155,6 @@ from_desc__pcfg_ptr_desc_NULL(void **unused)
 static void
 from_desc__incorrect_desc_size(void **unused)
 {
-	/* configure mocks */
-	will_return_maybe(__wrap__test_malloc, MOCK_ERRNO);
-
 	/* run test of rpma_peer_cfg_from_descriptor() */
 	struct rpma_peer_cfg *pcfg = NULL;
 	int ret = rpma_peer_cfg_from_descriptor(MOCK_DESC, MOCK_WRONG_DESC_SIZE,
