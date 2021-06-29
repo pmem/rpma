@@ -100,7 +100,7 @@ function(add_cstyle_pep8 name)
 
 	if(${ARGC} EQUAL 1)
 		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
-			DEPENDS ${PYLINT_RCFILE}
+			DEPENDS ${PYLINT_RCFILE} ${CMAKE_CURRENT_SOURCE_DIR}/*.py
 			COMMAND
 				${PYLINT_EXECUTABLE} ${PYLINT_ARGS}
 					${CMAKE_CURRENT_SOURCE_DIR}/*.py
@@ -109,7 +109,7 @@ function(add_cstyle_pep8 name)
 			)
 	else()
 		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
-			DEPENDS ${PYLINT_RCFILE}
+			DEPENDS ${PYLINT_RCFILE} ${ARGN}
 			COMMAND
 				${PYLINT_EXECUTABLE} ${PYLINT_ARGS} ${ARGN}
 			COMMAND
