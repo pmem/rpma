@@ -69,7 +69,7 @@ function benchmark_one() {
 		# 100000000 is the maximum value of iterations
 		ITERATIONS=(48336720 48336720 34951167 24475088 23630690 8299603 5001135)
 		local AUX_PARAMS="$AUX_PARAMS --report_gbits"
-		NAME="${MODE}-${THREADS}th"
+		NAME="${MODE}_${THREADS}th"
 		verify_block_size
 		;;
 	bw-dp-exp)
@@ -82,7 +82,7 @@ function benchmark_one() {
 		# 100000000 is the maximum value of iterations
 		ITERATIONS=(20769620 30431214 45416656 65543498 85589536 100000000 100000000 100000000)
 		local AUX_PARAMS="$AUX_PARAMS --report_gbits"
-		NAME="${MODE}-${BLOCK_SIZE}bs"
+		NAME="${MODE}_${BLOCK_SIZE}bs"
 		verify_depth
 		;;
 	bw-dp-lin)
@@ -95,7 +95,7 @@ function benchmark_one() {
 		# 100000000 is the maximum value of iterations
 		ITERATIONS=(20609419 30493585 40723132 43536049 50576557 55879517 60512919 65088286 67321386 68566797)
 		local AUX_PARAMS="$AUX_PARAMS --report_gbits"
-		NAME="${MODE}-${BLOCK_SIZE}bs"
+		NAME="${MODE}_${BLOCK_SIZE}bs"
 		verify_depth
 		;;
 	bw-th)
@@ -110,7 +110,7 @@ function benchmark_one() {
 		# 100000000 is the maximum value of iterations
 		ITERATIONS=(16527218 32344690 61246542 89456698 89591370)
 		local AUX_PARAMS="$AUX_PARAMS --report_gbits"
-		NAME="${MODE}-${BLOCK_SIZE}bs"
+		NAME="${MODE}_${BLOCK_SIZE}bs"
 		verify_threads
 		;;
 	lat)
