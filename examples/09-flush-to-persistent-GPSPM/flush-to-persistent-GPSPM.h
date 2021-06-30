@@ -13,4 +13,6 @@
 #define SEND_OFFSET	0
 #define RECV_OFFSET	(SEND_OFFSET + MSG_SIZE_MAX)
 
+#define RCQ_SIZE	1
+
 #endif /* EXAMPLES_FLUSH_2_PMEM_GPSPM */
