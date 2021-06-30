@@ -19,13 +19,8 @@ from .Requirement import *
 class Bench:
     """A benchmarking control object"""
 
-    def __init__(self, config, figures, requirements, result_dir):
-        # XXX The list of parts has to emerge from the list of provided figures
-        # The following quick and dirty WA works only because as of now only
-        # a single definition of part/figure exists.
-        # Note: The list of parts also has to be stored and restored from
-        # the bench.json file.
-        self.parts = ['read']
+    def __init__(self, config, parts, figures, requirements, result_dir):
+        self.parts = parts
         self.config = config
         self.figures = figures
         self.requirements = requirements
@@ -33,22 +28,24 @@ class Bench:
 
     @classmethod
     def new(cls, config, figures, result_dir):
+        parts = [ os.path.splitext(os.path.basename(figures['input_file']))[0] ]
         figures = Figure.flatten(figures['json'])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
-        return cls(config['json'], figures, requirements, result_dir)
+        return cls(config['json'], parts, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, bench):
         bench = bench['json']
         figures = [Figure(f, bench['result_dir']) for f in bench['figures']]
         requirements = {id: Requirement(r) for id, r in bench['requirements'].items()}
-        return cls(bench['config'], figures, requirements, bench['result_dir'])
+        return cls(bench['config'], bench['parts'], figures, requirements, bench['result_dir'])
 
     def cache(self):
         """Cache the current state of execution to a file"""
         output = {
             'config': self.config,
+            'parts': self.parts,
             'figures': [f.cache() for f in self.figures],
             'requirements': {id: r.cache() for id, r in self.requirements.items()},
             'result_dir': self.result_dir
