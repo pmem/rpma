@@ -37,8 +37,8 @@ class Figure:
         if not self.output['done']:
             self.series = f['series']
         else:
-            self.series = json_from_file(self._series_file(result_dir)) \
-                [self.key]['series']
+            data = json_from_file(self._series_file(result_dir))
+            self.series = data['json'][self.key]['series']
 
     def cache(self):
         """Cache the current state of execution"""
@@ -93,7 +93,7 @@ class Figure:
         for series in self.series:
             idfile = os.path.join(result_dir, 'benchmark_' + str(series['id']) +
                 '.json')
-            rows = json_from_file(idfile)
+            rows = json_from_file(idfile)['json']
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
@@ -104,7 +104,7 @@ class Figure:
         # save the series to a file
         series_path = self._series_file(result_dir)
         if os.path.exists(series_path):
-            figures = json_from_file(series_path)
+            figures = json_from_file(series_path)['json']
         else:
             figures = {}
         figures[self.key] = output
