@@ -12,6 +12,60 @@
 #include "rpma_conn_cfg_common.h"
 
 /*
+ * rpma_conn_cfg_common_prestate_init -- create a new connection
+ * configuration object, set all queue sizes and timeout value
+ */
+void
+rpma_conn_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
+{
+	struct rpma_conn_cfg_common_prestate *pr =
+		(struct rpma_conn_cfg_common_prestate *)prestate;
+	int ret;
+
+	if ((ret = rpma_conn_cfg_new(&pr->cfg_ptr))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_cq_size(pr->cfg_ptr,
+				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_cq_size", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_sq_size(pr->cfg_ptr,
+				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_sq_size", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_rq_size(pr->cfg_ptr,
+				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_rq_size", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr,
+				RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP)))
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
+}
+
+/*
+ * rpma_conn_cfg_common_prestate_fini -- free the connection configuration
+ * object
+ */
+void
+rpma_conn_cfg_common_prestate_fini(void *prestate, struct mtt_result *tr)
+{
+	struct rpma_conn_cfg_common_prestate *pr =
+		(struct rpma_conn_cfg_common_prestate *)prestate;
+	int ret;
+
+	if ((ret = rpma_conn_cfg_delete(&pr->cfg_ptr)))
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
+}
+
+/*
  * rpma_conn_cfg_common_init -- allocate state and create a new connection
  * configuration object
  */
