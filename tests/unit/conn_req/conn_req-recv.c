@@ -81,24 +81,17 @@ recv__success(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 }
 
-static struct conn_req_new_test_state prestate_conn_cfg_default;
-
 static const struct CMUnitTest tests_recv[] = {
 	/* rpma_conn_req_recv() unit tests */
 	cmocka_unit_test(recv__req_NULL),
 	cmocka_unit_test(recv__dst_NULL),
 	cmocka_unit_test(recv__req_dst_NULL),
-	cmocka_unit_test_prestate_setup_teardown(recv__success,
-		setup__conn_req_new, teardown__conn_req_new,
-		&prestate_conn_cfg_default),
+	cmocka_unit_test_setup_teardown(recv__success,
+		setup__conn_req_new, teardown__conn_req_new),
 };
 
 int
 main(int argc, char *argv[])
 {
-	/* prepare prestate - default conn_cfg */
-	prestate_init(&prestate_conn_cfg_default, MOCK_CONN_CFG_DEFAULT,
-			RPMA_DEFAULT_TIMEOUT_MS, MOCK_CQ_SIZE_DEFAULT);
-
 	return cmocka_run_group_tests(tests_recv, NULL, NULL);
 }
