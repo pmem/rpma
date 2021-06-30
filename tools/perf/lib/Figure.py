@@ -171,8 +171,24 @@ class Figure:
         """
         Create an HTML snippet string with a table containing the Figure data.
         """
-        return "XXX"
+        html = "<style> td { border: 1px solid black; } </style> <table>"
 
+        # header
+        html += "<tr> <td></td>"
+        for point in self.series[0].points:
+            html += "<td>" + point[0] + "</td>"
+        html += "</tr>"
+
+        # rows
+        for serie in self.series:
+            html += "<tr> <td>" + serie.label + "</td>"
+            for point in serie.points:
+                html += "<td>" + point[1] + "</td>"
+            html += "</tr>"
+
+        # end the table
+        html += "</table>"
+        return html
 
     def to_html(self, result_dir):
         """Combine a Figure's png and data table into a single HTML snippet"""
