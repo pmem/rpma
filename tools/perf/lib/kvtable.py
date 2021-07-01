@@ -10,7 +10,8 @@
 
 def lines2str(lines, sep = "\n"):
     """Merge a list of lines into a single string"""
-    return sep.join(lines)
+    # return sep.join(lines)
+    return lines
 
 def dict2kvtable(obj, env):
     """Generate an HTML table from a dictionary"""
