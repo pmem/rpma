@@ -4,54 +4,191 @@
             "title": "Latency ({y}): ib_read_lat vs rpma_read() from DRAM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "_comment": "XXX the following definition is obviously incorrect",
-            "file": ["ib_read_vs_rpma_read_dram", "rpma_read_dram_vs_pmem"],
+            "file": "ib_read_lat_vs_rpma_read",
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
+            "mode": "lat",
             "filetype": "malloc",
-            "mode": "lat"
+            "requirements": {
+                "direct_write_to_pmem": false
+            }
         },
         "series": [
             {
                 "tool": "ib_read.sh",
-                "label": "ib_read_lat",
-                "requirements": {
-                    "direct_write_to_pmem": false
-                }
+                "label": "ib_read_lat()"
             },
             {
                 "tool": "rpma_fio_bench.sh",
                 "tool_mode": "apm",
                 "rw": ["randread", "read"],
                 "label": "rpma_read() {rw_order}",
-                "requirements": {
-                    "direct_write_to_pmem": true
-                },
                 "fstrings": ["label"]
             }
         ]
     },
     {
         "output": {
-            "_comment": "XXX the following definition is obviously incorrect",
-            "title": "XXX ({x}): dummy",
-            "x": ["bs", "threads"],
-            "y": "bw",
-            "file": ["ib_read_bw_vs_rpma_read_dram", "rpma_read_dram_vs_pmem_bw"],
-            "key": "{x}",
+            "title": "Latency ({y}): rpma_read() from DRAM vs from PMEM",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "file": "apm_dram_vs_pmem",
+            "key": "{y}",
             "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "lat",
+            "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
+            "rw": ["randread", "read"],
+            "fstrings": ["label"]
         },
         "series": [
             {
                 "filetype": "malloc",
-                "mode": "lat",
-                "tool": "ib_read.sh",
-                "label": "ib_read_lat",
                 "requirements": {
                     "direct_write_to_pmem": false
-                }
+                },
+                "label": "DRAM {rw_order}"
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}"
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (bs) ({x}): ib_read_bw() vs rpma_read() from DRAM",
+            "x": "bs",
+            "y": "bw_avg",
+            "file": "bs_ib_read_bw_vs_rpma_read",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw-bs",
+            "filetype": "malloc",
+            "requirements": {
+                "direct_write_to_pmem": false
+            }
+        },
+        "series": [
+            {
+                "tool": "ib_read.sh",
+                "label": "ib_read_bw"
+            },
+            {
+                "tool": "rpma_fio_bench.sh",
+                "tool_mode": "apm",
+                "rw": ["randread", "read"],
+                "label": "rpma_read() {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (threads) ({x}): ib_read_bw() vs rpma_read() from DRAM",
+            "x": "threads",
+            "y": "bw_avg",
+            "file": "th_ib_read_bw_vs_rpma_read",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw-th",
+            "filetype": "malloc",
+            "requirements": {
+                "direct_write_to_pmem": false
+            }
+        },
+        "series": [
+            {
+                "tool": "ib_read.sh",
+                "label": "ib_read_bw"
+            },
+            {
+                "tool": "rpma_fio_bench.sh",
+                "tool_mode": "apm",
+                "rw": ["randread", "read"],
+                "label": "rpma_read() {rw_order}",
+                "fstrings": ["label"]
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (bs) ({x}): rpma_read() from DRAM vs from PMEM",
+            "x": "bs",
+            "y": "bw_avg",
+            "file": "bs_rpma_read_dram_vs_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw-bs",
+            "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
+            "rw": ["randread", "read"],
+            "fstrings": ["label"]
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "DRAM {rw_order}"
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}"
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (threads) ({x}): rpma_read() from DRAM vs from PMEM",
+            "x": "threads",
+            "y": "bw_avg",
+            "file": "th_rpma_read_dram_vs_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw-th",
+            "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
+            "rw": ["randread", "read"],
+            "fstrings": ["label"]
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "DRAM {rw_order}"
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}"
             }
         ]
     }

@@ -4,14 +4,14 @@
             "title": "Latency ({y}): APM to DRAM (DDIO=ON) vs PMEM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "apm_dram_vs_pmem",
+            "file": "lat_apm_dram_vs_pmem",
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
             "mode": "lat",
-            "tool_mode": "apm",
             "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -37,7 +37,7 @@
             "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "apm_pmem_vs_gpspm_pmem",
+            "file": "lat_apm_pmem_vs_gpspm_pmem",
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
@@ -76,17 +76,18 @@
     },
     {
         "output": {
-            "title": "Bandwidth ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
-            "x": ["bs", "threads"],
-            "y": "bw",
-            "file": "apm_dram_vs_pmem",
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (bs) ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
+            "x": "bs",
+            "y": "bw_avg",
+            "file": "bs_bw_apm_dram_vs_pmem",
             "key": "{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
-            "mode": "bw",
-            "tool_mode": "apm",
+            "mode": "bw-bs",
             "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -109,16 +110,94 @@
     },
     {
         "output": {
-            "title": "Bandwidth ({x}): APM to PMEM vs GPSPM(-RT) to PMEM",
-            "x": ["bs", "threads"],
-            "y": "bw",
-            "file": "apm_pmem_vs_gpspm_pmem",
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (threads) ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
+            "x": "threads",
+            "y": "bw_avg",
+            "file": "th_bw_apm_dram_vs_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "bw-th",
+            "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
+            "rw": ["randwrite", "write"],
+            "fstrings": ["label"]
+        },
+        "series": [
+            {
+                "filetype": "malloc",
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "DRAM {rw_order}"
+            },
+            {
+                "filetype": "pmem",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "PMEM {rw_order}"
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (bs) ({x}): APM to PMEM vs GPSPM(-RT) to PMEM",
+            "x": "bs",
+            "y": "bw_avg",
+            "file": "bs_bw_apm_pmem_vs_gpspm_pmem",
             "key": "{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
             "filetype": "pmem",
-            "mode": "bw",
+            "mode": "bw-bs",
+            "tool": "rpma_fio_bench.sh",
+            "rw": ["randwrite", "write"],
+            "fstrings": ["label"]
+        },
+        "series": [
+            {
+                "tool_mode": "apm",
+                "requirements": {
+                    "direct_write_to_pmem": true
+                },
+                "label": "APM {rw_order}"
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": true,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM-RT {rw_order}"
+            },
+            {
+                "tool_mode": "gpspm",
+                "busy_wait_polling": false,
+                "requirements": {
+                    "direct_write_to_pmem": false
+                },
+                "label": "GPSPM {rw_order}"
+            }
+        ]
+    },
+    {
+        "output": {
+            "_comment": "In the next step, combine the bw-bs series with the bw-th series",
+            "title": "Bandwidth (threads) ({x}): APM to PMEM vs GPSPM(-RT) to PMEM",
+            "x": "threads",
+            "y": "bw_avg",
+            "file": "th_bw_apm_pmem_vs_gpspm_pmem",
+            "key": "{x}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "filetype": "pmem",
+            "mode": "bw-th",
             "tool": "rpma_fio_bench.sh",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
