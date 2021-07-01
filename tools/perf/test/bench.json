@@ -1,0 +1,392 @@
+{
+    "config": {
+        "_comment": "A configuration file providing all information describing the system which are necessary to run ./rpma_fio_bench.sh and ./ib_read.sh.",
+        "platform_generation": "Cascade Lake",
+        "server_ip": "192.168.102.7",
+        "JOB_NUMA": 0,
+        "REMOTE_JOB_MEM_PATH": "path",
+        "REMOTE_USER": "nesperf",
+        "REMOTE_PASS": "nesperf",
+        "FIO_PATH": "/home/nesperf/repos/fio/fio",
+        "REMOTE_FIO_PATH": "/home/nesperf/repos/fio/fio",
+        "REMOTE_JOB_NUMA": 0,
+        "REMOTE_SUDO_NOPASSWD": false,
+        "REMOTE_DIRECT_WRITE_TO_PMEM": true,
+        "report": {
+            "_comment": "high_level_setup_figure requires making the path absolute",
+            "subtitle": "",
+            "high_level_setup_figure": "Figure_0.png",
+            "release": "0.00",
+            "test_date": "December 2020",
+            "ref": "2021_04_21_CLX"
+        }
+    },
+    "parts": [
+        "read"
+    ],
+    "figures": [
+        {
+            "output": {
+                "title": "Latency (lat_avg): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_avg",
+                "file": "ib_read_vs_rpma_read_dram",
+                "key": "lat_avg",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "Latency (lat_avg): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_avg",
+                "file": "rpma_read_dram_vs_pmem",
+                "key": "lat_avg",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "Latency (lat_pctl_99.9): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_pctl_99.9",
+                "file": "ib_read_vs_rpma_read_dram",
+                "key": "lat_pctl_99.9",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "Latency (lat_pctl_99.9): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_pctl_99.9",
+                "file": "rpma_read_dram_vs_pmem",
+                "key": "lat_pctl_99.9",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "Latency (lat_pctl_99.99): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_pctl_99.99",
+                "file": "ib_read_vs_rpma_read_dram",
+                "key": "lat_pctl_99.99",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "Latency (lat_pctl_99.99): ib_read_lat vs rpma_read() from DRAM",
+                "x": "bs",
+                "y": "lat_pctl_99.99",
+                "file": "rpma_read_dram_vs_pmem",
+                "key": "lat_pctl_99.99",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "XXX (bs): dummy",
+                "x": "bs",
+                "y": "bw",
+                "file": "ib_read_bw_vs_rpma_read_dram",
+                "key": "bs",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "XXX (bs): dummy",
+                "x": "bs",
+                "y": "bw",
+                "file": "rpma_read_dram_vs_pmem_bw",
+                "key": "bs",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "XXX (threads): dummy",
+                "x": "threads",
+                "y": "bw",
+                "file": "ib_read_bw_vs_rpma_read_dram",
+                "key": "threads",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                }
+            ]
+        },
+        {
+            "output": {
+                "title": "XXX (threads): dummy",
+                "x": "threads",
+                "y": "bw",
+                "file": "rpma_read_dram_vs_pmem_bw",
+                "key": "threads",
+                "done": false
+            },
+            "series": [
+                {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                }
+            ]
+        }
+    ],
+    "requirements": {
+        "0": {
+            "direct_write_to_pmem": false,
+            "done": false,
+            "benchmarks": {
+                "0": {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "ib_read.sh",
+                    "label": "ib_read_lat",
+                    "done": false,
+                    "id": 0
+                }
+            }
+        },
+        "1": {
+            "direct_write_to_pmem": true,
+            "done": false,
+            "benchmarks": {
+                "1": {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "randread",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 1
+                },
+                "2": {
+                    "filetype": "malloc",
+                    "mode": "lat",
+                    "tool": "rpma_fio_bench.sh",
+                    "tool_mode": "apm",
+                    "rw": "read",
+                    "label": "rpma_read() rand",
+                    "done": false,
+                    "id": 2
+                }
+            }
+        }
+    },
+    "result_dir": "/home/nesperf/repos/rpma/tools/perf/test"
+}
