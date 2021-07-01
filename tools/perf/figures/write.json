@@ -84,7 +84,7 @@
             "fstrings": ["title", "key"]
         },
         "series_common": {
-            "mode": "bw",
+            "mode": ["bw-bs", "bw-th"],
             "tool_mode": "apm",
             "tool": "rpma_fio_bench.sh",
             "rw": ["randwrite", "write"],
@@ -118,7 +118,7 @@
         },
         "series_common": {
             "filetype": "pmem",
-            "mode": "bw",
+            "mode": ["bw-bs", "bw-th"],
             "tool": "rpma_fio_bench.sh",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
