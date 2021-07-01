@@ -111,7 +111,7 @@ from_cm_event__cq_new_ERRNO(void **unused)
 	struct rdma_cm_id id = {0};
 	id.verbs = MOCK_VERBS;
 	event.id = &id;
-	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
+	will_return(rpma_conn_cfg_get_cqe, &Get_cqe);
 	expect_value(rpma_cq_new, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
