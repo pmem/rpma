@@ -10,8 +10,8 @@
         },
         "series_common": {
             "mode": "lat",
-            "tool_mode": "apm",
             "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -84,9 +84,9 @@
             "fstrings": ["title", "key"]
         },
         "series_common": {
-            "mode": "bw",
-            "tool_mode": "apm",
+            "mode": ["bw-bs", "bw-th"],
             "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -118,7 +118,7 @@
         },
         "series_common": {
             "filetype": "pmem",
-            "mode": "bw",
+            "mode": ["bw-bs", "bw-th"],
             "tool": "rpma_fio_bench.sh",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
