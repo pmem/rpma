@@ -14,4 +14,20 @@ def lines2str(lines, sep = "\n"):
 
 def dict2kvtable(obj, env):
     """Generate an HTML table from a dictionary"""
-    return "XXX table"
+    # header
+    html = "<table><tr><th>Item</th><th>Description</th></tr>"
+
+    # rows
+    for item, desc in obj.items():
+        if item == "type":
+            continue
+        # replace all 'var' with 'txt' from env in all lines of 'desc'
+        for line in desc:
+            for var, txt in env.items():
+                line.replace("{" + var + "}", txt)
+        html += "<tr><td>" + str(item) + "</td><td>" + lines2str(desc) + "</td></tr>"
+
+    # end the table
+    html += "</table>"
+
+    return html
