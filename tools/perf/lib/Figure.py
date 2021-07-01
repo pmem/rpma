@@ -190,6 +190,6 @@ class Figure:
 
     def to_html(self, result_dir):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        png_path = self.png_path(result_dir)
-        data_table = self.html_data_table()
-        return "XXX figure html"
+        html = '<img src="' + self.png_path(result_dir) + '" alt="' + self.title + '"/>'
+        html += self.html_data_table()
+        return html
