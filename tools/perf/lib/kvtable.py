@@ -9,8 +9,12 @@
 #
 
 def lines2str(lines, sep = "\n"):
-    """Merge a list of lines into a single string"""
-    return sep.join(lines)
+    if type(lines) is str:
+        return lines
+    if hasattr(lines, '__iter__'):
+        # merge a list of lines into a single string
+        return sep.join(lines)
+    return str(lines)
 
 def dict2kvtable(obj, env):
     """Generate an HTML table from a dictionary"""
