@@ -247,3 +247,14 @@ function(add_multithreaded)
 
 	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
 endfunction()
+
+# Configures testcase ${name}
+function(add_pytestcase name)
+	set(test_name ${name})
+	add_test(NAME ${test_name}
+			COMMAND ${PYTEST_EXECUTABLE}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+	set_tests_properties(${test_name} PROPERTIES
+			ENVIRONMENT "LC_ALL=C;PATH=$ENV{PATH};PYTHONPATH=${TOOLS_PERF_DIR}")
+endfunction()

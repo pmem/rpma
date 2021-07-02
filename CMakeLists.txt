@@ -123,6 +123,12 @@ else()
 	add_flag(-DRDMA_GETADDRINFO_OLD_SIGNATURE=1)
 endif()
 
+if(TEST_PYTHON_TOOLS)
+	find_package(PYLINT REQUIRED pylint)
+	find_package(PYTEST REQUIRED pytest)
+	set(TOOLS_PERF_DIR ${CMAKE_SOURCE_DIR}/tools/perf/)
+endif()
+
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
 add_custom_target(check-whitespace)
@@ -248,7 +254,6 @@ if(BUILD_EXAMPLES)
 endif()
 
 if(TEST_PYTHON_TOOLS)
-	find_package(PYLINT REQUIRED pylint)
 	add_subdirectory(tools/perf)
 endif()
 
