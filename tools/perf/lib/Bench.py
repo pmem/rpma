@@ -32,6 +32,7 @@ class Bench:
         figures = Figure.flatten(figures['json'])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
+        config['json']['report']['high_level_setup_figure'] = os.path.abspath(config['json']['report']['high_level_setup_figure'])
         return cls(config['json'], parts, figures, requirements, result_dir)
 
     @classmethod
