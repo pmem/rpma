@@ -1,7 +1,10 @@
 [MESSAGES CONTROL]
 
 # Disable the message, report, category or checker with the given id(s). 
-disable=fixme
+# fixme - do not fail because of XXX comments
+# too-few-public-methods - allow for 'too simple to be good' classes
+# e.g. in the unit tests
+disable=fixme,too-few-public-methods
 
 
 [FORMAT]
