@@ -106,6 +106,17 @@ class Benchmark:
         return args
 
     def run(self, config, result_dir):
+        """Run the benchmark process and mark it as done.
+
+        Args:
+            config (dict): a user-provided system config
+            result_dir (str): the directory for the benchmark's results
+        Raises:
+            CalledProcessError: when the benchmark's process returns non-zero
+                code
+        Returns:
+            None
+        """
         args = self._benchmark_args(config)
         env = self._get_env(config, result_dir)
 
