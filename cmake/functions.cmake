@@ -97,12 +97,13 @@ endfunction()
 function(add_cstyle_pep8 name)
 	set(PYLINT_RCFILE "${CMAKE_SOURCE_DIR}/utils/pylint.rc")
 	set(PYLINT_ARGS "--rcfile=${PYLINT_RCFILE}")
+	set(PYTHONENV "PYTHONPATH=${TOOLS_PERF_DIR}")
 
 	if(${ARGC} EQUAL 1)
 		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
 			DEPENDS ${PYLINT_RCFILE} ${CMAKE_CURRENT_SOURCE_DIR}/*.py
 			COMMAND
-				${PYLINT_EXECUTABLE} ${PYLINT_ARGS}
+				env ${PYTHONENV} ${PYLINT_EXECUTABLE} ${PYLINT_ARGS}
 					${CMAKE_CURRENT_SOURCE_DIR}/*.py
 			COMMAND
 				${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/pep8-${name}-status
@@ -111,7 +112,7 @@ function(add_cstyle_pep8 name)
 		add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/pep8-${name}-status
 			DEPENDS ${PYLINT_RCFILE} ${ARGN}
 			COMMAND
-				${PYLINT_EXECUTABLE} ${PYLINT_ARGS} ${ARGN}
+				env ${PYTHONENV} ${PYLINT_EXECUTABLE} ${PYLINT_ARGS} ${ARGN}
 			COMMAND
 				${CMAKE_COMMAND} -E touch ${CMAKE_BINARY_DIR}/pep8-${name}-status
 			)

@@ -49,3 +49,9 @@ add_subdirectory(integration)
 if(TESTS_SOFT_ROCE)
 	add_subdirectory(multithreaded)
 endif()
+if(TEST_PYTHON_TOOLS)
+	add_cstyle_pep8(tests-python-all
+		${CMAKE_CURRENT_SOURCE_DIR}/tools/perf/*/*.py)
+
+	add_subdirectory(tools)
+endif()
