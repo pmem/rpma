@@ -170,6 +170,18 @@ function check_env()
 
 function set_ddio()
 {
+	DIR=$1
+
+	if [ "$DIR" == "" ]; then
+		echo "Error: path for the 'ddio.sh' script is not set!"
+		exit 1
+	fi
+
+	if [ ! -f ../ddio.sh ]; then
+		echo "Error: ../ddio.sh script does not exist!"
+		exit 1
+	fi
+
 	if [ -n "$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM" ] && \
 	   [ $FORCE_REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
 		REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM
