@@ -200,7 +200,7 @@ function benchmark_one() {
 		;;
 	esac
 
-	set_ddio
+	set_ddio $DIR
 
 	for i in $(seq 0 $(expr $ITERATIONS - 1)); do
 		case $MODE in

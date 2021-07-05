@@ -150,7 +150,7 @@ function benchmark_one() {
 	# This test requires restoring the default settings.
 	REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
 
-	set_ddio
+	set_ddio "/dev/shm"
 
 	if [ "$DO_RUN" == "1" ]; then
 		rm -f $LOG_ERR
