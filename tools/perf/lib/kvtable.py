@@ -9,7 +9,16 @@
 #
 
 def lines2str(lines, sep = "\n"):
-    """Merge a list of lines into a single string"""
+    """Merge a list of lines into a single string
+
+    Args:
+        lines (list, str, other): a list of lines or a single object
+        sep (str, optional): a separator
+
+    Returns:
+        str: a single string which is either a concatenated lines (using
+            a custom or the default separator) or a str(lines) result
+    """
     if isinstance(lines, str):
         return lines
     if hasattr(lines, '__iter__'):
