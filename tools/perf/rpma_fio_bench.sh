@@ -52,6 +52,11 @@ CPU_LOAD_RANGE_VALUES="CPU_LOAD_$CPU_LOAD_RANGE"
 
 function benchmark_one() {
 
+	if [ ! -f ${FIO_PATH}/fio ]; then
+		echo "Error: wrong path to the 'fio' tool - \"${FIO_PATH}/fio\" does not exist"
+		exit 1
+	fi
+
 	SERVER_IP=$1
 	PERSIST_MODE=$2 # persistency mode
 	OP=$3
@@ -274,7 +279,7 @@ function benchmark_one() {
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}/fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
@@ -288,7 +293,7 @@ function benchmark_one() {
 			if [ "x$TRACER" == "x" ]; then
 				TRACER="numactl -N $JOB_NUMA"
 			fi
-			bash -c "$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma_${PERSIST_MODE}-client.fio \
+			bash -c "$ENV $TRACER ${FIO_PATH}/fio ./fio_jobs/librpma_${PERSIST_MODE}-client.fio \
 				--output-format=json+ > $TEMP_JSON"
 			if [ "$?" -ne 0 ]; then
 				echo "Error: FIO job failed"
