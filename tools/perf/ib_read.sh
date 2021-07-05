@@ -217,8 +217,13 @@ function benchmark_one() {
 
 		prepare_RUN_NAME_and_CMP__SUBST
 
+		if [ ! -f ${IB_PATH}/${IB_TOOL} ]; then
+			echo "Error: ${IB_PATH}/${IB_TOOL} does not exist"
+			exit 1
+		fi
+
 		# run the server
-		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
+		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}/${IB_TOOL} $BS_OPT $QP_OPT \
 			$DP_OPT $REMOTE_AUX_PARAMS"
 
 		if [ "$DO_RUN" == "1" ]; then
@@ -233,7 +238,7 @@ function benchmark_one() {
 
 		# XXX --duration hides detailed statistics
 		echo "[size: ${BS}, threads: ${TH}, tx_depth: ${DP}, iters: ${IT}] (duration: ~60s)"
-		CMD="numactl -N $JOB_NUMA ${REMOTE_IB_PATH}${IB_TOOL} $IT_OPT $BS_OPT \
+		CMD="numactl -N $JOB_NUMA ${REMOTE_IB_PATH}/${IB_TOOL} $IT_OPT $BS_OPT \
 			$QP_OPT $DP_OPT $AUX_PARAMS $SERVER_IP"
 		if [ "$DO_RUN" == "1" ]; then
 			$CMD 2>>$LOG_ERR | grep ${BS} | grep -v '[B]' | sed 's/^[ ]*//' \
