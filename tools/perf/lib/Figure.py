@@ -15,6 +15,7 @@ from textwrap import wrap
 from .common import *
 from .flat import *
 from .Benchmark import *
+from matplotlib.ticker import ScalarFormatter
 
 class Figure:
 
@@ -33,6 +34,7 @@ class Figure:
         self.x = self.output['x']
         self.y = self.output['y']
         self.key = self.output['key']
+        self.xscale = self.output.get('xscale', 'log')
         # find the latest series
         if not self.output['done']:
             self.series = f['series']
@@ -155,8 +157,13 @@ class Figure:
             xticks.extend(xs)
         # make values unique (set) and sort them
         xticks = sorted(list(set(xticks)))
-        # XXX linear / log
-        ax.set_xscale('linear')
+        # set the x-axis scale
+        if self.xscale == "linear":
+            ax.set_xscale(self.xscale)
+        else:
+            ax.set_xscale(self.xscale, base=2)
+            ax.xaxis.set_major_formatter(ScalarFormatter())
+
         ax.set_xticks(xticks)
         plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
         ax.set_xlabel(self._label(self.x))
