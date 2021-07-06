@@ -11,13 +11,22 @@
 import json
 import markdown2
 
-from .common import *
-from .kvtable import *
+from lib.kvtable import lines2str, dict2kvtable
 
 class Part:
     """A single report object"""
 
     def _process_variables_level(self, variables, common):
+        """Process a level of template variables including:
+        - concatenating multiline strings
+        - replacing common variables
+        - replacing kvtable definitions with their representation
+
+        Args:
+            variables (dict): a level of template variables
+            common (dict): a map of common variables reused across the template
+                variables
+        """
         for k, v in variables.items():
             if isinstance(v, list):
                 variables[k] = lines2str(v)
@@ -34,6 +43,12 @@ class Part:
                 variables[k] = variables[k].format(**common)
 
     def _load_variables(self, loader):
+        """Populate self.variables with resources required to render
+        the template
+
+        Args:
+            loader (jinja2.BaseLoader subclass): allows loading resources
+        """
         source, _, _ = loader.get_source(self.env,
             'part_' + self.name + '.json')
         variables = json.loads(source)
@@ -55,6 +70,12 @@ class Part:
         # XXX maybe a separate function is too much?
 
     def __init__(self, loader, env, name):
+        """
+        Args:
+            loader (jinja2.BaseLoader subclass): XXX should be obtained from env
+            env (jinja2.Environment): allows loading and render templates
+            name (str): a name of the part
+        """
         self.env = env          # jinja2.Environment
         self.name = name
         self._load_variables(loader)
