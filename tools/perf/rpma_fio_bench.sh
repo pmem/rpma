@@ -167,6 +167,18 @@ function benchmark_one() {
 		;;
 	esac
 
+	if ! which ${FIO_PATH}fio > /dev/null; then
+		echo "Error: wrong path to the 'fio' tool - \"${FIO_PATH}fio\" does not exist"
+		exit 1
+	fi
+
+	if ! sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no $REMOTE_USER@$SERVER_IP \
+			"which ${REMOTE_FIO_PATH}fio >/dev/null 2>$LOG_ERR" 2>>$LOG_ERR;
+	then
+		echo "Error: wrong remote path to the 'fio' tool - \"${REMOTE_FIO_PATH}fio\" does not exist"
+		exit 1
+	fi
+
 	echo "STARTING benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
 
 	if [ "$DUMP_CMDS" != "1" ]; then
