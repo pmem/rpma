@@ -17,15 +17,37 @@ from .kvtable import *
 class Part:
     """A single report object"""
 
+    def _process_variables_level(self, variables, common):
+        for k, v in variables.items():
+            if isinstance(v, list):
+                variables[k] = lines2str(v)
+            elif isinstance(v, dict):
+                if 'type' in v:
+                    if v["type"] == "kvtable":
+                        variables[k] = dict2kvtable(v, common)
+                    else:
+                        raise ValueError
+                else:
+                    self._process_variables_level(v, common)
+            # replace templates
+            if isinstance(variables[k], str):
+                variables[k] = variables[k].format(**common)
+
     def _load_variables(self, loader):
         source, _, _ = loader.get_source(self.env,
             'part_' + self.name + '.json')
         variables = json.loads(source)
-        # - preprocess variables['common']
-        #   - concat lines "\n" and or (lines2str)
-        # - preprocess other variables
-        #   - generate HTML tables dict2kvtable()
-        #     - take into account the variables['common']
+
+        # preprocess variables['common']
+        # - concat lines "\n" (lines2str)
+        common = variables.pop('common', {})
+        for var, txt in common.items():
+            common[var] = lines2str(txt)
+
+        # generate HTML tables dict2kvtable()
+        # - take into account the variables['common']
+        self._process_variables_level(variables, common)
+
         self.variables = variables
 
     def _load_template(self):
