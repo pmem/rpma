@@ -95,6 +95,8 @@ class Benchmark:
         return output
 
     def _benchmark_args(self, env):
+        if not 'tool' in self.oneseries or not 'mode' in self.oneseries:
+            raise ValueError
         args = ['./' + self.oneseries['tool'], env['server_ip']]
         if 'tool_mode' in self.oneseries.keys():
             args.append(self.oneseries['tool_mode'])
@@ -106,6 +108,23 @@ class Benchmark:
     def run(self, config, result_dir):
         args = self._benchmark_args(config)
         env = self._get_env(config, result_dir)
+
+        if not 'filetype' in self.oneseries or not 'id' in self.oneseries:
+            raise ValueError
+
+        if self.oneseries['filetype'] == 'malloc':
+            env['REMOTE_JOB_MEM_PATH'] = 'malloc'
+
+        if self.oneseries['filetype'] == 'pmem' and \
+           (not 'REMOTE_JOB_MEM_PATH' in env or env['REMOTE_JOB_MEM_PATH'] == 'malloc'):
+            raise ValueError
+
+        if 'busy_wait_polling' in self.oneseries:
+            if self.oneseries['busy_wait_polling']:
+                env['BUSY_WAIT_POLLING'] = '1'
+            else:
+                env['BUSY_WAIT_POLLING'] = '0'
+
         process = subprocess.run(args, env=env)
         process.check_returncode()
         self.oneseries['done'] = True
