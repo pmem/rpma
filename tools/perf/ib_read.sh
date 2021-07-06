@@ -217,6 +217,20 @@ function benchmark_one() {
 
 		prepare_RUN_NAME_and_CMP__SUBST
 
+		if ! which ${IB_PATH}${IB_TOOL} > /dev/null; then
+			echo "Error: wrong path (IB_PATH) to the \"${IB_TOOL}\" tool - " \
+					"\"${IB_PATH}${IB_TOOL}\" does not exist"
+			exit 1
+		fi
+
+		if ! sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no $REMOTE_USER@$SERVER_IP \
+				"which ${REMOTE_IB_PATH}${IB_TOOL} >/dev/null 2>$LOG_ERR" 2>>$LOG_ERR;
+		then
+			echo "Error: wrong remote path (REMOTE_IB_PATH) to the \"${IB_TOOL}\" tool - " \
+					"\"${REMOTE_IB_PATH}${IB_TOOL}\" does not exist"
+			exit 1
+		fi
+
 		# run the server
 		CMD="numactl -N $REMOTE_JOB_NUMA ${IB_PATH}${IB_TOOL} $BS_OPT $QP_OPT \
 			$DP_OPT $REMOTE_AUX_PARAMS"
