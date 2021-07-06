@@ -44,6 +44,12 @@ class Part:
         # XXX maybe a separate function is too much?
 
     def __init__(self, loader, env, name):
+        """
+        Args:
+            loader (jinja2.BaseLoader subclass): XXX should be obtained from env
+            env (jinja2.Environment): allows loading and render templates
+            name (str): a name of the part
+        """
         self.env = env          # jinja2.Environment
         self.name = name
         self._load_variables(loader)
