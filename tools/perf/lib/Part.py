@@ -21,11 +21,22 @@ class Part:
         source, _, _ = loader.get_source(self.env,
             'part_' + self.name + '.json')
         variables = json.loads(source)
-        # - preprocess variables['common']
-        #   - concat lines "\n" and or (lines2str)
-        # - preprocess other variables
-        #   - generate HTML tables dict2kvtable()
-        #     - take into account the variables['common']
+
+        # preprocess variables['common']
+        # - concat lines "\n" and or (lines2str)
+        if 'common' in variables:
+            for var, txt in variables['common'].items():
+                variables['common'][var] = lines2str(txt)
+
+        # generate HTML tables dict2kvtable()
+        # - take into account the variables['common']
+        for cfg, desc in variables['config'].items():
+            if isinstance(desc, list):
+                variables['config'][cfg] = lines2str(desc)
+            elif isinstance(desc, dict):
+                if desc["type"] == "kvtable":
+                    variables['config'][cfg] = dict2kvtable(desc, variables['common'])
+
         self.variables = variables
 
     def _load_template(self):
