@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2021, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 #
@@ -18,17 +19,17 @@ if [ "$1" == "--env" ]; then
 fi
 
 if [ "$#" -lt 2 ] || [ "$#" -eq 2 -a "$2" != "all" ]; then
-	rpma_usage "Too few arguments"
+	usage "Too few arguments"
 elif [ "$2" == "gpspm" ]; then
 	case "$3" in
 	read|randread|rw|randrw)
-		rpma_usage "The 'gpspm' mode does not support the '$3' operation for now."
+		usage "The 'gpspm' mode does not support the '$3' operation for now."
 		;;
 	esac
 elif [ "$2" == "aof_sw" -o "$2" == "aof_hw" ]; then
 	case "$3" in
 	read|randread|randwrite|rw|randrw)
-		rpma_usage "The '$2' mode does not support the '$3' operation."
+		usage "The '$2' mode does not support the '$3' operation."
 		;;
 	esac
 fi
@@ -370,7 +371,7 @@ all)
 	P_MODES="apm gpspm aof_sw aof_hw"
 	;;
 *)
-	rpma_usage "Wrong persistency mode: $P_MODES"
+	usage "Wrong persistency mode: $P_MODES"
 	;;
 esac
 
@@ -381,7 +382,7 @@ all)
 	OPS="read randread write randwrite rw randrw"
 	;;
 *)
-	rpma_usage "Wrong operation: $OPS"
+	usage "Wrong operation: $OPS"
 	;;
 esac
 
@@ -392,7 +393,7 @@ all)
 	MODES="lat lat-cpu bw-bs bw-cpu bw-cpu-mt bw-th bw-dp-lin bw-dp-exp"
 	;;
 *)
-	rpma_usage "Wrong mode: $MODES"
+	usage "Wrong mode: $MODES"
 	;;
 esac
 
