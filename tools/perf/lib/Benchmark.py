@@ -95,6 +95,12 @@ class Benchmark:
         return output
 
     def _benchmark_args(self, env):
+        if 'tool' not in self.oneseries:
+            print("error: 'tool' is missing in the figure")
+        if 'mode' not in self.oneseries:
+            print("error: 'mode' is missing in the figure")
+        if 'server_ip' not in env:
+            print("error: 'server_ip' is missing in the environment")
         if 'tool' not in self.oneseries or \
            'mode' not in self.oneseries or \
            'server_ip' not in env:
@@ -122,6 +128,10 @@ class Benchmark:
         args = self._benchmark_args(config)
         env = self._get_env(config, result_dir)
 
+        if 'filetype' not in self.oneseries:
+            print("error: 'filetype' is missing in the figure")
+        if 'id' not in self.oneseries:
+            print("error: 'id' is missing in the figure")
         if 'filetype' not in self.oneseries or 'id' not in self.oneseries:
             raise ValueError
 
@@ -129,10 +139,12 @@ class Benchmark:
             env['REMOTE_JOB_MEM_PATH'] = 'malloc'
         elif self.oneseries['filetype'] == 'pmem':
             if 'REMOTE_JOB_MEM_PATH' not in env or env['REMOTE_JOB_MEM_PATH'] == 'malloc':
+                print("error: 'REMOTE_JOB_MEM_PATH' is not set with a path")
                 raise ValueError
 
         if 'tool_mode' in self.oneseries.keys() and self.oneseries['tool_mode'] == 'gpspm':
             if 'busy_wait_polling' not in self.oneseries:
+                print("error: 'busy_wait_polling' is missing in the figure")
                 raise ValueError
 
         if 'busy_wait_polling' in self.oneseries:
