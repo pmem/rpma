@@ -100,6 +100,13 @@ class Figure:
             keys = rows[0].keys()
             # skip the series if it does not have required keys
             if self.x not in keys or self.y not in keys:
+                if self.x not in keys:
+                    axis = 'x'
+                    wrong_key = self.x
+                else:
+                    axis = 'y'
+                    wrong_key = self.y
+                print(f'Value ' + str(axis) + '=' + str(wrong_key) + ' are not in the ' + str(keys))
                 continue
             points = [[row[self.x], row[self.y]] for row in rows]
             output['series'].append({'label': series['label'], 'points': points})
