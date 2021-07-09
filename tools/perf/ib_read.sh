@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2021, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 #
@@ -24,7 +25,7 @@ if [ "$1" == "--env" ]; then
 fi
 
 if [ "$#" -lt 2 ]; then
-	ib_usage "Too few arguments"
+	usage "Too few arguments"
 fi
 
 check_env
@@ -126,7 +127,7 @@ function benchmark_one() {
 		verify_block_size
 		;;
 	*)
-		ib_usage "Wrong mode: $MODE"
+		usage "Wrong mode: $MODE"
 		;;
 	esac
 
@@ -294,7 +295,7 @@ all)
 	MODES="bw-bs bw-dp-exp bw-dp-lin bw-th lat"
 	;;
 *)
-	ib_usage "Wrong mode: $MODES"
+	usage "Wrong mode: $MODES"
 	;;
 esac
 
