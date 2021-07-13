@@ -215,6 +215,7 @@ main(int argc, char *argv[])
 	if (ret) {
 		goto err_mr_dereg;
 	} else if (dst_size < KILOBYTE) {
+		ret = -1;
 		fprintf(stderr,
 				"Remote memory region size too small for writing the data of the assumed size (%zu < %d)\n",
 				dst_size, KILOBYTE);
@@ -244,12 +245,14 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	if (cmpl.op != RPMA_OP_READ) {
+		ret = -1;
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value (%d != %d)\n",
 				cmpl.op, RPMA_OP_READ);
 		goto err_mr_remote_delete;
 	}
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
 		(void) fprintf(stderr, "rpma_read failed with %d\n",
 				cmpl.op_status);
 		goto err_mr_remote_delete;
