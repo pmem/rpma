@@ -14,6 +14,19 @@
 #include "cq-common.h"
 
 /*
+ * wait__cq_NULL - cq NULL is invalid
+ */
+static void
+wait__cq_NULL(void **unused)
+{
+	/* run test */
+	int ret = rpma_cq_wait(NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * wait__get_cq_event_ERRNO - ibv_get_cq_event() fails with MOCK_ERRNO
  */
 static void
@@ -78,6 +91,7 @@ wait__success(void **cq_ptr)
 
 static const struct CMUnitTest tests_wait[] = {
 	/* rpma_cq_wait() unit tests */
+	cmocka_unit_test(wait__cq_NULL),
 	cmocka_unit_test_setup_teardown(
 		wait__get_cq_event_ERRNO,
 		setup__cq_new, teardown__cq_delete),

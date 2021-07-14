@@ -14,6 +14,35 @@
 #include "cq-common.h"
 
 /*
+ * get_fd__cq_NULL -- cq NULL is invalid
+ */
+static void
+get_fd__cq_NULL(void **unused)
+{
+	/* run test */
+	int fd = 0;
+	int ret = rpma_cq_get_fd(NULL, &fd);
+
+	/* verify the results */
+	assert_ptr_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_fd__fd_NULL -- fd NULL is invalid
+ */
+static void
+get_fd__fd_NULL(void **cq_ptr)
+{
+	struct rpma_cq *cq = *cq_ptr;
+
+	/* run test */
+	int ret = rpma_cq_get_fd(cq, NULL);
+
+	/* verify the results */
+	assert_ptr_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * get_fd__success -- happy day scenario
  */
 static void
@@ -43,6 +72,9 @@ group_setup_get_fd(void **unused)
 
 static const struct CMUnitTest tests_get_fd[] = {
 	/* rpma_cq_get_fd() unit tests */
+	cmocka_unit_test(get_fd__cq_NULL),
+	cmocka_unit_test_setup_teardown(
+		get_fd__fd_NULL, setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test_setup_teardown(
 		get_fd__success, setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test(NULL)

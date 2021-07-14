@@ -23,7 +23,11 @@
 struct conn_test_state {
 	struct rpma_conn *conn;
 	struct rpma_conn_private_data data;
+	struct rpma_cq *rcq;
 };
+
+extern struct conn_test_state Conn_without_rcq;
+extern struct conn_test_state Conn_with_rcq;
 
 int setup__conn_new(void **cstate_ptr);
 int teardown__conn_delete(void **cstate_ptr);

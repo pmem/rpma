@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2019-2020, Intel Corporation
-# Copyright (c) 2021 Fujitsu
+# Copyright 2021, Fujitsu
 
 #
 # src/librpma.map -- linker link file for librpma
@@ -12,11 +12,13 @@ LIBRPMA_1.0 {
 		rpma_conn_cfg_delete;
 		rpma_conn_cfg_get_cq_size;
 		rpma_conn_cfg_get_rq_size;
+		rpma_conn_cfg_get_rcq_size;
 		rpma_conn_cfg_get_sq_size;
 		rpma_conn_cfg_get_timeout;
 		rpma_conn_cfg_new;
 		rpma_conn_cfg_set_cq_size;
 		rpma_conn_cfg_set_rq_size;
+		rpma_conn_cfg_set_rcq_size;
 		rpma_conn_cfg_set_sq_size;
 		rpma_conn_cfg_set_timeout;
 		rpma_conn_completion_get;
@@ -24,14 +26,19 @@ LIBRPMA_1.0 {
 		rpma_conn_delete;
 		rpma_conn_disconnect;
 		rpma_conn_get_completion_fd;
+		rpma_conn_get_cq;
 		rpma_conn_get_event_fd;
 		rpma_conn_get_private_data;
+		rpma_conn_get_rcq;
 		rpma_conn_next_event;
 		rpma_conn_req_connect;
 		rpma_conn_req_delete;
 		rpma_conn_req_get_private_data;
 		rpma_conn_req_new;
 		rpma_conn_req_recv;
+		rpma_cq_get_completion;
+		rpma_cq_get_fd;
+		rpma_cq_wait;
 		rpma_ep_get_fd;
 		rpma_ep_listen;
 		rpma_ep_next_conn_req;
