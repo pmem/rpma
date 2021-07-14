@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * mocks-rdma_cm.c -- librdmacm mocks
@@ -317,9 +318,11 @@ rdma_getaddrinfo(const char *node, const char *port,
 	if (*res != NULL)
 		return 0;
 
+	int ret = mock_type(int);
+	assert_int_not_equal(ret, 0);
 	errno = mock_type(int);
 
-	return -1;
+	return ret;
 }
 
 /*
