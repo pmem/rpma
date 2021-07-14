@@ -7,6 +7,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <netdb.h>
 
 #include "conn_req.h"
 #include "info.h"
@@ -53,10 +54,13 @@ rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 	int ret = rdma_getaddrinfo(addr, port, &hints, &rai);
 #endif
 	if (ret) {
-		RPMA_LOG_ERROR_WITH_ERRNO(errno,
-			"rdma_getaddrinfo(node=%s, service=%s, ai_flags=%s, ai_qp_type=IBV_QPT_RC, ai_port_space=RDMA_PS_TCP)",
+		const char *err = (ret == -1 || ret == EAI_SYSTEM) ?
+				strerror(errno) : gai_strerror(ret);
+		RPMA_LOG_ERROR(
+			"rdma_getaddrinfo(node=%s, service=%s, ai_flags=%s, ai_qp_type=IBV_QPT_RC, ai_port_space=RDMA_PS_TCP): %s",
 			addr, port,
-			(hints.ai_flags & RAI_PASSIVE) ? "passive" : "active");
+			(hints.ai_flags & RAI_PASSIVE) ? "passive" : "active",
+			err);
 		return RPMA_E_PROVIDER;
 	}
 
