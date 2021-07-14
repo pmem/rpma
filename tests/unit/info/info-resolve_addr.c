@@ -19,6 +19,7 @@
 #include "librpma.h"
 #include "info-common.h"
 #include "mocks-rdma_cm.h"
+#include "mocks-string.h"
 
 #include <infiniband/verbs.h>
 
@@ -38,6 +39,8 @@ resolve_addr__resolve_addr_ERRNO(void **info_state_ptr)
 	expect_value(rdma_resolve_addr, dst_addr, MOCK_DST_ADDR);
 	expect_value(rdma_resolve_addr, timeout_ms, RPMA_DEFAULT_TIMEOUT_MS);
 	will_return(rdma_resolve_addr, MOCK_ERRNO);
+	expect_value(__wrap_strerror, errnum, MOCK_ERRNO);
+	will_return(__wrap_strerror, MOCK_ERROR);
 
 	/* run test */
 	int ret = rpma_info_resolve_addr(istate->info, &cmid,

@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2021, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -14,6 +15,8 @@ function(add_test_info name)
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
+		${TEST_UNIT_COMMON_DIR}/mocks-string.c
+		${TEST_UNIT_COMMON_DIR}/mocks-netdb.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/info.c)
 
@@ -21,7 +24,7 @@ function(add_test_info name)
 
 	set_target_properties(${name}
 		PROPERTIES
-		LINK_FLAGS "-Wl,--wrap=_test_malloc")
+		LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=strerror,--wrap=gai_strerror")
 
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
