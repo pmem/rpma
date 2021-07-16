@@ -143,6 +143,7 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->byte_len = wc.byte_len;
 	cmpl->op_status = wc.status;
+	cmpl->qp_num = wc.qp_num;
 	/* 'wc_flags' is of 'int' type in older versions of libibverbs */
 	cmpl->flags = (unsigned)wc.wc_flags;
 
