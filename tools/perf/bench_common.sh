@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2021, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 #
@@ -9,31 +10,43 @@
 #                    and Fio tools common (EXPERIMENTAL)
 
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
+FILENAME=$(basename -- $0)
+
+if [ "$FILENAME" != "rpma_fio_bench.sh" -a "$FILENAME" != "ib_read.sh" ]; then
+	echo "The script $FILENAME is not supported"
+	exit 1
+fi
 
 function show_environment() {
 	echo
 	echo "Environment variables used by the script:"
 	echo
 	echo "export JOB_NUMA=$JOB_NUMA"
-	echo "export AUX_PARAMS=$AUX_PARAMS"
-	echo "export IB_PATH=$IB_PATH"
-	echo "export FIO_PATH=$FIO_PATH"
-	echo "export COMMENT=$COMMENT"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export FIO_PATH=$FIO_PATH"
+		echo "export COMMENT=$COMMENT"
+	else
+		echo "export AUX_PARAMS=$AUX_PARAMS"
+		echo "export IB_PATH=$IB_PATH"
+	fi
 	echo
 	echo "export REMOTE_USER=$REMOTE_USER"
 	echo "export REMOTE_PASS=$REMOTE_PASS"
 	echo "export REMOTE_JOB_NUMA=$REMOTE_JOB_NUMA"
-	echo "export REMOTE_AUX_PARAMS=$REMOTE_AUX_PARAMS"
 	echo "export REMOTE_SUDO_NOPASSWD=$REMOTE_SUDO_NOPASSWD"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=$REMOTE_RNIC_PCIE_ROOT_PORT"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=$REMOTE_DIRECT_WRITE_TO_PMEM"
 	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=$FORCE_REMOTE_DIRECT_WRITE_TO_PMEM"
-	echo "export REMOTE_IB_PATH=$REMOTE_IB_PATH"
-	echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
-	echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
-	echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
-	echo "export BUSY_WAIT_POLLING=$BUSY_WAIT_POLLING"
-	echo "export CPU_LOAD_RANGE=$CPU_LOAD_RANGE"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export REMOTE_FIO_PATH=$REMOTE_FIO_PATH"
+		echo "export REMOTE_JOB_PATH=$REMOTE_JOB_PATH"
+		echo "export REMOTE_JOB_MEM_PATH=$REMOTE_JOB_MEM_PATH"
+		echo "export BUSY_WAIT_POLLING=$BUSY_WAIT_POLLING"
+		echo "export CPU_LOAD_RANGE=$CPU_LOAD_RANGE"
+	else
+		echo "export REMOTE_AUX_PARAMS=$REMOTE_AUX_PARAMS"
+		echo "export REMOTE_IB_PATH=$REMOTE_IB_PATH"
+	fi
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=$REMOTE_ANOTHER_NUMA"
 	echo "export REMOTE_CMD_PRE='$REMOTE_CMD_PRE'"
@@ -41,8 +54,10 @@ function show_environment() {
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=$SHORT_RUNTIME"
-	echo "export TRACER=$TRACER"
-	echo "export REMOTE_TRACER=$REMOTE_TRACER"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export TRACER=$TRACER"
+		echo "export REMOTE_TRACER=$REMOTE_TRACER"
+	fi
 	echo "export DO_NOTHING=$DO_NOTHING"
 	echo "export DUMP_CMDS=$DUMP_CMDS"
 	echo
@@ -50,53 +65,49 @@ function show_environment() {
 	exit 0
 }
 
-function ib_usage()
+function usage()
 {
 	echo "Error: $1"
 	echo
-	echo "usage: $0 <server_ip> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat>"
-	echo "       $0 --env - show environment variables used by the script"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|bw-cpu-mt|l    at|lat-cpu]"
+		echo "       $0 --env - show environment variables used by the script"
+		echo
+		echo "Notes:"
+		echo " - 'all' is the default value for missing arguments"
+		echo " - the 'gpspm' mode does not support the 'read' operation for now."
+		echo " - the 'aof_*' modes do not support the 'read', 'randread', 'randwrite', 'rw' and 'randrw' operations."
+	else
+		echo "usage: $0 <server_ip> <all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|lat>"
+		echo "       $0 --env - show environment variables used by the script"
+	fi
 	echo
-	common_usage
-}
-
-function rpma_usage()
-{
-	echo "Error: $1"
-	echo
-	echo "Usage: $0 <server_ip> all|apm|gpspm|aof_sw|aof_hw [all|read|randread|write|randwrite|rw|randrw] [all|bw-bs|bw-dp-exp|bw-dp-lin|bw-th|bw-cpu|bw-cpu-mt|lat|lat-cpu]"
-	echo "       $0 --env - show environment variables used by the script"
-	echo
-	echo "Notes:"
-	echo " - 'all' is the default value for missing arguments"
-	echo " - the 'gpspm' mode does not support the 'read' operation for now."
-	echo " - the 'aof_*' modes do not support the 'read', 'randread', 'randwrite', 'rw' and 'randrw' operations."
-	echo
-	common_usage
-}
-
-function common_usage()
-{
 	echo "export JOB_NUMA=0"
-	echo "export AUX_PARAMS='-d mlx5_0 -R'"
-	echo "export IB_PATH=/custom/ib tool/path/"
-	echo "export FIO_PATH=/custom/fio/path/"
-	echo "export COMMENT=any_text_to_be_added_to_every_file_name"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export FIO_PATH=/custom/fio/path/"
+		echo "export COMMENT=any_text_to_be_added_to_every_file_name"
+	else
+		echo "export AUX_PARAMS='-d mlx5_0 -R'"
+		echo "export IB_PATH=/custom/ib tool/path/"
+	fi
 	echo
 	echo "export REMOTE_USER=user"
 	echo "export REMOTE_PASS=pass"
 	echo "export REMOTE_JOB_NUMA=0"
-	echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
-	echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
 	echo "export REMOTE_SUDO_NOPASSWD=0/1"
 	echo "export REMOTE_RNIC_PCIE_ROOT_PORT=<pcie_root_port>"
 	echo "export REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)"
 	echo "export FORCE_REMOTE_DIRECT_WRITE_TO_PMEM=0/1 (forces setting REMOTE_DIRECT_WRITE_TO_PMEM to this value)"
-	echo "export REMOTE_FIO_PATH=/custom/fio/path/"
-	echo "export REMOTE_JOB_PATH=/custom/jobs/path"
-	echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
-	echo "export BUSY_WAIT_POLLING=0/1"
-	echo "export CPU_LOAD_RANGE=00_99/75_99"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export REMOTE_FIO_PATH=/custom/fio/path/"
+		echo "export REMOTE_JOB_PATH=/custom/jobs/path"
+		echo "export REMOTE_JOB_MEM_PATH=/path/to/mem"
+		echo "export BUSY_WAIT_POLLING=0/1"
+		echo "export CPU_LOAD_RANGE=00_99/75_99"
+	else
+		echo "export REMOTE_AUX_PARAMS='-d mlx5_0 -R'"
+		echo "export REMOTE_IB_PATH=/custom/ib tool/path/"
+	fi
 	echo
 	echo "export REMOTE_ANOTHER_NUMA=1"
 	echo "export REMOTE_RESULTS_DIR=/tmp/"
@@ -117,8 +128,10 @@ function common_usage()
 	echo
 	echo "Debug:"
 	echo "export SHORT_RUNTIME=0 (adequate for functional verification only)"
-	echo "export TRACER='gdbserver localhost:2345'"
-	echo "export REMOTE_TRACER='gdbserver localhost:2345'"
+	if [ "$FILENAME" = "rpma_fio_bench.sh" ]; then
+		echo "export TRACER='gdbserver localhost:2345'"
+		echo "export REMOTE_TRACER='gdbserver localhost:2345'"
+	fi
 	echo "export DO_NOTHING=1 (create empty output files; do not run the actual execution)"
 	echo "export DUMP_CMDS=1 (dump all commands that would be executed; do not run the actual execution)"
 	echo
@@ -128,24 +141,18 @@ function common_usage()
 
 function check_env()
 {
-	if [ "$(basename -- $0)" = "ib_read.sh" ]; then
-		USAGE="ib_usage"
-	elif [ "$(basename -- $0)" = "rpma_fio_bench.sh" ]; then
-		USAGE="rpma_usage"
-	fi
-
 	if [ -z "$JOB_NUMA" ]; then
-		$USAGE "JOB_NUMA not set"
+		usage "JOB_NUMA not set"
 	elif [ -z "$REMOTE_USER" ]; then
-		$USAGE "REMOTE_USER not set"
+		usage "REMOTE_USER not set"
 	elif [ -z "$REMOTE_PASS" ]; then
-		$USAGE "REMOTE_PASS not set"
+		usage "REMOTE_PASS not set"
 	elif [ -z "$REMOTE_JOB_NUMA" ]; then
-		$USAGE "REMOTE_JOB_NUMA not set"
+		usage "REMOTE_JOB_NUMA not set"
 	elif [ -z "$REMOTE_RNIC_PCIE_ROOT_PORT" -a "$REMOTE_SUDO_NOPASSWD" == "1" ]; then
-		$USAGE "REMOTE_RNIC_PCIE_ROOT_PORT not set"
+		usage "REMOTE_RNIC_PCIE_ROOT_PORT not set"
 	elif [ -z "$REMOTE_DIRECT_WRITE_TO_PMEM" -a "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
-		$USAGE "REMOTE_DIRECT_WRITE_TO_PMEM not set"
+		usage "REMOTE_DIRECT_WRITE_TO_PMEM not set"
 	fi
 
 	if [ "$REMOTE_SUDO_NOPASSWD" != "1" ]; then
