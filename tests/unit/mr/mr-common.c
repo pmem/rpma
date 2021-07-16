@@ -89,7 +89,7 @@ setup__reg_success(void **pprestate)
 	mr_reg_args.usage = prestate->usage;
 	mr_reg_args.access = prestate->access;
 	mr_reg_args.mr = MOCK_MR;
-	will_return_maybe(rpma_peer_mr_reg, &mr_reg_args);
+	will_return(rpma_peer_mr_reg, &mr_reg_args);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
@@ -136,7 +136,7 @@ int
 setup__mr_remote(void **mr_ptr)
 {
 	/* configure mock */
-	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/*
 	 * create a remote memory structure based on a pre-prepared descriptor

@@ -240,7 +240,6 @@ new__cq_new_ERRNO(void **unused)
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
 	will_return(rpma_cq_new, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
-	will_return_maybe(rpma_conn_cfg_get_cqe, &Get_cqe);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;

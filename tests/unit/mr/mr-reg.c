@@ -166,7 +166,7 @@ reg__peer_mr_reg_ERRNO(void **unused)
 	mr_reg_args.access = IBV_ACCESS_LOCAL_WRITE;
 	mr_reg_args.mr = NULL;
 	mr_reg_args.verrno = MOCK_ERRNO;
-	will_return_maybe(rpma_peer_mr_reg, &mr_reg_args);
+	will_return(rpma_peer_mr_reg, &mr_reg_args);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */

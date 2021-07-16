@@ -168,9 +168,9 @@ next_event__data_store_E_NOMEM(void **cstate_ptr)
 	struct rdma_cm_event event;
 	event.event = RDMA_CM_EVENT_ESTABLISHED;
 	will_return(rdma_get_cm_event, &event);
+	will_return(rpma_private_data_store, RPMA_E_NOMEM);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
-	will_return(rpma_private_data_store, RPMA_E_NOMEM);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -198,11 +198,9 @@ next_event__success_no_data_ESTABLISHED_no_data(void **cstate_ptr)
 	event.param.conn.private_data = NULL;
 	event.param.conn.private_data_len = 0;
 	will_return(rdma_get_cm_event, &event);
-
+	will_return(rpma_private_data_store, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
-
-	will_return_maybe(rpma_private_data_store, MOCK_OK);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -243,11 +241,9 @@ next_event__success_no_data_ESTABLISHED_with_data(void **cstate_ptr)
 	event.param.conn.private_data = MOCK_PRIVATE_DATA;
 	event.param.conn.private_data_len = MOCK_PDATA_LEN;
 	will_return(rdma_get_cm_event, &event);
-
+	will_return(rpma_private_data_store, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
-
-	will_return_maybe(rpma_private_data_store, MOCK_OK);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
@@ -313,8 +309,6 @@ next_event__success_with_data_ESTABLISHED_no_data(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 
-	will_return_maybe(rpma_private_data_store, MOCK_OK);
-
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
 	ret = rpma_conn_next_event(cstate->conn, &c_event);
@@ -378,9 +372,6 @@ next_event__success_with_data_ESTABLISHED_with_data(void **cstate_ptr)
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
-
-	/* another data in the event */
-	will_return_maybe(rpma_private_data_store, MOCK_OK);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
