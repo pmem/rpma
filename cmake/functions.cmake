@@ -197,7 +197,7 @@ endfunction()
 
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
-	if(${CMAKE_C_COMPILER} MATCHES "gcc")
+	if(${CMAKE_C_COMPILER} MATCHES "cc")
 		set(DISCARDED_QUALIFIERS_FLAG "-Werror=discarded-qualifiers")
 	elseif(${CMAKE_C_COMPILER} MATCHES "clang")
 		set(DISCARDED_QUALIFIERS_FLAG "-Werror;-Wincompatible-pointer-types-discards-qualifiers")
