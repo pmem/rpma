@@ -213,6 +213,20 @@ rpma_conn_get_private_data(const struct rpma_conn *conn,
 }
 
 /*
+ * rpma_conn_get_qp_num -- get qp_num from the connection object
+ */
+int
+rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num)
+{
+	if (conn == NULL || qp_num == NULL)
+		return RPMA_E_INVAL;
+
+	*qp_num = conn->id->qp->qp_num;
+
+	return 0;
+}
+
+/*
  * rpma_conn_disconnect -- disconnect the connection
  */
 int
