@@ -18,7 +18,7 @@ struct prestate {
  * address string
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *result)
 {
 	struct prestate *ps = (struct prestate *)prestate;
@@ -53,5 +53,5 @@ main(int argc, char *argv[])
 			NULL
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }

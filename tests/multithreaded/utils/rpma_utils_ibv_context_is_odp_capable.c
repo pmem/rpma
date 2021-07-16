@@ -26,7 +26,7 @@ struct prestate {
  * and check if the device supports On-Demand Paging
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
@@ -51,7 +51,8 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * and check if the device supports On-Demand Paging
  */
 static void
-thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
+		struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int is_odp_supported;
@@ -87,5 +88,5 @@ main(int argc, char *argv[])
 			NULL
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }

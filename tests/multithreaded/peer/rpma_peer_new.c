@@ -23,7 +23,7 @@ struct state {
  * prestate_init -- obtain an ibv_context for a remote IP address
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret = rpma_utils_get_ibv_context(pr->addr,
@@ -36,7 +36,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * init -- allocate state
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
+init(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
@@ -52,7 +52,7 @@ init(unsigned id, void *prestate, void **state_ptr,
  * thread -- create rpma_peer based on shared ibv_context
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
@@ -70,7 +70,7 @@ thread(unsigned id, void *prestate, void *state,
  * fini -- delete rpma_peer and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
+fini(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
@@ -104,5 +104,5 @@ main(int argc, char *argv[])
 			NULL
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }

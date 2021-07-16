@@ -27,7 +27,7 @@ struct state {
  * and create a new peer object
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
@@ -46,7 +46,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * init -- allocate state and memory region
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
+init(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
@@ -68,7 +68,7 @@ init(unsigned id, void *prestate, void **state_ptr,
  * thread -- register the memory
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
@@ -84,7 +84,7 @@ thread(unsigned id, void *prestate, void *state,
  * fini -- deregister the memory region and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
+fini(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
@@ -104,7 +104,7 @@ fini(unsigned id, void *prestate, void **state_ptr,
  * prestate_fini -- delete the peer object
  */
 static void
-prestate_fini(void *prestate, struct mtt_result *tr)
+prestate_fini(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
@@ -134,5 +134,5 @@ main(int argc, char *argv[])
 			prestate_fini
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }

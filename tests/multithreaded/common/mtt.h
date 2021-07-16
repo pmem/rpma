@@ -11,6 +11,7 @@
 #ifndef MTT
 #define MTT
 
+#include <semaphore.h>
 #include <stddef.h>
 
 #define KILOBYTE 1024
@@ -98,10 +99,12 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
  * Arguments:
  * - prestate  - a pointer to the test-provided data. It is the only function
  *               type in which the prestate is expected to be modified.
+ * - sems      - an array of semaphores dedicated for synchronization with
+ *               the child process.
  * - result    - the result. On error the test is responsible for providing
  *               the error details (using e.g. MTT_ERR or MTT_RPMA_ERR macros).
  */
-typedef void (*mtt_prestate_init_fini_func)(void *prestate,
+typedef void (*mtt_prestate_init_fini_func)(void *prestate, sem_t **sems,
 		struct mtt_result *result);
 
 /*
@@ -125,7 +128,7 @@ typedef void (*mtt_prestate_init_fini_func)(void *prestate,
  *               and thread_fini_func).
  */
 typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
-		void **state_ptr, struct mtt_result *result);
+		void **state_ptr, sem_t **sems, struct mtt_result *result);
 
 /*
  * mtt_thread_func -- a function type used for the main execution step
@@ -148,7 +151,7 @@ typedef void (*mtt_thread_init_fini_func)(unsigned id, void *prestate,
  *              and thread_fini_func).
  */
 typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
-		struct mtt_result *result);
+		sem_t **sems, struct mtt_result *result);
 
 /*
  * mtt_child_process_func -- a function type used for the child process
@@ -157,7 +160,7 @@ typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
  * Arguments:
  * - prestate - a pointer to the test-provided data.
  */
-typedef int (*mtt_child_process_func)(void *prestate);
+typedef int (*mtt_child_process_func)(void *prestate, sem_t **sems);
 
 struct mtt_test {
 	/*
@@ -216,6 +219,6 @@ struct mtt_test {
 	void *child_prestate;
 };
 
-int mtt_run(struct mtt_test *test, unsigned threads_num);
+int mtt_run(struct mtt_test *test, unsigned threads_num, unsigned sems_num);
 
 #endif /* MTT */

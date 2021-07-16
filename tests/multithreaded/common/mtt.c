@@ -33,6 +33,7 @@ struct mtt_thread_args {
 	unsigned id; /* a thread id */
 	void *state; /* a thread-specific state */
 	struct mtt_test *test;
+	sem_t **sems; /* a thread's pointer to the semaphores array */
 	struct mtt_result ret; /* a thread return object */
 };
 
@@ -42,7 +43,35 @@ struct mtt_thread_args {
  */
 #define MTT_CALL_INIT_FINI(test, func, thread_args, result) \
 	(test)->func((thread_args)->id, (test)->prestate, \
-		&(thread_args)->state, (result))
+		&(thread_args)->state, (thread_args)->sems, (result))
+
+/*
+ * mtt_semaphores_open -- XXX
+ */
+static sem_t **
+mtt_semaphores_open(unsigned sems_num)
+{
+	/*
+	 * XXX use sem_open() in a for-loop
+	 * XXX names of the semaphores have to be generated at runtime
+	 * preferably in a way guaranteeing its uniqueness for a given MT test
+	 */
+
+	return NULL;
+}
+
+/*
+ * mtt_semaphores_close -- XXX
+ */
+static int
+mtt_semaphores_close(sem_t **sems, unsigned sems_num)
+{
+	/*
+	 * XXX use sem_close() in a for-loop
+	 */
+
+	return 0;
+}
 
 /*
  * mtt_thread_main -- wait for the synchronization conditional and run the test
@@ -86,7 +115,7 @@ mtt_thread_main(void *arg)
 		return tr;
 	}
 
-	test->thread_func(ta->id, test->prestate, ta->state, tr);
+	test->thread_func(ta->id, test->prestate, ta->state, ta->sems, tr);
 
 	if (test->thread_fini_func) {
 		/*
@@ -270,7 +299,7 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
  */
 static int
 mtt_start_child_process(mtt_child_process_func child_process_func,
-			void *prestate)
+			void *prestate, sem_t **sems)
 {
 	int pid;
 	int ret;
@@ -285,7 +314,7 @@ mtt_start_child_process(mtt_child_process_func child_process_func,
 	 */
 	switch ((pid = fork())) {
 	case 0: /* this is the child */
-		ret = child_process_func(prestate);
+		ret = child_process_func(prestate, sems);
 		exit(ret);
 	case -1: /* fork failed */
 		perror("fork");
@@ -298,11 +327,15 @@ mtt_start_child_process(mtt_child_process_func child_process_func,
 
 /*
  * mtt_run -- run the provided test using provided number of threads
+ *
+ * Setting sems_num to a non-zero value allows requesting for a number
+ * of semaphores dedicated for interprocess synchronization.
  */
 int
-mtt_run(struct mtt_test *test, unsigned threads_num)
+mtt_run(struct mtt_test *test, unsigned threads_num, unsigned sems_num)
 {
 	pthread_t *threads;
+	sem_t **sems;
 	struct mtt_thread_args *threads_args;
 	struct mtt_thread_args *ta;
 	struct mtt_result *tr;
@@ -315,22 +348,29 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	unsigned i;
 	int result = 0;
 
+	/* open required number of semaphores */
+	if (sems_num > 0) {
+		sems = mtt_semaphores_open(sems_num);
+		if (sems == NULL)
+			return -1;
+	}
+
 	/* configure logging thresholds to see more details */
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	if (test->child_process_func) {
 		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+					test->child_prestate, sems);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting child process failed");
-			return -1;
+			goto err_sems_close;
 		}
 	}
 
 	/* initialize the prestate */
 	if (test->prestate_init_func) {
-		test->prestate_init_func(test->prestate, &tr_local);
+		test->prestate_init_func(test->prestate, sems, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
 			result = tr_local.ret;
@@ -356,6 +396,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	for (i = 0; i < threads_num; i++) {
 		ta = &threads_args[i];
 		ta->id = i;
+		ta->sems = sems;
 		ta->test = test;
 
 		if (test->thread_seq_init_func) {
@@ -437,7 +478,7 @@ err_free_threads:
 err_cleanup_prestate:
 	/* clean up the prestate */
 	if (test->prestate_fini_func) {
-		test->prestate_fini_func(test->prestate, &tr_local);
+		test->prestate_fini_func(test->prestate, sems, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
 			result = tr_local.ret;
@@ -452,6 +493,13 @@ err_kill_child:
 			if (kill(child_pid, SIGTERM))
 				(void) kill(child_pid, SIGKILL);
 		}
+	}
+
+err_sems_close:
+	if (sems_num > 0) {
+		ret = mtt_semaphores_close(sems, sems_num);
+		if (ret)
+			result = ret;
 	}
 
 	return result;

@@ -59,7 +59,7 @@ struct state {
  * prestate_init -- prestate initialization called once for all threads
  */
 static void
-prestate_init(void *prestate, struct mtt_result *tr)
+prestate_init(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	pr->seed = 5; /* an arbitrary seed */
@@ -72,7 +72,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * should go here.
  */
 static void
-seq_init(unsigned id, void *prestate, void **state_ptr,
+seq_init(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
@@ -93,7 +93,7 @@ seq_init(unsigned id, void *prestate, void **state_ptr,
  * should go here.
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
+init(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
@@ -108,7 +108,7 @@ init(unsigned id, void *prestate, void **state_ptr,
  * thread -- a test itself (parallel)
  */
 static void
-thread(unsigned id, void *prestate, void *state,
+thread(unsigned id, void *prestate, void *state, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)state;
@@ -122,7 +122,7 @@ thread(unsigned id, void *prestate, void *state,
  * should go here.
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
+fini(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
@@ -139,7 +139,7 @@ fini(unsigned id, void *prestate, void **state_ptr,
  * should go here.
  */
 static void
-seq_fini(unsigned id, void *prestate, void **state_ptr,
+seq_fini(unsigned id, void *prestate, void **state_ptr, sem_t **sems,
 		struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
@@ -153,7 +153,7 @@ seq_fini(unsigned id, void *prestate, void **state_ptr,
  * prestate_fini -- prestate cleanup called once for all threads
  */
 static void
-prestate_fini(void *prestate, struct mtt_result *tr)
+prestate_fini(void *prestate, sem_t **sems, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	pr->seed = 0; /* zero out the seed */
@@ -180,5 +180,5 @@ main(int argc, char *argv[])
 			prestate_fini
 	};
 
-	return mtt_run(&test, args.threads_num);
+	return mtt_run(&test, args.threads_num, 0);
 }
