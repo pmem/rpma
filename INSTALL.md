@@ -18,7 +18,7 @@ In order to build librpma, you need to have installed several components:
 - diff
 - find
 - groff
-- txt2man == 1.7.0 (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-txt2man.sh to install the verified revision)
+- txt2man >= 1.7.0 (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-txt2man.sh to install the verified revision)
 
 and optionally:
 
