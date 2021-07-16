@@ -88,6 +88,7 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 		fprintf(stderr,
 			"rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
+		ret = -1;
 		goto err_conn_delete;
 	}
 
