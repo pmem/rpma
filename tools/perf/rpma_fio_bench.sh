@@ -269,10 +269,20 @@ function benchmark_one() {
 		prepare_RUN_NAME_and_CMP__SUBST
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
-			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
 			cores_per_socket=${CORES_PER_SOCKET}"
+
+		# pick either a DRAM/DeviceDAX or a FileSystemDAX mode
+		case "$REMOTE_JOB_DEST" in
+			malloc|/dev/dax*)
+				FILE_NAME="--filename=${REMOTE_JOB_DEST}"
+				;;
+			*)
+				FILE_NAME="--filename_format=${REMOTE_JOB_DEST}.\\\$jobnum"
+				;;
+		esac
+
 		if [ "$DO_RUN" == "1" ]; then
 			remote_command --pre
 
@@ -286,7 +296,7 @@ function benchmark_one() {
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILE_NAME $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
