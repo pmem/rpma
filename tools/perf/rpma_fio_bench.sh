@@ -148,6 +148,7 @@ function benchmark_one() {
 	elif [ "$DUMP_CMDS" == "1" ]; then
 		SERVER_DUMP=${NAME}-server.log
 		CLIENT_DUMP=${NAME}-client.log
+		LOG_ERR=${NAME}.log
 		echo "Log commands [server]: $SERVER_DUMP"
 		echo "Log commands [client]: $CLIENT_DUMP"
 	fi
@@ -269,10 +270,17 @@ function benchmark_one() {
 		prepare_RUN_NAME_and_CMP__SUBST
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
-			filename=${REMOTE_JOB_DEST} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
 			busy_wait_polling=${BUSY_WAIT_POLLING} cpuload=${CPU} \
 			cores_per_socket=${CORES_PER_SOCKET}"
+
+		# let FIO generate multiply files based on fs-dax mode
+		if [ "$REMOTE_JOB_DEST" == "malloc" ] || [ "$REMOTE_JOB_DEST" != "${REMOTE_JOB_DEST#/dev/dax}" ]; then
+			FN_ARG="--filename=${REMOTE_JOB_DEST}"
+		else
+			FN_ARG="--filename_format=${REMOTE_JOB_DEST}.\\\$jobnum"
+		fi
+
 		if [ "$DO_RUN" == "1" ]; then
 			remote_command --pre
 
@@ -286,7 +294,7 @@ function benchmark_one() {
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FN_ARG $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
