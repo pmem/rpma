@@ -180,15 +180,15 @@ class Figure:
         """
         # header
         html = "<table><tr><th></th>"
-        for point in self.series[0].points:
-            html += "<th>" + point[0] + "</th>"
+        for point in self.series[0]['points']:
+            html += "<th>" + str(point[0]) + "</th>"
         html += "</tr>"
 
         # rows
         for oneseries in self.series:
-            html += "<tr><td>" + oneseries.label + "</td>"
-            for point in oneseries.points:
-                html += "<td>" + point[1] + "</td>"
+            html += "<tr><td>" + oneseries['label'] + "</td>"
+            for point in oneseries['points']:
+                html += "<td>" + str(point[1]) + "</td>"
             html += "</tr>"
 
         # end the table
