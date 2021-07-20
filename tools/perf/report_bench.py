@@ -28,6 +28,11 @@ PARSER_R.add_argument('--figure', type=json_from_file, required=True,
                       help='a figure file describing the benchmark')
 PARSER_R.add_argument('--result_dir', type=dir_path, required=True,
                       help='an output directory')
+PARSER_R.add_argument('--dummy_results', dest='dummy_results',
+                      action='store_true',
+                      # XXX allow not breaking long strings
+                      help='generate dummy results instead of running ' \
+                           'actual benchmarks')
 PARSER_C = SUBPARSERS.add_parser('continue', help='continue the benchmark')
 PARSER_C.add_argument('--bench', type=json_from_file, required=True,
                       help='a bench.json file of an interrupted benchmark')
@@ -39,6 +44,8 @@ def main():
     """
     args = PARSER.parse_args()
     if args.command == "run":
+        if args.dummy_results:
+            args.config['json']['dummy_results'] = True
         bench = Bench.new(args.config, args.figure, args.result_dir)
         bench.cache()
     elif args.command == "continue":
