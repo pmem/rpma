@@ -10,6 +10,7 @@
 
 import json
 import os
+import random
 import subprocess
 
 from .common import *
@@ -145,8 +146,11 @@ class Benchmark:
             else:
                 env['BUSY_WAIT_POLLING'] = '0'
 
-        process = subprocess.run(args, env=env)
-        process.check_returncode()
+        if config['dummy_results']:
+            self.run_dummy(args, env)
+        else:
+            process = subprocess.run(args, env=env)
+            process.check_returncode()
         self.oneseries['done'] = True
 
     def dump(self, config, result_dir):
@@ -158,3 +162,15 @@ class Benchmark:
         print('- Environment:')
         print("\n".join(["{}=\"{}\"".format(k, v) for k, v in env.items()]))
         print('- Command: ' + ' '.join(args))
+
+    def _random_point(self):
+        keys = ['threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max',
+            'lat_avg', 'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9',
+            'lat_pctl_99.99', 'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg',
+            'iops_min', 'iops_max', 'iops_avg', 'cpuload']
+        return {k: random.randint(0, 10) for k in keys}
+
+    def run_dummy(self, args, env):
+        output = [self._random_point() for i in range(3)]
+        with open(env['OUTPUT_FILE'], 'w') as file:
+            json.dump(output, file, indent=4)
