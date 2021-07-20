@@ -8,6 +8,8 @@
 # Report.py -- a report object (EXPERIMENTAL)
 #
 
+import os
+
 from .Part import *
 
 class Report:
