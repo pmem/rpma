@@ -135,9 +135,9 @@ class Figure:
         # If the column is not in the dictionary the default return value is the raw name of the column.
         return label_by_column.get(column, column)
 
-    def png_path(self, result_dir):
+    def png_path(self):
         output = self.file + '_' + self.key + '.png'
-        return os.path.join(result_dir, output)
+        return os.path.join('./', output)
 
     def to_png(self, result_dir):
         # set output file size, padding and title
@@ -195,8 +195,8 @@ class Figure:
         html += "</table>"
         return html
 
-    def to_html(self, result_dir):
+    def to_html(self):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        html = '<img src="' + self.png_path(result_dir) + '" alt="' + self.title + '"/>'
+        html = '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
         html += self.html_data_table()
         return html
