@@ -35,12 +35,12 @@ Comparing the bandwidth of `rpma_read()` from PMem on **the RPMA Target** to the
 
 {{config.bw}}
 
-{{figure.ib_read_bw_vs_rpma_read_dram.bs}}
+{{figure.ib_read_vs_rpma_read_dram.bw_bs}}
 
-{{figure.ib_read_bw_vs_rpma_read_dram.threads}}
+{{figure.ib_read_vs_rpma_read_dram.bw_threads}}
 
-{{figure.rpma_read_dram_vs_pmem_bw.bs}}
+{{figure.rpma_read_dram_vs_pmem.bw_bs}}
 
-{{figure.rpma_read_dram_vs_pmem_bw.threads}}
+{{figure.rpma_read_dram_vs_pmem.bw_threads}}
 
 {% endif %}
