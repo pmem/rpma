@@ -21,6 +21,10 @@
 #include "mocks-rdma_cm.h"
 
 #include <infiniband/verbs.h>
+#include <netdb.h>
+
+static int rets[] = {EAI_SYSTEM, EAI_AGAIN, -1};
+static int num_rets = sizeof(rets) / sizeof(rets[0]);
 
 /*
  * new__addr_NULL -- NULL addr is not valid
@@ -92,19 +96,22 @@ new__getaddrinfo_ERRNO_ACTIVE(void **unused)
 	 * rdma_getaddrinfo() has failed.
 	 */
 	struct rdma_addrinfo_args get_args = {MOCK_VALIDATE, NULL};
-	will_return(rdma_getaddrinfo, &get_args);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
-	will_return(rdma_getaddrinfo, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+	for (int i = 0; i < num_rets; i++) {
+		will_return(rdma_getaddrinfo, &get_args);
+		expect_value(rdma_getaddrinfo, hints->ai_flags, 0);
+		will_return(rdma_getaddrinfo, MOCK_ERRNO);
+		will_return(rdma_getaddrinfo, rets[i]);
 
-	/* run test */
-	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_ACTIVE,
-			&info);
+		/* run test */
+		struct rpma_info *info = NULL;
+		int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_ACTIVE,
+				&info);
 
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(info);
+		/* verify the results */
+		assert_int_equal(ret, RPMA_E_PROVIDER);
+		assert_null(info);
+	}
 }
 
 /*
@@ -120,19 +127,22 @@ new__getaddrinfo_ERRNO_PASSIVE(void **unused)
 	 * rdma_getaddrinfo() has failed.
 	 */
 	struct rdma_addrinfo_args get_args = {MOCK_VALIDATE, NULL};
-	will_return(rdma_getaddrinfo, &get_args);
-	expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
-	will_return(rdma_getaddrinfo, MOCK_ERRNO);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+	for (int i = 0; i < num_rets; i++) {
+		will_return(rdma_getaddrinfo, &get_args);
+		expect_value(rdma_getaddrinfo, hints->ai_flags, RAI_PASSIVE);
+		will_return(rdma_getaddrinfo, MOCK_ERRNO);
+		will_return(rdma_getaddrinfo, rets[i]);
 
-	/* run test */
-	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
-			&info);
+		/* run test */
+		struct rpma_info *info = NULL;
+		int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
+				&info);
 
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(info);
+		/* verify the results */
+		assert_int_equal(ret, RPMA_E_PROVIDER);
+		assert_null(info);
+	}
 }
 
 /*

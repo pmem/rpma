@@ -318,8 +318,9 @@ rdma_getaddrinfo(const char *node, const char *port,
 		return 0;
 
 	errno = mock_type(int);
+	int ret = mock_type(int);
 
-	return -1;
+	return ret;
 }
 
 /*
