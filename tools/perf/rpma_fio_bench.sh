@@ -288,8 +288,13 @@ function benchmark_one() {
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
 				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
+			echo "Remote command:" >> $SERVER_DUMP
+			echo "$ $ENV $REMOTE_TRACER ${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" >> $SERVER_DUMP
+			echo >> $SERVER_DUMP
+			echo "Fio job file (./fio_jobs/librpma_${PERSIST_MODE}-server.fio):" >> $SERVER_DUMP
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
+			echo "---" >> $SERVER_DUMP
 		fi
 
 		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP, sync: $SYNC, cpuload: $CPU]"
@@ -322,6 +327,10 @@ function benchmark_one() {
 				touch ${OUTPUT[i]}
 			done
 		elif [ "$DUMP_CMDS" == "1" ]; then
+			echo "Command:" >> $CLIENT_DUMP
+			echo "$ $ENV $REMOTE_TRACER ${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILTER >> $LOG_ERR 2>&1" >> $CLIENT_DUMP
+			echo >> $CLIENT_DUMP
+			echo "Fio job file (./fio_jobs/librpma_${PERSIST_MODE}-client.fio):" >> $CLIENT_DUMP
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-client.fio | \
 				grep -v '^#' | $ENV envsubst >> $CLIENT_DUMP"
 			echo "---" >> $SERVER_DUMP
