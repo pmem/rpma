@@ -4,7 +4,7 @@
             "title": "Latency ({y}): ib_read_lat vs rpma_read() from DRAM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "ib_read_lat_vs_rpma_read",
+            "file": "ib_read_vs_rpma_read_dram",
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
@@ -34,7 +34,7 @@
             "title": "Latency ({y}): rpma_read() from DRAM vs from PMEM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "apm_dram_vs_pmem",
+            "file": "rpma_read_dram_vs_pmem",
             "key": "{y}",
             "fstrings": ["title", "key"]
         },
@@ -68,8 +68,8 @@
             "title": "Bandwidth ({x}): ib_read_bw() vs rpma_read() from DRAM",
             "x": "bs",
             "y": "bw_avg",
-            "file": "ib_read_bw_vs_rpma_read",
-            "key": "{x}",
+            "file": "ib_read_vs_rpma_read_dram",
+            "key": "bw_{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -99,8 +99,8 @@
             "title": "Bandwidth ({x}): ib_read_bw() vs rpma_read() from DRAM",
             "x": "threads",
             "y": "bw_avg",
-            "file": "ib_read_bw_vs_rpma_read",
-            "key": "{x}",
+            "file": "ib_read_vs_rpma_read_dram",
+            "key": "bw_{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -131,7 +131,7 @@
             "x": "bs",
             "y": "bw_avg",
             "file": "rpma_read_dram_vs_pmem",
-            "key": "{x}",
+            "key": "bw_{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -165,7 +165,7 @@
             "x": "threads",
             "y": "bw_avg",
             "file": "rpma_read_dram_vs_pmem",
-            "key": "{x}",
+            "key": "bw_{x}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
