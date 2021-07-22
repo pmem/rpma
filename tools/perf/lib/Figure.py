@@ -17,6 +17,8 @@ from .flat import *
 from .Benchmark import *
 from matplotlib.ticker import ScalarFormatter
 
+SKIP_NO_AXIS_MSG = "SKIP: Axis '{}' is not provided by the series of id={}. Available keys are: {}"
+
 class Figure:
 
     _figure_kwargs = {'figsize': [6.4, 4.8], 'dpi': 200, \
@@ -99,7 +101,11 @@ class Figure:
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
-            if self.x not in keys or self.y not in keys:
+            if self.x not in keys:
+                print(SKIP_NO_AXIS_MSG.format(self.x, series['id'], str(keys)))
+                continue
+            elif self.y not in keys:
+                print(SKIP_NO_AXIS_MSG.format(self.y, series['id'], str(keys)))
                 continue
             points = [[row[self.x], row[self.y]] for row in rows]
             output['series'].append({'label': series['label'], 'points': points})
