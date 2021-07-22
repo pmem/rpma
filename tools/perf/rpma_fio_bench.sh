@@ -283,6 +283,13 @@ function benchmark_one() {
 				;;
 		esac
 
+		# don't pre-create the unused 'malloc' file for the DRAM mode
+		if [ "$REMOTE_JOB_DEST" == "malloc" ]; then
+			CREATE_ON_OPEN="--create_on_open=1"
+		else
+			CREATE_ON_OPEN=""
+		fi
+
 		if [ "$DO_RUN" == "1" ]; then
 			remote_command --pre
 
@@ -296,7 +303,8 @@ function benchmark_one() {
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
 				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILE_NAME $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILE_NAME \
+				$CREATE_ON_OPEN $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
