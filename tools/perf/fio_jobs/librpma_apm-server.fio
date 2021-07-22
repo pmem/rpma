@@ -19,7 +19,6 @@ thread
 direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 size=100MiB
-filename=${filename}
 
 [cpuio]
 ioengine=cpuio
