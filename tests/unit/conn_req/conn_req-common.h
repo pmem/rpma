@@ -15,16 +15,26 @@
 #include "mocks-rpma-cq.h"
 
 #define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
+#define MOCK_GET_RCQ(cstate)	((cstate)->get_cqe.rcq_size ? MOCK_RPMA_RCQ : \
+				NULL)
+#define MOCK_GET_CONN_CFG(cstate)	((cstate)->get_cqe.cfg == \
+					MOCK_CONN_CFG_DEFAULT ? NULL : \
+					(cstate)->get_cqe.cfg)
 
 /*
  * All the resources used between setup__conn_req_from_cm_event and
  * teardown__conn_req_from_cm_event
  */
 struct conn_req_test_state {
+	struct conn_cfg_get_cq_size_mock_args get_cqe;
+
 	struct rdma_cm_event event;
 	struct rdma_cm_id id;
 	struct rpma_conn_req *req;
 };
+
+extern struct conn_req_test_state Conn_req_conn_cfg_default;
+extern struct conn_req_test_state Conn_req_conn_cfg_custom;
 
 int setup__conn_req_from_cm_event(void **cstate_ptr);
 int teardown__conn_req_from_cm_event(void **cstate_ptr);
@@ -34,18 +44,19 @@ int teardown__conn_req_from_cm_event(void **cstate_ptr);
  */
 struct conn_req_new_test_state {
 	struct conn_cfg_get_timeout_mock_args get_t;
-	struct conn_cfg_get_q_size_mock_args get_cqe;
+	struct conn_cfg_get_cq_size_mock_args get_cqe;
 
 	struct rdma_cm_id id;
 	struct rpma_conn_req *req;
 };
 
-void prestate_init(struct conn_req_new_test_state *prestate,
-		struct rpma_conn_cfg *cfg, int timeout_ms, uint32_t cq_size);
+extern struct conn_req_new_test_state Conn_req_new_conn_cfg_default;
+extern struct conn_req_new_test_state Conn_req_new_conn_cfg_custom;
 
 int setup__conn_req_new(void **cstate_ptr);
 int teardown__conn_req_new(void **cstate_ptr);
 
-int group_setup_conn_req(void **unused);
+void configure_conn_req_new(void **cstate_ptr);
+void configure_conn_req(void **cstate_ptr);
 
 #endif /* CONN_REQ_COMMON */
