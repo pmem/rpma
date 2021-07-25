@@ -247,8 +247,10 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	int ret = 0;
 
 	ret = rpma_flush_delete(&conn->flush);
-	if (ret)
+	if (ret) {
+		rdma_destroy_qp(conn->id);
 		goto err_rpma_cq_delete;
+	}
 
 	rdma_destroy_qp(conn->id);
 

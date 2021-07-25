@@ -242,6 +242,7 @@ delete__flush_delete_ERRNO(void **unused)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_PROVIDER);
 	will_return(rpma_flush_delete, MOCK_ERRNO);
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return_maybe(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
@@ -273,6 +274,7 @@ delete__flush_delete_E_INVAL(void **unused)
 
 	/* configure mocks: */
 	will_return(rpma_flush_delete, RPMA_E_INVAL);
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
 	will_return_maybe(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
