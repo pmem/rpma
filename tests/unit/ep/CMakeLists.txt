@@ -12,6 +12,7 @@ function(add_test_ep name)
 		ep-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-conn_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
+		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/ep.c)
 

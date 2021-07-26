@@ -231,22 +231,6 @@ rdma_listen(struct rdma_cm_id *id, int backlog)
 	return 0;
 }
 
-void *__real__test_malloc(size_t size);
-
-/*
- * __wrap__test_malloc -- malloc() mock
- */
-void *
-__wrap__test_malloc(size_t size)
-{
-	errno = mock_type(int);
-
-	if (errno)
-		return NULL;
-
-	return __real__test_malloc(size);
-}
-
 /*
  * rdma_get_cm_event -- rdma_get_cm_event() mock
  */
