@@ -15,6 +15,14 @@
 const char Private_data[] = "Random data";
 const char Private_data_2[] = "Another random data";
 
+struct conn_test_state Conn_without_rcq = {
+	.rcq = NULL
+};
+
+struct conn_test_state Conn_with_rcq = {
+	.rcq = MOCK_RPMA_RCQ
+};
+
 /*
  * rpma_private_data_store -- rpma_private_data_store() mock
  */
@@ -61,14 +69,16 @@ rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 int
 setup__conn_new(void **cstate_ptr)
 {
-	static struct conn_test_state cstate;
-	cstate.conn = NULL;
-	cstate.data.ptr = NULL;
-	cstate.data.len = 0;
+	/* the default is Conn_without_rcq */
+	struct conn_test_state *cstate = *cstate_ptr ? *cstate_ptr :
+			&Conn_without_rcq;
+	cstate->conn = NULL;
+	cstate->data.ptr = NULL;
+	cstate->data.len = 0;
 
 	Ibv_cq.channel = MOCK_COMP_CHANNEL;
 
-	/* configure mock: */
+	/* configure mock */
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
 	will_return(rdma_migrate_id, MOCK_OK);
@@ -77,13 +87,13 @@ setup__conn_new(void **cstate_ptr)
 
 	/* prepare an object */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_RPMA_CQ, &cstate.conn);
+			MOCK_RPMA_CQ, cstate->rcq, &cstate->conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
-	assert_non_null(cstate.conn);
+	assert_non_null(cstate->conn);
 
-	*cstate_ptr = &cstate;
+	*cstate_ptr = cstate;
 
 	return 0;
 }
@@ -99,6 +109,9 @@ teardown__conn_delete(void **cstate_ptr)
 	/* configure mocks: */
 	will_return(rpma_flush_delete, MOCK_OK);
 	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	expect_value(rpma_cq_delete, *cq_ptr, cstate->rcq);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);

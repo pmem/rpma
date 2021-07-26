@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -22,10 +23,12 @@ function(add_test_conn_cfg name)
        add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_conn_cfg(cq_size)
 add_test_conn_cfg(cqe)
+add_test_conn_cfg(cq_size)
 add_test_conn_cfg(delete)
 add_test_conn_cfg(new)
+add_test_conn_cfg(rcqe)
+add_test_conn_cfg(rcq_size)
 add_test_conn_cfg(rq_size)
 add_test_conn_cfg(sq_size)
 add_test_conn_cfg(timeout)
