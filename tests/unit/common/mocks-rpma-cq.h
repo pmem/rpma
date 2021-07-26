@@ -12,6 +12,7 @@
 #include "cq.h"
 
 #define MOCK_RPMA_CQ		(struct rpma_cq *)0xD418
+#define MOCK_RPMA_RCQ		(struct rpma_cq *)0xD419
 
 static const struct rpma_completion Completion = {
 	.op_context = MOCK_OP_CONTEXT,
