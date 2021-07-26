@@ -134,12 +134,13 @@ function benchmark_one() {
 	echo "STARTING benchmark for MODE=$MODE IP=$SERVER_IP ..."
 	if [ "$DUMP_CMDS" != "1" ]; then
 		OUTPUT=${NAME}.csv
-		LOG_ERR=/dev/shm/${NAME}-err.log
+		LOG_ERR=/dev/shm/${NAME}-errors.log
 		echo "Performance results: $OUTPUT"
 		echo "Output and errors (both sides): $LOG_ERR"
 	elif [ "$DUMP_CMDS" == "1" ]; then
 		SERVER_DUMP=${NAME}-server.log
 		CLIENT_DUMP=${NAME}-client.log
+		LOG_ERR=${NAME}-errors.log
 		echo "Log commands [server]: $SERVER_DUMP"
 		echo "Log commands [client]: $CLIENT_DUMP"
 	fi

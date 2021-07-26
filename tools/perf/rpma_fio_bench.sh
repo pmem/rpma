@@ -144,10 +144,11 @@ function benchmark_one() {
 		DIR=/dev/shm
 		TEMP_JSON=${DIR}/${NAME}_temp.json
 		TEMP_CSV=${DIR}/${NAME}_temp.csv
-		LOG_ERR=${DIR}/${NAME}.log
+		LOG_ERR=${DIR}/${NAME}-errors.log
 	elif [ "$DUMP_CMDS" == "1" ]; then
 		SERVER_DUMP=${NAME}-server.log
 		CLIENT_DUMP=${NAME}-client.log
+		LOG_ERR=${NAME}-errors.log
 		echo "Log commands [server]: $SERVER_DUMP"
 		echo "Log commands [client]: $CLIENT_DUMP"
 	fi
