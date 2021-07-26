@@ -534,7 +534,7 @@ line: while (<$filehandle>) {
 	if (/[^ \t]\+=/ || /\+=[^ ]/) {
 		err("missing space around += operator");
 	}
-	if (/[^ \t\-]\-[^\->]/ && !/\(\w+\)\-\w/ && !/[\(\[]\-[\w \t]+[\)\],]/) {
+	if (/[^ \t\-]\-[^\->]/ && !/\(\w+\)\-\w/ && !/[\(\[\{]\-[\w \t]+[\)\],]/) {
 		err("missing space before - operator");
 	}
 	if (/[^\-]\-[^ \-=>]/ && !/\(\-\w+\)/ &&
