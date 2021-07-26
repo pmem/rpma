@@ -6,7 +6,9 @@
 
 """test_run.py -- lib.Benchmark.run() tests"""
 
-import os.path
+import json
+import os
+import random
 import subprocess
 import pytest
 
@@ -283,3 +285,40 @@ def test_gpspm_no_busy_wait_polling(readwrite, mode, monkeypatch):
     with pytest.raises(ValueError):
         benchmark.run(CONFIG_BIG, RESULT_DIR)
     assert not benchmark.is_done()
+
+DUMMY_STR = 'dummy'
+DUMMY_RANDOM = 138
+VALID_KEYS = ['threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max',
+    'lat_avg', 'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9',
+    'lat_pctl_99.99', 'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg',
+    'iops_min', 'iops_max', 'iops_avg', 'cpuload']
+
+@pytest.mark.parametrize('dummy_results', [False, True])
+def test_dummy_results(dummy_results, benchmark_dummy, tmp_path, monkeypatch):
+    """random vs not random results source"""
+    def run_mock(_args, **_):
+        if dummy_results:
+            assert False, "subprocess.run() should not be called"
+        return ProcessMock()
+    def dump_mock(obj, filepointer, indent=None):
+        for point in obj:
+            assert len(point.items()) == len(VALID_KEYS)
+            for key, value in point.items():
+                assert key in VALID_KEYS
+                assert value == DUMMY_RANDOM
+        filepointer.write(DUMMY_STR)
+        assert indent is None or isinstance(indent, int)
+    def randint_mock(_a, _b):
+        return DUMMY_RANDOM
+    monkeypatch.setattr(subprocess, 'run', run_mock)
+    monkeypatch.setattr(random, 'randint', randint_mock)
+    monkeypatch.setattr(json, 'dump', dump_mock)
+    config = {**CONFIG_BIG, 'dummy_results': dummy_results}
+    benchmark_dummy.run(config, str(tmp_path))
+    assert benchmark_dummy.is_done()
+    if dummy_results:
+        # XXX put the Benchmark file path generation on the API?
+        output = os.path.join(tmp_path,
+            'benchmark_' + benchmark_dummy.get_id() + '.json')
+        with open(output, mode='r') as file:
+            assert DUMMY_STR == file.read()
