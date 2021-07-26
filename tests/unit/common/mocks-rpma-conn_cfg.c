@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * mocks-rpma-conn_cfg.c -- librpma conn_cfg.c module mocks
@@ -44,13 +45,30 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 int
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
-	struct conn_cfg_get_q_size_mock_args *args =
-			mock_type(struct conn_cfg_get_q_size_mock_args *);
+	struct conn_cfg_get_cq_size_mock_args *args =
+			mock_type(struct conn_cfg_get_cq_size_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(cqe);
 
-	*cqe = (int)args->q_size;
+	*cqe = (int)args->cq_size;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_rcqe -- rpma_conn_cfg_get_rcqe() mock
+ */
+int
+rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
+{
+	struct conn_cfg_get_cq_size_mock_args *args =
+			mock_type(struct conn_cfg_get_cq_size_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
+	assert_non_null(rcqe);
+
+	*rcqe = (int)args->rcq_size;
 
 	return 0;
 }
