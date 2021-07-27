@@ -294,7 +294,7 @@ VALID_KEYS = ['threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max',
     'iops_min', 'iops_max', 'iops_avg', 'cpuload']
 
 @pytest.mark.parametrize('dummy_results', [False, True])
-def test_dummy_results(dummy_results, benchmark_dummy, tmp_path, monkeypatch):
+def test_dummy_results(dummy_results, benchmark_dummy, tmpdir, monkeypatch):
     """random vs not random results source"""
     def run_mock(_args, **_):
         if dummy_results:
@@ -314,11 +314,11 @@ def test_dummy_results(dummy_results, benchmark_dummy, tmp_path, monkeypatch):
     monkeypatch.setattr(random, 'randint', randint_mock)
     monkeypatch.setattr(json, 'dump', dump_mock)
     config = {**CONFIG_BIG, 'dummy_results': dummy_results}
-    benchmark_dummy.run(config, str(tmp_path))
+    benchmark_dummy.run(config, str(tmpdir))
     assert benchmark_dummy.is_done()
     if dummy_results:
         # XXX put the Benchmark file path generation on the API?
-        output = os.path.join(tmp_path,
+        output = os.path.join(str(tmpdir),
             'benchmark_' + benchmark_dummy.get_id() + '.json')
         with open(output, mode='r') as file:
             assert DUMMY_STR == file.read()
