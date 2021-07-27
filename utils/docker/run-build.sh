@@ -152,6 +152,17 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DUSE_ASAN=${CI_SANITS} \
 	-DUSE_UBSAN=${CI_SANITS}
 
+# XXX run pytest only if it is installed
+if which pytest > /dev/null 2>&1; then
+	cd $WORKDIR/tools/perf/
+	pytest
+	cd $WORKDIR/build
+else
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "!!! NOTICE: pytest not found - skipping python tests !!!"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+fi
+
 make -j$(nproc)
 ctest --output-on-failure
 
