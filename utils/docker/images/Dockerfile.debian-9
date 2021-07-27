@@ -38,7 +38,9 @@ ENV TOOLS_DEPS "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
-	pylint3"
+	pylint3 \
+	python3-pip \
+	python3-pytest"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -60,6 +62,9 @@ RUN apt-get install -y --no-install-recommends \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+# create link for pytest
+RUN ln -s /usr/bin/pytest-3 /usr/bin/pytest
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
@@ -79,3 +84,8 @@ ENV OS debian
 ENV OS_VER 9
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
+
+# install python modules for the default user
+RUN pip3 install --user pandas
+RUN pip3 install --user matplotlib
+RUN pip3 install --user markdown2
