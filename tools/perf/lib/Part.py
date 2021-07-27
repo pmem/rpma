@@ -66,7 +66,7 @@ class Part:
         self.variables = variables
 
     def _load_template(self):
-        self.md_template = self.env.get_template(f'part_{self.name}.md')
+        self.md_template = self.env.get_template('part_{}.md'.format(self.name))
         # XXX maybe a separate function is too much?
 
     def __init__(self, loader, env, name):
