@@ -146,11 +146,11 @@ class Figure:
         # If the column is not in the dictionary the default return value is the raw name of the column.
         return label_by_column.get(column, column)
 
-    def png_path(self, result_dir):
+    def png_path(self):
         output = self.file + '_' + self.key + '.png'
-        return os.path.join(result_dir, output)
+        return os.path.join('.', output)
 
-    def to_png(self, result_dir):
+    def to_png(self):
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
         suptitle = "\n".join(wrap(self.title, 60))
@@ -183,7 +183,7 @@ class Figure:
         ax.legend(fontsize=6)
         ax.grid(True)
 
-        plt.savefig(self.png_path(result_dir))
+        plt.savefig(self.png_path())
 
     def html_data_table(self):
         """
@@ -198,7 +198,7 @@ class Figure:
         # rows
         for oneseries in self.series:
             # since the output is processed as markdown, special characters have to be escaped
-            html += "<tr><td>" + oneseries['label'].replace('_', '\_') + "</td>"
+            html += "<tr><td>" + oneseries['label'].replace('_', '\\_') + "</td>"
             for point in oneseries['points']:
                 html += "<td>" + str(point[1]) + "</td>"
             html += "</tr>"
@@ -207,8 +207,8 @@ class Figure:
         html += "</tbody></table>"
         return html
 
-    def to_html(self, result_dir):
+    def to_html(self):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        html = '<img src="' + self.png_path(result_dir) + '" alt="' + self.title + '"/>'
+        html = '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
         html += self.html_data_table()
         return html

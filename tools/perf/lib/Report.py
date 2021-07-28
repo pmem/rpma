@@ -16,15 +16,45 @@ class Report:
     """A report object"""
 
     def _load_parts(self, loader, env, bench):
-        self.parts = []
-        # XXX add an ordered list of parts to the Bench and bench.json
-        for part in bench.parts:
-            self.parts.append(Part(loader, env, part))
+        variables = self.config['report']
+        if 'authors' in variables:
+            variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
+
+        # XXX type validation is missing
+        if 'configuration' not in variables:
+            raise SyntaxError("config.json misses ['report']['configuration'] entry")
+        else:
+            if 'common' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['common'] entry")
+            if 'target' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['target'] entry")
+            if 'bios' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['bios'] entry")
+            else:
+                if 'settings' not in variables['configuration']['bios']:
+                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['settings'] entry")
+                if 'excerpt' not in variables['configuration']['bios']:
+                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['excerpt'] entry")
+
+        # the only correct type is 'kvtable'
+        variables['configuration']['common']['type'] = 'kvtable'
+        variables['configuration']['target']['type'] = 'kvtable'
+        variables['configuration']['bios']['settings']['type'] = 'kvtable'
+        variables['configuration']['bios']['excerpt']['type'] = 'kvtable'
+
+        preamble = Part(loader, env, 'preamble')
+        preamble.process_variables_level(variables, {})
+        preamble.set_variables(variables)
+        self.parts = [preamble]
+        for partname in bench.parts:
+            part = Part(loader, env, partname)
+            part.set_variables({'figure': self.figures})
+            self.parts.append(part)
 
     def _load_figures(self, bench):
         self.figures = {}
         for f in bench.figures:
-            html = f.to_html(bench.result_dir)
+            html = f.to_html()
             # add to 2-level figure dictionary
             if f.file not in self.figures.keys():
                 self.figures[f.file] = {}
@@ -32,21 +62,22 @@ class Report:
 
     def __init__(self, loader, env, bench):
         self.env = env # jinja2.Environment
+        self.config = bench.config
         self.result_dir = bench.result_dir
-        self._load_parts(loader, env, bench)
         self._load_figures(bench)
+        self._load_parts(loader, env, bench)
 
     def _create_menu(self):
         return "".join([part.menu() for part in self.parts])
 
     def _create_content(self):
-        return "".join([part.content(self.figures) for part in self.parts])
+        return "".join([part.content() for part in self.parts])
 
     def _create_header(self):
         # XXX both *_header.md files can be integrated directly into
         # the layout.html file so this step won't be necessary
         tmpl = self.env.get_template('report_header.md')
-        md = tmpl.render({})
+        md = tmpl.render(self.config['report'])
         html = markdown2.markdown(md)
         return html
 

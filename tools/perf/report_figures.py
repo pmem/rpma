@@ -25,7 +25,7 @@ def main():
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
     for figure in bench.figures:
-        figure.to_png(bench.result_dir)
+        figure.to_png()
     print('Done.')
 
 if __name__ == '__main__':
