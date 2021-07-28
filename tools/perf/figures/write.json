@@ -5,7 +5,7 @@
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "apm_dram_vs_pmem",
-            "key": "{y}",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -38,7 +38,7 @@
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "apm_pmem_vs_gpspm_pmem",
-            "key": "{y}",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -81,7 +81,7 @@
             "x": "bs",
             "y": "bw_avg",
             "file": "apm_dram_vs_pmem",
-            "key": "{x}",
+            "key": "{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -115,7 +115,7 @@
             "x": "threads",
             "y": "bw_avg",
             "file": "apm_dram_vs_pmem",
-            "key": "{x}",
+            "key": "{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -149,7 +149,7 @@
             "x": "bs",
             "y": "bw_avg",
             "file": "apm_pmem_vs_gpspm_pmem",
-            "key": "{x}",
+            "key": "{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -192,7 +192,7 @@
             "x": "threads",
             "y": "bw_avg",
             "file": "apm_pmem_vs_gpspm_pmem",
-            "key": "{x}",
+            "key": "{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {

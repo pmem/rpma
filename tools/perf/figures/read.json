@@ -5,7 +5,7 @@
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "ib_read_vs_rpma_read_dram",
-            "key": "{y}",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -35,7 +35,7 @@
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "rpma_read_dram_vs_pmem",
-            "key": "{y}",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -69,7 +69,7 @@
             "x": "bs",
             "y": "bw_avg",
             "file": "ib_read_vs_rpma_read_dram",
-            "key": "bw_{x}",
+            "key": "bw_{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -100,7 +100,7 @@
             "x": "threads",
             "y": "bw_avg",
             "file": "ib_read_vs_rpma_read_dram",
-            "key": "bw_{x}",
+            "key": "bw_{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -131,7 +131,7 @@
             "x": "bs",
             "y": "bw_avg",
             "file": "rpma_read_dram_vs_pmem",
-            "key": "bw_{x}",
+            "key": "bw_{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -165,7 +165,7 @@
             "x": "threads",
             "y": "bw_avg",
             "file": "rpma_read_dram_vs_pmem",
-            "key": "bw_{x}",
+            "key": "bw_{x_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
