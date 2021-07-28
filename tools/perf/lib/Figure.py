@@ -66,7 +66,7 @@ class Figure:
         """Generate all derived variables of a series"""
         output = {}
         if 'rw' in oneseries.keys():
-            output['rw_order'] = 'rand' if oneseries['rw'] else 'seq'
+            output['rw_order'] = 'rand' if oneseries['rw'] in ['randread', 'randwrite'] else 'seq'
         return output
 
     @classmethod
