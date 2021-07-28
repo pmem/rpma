@@ -16,7 +16,7 @@ EMPTY = START + HEADER + STOP
 SIMPLE_RANGE = 10
 SIMPLE = START + HEADER \
     + "".join([
-        '<tr><td>{}</td><td>{}</td></tr>'.format(k, k + 1)
+        '<tr><td>{}</td><td><pre>{}</pre></td></tr>'.format(k, k + 1)
             for k in range(SIMPLE_RANGE)]) \
     + STOP
 
