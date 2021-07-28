@@ -41,16 +41,16 @@ def object_cmp(obj1, obj2):
     dump2 = json.dumps(obj2, sort_keys=True)
     return dump1 == dump2
 
-@pytest.mark.parametrize('input_json,expected_variables',
+@pytest.mark.parametrize('input_json,expected_constants',
     [({}, {}), ({'common': {}}, {})])
-def test_empty(input_json, expected_variables, monkeypatch):
+def test_empty(input_json, expected_constants, monkeypatch):
     """provide an (almost) empty input"""
     def loads_mock(arg):
         assert arg == SOURCE_DUMMY
         return input_json
     monkeypatch.setattr(json, 'loads', loads_mock)
     part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
-    assert object_cmp(part.variables, expected_variables)
+    assert object_cmp(part.constants, expected_constants)
 
 JSON_NESTED = {
     'a': {
@@ -118,7 +118,7 @@ def json_nested(common=None, inner_e=None, inner_i=None):
         nested['f']['g']['h']['i'] = inner_i
     return nested
 
-@pytest.mark.parametrize('input_json,expected_variables', [
+@pytest.mark.parametrize('input_json,expected_constants', [
     # a simple nested dictionary
     (json_nested(), json_nested()),
     # a simple nested dictionary with various strings inside
@@ -139,16 +139,16 @@ def json_nested(common=None, inner_e=None, inner_i=None):
             COMMON_DUMMY, '{' + VAR_DUMMY_2 + '}...{' + VAR_DUMMY_1 + '}'),
         json_nested(None, STRING_DUMMY_2 + '...' + STRING_DUMMY_1))
     ])
-def test_nested_misc(input_json, expected_variables, monkeypatch):
+def test_nested_misc(input_json, expected_constants, monkeypatch):
     """processing miscellaneous nested dictionaries"""
     def loads_mock(arg):
         assert arg == SOURCE_DUMMY
         return input_json
     monkeypatch.setattr(json, 'loads', loads_mock)
     part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
-    assert object_cmp(part.variables, expected_variables)
+    assert object_cmp(part.constants, expected_constants)
 
-@pytest.mark.parametrize('input_json,expected_variables', [
+@pytest.mark.parametrize('input_json,expected_constants', [
     # a list of strings inside a nested dictionary
     (json_nested(None, STR_LIST_DUMMY_3),
         json_nested(None, STRING_DUMMY_3_CONCAT)),
@@ -161,7 +161,7 @@ def test_nested_misc(input_json, expected_variables, monkeypatch):
             COMMON_DUMMY_WITH_LIST, '{' + VAR_DUMMY_3 + '}', STR_LIST_DUMMY_3),
         json_nested(None, STRING_DUMMY_3_CONCAT, STRING_DUMMY_3_CONCAT))
     ])
-def test_nested_lines_misc(input_json, expected_variables, monkeypatch):
+def test_nested_lines_misc(input_json, expected_constants, monkeypatch):
     """processing miscellaneous nested dictionaries with lists of strings"""
     def loads_mock(arg):
         assert arg == SOURCE_DUMMY
@@ -175,7 +175,7 @@ def test_nested_lines_misc(input_json, expected_variables, monkeypatch):
     # imported instead of the source module.
     monkeypatch.setattr(lib.Part, 'lines2str', lines2str_mock)
     part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
-    assert object_cmp(part.variables, expected_variables)
+    assert object_cmp(part.constants, expected_constants)
 
 TYPE_INVALID = {
     **JSON_NESTED,
@@ -201,7 +201,7 @@ KVTABLE_DUMMY = {
 
 KVTABLE_OUTPUT_DUMMY = '<dummy>invalid</dummy>'
 
-@pytest.mark.parametrize('input_json,expected_env,expected_variables', [
+@pytest.mark.parametrize('input_json,expected_env,expected_constants', [
     # a simple kvtable nested inside a dictionary (an empty common)
     (json_nested(None, KVTABLE_DUMMY),
         {},
@@ -216,7 +216,7 @@ KVTABLE_OUTPUT_DUMMY = '<dummy>invalid</dummy>'
         COMMON_DUMMY_WITH_LIST_PROCESSED,
         json_nested(None, KVTABLE_OUTPUT_DUMMY)),
     ])
-def test_nested_kvtable_misc(input_json, expected_env, expected_variables,
+def test_nested_kvtable_misc(input_json, expected_env, expected_constants,
         monkeypatch):
     """processing miscellaneous nested dictionaries with kvtables"""
     def loads_mock(arg):
@@ -234,4 +234,4 @@ def test_nested_kvtable_misc(input_json, expected_env, expected_variables,
     monkeypatch.setattr(lib.Part, 'lines2str', lines2str_mock)
     monkeypatch.setattr(lib.Part, 'dict2kvtable', dict2kvtable_mock)
     part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
-    assert object_cmp(part.variables, expected_variables)
+    assert object_cmp(part.constants, expected_constants)

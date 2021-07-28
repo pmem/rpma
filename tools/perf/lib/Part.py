@@ -8,6 +8,7 @@
 # Part.py -- a single part object (EXPERIMENTAL)
 #
 
+import jinja2
 import json
 import markdown2
 
@@ -42,28 +43,33 @@ class Part:
             if isinstance(variables[k], str):
                 variables[k] = variables[k].format(**common)
 
-    def _load_variables(self, loader):
-        """Populate self.variables with resources required to render
-        the template
+    def _load_constants(self, loader):
+        """Populate self.constants with resources required to render
+        the template.
 
         Args:
             loader (jinja2.BaseLoader subclass): allows loading resources
         """
-        source, _, _ = loader.get_source(self.env,
-            'part_' + self.name + '.json')
-        variables = json.loads(source)
+        try:
+            source, _, _ = loader.get_source(self.env,
+                'part_' + self.name + '.json')
+        except jinja2.exceptions.TemplateNotFound:
+            self.constants = {}
+            return
 
-        # preprocess variables['common']
+        constants = json.loads(source)
+
+        # preprocess constants['common']
         # - concat lines "\n" (lines2str)
-        common = variables.pop('common', {})
+        common = constants.pop('common', {})
         for var, txt in common.items():
             common[var] = lines2str(txt)
 
         # generate HTML tables dict2kvtable()
-        # - take into account the variables['common']
-        self._process_variables_level(variables, common)
+        # - take into account the constants['common']
+        self._process_variables_level(constants, common)
 
-        self.variables = variables
+        self.constants = constants
 
     def _load_template(self):
         self.md_template = self.env.get_template('part_{}.md'.format(self.name))
@@ -78,10 +84,14 @@ class Part:
         """
         self.env = env          # jinja2.Environment
         self.name = name
-        self._load_variables(loader)
+        self._load_constants(loader)
+        self.variables = {}
         self._load_template()
 
-    def _render(self, variables):
+    def set_variables(self, variables):
+        self.variables = variables
+
+    def _render(self, variables, md_to_html=True):
         """
         Render the part:
         1. jinja2 markdown template
@@ -89,15 +99,18 @@ class Part:
         3. HTML
         """
         md = self.md_template.render(variables)
-        html = markdown2.markdown(md)
-        return html
+        if md_to_html:
+            html = markdown2.markdown(md)
+            return html
+        else:
+            return md
 
     def menu(self):
         """Render the part's menu"""
-        variables = dict(**self.variables, **{'menu': True})
-        return self._render(variables)
+        variables = dict(**self.constants,**self.variables, **{'menu': True})
+        return self._render(variables, md_to_html=False)
 
-    def content(self, figures):
+    def content(self):
         """Render the part's content"""
-        variables = dict(**self.variables, **{'figure': figures})
+        variables = dict(**self.constants,**self.variables)
         return self._render(variables)
