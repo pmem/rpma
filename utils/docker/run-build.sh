@@ -155,6 +155,17 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 make -j$(nproc)
 ctest --output-on-failure
 
+# XXX run pytest only if it is installed
+if which pytest > /dev/null 2>&1; then
+	cd $WORKDIR/tools/perf/
+	pytest
+	cd -
+else
+	echo
+	echo "SKIP: Skipping python tests, because pytest is missing"
+	echo
+fi
+
 cd $WORKDIR
 rm -rf $WORKDIR/build
 
