@@ -8,9 +8,9 @@
 
 import lib.kvtable
 
-HEADER = '<tr><th>Item</th><th>Description</th></tr>'
-START = '<table>'
-STOP = '</table>'
+HEADER = '<tr><th>Item</th><th>Description</th></tr></thead><tbody>'
+START = '<table><thead>'
+STOP = '</tbody></table>'
 
 EMPTY = START + HEADER + STOP
 SIMPLE_RANGE = 10
