@@ -6,11 +6,25 @@
 
 """test_oneseries_derivatives.py -- lib.Figure.oneseries_derivatives() tests"""
 
-from lib.Figure import Figure
+import lib.Figure
 import pytest
 
 @pytest.mark.parametrize('rw, rw_order', [('randread', 'rand'), ('randwrite', 'rand'), ('read', 'seq'), ('write', 'seq')])
-def test_oneseries_derivatives(rw, rw_order):
-    """basic test of oneseries_derivatives()"""
-    output = Figure.oneseries_derivatives({'rw' : rw})
+def test_rw_order(rw, rw_order):
+    """generating rw_order from rw"""
+    output = lib.Figure.Figure.oneseries_derivatives({'rw' : rw})
     assert output['rw_order'] == rw_order
+
+DUMMY_STR = 'dummy'
+DUMMY_STR_KEY = 'key'
+
+@pytest.mark.parametrize('input_key,output_key', [('x', 'x_key'),
+    ('y', 'y_key')])
+def test_xy_key(input_key, output_key, monkeypatch):
+    """generating x_key and y_key from x and y"""
+    def str2key_mock(arg):
+        assert arg == DUMMY_STR
+        return DUMMY_STR_KEY
+    monkeypatch.setattr(lib.Figure, 'str2key', str2key_mock)
+    output = lib.Figure.Figure.oneseries_derivatives({input_key: DUMMY_STR})
+    assert output[output_key] == DUMMY_STR_KEY

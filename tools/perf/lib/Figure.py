@@ -67,13 +67,18 @@ class Figure:
         output = {}
         if 'rw' in oneseries.keys():
             output['rw_order'] = 'rand' if oneseries['rw'] in ['randread', 'randwrite'] else 'seq'
+        if 'x' in oneseries.keys():
+            output['x_key'] = str2key(oneseries['x'])
+        if 'y' in oneseries.keys():
+            output['y_key'] = str2key(oneseries['y'])
         return output
 
     @classmethod
     def flatten(cls, figures):
         """Flatten the figures list"""
         figures = make_flat(figures, cls.get_figure_desc)
-        figures = process_fstrings(figures, cls.get_figure_desc)
+        figures = process_fstrings(figures, cls.get_figure_desc,
+            cls.oneseries_derivatives)
         output = []
         for f in figures:
             # flatten series
