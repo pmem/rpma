@@ -192,7 +192,7 @@ class Figure:
 
         # rows
         for oneseries in self.series:
-            html += "<tr><td>" + oneseries['label'] + "</td>"
+            html += "<tr><td>" + oneseries['label'].replace('_', '\_') + "</td>"
             for point in oneseries['points']:
                 html += "<td>" + str(point[1]) + "</td>"
             html += "</tr>"
