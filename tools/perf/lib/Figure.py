@@ -185,10 +185,10 @@ class Figure:
         Create an HTML snippet string with a table containing the Figure data.
         """
         # header
-        html = "<table><tr><th></th>"
+        html = "<table><thead><tr><th></th>"
         for point in self.series[0]['points']:
             html += "<th>" + str(point[0]) + "</th>"
-        html += "</tr>"
+        html += "</tr></thead><tbody>"
 
         # rows
         for oneseries in self.series:
@@ -198,7 +198,7 @@ class Figure:
             html += "</tr>"
 
         # end the table
-        html += "</table>"
+        html += "</tbody></table>"
         return html
 
     def to_html(self, result_dir):
