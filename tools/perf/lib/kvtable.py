@@ -28,7 +28,7 @@ def lines2str(lines, sep = "\n"):
 def dict2kvtable(obj, env):
     """Generate an HTML table from a dictionary"""
     # header
-    html = "<table><tr><th>Item</th><th>Description</th></tr>"
+    html = "<table><thead><tr><th>Item</th><th>Description</th></tr></thead><tbody>"
 
     # rows
     for item, desc in obj.items():
@@ -41,6 +41,6 @@ def dict2kvtable(obj, env):
         html += "<tr><td>" + str(item) + "</td><td>" + lines2str(desc) + "</td></tr>"
 
     # end the table
-    html += "</table>"
+    html += "</tbody></table>"
 
     return html
