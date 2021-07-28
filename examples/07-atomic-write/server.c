@@ -78,6 +78,8 @@ main(int argc, char *argv[])
 
 		/* pmem is expected */
 		if (!is_pmem) {
+			(void) fprintf(stderr, "%s is not an actual PMEM\n",
+				path);
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
