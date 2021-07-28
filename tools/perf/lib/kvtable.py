@@ -38,7 +38,7 @@ def dict2kvtable(obj, env):
         for line in desc:
             for var, txt in env.items():
                 line.replace("{" + var + "}", txt)
-        html += "<tr><td>" + str(item) + "</td><td>" + lines2str(desc) + "</td></tr>"
+        html += "<tr><td>" + str(item) + "</td><td><pre>" + lines2str(desc) + "</pre></td></tr>"
 
     # end the table
     html += "</table>"
