@@ -35,6 +35,7 @@ class Report:
         self.result_dir = bench.result_dir
         self._load_parts(loader, env, bench)
         self._load_figures(bench)
+        self.config = bench.config
 
     def _create_menu(self):
         return "".join([part.menu() for part in self.parts])
@@ -46,7 +47,7 @@ class Report:
         # XXX both *_header.md files can be integrated directly into
         # the layout.html file so this step won't be necessary
         tmpl = self.env.get_template('report_header.md')
-        md = tmpl.render({})
+        md = tmpl.render(self.config['report'])
         html = markdown2.markdown(md)
         return html
 
