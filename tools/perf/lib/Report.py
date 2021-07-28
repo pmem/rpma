@@ -16,10 +16,18 @@ class Report:
     """A report object"""
 
     def _load_parts(self, loader, env, bench):
-        self.parts = []
-        # XXX add an ordered list of parts to the Bench and bench.json
-        for part in bench.parts:
-            self.parts.append(Part(loader, env, part))
+        preamble = Part(loader, env, 'preamble')
+        # XXX a dummy set of variables
+        preamble.set_variables({
+            'configuration': {
+                'bios': 'XXX bios'
+            }
+        })
+        self.parts = [preamble]
+        for partname in bench.parts:
+            part = Part(loader, env, partname)
+            part.set_variables({'figure': self.figures})
+            self.parts.append(part)
 
     def _load_figures(self, bench):
         self.figures = {}
@@ -33,15 +41,15 @@ class Report:
     def __init__(self, loader, env, bench):
         self.env = env # jinja2.Environment
         self.result_dir = bench.result_dir
-        self._load_parts(loader, env, bench)
         self._load_figures(bench)
+        self._load_parts(loader, env, bench)
         self.config = bench.config
 
     def _create_menu(self):
         return "".join([part.menu() for part in self.parts])
 
     def _create_content(self):
-        return "".join([part.content(self.figures) for part in self.parts])
+        return "".join([part.content() for part in self.parts])
 
     def _create_header(self):
         # XXX both *_header.md files can be integrated directly into
