@@ -15,7 +15,11 @@ security.md.copyme, introduction.md, #}
 
 **Testing Date**: {{test_date}}
 
+{% if authors %}
+**Performed by**:
+
 {{authors}}
+{% endif %}
 
 ## Audience and Purpose
 
