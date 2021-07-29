@@ -45,6 +45,65 @@
         "ref": "2021_04_21_CLX",
         "authors": ["Name-1 (E-mail-1)", "Name-2 (E-mail-2)", "Name-3 (E-mail-3)"],
         "configuration" : {
+            "common": {
+                "type": "kvtable",
+                "Server Platform" : [
+                    "The name of the platform"
+                ],
+                "CPU" : [
+                    "Producer&reg; Name A.BGHz"
+                ],
+                "Memory" : [
+                    "Cx DGB Producer&reg; Model, DDRE, FMT/s", "Total of JGB DRAM"
+                ],
+                "Persistent Memory" : [
+                    "Gx HGB Producer&reg; Model Persistent Memory, IMT/s",
+                    "Total of KGB PMem",
+                    "XGiB Device DAX / FileSystem DAX file on Xx Interleaved region"
+                ],
+                "RDMA-capable NIC" : [
+                    "XGbps Producer&reg; Name MTU Y Protocol"
+                ],
+                "Storage" : [
+                    "XGB Producer&reg; Name"
+                ],
+                "Operating System" : [
+                    "Distribution Linux L.M"
+                ],
+                "BIOS" : [
+                    "serial_number"
+                ],
+                "Linux kernel version" : [
+                    "version-patch.architecture"
+                ],
+                "librpma" : [
+                    "major.minor-patch-hash"
+                ],
+                "libibverbs" : [
+                    "major.minor-patch-hash"
+                ],
+                "libpmem" : [
+                    "major.minor-patch-hash"
+                ],
+                "FIO version" : [
+                    "major.minor-patch-hash"
+                ],
+                "rdma-core" : [
+                    "major.minor-patch-hash"
+                ]
+            },
+            "target" : {
+                "type": "kvtable",
+                "Repository" : [
+                    "https://github.com/domain/url"
+                ],
+                "Version" : [
+                    "hash"
+                ],
+                "Applied procedure" : [
+                    "[Details](https://domain/url)"
+                ]
+            },
             "bios": {
                 "settings" : {
                     "type": "kvtable",
@@ -56,6 +115,15 @@
                     ],
                     "Applied procedure" : [
                         "[Details](https://domain/url)"
+                    ]
+                },
+                "excerpt" : {
+                    "type": "kvtable",
+                    "Key1" : [
+                        "value1"
+                    ],
+                    "Key2" : [
+                        "value2"
                     ]
                 }
             }
