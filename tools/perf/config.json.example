@@ -45,6 +45,66 @@
         "ref": "2021_04_21_CLX",
         "authors": ["Name-1 (E-mail-1)", "Name-2 (E-mail-2)", "Name-3 (E-mail-3)"],
         "configuration" : {
+            "common": {
+                "type": "kvtable",
+                "Server Platform" : [
+                    "S2600WFT"
+                ],
+                "CPU" : [
+                    "Intel® Xeon® Gold 6252 CPU@2.10GHz"
+                ],
+                "Memory" : [
+                    "12x 32GB Micron 36ASF4G72PZ-2G9E2, DDR4, 2666MT/s", "Total of 384GB DRAM"
+                ],
+                "Persistent Memory" : [
+                    "12x 256GB Intel® Optane™ Persistent Memory, 2666MT/s",
+                    "Total of 3072GB PMem",
+                    "12GiB Device DAX on 6x Interleaved region"
+                ],
+                "RDMA-capable NIC" : [
+                    "100Gbps Mellanox Technologies ConnectX-5 MTU 4200 RoCEv2"
+                ],
+                "Storage" : [
+                    "Intel® SSDSCKKB48"
+                ],
+                "Operating System" : [
+                    "CentOS Linux 8 (Core)"
+                ],
+                "BIOS" : [
+                    "SE5C620.86B.02.01.0013.121520200651"
+                ],
+                "Linux kernel version" : [
+                    "4.18.0-193.28.1.el8_2.x86_64"
+                ],
+                "librpma" : [
+                    "0.9.0-452-gf5ccce3"
+                ],
+                "libibverbs" : [
+                    "1.10.30.0"
+                ],
+                "libpmem" : [
+                    "1.6.1"
+                ],
+                "FIO version" : [
+                    "https://github.com/pmem/fio/tree/rpma",
+                    "fio-3.23-419-g79ae6"
+                ],
+                "rdma-core" : [
+                    "Version 51mlnx1 Release 1.51258"
+                ]
+            },
+            "target" : {
+                "type": "kvtable",
+                "Repository" : [
+                    "https://github.com/pmem/rpma/tree/gh-pages"
+                ],
+                "Version" : [
+                    "c792f3fc7674eb58f0a26bedc1667c87941a7e75"
+                ],
+                "Applied procedure" : [
+                    "https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html"
+                ]
+            },
             "bios": {
                 "settings" : {
                     "type": "kvtable",
@@ -56,6 +116,42 @@
                     ],
                     "Applied procedure" : [
                         "https://pmem.io/rpma/documentation/perf-tuning.html"
+                    ]
+                },
+                "excerpt" : {
+                    "type": "kvtable",
+                    "Package C-State" : [
+                        "C0/C1 state"
+                    ],
+                    "C1E" : [
+                        "Disabled"
+                    ],
+                    "CPU Power and Performance Policy" : [
+                        "Performance"
+                    ],
+                    "Fan Profile" : [
+                        "Performance"
+                    ],
+                    "Memory Configuration - Average Power Budget" : [
+                        "18mW"
+                    ],
+                    "Memory Configuration - NMV Performance Setting" : [
+                        "Latency Optimized"
+                    ],
+                    "Intel® Turbo Boost Technology" : [
+                        "Enabled"
+                    ],
+                    "Energy Efficient Turbo" : [
+                        "Disabled"
+                    ],
+                    "Intel® Hyper-Threading Technology" : [
+                        "Disabled"
+                    ],
+                    "Intel® Virtualization Technology" : [
+                        "Disabled"
+                    ],
+                    "Thermal Monitor" : [
+                        "Disabled"
                     ]
                 }
             }
