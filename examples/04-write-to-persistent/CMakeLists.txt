@@ -20,10 +20,14 @@ find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBRPMA librpma)
+	pkg_check_modules(LIBIBVERBS libibverbs)
 	pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 endif()
 if(NOT LIBRPMA_FOUND)
 	find_package(LIBRPMA REQUIRED librpma)
+endif()
+if(NOT LIBIBVERBS_FOUND)
+	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
 if(NOT LIBPMEM_FOUND)
 	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION} QUIET)
@@ -38,7 +42,7 @@ function(add_example name)
 		PRIVATE
 			${LIBRPMA_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(${name} rpma ${LIBRT_LIBRARIES})
+	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 
 	if(LIBPMEM_FOUND)
 		target_include_directories(${name}

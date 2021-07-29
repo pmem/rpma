@@ -234,8 +234,9 @@ client_handle_completion(struct custom_event *ce)
 	/* validate received completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr,
-				"[%d] rpma_read failed with %d\n",
-				clnt->client_id, cmpl.op_status);
+				"[%d] rpma_read failed: %s\n",
+				clnt->client_id,
+				ibv_wc_status_str(cmpl.op_status));
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}

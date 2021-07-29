@@ -18,9 +18,13 @@ find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBRPMA librpma)
+	pkg_check_modules(LIBIBVERBS libibverbs)
 endif()
 if(NOT LIBRPMA_FOUND)
 	find_package(LIBRPMA REQUIRED librpma)
+endif()
+if(NOT LIBIBVERBS_FOUND)
+	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
@@ -32,7 +36,7 @@ function(add_example name)
 		PUBLIC
 			${LIBRPMA_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(${name} rpma ${LIBRT_LIBRARIES})
+	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)
