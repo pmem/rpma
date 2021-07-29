@@ -1,13 +1,14 @@
 {# XXX make obsolete: tc1_read.md and tc_read_*_config.md.copyme #}
 
 {% if menu is true %}
-<a class="pure-menu-heading" href="#introduction">Introduction</a>
 <a class="pure-menu-heading" href="#read">Read from PMem</a>
 <ul class="pure-menu-list">
     <li class="pure-menu-item"><a href="#read-lat" class="pure-menu-link">Latency</a></li>
     <li class="pure-menu-item"><a href="#read-bw" class="pure-menu-link">Bandwidth</a></li>
 </ul>
 {% else %}
+
+<h2 id="read">Read from PMem</h2>
 
 Benchmarking the `rpma_read()` operation against various data sources (PMem, DRAM) and comparing the obtained results to standard RDMA benchmarking tools: `ib_read_lat` and `ib_read_bw`.
 
