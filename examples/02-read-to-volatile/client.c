@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the read-to-volatile example
@@ -128,13 +129,24 @@ main(int argc, char *argv[])
 
 	/* wait for a completion of the RDMA read */
 	ret = rpma_conn_completion_get(conn, &cmpl);
-	if (cmpl.op != RPMA_OP_READ) {
-		fprintf(stderr,
-				"rpma_conn_completion_get returned a completion of an unexpected operation: %d\n",
-				cmpl.op);
-	} else if (cmpl.op_status == IBV_WC_SUCCESS) {
-		fprintf(stdout, "Read a message: %s\n", (char *)dst_ptr);
+	if (ret)
+		goto err_mr_remote_delete;
+
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
+		(void) fprintf(stderr, "rpma_read failed with %d\n",
+				cmpl.op_status);
+		goto err_mr_remote_delete;
 	}
+
+	if (cmpl.op != RPMA_OP_READ) {
+		ret = -1;
+		(void) fprintf(stderr, "unexpected cmpl.op value (%d != %d)\n",
+				cmpl.op, RPMA_OP_READ);
+		goto err_mr_remote_delete;
+	}
+
+	(void) fprintf(stdout, "Read a message: %s\n", (char *)dst_ptr);
 
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
