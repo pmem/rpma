@@ -32,7 +32,7 @@ class Report:
     def _load_figures(self, bench):
         self.figures = {}
         for f in bench.figures:
-            html = f.to_html(bench.result_dir)
+            html = f.to_html()
             # add to 2-level figure dictionary
             if f.file not in self.figures.keys():
                 self.figures[f.file] = {}
