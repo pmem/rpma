@@ -17,7 +17,7 @@ from lib.kvtable import lines2str, dict2kvtable
 class Part:
     """A single report object"""
 
-    def _process_variables_level(self, variables, common):
+    def process_variables_level(self, variables, common):
         """Process a level of template variables including:
         - concatenating multiline strings
         - replacing common variables
@@ -38,7 +38,7 @@ class Part:
                     else:
                         raise ValueError
                 else:
-                    self._process_variables_level(v, common)
+                    self.process_variables_level(v, common)
             # replace common
             if isinstance(variables[k], str):
                 variables[k] = variables[k].format(**common)
@@ -67,7 +67,7 @@ class Part:
 
         # generate HTML tables dict2kvtable()
         # - take into account the constants['common']
-        self._process_variables_level(constants, common)
+        self.process_variables_level(constants, common)
 
         self.constants = constants
 
