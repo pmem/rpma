@@ -23,13 +23,24 @@ class Report:
         # XXX type validation is missing
         if 'configuration' not in variables:
             raise SyntaxError("config.json misses ['report']['configuration'] entry")
-        elif 'bios' not in variables['configuration']:
-            raise SyntaxError("config.json misses ['report']['configuration']['bios'] entry")
-        elif 'settings' not in variables['configuration']['bios']:
-            raise SyntaxError("config.json misses ['report']['configuration']['bios']['settings'] entry")
+        else:
+            if 'common' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['common'] entry")
+            if 'target' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['target'] entry")
+            if 'bios' not in variables['configuration']:
+                raise SyntaxError("config.json misses ['report']['configuration']['bios'] entry")
+            else:
+                if 'settings' not in variables['configuration']['bios']:
+                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['settings'] entry")
+                if 'excerpt' not in variables['configuration']['bios']:
+                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['excerpt'] entry")
 
         # the only correct type is 'kvtable'
+        variables['configuration']['common']['type'] = 'kvtable'
+        variables['configuration']['target']['type'] = 'kvtable'
         variables['configuration']['bios']['settings']['type'] = 'kvtable'
+        variables['configuration']['bios']['excerpt']['type'] = 'kvtable'
 
         preamble = Part(loader, env, 'preamble')
         preamble.process_variables_level(variables, {})
