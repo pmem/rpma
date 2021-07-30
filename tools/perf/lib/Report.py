@@ -17,11 +17,16 @@ class Report:
 
     def _load_parts(self, loader, env, bench):
         variables = self.config['report']
-        variables['configuration'] = {'bios': 'XXX bios'}
         if 'authors' in variables:
             variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
+        if 'configuration' in variables:
+            if 'bios' in variables['configuration']:
+                if 'settings' in variables['configuration']['bios']:
+                    if 'type' not in variables['configuration']['bios']['settings']:
+                        variables['configuration']['bios']['settings']['type'] = 'kvtable'
 
         preamble = Part(loader, env, 'preamble')
+        preamble.process_variables_level(variables, {})
         preamble.set_variables(variables)
         self.parts = [preamble]
         for partname in bench.parts:
