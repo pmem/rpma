@@ -17,11 +17,11 @@ class Report:
 
     def _load_parts(self, loader, env, bench):
         variables = self.config['report']
-        variables['configuration'] = {'bios': 'XXX bios'}
         if 'authors' in variables:
             variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
 
         preamble = Part(loader, env, 'preamble')
+        preamble.process_variables_level(variables, {})
         preamble.set_variables(variables)
         self.parts = [preamble]
         for partname in bench.parts:
