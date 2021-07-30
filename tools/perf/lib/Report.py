@@ -16,13 +16,13 @@ class Report:
     """A report object"""
 
     def _load_parts(self, loader, env, bench):
+        variables = self.config['report']
+        variables['configuration'] = {'bios': 'XXX bios'}
+        if 'authors' in variables:
+            variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
+
         preamble = Part(loader, env, 'preamble')
-        # XXX a dummy set of variables
-        preamble.set_variables({
-            'configuration': {
-                'bios': 'XXX bios'
-            }
-        })
+        preamble.set_variables(variables)
         self.parts = [preamble]
         for partname in bench.parts:
             part = Part(loader, env, partname)
@@ -40,10 +40,10 @@ class Report:
 
     def __init__(self, loader, env, bench):
         self.env = env # jinja2.Environment
+        self.config = bench.config
         self.result_dir = bench.result_dir
         self._load_figures(bench)
         self._load_parts(loader, env, bench)
-        self.config = bench.config
 
     def _create_menu(self):
         return "".join([part.menu() for part in self.parts])
