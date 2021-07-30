@@ -17,11 +17,22 @@ class Report:
 
     def _load_parts(self, loader, env, bench):
         variables = self.config['report']
-        variables['configuration'] = {'bios': 'XXX bios'}
         if 'authors' in variables:
             variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
 
+        # XXX type validation is missing
+        if 'configuration' not in variables:
+            raise SyntaxError('config.json misses ['report']['configuration'] entry')
+        else if 'bios' not in variables['configuration']:
+            raise SyntaxError('config.json misses ['report']['configuration']['bios'] entry')
+        else if 'settings' not in variables['configuration']['bios']:
+            raise SyntaxError('config.json misses ['report']['configuration']['bios']['settings'] entry')
+
+        # the only correct type is 'kvtable'
+        variables['configuration']['bios']['settings']['type'] = 'kvtable'
+
         preamble = Part(loader, env, 'preamble')
+        preamble.process_variables_level(variables, {})
         preamble.set_variables(variables)
         self.parts = [preamble]
         for partname in bench.parts:
