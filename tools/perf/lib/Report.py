@@ -20,10 +20,19 @@ class Report:
         if 'authors' in variables:
             variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
         if 'configuration' in variables:
+            if 'common' in variables['configuration']:
+                if 'type' not in variables['configuration']['common']:
+                    variables['configuration']['common']['type'] = 'kvtable'
+            if 'target' in variables['configuration']:
+                if 'type' not in variables['configuration']['target']:
+                    variables['configuration']['target']['type'] = 'kvtable'
             if 'bios' in variables['configuration']:
                 if 'settings' in variables['configuration']['bios']:
                     if 'type' not in variables['configuration']['bios']['settings']:
                         variables['configuration']['bios']['settings']['type'] = 'kvtable'
+                if 'excerpt' in variables['configuration']['bios']:
+                    if 'type' not in variables['configuration']['bios']['excerpt']:
+                        variables['configuration']['bios']['excerpt']['type'] = 'kvtable'
 
         preamble = Part(loader, env, 'preamble')
         preamble.process_variables_level(variables, {})
