@@ -194,3 +194,9 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 
 	return ret;
 }
+
+void
+printer()
+{
+	printf("No pmem supportt or pow to pmem no provity \n"); /*add printf */
+}
