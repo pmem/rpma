@@ -61,5 +61,5 @@ int server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
-
+void printer(); 
 #endif /* EXAMPLES_COMMON */
