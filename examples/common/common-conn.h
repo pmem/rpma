@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021, Intel Corporation */
 
 /*
  * common-conn.h -- a common connection functions declarations for examples
@@ -17,6 +17,9 @@
 #define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
 #define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
 
+#define NO_PMEM_MSG "No <pmem-path> provided. Using DRAM instead.\n"
+#else
+#define NO_PMEM_MSG "The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead.\n"
 #endif
 
 /*
