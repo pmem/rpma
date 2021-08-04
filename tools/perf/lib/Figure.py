@@ -37,6 +37,7 @@ class Figure:
         self.y = self.output['y']
         self.key = self.output['key']
         self.xscale = self.output.get('xscale', 'log')
+        self.result_dir = result_dir
         # find the latest series
         if not self.output['done']:
             self.series = f['series']
@@ -183,6 +184,7 @@ class Figure:
         ax.legend(fontsize=6)
         ax.grid(True)
 
+        os.chdir(self.result_dir)
         plt.savefig(self.png_path())
 
     def html_data_table(self):
