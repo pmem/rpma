@@ -37,10 +37,12 @@ class Bench:
 
     @classmethod
     def carry_on(cls, bench):
+        result_dir, _ = os.path.split(os.path.realpath(bench['input_file']))
         bench = bench['json']
-        figures = [Figure(f, bench['result_dir']) for f in bench['figures']]
+        figures = [Figure(f, result_dir) for f in bench['figures']]
         requirements = {id: Requirement(r) for id, r in bench['requirements'].items()}
-        return cls(bench['config'], bench['parts'], figures, requirements, bench['result_dir'])
+        return cls(bench['config'], bench['parts'], figures, requirements, \
+            result_dir)
 
     def cache(self):
         """Cache the current state of execution to a file"""
@@ -48,8 +50,7 @@ class Bench:
             'config': self.config,
             'parts': self.parts,
             'figures': [f.cache() for f in self.figures],
-            'requirements': {id: r.cache() for id, r in self.requirements.items()},
-            'result_dir': self.result_dir
+            'requirements': {id: r.cache() for id, r in self.requirements.items()}
         }
 
         output_path = os.path.join(self.result_dir, 'bench.json')
