@@ -150,7 +150,7 @@ class Figure:
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
-    def to_png(self):
+    def to_png(self, result_dir):
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
         suptitle = "\n".join(wrap(self.title, 60))
@@ -183,6 +183,7 @@ class Figure:
         ax.legend(fontsize=6)
         ax.grid(True)
 
+        os.chdir(result_dir)
         plt.savefig(self.png_path())
 
     def html_data_table(self):
