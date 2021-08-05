@@ -17,8 +17,6 @@ To use the benchmarking tools (e.g. `ib_read.sh`, `rpma_fio_bench.sh`), you must
  - sshpass
  - pciutils (for ddio.sh which may be invoked from `rpma_fio_bench.sh`)
 
-*Note*: Currently only https://github.com/pmem/fio.git supports the librpma fio engine.
-
 ```sh
 $ sudo yum install python3 python3-pip numactl sshpass
 $ pip3 install --user pandas
