@@ -12,12 +12,12 @@ To use the benchmarking tools (e.g. `ib_read.sh`, `rpma_fio_bench.sh`), you must
  - pandas
  - matplotlib
  - perftest (providing ib tools like `ib_read_lat`, `ib_read_bw` etc)
- - fio (supporting the librpma fio engine)
+ - fio
  - numactl
  - sshpass
  - pciutils (for ddio.sh which may be invoked from `rpma_fio_bench.sh`)
 
-*Note*: Currently only https://github.com/pmem/fio.git supports the librpma fio engine.
+*Note*: The newest features are available on the development branch: https://github.com/pmem/fio.git
 
 ```sh
 $ sudo yum install python3 python3-pip numactl sshpass
@@ -33,7 +33,7 @@ $ ./configure
 $ make
 $ sudo make install
 
-$ git clone https://github.com/pmem/fio.git
+$ git clone https://github.com/axboe/fio.git
 $ cd fio
 $ ./configure
 $ make
