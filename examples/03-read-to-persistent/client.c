@@ -127,9 +127,9 @@ main(int argc, char *argv[])
 #endif
 
 	/* if no pmem support or it is not provided */
-	if (mr_ptr == NULL) {
+	 {
 		
-		printer(); /*add printf */
+		print_no_pmem_detected(); /*print_no_pmem_detected */
 
 		mr_ptr = malloc_aligned(sizeof(struct hello_t));
 		if (mr_ptr == NULL)

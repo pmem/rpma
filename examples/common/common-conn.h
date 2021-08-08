@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2021	, Intel Corporation */
 
 /*
  * common-conn.h -- a common connection functions declarations for examples
@@ -61,5 +61,5 @@ int server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
-void printer(); 
+void print_no_pmem_detected(); 
 #endif /* EXAMPLES_COMMON */
