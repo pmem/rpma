@@ -194,9 +194,3 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 
 	return ret;
 }
-
-void
-print_no_pmem_detected()
-{
-	printf("PMEM not detected or a path to PMEM not provided. Example usage of functions using PMEM skipped. \n"); /*add printf */
-}

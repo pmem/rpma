@@ -12,11 +12,13 @@
 #include <librpma.h>
 
 #ifdef USE_LIBPMEM
-
 /* signature marking the persistent contents as valid */
 #define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
 #define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
 
+#define NO_PMEM_MSG "No <pmem-path> provided. Using DRAM instead. \n"
+#else
+#define NO_PMEM_MSG "The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead. \n"
 #endif
 
 /*
@@ -61,5 +63,5 @@ int server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
-void print_no_pmem_detected(); 
+
 #endif /* EXAMPLES_COMMON */
