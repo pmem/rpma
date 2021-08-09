@@ -11,7 +11,7 @@
 #include "test-common.h"
 #include "cq.h"
 
-#define MOCK_WC_STATUS		(int)0x51A5
+#define MOCK_WC_STATUS_ERROR		(int)0x51A5
 
 int setup__cq_new(void **cq_ptr);
 int teardown__cq_delete(void **cq_ptr);
