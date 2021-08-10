@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the write-to-persistent example
@@ -255,7 +256,7 @@ main(int argc, char *argv[])
 	}
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_read failed with %d\n",
+		(void) fprintf(stderr, "rpma_read() failed with %d\n",
 				cmpl.op_status);
 		goto err_mr_remote_delete;
 	}
