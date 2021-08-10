@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the messages-ping-pong example
@@ -131,7 +132,8 @@ main(int argc, char *argv[])
 
 			if (cmpl.op_status != IBV_WC_SUCCESS) {
 				(void) fprintf(stderr,
-					"Shutting down the client due to the unsuccessful completion of an operation.\n");
+					"rpma_send()/rpma_recv() failed: %s\n",
+					ibv_wc_status_str(cmpl.op_status));
 				ret = -1;
 				break;
 			}

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the flush-to-persistent example
@@ -252,6 +253,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	if (cmpl.op_context != FLUSH_ID) {
+		ret = -1;
 		(void) fprintf(stderr,
 				"unexpected cmpl.op_context value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
@@ -259,8 +261,12 @@ main(int argc, char *argv[])
 				(uintptr_t)FLUSH_ID);
 		goto err_mr_remote_delete;
 	}
-	if (cmpl.op_status != IBV_WC_SUCCESS)
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
+		(void) fprintf(stderr, "rpma_flush() failed with %d\n",
+				cmpl.op_status);
 		goto err_mr_remote_delete;
+	}
 
 	/*
 	 * Translate the message so the next time the greeting will be
