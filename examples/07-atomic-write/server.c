@@ -129,6 +129,7 @@ main(int argc, char *argv[])
 
 	/* if no pmem support or it is not provided */
 	if (mr_ptr == NULL) {
+		(void) fprintf(stderr, NO_PMEM_MSG);
 		log = malloc_aligned(sizeof(struct log));
 		if (log == NULL)
 			return -1;
