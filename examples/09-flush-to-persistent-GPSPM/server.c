@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * server.c -- a server of the flush-to-persistent-GPSPM example
@@ -237,6 +238,13 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
 		goto err_conn_delete;
 
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
+		(void) fprintf(stderr, "rpma_recv() failed with %d\n",
+				cmpl.op_status);
+		goto err_conn_delete;
+	}
+
 	/* unpack a flush request from the received buffer */
 	flush_req = gpspm_flush_request__unpack(NULL, cmpl.byte_len, recv_ptr);
 	if (flush_req == NULL) {
@@ -281,9 +289,15 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* validate the completion */
-	if (cmpl.op_status != IBV_WC_SUCCESS)
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
+		(void) fprintf(stderr, "rpma_send() failed with %d\n",
+				cmpl.op_status);
 		goto err_conn_delete;
+	}
+
 	if (cmpl.op != RPMA_OP_SEND) {
+		ret = -1;
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
