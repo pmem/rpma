@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
+# Copyright 2021, Fujitsu
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -20,11 +21,15 @@ find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBRPMA librpma)
+	pkg_check_modules(LIBIBVERBS libibverbs)
 	pkg_check_modules(LIBPROTOBUFC libprotobuf-c)
 	pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
 endif()
 if(NOT LIBRPMA_FOUND)
 	find_package(LIBRPMA REQUIRED librpma)
+endif()
+if(NOT LIBIBVERBS_FOUND)
+	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
 if(NOT LIBPROTOBUFC_FOUND)
 	find_package(LIBPROTOBUFC REQUIRED libprotobuf-c)
@@ -42,7 +47,7 @@ function(add_example name)
 		PRIVATE
 			${LIBRPMA_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(${name} rpma ${LIBRT_LIBRARIES})
+	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 
 	if(LIBPMEM_FOUND)
 		target_include_directories(${name}

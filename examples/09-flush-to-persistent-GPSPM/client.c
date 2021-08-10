@@ -266,8 +266,8 @@ main(int argc, char *argv[])
 	/* validate the completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_recv() failed with %d\n",
-				cmpl.op_status);
+		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
+				ibv_wc_status_str(cmpl.op_status));
 		goto err_mr_remote_delete;
 	}
 

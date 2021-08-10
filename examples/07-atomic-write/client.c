@@ -118,8 +118,8 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
-		(void) fprintf(stderr, "rpma_read() failed with %d\n",
-				cmpl.op_status);
+		(void) fprintf(stderr, "rpma_read() failed: %s\n",
+				ibv_wc_status_str(cmpl.op_status));
 		goto err_mr_remote_delete;
 	}
 
@@ -188,8 +188,8 @@ main(int argc, char *argv[])
 		}
 
 		if (cmpl.op_status != IBV_WC_SUCCESS) {
-			(void) fprintf(stderr, "rpma_flush() failed with %d\n",
-					cmpl.op_status);
+			(void) fprintf(stderr, "rpma_flush() failed: %s\n",
+					ibv_wc_status_str(cmpl.op_status));
 			break;
 		}
 	}
