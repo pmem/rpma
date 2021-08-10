@@ -15,6 +15,8 @@ For Cascade Lake platforms you can allow to set up DDIO automatically during the
     "REMOTE_RNIC_PCIE_ROOT_PORT": "0000:17:00.0"
 ```
 
+[direct-write]: https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html
+
 ### Collecting SAR data
 
 ```json
@@ -38,9 +40,9 @@ For Cascade Lake platforms you can allow to set up DDIO automatically during the
 
 For functional testing, you can run each benchmark only for a brief period of time.
 
-'''json
+```json
     "SHORT_RUNTIME": true
-'''
+```
 
 For debugging purposes, you can attach tracers to each or both ends of the connections e.g. `gdbserver`.
 
@@ -51,7 +53,7 @@ For debugging purposes, you can attach tracers to each or both ends of the conne
 
 During in-depth analysis of the benchmarking process itself, you may find useful these two options. Where `DO_NOTHING` allows running all the machinery but prevents the actual benchmark binaries to run. Whereas `DUMP_CMDS` allows dumping all commands running the benchmark binaries. You can use either or both of them.
 
-'''json
+```json
     "DO_NOTHING": true,
     "DUMP_CMDS": true
-'''
+```
