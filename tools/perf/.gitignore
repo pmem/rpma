@@ -2,6 +2,7 @@
 *.csv
 *.png
 config.json
+report.json
 report_*
 !report_bench.py
 !report_bench.sh
