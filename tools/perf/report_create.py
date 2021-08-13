@@ -18,6 +18,8 @@ PARSER = argparse.ArgumentParser(
     description='Generate a performance report (EXPERIMENTAL)')
 PARSER.add_argument('--bench', type=json_from_file, required=True,
                     help='a bench.json file of a completed benchmark')
+PARSER.add_argument('--report', type=json_from_file, required=True,
+                    help='a report configuration file')
 PARSER.add_argument('--output', default='report',
                     help='a name of the output file')
 SEARCHPATH = 'templates'
@@ -32,7 +34,7 @@ def main():
     args = PARSER.parse_args()
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
-    report = Report(LOADER, ENV, bench)
+    report = Report(LOADER, ENV, bench, args.report)
     report.create(args.output)
     print("Done.")
 
