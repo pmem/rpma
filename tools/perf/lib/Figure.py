@@ -132,7 +132,7 @@ class Figure:
         ys = [p[1] for p in points]
         return xs, ys
 
-    def _label(self, column):
+    def _label(self, column, with_better=False):
         """Translate the name of a column to a label with a unit"""
         label_by_column={
             'threads': '# of threads',
@@ -144,8 +144,20 @@ class Figure:
             'bw': 'bandwidth [Gb/s]',
             'cpuload': 'CPU load [%]'
         }
+        lower = 'lower is better'
+        higher = 'higher is better'
+        better_by_column={
+            'lat_avg': lower,
+            'lat_pctl_99.9': lower,
+            'lat_pctl_99.99': lower,
+            'bw_avg': higher
+        }
         # If the column is not in the dictionary the default return value is the raw name of the column.
-        return label_by_column.get(column, column)
+        output = label_by_column.get(column, column)
+        if with_better:
+            better = better_by_column.get(column, column)
+            output = better + '\n' + output
+        return output
 
     def png_path(self):
         output = self.file + '_' + self.key + '.png'
@@ -179,7 +191,7 @@ class Figure:
         ax.set_xticks(xticks)
         plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
         ax.set_xlabel(self._label(self.x))
-        ax.set_ylabel(self._label(self.y))
+        ax.set_ylabel(self._label(self.y, with_better=True))
         ax.set_ylim(bottom=0)
         ax.legend(fontsize=6)
         ax.grid(True)
