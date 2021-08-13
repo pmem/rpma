@@ -141,7 +141,7 @@ class Figure:
             'lat_avg': 'latency [usec]',
             'lat_pctl_99.9': 'latency [usec]',
             'lat_pctl_99.99': 'latency [usec]',
-            'bw': 'bandwidth [Gb/s]',
+            'bw_avg': 'bandwidth [Gb/s]',
             'cpuload': 'CPU load [%]'
         }
         # If the column is not in the dictionary the default return value is the raw name of the column.
