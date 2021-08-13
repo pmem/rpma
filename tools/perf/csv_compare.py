@@ -29,6 +29,11 @@ column_to_label = {
     'cpuload':  'CPU load [%]'
 }
 
+column_to_better = {
+    'lat':      'lower is better',
+    'bw':       'higher is better'
+}
+
 column_to_description = {
     'threads':  'threads={}',
     'iodepth':  'iodepth={}',
@@ -117,18 +122,27 @@ layouts = {
 empty = {'lat_avg': [0], 'lat_pctl_99.9': [0], 'lat_pctl_99.999': [0], \
     'bs': [1], 'bw_avg': [0], 'threads': [1]}
 
-def get_label(column):
+def get_label(column, with_better=False):
     """Find a text label for an axis describing a provided CSV column.
 
     :param column: name of the CSV column   
     :type column: str
+    :param with_better: add a better hint to the output 
+    :type with_better: bool
     :return: a label for an axis
     :rtype: str
     """
 
     for key, label in column_to_label.items():
         if key in column:
-            return label
+            output = label
+            break
+    if with_better:
+        for key, better in column_to_better.items():
+            if key in column:
+                output = better + '\n' + output
+                break
+    return output
 
 def dfs_filter(dfs, df_names, column_list):
     """Filter out all pandas.DataFrame without required columns
@@ -213,7 +227,7 @@ def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
 
     ax.set_xticks(xticks)
     ax.set_xlabel(get_label(x))
-    ax.set_ylabel(get_label(y))
+    ax.set_ylabel(get_label(y, with_better=True))
     ax.set_ylim(bottom=0)
     if yaxis_max is not None:
         ax.set_ylim(top=float(yaxis_max))
