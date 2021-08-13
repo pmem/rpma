@@ -15,36 +15,42 @@ from .Part import *
 class Report:
     """A report object"""
 
-    def _load_parts(self, loader, env, bench):
-        variables = self.config['report']
-        if 'authors' in variables:
-            variables['authors'] = "\n".join(['- ' + author for author in variables['authors']])
+    def _set_variables(self, vars):
+        if 'authors' in vars:
+            vars['authors'] = "\n".join(
+                ['- ' + author for author in vars['authors']])
 
         # XXX type validation is missing
-        if 'configuration' not in variables:
-            raise SyntaxError("config.json misses ['report']['configuration'] entry")
+        if 'configuration' not in vars:
+            raise SyntaxError("report.json misses ['configuration'] entry")
         else:
-            if 'common' not in variables['configuration']:
-                raise SyntaxError("config.json misses ['report']['configuration']['common'] entry")
-            if 'target' not in variables['configuration']:
-                raise SyntaxError("config.json misses ['report']['configuration']['target'] entry")
-            if 'bios' not in variables['configuration']:
-                raise SyntaxError("config.json misses ['report']['configuration']['bios'] entry")
+            if 'common' not in vars['configuration']:
+                raise SyntaxError("report.json misses ['configuration']['common'] entry")
+            if 'target' not in vars['configuration']:
+                raise SyntaxError("report.json misses ['configuration']['target'] entry")
+            if 'bios' not in vars['configuration']:
+                raise SyntaxError("report.json misses ['configuration']['bios'] entry")
             else:
-                if 'settings' not in variables['configuration']['bios']:
-                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['settings'] entry")
-                if 'excerpt' not in variables['configuration']['bios']:
-                    raise SyntaxError("config.json misses ['report']['configuration']['bios']['excerpt'] entry")
+                if 'settings' not in vars['configuration']['bios']:
+                    raise SyntaxError("report.json misses ['configuration']['bios']['settings'] entry")
+                if 'excerpt' not in vars['configuration']['bios']:
+                    raise SyntaxError("report.json misses ['configuration']['bios']['excerpt'] entry")
 
         # the only correct type is 'kvtable'
-        variables['configuration']['common']['type'] = 'kvtable'
-        variables['configuration']['target']['type'] = 'kvtable'
-        variables['configuration']['bios']['settings']['type'] = 'kvtable'
-        variables['configuration']['bios']['excerpt']['type'] = 'kvtable'
+        vars['configuration']['common']['type'] = 'kvtable'
+        vars['configuration']['target']['type'] = 'kvtable'
+        vars['configuration']['bios']['settings']['type'] = 'kvtable'
+        vars['configuration']['bios']['excerpt']['type'] = 'kvtable'
 
+        self.variables = vars
+
+    def _load_parts(self, loader, env, bench):
         preamble = Part(loader, env, 'preamble')
-        preamble.process_variables_level(variables, {})
-        preamble.set_variables(variables)
+        # XXX Part.process_variables_level() should be a function not a method
+        # this way self.variables may be processed inReport._set_variables()
+        # where it belongs.
+        preamble.process_variables_level(self.variables, {})
+        preamble.set_variables(self.variables)
         self.parts = [preamble]
         for partname in bench.parts:
             part = Part(loader, env, partname)
@@ -60,9 +66,9 @@ class Report:
                 self.figures[f.file] = {}
             self.figures[f.file][f.key] = html
 
-    def __init__(self, loader, env, bench):
+    def __init__(self, loader, env, bench, vars):
         self.env = env # jinja2.Environment
-        self.config = bench.config
+        self._set_variables(vars['json'])
         self.result_dir = bench.result_dir
         self._load_figures(bench)
         self._load_parts(loader, env, bench)
@@ -77,7 +83,7 @@ class Report:
         # XXX both *_header.md files can be integrated directly into
         # the layout.html file so this step won't be necessary
         tmpl = self.env.get_template('report_header.md')
-        md = tmpl.render(self.config['report'])
+        md = tmpl.render(self.variables)
         html = markdown2.markdown(md)
         return html
 
