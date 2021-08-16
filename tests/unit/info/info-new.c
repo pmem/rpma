@@ -99,7 +99,7 @@ new__getaddrinfo_ERRNO_ACTIVE(void **unused)
 
 	/* run test */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_ACTIVE,
+	int ret = rpma_info_new(MOCK_IP_ADDRESS, MOCK_PORT, RPMA_INFO_ACTIVE,
 			&info);
 
 	/* verify the results */
@@ -127,7 +127,7 @@ new__getaddrinfo_ERRNO_PASSIVE(void **unused)
 
 	/* run test */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_IP_ADDRESS, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
@@ -150,7 +150,7 @@ new__malloc_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_IP_ADDRESS, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
@@ -177,7 +177,7 @@ new__lifecycle(void **unused)
 
 	/* run test - step 1 */
 	struct rpma_info *info = NULL;
-	int ret = rpma_info_new(MOCK_ADDR, MOCK_PORT, RPMA_INFO_PASSIVE,
+	int ret = rpma_info_new(MOCK_IP_ADDRESS, MOCK_PORT, RPMA_INFO_PASSIVE,
 			&info);
 
 	/* verify the results */
