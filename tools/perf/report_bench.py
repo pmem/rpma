@@ -22,10 +22,8 @@ SUBPARSERS.required = True
 PARSER_R = SUBPARSERS.add_parser('run', help='start a new benchmark')
 PARSER_R.add_argument('--config', type=json_from_file, required=True,
                       help='a platform configuration file')
-# XXX it should be possible to provide multiple files or an experiment.json
-# file providing a set of benchmarks to be run
-PARSER_R.add_argument('--figure', type=json_from_file, required=True,
-                      help='a figure file describing the benchmark')
+PARSER_R.add_argument('--figures', type=json_from_file, required=True,
+                      help='figure files describing the benchmark', nargs='+')
 PARSER_R.add_argument('--result_dir', type=dir_path, required=True,
                       help='an output directory')
 PARSER_R.add_argument('--dummy_results', dest='dummy_results',
@@ -46,7 +44,7 @@ def main():
     if args.command == "run":
         if args.dummy_results:
             args.config['json']['dummy_results'] = True
-        bench = Bench.new(args.config, args.figure, args.result_dir)
+        bench = Bench.new(args.config, args.figures, args.result_dir)
         bench.cache()
     elif args.command == "continue":
         bench = Bench.carry_on(args.bench)
