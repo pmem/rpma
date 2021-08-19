@@ -119,6 +119,21 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 		return RPMA_E_UNKNOWN;
 	}
 
+	cmpl->op_context = (void *)wc.wr_id;
+	cmpl->op_status = wc.status;
+
+	/*
+	 * When wc.status != IBV_WC_SUCCESS only the following attributes
+	 * are valid: wr_id, status, qp_num, and vendor_err.
+	 */
+	if (unlikely(cmpl->op_status != IBV_WC_SUCCESS)) {
+		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64
+				", op_status=%s)",
+				cmpl->op_context,
+				ibv_wc_status_str(cmpl->op_status));
+		return 0;
+	}
+
 	switch (wc.opcode) {
 	case IBV_WC_RDMA_READ:
 		cmpl->op = RPMA_OP_READ;
@@ -140,9 +155,7 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 		return RPMA_E_NOSUPP;
 	}
 
-	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->byte_len = wc.byte_len;
-	cmpl->op_status = wc.status;
 	/* 'wc_flags' is of 'int' type in older versions of libibverbs */
 	cmpl->flags = (unsigned)wc.wc_flags;
 
@@ -154,13 +167,6 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 			(cmpl->op == RPMA_OP_RECV_RDMA_WITH_IMM)) {
 		if (cmpl->flags & IBV_WC_WITH_IMM)
 			cmpl->imm = ntohl(wc.imm_data);
-	}
-
-	if (unlikely(wc.status != IBV_WC_SUCCESS)) {
-		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64
-				", op_status=%s)",
-				cmpl->op_context,
-				ibv_wc_status_str(cmpl->op_status));
 	}
 
 	return 0;

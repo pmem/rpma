@@ -97,6 +97,40 @@ get_completion__poll_cq_2(void **cq_ptr)
 }
 
 /*
+ * get_completion__poll_cq_wc_status_error - ibv_poll_cq() returns
+ * an error wc.status (wc.status != IBV_WC_SUCCESS)
+ */
+static void
+get_completion__poll_cq_wc_status_error(void **cq_ptr)
+{
+	struct rpma_cq *cq = *cq_ptr;
+	struct ibv_wc wc = {0};
+
+	/* configure mock */
+	expect_value(poll_cq, cq, MOCK_IBV_CQ);
+	will_return(poll_cq, 1);
+	wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	assert_int_not_equal(MOCK_WC_STATUS_ERROR, IBV_WC_SUCCESS);
+	wc.status = MOCK_WC_STATUS_ERROR;
+	will_return(poll_cq, &wc);
+
+	/* run test */
+	struct rpma_completion cmpl = {NULL, RPMA_OP_WRITE, 0xba,
+			IBV_WC_SUCCESS, 0xba, 0xba};
+	int ret = rpma_cq_get_completion(cq, &cmpl);
+
+	/* verify the result */
+	assert_int_equal(ret, 0);
+	assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
+	assert_int_equal(cmpl.op_status, MOCK_WC_STATUS_ERROR);
+	/* the rest of the fields should not be touched at all */
+	assert_int_equal(cmpl.op, RPMA_OP_WRITE);
+	assert_int_equal(cmpl.byte_len, 0xba);
+	assert_int_equal(cmpl.flags, 0xba);
+	assert_int_equal(cmpl.imm, 0xba);
+}
+
+/*
  * get_completion__poll_cq_opcode_IBV_WC_BIND_MW - ibv_poll_cq() returns
  * IBV_WC_BIND_MW (an unexpected opcode)
  */
@@ -109,6 +143,8 @@ get_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cq_ptr)
 	/* configure mock */
 	expect_value(poll_cq, cq, MOCK_IBV_CQ);
 	will_return(poll_cq, 1);
+	wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	wc.status = IBV_WC_SUCCESS;
 	wc.opcode = IBV_WC_BIND_MW;
 	will_return(poll_cq, &wc);
 
@@ -118,6 +154,8 @@ get_completion__poll_cq_opcode_IBV_WC_BIND_MW(void **cq_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_NOSUPP);
+	assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
+	assert_int_equal(cmpl.op_status, IBV_WC_SUCCESS);
 }
 
 /*
@@ -162,10 +200,10 @@ get_completion__success(void **cq_ptr)
 		/* configure mock */
 		expect_value(poll_cq, cq, MOCK_IBV_CQ);
 		will_return(poll_cq, 1);
-		wc.opcode = opcodes[i];
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		wc.status = IBV_WC_SUCCESS;
+		wc.opcode = opcodes[i];
 		wc.byte_len = MOCK_LEN;
-		wc.status = MOCK_WC_STATUS;
 		if (flags[i] == IBV_WC_WITH_IMM) {
 			/*
 			 * 'wc_flags' is of 'int' type
@@ -182,10 +220,10 @@ get_completion__success(void **cq_ptr)
 
 		/* verify the result */
 		assert_int_equal(ret, 0);
-		assert_int_equal(cmpl.op, ops[i]);
 		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
+		assert_int_equal(cmpl.op_status, IBV_WC_SUCCESS);
+		assert_int_equal(cmpl.op, ops[i]);
 		assert_int_equal(cmpl.byte_len, MOCK_LEN);
-		assert_int_equal(cmpl.op_status, MOCK_WC_STATUS);
 		if (flags[i] == IBV_WC_WITH_IMM) {
 			assert_int_equal(cmpl.flags, IBV_WC_WITH_IMM);
 			assert_int_equal(cmpl.imm, MOCK_IMM_DATA);
@@ -213,6 +251,9 @@ static const struct CMUnitTest tests_get_completion[] = {
 	cmocka_unit_test_setup_teardown(get_completion__poll_cq_0,
 		setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test_setup_teardown(get_completion__poll_cq_2,
+		setup__cq_new, teardown__cq_delete),
+	cmocka_unit_test_setup_teardown(
+		get_completion__poll_cq_wc_status_error,
 		setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test_setup_teardown(
 		get_completion__poll_cq_opcode_IBV_WC_BIND_MW,

@@ -2556,8 +2556,10 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *   RMA write operation with immediate data
  *
  * RETURN VALUE
- * The rpma_conn_completion_get() function returns 0 on success
- * or a negative error code on failure.
+ * The rpma_conn_completion_get() function returns 0 on success or a negative
+ * error code on failure. On success, it writes the first available completion
+ * to *cmpl*. If *op_status* of the written *cmpl* is not equal to
+ * **IBV_WC_SUCCESS** then only *op_context* of the returned *cmpl* is valid.
  *
  * ERRORS
  * rpma_conn_completion_get() can fail with the following errors:
