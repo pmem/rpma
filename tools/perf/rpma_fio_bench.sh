@@ -285,6 +285,8 @@ function benchmark_one() {
 				;;
 		esac
 
+		SERVER_COMMAND="$ENV $REMOTE_TRACER ${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILE_NAME $FILTER >> $LOG_ERR 2>&1"
+
 		if [ "$DO_RUN" == "1" ]; then
 			remote_command --pre
 
@@ -297,23 +299,30 @@ function benchmark_one() {
 				REMOTE_TRACER="numactl -N $REMOTE_JOB_NUMA"
 			fi
 			sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no \
-				$REMOTE_USER@$SERVER_IP "$ENV $REMOTE_TRACER \
-				${REMOTE_FIO_PATH}fio $REMOTE_JOB_PATH $FILE_NAME $FILTER >> $LOG_ERR 2>&1" 2>>$LOG_ERR &
+				$REMOTE_USER@$SERVER_IP "$SERVER_COMMAND" 2>>$LOG_ERR &
 		elif [ "$DUMP_CMDS" == "1" ]; then
+			echo "Remote command:" >> $SERVER_DUMP
+			echo "$ $SERVER_COMMAND" >> $SERVER_DUMP
+			echo >> $SERVER_DUMP
+			echo "Fio job file (./fio_jobs/librpma_${PERSIST_MODE}-server.fio):" >> $SERVER_DUMP
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-server.fio | \
 				grep -v '^#' | $ENV envsubst >> $SERVER_DUMP"
+			echo "---" >> $SERVER_DUMP
 		fi
 
 		echo "[mode: $PERSIST_MODE, op: $OP, size: $BS, threads: $TH, iodepth: $DP, sync: $SYNC, cpuload: $CPU]"
 		ENV="serverip=$SERVER_IP blocksize=$BS sync=$SYNC numjobs=$TH iodepth=${DP} \
 			readwrite=${OP} ramp_time=$RAMP_TIME runtime=$RUNTIME"
+		if [ "x$TRACER" == "x" ]; then
+			TRACER="numactl -N $JOB_NUMA"
+		fi
+
+		CLIENT_COMMAND="$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma_${PERSIST_MODE}-client.fio \
+				--output-format=json+ > $TEMP_JSON"
+
 		if [ "$DO_RUN" == "1" ]; then
 			# run FIO
-			if [ "x$TRACER" == "x" ]; then
-				TRACER="numactl -N $JOB_NUMA"
-			fi
-			bash -c "$ENV $TRACER ${FIO_PATH}fio ./fio_jobs/librpma_${PERSIST_MODE}-client.fio \
-				--output-format=json+ > $TEMP_JSON"
+			bash -c "$CLIENT_COMMAND"
 			if [ "$?" -ne 0 ]; then
 				echo "Error: FIO job failed"
 				exit 1
@@ -334,6 +343,10 @@ function benchmark_one() {
 				touch ${OUTPUT[i]}
 			done
 		elif [ "$DUMP_CMDS" == "1" ]; then
+			echo "Command:" >> $CLIENT_DUMP
+			echo "$ $CLIENT_COMMAND" >> $CLIENT_DUMP
+			echo >> $CLIENT_DUMP
+			echo "Fio job file (./fio_jobs/librpma_${PERSIST_MODE}-client.fio):" >> $CLIENT_DUMP
 			bash -c "cat ./fio_jobs/librpma_${PERSIST_MODE}-client.fio | \
 				grep -v '^#' | $ENV envsubst >> $CLIENT_DUMP"
 			echo "---" >> $SERVER_DUMP
