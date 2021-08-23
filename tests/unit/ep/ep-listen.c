@@ -23,7 +23,7 @@ listen__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(NULL, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(NULL, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -53,7 +53,7 @@ listen__port_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, NULL, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, NULL, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -67,7 +67,7 @@ static void
 listen__ep_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, NULL);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -106,7 +106,7 @@ listen__create_evch_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -133,7 +133,7 @@ listen__create_id_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -161,7 +161,7 @@ listen__info_new_E_NOMEM(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -190,7 +190,7 @@ listen__info_bind_addr_E_PROVIDER(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -219,7 +219,7 @@ listen__listen_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -249,7 +249,7 @@ listen__malloc_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -284,7 +284,7 @@ listen__malloc_ERRNO_destroy_id_ERRNO2(void **unused)
 
 	/* run test */
 	struct rpma_ep *ep = NULL;
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT, &ep);
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT, &ep);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);

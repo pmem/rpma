@@ -159,7 +159,7 @@ int
 rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
 		struct rpma_info **info_ptr)
 {
-	assert_string_equal(addr, MOCK_ADDR);
+	assert_string_equal(addr, MOCK_IP_ADDRESS);
 	assert_string_equal(port, MOCK_PORT);
 	assert_int_equal(side, RPMA_INFO_PASSIVE);
 	assert_non_null(info_ptr);
@@ -324,7 +324,7 @@ setup__ep_listen(void **estate_ptr)
 	expect_value(rpma_info_delete, *info_ptr, MOCK_INFO);
 
 	/* prepare an object */
-	int ret = rpma_ep_listen(MOCK_PEER, MOCK_ADDR, MOCK_PORT,
+	int ret = rpma_ep_listen(MOCK_PEER, MOCK_IP_ADDRESS, MOCK_PORT,
 		&estate->ep);
 
 	/* verify the results */
