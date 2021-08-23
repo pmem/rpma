@@ -84,6 +84,10 @@
                     "value2"
                 ]
             }
-        }
+        },
+        "security" :
+            "Elaborate on the kernel and BIOS spectre-meltdown resistance and security in general.",
+        "description" :
+            "Briefly describe the test setup."
     }
 }
