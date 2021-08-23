@@ -7,6 +7,7 @@
 """test_init.py -- lib.Report.__init__() tests"""
 
 import json
+import shutil
 
 # XXX required for an easy comparison of nested dictionaries
 # from deepdiff import DeepDiff
@@ -51,7 +52,8 @@ VARS_DUMMY = {
             'bios': {
                 'settings': {},
                 'excerpt': {}
-            }
+            },
+            'schematic': 'Figure_0.png'
         }
     }
 }
@@ -71,7 +73,8 @@ VARS_DUMMY_OUT = {
             'excerpt': {
                 'type': 'kvtable'
             }
-        }
+        },
+        'schematic': 'Figure_0.png',
     }
 }
 
@@ -106,12 +109,16 @@ def test_init(monkeypatch):
         else:
             # XXX assert DeepDiff(variables, PART_VARS) == {}
             assert variables == PART_VARS
+    def copy_mock(src, dst):
+        assert src == 'Figure_0.png'
+        assert dst == RESULT_DIR
     monkeypatch.setattr(json, 'loads', loads_mock)
     monkeypatch.setattr(Figure, 'to_html', to_html_mock)
     monkeypatch.setattr(Part, '__init__', part_init_mock)
     monkeypatch.setattr(Part, 'process_variables_level',
             process_variables_level_mock)
     monkeypatch.setattr(Part, 'set_variables', set_variables_mock)
+    monkeypatch.setattr(shutil, 'copy', copy_mock)
     report = Report(LOADER_DUMMY, ENV_DUMMY, BENCH_DUMMY, VARS_DUMMY)
     assert report.env == ENV_DUMMY
     # XXX assert DeepDiff(report.variables, VARS_DUMMY_OUT) == {}

@@ -9,6 +9,7 @@
 #
 
 import os
+import shutil
 
 from .Part import *
 
@@ -63,6 +64,9 @@ class Report:
             part = Part(loader, env, partname)
             part.set_variables({'figure': self.figures})
             self.parts.append(part)
+        # copy schematic
+        shutil.copy(self.variables['configuration']['schematic'], self.result_dir)
+        self.variables['configuration']['schematic'] = os.path.basename(self.variables['configuration']['schematic'])
 
     def _load_figures(self, bench):
         self.figures = {}
