@@ -18,15 +18,8 @@
 
 #include <infiniband/verbs.h>
 
-#define MOCK_ADDR	"127.0.0.1"
-#define MOCK_PORT	"1234"
 #define MOCK_SRC_ADDR	(struct sockaddr *)0x0ADD
 #define MOCK_DST_ADDR	(struct sockaddr *)0x0ADE
-
-#define MOCK_PASSTHROUGH	0
-#define MOCK_VALIDATE		1
-
-#define MOCK_OK		0
 
 /*
  * All the resources used between setup__new_* and teardown__delete.
