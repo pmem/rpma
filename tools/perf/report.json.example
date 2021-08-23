@@ -84,6 +84,12 @@
                     "value2"
                 ]
             }
-        }
+        },
+        "security" : [
+            "Kernel & BIOS spectre-meltdown information Elaborate on the kernel and BIOS security."
+        ],
+        "description" : [
+            "The setup consists of two individual systems (one used as the initiator and one used as the target). The target system has six Intel&reg; Optane&trade; Persistent Memory devices connected to the respective NUMA node. Both the initiator and the target are equipped with 100Gbps Mellanox ConnectX-5 NICs. The initiator is connected to the target system directly using QSFP28 cables without any switches. From two ports available on NICs only one is in use during the measurements."
+        ]
     }
 }
