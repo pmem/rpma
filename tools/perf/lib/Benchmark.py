@@ -92,7 +92,6 @@ class Benchmark:
         environ = os.environ if include_environ else {}
         output = {**environ, **env, **{'OUTPUT_FILE': output_file}}
         output.pop('_comment', None)
-        output.pop('report', None)
         return output
 
     def _benchmark_args(self, env):
