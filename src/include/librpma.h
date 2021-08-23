@@ -2544,7 +2544,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * DESCRIPTION
  * rpma_conn_completion_get() receives the next available completion
  * of an already posted operation. All operations generate completion on
- * error. The operations posted with the **RPMA_F_COMPLETION_ALWAYS** flag
+ * error. The operations posted with the RPMA_F_COMPLETION_ALWAYS flag
  * also generate a completion on success.
  * The following operations are available:
  * - RPMA_OP_READ - RMA read operation
@@ -2558,8 +2558,8 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * RETURN VALUE
  * The rpma_conn_completion_get() function returns 0 on success or a negative
  * error code on failure. On success, it writes the first available completion
- * to *cmpl*. If *op_status* of the written *cmpl* is not equal to
- * **IBV_WC_SUCCESS** then only *op_context* of the returned *cmpl* is valid.
+ * to cmpl. If op_status of the written cmpl is not equal to
+ * IBV_WC_SUCCESS then only op_context of the returned cmpl is valid.
  *
  * ERRORS
  * rpma_conn_completion_get() can fail with the following errors:
