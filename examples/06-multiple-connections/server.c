@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * server.c -- a server of the multiple-connections example
@@ -231,13 +232,19 @@ client_handle_completion(struct custom_event *ce)
 	}
 
 	/* validate received completion */
-	if (cmpl.op != RPMA_OP_READ || cmpl.op_status != IBV_WC_SUCCESS) {
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr,
-				"[%d] received completion is not as expected (%d != %d || %d != %d)\n",
+				"[%d] rpma_read() failed: %s\n",
 				clnt->client_id,
-				cmpl.op, RPMA_OP_READ,
-				cmpl.op_status, IBV_WC_SUCCESS);
+				ibv_wc_status_str(cmpl.op_status));
+		(void) rpma_conn_disconnect(clnt->conn);
+		return;
+	}
 
+	if (cmpl.op != RPMA_OP_READ) {
+		(void) fprintf(stderr,
+				"[%d] received unexpected cmpl.op value (%d != %d)\n",
+				clnt->client_id, cmpl.op, RPMA_OP_READ);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}

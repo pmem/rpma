@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright 2021, Fujitsu */
 
 /*
  * client.c -- a client of the flush-to-persistent-GPSPM example
@@ -263,9 +264,15 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* validate the completion */
-	if (cmpl.op_status != IBV_WC_SUCCESS)
+	if (cmpl.op_status != IBV_WC_SUCCESS) {
+		ret = -1;
+		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
+				ibv_wc_status_str(cmpl.op_status));
 		goto err_mr_remote_delete;
+	}
+
 	if (cmpl.op != RPMA_OP_RECV) {
+		ret = -1;
 		(void) fprintf(stderr,
 				"unexpected cmpl.op value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
