@@ -277,7 +277,13 @@ function benchmark_one() {
 
 		# pick either a DRAM/DeviceDAX or a FileSystemDAX mode
 		case "$REMOTE_JOB_DEST" in
-			malloc|/dev/dax*)
+			malloc)
+				# create_on_open prevents FIO from creating files
+				# where the engines won't make use of them anyways
+				# since they are using DRAM instead
+				FILE_NAME="--filename=${REMOTE_JOB_DEST} --create_on_open=1"
+				;;
+			/dev/dax*)
 				FILE_NAME="--filename=${REMOTE_JOB_DEST}"
 				;;
 			*)
