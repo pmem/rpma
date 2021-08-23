@@ -9,6 +9,7 @@
 #
 
 import os
+import shutil
 
 from .Part import *
 
@@ -52,6 +53,10 @@ class Report:
         self.variables = vars
 
     def _load_parts(self, loader, env, bench):
+        # copy schematic
+        shutil.copy(self.variables['configuration']['schematic'], self.result_dir)
+        self.variables['configuration']['schematic'] = os.path.basename(self.variables['configuration']['schematic'])
+        # prepare preamble part
         preamble = Part(loader, env, 'preamble')
         # XXX Part.process_variables_level() should be a function not a method
         # this way self.variables may be processed in Report._set_variables()
