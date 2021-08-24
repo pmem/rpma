@@ -15,15 +15,18 @@
  * get_private_data__success -- happy day scenario
  */
 static void
-get_private_data__success(void **unused)
+get_private_data__success(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_test_state *cstate = NULL;
+	struct conn_req_test_state *cstate = *cstate_ptr;
 	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
@@ -62,15 +65,18 @@ get_private_data__conn_req_NULL(void **unused)
  * get_private_data__pdata_NULL -- pdata NULL is invalid
  */
 static void
-get_private_data__pdata_NULL(void **unused)
+get_private_data__pdata_NULL(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
-	struct conn_req_test_state *cstate = NULL;
+	struct conn_req_test_state *cstate = *cstate_ptr;
 	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
@@ -89,9 +95,9 @@ get_private_data__pdata_NULL(void **unused)
 }
 
 static const struct CMUnitTest test_private_data[] = {
-	cmocka_unit_test(get_private_data__success),
 	cmocka_unit_test(get_private_data__conn_req_NULL),
-	cmocka_unit_test(get_private_data__pdata_NULL),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(get_private_data__success),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(get_private_data__pdata_NULL),
 	cmocka_unit_test(NULL)
 };
 
