@@ -1,7 +1,5 @@
 {
-    "_comment": "high_level_setup_figure requires making the path absolute",
     "subtitle": "",
-    "high_level_setup_figure": "Figure_0.png",
     "release": "0.00",
     "test_date": "December 2020",
     "ref": "2021_04_21_CLX",
@@ -88,6 +86,7 @@
         "security" :
             "Elaborate on the kernel and BIOS spectre-meltdown resistance and security in general.",
         "description" :
-            "Briefly describe the test setup."
+            "Briefly describe the test setup.",
+        "schematic": "Figure_0.png"
     }
 }
