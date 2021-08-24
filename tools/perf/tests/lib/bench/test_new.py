@@ -29,10 +29,12 @@ PARTS = [PART]
 
 FIGURES_DUMMY = [DICT_DUMMY]
 
-FIGURES_DUMMY_INPUT = {
-    'input_file': '/path/to/figure/' + PART + '.json',
-    'json': FIGURES_DUMMY
-}
+FIGURES_DUMMY_INPUT = [
+    {
+        'input_file': '/path/to/figure/' + PART + '.json',
+        'json': FIGURES_DUMMY
+    }
+]
 
 FIGURES_DUMMY_FLAT = [
     {

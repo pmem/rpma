@@ -28,8 +28,13 @@ class Bench:
 
     @classmethod
     def new(cls, config, figures, result_dir):
-        parts = [ os.path.splitext(os.path.basename(figures['input_file']))[0] ]
-        figures = Figure.flatten(figures['json'])
+        parts = [ os.path.splitext(os.path.basename(figure['input_file']))[0]
+                for figure in figures ]
+        # combine figures from all input files
+        figures = Figure.flatten([
+                figure
+                    for figure_file in figures
+                        for figure in figure_file['json']])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
         return cls(config['json'], parts, figures, requirements, result_dir)
