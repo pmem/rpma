@@ -198,6 +198,13 @@ main(int argc, char *argv[])
 	if ((ret = rpma_mr_get_descriptor(mr, &data.descriptors[0])))
 		goto err_mr_dereg;
 
+	struct rpma_conn_cfg *cfg = NULL;
+	if ((ret = rpma_conn_cfg_new(&cfg)))
+		goto err_mr_dereg;
+
+	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
+		goto err_cfg_delete;
+
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
@@ -207,7 +214,7 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(struct common_data);
 
 	/* receive an incoming connection request */
-	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
+	if ((ret = rpma_ep_next_conn_req(ep, cfg, &req)))
 		goto err_mr_dereg;
 
 	/* prepare buffer for a flush request */
@@ -232,16 +239,30 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* wait for the receive completion to be ready */
+	struct rpma_cq *rcq = NULL;
+	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	if ((ret = rpma_cq_wait(rcq)))
+		goto err_conn_delete;
+	if ((ret = rpma_cq_get_completion(rcq, &cmpl)))
 		goto err_conn_delete;
 
+	/* validate the receive completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		ret = -1;
 		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
 				ibv_wc_status_str(cmpl.op_status));
+		goto err_conn_delete;
+	}
+
+	if (cmpl.op != RPMA_OP_RECV) {
+		ret = -1;
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value "
+				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+				(uintptr_t)cmpl.op,
+				(uintptr_t)RPMA_OP_RECV);
 		goto err_conn_delete;
 	}
 
@@ -282,13 +303,16 @@ main(int argc, char *argv[])
 			RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_conn_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* wait for the send completion to be ready */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_conn_delete;
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	if ((ret = rpma_cq_wait(cq)))
+		goto err_conn_delete;
+	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
 		goto err_conn_delete;
 
-	/* validate the completion */
+	/* validate the send completion */
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
 		ret = -1;
 		(void) fprintf(stderr, "rpma_send() failed: %s\n",
@@ -321,6 +345,9 @@ err_conn_delete:
 
 err_req_delete:
 	(void) rpma_conn_req_delete(&req);
+
+err_cfg_delete:
+	(void) rpma_conn_cfg_delete(&cfg);
 
 err_mr_dereg:
 	(void) rpma_mr_dereg(&msg_mr);

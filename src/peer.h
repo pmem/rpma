@@ -22,7 +22,8 @@
  * - RPMA_E_PROVIDER - allocating a QP failed
  */
 int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_cq *cq, const struct rpma_conn_cfg *cfg);
+		struct rpma_cq *cq, struct rpma_cq *rcq,
+		const struct rpma_conn_cfg *cfg);
 
 /*
  * ASSUMPTIONS
