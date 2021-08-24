@@ -36,6 +36,35 @@ poll_cq(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
 }
 
 /*
+ * get_completion__cq_NULL - cq NULL is invalid
+ */
+static void
+get_completion__cq_NULL(void **unused)
+{
+	/* run test */
+	struct rpma_completion cmpl = {0};
+	int ret = rpma_cq_get_completion(NULL, &cmpl);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
+ * get_completion__cmpl_NULL - cmpl NULL is invalid
+ */
+static void
+get_completion__cmpl_NULL(void **cq_ptr)
+{
+	struct rpma_cq *cq = *cq_ptr;
+
+	/* run test */
+	int ret = rpma_cq_get_completion(cq, NULL);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * get_completion__poll_cq_fail - ibv_poll_cq() returns -1
  */
 static void
@@ -245,6 +274,10 @@ group_setup_get_completion(void **unused)
 
 static const struct CMUnitTest tests_get_completion[] = {
 	/* rpma_cq_get_completion() unit tests */
+	cmocka_unit_test(get_completion__cq_NULL),
+	cmocka_unit_test_setup_teardown(
+		get_completion__cmpl_NULL,
+		setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test_setup_teardown(
 		get_completion__poll_cq_fail,
 		setup__cq_new, teardown__cq_delete),

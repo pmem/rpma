@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2019-2021, Intel Corporation */
-/* Copyright (c) 2021 Fujitsu */
+/* Copyright 2021, Fujitsu */
 
 /*
  * librpma.h -- definitions of librpma entry points
@@ -1332,6 +1332,68 @@ int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *cq_size);
 
 /** 3
+ * rpma_conn_cfg_set_rcq_size - set receive CQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg,
+ *			uint32_t rcq_size);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_rcq_size() sets the receive CQ size for the connection.
+ * Please see the rpma_conn_get_rcq() for details about the receive CQ.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_rcq_size() function returns 0 on success or
+ * a negative error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_rcq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_get_rcq_size(3), rpma_conn_cfg_new(3), rpma_conn_get_rcq(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size);
+
+/** 3
+ * rpma_conn_cfg_get_rcq_size - get receive CQ size for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg,
+ *			uint32_t *rcq_size);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_rcq_size() gets the receive CQ size for the connection.
+ * Please see the rpma_conn_get_rcq() for details about the receive CQ.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_rcq_size() function returns 0 on success or
+ * a negative error code on failure. rpma_conn_cfg_get_rcq_size() does not
+ * set *rcq_size value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_rcq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or rcq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_rcq_size(3), rpma_conn_get_rcq(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg,
+		uint32_t *rcq_size);
+
+/** 3
  * rpma_conn_cfg_set_sq_size - set SQ size for the connection
  *
  * SYNOPSIS
@@ -1639,6 +1701,79 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
  */
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
+
+struct rpma_cq;
+
+/** 3
+ * rpma_conn_get_cq -- get the connection's main CQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	struct rpma_cq;
+ *	int rpma_conn_get_cq(const struct rpma_conn *conn,
+ *			struct rpma_cq **cq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_cq() gets the main CQ from the connection. When the receive
+ * CQ is not present the main CQ allows handling all completions within
+ * the connection. When the receive CQ is present the main CQ allows handling
+ * all completions except rpma_recv(3) completions within the connection.
+ * Please see rpma_conn_get_rcq() for details about the receive CQ.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_cq() function returns 0 on success or a negative error
+ * code on failure. rpma_conn_get_cq() does not set *cq_ptr value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_cq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or cq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
+ * rpma_cq_get_completion(3), rpma_cq_get_fd(3), rpma_recv(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr);
+
+/** 3
+ * rpma_conn_get_rcq -- get the connection's receive CQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	struct rpma_cq;
+ *	int rpma_conn_get_rcq(const struct rpma_conn *conn,
+ *			struct rpma_cq **rcq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_rcq() gets the receive CQ from the connection. The receive
+ * CQ allows handling all rpma_recv(3) completions within the connection.
+ * It allows separating rpma_recv(3) completions processing path from all other
+ * completions. The receive CQ is created only if the receive CQ size in
+ * the provided connection configuration is greater than 0. When the receive CQ
+ * does not exist for the given connection the *rcq_ptr == NULL.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_rcq() function returns 0 on success or a negative error
+ * code on failure. rpma_conn_get_rcq() does not set *rcq_ptr value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_rcq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or rcq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_set_rcq_size(3), rpma_conn_req_connect(3), rpma_conn_get_cq(3),
+ * rpma_cq_wait(3), rpma_cq_get_completion(3), rpma_cq_get_fd(3), rpma_recv(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr);
 
 /** 3
  * rpma_conn_disconnect - tear the connection down
@@ -2452,8 +2587,10 @@ int rpma_recv(struct rpma_conn *conn,
  *	int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
- * rpma_conn_get_completion_fd() gets the completion file descriptor
- * of the connection.
+ * rpma_conn_get_completion_fd() gets the completion file descriptor of
+ * the connection. It is the same file descriptor as the one returned by
+ * the rpma_cq_get_fd(3) for the connection's main CQ available via
+ * rpma_conn_get_cq(3).
  *
  * RETURN VALUE
  * The rpma_conn_get_completion_fd() function returns 0 on success
@@ -2529,6 +2666,106 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  *	struct rpma_conn;
  *	struct rpma_completion;
+ *
+ *	int rpma_conn_completion_get(struct rpma_conn *conn,
+ *			struct rpma_completion *cmpl);
+ *
+ * DESCRIPTION
+ * rpma_conn_completion_get() receives the next available completion of
+ * an already posted operation from the connection's main CQ one can access
+ * directly using rpma_conn_get_cq(3). Please see rpma_cq_get_completion(3)
+ * for details.
+ *
+ * RETURN VALUE
+ * The rpma_conn_completion_get() function returns 0 on success
+ * or a negative error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_completion_get() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or cmpl is NULL
+ * - Other errors - please see rpma_cq_get_completion(3)
+ *
+ * SEE ALSO
+ * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
+ * rpma_conn_req_connect(3), rpma_conn_get_cq(3), rpma_conn_get_rcq(3),
+ * rpma_flush(3), rpma_read(3), rpma_recv(3), rpma_send(3),
+ * rpma_send_with_imm(3), rpma_write(3), rpma_write_with_imm(3),
+ * rpma_write_atomic(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_completion_get(struct rpma_conn *conn,
+		struct rpma_completion *cmpl);
+
+/** 3
+ * rpma_cq_get_fd - get the completion file descriptor
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_cq;
+ *	int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
+ *
+ * DESCRIPTION
+ * rpma_cq_get_fd() gets the completion file descriptor of the CQ, either
+ * for the connection's main CQ or the receive CQ. For details please see
+ * rpma_conn_get_cq(3) and rpma_conn_get_rcq(3).
+ *
+ * RETURN VALUE
+ * The rpma_cq_get_fd() function returns 0 on success or a negative error
+ * code on failure. rpma_cq_get_fd() does not set *fd value on failure.
+ *
+ * ERRORS
+ * rpma_cq_get_fd() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cq or fd is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
+ * rpma_cq_get_completion(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
+
+/** 3
+ * rpma_cq_wait - wait for a completion
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_cq;
+ *	int rpma_cq_wait(struct rpma_cq *cq);
+ *
+ * DESCRIPTION
+ * rpma_cq_wait() waits for an incoming completion. If it succeeds
+ * the completion can be collected using rpma_cq_get_completion(3).
+ *
+ * RETURN VALUE
+ * The rpma_cq_wait() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_cq_wait() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - cq is NULL
+ * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
+ * - RPMA_E_NO_COMPLETION - no completions available
+ *
+ * SEE ALSO
+ * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_get_completion(3),
+ * rpma_cq_get_fd(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_cq_wait(struct rpma_cq *cq);
+
+/** 3
+ * rpma_cq_get_completion - receive a completion of an operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_cq;
+ *	struct rpma_completion;
  *	enum rpma_op {
  *		RPMA_OP_READ,
  *		RPMA_OP_WRITE,
@@ -2538,15 +2775,14 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *		RPMA_OP_RECV_RDMA_WITH_IMM,
  *	};
  *
- *	int rpma_conn_completion_get(struct rpma_conn *conn,
+ *	int rpma_cq_get_completion(struct rpma_cq *cq,
  *			struct rpma_completion *cmpl);
  *
  * DESCRIPTION
- * rpma_conn_completion_get() receives the next available completion
- * of an already posted operation. All operations generate completion on
- * error. The operations posted with the RPMA_F_COMPLETION_ALWAYS flag
- * also generate a completion on success.
- * The following operations are available:
+ * rpma_cq_get_completion() receives the next available completion of
+ * an already posted operation. All operations generate completion on error.
+ * The operations posted with the RPMA_F_COMPLETION_ALWAYS flag also
+ * generate a completion on success. The following operations are available:
  * - RPMA_OP_READ - RMA read operation
  * - RPMA_OP_WRITE - RMA write operation
  * - RPMA_OP_FLUSH - RMA flush operation
@@ -2554,30 +2790,34 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - RPMA_OP_RECV - messaging receive operation
  * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
  *   RMA write operation with immediate data
+ * Note that if the provided cq is the main CQ and the receive CQ is present
+ * on the same connection this function won't return RPMA_OP_RECV and
+ * RPMA_OP_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
+ * instead to collect these completions. Please see the rpma_conn_get_rcq(3)
+ * for details about the receive CQ.
  *
  * RETURN VALUE
- * The rpma_conn_completion_get() function returns 0 on success or a negative
+ * The rpma_cq_get_completion() function returns 0 on success or a negative
  * error code on failure. On success, it writes the first available completion
- * to cmpl. If op_status of the written cmpl is not equal to
- * IBV_WC_SUCCESS then only op_context of the returned cmpl is valid.
+ * to cmpl. If op_status of the written cmpl is not equal to IBV_WC_SUCCESS
+ * then only op_context of the returned cmpl is valid.
  *
  * ERRORS
- * rpma_conn_completion_get() can fail with the following errors:
+ * rpma_cq_get_completion() can fail with the following errors:
  *
- * - RPMA_E_INVAL - conn or cmpl is NULL
+ * - RPMA_E_INVAL - cq or cmpl is NULL
  * - RPMA_E_NO_COMPLETION - no completions available
  * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
  * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
  * - RPMA_E_NOSUPP - not supported opcode
  *
  * SEE ALSO
- * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
- * rpma_conn_req_connect(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
- * https://pmem.io/rpma/
+ * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
+ * rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
+ * rpma_send(3), rpma_send_with_imm(3), rpma_write(3), rpma_write_with_imm(3),
+ * rpma_write_atomic(3), librpma(7) and https://pmem.io/rpma/
  */
-int rpma_conn_completion_get(struct rpma_conn *conn,
-		struct rpma_completion *cmpl);
+int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
 
 /* error handling */
 
