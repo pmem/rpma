@@ -26,7 +26,9 @@ DESCRIPTION
 ===========
 
 **rpma\_conn\_get\_completion\_fd**() gets the completion file
-descriptor of the connection.
+descriptor of the connection. It is the same file descriptor as the one
+returned by the **rpma\_cq\_get\_fd**(3) for the connection\'s main CQ
+available via **rpma\_conn\_get\_cq**(3).
 
 RETURN VALUE
 ============
