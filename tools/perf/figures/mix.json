@@ -1,0 +1,51 @@
+[
+    {
+        "output": {
+            "title": "Latency ({y}): MIX against PMEM vs rpma_read() + APM to PMEM (seq)",
+            "x": "bs",
+            "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "file": "mix_seq",
+            "key": "{y_key}",
+            "fstrings": ["title", "key"]
+        },
+        "series_common": {
+            "mode": "lat",
+            "filetype": "pmem",
+            "tool": "rpma_fio_bench.sh",
+            "tool_mode": "apm",
+            "requirements": {
+                "direct_write_to_pmem": true
+            }
+        },
+        "series": [
+            {
+                "rw": "read",
+                "label": "rpma_read()"
+            },
+            {
+                "rw": "write",
+                "label": "APM to PMEM"
+            },
+            {
+                "_comment": [
+                    "XXX The rw and randrw workloads still do not work.",
+                    "They require combining both read and write results",
+                    "into a single JSON file."
+                ],
+                "rw": "rw",
+                "rw_dir": "read",
+                "label": "MIX read"
+            },
+            {
+                "_comment": [
+                    "XXX The rw and randrw workloads still do not work.",
+                    "They require combining both read and write results",
+                    "into a single JSON file."
+                ],
+                "rw": "rw",
+                "rw_dir": "write",
+                "label": "MIX write"
+            }
+        ]
+    }
+]
