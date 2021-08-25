@@ -40,7 +40,7 @@ $ make
 $ sudo make install
 ```
 
-To use the reporting tools (e.g. `csv_compare.py`, `report_bench.sh`, `create_report_figures.sh`, `create_report.py`, `fio-histogram.py`), you must additionally install:
+To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
  - jinja2
  - markdown2
  - PIL
@@ -122,41 +122,40 @@ To generate a report, follow these steps:
 
 ### 1) Run all benchmarks required for the performance report:
 
-```sh
-$ export REMOTE_SUDO_NOPASSWD=1
-$ export REMOTE_RNIC_PCIE_ROOT_PORT=$pcie_root_port
-$ export REMOTE_JOB_MEM_PATH=/dev/dax1.0
+Prepare config.json based file on config.json.example
 
-$ ./report_bench.sh $SERVER_IP
+```sh
+$ ./report_bench.py run --config config.json --figure figures/read.json --result_dir results
 ```
 
-### 2) Generate Figures and Appendix charts for the performance report:
+To see all available configuration options please take a look at the help:
 
 ```sh
-$ mkdir -p results/MACHINE_A
-$ mv *.csv results/MACHINE_A
-$ export DATA_PATH=results
-$ export REPORT_MACHINE=A
-$ export STAMP=xyz
-
-# charts will be produced to the report_xyz directory
-$ ./create_report_figures.sh report
-$ ./create_report_figures.sh appendix
+$ ./report_bench.py -h
 ```
 
-### 3) Prepare custom report parts (optional):
+### 2) Generate Figures charts for the performance report:
 
 ```sh
-$ cp templates/*.copyme report_xyz/
-$ for f in report_xyz/*.copyme; do mv "$f" "${f/.copyme/}"; done
-# edit the report_xyz/*.md files to represent details of your configuration
-# prepare a high-level view of the performance test configuration (setup.png)
+$ ./report_figures.py --bench results/bench.json
 ```
 
-### 4) Generate the performance report and appendices:
+To see all available configuration options please take a look at the help:
 
 ```sh
-# will create a report_xyz/report.html report_xyz/appendices.html
-$ ./create_report.py --report_dir report_xyz --release X.YZ report --test_date "Now" --high_level_setup_figure ./setup.png
-$ ./create_report.py --report_dir report_xyz --release X.YZ appendices
+$ ./report_figures.py -h
+```
+
+### 3) Generate the performance report:
+
+Prepare report.json based file on report.json.example
+
+```sh
+$ ./report_create.py --bench results/bench.json --report report.json
+```
+
+To see all available configuration options please take a look at the help:
+
+```sh
+$ ./report_create.py -h
 ```
