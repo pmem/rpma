@@ -15,10 +15,30 @@ import subprocess
 
 from .common import *
 
+ENCODE = json.JSONEncoder(indent=4).encode
+
 class Benchmark:
     """A single benchmark object"""
 
-    def __init__(self, oneseries):
+    def __init__(self, oneseries, from_figure=False):
+        self.oneseries_from_figure = None
+        if from_figure:
+            # When oneseries belongs to a Figure:
+            # - it should not be modified directly (a copy is required) and
+            # - the id when set should be propagated to the original oneseries 
+            #   object to allow relating among a unique Benchmark
+            #   and potentially multiple series making use of it.
+            self.oneseries_from_figure = oneseries
+            oneseries = oneseries.copy()
+            # validate if it is a mixed workload
+            if 'rw' in oneseries and 'rw' in oneseries['rw']:
+                if 'rw_dir' not in oneseries:
+                    raise SyntaxError(
+                        "'rw_dir' is required for mixed workloads (['rw'] == '*rw')\n{}".format(
+                            ENCODE(oneseries)))
+            # remove unnecessary fields
+            oneseries.pop('label', None)
+            oneseries.pop('rw_dir', None)
         oneseries['done'] = oneseries.get('done', False)
         self.oneseries = oneseries
         if 'requirements' in oneseries.keys():
@@ -30,7 +50,7 @@ class Benchmark:
 
     def __repr__(self):
         """A string representation of the object"""
-        return json.JSONEncoder(indent=4).encode(self.oneseries)
+        return ENCODE(self.oneseries)
 
     def __eq__(self, other):
         """A comparison function"""
@@ -38,7 +58,7 @@ class Benchmark:
         keys = list(set([*self.oneseries.keys(), *other.oneseries.keys()]))
         for k in keys:
             # ignore series-specific or instance-specific keys
-            if k in ['id', 'label']:
+            if k == 'id':
                 continue
             sv = self.oneseries.get(k, None)
             ov = other.oneseries.get(k, None)
@@ -49,6 +69,10 @@ class Benchmark:
     def set_id(self, id):
         """Set an instance id"""
         self.oneseries['id'] = id
+        if self.oneseries_from_figure is not None:
+            # Propagated to the original oneseries object to allow relating
+            # to the Benchmark object.
+            self.oneseries_from_figure['id'] = id
 
     def get_id(self):
         """Get the instance id"""
@@ -57,7 +81,7 @@ class Benchmark:
     @classmethod
     def uniq(cls, figures):
         """Generate a set of unique benchmarks"""
-        output = [cls(oneseries)
+        output = [cls(oneseries, from_figure=True)
             for f in figures
                 for oneseries in f.series
         ]
@@ -170,6 +194,12 @@ class Benchmark:
         return {k: random.randint(0, 10) for k in keys}
 
     def _run_dummy(self, env):
-        output = [self._random_point() for i in range(3)]
+        if 'rw' in self.oneseries and 'rw' in self.oneseries['rw']:
+            output = {
+                'read': [self._random_point() for i in range(3)],
+                'write': [self._random_point() for i in range(3)]
+            }
+        else:
+            output = [self._random_point() for i in range(3)]
         with open(env['OUTPUT_FILE'], 'w') as file:
             json.dump(output, file, indent=4)

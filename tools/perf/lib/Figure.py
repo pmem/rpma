@@ -104,6 +104,12 @@ class Figure:
             idfile = os.path.join(result_dir, 'benchmark_' + str(series['id']) +
                 '.json')
             rows = json_from_file(idfile)['json']
+            # If it is dict() it indicates a mix workload consisting of
+            # two parts: 'read' and 'write'. In this case, the series
+            # has to provide 'rw_dir' to pick one of them.
+            if isinstance(rows, dict):
+                rw_dir = series['rw_dir']
+                rows = rows[rw_dir]
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
