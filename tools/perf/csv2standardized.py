@@ -38,6 +38,7 @@
 #
 
 import argparse
+import json
 import os.path
 import pandas as pd
 
@@ -78,37 +79,60 @@ ib_bw_output_names = [
 def main():
     parser = argparse.ArgumentParser(
         description='Standardize a CSV (EXPERIMENTAL)')
-    parser.add_argument('csv_file', metavar='CSV_FILE',
-        help='a CSV log file to process')
+    parser.add_argument('csv_files', metavar='CSV_FILE', nargs='+',
+        help='a CSV log file(s) to process')
     parser.add_argument('--csv_type', metavar='CSV_TYPE', required=True,
         choices=['ib_lat', 'ib_bw', 'fio'], help='a type of the CSV file')
+    parser.add_argument('--keys', metavar='KEY', nargs='+',
+        help='keys enumerating the input csv_files in the output_file')
     parser.add_argument('--output_file', metavar='OUTPUT_FILE',
-        default='output.csv', help='an output file')        
+        default='output.csv', help='an output file')
     args = parser.parse_args()
 
-    if args.csv_type == 'ib_lat':
-        df = pd.read_csv(args.csv_file, header=0, names=ib_lat_input_names)
-        df = df.reindex(columns=ib_lat_output_names)
-    elif args.csv_type == 'ib_bw':
-        df = pd.read_csv(args.csv_file, header=0, names=ib_bw_input_names)
-        df = df.reindex(columns=ib_bw_output_names)
-        df = df.apply(lambda x: round(x, 2) \
-            if x.name == 'bw_avg' else x)
-    else: # fio
-        df = pd.read_csv(args.csv_file, header=0, names=fio_input_names)
-        # convert nsec to usec
-        df = df.apply(lambda x: round(x / 1000, 2) \
-            if x.name in fio_nsec_2_usec_names else x)
-        # convert KiB/s to Gb/s
-        df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
-            if x.name in fio_KiBps_2_Gbps_names else x)
-        df = df.reindex(columns=fio_output_names)
-    
+    def read_csv(csv_file):
+        if args.csv_type == 'ib_lat':
+            df = pd.read_csv(csv_file, header=0, names=ib_lat_input_names)
+            df = df.reindex(columns=ib_lat_output_names)
+        elif args.csv_type == 'ib_bw':
+            df = pd.read_csv(csv_file, header=0, names=ib_bw_input_names)
+            df = df.reindex(columns=ib_bw_output_names)
+            df = df.apply(lambda x: round(x, 2) \
+                if x.name == 'bw_avg' else x)
+        else: # fio
+            df = pd.read_csv(csv_file, header=0, names=fio_input_names)
+            # convert nsec to usec
+            df = df.apply(lambda x: round(x / 1000, 2) \
+                if x.name in fio_nsec_2_usec_names else x)
+            # convert KiB/s to Gb/s
+            df = df.apply(lambda x: round(x * KiBpbs_2_Gbps, 2) \
+                if x.name in fio_KiBps_2_Gbps_names else x)
+            df = df.reindex(columns=fio_output_names)
+        return df
+
+    dfs = [read_csv(csv_file) for csv_file in args.csv_files]
     _, ext = os.path.splitext(args.output_file)
     if ext == '.csv':
-        df.to_csv(args.output_file, index=False)
+        if len(dfs) != 1:
+            raise ArithmeticError(
+                "csv output_file does not allow to store more than one input file")
+        dfs[0].to_csv(args.output_file, index=False)
     elif ext == '.json':
-        df.to_json(args.output_file, orient='records')
+        if args.keys is None or len(args.keys) == 0:
+            # without keys only a single input file can be stored
+            if len(dfs) != 1:
+                raise ArithmeticError(
+                    "to store multiple csv_files you have to provide keys")
+            dfs[0].to_json(args.output_file, orient='records')
+        else:
+            if len(args.keys) != len(dfs):
+                raise ArithmeticError(
+                    "the number of keys have to be equal to the number of csv_files")
+            # prepare the output dict()
+            output = {key: df.to_dict(orient='records')
+                for key, df in zip(args.keys, dfs)}
+            # write the constructed dict() to the output_file
+            with open(args.output_file, 'w') as file:
+                json.dump(output, file)
     else:
         raise Exception(f"Unsupported output file extension: {ext}")
 

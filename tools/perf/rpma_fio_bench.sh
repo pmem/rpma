@@ -166,6 +166,10 @@ function benchmark_one() {
 		;;
 	rw|randrw)
 		INDS="0 1" # read write
+		if [ -n "$OUTPUT_FILE" ]; then
+			# Mixed workloads have to be combined into a single output file.
+			COMBINE=1
+		fi
 		;;
 	esac
 
@@ -347,15 +351,26 @@ function benchmark_one() {
 			cat ${OUTPUT[i]} | head -1 > $TEMP_CSV
 			cat ${OUTPUT[i]} | grep -v 'lat' >> $TEMP_CSV
 			mv $TEMP_CSV ${OUTPUT[i]}
+			# Mixed workloads have to be processed together
+			# in order to be combined into a single output file.
+			[ "x$COMBINE" == "x1" ] && continue
 			# prepare output file name
 			output_file=${OUTPUT_FILE-${OUTPUT[i]}}
 			# convert to standardized-CSV/JSON
-			./csv2standardized.py --csv_type fio --output_file $output_file ${OUTPUT[i]}
+			./csv2standardized.py --csv_type fio --output_file $output_file \
+				${OUTPUT[i]}
 
 			if [ "$output_file" != "${OUTPUT[i]}" ]; then
 				rm -f ${OUTPUT[i]}
 			fi
 		done
+
+		# Combine all outputs into a single file.
+		if [ "x$COMBINE" == "x1" ]; then
+			./csv2standardized.py --csv_type fio --output_file $OUTPUT_FILE \
+				${OUTPUT[@]} --keys ${RW_OPS[@]}
+			rm -f ${OUTPUT[@]}
+		fi
 	fi
 
 	echo "FINISHED benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP"
