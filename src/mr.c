@@ -510,3 +510,25 @@ rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
 
 	return 0;
 }
+
+/*
+ * rpma_mr_advise -- give advice about an address range in a memory registration
+ */
+int
+rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t length,
+		int advice, uint32_t flags)
+{
+	struct ibv_sge sg_list;
+	sg_list.lkey = mr->ibv_mr->lkey;
+	sg_list.addr = (uint64_t)((uintptr_t)mr->ibv_mr->addr + offset);
+	sg_list.length = (uint32_t)length;
+
+	int ret = ibv_advise_mr(mr->ibv_mr->pd,
+		(enum ibv_advise_mr_advice)advice, flags, &sg_list, 1);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_advise_mr");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
