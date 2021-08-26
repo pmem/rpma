@@ -118,6 +118,15 @@ else()
 	message(WARNING "On-Demand Paging (ODP) is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
+# check if libibverbs has ibv_advise_mr support
+is_ibv_advise_mr_supported(IBV_ADVISE_MR_SUPPORTED)
+if(IBV_ADVISE_MR_SUPPORTED)
+	message(STATUS "ibv_advise_mr() supported in libibverbs - Success")
+	add_flag(-DIBV_ADVISE_MR_SUPPORTED=1)
+else()
+	message(WARNING "ibv_advise_mr() is NOT supported and will be disabled (too old version of libibverbs)!")
+endif()
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 check_signature_rdma_getaddrinfo(RDMA_GETADDRINFO_NEW_SIGNATURE)
 if(RDMA_GETADDRINFO_NEW_SIGNATURE)
