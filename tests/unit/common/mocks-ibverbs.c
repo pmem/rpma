@@ -347,3 +347,28 @@ ibv_wc_status_str(enum ibv_wc_status status)
 {
 	return "";
 }
+
+#ifdef IBV_ADVISE_MR_SUPPORTED
+/*
+ * ibv_advise_mr_mock -- mock of ibv_advise_mr()
+ */
+int
+ibv_advise_mr_mock(struct ibv_pd *pd,
+				enum ibv_advise_mr_advice advice,
+				uint32_t flags,
+				struct ibv_sge *sg_list,
+				uint32_t num_sge)
+{
+	check_expected_ptr(pd);
+	check_expected(advice);
+	check_expected(flags);
+
+	assert_non_null(sg_list);
+	check_expected(sg_list->lkey);
+	check_expected_ptr(sg_list->addr);
+	check_expected(sg_list->length);
+	check_expected(num_sge);
+
+	return mock_type(int);
+}
+#endif
