@@ -11,7 +11,7 @@ import shutil
 
 # XXX required for an easy comparison of nested dictionaries
 # from deepdiff import DeepDiff
-from lib.Figure import Figure
+from lib.figure import Figure
 from lib.Part import Part
 from lib.Report import Report
 
