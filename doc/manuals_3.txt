@@ -38,6 +38,7 @@ rpma_flush.3
 rpma_log_get_threshold.3
 rpma_log_set_function.3
 rpma_log_set_threshold.3
+rpma_mr_advise.3
 rpma_mr_dereg.3
 rpma_mr_get_descriptor.3
 rpma_mr_get_descriptor_size.3
