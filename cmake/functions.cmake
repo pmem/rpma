@@ -195,6 +195,20 @@ function(is_ODP_supported var)
 	set(var ${ON_DEMAND_PAGING_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
+# check if libibverbs has ibv_advise_mr() support
+function(is_ibv_advise_mr_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if ibv_advise_mr() is defined */
+		int main() {
+			if (!ibv_advise_mr)
+				return -1;
+			return 0;
+		}"
+		IBV_ADVISE_MR_SUPPORTED)
+	set(var ${IBV_ADVISE_MR_SUPPORTED} PARENT_SCOPE)
+endfunction()
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
 	get_filename_component(REAL_CMAKE_C_COMPILER ${CMAKE_C_COMPILER} REALPATH)
