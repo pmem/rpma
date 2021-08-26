@@ -26,6 +26,7 @@ function(add_test_mr name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_mr(advise)
 add_test_mr(descriptor)
 add_test_mr(get_flush_type)
 add_test_mr(local)

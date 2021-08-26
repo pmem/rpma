@@ -347,3 +347,31 @@ ibv_wc_status_str(enum ibv_wc_status status)
 {
 	return "";
 }
+
+/*
+ * ibv_post_send_mock -- mock of ibv_advise_mr()
+ */
+int
+ibv_advise_mr_mock(struct ibv_pd *pd,
+				enum ibv_advise_mr_advice advice,
+				uint32_t flags,
+				struct ibv_sge *sg_list,
+				uint32_t num_sge)
+{
+	struct ibv_advise_mr_mock_args *args =
+		mock_type(struct ibv_advise_mr_mock_args *);
+
+	assert_non_null(pd);
+	assert_non_null(sg_list);
+
+	assert_int_equal(pd, args->pd);
+	assert_int_equal(advice, args->advice);
+	assert_int_equal(flags, args->flags);
+
+	assert_int_equal(sg_list->lkey, args->lkey);
+	assert_int_equal(sg_list->addr, args->local_addr);
+	assert_int_equal(sg_list->length, args->length);
+	assert_int_equal(num_sge, args->num_sge);
+
+	return args->ret;
+}
