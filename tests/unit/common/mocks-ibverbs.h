@@ -73,4 +73,7 @@ int ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
 
 int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 
+int ibv_advise_mr_mock(struct ibv_pd *pd, int advice,
+		uint32_t flags, struct ibv_sge *sg_list, uint32_t num_sge);
+
 #endif /* MOCKS_IBVERBS_H */
