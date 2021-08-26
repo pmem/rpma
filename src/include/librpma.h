@@ -1146,6 +1146,45 @@ int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  */
 int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
+/** 3
+ * rpma_mr_advise - give advice about an address range in a memory registration
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_mr_local *mr;
+ *	int rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
+ *		uint32_t advice, uint32_t flags);
+ *
+ * DESCRIPTION
+ * rpma_mr_advise() give advice about an address range in a memory
+ * registration. The usage parameter specifies the operations that can be
+ * performed on the given memory address range.
+ * the advice
+ * - IBV_ADVISE_MR_ADVICE_PREFETCH_NO_FAULT - prefetching without prefaulting
+ * - IBV_ADVISE_MR_ADVICE_PREFETCH - read-only access
+ * - IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE - read and write access
+ *
+ * the flags
+ * - IBV_ADVISE_MR_FLAG_FLUSH - the underlying pages are guaranteed to be
+ *   updated in the HCA before returning SUCCESS
+ *
+ * RETURN VALUE
+ * The rpma_mr_advise() function returns 0 on success or a negative error code
+ * on failure.
+ *
+ * ERRORS
+ * rpma_mr_advise() can fail with the following errors:
+ *
+ * - RPMA_E_PROVIDER - memory registration failed
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
+		uint32_t advice, uint32_t flags);
+
 /* connection configuration */
 
 struct rpma_conn_cfg;
