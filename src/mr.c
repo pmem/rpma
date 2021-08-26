@@ -510,3 +510,75 @@ rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
 
 	return 0;
 }
+
+/*
+ * rpma_mr_usage_to_access -- convert usage to access
+ *
+ * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
+ */
+static int
+rpma_mr_usage_to_access(struct rpma_mr_local *mr)
+{
+	enum ibv_transport_type type =
+			mr->ibv_mr->pd->context->device->transport_type;
+	int usage = mr->usage;
+	int access = 0;
+
+	if (usage & (RPMA_MR_USAGE_READ_SRC |\
+			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
+			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+		access |= IBV_ACCESS_REMOTE_READ;
+
+	if (usage & RPMA_MR_USAGE_READ_DST) {
+		access |= IBV_ACCESS_LOCAL_WRITE;
+
+		/*
+		 * iWARP implements the READ operation as the WRITE operation
+		 * in the opposite direction.
+		 */
+		if (type == IBV_TRANSPORT_IWARP)
+			access |= IBV_ACCESS_REMOTE_WRITE;
+	}
+
+	if (usage & RPMA_MR_USAGE_WRITE_SRC)
+		access |= IBV_ACCESS_LOCAL_WRITE;
+
+	if (usage & RPMA_MR_USAGE_WRITE_DST)
+		/*
+		 * If IBV_ACCESS_REMOTE_WRITE is set, then
+		 * IBV_ACCESS_LOCAL_WRITE must be set too.
+		 */
+		access |= IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE;
+
+	if (usage & RPMA_MR_USAGE_RECV)
+		access |= IBV_ACCESS_LOCAL_WRITE;
+
+	/*
+	 * There is no IBV_ACCESS_* value to be set for RPMA_MR_USAGE_SEND.
+	 */
+
+	return access;
+}
+
+/*
+ * rpma_mr_advise -- give advice about an address range in a memory registration
+ */
+int
+rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
+		enum ibv_advise_mr_advice advice, uint32_t flags)
+{
+	struct ibv_sge sg_list;
+	sg_list.lkey = mr->ibv_mr->lkey;
+	sg_list.addr = (uint64_t)((char *)mr->ibv_mr->addr + offset);
+	sg_list.length = len;
+
+	if (ibv_advise_mr(mr->ibv_mr->pd, advice, flags, &sg_list, 1)) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno,
+			"ibv_advise_mr failed: "
+			"ibv_reg_mr(addr=%p, length=%zu, advice=%i, flags=%d)",
+			sg_list.addr, len, advice, flags);
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
