@@ -48,6 +48,9 @@
 #define MOCK_RADDR		(uint64_t)0x0001020304050607
 #define MOCK_RKEY		(uint32_t)0x10111213
 
+#define MOCK_LADDR		(uint64_t)0x0001020304050607
+#define MOCK_LKEY		(uint32_t)0x20212223
+
 /* a state used for rpma_mr_read/_write tests */
 struct mrs {
 	struct rpma_mr_local *local;
