@@ -11,7 +11,7 @@ import argparse
 from jinja2 import Environment, FileSystemLoader
 
 from lib.common import json_from_file
-from lib.Bench import Bench
+from lib.bench import Bench
 from lib.Report import Report
 
 PARSER = argparse.ArgumentParser(

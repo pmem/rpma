@@ -9,7 +9,7 @@
 import argparse
 
 from lib.common import json_from_file
-from lib.Bench import Bench
+from lib.bench import Bench
 
 PARSER = argparse.ArgumentParser(
     description='Generate figures (EXPERIMENTAL)')

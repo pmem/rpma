@@ -4,9 +4,9 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""test_new.py -- lib.Bench.new() tests"""
+"""test_new.py -- lib.bench.Bench.new() tests"""
 
-from lib.Bench import Bench
+from lib.bench import Bench
 from lib.Benchmark import Benchmark
 from lib.Figure import Figure
 from lib.Requirement import Requirement

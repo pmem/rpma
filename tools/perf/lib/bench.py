@@ -4,17 +4,14 @@
 # Copyright 2021, Intel Corporation
 #
 
-#
-# Bench.py -- control the banchmarking process (EXPERIMENTAL)
-#
+"""Bench.py -- control the banchmarking process (EXPERIMENTAL)"""
 
+import json
 import os
-import sys
 
-from .common import *
-from .Benchmark import *
-from .Figure import *
-from .Requirement import *
+from lib.Benchmark import Benchmark
+from lib.Figure import Figure
+from lib.Requirement import Requirement
 
 class Bench:
     """A benchmarking control object"""
@@ -28,33 +25,39 @@ class Bench:
 
     @classmethod
     def new(cls, config, figures, result_dir):
-        parts = [ os.path.splitext(os.path.basename(figure['input_file']))[0]
-                for figure in figures ]
+        """combine config and list of figures into a new bench object"""
+        parts = [os.path.splitext(os.path.basename(figure['input_file']))[0]
+                 for figure in figures]
         # combine figures from all input files
         figures = Figure.flatten([
-                figure
-                    for figure_file in figures
-                        for figure in figure_file['json']])
+            figure
+            for figure_file in figures
+            for figure in figure_file['json']])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
         return cls(config['json'], parts, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, bench):
+        """restore a bench object from cache (JSON file)"""
         result_dir, _ = os.path.split(os.path.realpath(bench['input_file']))
         bench = bench['json']
         figures = [Figure(f, result_dir) for f in bench['figures']]
-        requirements = {id: Requirement(r) for id, r in bench['requirements'].items()}
+        requirements = {
+            id: Requirement(r)
+            for id, r in bench['requirements'].items()}
         return cls(bench['config'], bench['parts'], figures, requirements, \
             result_dir)
 
     def cache(self):
-        """Cache the current state of execution to a file"""
+        """cache the current state of execution to a JSON file"""
         output = {
             'config': self.config,
             'parts': self.parts,
             'figures': [f.cache() for f in self.figures],
-            'requirements': {id: r.cache() for id, r in self.requirements.items()}
+            'requirements': {
+                id: r.cache()
+                for id, r in self.requirements.items()}
         }
 
         output_path = os.path.join(self.result_dir, 'bench.json')
@@ -62,10 +65,11 @@ class Bench:
             json.dump(output, file, indent=4)
 
     def get_config(self):
+        """get the config"""
         return self.config
 
     def run(self):
-        # run all benchmarks one-by-one
+        """run all benchmarks one-by-one"""
         skip = False
         for _, req in self.requirements.items():
             if req.is_done():
@@ -81,13 +85,14 @@ class Bench:
             return
 
         # collect data required for all scheduled figures
-        for f in self.figures:
-            if f.is_done():
+        for figure in self.figures:
+            if figure.is_done():
                 continue
-            f.prepare_series(self.result_dir)
+            figure.prepare_series(self.result_dir)
             self.cache()
 
     def dump(self):
+        """print the current status of bench execution"""
         for _, req in self.requirements.items():
             if req.is_done():
                 status = "done"
@@ -99,9 +104,15 @@ class Bench:
             req.benchmarks_dump(self, self.result_dir)
 
     def check_completed(self):
+        """
+        if bench is not completed raise an Exception
+        (all requirements (benchmarks within them) and all figures)
+        """
         for _, req in self.requirements.items():
             if not req.is_done():
-                raise Exception('Benchmarking not completed. Please use report_bench.py.')
-        for f in self.figures:
-            if not f.is_done():
-                raise Exception('Postprocessing not completed. Please use report_bench.py.')
+                raise Exception(
+                    'Benchmarking not completed. Please use report_bench.py.')
+        for figure in self.figures:
+            if not figure.is_done():
+                raise Exception(
+                    'Postprocessing not completed. Please use report_bench.py.')
