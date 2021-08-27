@@ -72,13 +72,23 @@ class Report:
     def _load_figures(self, bench):
         self.figures = {}
         for f in bench.figures:
-            html = f.to_html()
             # add to 2-level figure dictionary
             if f.file not in self.figures.keys():
                 self.figures[f.file] = {}
-            self.figures[f.file][f.key] = html
+            self.figures[f.file][f.key] = f
+
+    # a global figure counter needed for numbering figures within the report
+    figno = 0
+
+    def _add_filters(self, env):
+        """add custom filters to the environment"""
+        def figure_filter(figure):
+            Report.figno += 1
+            return figure.to_html(Report.figno)
+        env.filters['figure'] = figure_filter
 
     def __init__(self, loader, env, bench, vars):
+        self._add_filters(env)
         self.env = env # jinja2.Environment
         self._set_variables(vars)
         self.result_dir = bench.result_dir

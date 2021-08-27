@@ -41,7 +41,11 @@ class BenchMock:
     figures = [Figure(FIGURE_DUMMY)]
     parts = [PART_DUMMY]
 
-ENV_DUMMY = {}
+class EnvMock:
+    """a jinja2.Environment mock"""
+    filters = {}
+
+ENV_DUMMY = EnvMock()
 LOADER_DUMMY = {}
 BENCH_DUMMY = BenchMock()
 
@@ -80,14 +84,6 @@ VARS_DUMMY_OUT = {
     }
 }
 
-PART_VARS = {
-    'figure': {
-        FILE_DUMMY: {
-            KEY_DUMMY: HTML_DUMMY
-        }
-    }
-}
-
 def test_init(monkeypatch):
     """a report with a single dummy part"""
     def loads_mock(source):
@@ -109,8 +105,11 @@ def test_init(monkeypatch):
             # XXX assert DeepDiff(variables, VARS_DUMMY_OUT) == {}
             assert variables == VARS_DUMMY_OUT
         else:
-            # XXX assert DeepDiff(variables, PART_VARS) == {}
-            assert variables == PART_VARS
+            assert 'figure' in variables
+            assert 'file_dummy' in variables['figure']
+            assert 'key_dummy' in variables['figure']['file_dummy']
+            assert variables['figure']['file_dummy']['key_dummy'] == \
+                Figure(FIGURE_DUMMY)
     def copy_mock(src, dst):
         assert src == SCHEMATIC_PATH
         assert dst == RESULT_DIR
