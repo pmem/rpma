@@ -9,7 +9,7 @@
 import argparse
 
 from lib.common import json_from_file, dir_path
-from lib.Bench import Bench
+from lib.bench import Bench
 
 PARSER = argparse.ArgumentParser(
     description='Run report-specific benchmarks (EXPERIMENTAL)')

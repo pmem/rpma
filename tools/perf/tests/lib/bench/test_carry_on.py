@@ -4,11 +4,11 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""test_carry_on.py -- lib.Bench.carry_on() tests"""
+"""test_carry_on.py -- lib.bench.Bench.carry_on() tests"""
 
 import os
 
-from lib.Bench import Bench
+from lib.bench import Bench
 
 DUMMY_INPUT_PATH = 'dummy'
 

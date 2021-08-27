@@ -11,4 +11,5 @@ add_cstyle_pep8(tools_perf
 	# ${CMAKE_CURRENT_SOURCE_DIR}/tests/*/*/*/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/report_bench.py
 	${CMAKE_CURRENT_SOURCE_DIR}/report_create.py 
-	${CMAKE_CURRENT_SOURCE_DIR}/report_figures.py)
+	${CMAKE_CURRENT_SOURCE_DIR}/report_figures.py
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/bench.py)
