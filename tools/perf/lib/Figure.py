@@ -45,6 +45,16 @@ class Figure:
             data = json_from_file(self._series_file(result_dir))
             self.series = data['json'][self.key]['series']
 
+    def __eq__(self, other):
+        """A comparison function"""
+        if self.output != other.output:
+            return False
+        if self.result_dir != other.result_dir:
+            return False
+        if self.series != other.series:
+            return False
+        return True
+
     def cache(self):
         """Cache the current state of execution"""
         return {'output': self.output, 'series': self.series}
@@ -226,8 +236,9 @@ class Figure:
         html += "</tbody></table>"
         return html
 
-    def to_html(self):
+    def to_html(self, figno):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        html = '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
+        html = "<h4>Figure {}. {}</h4>".format(figno, self.title)
+        html += '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
         html += self.html_data_table()
         return html

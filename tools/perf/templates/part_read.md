@@ -18,17 +18,17 @@ Comparing the latency of `rpma_read()` from PMem on **the RPMA Target** to the l
 
 {{config.lat}}
 
-{{figure.ib_read_vs_rpma_read_dram.lat_avg}}
+{{figure.ib_read_vs_rpma_read_dram.lat_avg | figure}}
 
-{{figure.ib_read_vs_rpma_read_dram.lat_pctl_999}}
+{{figure.ib_read_vs_rpma_read_dram.lat_pctl_999 | figure}}
 
-{{figure.ib_read_vs_rpma_read_dram.lat_pctl_9999}}
+{{figure.ib_read_vs_rpma_read_dram.lat_pctl_9999 | figure}}
 
-{{figure.rpma_read_dram_vs_pmem.lat_avg}}
+{{figure.rpma_read_dram_vs_pmem.lat_avg | figure}}
 
-{{figure.rpma_read_dram_vs_pmem.lat_pctl_999}}
+{{figure.rpma_read_dram_vs_pmem.lat_pctl_999 | figure}}
 
-{{figure.rpma_read_dram_vs_pmem.lat_pctl_9999}}
+{{figure.rpma_read_dram_vs_pmem.lat_pctl_9999 | figure}}
 
 <h3 id="read-bw">Read from PMem: Bandwidth</h3>
 
@@ -36,12 +36,12 @@ Comparing the bandwidth of `rpma_read()` from PMem on **the RPMA Target** to the
 
 {{config.bw}}
 
-{{figure.ib_read_vs_rpma_read_dram.bw_bs}}
+{{figure.ib_read_vs_rpma_read_dram.bw_bs | figure}}
 
-{{figure.ib_read_vs_rpma_read_dram.bw_threads}}
+{{figure.ib_read_vs_rpma_read_dram.bw_threads | figure}}
 
-{{figure.rpma_read_dram_vs_pmem.bw_bs}}
+{{figure.rpma_read_dram_vs_pmem.bw_bs | figure}}
 
-{{figure.rpma_read_dram_vs_pmem.bw_threads}}
+{{figure.rpma_read_dram_vs_pmem.bw_threads | figure}}
 
 {% endif %}

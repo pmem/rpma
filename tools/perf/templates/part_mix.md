@@ -15,17 +15,17 @@ Benchmarking mixed reads from PMem (`rpma_read()`) on the **RPMA Target** and wr
 Comparing the latency of `rpma_read()` and **APM** in the **MIX** workload vs the latency of 100% reads and 100% writes configurations.
 {{config.lat}}
 
-{{figure.mix_seq.lat_avg}}
+{{figure.mix_seq.lat_avg | figure}}
 
-{{figure.mix_seq.lat_pctl_999}}
+{{figure.mix_seq.lat_pctl_999 | figure}}
 
-{{figure.mix_seq.lat_pctl_9999}}
+{{figure.mix_seq.lat_pctl_9999 | figure}}
 
-{{figure.mix_rand.lat_avg}}
+{{figure.mix_rand.lat_avg | figure}}
 
-{{figure.mix_rand.lat_pctl_999}}
+{{figure.mix_rand.lat_pctl_999 | figure}}
 
-{{figure.mix_rand.lat_pctl_9999}}
+{{figure.mix_rand.lat_pctl_9999 | figure}}
 
 <h3 id="mix-bw">Mix against PMem: Bandwidth</h3>
 
@@ -33,12 +33,12 @@ Comparing the bandwidth of `rpma_read()` and **APM** in the **MIX** workload vs 
 
 {{config.bw}}
 
-{{figure.mix_seq.bw_bs}}
+{{figure.mix_seq.bw_bs | figure}}
 
-{{figure.mix_seq.bw_threads}}
+{{figure.mix_seq.bw_threads | figure}}
 
-{{figure.mix_rand.bw_bs}}
+{{figure.mix_rand.bw_bs | figure}}
 
-{{figure.mix_rand.bw_threads}}
+{{figure.mix_rand.bw_threads | figure}}
 
 {% endif %}
