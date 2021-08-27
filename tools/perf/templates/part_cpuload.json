@@ -1,0 +1,143 @@
+{
+    "common": {
+        "server_global": [
+            "create_serialize=0",
+            "kb_base=1000",
+            "serverip=$serverip",
+            "port=7204",
+            "thread"
+        ],
+        "server_cpu": [
+            "[cpuio]",
+            "ioengine=cpuio",
+            "cpuload={0, 25, 50, 75, 80, 85, 90, 95, 99, 100}",
+            "numjobs=$cores_per_socket"
+        ],
+        "client_global": [
+            "create_serialize=0",
+            "serverip=$serverip",
+            "port=7204",
+            "thread",
+            "disable_clat=1",
+            "lat_percentiles=1",
+            "percentile_list=99.0:99.9:99.99:99.999"
+        ],
+        "client_common": [
+            "readwrite={write, randwrite}",
+            "blocksize=$blocksize",
+            "ramp_time=15",
+            "time_based",
+            "runtime=60"
+        ]
+    },
+    "config": {
+        "lat": {
+            "type": "kvtable",
+            "APM Server - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_apm_server",
+                "{server_global}",
+                "",
+                "[server]",
+                "direct_write_to_pmem=1",
+                "numjobs=1",
+                "size=100MiB",
+                "filename=/dev/dax/path",
+                "",
+                "{server_cpu}"
+            ],
+            "APM Client - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_apm_client",
+                "{client_global}",
+                "",
+                "[client]",
+                "sync=1",
+                "{client_common}"
+            ],
+            "GPSPM(-RT) Server - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_gpspm_server",
+                "{server_global}",
+                "",
+                "[server]",
+                "direct_write_to_pmem=0",
+                "numjobs=1",
+                "iodepth=1",
+                "size=100MiB",
+                "filename=/dev/dax/path",
+                "busy_wait_polling={{0, 1}} # 1 for GPSPM-RT",
+                "",
+                "time_based",
+                "runtime=365d",
+                "",
+                "{server_cpu}"
+            ],
+            "GPSPM(-RT) Client - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_gpspm_client",
+                "{client_global}",
+                "",
+                "[client]",
+                "sync=1",
+                "{client_common}"
+            ]
+        },
+        "bw": {
+            "type": "kvtable",
+            "APM Server - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_apm_server",
+                "{server_global}",
+                "",
+                "[server]",
+                "direct_write_to_pmem=1",
+                "numjobs=$numjobs",
+                "size=100MiB",
+                "filename=/dev/dax/path",
+                "",
+                "{server_cpu}"
+            ],
+            "APM Client - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_apm_client",
+                "{client_global}",
+                "",
+                "[client]",
+                "numjobs=$numjobs",
+                "group_reporting=1",
+                "iodepth=2",
+                "{client_common}"
+            ],
+            "GPSPM(-RT) Server - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_gpspm_server",
+                "{server_global}",
+                "",
+                "[server]",
+                "direct_write_to_pmem=0",
+                "numjobs=$numjobs",
+                "iodepth=2",
+                "size=100MiB",
+                "filename=/dev/dax/path",
+                "busy_wait_polling={{0, 1}} # 1 for GPSPM-RT",
+                "",
+                "time_based",
+                "runtime=365d",
+                "",
+                "{server_cpu}"
+            ],
+            "GPSPM(-RT) Client - FIO engine configuration": [
+                "[global]",
+                "ioengine=librpma_gpspm_client",
+                "{client_global}",
+                "",
+                "[client]",
+                "numjobs=$numjobs",
+                "group_reporting=1",
+                "iodepth=2",
+                "{client_common}"
+            ]
+        }
+    }
+}

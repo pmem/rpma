@@ -4,8 +4,8 @@
             "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "lat_apm_vs_gpspm_cpu",
-            "key": "00_99_{y_key}",
+            "file": "apm_vs_gpspm_cpu_00_99",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -47,8 +47,8 @@
             "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
-            "file": "lat_apm_vs_gpspm_cpu",
-            "key": "75_99_{y_key}",
+            "file": "apm_vs_gpspm_cpu_75_99",
+            "key": "{y_key}",
             "fstrings": ["title", "key"]
         },
         "series_common": {
@@ -90,8 +90,8 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
-            "file": "bw_apm_vs_gpspm_cpu",
-            "key": "00_99"
+            "file": "apm_vs_gpspm_cpu_00_99",
+            "key": "bw"
         },
         "series_common": {
             "mode": "bw-cpu",
@@ -132,8 +132,8 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
-            "file": "bw_apm_vs_gpspm_cpu",
-            "key": "75_99"
+            "file": "apm_vs_gpspm_cpu_75_99",
+            "key": "bw"
         },
         "series_common": {
             "mode": "bw-cpu",
@@ -174,8 +174,8 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
-            "file": "bw_apm_vs_gpspm_cpu_mt",
-            "key": "00_99"
+            "file": "apm_vs_gpspm_cpu_00_99",
+            "key": "bw_mt"
         },
         "series_common": {
             "mode": "bw-cpu-mt",
@@ -216,8 +216,8 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
-            "file": "bw_apm_vs_gpspm_cpu_mt",
-            "key": "75_99"
+            "file": "apm_vs_gpspm_cpu_75_99",
+            "key": "bw_mt"
         },
         "series_common": {
             "mode": "bw-cpu-mt",
