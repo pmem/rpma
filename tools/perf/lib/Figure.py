@@ -168,11 +168,12 @@ class Figure:
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
-    def to_png(self):
+    def to_png(self, include_title):
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
-        suptitle = "\n".join(wrap(self.title, 60))
-        fig.suptitle(suptitle, fontsize='medium', y=0.90)
+        if include_title:
+            suptitle = "\n".join(wrap(self.title, 60))
+            fig.suptitle(suptitle, fontsize='medium', y=0.90)
         # get a subplot
         ax = plt.subplot(1, 1, 1)
         # XXX bw_avg [threads=24, iodepth=2, block size=4096B]

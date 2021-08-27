@@ -15,6 +15,9 @@ PARSER = argparse.ArgumentParser(
     description='Generate figures (EXPERIMENTAL)')
 PARSER.add_argument('--bench', type=json_from_file, required=True,
                     help='a bench.json file of a completed benchmark')
+PARSER.add_argument('--include_titles', dest='include_titles',
+                    action='store_true',
+                    help='include titles into the output figures')
 
 def main():
     """
@@ -25,7 +28,7 @@ def main():
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
     for figure in bench.figures:
-        figure.to_png()
+        figure.to_png(args.include_titles)
     print('Done.')
 
 if __name__ == '__main__':
