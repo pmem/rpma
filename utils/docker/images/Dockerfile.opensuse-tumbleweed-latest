@@ -28,6 +28,9 @@ ENV BASE_DEPS "\
 	sudo \
 	which"
 
+ENV EXAMPLES_DEPS "\
+	libpmem2-devel"
+
 ENV TOOLS_DEPS "\
 	python3-Jinja2"
 
@@ -56,6 +59,7 @@ ENV RPMA_DEPS "\
 # Install all required packages
 RUN zypper install -y \
 	$BASE_DEPS \
+	$EXAMPLES_DEPS \
 	$TOOLS_DEPS \
 	$TESTS_DEPS \
 	$RPMA_DEPS
