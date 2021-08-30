@@ -4,10 +4,10 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""test_png_path.py -- lib.Figure.png_path() tests"""
+"""test_png_path.py -- lib.figure.Figure.png_path() tests"""
 
 import pytest
-from lib.Figure import Figure
+from lib.figure import Figure
 
 DATA = {
     'output': {
@@ -28,5 +28,5 @@ DATA = {
 RELATIVE_PATH = "./file_key.png"
 
 def test_png_path_basic():
-    """basic lib.Figure.html_data_table() test"""
+    """basic lib.figure.Figure.html_data_table() test"""
     assert Figure(DATA).png_path() == RELATIVE_PATH
