@@ -30,6 +30,7 @@ ENV BASE_DEPS "\
 
 ENV EXAMPLES_DEPS "\
 	libpmem-dev \
+	libpmem2-dev \
 	libprotobuf-c-dev"
 
 ENV TOOLS_DEPS "\
