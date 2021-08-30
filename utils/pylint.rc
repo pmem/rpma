@@ -5,7 +5,9 @@
 # too-few-public-methods - allow for 'too simple to be good' classes
 # e.g. in the unit tests
 # too-many-arguments - (X>5) XXX requires consideration
-disable=fixme,too-few-public-methods,too-many-arguments
+# too-many-instance-attributes - (X>7) XXX requires consideration
+# no-self-use - XXX requires consideration
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use
 
 
 [FORMAT]

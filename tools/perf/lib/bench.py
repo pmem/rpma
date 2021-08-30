@@ -10,7 +10,7 @@ import json
 import os
 
 from lib.Benchmark import Benchmark
-from lib.Figure import Figure
+from lib.figure import Figure
 from lib.Requirement import Requirement
 
 class Bench:

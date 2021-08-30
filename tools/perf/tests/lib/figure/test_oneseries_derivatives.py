@@ -4,15 +4,15 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""test_oneseries_derivatives.py -- lib.Figure.oneseries_derivatives() tests"""
+"""test_oneseries_derivatives.py -- Figure.oneseries_derivatives() tests"""
 
-import lib.Figure
+import lib.figure
 import pytest
 
 @pytest.mark.parametrize('rw, rw_order', [('randread', 'rand'), ('randwrite', 'rand'), ('read', 'seq'), ('write', 'seq')])
 def test_rw_order(rw, rw_order):
     """generating rw_order from rw"""
-    output = lib.Figure.Figure.oneseries_derivatives({'rw' : rw})
+    output = lib.figure.Figure.oneseries_derivatives({'rw' : rw})
     assert output['rw_order'] == rw_order
 
 DUMMY_STR = 'dummy'
@@ -25,6 +25,6 @@ def test_xy_key(input_key, output_key, monkeypatch):
     def str2key_mock(arg):
         assert arg == DUMMY_STR
         return DUMMY_STR_KEY
-    monkeypatch.setattr(lib.Figure, 'str2key', str2key_mock)
-    output = lib.Figure.Figure.oneseries_derivatives({input_key: DUMMY_STR})
+    monkeypatch.setattr(lib.figure, 'str2key', str2key_mock)
+    output = lib.figure.Figure.oneseries_derivatives({input_key: DUMMY_STR})
     assert output[output_key] == DUMMY_STR_KEY

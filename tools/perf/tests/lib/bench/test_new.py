@@ -8,7 +8,7 @@
 
 from lib.bench import Bench
 from lib.Benchmark import Benchmark
-from lib.Figure import Figure
+from lib.figure import Figure
 from lib.Requirement import Requirement
 
 DICT_DUMMY = {
