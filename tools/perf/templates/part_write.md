@@ -25,17 +25,17 @@ Comparing the latency of **APM** to PMem on **the RPMA Target** (with *Direct Wr
 
 {{config.lat}}
 
-{{figure.apm_dram_vs_pmem.lat_avg}}
+{{figure.apm_dram_vs_pmem.lat_avg | figure}}
 
-{{figure.apm_dram_vs_pmem.lat_pctl_999}}
+{{figure.apm_dram_vs_pmem.lat_pctl_999 | figure}}
 
-{{figure.apm_dram_vs_pmem.lat_pctl_9999}}
+{{figure.apm_dram_vs_pmem.lat_pctl_9999 | figure}}
 
-{{figure.apm_pmem_vs_gpspm_pmem.lat_avg}}
+{{figure.apm_pmem_vs_gpspm_pmem.lat_avg | figure}}
 
-{{figure.apm_pmem_vs_gpspm_pmem.lat_pctl_999}}
+{{figure.apm_pmem_vs_gpspm_pmem.lat_pctl_999 | figure}}
 
-{{figure.apm_pmem_vs_gpspm_pmem.lat_pctl_9999}}
+{{figure.apm_pmem_vs_gpspm_pmem.lat_pctl_9999 | figure}}
 
 <h3 id="write-bw">Write to PMem: Bandwidth</h3>
 
@@ -43,12 +43,12 @@ Comparing the bandwidth of **APM** to PMem on **the RPMA Target** (with *Direct 
 
 {{config.bw}}
 
-{{figure.apm_dram_vs_pmem.bw_bs}}
+{{figure.apm_dram_vs_pmem.bw_bs | figure}}
 
-{{figure.apm_dram_vs_pmem.bw_threads}}
+{{figure.apm_dram_vs_pmem.bw_threads | figure}}
 
-{{figure.apm_pmem_vs_gpspm_pmem.bw_bs}}
+{{figure.apm_pmem_vs_gpspm_pmem.bw_bs | figure}}
 
-{{figure.apm_pmem_vs_gpspm_pmem.bw_threads}}
+{{figure.apm_pmem_vs_gpspm_pmem.bw_threads | figure}}
 
 {% endif %}
