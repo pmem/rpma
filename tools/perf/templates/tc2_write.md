@@ -2,8 +2,8 @@ Benchmarking two ways of writing data persistently to **the RPMA Target**: *Appl
 
 - **APM** uses `rpma_flush()` following a sequence of `rpma_write()` operations to provide the remote persistency. This method requires **the RPMA Target** to be capable of *Direct Write to PMem* (for details please see [Direct Write to PMem][direct-write-to-pmem]).
 - **GPSPM** uses `rpma_send()` and `rpma_recv()` operations for sending requests to **the RPMA Target** to assure persistency of the data written using `rpma_write()`. **The RPMA Target** has to provide a thread handling these requests e.g. persisting the data using the `pmem_persist()` operation. When the persistency of the data is assured the response is sent back using also `rpma_send()` and `rpma_recv()`. Depending on how the thread polls for incoming requests you may distinguish two modes:
-    - **GPSPM-RT** where the thread polling for incoming requests busy-wait for them (`busy_wait_polling=1`) and
-    - **GPSPM** where the thread schedule to be wakened up when a request will appear (`busy_wait_polling=0`). Picking one of these polling modes over another introduces specific challenges and benefits.
+    - **GPSPM-RT** where the thread polling for incoming requests busy-wait for them (`busy\_wait\_polling=1`) and
+    - **GPSPM** where the thread schedule to be wakened up when a request will appear (`busy\_wait\_polling=0`). Picking one of these polling modes over another introduces specific challenges and benefits.
 
 For more details on **APM** and **GPSPM** please see: "[Persistent Memory Replication Over Traditional RDMA Part 1: Understanding Remote Persistent Memory][rpmem-wp]" Chapter "Two Remote Replication Methods".
 
