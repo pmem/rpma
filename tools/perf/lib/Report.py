@@ -46,7 +46,7 @@ class Report:
 
         # the only correct type is 'kvtable'
         vars['configuration']['common']['type'] = 'kvtable'
-        vars['configuration']['target']['type'] = 'kvtable'
+        vars['configuration']['target']['details']['type'] = 'kvtable'
         vars['configuration']['bios']['settings']['type'] = 'kvtable'
         vars['configuration']['bios']['excerpt']['type'] = 'kvtable'
 
