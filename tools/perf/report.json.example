@@ -51,6 +51,8 @@
                 "major.minor-patch-hash"
             ]
         },
+        "target_description" :
+            "Description of applied configuration.",
         "target" : {
             "Repository" : [
                 "https://github.com/domain/url"
