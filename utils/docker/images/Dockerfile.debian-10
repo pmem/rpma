@@ -32,7 +32,8 @@ ENV BASE_DEPS "\
 	whois"
 
 ENV EXAMPLES_DEPS "\
-	libpmem-dev"
+	libpmem-dev \
+	libpmem2-dev"
 
 ENV TOOLS_DEPS "\
 	python3-jinja2"
