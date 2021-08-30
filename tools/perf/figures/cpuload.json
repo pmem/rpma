@@ -4,6 +4,7 @@
             "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_00_99",
             "key": "{y_key}",
             "fstrings": ["title", "key"]
@@ -47,6 +48,7 @@
             "title": "Latency ({y}): APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_75_99",
             "key": "{y_key}",
             "fstrings": ["title", "key"]
@@ -90,6 +92,7 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_00_99",
             "key": "bw"
         },
@@ -132,6 +135,7 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_75_99",
             "key": "bw"
         },
@@ -174,6 +178,7 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_00_99",
             "key": "bw_mt"
         },
@@ -216,6 +221,7 @@
             "title": "Bandwidth: APM to PMEM vs GPSPM(-RT) to PMEM with the target CPU under load",
             "x": "cpuload",
             "y": "bw_avg",
+            "xscale": "linear",
             "file": "apm_vs_gpspm_cpu_75_99",
             "key": "bw_mt"
         },
