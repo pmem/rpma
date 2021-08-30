@@ -147,7 +147,7 @@ class Figure:
         else:
             figures = {}
         figures[self.key] = output
-        with open(series_path, 'w') as file:
+        with open(series_path, 'w', encoding="utf-8") as file:
             json.dump(figures, file, indent=4)
         # mark as done
         self.output['done'] = True
