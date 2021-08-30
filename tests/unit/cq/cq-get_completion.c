@@ -141,17 +141,19 @@ get_completion__poll_cq_wc_status_error(void **cq_ptr)
 	wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 	assert_int_not_equal(MOCK_WC_STATUS_ERROR, IBV_WC_SUCCESS);
 	wc.status = MOCK_WC_STATUS_ERROR;
+	wc.qp_num = MOCK_CONN_UID;
 	will_return(poll_cq, &wc);
 
 	/* run test */
 	struct rpma_completion cmpl = {NULL, RPMA_OP_WRITE, 0xba,
-			IBV_WC_SUCCESS, 0xba, 0xba};
+			IBV_WC_SUCCESS, 0xba, 0xba, 0xba};
 	int ret = rpma_cq_get_completion(cq, &cmpl);
 
 	/* verify the result */
 	assert_int_equal(ret, 0);
 	assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
 	assert_int_equal(cmpl.op_status, MOCK_WC_STATUS_ERROR);
+	assert_int_equal(cmpl.conn_uid, MOCK_CONN_UID);
 	/* the rest of the fields should not be touched at all */
 	assert_int_equal(cmpl.op, RPMA_OP_WRITE);
 	assert_int_equal(cmpl.byte_len, 0xba);
@@ -231,6 +233,7 @@ get_completion__success(void **cq_ptr)
 		will_return(poll_cq, 1);
 		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 		wc.status = IBV_WC_SUCCESS;
+		wc.qp_num = MOCK_CONN_UID;
 		wc.opcode = opcodes[i];
 		wc.byte_len = MOCK_LEN;
 		if (flags[i] == IBV_WC_WITH_IMM) {
@@ -251,6 +254,7 @@ get_completion__success(void **cq_ptr)
 		assert_int_equal(ret, 0);
 		assert_int_equal(cmpl.op_context, MOCK_OP_CONTEXT);
 		assert_int_equal(cmpl.op_status, IBV_WC_SUCCESS);
+		assert_int_equal(cmpl.conn_uid, MOCK_CONN_UID);
 		assert_int_equal(cmpl.op, ops[i]);
 		assert_int_equal(cmpl.byte_len, MOCK_LEN);
 		if (flags[i] == IBV_WC_WITH_IMM) {

@@ -20,6 +20,7 @@ rpma_conn_get_cq.3
 rpma_conn_get_event_fd.3
 rpma_conn_get_private_data.3
 rpma_conn_get_rcq.3
+rpma_conn_get_uid.3
 rpma_conn_next_event.3
 rpma_conn_req_connect.3
 rpma_conn_req_delete.3

@@ -477,6 +477,20 @@ rpma_recv(struct rpma_conn *conn,
 }
 
 /*
+ * rpma_conn_get_uid -- get the connection's unique ID
+ */
+int
+rpma_conn_get_uid(const struct rpma_conn *conn, uint32_t *conn_uid)
+{
+	if (conn == NULL || conn_uid == NULL)
+		return RPMA_E_INVAL;
+
+	*conn_uid = conn->id->qp->qp_num;
+
+	return 0;
+}
+
+/*
  * rpma_conn_get_cq -- get the connection's main CQ
  */
 int

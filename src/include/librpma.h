@@ -1702,6 +1702,37 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
 
+
+/** 3
+ * rpma_conn_get_uid - get the connection's unique ID
+ *
+ * SYNOPSIS
+ *
+ *     #include <librpma.h>
+ *
+ *     struct rpma_conn;
+ *     int rpma_conn_get_uid(const struct rpma_conn *conn,
+ *                     uint32_t *conn_uid);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_uid() obtains the unique ID of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_uid() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_get_uid() does not set *conn_uid
+ * value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_uid() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or conn_uid is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_conn_req_connect(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_get_uid(const struct rpma_conn *conn, uint32_t *conn_uid);
+
 struct rpma_cq;
 
 /** 3
@@ -2622,6 +2653,7 @@ struct rpma_completion {
 	enum rpma_op op;
 	uint32_t byte_len;
 	enum ibv_wc_status op_status;
+	uint32_t conn_uid;
 	unsigned flags;
 	uint32_t imm;
 };
