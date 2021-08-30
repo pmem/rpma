@@ -234,7 +234,11 @@ class Figure:
         # header
         html = "<table><thead><tr><th></th>"
         for point in self.series[0]['points']:
-            html += "<th>" + str(point[0]) + "</th>"
+            data = str(point[0])
+            if data != "":
+                html += "<th>" + data + "</th>"
+            else:
+                html += "<th> - </th>"
         html += "</tr></thead><tbody>"
 
         # rows
@@ -244,7 +248,11 @@ class Figure:
             html += "<tr><td>" + oneseries['label'].replace('_', '\\_') \
                 + "</td>"
             for point in oneseries['points']:
-                html += "<td>" + str(point[1]) + "</td>"
+                data = str(point[1])
+                if data != "":
+                    html += "<td>" + data + "</td>"
+                else:
+                    html += "<td> - </td>"
             html += "</tr>"
 
         # end the table
