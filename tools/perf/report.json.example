@@ -1,4 +1,8 @@
 {
+    "visualization": {
+        "_comment": "If you provide the maximum bandwidth of the RNIC all the bandwidth graphs will have a consistent y-axis scale. The value should be provided in Gbps."
+        "rnic_max_bw": 100
+    },
     "subtitle": "",
     "release": "0.00",
     "test_date": "December 2020",
