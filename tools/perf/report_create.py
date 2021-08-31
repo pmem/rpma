@@ -8,6 +8,7 @@
 
 import argparse
 
+from shutil import copy
 from jinja2 import Environment, FileSystemLoader
 
 from lib.common import json_from_file
@@ -35,6 +36,8 @@ def main():
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
     report = Report(LOADER, ENV, bench, args.report)
+    # copying report.json file to the result dir for future reference
+    copy(args.report['input_file'], bench.result_dir)
     report.create(args.output)
     print("Done.")
 
