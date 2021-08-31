@@ -236,6 +236,7 @@ class Figure:
 
         os.chdir(self.result_dir)
         plt.savefig(self.png_path())
+        plt.close(fig)
 
     def html_data_table(self):
         """
