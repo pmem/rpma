@@ -34,6 +34,7 @@ RESULT_DIR = '/dummy/path'
 PART_DUMMY = "dummy"
 SCHEMATIC_FILE = 'Figure.png'
 SCHEMATIC_PATH = 'path/' + SCHEMATIC_FILE
+NUMBER_OF_PARTS = 3
 
 class BenchMock:
     """a lib.Bench.Bench mock"""
@@ -98,14 +99,14 @@ def test_init(monkeypatch):
     def part_init_mock(self, loader, env, name):
         assert loader == LOADER_DUMMY
         assert env == ENV_DUMMY
-        assert name in ["preamble", PART_DUMMY]
+        assert name in ["preamble", "footer", PART_DUMMY]
         self.name = name
     def process_variables_level_mock(_self, variables, common):
         # XXX assert DeepDiff(variables, VARS_DUMMY_OUT) == {}
         assert variables == VARS_DUMMY_OUT
         assert common == {}
     def set_variables_mock(self, variables):
-        if self.name == "preamble":
+        if self.name in ["preamble", "footer"]:
             # XXX assert DeepDiff(variables, VARS_DUMMY_OUT) == {}
             assert variables == VARS_DUMMY_OUT
         else:
@@ -129,4 +130,4 @@ def test_init(monkeypatch):
     # XXX assert DeepDiff(report.variables, VARS_DUMMY_OUT) == {}
     assert report.variables == VARS_DUMMY_OUT
     assert report.result_dir == RESULT_DIR
-    assert len(report.parts) == 2
+    assert len(report.parts) == NUMBER_OF_PARTS

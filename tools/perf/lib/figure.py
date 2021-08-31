@@ -12,7 +12,7 @@ from textwrap import wrap
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
-from lib.common import json_from_file, str2key
+from lib.common import json_from_file, str2key, escape
 from lib.flat import make_flat, process_fstrings
 
 # XXX allow not breaking long strings
@@ -87,11 +87,6 @@ class Figure:
         if 'y' in oneseries.keys():
             output['y_key'] = str2key(oneseries['y'])
         return output
-
-    @staticmethod
-    def escape(string):
-        """Escape markdown special characters"""
-        return string.replace('_', '\\_')
 
     @classmethod
     def flatten(cls, figures):
@@ -254,7 +249,7 @@ class Figure:
         for oneseries in self.series:
             # Since the output is processed as markdown,
             # special characters have to be escaped.
-            html += "<tr><td>" + Figure.escape(oneseries['label']) + "</td>"
+            html += "<tr><td>" + escape(oneseries['label']) + "</td>"
             points = Figure._points_to_dict(oneseries['points'])
             points = {k: '{0:.2f}'.format(v) for k, v in points.items()}
             for xarg in xcommon:
@@ -267,7 +262,7 @@ class Figure:
 
     def to_html(self, figno):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        html = "<h4>Figure {}. {}</h4>".format(figno, Figure.escape(self.title))
+        html = "<h4>Figure {}. {}</h4>".format(figno, escape(self.title))
         html += '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
         html += self.html_data_table()
         return html

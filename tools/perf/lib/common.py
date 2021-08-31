@@ -57,3 +57,7 @@ def str2key(input):
     Ref: https://jinja.palletsprojects.com/en/3.0.x/templates/#variables
     """
     return input.replace('.', '')
+
+def escape(string):
+    """Escape markdown special characters"""
+    return string.replace('_', '\\_')
