@@ -12,6 +12,7 @@ import os
 import shutil
 
 from .Part import *
+from lib.common import escape
 
 class Report:
     """A report object"""
@@ -24,6 +25,9 @@ class Report:
         if 'authors' in vars:
             vars['authors'] = "\n".join(
                 ['- ' + author for author in vars['authors']])
+
+        if 'ref' in vars:
+            vars['ref'] = escape(vars['ref'])
 
         # XXX type validation is missing
         if 'configuration' not in vars:
@@ -68,6 +72,9 @@ class Report:
             part = Part(loader, env, partname)
             part.set_variables({'figure': self.figures})
             self.parts.append(part)
+        footer = Part(loader, env, 'footer')
+        footer.set_variables(self.variables)
+        self.parts.append(footer)
 
     def _load_figures(self, bench):
         self.figures = {}
