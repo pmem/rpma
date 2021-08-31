@@ -32,6 +32,7 @@ FIGURE_DUMMY = {
 
 RESULT_DIR = '/dummy/path'
 PART_DUMMY = "dummy"
+INPUT_FILE = '/path/to/report.json'
 SCHEMATIC_FILE = 'Figure.png'
 SCHEMATIC_PATH = 'path/' + SCHEMATIC_FILE
 
@@ -50,7 +51,7 @@ LOADER_DUMMY = {}
 BENCH_DUMMY = BenchMock()
 
 VARS_DUMMY = {
-    'input_file': '/path/to/report.json',
+    'input_file': INPUT_FILE,
     'json': {
         'configuration': {
             'common': {},
@@ -115,7 +116,7 @@ def test_init(monkeypatch):
             assert variables['figure']['file_dummy']['key_dummy'] == \
                 Figure(FIGURE_DUMMY)
     def copy_mock(src, dst):
-        assert src == SCHEMATIC_PATH
+        assert (src == SCHEMATIC_PATH or src == INPUT_FILE)
         assert dst == RESULT_DIR
     monkeypatch.setattr(json, 'loads', loads_mock)
     monkeypatch.setattr(Figure, 'to_html', to_html_mock)

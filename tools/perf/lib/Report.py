@@ -52,10 +52,12 @@ class Report:
 
         self.variables = vars
 
-    def _load_parts(self, loader, env, bench):
+    def _load_parts(self, loader, env, bench, input_file):
         # copy schematic
         shutil.copy(self.variables['configuration']['schematic'], self.result_dir)
         self.variables['configuration']['schematic'] = os.path.basename(self.variables['configuration']['schematic'])
+        # copy report.json file
+        shutil.copy(input_file, self.result_dir)
         # prepare preamble part
         preamble = Part(loader, env, 'preamble')
         # XXX Part.process_variables_level() should be a function not a method
@@ -93,7 +95,7 @@ class Report:
         self._set_variables(vars)
         self.result_dir = bench.result_dir
         self._load_figures(bench)
-        self._load_parts(loader, env, bench)
+        self._load_parts(loader, env, bench, vars['input_file'])
 
     def _create_menu(self):
         return "".join([part.menu() for part in self.parts])
