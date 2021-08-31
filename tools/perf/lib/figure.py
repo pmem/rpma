@@ -23,7 +23,7 @@ class Figure:
     """A single figure"""
 
     _figure_kwargs = {'figsize': [6.4, 4.8], 'dpi': 200, \
-        'tight_layout': {'pad': 6}}
+        'tight_layout': {'pad': 1}}
 
     def _series_file(self, result_dir):
         return os.path.join(result_dir, self.file + '.json')
