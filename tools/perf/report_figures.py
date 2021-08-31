@@ -28,7 +28,10 @@ def main():
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
     for figure in bench.figures:
-        figure.to_png(args.include_titles)
+        yaxis_max = 0
+        if 'rnic_max_bw' in bench.config:
+            yaxis_max = 1.1*bench.config['rnic_max_bw']
+        figure.to_png(args.include_titles, yaxis_max)
     print('Done.')
 
 if __name__ == '__main__':
