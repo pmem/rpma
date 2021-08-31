@@ -49,9 +49,9 @@ Intel does not control or audit third-party data.  You should consult other sour
 
 <h3 id="target-cfg">Target Configuration</h3>
 
-Description of applied configuration.
+{{configuration.target.description}}
 
-{{configuration.target}}
+{{configuration.target.details}}
 
 <h3 id="bios-settings">BIOS Settings</h3>
 

@@ -51,16 +51,20 @@
                 "major.minor-patch-hash"
             ]
         },
-        "target" : {
-            "Repository" : [
-                "https://github.com/domain/url"
-            ],
-            "Version" : [
-                "hash"
-            ],
-            "Applied procedure" : [
-                "[Details](https://domain/url)"
-            ]
+         "target" : {
+            "description" :
+                "Description of applied configuration.",
+            "details": {
+                "Repository" : [
+                    "https://github.com/domain/url"
+                ],
+                "Version" : [
+                    "hash"
+                ],
+                "Applied procedure" : [
+                    "[Details](https://domain/url)"
+                ]
+            }
         },
         "bios": {
             "settings" : {

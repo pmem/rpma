@@ -54,7 +54,9 @@ VARS_DUMMY = {
     'json': {
         'configuration': {
             'common': {},
-            'target': {},
+            'target': {
+                'details': {}
+            },
             'bios': {
                 'settings': {},
                 'excerpt': {}
@@ -70,7 +72,9 @@ VARS_DUMMY_OUT = {
             'type': 'kvtable'
         },
         'target': {
-            'type': 'kvtable'
+            'details': {
+                'type': 'kvtable'
+            }
         },
         'bios': {
             'settings': {
