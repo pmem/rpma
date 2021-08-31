@@ -262,7 +262,8 @@ class Figure:
 
     def to_html(self, figno):
         """Combine a Figure's png and data table into a single HTML snippet"""
-        html = "<h4>Figure {}. {}</h4>".format(figno, escape(self.title))
+        html = "<h4 style='margin-top:80.0pt'>Figure {}. {}</h4>". \
+            format(figno, escape(self.title))
         html += '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
         html += self.html_data_table()
         return html
