@@ -14,5 +14,6 @@
     "REMOTE_DIRECT_WRITE_TO_PMEM": false,
     "REMOTE_FIO_PATH": "path",
     "REMOTE_JOB_PATH": "path",
-    "REMOTE_JOB_MEM_PATH": "path"
+    "REMOTE_JOB_MEM_PATH": "path",
+    "rnic_max_bw": "(optional) in Gbps"
 }

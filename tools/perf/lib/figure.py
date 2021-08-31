@@ -8,6 +8,7 @@
 
 import json
 import os.path
+import re
 from textwrap import wrap
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -199,7 +200,7 @@ class Figure:
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
-    def to_png(self, include_title):
+    def to_png(self, include_title, yaxis_max):
         """generate an output PNG file"""
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
@@ -230,6 +231,9 @@ class Figure:
         plt.setp(plot.get_xticklabels(), rotation=45, ha='right')
         plot.set_xlabel(self._label(self.argx))
         plot.set_ylabel(self._label(self.argy, with_better=True))
+        if yaxis_max:
+            if not re.match(r"lat*", self.argy):
+                plot.set_ylim(top=yaxis_max)
         plot.set_ylim(bottom=0)
         plot.legend(fontsize=6)
         plot.grid(True)
