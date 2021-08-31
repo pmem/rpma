@@ -201,6 +201,7 @@ class Figure:
 
     def to_png(self, include_title):
         """generate an output PNG file"""
+        max_yaxis = 0
         # set output file size, padding and title
         fig = plt.figure(**Figure._figure_kwargs)
         if include_title:
@@ -217,6 +218,9 @@ class Figure:
             plot.plot(xslist, yslist, marker='.', label=oneseries['label'])
             # collect all existing x values
             xticks.extend(xslist)
+            # set max y value
+            if max(yslist) > max_yaxis:
+                max_yaxis = max(yslist)
         # make values unique (set) and sort them
         xticks = sorted(list(set(xticks)))
         # set the x-axis scale
@@ -230,6 +234,7 @@ class Figure:
         plt.setp(plot.get_xticklabels(), rotation=45, ha='right')
         plot.set_xlabel(self._label(self.argx))
         plot.set_ylabel(self._label(self.argy, with_better=True))
+        plot.set_ylim(top=1.1*max_yaxis)
         plot.set_ylim(bottom=0)
         plot.legend(fontsize=6)
         plot.grid(True)
