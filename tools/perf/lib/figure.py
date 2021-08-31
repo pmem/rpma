@@ -8,6 +8,7 @@
 
 import json
 import os.path
+import re
 from textwrap import wrap
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -36,6 +37,7 @@ class Figure:
         self.file = self.output['file']
         self.argx = self.output['x']
         self.argy = self.output['y']
+        self.yaxis_max = None
         self.key = self.output['key']
         self.xscale = self.output.get('xscale', 'log')
         self.result_dir = result_dir
@@ -63,6 +65,10 @@ class Figure:
     def is_done(self):
         """Are all steps completed?"""
         return self.output['done']
+
+    def set_yaxis_max(self, max_y):
+        """Set y-axis max"""
+        self.yaxis_max = max_y
 
     @staticmethod
     def get_figure_desc(figure):
@@ -230,6 +236,8 @@ class Figure:
         plt.setp(plot.get_xticklabels(), rotation=45, ha='right')
         plot.set_xlabel(self._label(self.argx))
         plot.set_ylabel(self._label(self.argy, with_better=True))
+        if self.yaxis_max is not None:
+            plot.set_ylim(top=self.yaxis_max)
         plot.set_ylim(bottom=0)
         plot.legend(fontsize=6)
         plot.grid(True)
