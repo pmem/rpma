@@ -8,6 +8,14 @@ All mandatory parameters are listed in the [`config.json.example`](./config.json
 
 ## Optional parameters
 
+If you provide the maximum bandwidth of the RNIC all the bandwidth graphs will have a consistent y-axis scale. The value should be provided in Gbps.
+
+```json
+    "rnic_max_bw": 100
+```
+
+### Cascade Lake DDIO automatization
+
 For Cascade Lake platforms you can allow to set up DDIO automatically during the benchmark execution. To make it possible you have to allow password-less sudo for the user you are using on the target system and provide a PCIe Root Port of the RNIC you are using on the target system. For details please read [Direct Write to PMem][direct-write]. e.g.:
 
 ```json
