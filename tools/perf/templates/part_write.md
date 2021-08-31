@@ -6,7 +6,7 @@
 </ul>
 {% else %}
 
-<h2 id="write">Write to PMem</h2>
+<h2 id="write" class="page-break">Write to PMem</h2>
 
 Benchmarking two ways of writing data persistently to **the RPMA Target**: *Appliance Persistency Method* (**APM**) and *General Purpose Persistency Method* (**GPSPM**). Where:
 
@@ -37,7 +37,7 @@ Comparing the latency of **APM** to PMem on **the RPMA Target** (with *Direct Wr
 
 {{figure.apm_pmem_vs_gpspm_pmem.lat_pctl_9999 | figure}}
 
-<h3 id="write-bw">Write to PMem: Bandwidth</h3>
+<h3 id="write-bw" class="page-break">Write to PMem: Bandwidth</h3>
 
 Comparing the bandwidth of **APM** to PMem on **the RPMA Target** (with *Direct Write to PMem*) vs the bandwidth of **APM** to DRAM on **the RPMA Target** (with *Direct Write to PMem* disabled) (as a baseline) vs the bandwidth of **GPSPM(-RT)** to PMem on **the RPMA Target** (with *Direct Write to PMem* disabled).
 

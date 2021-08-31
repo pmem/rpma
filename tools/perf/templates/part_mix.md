@@ -6,7 +6,7 @@
 </ul>
 {% else %}
 
-<h2 id="mix">Mix against PMem</h2>
+<h2 id="mix" class="page-break">Mix against PMem</h2>
 
 Benchmarking mixed reads from PMem (`rpma_read()`) on the **RPMA Target** and writes (**APM**) to the same PMem on **the RPMA Target** side in the configured ratio (**MIX**) and comparing it to pure `rpma_read()` (100% reads) and **APM** (100% writes).
 
@@ -27,7 +27,7 @@ Comparing the latency of `rpma_read()` and **APM** in the **MIX** workload vs th
 
 {{figure.mix_rand.lat_pctl_9999 | figure}}
 
-<h3 id="mix-bw">Mix against PMem: Bandwidth</h3>
+<h3 id="mix-bw" class="page-break">Mix against PMem: Bandwidth</h3>
 
 Comparing the bandwidth of `rpma_read()` and **APM** in the **MIX** workload vs the latency of 100% reads and 100% writes configurations.
 

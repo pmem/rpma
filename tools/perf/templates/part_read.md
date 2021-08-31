@@ -8,7 +8,7 @@
 </ul>
 {% else %}
 
-<h2 id="read">Read from PMem</h2>
+<h2 id="read" class="page-break">Read from PMem</h2>
 
 Benchmarking the `rpma_read()` operation against various data sources (PMem, DRAM) and comparing the obtained results to standard RDMA benchmarking tools: `ib_read_lat` and `ib_read_bw`.
 
@@ -30,7 +30,7 @@ Comparing the latency of `rpma_read()` from PMem on **the RPMA Target** to the l
 
 {{figure.rpma_read_dram_vs_pmem.lat_pctl_9999 | figure}}
 
-<h3 id="read-bw">Read from PMem: Bandwidth</h3>
+<h3 id="read-bw" class="page-break">Read from PMem: Bandwidth</h3>
 
 Comparing the bandwidth of `rpma_read()` from PMem on **the RPMA Target** to the bandwidth of `rpma_read()` from DRAM on **the RPMA Target** using the `ib_read_bw` as the baseline.
 
