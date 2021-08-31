@@ -27,7 +27,12 @@ def main():
     args = PARSER.parse_args()
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
+    bw_max = bench.config.get('rnic_max_bw', None)
+    if bw_max is not None:
+        bw_max *= 1.1
     for figure in bench.figures:
+        if figure.argy == 'bw_avg':
+            figure.set_yaxis_max(bw_max)
         figure.to_png(args.include_titles)
     print('Done.')
 
