@@ -169,6 +169,9 @@ class Benchmark:
             else:
                 env['BUSY_WAIT_POLLING'] = '0'
 
+        if 'cpu_load_range' in self.oneseries:
+            env['CPU_LOAD_RANGE'] = self.oneseries['cpu_load_range']
+
         if config.get('dummy_results', False):
             self._run_dummy(env)
         else:
