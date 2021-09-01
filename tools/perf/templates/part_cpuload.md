@@ -6,7 +6,7 @@
 </ul>
 {% else %}
 
-<h2 id="cpuload">CPU load impact</h2>
+<h2 id="cpuload" class="page-break">CPU load impact</h2>
 
 Benchmarking an impact of the CPU load running on **the RPMA Target** on writing data persistently using both ways of achieving remote persistency: **APM** and **GPSPM(-RT)**.
 
@@ -30,7 +30,7 @@ Comparing the latency of **APM** to PMem on **the RPMA Target** vs the latency o
 
 {{figure.apm_vs_gpspm_cpu_75_99.lat_pctl_9999 | figure}}
 
-<h3 id="cpuload-bw">CPU load impact: Bandwidth</h3>
+<h3 id="cpuload-bw" class="page-break">CPU load impact: Bandwidth</h3>
 
 Comparing the bandwidth of **APM** to PMem on **the RPMA Target** vs the bandwidth of **GPSPM(-RT)** to PMem on **the RPMA Target** affected by various CPU loads running on **the RPMA Target**.
 
