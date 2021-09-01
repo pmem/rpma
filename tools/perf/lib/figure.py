@@ -137,11 +137,13 @@ class Figure:
                                           Figure.COMMON_PARAMS[key]['default'])}
         return params
 
-    def prepare_series(self, result_dir):
+    def prepare_series(self, result_dir=None):
         """
         Extract all series from the respective benchmark files and append them
         to the series file.
         """
+        if result_dir is None:
+            result_dir = self.result_dir
         output = {}
         output['title'] = self.title
         output['x'] = self.argx
