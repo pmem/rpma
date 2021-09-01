@@ -48,6 +48,12 @@ class Report:
         if missing is not None:
             raise SyntaxError("{} misses {} entry".format(input_file, missing))
 
+        # escape markdown special characters
+        if 'security' in vars['configuration']:
+            vars['configuration']['security'] = escape(vars['configuration']['security'])
+        if 'description' in vars['configuration']:
+            vars['configuration']['description'] = escape(vars['configuration']['description'])
+
         # the only correct type is 'kvtable'
         vars['configuration']['common']['type'] = 'kvtable'
         vars['configuration']['target']['details']['type'] = 'kvtable'
