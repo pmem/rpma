@@ -40,7 +40,7 @@ $ make
 $ sudo make install
 ```
 
-To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
+To use the reporting tools (e.g. `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
  - jinja2
  - markdown2
  - PIL
@@ -98,20 +98,6 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./rpma_fio_bench.sh
 ```
-
-## Analyzing the results
-
-All of the benchmarking tools described above generate standardized CSV format output files, which can be further processed using `csv_compare.py` to generate comparative charts.
-
-### Example of comparing the obtained results
-
-To generate a chart comparing the obtained results you can feed them into the script as follows:
-
-```sh
-$ ./csv_compare.py --output_layout lat_avg ib_read_lat-21-01-31-072033.csv rpma_fio_apm_read_lat_th1_dp1_dev_dax1.0-21-01-31-073733.csv --output_with_tables
-```
-
-With the help of additional parameters, you can adjust various aspects of the output.
 
 ## Reporting
 
