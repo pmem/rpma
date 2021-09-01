@@ -33,6 +33,12 @@ class Report:
         if 'configuration' not in vars:
             missing = "['configuration']"
         else:
+            # escape markdown special characters
+            if 'security' in vars['configuration']:
+                vars['configuration']['security'] = escape(vars['configuration']['security'])
+            if 'description' in vars['configuration']:
+                vars['configuration']['description'] = escape(vars['configuration']['description'])
+
             if 'common' not in vars['configuration']:
                 missing = "['configuration']['common']"
             elif 'target' not in vars['configuration']:
