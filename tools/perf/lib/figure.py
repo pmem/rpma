@@ -244,7 +244,8 @@ class Figure:
         """
         # header
         xcommon = self._get_xcommon()
-        html = '<table><thead><tr><th></th><th>{}</th></tr></thead><tbody>'. \
+        html = '<table class="data"><thead><tr><th></th><th>{}</th></tr>' \
+            '</thead><tbody>'. \
             format('</th><th>'.join([str(x) for x in xcommon]))
         # rows
         for oneseries in self.series:

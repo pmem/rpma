@@ -15,6 +15,10 @@
             margin-top: 80pt; /* spacing before the figures' titles */
         }
 
+        table.data th, table.data td {
+            text-align: right;
+        }
+
         @media (min-width: 48em) {
             #layout {
                 padding-left: 250px; /* left col width "#menu" */
@@ -55,7 +59,7 @@
     // add class="pure-table pure-table-bordered" to all table objects
     var tabs = document.getElementsByTagName('table');
     for (var i = 0; i < tabs.length; ++i)
-        tabs[i].className = 'pure-table pure-table-bordered'
+        tabs[i].className += ' pure-table pure-table-bordered'
     // add styl="width: 100%"" to all img objects
     var imgs = document.getElementsByTagName('img');
     for (var i = 0; i < imgs.length; ++i)
