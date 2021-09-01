@@ -43,6 +43,7 @@ class Figure:
         if self.output['done']:
             data = json_from_file(self._series_file(result_dir))
             self.series = data['json'][self.key]['series']
+            self.common_params = data['json'][self.key]['common_params']
 
     def __eq__(self, other):
         """A comparison function"""
@@ -108,6 +109,34 @@ class Figure:
             output.append(cls(figure))
         return output
 
+    # a list of possible common params
+    COMMON_PARAMS = {
+        'threads': {
+            'default': 1,
+            'format': '{}'
+        },
+        'iodepth': {
+            'default': 1,
+            'format': '{}'
+        },
+        'bs': {
+            'default': None,
+            'format': '{}B'
+        },
+    }
+
+    @staticmethod
+    def _get_common_params(params, rows):
+        """lookup common parameters"""
+        if params is None:
+            params = {key: rows[0].get(key, value['default'])
+                      for key, value in Figure.COMMON_PARAMS.items()}
+        for row in rows:
+            params = {key: value for key, value in params.items()
+                      if value == row.get(key,
+                                          Figure.COMMON_PARAMS[key]['default'])}
+        return params
+
     def prepare_series(self, result_dir):
         """
         Extract all series from the respective benchmark files and append them
@@ -117,7 +146,9 @@ class Figure:
         output['title'] = self.title
         output['x'] = self.argx
         output['y'] = self.argy
+        output['common_params'] = []
         output['series'] = []
+        common = None
         for series in self.series_in:
             idfile = os.path.join(result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
@@ -140,8 +171,10 @@ class Figure:
                     self.argy, series['id'], str(keys)))
                 continue
             points = [[row[self.argx], row[self.argy]] for row in rows]
+            common = Figure._get_common_params(common, rows)
             output['series'].append(
                 {'label': series['label'], 'points': points})
+        output['common_params'] = common
         # save the series to a file
         series_path = self._series_file(result_dir)
         if os.path.exists(series_path):
@@ -153,6 +186,8 @@ class Figure:
             json.dump(figures, file, indent=4)
         # mark as done
         self.output['done'] = True
+        self.series = output['series']
+        self.common_params = output['common_params']
 
     def _points_to_xy(self, points):
         xslist = [p[0] for p in points]
@@ -210,8 +245,11 @@ class Figure:
             fig.suptitle(suptitle, fontsize='medium', y=0.90)
         # get a subplot
         plot = plt.subplot(1, 1, 1)
-        # XXX bw_avg [threads=24, iodepth=2, block size=4096B]
-        plot.title.set_text('')
+        plot.title.set_text('[{}]'.format(
+            ', '.join(['{}={}'. \
+            format(key, Figure.COMMON_PARAMS[key]['format'].format(value))
+                       for key, value in self.common_params.items()])))
+        plot.title.set_fontsize(10)
         xticks = []
         for oneseries in self.series:
             # draw series ony-by-one
