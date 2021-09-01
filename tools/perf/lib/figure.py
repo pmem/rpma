@@ -39,10 +39,8 @@ class Figure:
         self.key = self.output['key']
         self.xscale = self.output.get('xscale', 'log')
         self.result_dir = result_dir
-        # find the latest series
-        if not self.output['done']:
-            self.series = f['series']
-        else:
+        self.series_in = f['series']
+        if self.output['done']:
             data = json_from_file(self._series_file(result_dir))
             self.series = data['json'][self.key]['series']
 
@@ -52,17 +50,21 @@ class Figure:
             return False
         if self.result_dir != other.result_dir:
             return False
-        if self.series != other.series:
+        if self.series_in != other.series_in:
             return False
         return True
 
     def cache(self):
         """Cache the current state of execution"""
-        return {'output': self.output, 'series': self.series}
+        return {'output': self.output, 'series': self.series_in}
 
     def is_done(self):
         """Are all steps completed?"""
         return self.output['done']
+
+    def get_series_in(self):
+        """Get a series input list"""
+        return self.series_in
 
     @staticmethod
     def get_figure_desc(figure):
@@ -116,7 +118,7 @@ class Figure:
         output['x'] = self.argx
         output['y'] = self.argy
         output['series'] = []
-        for series in self.series:
+        for series in self.series_in:
             idfile = os.path.join(result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
             rows = json_from_file(idfile)['json']
