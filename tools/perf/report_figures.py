@@ -17,6 +17,9 @@ PARSER.add_argument('--bench', type=json_from_file, required=True,
                     help='a bench.json file of a completed benchmark')
 PARSER.add_argument('--report', type=json_from_file,
                     help='a report configuration file')
+PARSER.add_argument('--regenerate_jsons', dest='regenerate_jsons',
+                    action='store_true',
+                    help='regenerate file.json files from benchmark_*.json')
 PARSER.add_argument('--include_titles', dest='include_titles',
                     action='store_true',
                     help='include titles into the output figures')
@@ -36,6 +39,8 @@ def main():
     if bw_max is not None:
         bw_max *= 1.1
     for figure in bench.figures:
+        if args.regenerate_jsons:
+            figure.prepare_series()
         if figure.argy == 'bw_avg':
             figure.set_yaxis_max(bw_max)
         figure.to_png(args.include_titles)
