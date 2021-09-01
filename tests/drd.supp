@@ -6,7 +6,7 @@
 #
 
 #
-# Assesment: XXX required
+# Assessment: XXX required
 #
 # Probably these suppressions do not indicate a lack of MT safety.
 #
@@ -35,7 +35,7 @@
 }
 
 #
-# Assesment: These suppressions do not indicate a lack of MT safety.
+# Assessment: These suppressions do not indicate a lack of MT safety.
 #
 # cma_dev_cnt was a global counter of elements populating the global array of
 # devices detected by librdmacm. It was used as an indicator of already done
@@ -80,7 +80,7 @@
 }
 
 #
-# Assesment: XXX required
+# Assessment: XXX required
 #
 
 {

@@ -25,7 +25,7 @@ class ProcessMock:
         self._returncode = returncode
 
     def check_returncode(self):
-        """raise an exeception as expected"""
+        """raise an exception as expected"""
         if self._returncode != 0:
             raise subprocess.CalledProcessError(self._returncode, "")
 
