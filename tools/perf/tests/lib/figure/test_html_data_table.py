@@ -6,9 +6,9 @@
 
 """test_html_data_table.py -- lib.figure.Figure.html_data_table() tests"""
 
-import pytest
-from lib.common import json_from_file
-from lib.figure import Figure
+import lib.figure
+
+KEY = 'key'
 
 DATA = {
     'output': {
@@ -16,22 +16,41 @@ DATA = {
         'file': 'file',
         'x' : 'x',
         'y' : 'y',
-        'key' : 'key'
+        'key' : KEY,
+        'done': True
     },
-    'series': [
-        {
-            'label': 'label_1',
-            'points' : [[0, 3], [1, 4], [2, 5]],
-        },
-        {
-            'label': 'label_2',
-            'points' : [[0, 6], [1, 7], [2, 8]],
+    'series': []
+}
+
+SERIES_FILE = 'dummy/series/file'
+
+SERIES = {
+    'json': {
+        KEY : {
+            'series': [
+                {
+                    'label': 'label_1',
+                    'points' : [[0, 3], [1, 4], [2, 5]],
+                },
+                {
+                    'label': 'label_2',
+                    'points' : [[0, 6], [1, 7], [2, 8]],
+                }
+            ]
         }
-    ]
+    }
 }
 
 HTML = '<table class="data"><thead><tr><th></th><th>0</th><th>1</th><th>2</th></tr></thead><tbody><tr><td>label\\_1</td><td>3.00</td><td>4.00</td><td>5.00</td></tr><tr><td>label\\_2</td><td>6.00</td><td>7.00</td><td>8.00</td></tr></tbody></table>'
 
-def test_html_data_table_basic():
+def test_html_data_table_basic(monkeypatch):
     """basic lib.figure.Figure.html_data_table() test"""
-    assert Figure(DATA).html_data_table() == HTML
+    def series_file_mock(_self, _):
+        return SERIES_FILE
+    def json_from_file_mock(series_file):
+        assert series_file == SERIES_FILE
+        return SERIES
+    monkeypatch.setattr(lib.figure.Figure, '_series_file', series_file_mock)
+    monkeypatch.setattr(lib.figure, 'json_from_file',
+        json_from_file_mock)
+    assert lib.figure.Figure(DATA).html_data_table() == HTML

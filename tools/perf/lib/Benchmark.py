@@ -83,7 +83,7 @@ class Benchmark:
         """Generate a set of unique benchmarks"""
         output = [cls(oneseries, from_figure=True)
             for f in figures
-                for oneseries in f.series
+                for oneseries in f.get_series_in()
         ]
         return uniq(output)
 
