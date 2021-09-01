@@ -58,6 +58,11 @@ def str2key(input):
     """
     return input.replace('.', '')
 
-def escape(string):
+def escape(x):
     """Escape markdown special characters"""
-    return string.replace('_', '\\_')
+    if type(x) is str:
+        return x.replace('_', '\\_')
+    elif type(x) is list:
+        return [escape(el) for el in x]
+    else:
+        raise ValueError('Unsupported type in escape(): ' + type(x))
