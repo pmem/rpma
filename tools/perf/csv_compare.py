@@ -119,7 +119,6 @@ empty = {'lat_avg': [0], 'lat_pctl_99.9': [0], 'lat_pctl_99.999': [0], \
 
 def get_label(column):
     """Find a text label for an axis describing a provided CSV column.
-
     :param column: name of the CSV column   
     :type column: str
     :return: a label for an axis
@@ -132,7 +131,6 @@ def get_label(column):
 
 def dfs_filter(dfs, df_names, column_list):
     """Filter out all pandas.DataFrame without required columns
-
     :param dfs: list of pandas.DataFrame objects to draw on the subplot
     :type dfs: list[pandas.DataFrame]
     :param df_names: a list of human readable descriptions for dfs
@@ -163,7 +161,6 @@ def dfs_filter(dfs, df_names, column_list):
 
 def dfs_all_values(dfs, column):
     """Find all possible values of a column in the pandas.DataFram list
-
     :param dfs: list of pandas.DataFrame objects to draw on the subplot
     :type dfs: list[pandas.DataFrame]
     :param column: a columns
@@ -182,7 +179,6 @@ def dfs_all_values(dfs, column):
 
 def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
     """Draw multiple lines y(x) using data from the dfs list on the ax subplot.
-
     :param ax: an axes (subplot)
     :type ax: matplotlib.axes
     :param dfs: list of pandas.DataFrame objects to draw on the subplot
@@ -222,7 +218,6 @@ def draw_plot(ax, dfs, legend, x, y, xscale, yaxis_max):
 
 def draw_table(ax, dfs, legend, x, y):
     """Draw a table of all data used to chart y(x)
-
     :param ax: an axes (subplot)
     :type ax: matplotlib.axes
     :param dfs: list of pandas.DataFrame objects to draw on the subplot
@@ -438,4 +433,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

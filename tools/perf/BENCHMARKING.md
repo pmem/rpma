@@ -40,7 +40,7 @@ $ make
 $ sudo make install
 ```
 
-To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
+To use the reporting tools (e.g. `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
  - jinja2
  - markdown2
  - PIL

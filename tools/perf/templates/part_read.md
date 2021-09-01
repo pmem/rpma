@@ -1,5 +1,3 @@
-{# XXX make obsolete: tc1_read.md and tc_read_*_config.md.copyme #}
-
 {% if menu is true %}
 <a class="pure-menu-heading" href="#read">Read from PMem</a>
 <ul class="pure-menu-list">
