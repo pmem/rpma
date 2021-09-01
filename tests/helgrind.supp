@@ -6,7 +6,7 @@
 #
 
 #
-# Assesment: XXX required
+# Assessment: XXX required
 #
 # Probably these suppressions do not indicate a lack of MT safety.
 #
@@ -48,7 +48,7 @@
 }
 
 #
-# Assesment: These suppressions do not indicate a lack of MT safety.
+# Assessment: These suppressions do not indicate a lack of MT safety.
 #
 # For details please see drd.supp.
 #
@@ -61,7 +61,7 @@
 }
 
 #
-# Assesment: XXX required
+# Assessment: XXX required
 #
 
 {
