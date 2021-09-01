@@ -27,6 +27,7 @@ SERIES_FILE = 'dummy/series/file'
 SERIES = {
     'json': {
         KEY : {
+            'common_params': {},
             'series': [
                 {
                     'label': 'label_1',
