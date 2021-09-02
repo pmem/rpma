@@ -29,12 +29,20 @@ ENV TOOLS_DEPS "\
 	python-jinja"
 
 ENV TESTS_DEPS "\
-	python-pylint"
+	python-mccabe \
+	python-pylint \
+	python-pip \
+	python-pytest"
 
 # rdma-core deps
 ENV RDMA_DEPS "\
 	fakeroot \
 	file"
+
+ENV PYTHON_DEPS "\
+	markdown2 \
+	matplotlib \
+	pandas"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -93,3 +101,6 @@ ENV OS archlinux
 ENV OS_VER latest
 ENV PACKAGE_MANAGER none
 ENV NOTTY 1
+
+# install python modules for the default user
+RUN pip3 install --user $PYTHON_DEPS
