@@ -46,6 +46,9 @@ jobs:
                  # Debian9 was moved to per-PR builds
                  # because it has older Python v3.5.3
                  "N=DebianS      OS=debian  OS_VER=stable",
+                 # successors of CentOS:
+                 "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
+                 "N=VzLinux8       OS=vzlinux    OS_VER=latest",
                  # Rolling/testing/experimental distributions:
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
                  "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
@@ -93,6 +96,9 @@ jobs:
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # Rolling/testing/experimental distributions:
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
+                 # successors of CentOS:
+                 "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
+                 "N=VzLinux8       OS=vzlinux    OS_VER=latest",
                  # the build Fedora_Rawhide with sanitizers was moved to Nightly_Experimental
                  "N=Fedora_Rawhide_no_SANITS  OS=fedora          OS_VER=rawhide  CI_SANITS=OFF",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
