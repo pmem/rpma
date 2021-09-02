@@ -10,9 +10,6 @@
 
 #include <rdma/rdma_cma.h>
 
-#define MOCK_ADDR	"127.0.0.1"
-#define MOCK_PORT	"1234"
-#define MOCK_PEER	(struct rpma_peer *)0xFEEF
 #define MOCK_CONN_REQ	(struct rpma_conn_req *)0xCFEF
 #define MOCK_FD		0x00FD
 
