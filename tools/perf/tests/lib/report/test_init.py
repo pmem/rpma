@@ -49,10 +49,12 @@ class EnvMock:
 ENV_DUMMY = EnvMock()
 LOADER_DUMMY = {}
 BENCH_DUMMY = BenchMock()
+TEST_DATE = "January 2077"
 
 VARS_DUMMY = {
     'input_file': '/path/to/report.json',
     'json': {
+        'test_date': TEST_DATE,
         'configuration': {
             'common': {},
             'target': {
@@ -68,21 +70,26 @@ VARS_DUMMY = {
 }
 
 VARS_DUMMY_OUT = {
+    'test_date': TEST_DATE,
     'configuration': {
         'common': {
-            'type': 'kvtable'
+            'type': 'kvtable',
+            Report.TESTING_DATE: TEST_DATE
         },
         'target': {
             'details': {
-                'type': 'kvtable'
+                'type': 'kvtable',
+                Report.TESTING_DATE: TEST_DATE
             }
         },
         'bios': {
             'settings': {
-                'type': 'kvtable'
+                'type': 'kvtable',
+                Report.TESTING_DATE: TEST_DATE
             },
             'excerpt': {
-                'type': 'kvtable'
+                'type': 'kvtable',
+                Report.TESTING_DATE: TEST_DATE
             }
         },
         'schematic': SCHEMATIC_FILE,
