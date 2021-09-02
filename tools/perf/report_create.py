@@ -8,7 +8,7 @@
 
 import argparse
 
-from shutil import copy
+from shutil import copy, SameFileError
 from jinja2 import Environment, FileSystemLoader
 
 from lib.common import json_from_file
@@ -36,8 +36,12 @@ def main():
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
     report = Report(LOADER, ENV, bench, args.report)
-    # copying report.json file to the result dir for future reference
-    copy(args.report['input_file'], bench.result_dir)
+    try:
+        # copying report.json file to the result dir for future reference
+        copy(args.report['input_file'], bench.result_dir)
+    except SameFileError:
+        # do nothing if src and dst specify the same file
+        pass
     report.create(args.output)
     print("Done.")
 
