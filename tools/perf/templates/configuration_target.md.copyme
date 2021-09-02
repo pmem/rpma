@@ -1,8 +1,0 @@
-<h3 id="target-cfg">Target Configuration</h3>
-
-Description of applied configuration.
-
-|Applied procedure|[Details](https://domain/url)|
-|---|---|
-|Repository|https://github.com/domain/url|
-|Version|hash|

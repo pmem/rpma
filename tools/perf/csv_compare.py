@@ -120,7 +120,7 @@ empty = {'lat_avg': [0], 'lat_pctl_99.9': [0], 'lat_pctl_99.999': [0], \
 def get_label(column):
     """Find a text label for an axis describing a provided CSV column.
 
-    :param column: name of the CSV column   
+    :param column: name of the CSV column
     :type column: str
     :return: a label for an axis
     :rtype: str
@@ -438,4 +438,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

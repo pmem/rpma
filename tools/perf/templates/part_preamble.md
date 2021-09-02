@@ -1,7 +1,3 @@
-{# XXX make obsolete: authors.md.copyme, audience.md, disclaimer.md,
-configuration_common.md.copyme, configuration_target.md.copyme, bios.md.copyme,
-security.md.copyme, introduction.md, #}
-
 {% if menu is true %}
 <a class="pure-menu-heading" href="#test-setup">Test Setup</a>
 <ul class="pure-menu-list">
