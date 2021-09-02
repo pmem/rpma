@@ -31,7 +31,13 @@ ENV TOOLS_DEPS "\
 	python36-jinja2"
 
 ENV TESTS_DEPS "\
-	python36-pylint"
+	python36-pylint \
+	python36-pytest"
+
+ENV PYTHON_DEPS "\
+	markdown2 \
+	matplotlib \
+	pandas"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -78,3 +84,6 @@ ENV OS centos
 ENV OS_VER 7
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
+
+# install python modules for the default user
+RUN pip3 install --user $PYTHON_DEPS

@@ -40,7 +40,14 @@ ENV TOOLS_DEPS "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
-	pylint3"
+	pylint3 \
+	python3-pip \
+	python3-pytest"
+
+ENV PYTHON_DEPS "\
+	markdown2 \
+	matplotlib \
+	pandas"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -82,3 +89,6 @@ ENV OS ubuntu
 ENV OS_VER 18.04
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
+
+# install python modules for the default user
+RUN pip3 install --user $PYTHON_DEPS
