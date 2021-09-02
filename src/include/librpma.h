@@ -2618,11 +2618,20 @@ enum rpma_op {
 };
 
 struct rpma_completion {
+	/*
+	 * user context of the completion, which comes from
+	 * the op_context argument in rpma_send(), rpma_write(), etc
+	 */
 	void *op_context;
+	/* operation type of the completion */
 	enum rpma_op op;
+	/* number of bytes transferred */
 	uint32_t byte_len;
+	/* status of the completion */
 	enum ibv_wc_status op_status;
+	/* flags of the completion */
 	unsigned flags;
+	/* immediate data (in host byte order) */
 	uint32_t imm;
 };
 
@@ -2765,7 +2774,14 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *	#include <librpma.h>
  *
  *	struct rpma_cq;
- *	struct rpma_completion;
+ *	struct rpma_completion {
+ *		void *op_context;
+ *		enum rpma_op op;
+ *		uint32_t byte_len;
+ *		enum ibv_wc_status op_status;
+ *		unsigned flags;
+ *		uint32_t imm;
+ *	};
  *	enum rpma_op {
  *		RPMA_OP_READ,
  *		RPMA_OP_WRITE,
