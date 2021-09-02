@@ -17,6 +17,15 @@ from lib.common import escape
 class Report:
     """A report object"""
 
+    TESTING_DATE = 'Testing Date'
+
+    @staticmethod
+    def _preprocess_config_table(table, vars):
+        """set type and append the testing date to a configuration table"""
+        # the only correct type is 'kvtable'
+        table['type'] = 'kvtable'
+        table[Report.TESTING_DATE] = vars['test_date']
+
     def _set_variables(self, vars):
         input_file = vars['input_file']
         vars = vars['json']
@@ -54,11 +63,11 @@ class Report:
         if 'description' in vars['configuration']:
             vars['configuration']['description'] = escape(vars['configuration']['description'])
 
-        # the only correct type is 'kvtable'
-        vars['configuration']['common']['type'] = 'kvtable'
-        vars['configuration']['target']['details']['type'] = 'kvtable'
-        vars['configuration']['bios']['settings']['type'] = 'kvtable'
-        vars['configuration']['bios']['excerpt']['type'] = 'kvtable'
+        for table in [vars['configuration']['common'],
+                      vars['configuration']['target']['details'],
+                      vars['configuration']['bios']['settings'],
+                      vars['configuration']['bios']['excerpt']]:
+            Report._preprocess_config_table(table, vars)
 
         self.variables = vars
 
