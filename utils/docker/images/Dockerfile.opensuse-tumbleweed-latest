@@ -60,6 +60,8 @@ RUN zypper install -y \
 	$TESTS_DEPS \
 	$RPMA_DEPS
 
+RUN pip3 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh

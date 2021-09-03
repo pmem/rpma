@@ -69,6 +69,8 @@ RUN dnf install -y \
 	$DOC_UPDATE_DEPS \
 && dnf clean all
 
+RUN pip3 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh

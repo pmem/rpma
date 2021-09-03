@@ -61,6 +61,8 @@ RUN zypper install -y \
 	$TESTS_DEPS \
 	$RPMA_DEPS
 
+RUN pip3 install --upgrade pip
+
 # Required by python3-pylint
 RUN pip install setuptools
 

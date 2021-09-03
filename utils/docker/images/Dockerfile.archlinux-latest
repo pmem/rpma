@@ -64,6 +64,8 @@ RUN pacman -S --noconfirm \
 	$RPMA_DEPS \
 && rm -rf /var/cache/pacman/pkg/*
 
+RUN pip3 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
