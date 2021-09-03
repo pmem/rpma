@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        CONFIG: ["N=1 OS=ubuntu OS_VER=20.04 TYPE=normal CC=gcc   COVERAGE=1",
-                 "N=2 OS=ubuntu OS_VER=20.04 TYPE=normal CC=clang PUSH_IMAGE=1",
-                 "N=3 OS=fedora OS_VER=32    TYPE=normal CC=gcc   PUSH_IMAGE=1",
-                 "N=4 OS=fedora OS_VER=32    TYPE=normal CC=clang AUTO_DOC_UPDATE=1",
+        CONFIG: ["N=1 OS=ubuntu OS_VER=21.04 TYPE=normal CC=gcc   COVERAGE=1",
+                 "N=2 OS=ubuntu OS_VER=21.04 TYPE=normal CC=clang PUSH_IMAGE=1",
+                 "N=3 OS=fedora OS_VER=34    TYPE=normal CC=gcc   PUSH_IMAGE=1",
+                 "N=4 OS=fedora OS_VER=34    TYPE=normal CC=clang AUTO_DOC_UPDATE=1",
                  # Debian 9 has older Python v3.5.3 (and pylint3 v1.6.5)
                  "N=5 OS=debian OS_VER=9     TYPE=normal CC=gcc   PUSH_IMAGE=1"]
                # "N=5 OS=ubuntu OS_VER=20.04 TYPE=coverity CC=gcc"]
