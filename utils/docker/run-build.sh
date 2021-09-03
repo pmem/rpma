@@ -128,6 +128,26 @@ function test_compile_all_examples_standalone() {
 	done
 }
 
+function run_pytest() {
+	# find pytest
+	PYTESTS="pytest pytest3 pytest-3"
+	for bin in $PYTESTS; do
+		which $bin && export PYTEST=$(which $bin) && break
+	done
+
+	if [ "$PYTEST" == "" ]; then
+		echo
+		echo "ERROR: pytest not found"
+		echo
+		exit 1
+	fi
+
+	# run pytest
+	cd $WORKDIR/tools/perf/
+	eval $PYTEST
+	cd -
+}
+
 ./prepare-for-build.sh
 
 # look for libprotobuf-c
@@ -154,17 +174,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 
 make -j$(nproc)
 ctest --output-on-failure
-
-# XXX run pytest only if it is installed
-if which pytest > /dev/null 2>&1; then
-	cd $WORKDIR/tools/perf/
-	pytest
-	cd -
-else
-	echo
-	echo "SKIP: Skipping python tests, because pytest is missing"
-	echo
-fi
+run_pytest
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
