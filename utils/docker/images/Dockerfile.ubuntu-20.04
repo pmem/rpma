@@ -69,6 +69,8 @@ RUN apt-get install -y --no-install-recommends \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --upgrade pip
+
 # create a link for pytest
 RUN ln -s /usr/bin/pytest-3 /usr/bin/pytest
 

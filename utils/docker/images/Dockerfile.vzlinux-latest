@@ -62,6 +62,8 @@ RUN dnf install -y \
 	$RPMA_DEPS \
 && dnf clean all
 
+RUN pip3.6 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh

@@ -61,6 +61,8 @@ RUN apt-get install -y --no-install-recommends \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
