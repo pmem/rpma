@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM ubuntu:20.10
+FROM ubuntu:21.04
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -39,7 +39,14 @@ ENV TOOLS_DEPS "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
-	pylint"
+	pylint3 \
+	python3-pip \
+	python3-pytest"
+
+ENV PYTHON_DEPS "\
+	markdown2 \
+	matplotlib \
+	pandas"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -62,6 +69,8 @@ RUN apt-get install -y --no-install-recommends \
 	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --upgrade pip
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
@@ -69,6 +78,11 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Download scripts required in run-*.sh
+COPY download-scripts.sh download-scripts.sh
+COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
+RUN ./download-scripts.sh
 
 # Add user
 ENV USER user
@@ -78,6 +92,9 @@ USER $USER
 
 # Set required environment variables
 ENV OS ubuntu
-ENV OS_VER 20.10
+ENV OS_VER 21.04
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
+
+# install python modules for the default user
+RUN pip3 install --user $PYTHON_DEPS
