@@ -18,7 +18,7 @@ SYNOPSIS
 ========
 
           #include <librpma.h>
-          cc ``` -lrpma
+          cc ... -lrpma
 
 DESCRIPTION
 ===========
