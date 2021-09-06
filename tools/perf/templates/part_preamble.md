@@ -71,6 +71,8 @@ The RPMA library and any application using it (including FIO with dedicated engi
 
 The FIO should be configured in a way that guarantees running all its threads and allocating all its buffers from a single NUMA node, the same the used RDMA interface is attached to, to avoid costly cross-NUMA synchronizations (e.g. using Ultra Path Interconnect).
 
+To learn how to automate the collection, processing, and presentation of performance (latency and throughput) data from the RPMA-dedicated FIO engine, visit [BENCHMARKING.md​​](https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md).
+
 Please see a high-level schematic of the systems used for testing in the rest of this report. {{configuration.description}}
 
 {% if configuration.schematic %}<img src="{{configuration.schematic}}"/>{% endif %}
