@@ -34,7 +34,13 @@ ENV TOOLS_DEPS "\
 ENV TESTS_DEPS "\
 	python3-pip \
 	python3-pylint \
+	python3-pytest \
 	python3-setuptools"
+
+ENV PYTHON_DEPS "\
+	markdown2 \
+	matplotlib \
+	pandas"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -89,3 +95,5 @@ ENV OS_VER latest
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
+# install python modules for the default user
+RUN pip3 install --user $PYTHON_DEPS
