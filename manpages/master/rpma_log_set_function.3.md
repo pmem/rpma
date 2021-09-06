@@ -25,7 +25,7 @@ SYNOPSIS
                   const int line_no,
                   const char *function_name,
                   const char *message_format,
-                  ```);
+                  ...);
 
           int rpma_log_set_function(rpma_log_function *log_function);
 
@@ -53,7 +53,7 @@ Parameters of a user-defined log function are as follow:
 -   *message\_format* - **printf**(3)**-like** format string of the
     message
 
--   \"\`\`\`\" - additional arguments of the message format string
+-   \"\...\" - additional arguments of the message format string
 
 THE DEFAULT LOGGING FUNCTION
 ============================
