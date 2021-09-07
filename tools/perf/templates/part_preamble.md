@@ -5,6 +5,7 @@
     <li class="pure-menu-item"><a href="#target-cfg" class="pure-menu-link">Target Configuration</a></li>
     <li class="pure-menu-item"><a href="#bios-settings" class="pure-menu-link">BIOS Settings</a></li>
     <li class="pure-menu-item"><a href="#security" class="pure-menu-link">Security</a></li>
+    <li class="pure-menu-item"><a href="#benchmarking" class="pure-menu-link">Benchmarking</a></li>
 </ul>
 <a class="pure-menu-heading" href="#introduction">Introduction</a>
 {% else %}
@@ -61,6 +62,10 @@ Excerpt:
 
 {{configuration.security}}
 
+<h3 id="benchmarking">Benchmarking process</h3>
+
+To learn how the collection, processing, and presentation of the data was conducted please see [https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md​​](https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md).
+
 <h2 id="introduction">Introduction to RPMA</h2>
 
 The Remote Persistent Memory Access (RPMA) library (librpma) uses Remote Direct Memory Access (RDMA) to provide easy to use interface for accessing Persistent Memory (PMem) on the remote system. It is a user-space library which may be used with all available RDMA implementations (InfiniBand&trade;, iWARP, RoCE, RoCEv2) from various providers as long as they support the standard RDMA user-space Linux interface namely the libiverbs library.
@@ -70,8 +75,6 @@ The RPMA-dedicated FIO engines are created as complementary pairs namely librpma
 The RPMA library and any application using it (including FIO with dedicated engines) should work on all flavours of RDMA transport but it is currently tested against RoCEv2.
 
 The FIO should be configured in a way that guarantees running all its threads and allocating all its buffers from a single NUMA node, the same the used RDMA interface is attached to, to avoid costly cross-NUMA synchronizations (e.g. using Ultra Path Interconnect).
-
-To learn how to automate the collection, processing, and presentation of performance (latency and throughput) data from the RPMA-dedicated FIO engine, visit [BENCHMARKING.md​​](https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md).
 
 Please see a high-level schematic of the systems used for testing in the rest of this report. {{configuration.description}}
 
