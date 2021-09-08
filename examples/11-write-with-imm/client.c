@@ -108,12 +108,18 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
-	/* prepare completions, get one and validate it */
-	ret = rpma_conn_completion_wait(conn);
+	/* get the connection's main CQ */
+	struct rpma_cq *cq = NULL;
+	ret = rpma_conn_get_cq(conn, &cq);
 	if (ret)
 		goto err_mr_remote_delete;
 
-	ret = rpma_conn_completion_get(conn, &cmpl);
+	/* prepare completions, get one and validate it */
+	ret = rpma_cq_wait(cq);
+	if (ret)
+		goto err_mr_remote_delete;
+
+	ret = rpma_cq_get_completion(cq, &cmpl);
 	if (ret)
 		goto err_mr_remote_delete;
 
