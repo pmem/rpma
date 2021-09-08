@@ -131,6 +131,12 @@ You can choose from few predefined sets of benchmarks covering different aspects
 $ ./report_bench.py run --config config.json --figures figures/read.json figures/write.json --result_dir results
 ```
 
+If you want to continue an interrupted benchmark or if you want to run more benchmarks for different configuration parameters, you can change them in the 'results/bench.json' file and run:
+
+```sh
+$ ./report_bench.py continue --bench results/bench.json
+```
+
 To see all available configuration options please take a look at the help:
 
 ```sh
