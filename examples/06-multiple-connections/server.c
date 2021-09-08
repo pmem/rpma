@@ -151,7 +151,14 @@ client_add_to_epoll(struct client_res *clnt, int epoll)
 		return ret;
 
 	/* get the connection's completion fd and add it to epoll */
-	ret = rpma_conn_get_completion_fd(clnt->conn, &fd);
+	struct rpma_cq *cq = NULL;
+	ret = rpma_conn_get_cq(clnt->conn, &cq);
+	if (ret) {
+		epoll_delete(epoll, &clnt->ev_conn_event);
+		return ret;
+	}
+
+	ret = rpma_cq_get_fd(cq, &fd);
 	if (ret) {
 		epoll_delete(epoll, &clnt->ev_conn_event);
 		return ret;
@@ -207,7 +214,15 @@ client_handle_completion(struct custom_event *ce)
 	const struct server_res *svr = clnt->svr;
 
 	/* prepare detected completions for processing */
-	int ret = rpma_conn_completion_wait(clnt->conn);
+	struct rpma_cq *cq = NULL;
+	int ret = rpma_conn_get_cq(clnt->conn, &cq);
+	if (ret) {
+		/* another error occurred - disconnect */
+		(void) rpma_conn_disconnect(clnt->conn);
+		return;
+	}
+
+	ret = rpma_cq_wait(cq);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
@@ -220,7 +235,7 @@ client_handle_completion(struct custom_event *ce)
 
 	/* get next completion */
 	struct rpma_completion cmpl;
-	ret = rpma_conn_completion_get(clnt->conn, &cmpl);
+	ret = rpma_cq_get_completion(cq, &cmpl);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
