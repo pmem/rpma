@@ -104,6 +104,11 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	}
 
+	/* get the connection's main CQ */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
+		goto err_conn_disconnect;
+
 	/* RPMA_OP_SEND completion in the first round is not present */
 	int send_cmpl = 1;
 	int recv_cmpl = 0;
@@ -111,14 +116,14 @@ main(int argc, char *argv[])
 	while (1) {
 		do {
 			/* prepare completions, get one and validate it */
-			ret = rpma_conn_completion_get(conn, &cmpl);
+			ret = rpma_cq_get_completion(cq, &cmpl);
 			if (ret && ret != RPMA_E_NO_COMPLETION)
 				break;
 
 			if (ret == RPMA_E_NO_COMPLETION) {
-				if ((ret = rpma_conn_completion_wait(conn))) {
+				if ((ret = rpma_cq_wait(cq))) {
 					break;
-				} else if ((ret = rpma_conn_completion_get(conn,
+				} else if ((ret = rpma_cq_get_completion(cq,
 						&cmpl))) {
 					if (ret == RPMA_E_NO_COMPLETION)
 						continue;

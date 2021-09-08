@@ -94,6 +94,11 @@ main(int argc, char *argv[])
 	if ((ret = client_connect(peer, addr, port, NULL, NULL, &conn)))
 		goto err_mr_dereg;
 
+	/* get the connection's main CQ */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
+		goto err_conn_disconnect;
+
 	while (--rounds) {
 		/* prepare a receive for the server's response */
 		if ((ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv)))
@@ -115,14 +120,14 @@ main(int argc, char *argv[])
 
 		do {
 			/* prepare completions, get one and validate it */
-			ret = rpma_conn_completion_get(conn, &cmpl);
+			ret = rpma_cq_get_completion(cq, &cmpl);
 			if (ret && ret != RPMA_E_NO_COMPLETION)
 				break;
 
 			if (ret == RPMA_E_NO_COMPLETION) {
-				if ((ret = rpma_conn_completion_wait(conn))) {
+				if ((ret = rpma_cq_wait(cq))) {
 					break;
-				} else if ((ret = rpma_conn_completion_get(conn,
+				} else if ((ret = rpma_cq_get_completion(cq,
 						&cmpl))) {
 					if (ret == RPMA_E_NO_COMPLETION)
 						continue;
@@ -174,6 +179,7 @@ main(int argc, char *argv[])
 	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR,
 			NULL);
 
+err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
