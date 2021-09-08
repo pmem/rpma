@@ -218,9 +218,12 @@ extern "C" {
  * for more details on queues).
  *
  * The librpma library implements the following API for handling completions:
- * - rpma_conn_completion_wait() waits for incoming completions. If it
- * succeeds the completions can be collected using rpma_conn_completion_get().
- * - rpma_conn_completion_get() receives the next available completion
+ * - rpma_conn_get_cq() gets the connection's main CQ,
+ * - rpma_conn_get_rcq() gets the connection's receive CQ,
+ * - rpma_cq_wait() waits for an incoming completion from the specified CQ
+ * (main or receive CQ), if it succeeds the completion can be collected using
+ * rpma_cq_get_completion(),
+ * - rpma_cq_get_completion() receives the next available completion
  * of an already posted operation.
  *
  * PEER
@@ -242,15 +245,14 @@ extern "C" {
  * where:
  *
  * - rpma_ep_next_conn_req(),
- * - rpma_conn_completion_wait() and
+ * - rpma_cq_wait() and
  * - rpma_conn_get_next_event()
  *
  * are blocking calls. You can make those API calls non-blocking by modifying
  * the respective file descriptors:
  *
  * - rpma_ep_get_fd() - provides a file descriptor for rpma_ep_next_conn_req()
- * - rpma_conn_get_completion_fd() - provides a file descriptor for
- * rpma_conn_completion_wait()
+ * - rpma_cq_get_fd() - provides a file descriptor for rpma_cq_wait()
  * - rpma_conn_get_event_fd() - provides a file descriptor for
  * rpma_conn_get_next_event()
  *
