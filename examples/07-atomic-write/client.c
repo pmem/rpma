@@ -110,11 +110,16 @@ main(int argc, char *argv[])
 			sizeof(uint64_t), RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
 
-	/* wait for the completion to be ready */
-	if ((ret = rpma_conn_completion_wait(conn)))
+	/* get the connection's main CQ */
+	struct rpma_cq *cq = NULL;
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+	/* wait for the completion to be ready */
+	if ((ret = rpma_cq_wait(cq)))
+		goto err_mr_remote_delete;
+
+	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
 		goto err_mr_remote_delete;
 
 	if (cmpl.op_status != IBV_WC_SUCCESS) {
@@ -172,10 +177,10 @@ main(int argc, char *argv[])
 			break;
 
 		/* wait for the completion to be ready */
-		if ((ret = rpma_conn_completion_wait(conn)))
+		if ((ret = rpma_cq_wait(cq)))
 			break;
 
-		if ((ret = rpma_conn_completion_get(conn, &cmpl)))
+		if ((ret = rpma_cq_get_completion(cq, &cmpl)))
 			break;
 
 		if (cmpl.op_context != FLUSH_ID) {
