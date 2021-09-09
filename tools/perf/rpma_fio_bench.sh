@@ -375,20 +375,23 @@ function benchmark_one() {
 			[ "x$COMBINE" == "x1" ] && continue
 			# prepare output file name
 			output_file=${OUTPUT_FILE-${OUTPUT[i]}}
+			if [ "$output_file" == "${OUTPUT[i]}" ]; then
+				# save the input *.csv file in case of an error
+				mv ${OUTPUT[i]} ${OUTPUT[i]}_input.csv
+				OUTPUT[i]=${OUTPUT[i]}_input.csv
+			fi
 			# convert to standardized-CSV/JSON
 			./csv2standardized.py --csv_type fio --output_file $output_file \
 				${OUTPUT[i]}
 
-			if [ "$output_file" != "${OUTPUT[i]}" ]; then
-				rm -f ${OUTPUT[i]}
-			fi
+			[ $? -eq 0 ] && rm -f ${OUTPUT[i]}
 		done
 
 		# Combine all outputs into a single file.
 		if [ "x$COMBINE" == "x1" ]; then
 			./csv2standardized.py --csv_type fio --output_file $OUTPUT_FILE \
 				${OUTPUT[@]} --keys ${RW_OPS[@]}
-			rm -f ${OUTPUT[@]}
+			[ $? -eq 0 ] && rm -f ${OUTPUT[@]}
 		fi
 	fi
 
