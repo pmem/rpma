@@ -267,13 +267,17 @@ function benchmark_one() {
 
 		# prepare output file name
 		output_file=${OUTPUT_FILE-$OUTPUT}
+		if [ "$output_file" == "$OUTPUT" ]; then
+			# save the input *.csv file in case of an error
+			mv ${OUTPUT} ${OUTPUT}_error.csv
+			OUTPUT=${OUTPUT}_error.csv
+		fi
+
 		# convert to standardized-CSV/JSON
 		./csv2standardized.py --csv_type ${CSV_MODE} \
 			--output_file $output_file $OUTPUT
 
-		if [ "$output_file" != "$OUTPUT" ]; then
-			rm -f $OUTPUT
-		fi
+		[ $? -eq 0 ] && rm -f $OUTPUT
 	fi
 
 	echo "FINISHED benchmark for MODE=$MODE IP=$SERVER_IP"
