@@ -5,7 +5,7 @@
 
 #
 # Dockerfile - a 'recipe' for Docker to build an image of fedora-based
-#              environment prepared for running tests of librpma.
+#              environment prepared for running tests of librpma
 #
 
 # Pull base image

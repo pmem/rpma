@@ -33,8 +33,8 @@ ID_DUMMY = 'di'
 ONESERIES_DUMMY = {'tool': 'dummy', 'mode': 'dummy', 'filetype': 'malloc',
     'id': ID_DUMMY}
 
-@pytest.fixture(name='benchmark_dummy', scope='function')
-def fixture_benchmark_dummy():
+@pytest.fixture(scope='function')
+def benchmark_dummy():
     """create a very simple Benchmark instance"""
     return Benchmark({**ONESERIES_DUMMY})
 
