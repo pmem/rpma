@@ -1702,6 +1702,38 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
 
+
+/** 3
+ * rpma_conn_get_qp_num - get the connection's qp_num
+ *
+ * SYNOPSIS
+ *
+ *     #include <librpma.h>
+ *
+ *     struct rpma_conn;
+ *     int rpma_conn_get_qp_num(const struct rpma_conn *conn,
+ *                     uint32_t *qp_num);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_qp_num() obtains the connection's qp_num which is the unique
+ * identifier of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_qp_num() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_get_qp_num() does not set *qp_num
+ * value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_qp_num() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or qp_num is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_conn_req_connect(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num);
+
 struct rpma_cq;
 
 /** 3
@@ -2626,6 +2658,7 @@ struct rpma_completion {
 	enum rpma_op op;
 	uint32_t byte_len;
 	enum ibv_wc_status op_status;
+	uint32_t qp_num;
 	unsigned flags;
 	uint32_t imm;
 };
@@ -2774,6 +2807,7 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *		enum rpma_op op;
  *		uint32_t byte_len;
  *		enum ibv_wc_status op_status;
+ *		uint32_t qp_num;
  *		unsigned flags;
  *		uint32_t imm;
  *	};
@@ -2808,6 +2842,8 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - op - operation type of the completion
  * - byte_len - number of bytes transferred
  * - op_status - status of the completion
+ * - qp_num - unique identifier of the connection which the completion
+ *   comes from
  * - flags - flags of the completion
  * - imm - immediate data (in host byte order)
  *

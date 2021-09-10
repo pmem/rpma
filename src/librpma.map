@@ -29,6 +29,7 @@ LIBRPMA_1.0 {
 		rpma_conn_get_cq;
 		rpma_conn_get_event_fd;
 		rpma_conn_get_private_data;
+		rpma_conn_get_qp_num;
 		rpma_conn_get_rcq;
 		rpma_conn_next_event;
 		rpma_conn_req_connect;

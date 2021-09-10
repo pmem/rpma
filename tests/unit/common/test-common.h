@@ -34,6 +34,7 @@
 #define MOCK_NOFENCE		false
 #define MOCK_FENCE		true
 #define MOCK_COMPLETION_FD	0x00FE
+#define MOCK_QP_NUM		1289
 
 #define MOCK_OK			0
 #define MOCK_ERRNO		123456
