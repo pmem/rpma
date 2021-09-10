@@ -53,8 +53,8 @@ jobs:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
                  "N=VzLinux8       OS=vzlinux    OS_VER=latest",
                  # Rolling/testing/experimental distributions:
+                 # (the Fedora_Rawhide build was moved to Nightly_Experimental)
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
-                 "N=Fedora_Rawhide       OS=fedora               OS_VER=rawhide",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
@@ -99,13 +99,12 @@ jobs:
                  "N=Debian10     OS=debian  OS_VER=10",
                  "N=Debian9      OS=debian  OS_VER=9",
                  "N=DebianS      OS=debian  OS_VER=stable",
-                 # Rolling/testing/experimental distributions:
-                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
                  # successors of CentOS:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
                  "N=VzLinux8       OS=vzlinux    OS_VER=latest",
-                 # the build Fedora_Rawhide with sanitizers was moved to Nightly_Experimental
-                 "N=Fedora_Rawhide_no_SANITS  OS=fedora          OS_VER=rawhide  CI_SANITS=OFF",
+                 # Rolling/testing/experimental distributions:
+                 # (the Fedora_Rawhide builds were moved to Nightly_Experimental)
+                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
