@@ -211,6 +211,7 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 
 	cmpl->op_context = (void *)wc.wr_id;
 	cmpl->op_status = wc.status;
+	cmpl->qp_num = wc.qp_num;
 
 	/*
 	 * When wc.status != IBV_WC_SUCCESS only the following attributes
