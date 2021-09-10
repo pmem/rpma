@@ -2617,6 +2617,10 @@ enum rpma_op {
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
+/*
+ * For the description of all fields of 'struct rpma_completion'
+ * see the DESCRIPTION section of the rpma_cq_get_completion()'s manual.
+ */
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
@@ -2765,7 +2769,14 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *	#include <librpma.h>
  *
  *	struct rpma_cq;
- *	struct rpma_completion;
+ *	struct rpma_completion {
+ *		void *op_context;
+ *		enum rpma_op op;
+ *		uint32_t byte_len;
+ *		enum ibv_wc_status op_status;
+ *		unsigned flags;
+ *		uint32_t imm;
+ *	};
  *	enum rpma_op {
  *		RPMA_OP_READ,
  *		RPMA_OP_WRITE,
@@ -2790,6 +2801,16 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - RPMA_OP_RECV - messaging receive operation
  * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
  *   RMA write operation with immediate data
+ *
+ * The fields of 'struct rpma_completion' have the following meaning:
+ * - op_context - user context of the completion, which comes from
+ *   the op_context argument in rpma_send(), rpma_write(), etc
+ * - op - operation type of the completion
+ * - byte_len - number of bytes transferred
+ * - op_status - status of the completion
+ * - flags - flags of the completion
+ * - imm - immediate data (in host byte order)
+ *
  * Note that if the provided cq is the main CQ and the receive CQ is present
  * on the same connection this function won't return RPMA_OP_RECV and
  * RPMA_OP_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
