@@ -8,7 +8,7 @@
 
 <h2 id="mix" class="page-break">Mix against PMem</h2>
 
-Benchmarking mixed reads from PMem (`rpma_read()`) on the **RPMA Target** and writes (**APM**) to the same PMem on **the RPMA Target** side in the configured ratio (**MIX**) and comparing it to pure `rpma_read()` (100% reads) and **APM** (100% writes).
+Benchmarking mixed reads from PMem (`rpma_read()`) on the **RPMA Target** and writes (**APM**) to the same PMem on **the RPMA Target** side in the configured ratio (**MIX**) and comparing it to pure `rpma_read()` (100% reads) and **APM** (100% writes). **The RPMA Target** is configured to be capable of *Direct Write to PMem* (**DW2PMem**)
 
 <h3 id="mix-lat">Mix against PMem: Latency</h3>
 

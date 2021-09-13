@@ -53,7 +53,7 @@
         },
          "target" : {
             "description" :
-                "Description of applied configuration.",
+                "Description of applied configuration. With highlighting differences between Direct Write to PMem (DW2PMem) and non-Direct Write to PMem (non-DW2PMem) configurations.",
             "details": {
                 "Repository" : [
                     "https://github.com/domain/url"
