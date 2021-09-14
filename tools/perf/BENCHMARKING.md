@@ -148,16 +148,29 @@ $ ./report_bench.py -h
 ### 3) Generate figures
 
 ```sh
-$ ./report_figures.py --bench results/bench.json
+$ ./report_figures.py report --bench results/bench.json
 ```
 
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_figures.py -h
+$ ./report_figures.py report -h
 ```
 
-### 4) Generate the performance report
+### 4) Generate comparison figures
+
+```sh
+$ ./report_figures.py compare --benches results_1/bench.json results_2/bench.json
+--names results_1 results_2 --result_dir compare
+```
+
+To see all available configuration options please take a look at the help:
+
+```sh
+$ ./report_figures.py compare -h
+```
+
+### 5) Generate the performance report
 
 Make a copy of report.json.example (report.json) and adjust it to describe your configuration.
 
@@ -170,7 +183,7 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./report_create.py -h
 ```
-### 5) Watermarking (optional)
+### 6) Watermarking (optional)
 
 An HTML document can be easily transformed into a PDF document using one of many available `Print to PDF...` software. You may find useful also an option to overlay its contents with a watermark of your choice.
 
