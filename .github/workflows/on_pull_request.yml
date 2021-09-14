@@ -1,5 +1,8 @@
+#
+# Builds run on every pull request and every push to the repo.
+#
 
-name: RPMA
+name: On_Pull_Request
 on: [push, pull_request]
 
 env:

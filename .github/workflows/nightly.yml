@@ -1,5 +1,10 @@
+#
+# Builds run over the night testing all OSes supported by librpma.
+# (each of them is built with two compilers, gcc and clang, separately).
+#
+# It is run at 00:00 UTC every day or on demand.
+#
 
-# This build is run at 00:00 UTC every day
 name: Nightly
 
 on:
@@ -46,8 +51,7 @@ jobs:
                  "N=CentOS7      OS=centos  OS_VER=7",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
-                 # Debian9 was moved to per-PR builds
-                 # because it has older Python v3.5.3
+                 "N=Debian9      OS=debian  OS_VER=9",
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # successors of CentOS:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
