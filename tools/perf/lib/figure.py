@@ -58,7 +58,7 @@ class Figure:
         """A comparison function"""
         if DeepDiff(self.output, other.output, exclude_paths=["root['title']"]):
             return False
-        if self.series_in != other.series_in:
+        if len(self.series_in) != len(other.series_in):
             return False
         # XXX It may happen that a requirement within a figure is not done
         # despite it is 'done' globally. The exclude below is merely a WA.
