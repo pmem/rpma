@@ -1,7 +1,7 @@
 [
     {
         "output": {
-            "title": "Latency ({y}): APM to DRAM (DDIO=ON) vs PMEM",
+            "title": "Latency ({y}): APM to DRAM (non-DW2PMem) vs APM to PMEM",
             "x": "bs",
             "y": ["lat_avg", "lat_pctl_99.9", "lat_pctl_99.99"],
             "file": "apm_dram_vs_pmem",
@@ -77,7 +77,7 @@
     {
         "output": {
             "_comment": "XXX combine bw-bs and bw-th definitions",
-            "title": "Bandwidth ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
+            "title": "Bandwidth ({x}): APM to DRAM (non-DW2PMem) vs APM to PMEM",
             "x": "bs",
             "y": "bw_avg",
             "file": "apm_dram_vs_pmem",
@@ -111,7 +111,7 @@
     {
         "output": {
             "_comment": "XXX combine bw-bs and bw-th definitions",
-            "title": "Bandwidth ({x}): APM to DRAM (DDIO=ON) vs to PMEM",
+            "title": "Bandwidth ({x}): APM to DRAM (non-DW2PMem) vs APM to PMEM",
             "x": "threads",
             "y": "bw_avg",
             "file": "apm_dram_vs_pmem",
