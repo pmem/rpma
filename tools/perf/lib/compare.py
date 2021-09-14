@@ -63,29 +63,46 @@ class Comparison:
                 if figure == self._figure:
                     self._figures[name] = figure
 
-    def _prepare_benchlines(self, label):
-        """generate an actual data comparing results from various sources"""
+    # def _prepare_benchlines(self, label):
+    #     """generate an actual data comparing results from various sources"""
+    #     benchlines = []
+    #     for name, figure in self._figures.items():
+    #         benchline = {}
+    #         benchline['name'] = name
+    #         for oneseries in figure.series:
+    #             # looking for an actual line
+    #             if oneseries['label'] != label:
+    #                 continue
+    #             # extract the data
+    #             benchline['points'] = oneseries['points']
+    #             # only a single line should match so the search is done
+    #             break
+    #         # append the line
+    #         benchlines.append(benchline)
+    #     return {
+    #             'title': self._figure.title,
+    #             'label': label,
+    #             'x': self._figure.argx,
+    #             'y': self._figure.argy,
+    #             'xscale': self._figure.xscale,
+    #             'benchlines': benchlines}
+
+    def _merge(self):
         benchlines = []
         for name, figure in self._figures.items():
-            benchline = {}
-            benchline['name'] = name
             for oneseries in figure.series:
-                # looking for an actual line
-                if oneseries['label'] != label:
-                    continue
+                benchline = {}
+                benchline['label'] = '{} {}'.format(name, oneseries['label'])
                 # extract the data
                 benchline['points'] = oneseries['points']
-                # only a single line should match so the search is done
-                break
-            # append the line
-            benchlines.append(benchline)
+                # append the line
+                benchlines.append(benchline)
         return {
                 'title': self._figure.title,
-                'label': label,
                 'x': self._figure.argx,
                 'y': self._figure.argy,
                 'xscale': self._figure.xscale,
-                'benchlines': benchlines}
+                'benchlines': benchlines}    
 
     def _series_file(self):
         """generate a JSON file path"""
@@ -98,28 +115,26 @@ class Comparison:
             output = json_from_file(self._series_file())['json']
         else:
             output = {}
-        keycontent = output.get(self._figure.key, [])
-        for oneseries in self._figure.series:
-            keycontent.append(self._prepare_benchlines(oneseries['label']))
+        # for oneseries in self._figure.series:
+            # keycontent.append(self._prepare_benchlines(oneseries['label']))
+        keycontent = self._merge()
         output[self._figure.key] = keycontent
         with open(self._series_file(), 'w', encoding="utf-8") as file:
             json.dump(output, file, indent=4)
 
-    def png_path(self, identifier):
+    def png_path(self):
         """get a path to the output PNG file"""
-        output = self._figure.file + '_' + self._figure.key + '_' + \
-                 str(identifier) + '.png'
+        output = self._figure.file + '_' + self._figure.key + '.png'
         return os.path.join('.', output)
 
     def to_pngs(self):
         """generate all PNG files"""
         os.chdir(self._compare._result_dir)
         data = json_from_file(self._series_file())['json']
-        keycontent = data.get(self._figure.key)
-        counter = 0
-        for xxx in keycontent:
-            output_path = self.png_path(counter)
-            counter += 1
-            Figure.draw_png(xxx['x'], xxx['y'], xxx['benchlines'],
-                            xxx['xscale'], output_path, None, xxx['title'],
-                            xxx['label'], oneseries_name='name')
+        xxx = data.get(self._figure.key)
+        # counter = 0
+        # for xxx in keycontent:
+        output_path = self.png_path()
+            # counter += 1
+        Figure.draw_png(xxx['x'], xxx['y'], xxx['benchlines'],
+                        xxx['xscale'], output_path, None, xxx['title'], None)
