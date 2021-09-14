@@ -58,7 +58,7 @@ class Figure:
         """A comparison function"""
         if self.output != other.output:
             return False
-        if self.series_in != other.series_in:
+        if len(self.series_in) != len(other.series_in):
             return False
         diff = DeepDiff(self.series_in, other.series_in)
         if diff:
