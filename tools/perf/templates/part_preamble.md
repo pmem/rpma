@@ -1,4 +1,5 @@
 {% if menu is true %}
+<a class="pure-menu-heading release" href="#main">{{release}}</a>
 <a class="pure-menu-heading" href="#test-setup">Test Setup</a>
 <ul class="pure-menu-list">
     <li class="pure-menu-item"><a href="#common-cfg" class="pure-menu-link">Common Configuration</a></li>
