@@ -38,6 +38,7 @@ NUMBER_OF_PARTS = 3
 
 class BenchMock:
     """a lib.Bench.Bench mock"""
+    config = {}
     result_dir = RESULT_DIR
     figures = [Figure(FIGURE_DUMMY)]
     parts = [PART_DUMMY]
