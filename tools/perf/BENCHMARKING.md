@@ -148,13 +148,13 @@ $ ./report_bench.py -h
 ### 3) Generate figures
 
 ```sh
-$ ./report_figures.py --bench results/bench.json
+$ ./report_figures.py generate --bench results/bench.json
 ```
 
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_figures.py -h
+$ ./report_figures.py generate -h
 ```
 
 ### 4) Generate the performance report
@@ -185,4 +185,16 @@ Having the `watermark.pdf` file prepared you can overlay it on all pages of your
 
 ```sh
 $ pdftk report.pdf stamp watermark.pdf output report_with_watermark.pdf
+```
+### 6) Comparing
+
+```sh
+$ ./report_figures.py compare --benches results_1/bench.json results_2/bench.json
+--names results_1 results_2 --result_dir compare
+```
+
+To see all available configuration options please take a look at the help:
+
+```sh
+$ ./report_figures.py compare -h
 ```

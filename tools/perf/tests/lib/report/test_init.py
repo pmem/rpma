@@ -30,6 +30,8 @@ FIGURE_DUMMY = {
     'series': []
 }
 
+CONFIG_DUMMY = {}
+
 RESULT_DIR = '/dummy/path'
 PART_DUMMY = "dummy"
 SCHEMATIC_FILE = 'Figure.png'
@@ -38,6 +40,7 @@ NUMBER_OF_PARTS = 3
 
 class BenchMock:
     """a lib.Bench.Bench mock"""
+    config = CONFIG_DUMMY
     result_dir = RESULT_DIR
     figures = [Figure(FIGURE_DUMMY)]
     parts = [PART_DUMMY]
