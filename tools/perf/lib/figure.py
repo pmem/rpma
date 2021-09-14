@@ -9,8 +9,10 @@
 import json
 import os.path
 from textwrap import wrap
+from collections import deque
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
+from deepdiff import DeepDiff
 
 from lib.common import json_from_file, str2key, escape
 from lib.flat import make_flat, process_fstrings
@@ -24,8 +26,12 @@ SKIP_NO_ROWS_MSG = "SKIP: No row is provided by the series of id={}."
 class Figure:
     """A single figure"""
 
-    _figure_kwargs = {'figsize': [6.4, 4.8], 'dpi': 200, \
-        'tight_layout': {'pad': 1}}
+    _figure_common = {'figsize': [6.4, 4.8], 'dpi': 200}
+
+    _figure_kwargs = {**_figure_common, **{'tight_layout': {'pad': 1}}}
+
+    _figure_kwargs_with_title = {**_figure_common, \
+        **{'tight_layout': {'pad': 2}}}
 
     def _series_file(self, result_dir):
         return os.path.join(result_dir, self.file + '.json')
@@ -50,11 +56,14 @@ class Figure:
 
     def __eq__(self, other):
         """A comparison function"""
-        if self.output != other.output:
-            return False
-        if self.result_dir != other.result_dir:
+        if DeepDiff(self.output, other.output, exclude_paths=["root['title']"]):
             return False
         if self.series_in != other.series_in:
+            return False
+        # XXX It may happen that a requirement within a figure is not done
+        # despite it is 'done' globally. The exclude below is merely a WA.
+        if DeepDiff(self.series_in, other.series_in,
+                    exclude_regex_paths="['requirements']['done']"):
             return False
         return True
 
@@ -211,7 +220,8 @@ class Figure:
         self.series = output['series']
         self.common_params = output['common_params']
 
-    def _points_to_xy(self, points):
+    @staticmethod
+    def _points_to_xy(points):
         xslist = [p[0] for p in points]
         yslist = [p[1] for p in points]
         return xslist, yslist
@@ -226,7 +236,8 @@ class Figure:
         """transform list of [x, y] into a dict() where {x: y}"""
         return {p[0]: p[1] for p in points}
 
-    def _label(self, column, with_better=False):
+    @staticmethod
+    def _label(column, with_better=False):
         """Translate the name of a column to a label with a unit"""
         label_by_column = {
             'threads': '# of threads',
@@ -258,49 +269,62 @@ class Figure:
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
-    def to_png(self, include_title):
-        """generate an output PNG file"""
+    @staticmethod
+    def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
+                 suptitle=None, title=None, oneseries_name='label'):
+        """draw a figure"""
         # set output file size, padding and title
-        fig = plt.figure(**Figure._figure_kwargs)
-        if include_title:
-            suptitle = "\n".join(wrap(self.title, 60))
+        fig = plt.figure(**(Figure._figure_kwargs
+                            if suptitle is None else
+                            Figure._figure_kwargs_with_title))
+        if suptitle is not None:
+            suptitle = "\n".join(wrap(suptitle, 60))
             fig.suptitle(suptitle, fontsize='medium', y=0.90)
         # get a subplot
         plot = plt.subplot(1, 1, 1)
-        plot.title.set_text('[{}]'.format(
-            ', '.join(['{}={}'. \
-            format(key, Figure.COMMON_PARAMS[key]['format'].format(value))
-                       for key, value in self.common_params.items()])))
-        plot.title.set_fontsize(10)
+        if title is not None:
+            plot.title.set_text(title)
+            plot.title.set_fontsize(10)
         xticks = []
-        for oneseries in self.series:
+        for oneseries in series:
             # draw series ony-by-one
-            xslist, yslist = self._points_to_xy(oneseries['points'])
-            plot.plot(xslist, yslist, marker='.', label=oneseries['label'])
+            xslist, yslist = Figure._points_to_xy(oneseries['points'])
+            plot.plot(xslist, yslist, marker='.',
+                      label=oneseries[oneseries_name])
             # collect all existing x values
             xticks.extend(xslist)
         # make values unique (set) and sort them
         xticks = sorted(list(set(xticks)))
         # set the x-axis scale
-        if self.xscale == "linear":
-            plot.set_xscale(self.xscale)
+        if xscale == "linear":
+            plot.set_xscale(xscale)
         else:
-            plot.set_xscale(self.xscale, base=2)
+            plot.set_xscale(xscale, base=2)
             plot.xaxis.set_major_formatter(ScalarFormatter())
 
         plot.set_xticks(xticks)
         plt.setp(plot.get_xticklabels(), rotation=45, ha='right')
-        plot.set_xlabel(self._label(self.argx))
-        plot.set_ylabel(self._label(self.argy, with_better=True))
-        if self.yaxis_max is not None:
-            plot.set_ylim(top=self.yaxis_max)
+        plot.set_xlabel(Figure._label(argx))
+        plot.set_ylabel(Figure._label(argy, with_better=True))
+        if yaxis_max is not None:
+            plot.set_ylim(top=yaxis_max)
         plot.set_ylim(bottom=0)
         plot.legend(fontsize=6)
         plot.grid(True)
 
-        os.chdir(self.result_dir)
-        plt.savefig(self.png_path())
+        plt.savefig(output_path)
         plt.close(fig)
+
+    def to_png(self, include_title):
+        """generate an output PNG file"""
+        os.chdir(self.result_dir)
+        suptitle = self.title if include_title else None
+        title = '[{}]'.format(', '.join(['{}={}'. \
+            format(key, Figure.COMMON_PARAMS[key]['format'].format(value))
+                                         for key, value in
+                                         self.common_params.items()]))
+        Figure.draw_png(self.argx, self.argy, self.series, self.xscale,
+                        self.png_path(), self.yaxis_max, suptitle, title)
 
     def html_data_table(self):
         """
