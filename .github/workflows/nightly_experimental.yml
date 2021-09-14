@@ -1,5 +1,9 @@
+#
+# Builds using very experimental OS distributions that can fail very often.
+#
+# It is run at 00:00 UTC every day or on demand.
+#
 
-# This build is run at 00:00 UTC every day
 name: Nightly_Experimental
 
 on:
