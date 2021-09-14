@@ -8,7 +8,8 @@
 # too-many-instance-attributes - (X>7) XXX requires consideration
 # no-self-use - XXX requires consideration
 # consider-using-f-string - f-string is not supported on Debian 9 with python v3.5.3 and pylint3 v1.6.5
-disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string
+# too-many-locals - (X>15) XXX requires consideration
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,too-many-locals
 
 
 [FORMAT]
