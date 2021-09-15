@@ -93,6 +93,7 @@ class Comparison:
             for oneseries in figure.series:
                 benchline = {}
                 benchline['label'] = '{} {}'.format(name, oneseries['label'])
+                benchline['group'] = name
                 # extract the data
                 benchline['points'] = oneseries['points']
                 # append the line
