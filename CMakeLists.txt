@@ -104,7 +104,10 @@ endif()
 
 pkg_check_modules(LIBPMEM libpmem>=${LIBPMEM_REQUIRED_VERSION})
 if(NOT LIBPMEM_FOUND)
-	message(WARNING "Since libpmem is missing, the examples will be unable to use PMem. They will be using DRAM instead.")
+	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION})
+	if(NOT LIBPMEM_FOUND)
+		message(WARNING "Since libpmem is missing, the examples will be unable to use PMem. They will be using DRAM instead.")
+	endif()
 endif()
 
 pkg_check_modules(LIBPROTOBUFC libprotobuf-c)
