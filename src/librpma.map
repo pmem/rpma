@@ -48,6 +48,7 @@ LIBRPMA_1.0 {
 		rpma_log_get_threshold;
 		rpma_log_set_function;
 		rpma_log_set_threshold;
+		rpma_mr_advise;
 		rpma_mr_dereg;
 		rpma_mr_get_descriptor;
 		rpma_mr_get_descriptor_size;
