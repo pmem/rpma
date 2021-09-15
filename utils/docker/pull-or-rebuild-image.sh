@@ -34,15 +34,7 @@ function rebuild_and_push_image()
 	popd
 
 	# Check if the image has to be pushed to ${DOCKER_REPO}
-	# (i.e. the build is triggered by commits to the ${GITHUB_REPO}
-	# repository's master branch, and the Travis build is not
-	# of the "pull_request" type). In that case, create the empty
-	# file.
-	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
-		&& ($CI_BRANCH == stable-* || $CI_BRANCH == master) \
-		&& $CI_EVENT_TYPE != "pull_request"
-		&& $PUSH_IMAGE == "1" ]]
-	then
+	if [[ $PUSH_IMAGE == "1" ]]; then
 		echo "The image will be pushed to ${DOCKER_REPO}"
 		touch $CI_FILE_PUSH_IMAGE_TO_REPO
 	else
@@ -104,6 +96,9 @@ for file in $files; do
 		rebuild_and_push_image
 	fi
 done
+
+# Log in to ${DOCKER_REPO}
+echo "${GH_CR_PAT}" | docker login ${GH_CR_ADDR} -u="${GH_CR_USER}" --password-stdin
 
 # Getting here means rebuilding the Docker image is not required.
 # Pull the image from ${DOCKER_REPO}. If pulling fails
