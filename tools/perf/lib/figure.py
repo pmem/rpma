@@ -267,6 +267,8 @@ class Figure:
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
+    LINE_STYLES = ['solid', 'dashed', 'dashdot', 'dotted']
+
     @staticmethod
     def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
                  suptitle=None, title=None, oneseries_name='label'):
@@ -284,10 +286,23 @@ class Figure:
             plot.title.set_text(title)
             plot.title.set_fontsize(10)
         xticks = []
+        line_styles = deque(Figure.LINE_STYLES.copy())
+        group_to_line_styles = {}
         for oneseries in series:
+            # Pick a line style according to the group to which
+            # the line belongs. If no group provided a default one is assumed.
+            group = oneseries.get('group', 'default')
+            if group in group_to_line_styles.keys():
+                line_style = group_to_line_styles[group]
+            else:
+                if len(line_styles) > 0:
+                    line_style = line_styles.popleft()
+                else:
+                    raise Exception('Too many benchmarks.')
+                group_to_line_styles[group] = line_style
             # draw series ony-by-one
             xslist, yslist = Figure._points_to_xy(oneseries['points'])
-            plot.plot(xslist, yslist, marker='.',
+            plot.plot(xslist, yslist, marker='.', linestyle=line_style,
                       label=oneseries[oneseries_name])
             # collect all existing x values
             xticks.extend(xslist)
@@ -307,7 +322,7 @@ class Figure:
         if yaxis_max is not None:
             plot.set_ylim(top=yaxis_max)
         plot.set_ylim(bottom=0)
-        plot.legend(fontsize=6)
+        plot.legend(fontsize=10)
         plot.grid(True)
 
         plt.savefig(output_path)
