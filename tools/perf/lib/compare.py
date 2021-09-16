@@ -62,6 +62,7 @@ class Comparison:
             for figure in bench.figures:
                 if figure == self._figure:
                     self._figures[name] = figure
+                    break
 
     # def _prepare_benchlines(self, label):
     #     """generate an actual data comparing results from various sources"""
@@ -137,5 +138,9 @@ class Comparison:
         # for xxx in keycontent:
         output_path = self.png_path()
             # counter += 1
+        # XXX quick and dirty
+        yaxis_max = 30 if self._figure.key in \
+            ["lat_avg", "lat_pctl_999", "lat_pctl_9999"] else None
         Figure.draw_png(xxx['x'], xxx['y'], xxx['benchlines'],
-                        xxx['xscale'], output_path, None, xxx['title'], None)
+                        xxx['xscale'], output_path, yaxis_max, xxx['title'],
+                        None)
