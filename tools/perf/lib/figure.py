@@ -53,10 +53,28 @@ class Figure:
 
     def __eq__(self, other):
         """A comparison function"""
+        # XXX
+        self.output.pop('title', None)
+        other.output.pop('title', None)
         if self.output != other.output:
             return False
-        if self.series_in != other.series_in:
+        if len(self.series_in) != len(other.series_in):
             return False
+        for self_oneseries,other_oneseries in \
+            zip(self.series_in, other.series_in):
+            if len(self_oneseries.keys()) != len(other_oneseries.keys()):
+                return False
+            for key,value in self_oneseries.items():
+                if key == 'requirements':
+                    # XXX requires generalization
+                    if value['direct_write_to_pmem'] != \
+                        other_oneseries[key]['direct_write_to_pmem']:
+                        return False
+                    break
+                if key not in other_oneseries.keys():
+                    return False
+                if value != other_oneseries[key]:
+                    return False
         return True
 
     def cache(self):
