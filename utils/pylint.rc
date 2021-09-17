@@ -7,7 +7,7 @@
 # too-many-arguments - (X>5) XXX requires consideration
 # too-many-instance-attributes - (X>7) XXX requires consideration
 # no-self-use - XXX requires consideration
-disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string
 
 
 [FORMAT]
