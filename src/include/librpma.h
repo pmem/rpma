@@ -402,6 +402,14 @@ extern "C" {
  *
  * librpma is built on the top of libibverbs and librdmacm APIs.
  *
+ * DEPRECATING
+ *
+ * Using of the API calls which are marked as deprecated should be avoided,
+ * because they will be removed in a new major release.
+ *
+ * NOTE: API calls deprecated in 0.X release will be removed in 0.(X+1) release
+ * usually.
+ *
  * SEE ALSO
  *
  * https://pmem.io/rpma/
@@ -2610,7 +2618,7 @@ int rpma_recv(struct rpma_conn *conn,
 /* completion handling */
 
 /** 3
- * rpma_conn_get_completion_fd - get the completion file descriptor
+ * rpma_conn_get_completion_fd - get the completion file descriptor (deprecated)
  *
  * SYNOPSIS
  *
@@ -2660,7 +2668,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_completion_wait - wait for a completion
+ * rpma_conn_completion_wait - wait for a completion (deprecated)
  *
  * SYNOPSIS
  *
@@ -2691,7 +2699,7 @@ struct rpma_completion {
 int rpma_conn_completion_wait(struct rpma_conn *conn);
 
 /** 3
- * rpma_conn_completion_get - receive a completion of an operation
+ * rpma_conn_completion_get - receive a completion of an operation (deprecated)
  *
  * SYNOPSIS
  *
