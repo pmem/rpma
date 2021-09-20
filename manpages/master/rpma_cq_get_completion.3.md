@@ -53,12 +53,13 @@ available:
 -   RPMA\_OP\_RECV - messaging receive operation
 
 -   RPMA\_OP\_RECV\_RDMA\_WITH\_IMM - messaging receive operation for
-    RMA write operation with immediate data Note that if the provided cq
-    is the main CQ and the receive CQ is present on the same connection
-    this function won\'t return RPMA\_OP\_RECV and
-    RPMA\_OP\_RECV\_RDMA\_WITH\_IMM at any time. The receive CQ has to
-    be used instead to collect these completions. Please see the
-    **rpma\_conn\_get\_rcq**(3) for details about the receive CQ.
+    RMA write operation with immediate data
+
+Note that if the provided cq is the main CQ and the receive CQ is
+present on the same connection this function won\'t return
+RPMA\_OP\_RECV and RPMA\_OP\_RECV\_RDMA\_WITH\_IMM at any time. The
+receive CQ has to be used instead to collect these completions. Please
+see the **rpma\_conn\_get\_rcq**(3) for details about the receive CQ.
 
 RETURN VALUE
 ============
