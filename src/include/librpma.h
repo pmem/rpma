@@ -1738,7 +1738,7 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 struct rpma_cq;
 
 /** 3
- * rpma_conn_get_cq -- get the connection's main CQ
+ * rpma_conn_get_cq - get the connection's main CQ
  *
  * SYNOPSIS
  *
@@ -1754,7 +1754,7 @@ struct rpma_cq;
  * CQ is not present the main CQ allows handling all completions within
  * the connection. When the receive CQ is present the main CQ allows handling
  * all completions except rpma_recv(3) completions within the connection.
- * Please see rpma_conn_get_rcq() for details about the receive CQ.
+ * Please see rpma_conn_get_rcq(3) for details about the receive CQ.
  *
  * RETURN VALUE
  * The rpma_conn_get_cq() function returns 0 on success or a negative error
@@ -2823,6 +2823,7 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - RPMA_OP_RECV - messaging receive operation
  * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
  *   RMA write operation with immediate data
+ *
  * Note that if the provided cq is the main CQ and the receive CQ is present
  * on the same connection this function won't return RPMA_OP_RECV and
  * RPMA_OP_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
