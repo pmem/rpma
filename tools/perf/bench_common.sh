@@ -229,7 +229,7 @@ function set_ddio()
 	elif [ $REMOTE_DIRECT_WRITE_TO_PMEM -ne $REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM ]; then
 		echo "Error: REMOTE_DIRECT_WRITE_TO_PMEM does not have the required value ($REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM)"
 		echo "Skipping..."
-		return
+		exit 0
 	fi
 
 	if [ "$DUMP_CMDS" == "1" ]; then
