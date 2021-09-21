@@ -54,6 +54,10 @@ class Benchmark:
 
     def __eq__(self, other):
         """A comparison function"""
+        # The same benchmark run under different requirements
+        # are two different benchmarks.
+        if self.req != other.req:
+            return False
         # a complete list of all keys from both objects (without duplicates)
         keys = list(set([*self.oneseries.keys(), *other.oneseries.keys()]))
         for k in keys:
