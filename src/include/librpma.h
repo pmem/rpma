@@ -1735,6 +1735,36 @@ int rpma_conn_get_private_data(const struct rpma_conn *conn,
 int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg);
 
+/** 3
+ * rpma_conn_get_qp_num - get the connection's qp_num
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	int rpma_conn_get_qp_num(const struct rpma_conn *conn,
+ *			uint32_t *qp_num);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_qp_num() obtains the unique identifier of the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_qp_num() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_get_qp_num() does not set *qp_num
+ * value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_qp_num() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or qp_num is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_conn_req_connect(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num);
+
 struct rpma_cq;
 
 /** 3
@@ -2656,6 +2686,7 @@ struct rpma_completion {
 	enum rpma_op op;
 	uint32_t byte_len;
 	enum ibv_wc_status op_status;
+	uint32_t qp_num;
 	unsigned flags;
 	uint32_t imm;
 };
@@ -2812,6 +2843,7 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *		enum rpma_op op;
  *		uint32_t byte_len;
  *		enum ibv_wc_status op_status;
+ *		uint32_t qp_num;
  *		unsigned flags;
  *		uint32_t imm;
  *	};
@@ -2834,6 +2866,7 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *   the decription below
  * - byte_len - number of bytes transferred
  * - op_status - status of the operation
+ * - qp_num - unique identifier of the connection
  * - flags - flags of the operation, for avaiable values please
  *   see ibv_poll_cq(3)
  * - imm - immediate data (in host byte order)
@@ -2869,11 +2902,11 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - RPMA_E_NOSUPP - not supported opcode
  *
  * SEE ALSO
- * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
- * rpma_cq_wait(3), rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3),
- * rpma_recv(3), rpma_send(3), rpma_send_with_imm(3), rpma_write(3),
- * rpma_write_atomic(3), rpma_write_with_imm(3), librpma(7) and
- * https://pmem.io/rpma/
+ * rpma_conn_get_cq(3), rpma_conn_get_qp_num(3), rpma_conn_get_rcq(3),
+ * rpma_conn_req_recv(3), rpma_cq_wait(3), rpma_cq_get_fd(3), rpma_flush(3),
+ * rpma_read(3), rpma_recv(3), rpma_send(3), rpma_send_with_imm(3),
+ * rpma_write(3), rpma_write_atomic(3), rpma_write_with_imm(3), librpma(7)
+ * and https://pmem.io/rpma/
  */
 int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
 
