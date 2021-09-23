@@ -168,3 +168,19 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./report_create.py -h
 ```
+### 5) Watermarking (optional)
+
+An HTML document can be easily transformed into a PDF document using one of many available `Print to PDF...` software. You may find useful also an option to overlay its contents with a watermark of your choice.
+
+One way of preparing a watermark is by using Microsoft PowerPoint:
+
+1. Prepare a single slide and adjust its size to the size of the PDF document.
+2. Make the background of the slide 100% transparent.
+3. Add watermark elements of your choice.
+4. Export the slide to a PDF file.
+
+Having the `watermark.pdf` file prepared you can overlay it on all pages of your PDF report as follows:
+
+```sh
+$ pdftk report.pdf stamp watermark.pdf output report_with_watermark.pdf
+```
