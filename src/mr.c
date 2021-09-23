@@ -528,7 +528,12 @@ rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
 			(enum ibv_advise_mr_advice)advice, flags, &sg_list, 1);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_advise_mr()");
-		return RPMA_E_PROVIDER;
+		if (ret == EOPNOTSUPP || ret == ENOTSUP)
+			return RPMA_E_NOSUPP;
+		else if (ret == EFAULT || ret == EINVAL)
+			return RPMA_E_INVAL;
+		else
+			return RPMA_E_PROVIDER;
 	}
 
 	return 0;
