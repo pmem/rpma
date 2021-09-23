@@ -1170,11 +1170,15 @@ int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
  * ERRORS
  * rpma_mr_advise() can fail with the following errors:
  *
- * - RPMA_E_PROVIDER - rpma_mr_advise() failed
+ * - RPMA_E_INVAL - in one of the following:
+ *	- the requested range is out of the memory registration bounds
+ *	- the memory registration usage does not allow the specific advice
+ *	- the flags are invalid
  * - RPMA_E_NOSUPP - the operation is not supported by the system
+ * - RPMA_E_PROVIDER - rpma_mr_advise() failed for other errors
  *
  * SEE ALSO
- * rpma_mr_reg(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_mr_advise(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
 		int advice, uint32_t flags);
