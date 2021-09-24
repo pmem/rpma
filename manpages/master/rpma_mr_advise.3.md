@@ -43,11 +43,20 @@ ERRORS
 
 **rpma\_mr\_advise**() can fail with the following errors:
 
--   RPMA\_E\_PROVIDER - **rpma\_mr\_advise**() failed
+-   RPMA\_E\_INVAL - in one of the following:
+
+    -   the requested range is out of the memory registration bounds
+
+    -   the memory registration usage does not allow the specific advice
+
+    -   the flags are invalid
 
 -   RPMA\_E\_NOSUPP - the operation is not supported by the system
+
+-   RPMA\_E\_PROVIDER - **ibv\_mr\_advise**(3) failed for other errors
 
 SEE ALSO
 ========
 
-**rpma\_mr\_reg**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma\_mr\_reg**(3), **ibv\_mr\_advise**(3), **librpma**(7) and
+https://pmem.io/rpma/
