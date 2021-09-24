@@ -224,6 +224,8 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 		return 0;
 	}
 
+	cmpl->opcode = wc.opcode;
+
 	switch (wc.opcode) {
 	case IBV_WC_RDMA_READ:
 		cmpl->op = RPMA_OP_READ;
@@ -253,8 +255,8 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 	 * The value of imm_data can be placed only in the receive Completion
 	 * Queue Element.
 	 */
-	if ((cmpl->op == RPMA_OP_RECV) ||
-			(cmpl->op == RPMA_OP_RECV_RDMA_WITH_IMM)) {
+	if ((cmpl->opcode == IBV_WC_RECV) ||
+			(cmpl->opcode == IBV_WC_RECV_RDMA_WITH_IMM)) {
 		if (cmpl->flags & IBV_WC_WITH_IMM)
 			cmpl->imm = ntohl(wc.imm_data);
 	}
