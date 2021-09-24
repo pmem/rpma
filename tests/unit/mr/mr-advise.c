@@ -17,8 +17,88 @@
 
 #ifdef IBV_ADVISE_MR_SUPPORTED
 /*
+ * advise__failed_E_NOSUPP - rpma_mr_advise failed
+ * with RPMA_E_NOSUPP
+ */
+static void
+advise__failed_E_NOSUPP(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	int error_no[] = {
+		EOPNOTSUPP,
+		ENOTSUP
+	};
+
+	int n_values = sizeof(error_no) / sizeof(error_no[0]);
+
+	for (int i = 0; i < n_values; i++) {
+		/* configure mocks */
+		expect_value(ibv_advise_mr_mock, pd, MOCK_IBV_PD);
+		expect_value(ibv_advise_mr_mock, advice,
+			IB_UVERBS_ADVISE_MR_ADVICE_PREFETCH_WRITE);
+		expect_value(ibv_advise_mr_mock, flags,
+			IB_UVERBS_ADVISE_MR_FLAG_FLUSH);
+		expect_value(ibv_advise_mr_mock, sg_list->lkey, MOCK_LKEY);
+		expect_value(ibv_advise_mr_mock, sg_list->addr,
+			MOCK_LADDR + MOCK_SRC_OFFSET);
+		expect_value(ibv_advise_mr_mock, sg_list->length, MOCK_LEN);
+		expect_value(ibv_advise_mr_mock, num_sge, 1);
+		will_return(ibv_advise_mr_mock, error_no[i]);
+
+		/* run test */
+		int ret = rpma_mr_advise(mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+				IB_UVERBS_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IB_UVERBS_ADVISE_MR_FLAG_FLUSH);
+
+		/* verify the results */
+		assert_int_equal(ret, RPMA_E_NOSUPP);
+	}
+}
+
+/*
+ * advise__failed_E_INVAL - rpma_mr_advise failed
+ * with RPMA_E_INVAL
+ */
+static void
+advise__failed_E_INVAL(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	int error_no[] = {
+		EFAULT,
+		EINVAL
+	};
+
+	int n_values = sizeof(error_no) / sizeof(error_no[0]);
+
+	for (int i = 0; i < n_values; i++) {
+		/* configure mocks */
+		expect_value(ibv_advise_mr_mock, pd, MOCK_IBV_PD);
+		expect_value(ibv_advise_mr_mock, advice,
+			IB_UVERBS_ADVISE_MR_ADVICE_PREFETCH_WRITE);
+		expect_value(ibv_advise_mr_mock, flags,
+			IB_UVERBS_ADVISE_MR_FLAG_FLUSH);
+		expect_value(ibv_advise_mr_mock, sg_list->lkey, MOCK_LKEY);
+		expect_value(ibv_advise_mr_mock, sg_list->addr,
+			MOCK_LADDR + MOCK_SRC_OFFSET);
+		expect_value(ibv_advise_mr_mock, sg_list->length, MOCK_LEN);
+		expect_value(ibv_advise_mr_mock, num_sge, 1);
+		will_return(ibv_advise_mr_mock, error_no[i]);
+
+		/* run test */
+		int ret = rpma_mr_advise(mrs->local, MOCK_SRC_OFFSET, MOCK_LEN,
+				IB_UVERBS_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IB_UVERBS_ADVISE_MR_FLAG_FLUSH);
+
+		/* verify the results */
+		assert_int_equal(ret, RPMA_E_INVAL);
+	}
+}
+
+/*
  * advise__failed_E_PROVIDER - rpma_mr_advise failed
- * with RPMA_E_PROVIDER when length > ibv_mr->length
+ * with RPMA_E_PROVIDER
  */
 static void
 advise__failed_E_PROVIDER(void **mrs_ptr)
@@ -131,6 +211,12 @@ group_setup_mr_advise(void **unused)
 #ifdef IBV_ADVISE_MR_SUPPORTED
 static const struct CMUnitTest test_mr_advise[] = {
 	/* rpma_mr_adivse() unit tests */
+	cmocka_unit_test_setup_teardown(advise__failed_E_NOSUPP,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+	cmocka_unit_test_setup_teardown(advise__failed_E_INVAL,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
 	cmocka_unit_test_setup_teardown(advise__failed_E_PROVIDER,
 			setup__mr_local_and_remote,
 			teardown__mr_local_and_remote),
