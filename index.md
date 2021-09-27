@@ -14,6 +14,8 @@ The documentation is available for:
 * the current [master](./manpages/master/librpma.7.html)
 * [v0.9.0](./manpages/v0.9.0/librpma.7.html)
 
+#### [Performance reports](./reports/index.html)
+
 #### Recommended reading list
 
 * [Basic - Direct write to PMem](./documentation/basic-direct-write-to-pmem.html)
