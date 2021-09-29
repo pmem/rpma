@@ -19,3 +19,5 @@ The documentation is available for:
 * [Basic - Direct write to PMem](./documentation/basic-direct-write-to-pmem.html)
 * [Basic - HW & SW setup starting point](./documentation/basic-hw_sw_setup_starting_point.html)
 * [Performance - Tuning](./documentation/perf-tuning.html)
+
+#### [Performance reports](./reports/index.html)
