@@ -2654,6 +2654,7 @@ enum rpma_op {
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
+/* For details please see rpma_cq_get_completion(3). */
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
@@ -2802,7 +2803,6 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *	#include <librpma.h>
  *
  *	struct rpma_cq;
- *	struct rpma_completion;
  *	enum rpma_op {
  *		RPMA_OP_READ,
  *		RPMA_OP_WRITE,
@@ -2810,6 +2810,14 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *		RPMA_OP_SEND,
  *		RPMA_OP_RECV,
  *		RPMA_OP_RECV_RDMA_WITH_IMM,
+ *	};
+ *	struct rpma_completion {
+ *		void *op_context;
+ *		enum rpma_op op;
+ *		uint32_t byte_len;
+ *		enum ibv_wc_status op_status;
+ *		unsigned flags;
+ *		uint32_t imm;
  *	};
  *
  *	int rpma_cq_get_completion(struct rpma_cq *cq,
@@ -2819,7 +2827,22 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * rpma_cq_get_completion() receives the next available completion of
  * an already posted operation. All operations generate completion on error.
  * The operations posted with the RPMA_F_COMPLETION_ALWAYS flag also
- * generate a completion on success. The following operations are available:
+ * generate a completion on success.
+ *
+ * The rpma_completion structure provides the following fields:
+ * - op_context - context of the operation provided by the user to
+ *   either rpma_conn_req_recv(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
+ *   rpma_send(3), rpma_send_with_imm(3), rpma_write(3), rpma_write_atomic(3),
+ *   rpma_write_with_imm(3)
+ * - op - type of the operation, for avaiable values please see
+ *   the decription below
+ * - byte_len - number of bytes transferred
+ * - op_status - status of the operation
+ * - flags - flags of the operation, for avaiable values please
+ *   see ibv_poll_cq(3)
+ * - imm - immediate data (in host byte order)
+ *
+ * The available op values are:
  * - RPMA_OP_READ - RMA read operation
  * - RPMA_OP_WRITE - RMA write operation
  * - RPMA_OP_FLUSH - RMA flush operation
@@ -2850,10 +2873,11 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - RPMA_E_NOSUPP - not supported opcode
  *
  * SEE ALSO
- * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
- * rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_send_with_imm(3), rpma_write(3), rpma_write_with_imm(3),
- * rpma_write_atomic(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
+ * rpma_cq_wait(3), rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3),
+ * rpma_recv(3), rpma_send(3), rpma_send_with_imm(3), rpma_write(3),
+ * rpma_write_atomic(3), rpma_write_with_imm(3), librpma(7) and
+ * https://pmem.io/rpma/
  */
 int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
 
