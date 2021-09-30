@@ -20,7 +20,6 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_cq;
-          struct rpma_completion;
           enum rpma_op {
                   RPMA_OP_READ,
                   RPMA_OP_WRITE,
@@ -28,6 +27,14 @@ SYNOPSIS
                   RPMA_OP_SEND,
                   RPMA_OP_RECV,
                   RPMA_OP_RECV_RDMA_WITH_IMM,
+          };
+          struct rpma_completion {
+                  void *op_context;
+                  enum rpma_op op;
+                  uint32_t byte_len;
+                  enum ibv_wc_status op_status;
+                  unsigned flags;
+                  uint32_t imm;
           };
 
           int rpma_cq_get_completion(struct rpma_cq *cq,
@@ -39,8 +46,29 @@ DESCRIPTION
 **rpma\_cq\_get\_completion**() receives the next available completion
 of an already posted operation. All operations generate completion on
 error. The operations posted with the RPMA\_F\_COMPLETION\_ALWAYS flag
-also generate a completion on success. The following operations are
-available:
+also generate a completion on success.
+
+The rpma\_completion structure provides the following fields:
+
+-   op\_context - context of the operation provided by the user to
+    either **rpma\_conn\_req\_recv**(3), **rpma\_flush**(3),
+    **rpma\_read**(3), **rpma\_recv**(3), **rpma\_send**(3),
+    **rpma\_send\_with\_imm**(3), **rpma\_write**(3),
+    **rpma\_write\_atomic**(3), **rpma\_write\_with\_imm**(3)
+
+-   op - type of the operation, for avaiable values please see the
+    decription below
+
+-   byte\_len - number of bytes transferred
+
+-   op\_status - status of the operation
+
+-   flags - flags of the operation, for avaiable values please see
+    **ibv\_poll\_cq**(3)
+
+-   imm - immediate data (in host byte order)
+
+The available op values are:
 
 -   RPMA\_OP\_READ - RMA read operation
 
@@ -91,8 +119,8 @@ SEE ALSO
 ========
 
 **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_wait**(3), **rpma\_cq\_get\_fd**(3), **rpma\_flush**(3),
-**rpma\_read**(3), **rpma\_recv**(3), **rpma\_send**(3),
-**rpma\_send\_with\_imm**(3), **rpma\_write**(3),
-**rpma\_write\_with\_imm**(3), **rpma\_write\_atomic**(3),
-**librpma**(7) and https://pmem.io/rpma/
+**rpma\_conn\_req\_recv**(3), **rpma\_cq\_wait**(3),
+**rpma\_cq\_get\_fd**(3), **rpma\_flush**(3), **rpma\_read**(3),
+**rpma\_recv**(3), **rpma\_send**(3), **rpma\_send\_with\_imm**(3),
+**rpma\_write**(3), **rpma\_write\_atomic**(3),
+**rpma\_write\_with\_imm**(3), **librpma**(7) and https://pmem.io/rpma/
