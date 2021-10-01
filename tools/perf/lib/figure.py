@@ -172,6 +172,8 @@ class Figure:
             if isinstance(rows, dict):
                 rw_dir = series['rw_dir']
                 rows = rows[rw_dir]
+            if len(rows) == 0:
+                continue
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
