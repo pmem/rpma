@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2020, Intel Corporation
+# Copyright 2018-2021, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -10,8 +10,8 @@ add_flag(-Wsign-compare)
 add_flag(-Wunreachable-code-return)
 add_flag(-Wmissing-variable-declarations)
 add_flag(-fno-common)
-#add_flag(-Wunused-macros)
-#add_flag(-Wsign-conversion)
+add_flag(-Wunused-macros)
+add_flag(-Wsign-conversion)
 
 add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
