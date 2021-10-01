@@ -402,6 +402,14 @@ extern "C" {
  *
  * librpma is built on the top of libibverbs and librdmacm APIs.
  *
+ * DEPRECATING
+ *
+ * Using of the API calls which are marked as deprecated should be avoided,
+ * because they will be removed in a new major release.
+ *
+ * NOTE: API calls deprecated in 0.X release will be removed in 0.(X+1) release
+ * usually.
+ *
  * SEE ALSO
  *
  * https://pmem.io/rpma/
@@ -2614,7 +2622,7 @@ int rpma_recv(struct rpma_conn *conn,
 /* completion handling */
 
 /** 3
- * rpma_conn_get_completion_fd - get the completion file descriptor
+ * rpma_conn_get_completion_fd - get the completion file descriptor (deprecated)
  *
  * SYNOPSIS
  *
@@ -2638,6 +2646,9 @@ int rpma_recv(struct rpma_conn *conn,
  * rpma_conn_get_completion_fd() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or fd is NULL
+ *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
  *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
@@ -2665,7 +2676,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_completion_wait - wait for a completion
+ * rpma_conn_completion_wait - wait for a completion (deprecated)
  *
  * SYNOPSIS
  *
@@ -2689,6 +2700,9 @@ struct rpma_completion {
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
  *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
@@ -2696,7 +2710,7 @@ struct rpma_completion {
 int rpma_conn_completion_wait(struct rpma_conn *conn);
 
 /** 3
- * rpma_conn_completion_get - receive a completion of an operation
+ * rpma_conn_completion_get - receive a completion of an operation (deprecated)
  *
  * SYNOPSIS
  *
@@ -2723,6 +2737,9 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  * - RPMA_E_INVAL - conn or cmpl is NULL
  * - Other errors - please see rpma_cq_get_completion(3)
+ *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
