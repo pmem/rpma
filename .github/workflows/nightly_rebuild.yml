@@ -43,8 +43,8 @@ jobs:
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental   REBUILD_ALWAYS=YES",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest         REBUILD_ALWAYS=YES",
                  "N=CentOS_Stream        OS=centos               OS_VER=stream         REBUILD_ALWAYS=YES",
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest         REBUILD_ALWAYS=YES",
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest         REBUILD_ALWAYS=YES"]
+                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest         REBUILD_ALWAYS=YES"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
