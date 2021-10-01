@@ -62,8 +62,10 @@ jobs:
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
+                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
+                 # because of the following bug:
+                 # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
@@ -112,8 +114,10 @@ jobs:
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
+                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
+                 # because of the following bug:
+                 # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
