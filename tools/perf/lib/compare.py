@@ -44,6 +44,23 @@ class Compare:
                 comparison.to_pngs()
                 done[Compare._figure_id(figure)] = True
 
+    def cache(self):
+        """store the comparison to a JSON file"""
+        _, bench = list(self._benches.items())[0]
+        output = {
+            'config': {
+                'compare': True},
+            'parts': bench.parts,
+            'figures': [figure.cache() for figure in bench.figures],
+            'requirements': {
+                id: r.cache()
+                for id, r in bench.requirements.items()}
+        }
+
+        output_path = os.path.join(self._result_dir, 'bench.json')
+        with open(output_path, 'w', encoding="utf-8") as file:
+            json.dump(output, file, indent=4)
+
 class Comparison:
     """a comparison among the same figure present in different benches"""
 
