@@ -64,6 +64,7 @@ def comparative_figures(args):
     benches = [Bench.carry_on(bench) for bench in args.benches]
     compare = Compare(args.names, benches, args.result_dir)
     compare.prepare_series()
+    compare.cache()
 
 COMMANDS = {
     "report": report_figures,
