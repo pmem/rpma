@@ -121,7 +121,7 @@ class Comparison:
                 'x': self._figure.argx,
                 'y': self._figure.argy,
                 'xscale': self._figure.xscale,
-                'benchlines': benchlines}    
+                'series': benchlines}    
 
     def _series_file(self):
         """generate a JSON file path"""
@@ -158,6 +158,6 @@ class Comparison:
         # XXX quick and dirty
         yaxis_max = 30 if self._figure.key in \
             ["lat_avg", "lat_pctl_999", "lat_pctl_9999"] else None
-        Figure.draw_png(xxx['x'], xxx['y'], xxx['benchlines'],
-                        xxx['xscale'], output_path, yaxis_max, xxx['title'],
+        Figure.draw_png(xxx['x'], xxx['y'], xxx['series'],
+                        xxx['xscale'], output_path, yaxis_max, None,
                         None)
