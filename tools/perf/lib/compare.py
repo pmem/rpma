@@ -26,11 +26,11 @@ class Compare:
 
     @staticmethod
     def _figure_id(figure):
-        """generate an identifier of the figure"""
+        """generate the identifier of the figure"""
         return "{}.{}".format(figure.file, figure.key)
 
     def prepare_series(self):
-        """generate all comparisons required"""
+        """generate all comparisons required (both JSON and PNG files)"""
         # track whether a given figure is already done
         done = {}
         # Loop over all benches and figures just in case not all figures are
@@ -44,14 +44,33 @@ class Compare:
                 comparison.to_pngs()
                 done[Compare._figure_id(figure)] = True
 
+    def cache(self):
+        """store the comparison to bench.json file"""
+        # XXX assuming the first benchmark covers all figures of the comparison
+        # which may not always be true
+        _, bench = list(self._benches.items())[0]
+        output = {
+            'config': {
+                'compare': True},
+            'parts': bench.parts,
+            'figures': [figure.cache() for figure in bench.figures],
+            'requirements': {
+                id: r.cache()
+                    for id, r in bench.requirements.items()}
+        }
+
+        output_path = os.path.join(self._result_dir, 'bench.json')
+        with open(output_path, 'w', encoding="utf-8") as file:
+            json.dump(output, file, indent=4)
+
 class Comparison:
     """a comparison among the same figure present in different benches"""
 
     def __init__(self, compare, figure):
         self._compare = compare
         self._figure = figure # the sample figure
-        self._figures = {}
         # pick all figures matching the sample one
+        self._figures = {}
         for name, bench in self._compare._benches.items():
             for figure in bench.figures:
                 if figure == self._figure:
@@ -59,6 +78,7 @@ class Comparison:
                     break
 
     def _merge(self):
+        """combine series from all figures involved into a single figure"""
         benchlines = []
         for name, figure in self._figures.items():
             for oneseries in figure.series:
@@ -74,7 +94,7 @@ class Comparison:
                 'x': self._figure.argx,
                 'y': self._figure.argy,
                 'xscale': self._figure.xscale,
-                'series': benchlines}    
+                'series': benchlines}
 
     def _series_file(self):
         """generate a JSON file path"""
@@ -87,8 +107,6 @@ class Comparison:
             output = json_from_file(self._series_file())['json']
         else:
             output = {}
-        # for oneseries in self._figure.series:
-            # keycontent.append(self._prepare_benchlines(oneseries['label']))
         keycontent = self._merge()
         output[self._figure.key] = keycontent
         with open(self._series_file(), 'w', encoding="utf-8") as file:
@@ -105,7 +123,6 @@ class Comparison:
         data = json_from_file(self._series_file())['json']
         keycontent = data.get(self._figure.key)
         output_path = self.png_path()
-        # XXX - add setters to yaxis_max for bw and lat
+        # XXX add setters to yaxis_max for bw and lat
         Figure.draw_png(keycontent['x'], keycontent['y'], keycontent['series'],
-                        keycontent['xscale'], output_path, None, None,
-                        None)
+                        keycontent['xscale'], output_path, None, None, None)

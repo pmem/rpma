@@ -21,7 +21,7 @@ SUBPARSERS = PARSER.add_subparsers(dest='command')
 # manually.
 SUBPARSERS.required = True
 PARSER_R = SUBPARSERS.add_parser('report',
-    help='generate figures for the report')
+                                 help='generate figures for the report')
 PARSER_R.add_argument('--bench', type=json_from_file, required=True,
                       help='a bench.json file of a completed benchmark')
 PARSER_R.add_argument('--regenerate_jsons', dest='regenerate_jsons',
@@ -64,6 +64,7 @@ def comparative_figures(args):
     benches = [Bench.carry_on(bench) for bench in args.benches]
     compare = Compare(args.names, benches, args.result_dir)
     compare.prepare_series()
+    compare.cache()
 
 COMMANDS = {
     "report": report_figures,
