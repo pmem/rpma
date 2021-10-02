@@ -54,8 +54,6 @@ class Figure:
     def __eq__(self, other):
         """A comparison function"""
         # XXX
-        self.output.pop('title', None)
-        other.output.pop('title', None)
         if self.output != other.output:
             return False
         if len(self.series_in) != len(other.series_in):
