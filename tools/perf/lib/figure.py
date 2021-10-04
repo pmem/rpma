@@ -172,7 +172,7 @@ class Figure:
             if isinstance(rows, dict):
                 rw_dir = series['rw_dir']
                 rows = rows[rw_dir]
-            if len(rows) == 0:
+            if not rows:
                 continue
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
