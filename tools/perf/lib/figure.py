@@ -18,6 +18,8 @@ from lib.flat import make_flat, process_fstrings
 # XXX allow not breaking long strings
 SKIP_NO_AXIS_MSG = "SKIP: Axis '{}' is not provided by the series of id={}. " \
     "Available keys are: {}"
+SKIP_NO_FILE_MSG = "SKIP: the file does not exist: {}"
+SKIP_NO_ROWS_MSG = "SKIP: No row is provided by the series of id={}."
 
 class Figure:
     """A single figure"""
@@ -159,13 +161,17 @@ class Figure:
         output['title'] = self.title
         output['x'] = self.argx
         output['y'] = self.argy
-        output['common_params'] = []
+        output['common_params'] = {}
         output['series'] = []
         common = None
         for series in self.series_in:
             idfile = os.path.join(result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
-            rows = json_from_file(idfile)['json']
+            try:
+                rows = json_from_file(idfile)['json']
+            except FileNotFoundError:
+                print(SKIP_NO_FILE_MSG.format(idfile))
+                continue
             # If it is dict() it indicates a mix workload consisting of
             # two parts: 'read' and 'write'. In this case, the series
             # has to provide 'rw_dir' to pick one of them.
@@ -173,6 +179,7 @@ class Figure:
                 rw_dir = series['rw_dir']
                 rows = rows[rw_dir]
             if not rows:
+                print(SKIP_NO_ROWS_MSG.format(series['id']))
                 continue
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
@@ -189,7 +196,7 @@ class Figure:
             common = Figure._get_common_params(common, rows)
             output['series'].append(
                 {'label': series['label'], 'points': points})
-        output['common_params'] = common
+        output['common_params'] = {} if common is None else common
         # save the series to a file
         series_path = self._series_file(result_dir)
         if os.path.exists(series_path):

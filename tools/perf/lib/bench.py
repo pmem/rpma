@@ -38,10 +38,11 @@ class Bench:
         return cls(config['json'], parts, figures, requirements, result_dir)
 
     @classmethod
-    def carry_on(cls, bench):
+    def carry_on(cls, bench, skip_undone=False):
         """restore a bench object from cache (JSON file)"""
         result_dir, _ = os.path.split(os.path.realpath(bench['input_file']))
         bench = bench['json']
+        bench['config']['skip_undone'] = skip_undone
         figures = [Figure(f, result_dir) for f in bench['figures']]
         requirements = {
             id: Requirement(r)
@@ -73,6 +74,9 @@ class Bench:
         skip = False
         for _, req in self.requirements.items():
             if req.is_done():
+                continue
+            if self.config.get('skip_undone', False):
+                req.benchmarks_skip(self)
                 continue
             if not req.is_met(self.config):
                 skip = True
