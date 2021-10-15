@@ -13,6 +13,7 @@ NAME
 ====
 
 **rpma\_conn\_get\_completion\_fd** - get the completion file descriptor
+(deprecated)
 
 SYNOPSIS
 ========
@@ -44,6 +45,12 @@ ERRORS
 **rpma\_conn\_get\_completion\_fd**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - conn or fd is NULL
+
+DEPRECATED
+==========
+
+Please use **rpma\_conn\_get\_cq**(3) and **rpma\_cq\_get\_fd**(3)
+instead.
 
 SEE ALSO
 ========

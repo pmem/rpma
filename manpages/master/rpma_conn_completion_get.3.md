@@ -13,6 +13,7 @@ NAME
 ====
 
 **rpma\_conn\_completion\_get** - receive a completion of an operation
+(deprecated)
 
 SYNOPSIS
 ========
@@ -47,6 +48,12 @@ ERRORS
 -   RPMA\_E\_INVAL - conn or cmpl is NULL
 
 -   Other errors - please see **rpma\_cq\_get\_completion**(3)
+
+DEPRECATED
+==========
+
+Please use **rpma\_conn\_get\_cq**(3) and
+**rpma\_cq\_get\_completion**(3) instead.
 
 SEE ALSO
 ========
