@@ -218,9 +218,12 @@ extern "C" {
  * for more details on queues).
  *
  * The librpma library implements the following API for handling completions:
- * - rpma_conn_completion_wait() waits for incoming completions. If it
- * succeeds the completions can be collected using rpma_conn_completion_get().
- * - rpma_conn_completion_get() receives the next available completion
+ * - rpma_conn_get_cq() gets the connection's main CQ,
+ * - rpma_conn_get_rcq() gets the connection's receive CQ,
+ * - rpma_cq_wait() waits for an incoming completion from the specified CQ
+ * (main or receive CQ) - if it succeeds the completion can be collected using
+ * rpma_cq_get_completion(),
+ * - rpma_cq_get_completion() receives the next available completion
  * of an already posted operation.
  *
  * PEER
@@ -242,15 +245,14 @@ extern "C" {
  * where:
  *
  * - rpma_ep_next_conn_req(),
- * - rpma_conn_completion_wait() and
+ * - rpma_cq_wait() and
  * - rpma_conn_get_next_event()
  *
  * are blocking calls. You can make those API calls non-blocking by modifying
  * the respective file descriptors:
  *
  * - rpma_ep_get_fd() - provides a file descriptor for rpma_ep_next_conn_req()
- * - rpma_conn_get_completion_fd() - provides a file descriptor for
- * rpma_conn_completion_wait()
+ * - rpma_cq_get_fd() - provides a file descriptor for rpma_cq_wait()
  * - rpma_conn_get_event_fd() - provides a file descriptor for
  * rpma_conn_get_next_event()
  *
@@ -401,6 +403,14 @@ extern "C" {
  * ACKNOWLEDGEMENTS
  *
  * librpma is built on the top of libibverbs and librdmacm APIs.
+ *
+ * DEPRECATING
+ *
+ * Using of the API calls which are marked as deprecated should be avoided,
+ * because they will be removed in a new major release.
+ *
+ * NOTE: API calls deprecated in 0.X release will be removed in 0.(X+1) release
+ * usually.
  *
  * SEE ALSO
  *
@@ -1993,13 +2003,11 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  *
  * SEE ALSO
  * rpma_conn_apply_remote_peer_cfg(3), rpma_conn_delete(3),
- * rpma_conn_disconnect(3), rpma_conn_get_completion_fd(3),
- * rpma_conn_get_event_fd(3), rpma_conn_get_private_data(3),
- * rpma_conn_completion_get(3), rpma_conn_next_event(3),
- * rpma_conn_completion_wait(3), rpma_conn_req_new(3),
- * rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
- * https://pmem.io/rpma/
+ * rpma_conn_disconnect(3), rpma_conn_get_cq(3), rpma_conn_get_event_fd(3),
+ * rpma_conn_get_private_data(3), rpma_conn_get_rcq(3), rpma_conn_next_event(3),
+ * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3),
+ * rpma_recv(3), rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7)
+ * and https://pmem.io/rpma/
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		const struct rpma_conn_private_data *pdata,
@@ -2586,7 +2594,7 @@ int rpma_send_with_imm(struct rpma_conn *conn,
  * A buffer for an incoming message have to be prepared beforehand.
  *
  * The order of buffers in the set does not affect the order of completions of
- * receive operations get via rpma_conn_completion_get(3).
+ * receive operations get via rpma_cq_get_completion(3).
  *
  * NOTE
  * In the RDMA standard, receive requests form an ordered queue.
@@ -2614,7 +2622,7 @@ int rpma_recv(struct rpma_conn *conn,
 /* completion handling */
 
 /** 3
- * rpma_conn_get_completion_fd - get the completion file descriptor
+ * rpma_conn_get_completion_fd - get the completion file descriptor (deprecated)
  *
  * SYNOPSIS
  *
@@ -2638,6 +2646,9 @@ int rpma_recv(struct rpma_conn *conn,
  * rpma_conn_get_completion_fd() can fail with the following error:
  *
  * - RPMA_E_INVAL - conn or fd is NULL
+ *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
  *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
@@ -2665,7 +2676,7 @@ struct rpma_completion {
 };
 
 /** 3
- * rpma_conn_completion_wait - wait for a completion
+ * rpma_conn_completion_wait - wait for a completion (deprecated)
  *
  * SYNOPSIS
  *
@@ -2689,6 +2700,9 @@ struct rpma_completion {
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
  *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
@@ -2696,7 +2710,7 @@ struct rpma_completion {
 int rpma_conn_completion_wait(struct rpma_conn *conn);
 
 /** 3
- * rpma_conn_completion_get - receive a completion of an operation
+ * rpma_conn_completion_get - receive a completion of an operation (deprecated)
  *
  * SYNOPSIS
  *
@@ -2723,6 +2737,9 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  *
  * - RPMA_E_INVAL - conn or cmpl is NULL
  * - Other errors - please see rpma_cq_get_completion(3)
+ *
+ * DEPRECATED
+ * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
