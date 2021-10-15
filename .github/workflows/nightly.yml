@@ -35,7 +35,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
+        CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
+                 "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
                  "N=Ubuntu18.04  OS=ubuntu  OS_VER=18.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
@@ -87,7 +88,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
+        CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
+                 "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
                  "N=Ubuntu18.04  OS=ubuntu  OS_VER=18.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
