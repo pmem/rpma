@@ -260,11 +260,15 @@ queues).
 The librpma library implements the following API for handling
 completions:
 
--   **rpma\_conn\_completion\_wait**() waits for incoming completions.
-    If it succeeds the completions can be collected using
-    **rpma\_conn\_completion\_get**().
+-   **rpma\_conn\_get\_cq**() gets the connection\'s main CQ,
 
--   **rpma\_conn\_completion\_get**() receives the next available
+-   **rpma\_conn\_get\_rcq**() gets the connection\'s receive CQ,
+
+-   **rpma\_cq\_wait**() waits for an incoming completion from the
+    specified CQ (main or receive CQ) - if it succeeds the completion
+    can be collected using **rpma\_cq\_get\_completion**(),
+
+-   **rpma\_cq\_get\_completion**() receives the next available
     completion of an already posted operation.
 
 PEER
@@ -295,7 +299,7 @@ mode where:
 
 -   **rpma\_ep\_next\_conn\_req**(),
 
--   **rpma\_conn\_completion\_wait**() and
+-   **rpma\_cq\_wait**() and
 
 -   **rpma\_conn\_get\_next\_event**()
 
@@ -305,8 +309,8 @@ modifying the respective file descriptors:
 -   **rpma\_ep\_get\_fd**() - provides a file descriptor for
     **rpma\_ep\_next\_conn\_req**()
 
--   **rpma\_conn\_get\_completion\_fd**() - provides a file descriptor
-    for **rpma\_conn\_completion\_wait**()
+-   **rpma\_cq\_get\_fd**() - provides a file descriptor for
+    **rpma\_cq\_wait**()
 
 -   **rpma\_conn\_get\_event\_fd**() - provides a file descriptor for
     **rpma\_conn\_get\_next\_event**()
@@ -495,6 +499,15 @@ ACKNOWLEDGEMENTS
 ================
 
 librpma is built on the top of libibverbs and librdmacm APIs.
+
+DEPRECATING
+===========
+
+Using of the API calls which are marked as deprecated should be avoided,
+because they will be removed in a new major release.
+
+NOTE: API calls deprecated in 0.X release will be removed in **0.**(X+1)
+release usually.
 
 SEE ALSO
 ========

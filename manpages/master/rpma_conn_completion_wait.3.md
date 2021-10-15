@@ -12,7 +12,7 @@ date: rpma API version 0.9.0
 NAME
 ====
 
-**rpma\_conn\_completion\_wait** - wait for a completion
+**rpma\_conn\_completion\_wait** - wait for a completion (deprecated)
 
 SYNOPSIS
 ========
@@ -46,6 +46,11 @@ ERRORS
     provider error
 
 -   RPMA\_E\_NO\_COMPLETION - no completions available
+
+DEPRECATED
+==========
+
+Please use **rpma\_conn\_get\_cq**(3) and **rpma\_cq\_wait**(3) instead.
 
 SEE ALSO
 ========
