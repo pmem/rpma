@@ -52,6 +52,7 @@ function(add_example name)
 		target_compile_definitions(${name}
 			PRIVATE USE_LIBPMEM)
 	endif()
+
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)
