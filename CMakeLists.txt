@@ -24,6 +24,7 @@ set(LIBRPMA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
 # required only for some examples
 set(LIBPMEM_REQUIRED_VERSION 1.6)
+set(LIBPMEM2_REQUIRED_VERSION 1.6)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
@@ -107,6 +108,14 @@ if(NOT LIBPMEM_FOUND)
 	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION})
 	if(NOT LIBPMEM_FOUND)
 		message(WARNING "Since libpmem is missing, the examples will be unable to use PMem. They will be using DRAM instead.")
+	endif()
+endif()
+
+pkg_check_modules(LIBPMEM2 libpmem2>=${LIBPMEM2_REQUIRED_VERSION})
+if(NOT LIBPMEM2_FOUND)
+	find_package(LIBPMEM2 ${LIBPMEM2_REQUIRED_VERSION})
+	if(NOT LIBPMEM2_FOUND)
+		message(WARNING "Since libpmem2 is missing, the examples will be unable to use PMem. They will be using DRAM instead.")
 	endif()
 endif()
 
