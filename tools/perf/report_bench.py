@@ -15,6 +15,8 @@ PARSER = argparse.ArgumentParser(
     description='Run report-specific benchmarks (EXPERIMENTAL)')
 PARSER.add_argument('--dump', dest='dump', action='store_true',
                     help='only print a dump')
+PARSER.add_argument('--skip_undone', dest='skip_undone', action='store_true',
+                    help='skip not yet done benchmarks')
 SUBPARSERS = PARSER.add_subparsers(dest='command')
 # Python >= 3.7 accepts 'required' kwarg. For older versions, it is validated
 # manually.
@@ -44,10 +46,12 @@ def main():
     if args.command == "run":
         if args.dummy_results:
             args.config['json']['dummy_results'] = True
+        if args.skip_undone:
+            args.config['json']['skip_undone'] = True
         bench = Bench.new(args.config, args.figures, args.result_dir)
         bench.cache()
     elif args.command == "continue":
-        bench = Bench.carry_on(args.bench)
+        bench = Bench.carry_on(args.bench, args.skip_undone)
     else:
         raise ValueError('Unsupported command: ' + args.command)
     if args.dump:

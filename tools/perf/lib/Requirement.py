@@ -134,6 +134,15 @@ class Requirement:
         self.req['done'] = True
         ctx.cache() # store to a disk the final state of execution
 
+    def benchmarks_skip(self, ctx):
+        """Skip all undone benchmarks"""
+        for _, b in self.benchmarks.items():
+            if b.is_done():
+                continue
+            b.skip()
+        self.req['done'] = True
+        ctx.cache() # store to a disk the final state of execution
+
     def benchmarks_dump(self, ctx, result_dir):
         """Dump all benchmarks"""
         for _, b in self.benchmarks.items():

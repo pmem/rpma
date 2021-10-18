@@ -183,6 +183,9 @@ class Benchmark:
             process.check_returncode()
         self.oneseries['done'] = True
 
+    def skip(self):
+        self.oneseries['done'] = True
+
     def dump(self, config, result_dir):
         args = self._benchmark_args(config)
         env = self._get_env(config, result_dir, include_environ=False)
