@@ -53,7 +53,9 @@ CPU_LOAD_RANGE_VALUES="CPU_LOAD_$CPU_LOAD_RANGE"
 
 function benchmark_one() {
 
-	SERVER_IP=$1
+	SERVER_IPS=($1)
+	N_SERVER_IPS=${#SERVER_IPS[@]}
+
 	PERSIST_MODE=$2 # persistency mode
 	OP=$3
 	MODE=$4
@@ -62,10 +64,12 @@ function benchmark_one() {
 	fi
 
 	if [ -n "$REMOTE_JOB_MEM_PATH" ]; then
-		REMOTE_JOB_DEST="$REMOTE_JOB_MEM_PATH"
+		REMOTE_JOB_DESTS=($REMOTE_JOB_MEM_PATH)
 	else
-		REMOTE_JOB_DEST="malloc"
+		REMOTE_JOB_DESTS=("malloc")
 	fi
+
+	N_REMOTE_JOB_DESTS=${#REMOTE_JOB_DESTS[@]}
 
 	case $MODE in
 	bw-bs)
@@ -137,7 +141,7 @@ function benchmark_one() {
 		;;
 	esac
 
-	DEST="$(echo $REMOTE_JOB_DEST | cut -d'/' -f2- | sed 's/\//_/g')"
+	DEST="$(echo ${REMOTE_JOB_DESTS[0]} | cut -d'/' -f2- | sed 's/\//_/g')"
 	[ "$DEST" == "malloc" ] && DEST="dram"
 
 	NAME=rpma_fio_${PERSIST_MODE}_${POLLING}_${OP}_${MODE}_${NAME_SUFFIX}_${DEST}${COMMENT}-${TIMESTAMP}
@@ -178,14 +182,16 @@ function benchmark_one() {
 		exit 1
 	fi
 
-	if ! sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no $REMOTE_USER@$SERVER_IP \
-			"which ${REMOTE_FIO_PATH}fio >/dev/null 2>$LOG_ERR" 2>>$LOG_ERR;
-	then
-		echo "Error: wrong remote path to the 'fio' tool - \"${REMOTE_FIO_PATH}fio\" does not exist"
-		exit 1
-	fi
-
-	echo "STARTING benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
+	for i in $(seq 0 $(expr $N_SERVER_IPS - 1)); do
+		SERVER_IP="${SERVER_IPS[${i}]}"
+		if ! sshpass -p "$REMOTE_PASS" -v ssh -o StrictHostKeyChecking=no $REMOTE_USER@$SERVER_IP \
+				"which ${REMOTE_FIO_PATH}fio >/dev/null 2>$LOG_ERR" 2>>$LOG_ERR;
+		then
+			echo "Error: wrong remote path to the 'fio' tool - \"${REMOTE_FIO_PATH}fio\" does not exist on the $SERVER_IP server"
+			exit 1
+		fi
+		echo "STARTING benchmark for PERSIST_MODE=$PERSIST_MODE OP=$OP MODE=$MODE IP=$SERVER_IP ..."
+	done
 
 	if [ "$DUMP_CMDS" != "1" ]; then
 		case $OP in
@@ -273,6 +279,16 @@ function benchmark_one() {
 		fi
 
 		prepare_RUN_NAME_and_CMP__SUBST
+
+		[ $N_REMOTE_JOB_DESTS -ge $N_SERVER_IPS ] && MAX=$N_REMOTE_JOB_DESTS || MAX=$N_SERVER_IPS
+
+		for i in $(seq 0 $(expr $MAX - 1)); do
+			SERVER_IP=${SERVER_IPS[$(($i % $N_SERVER_IPS))]}
+			REMOTE_JOB_DEST=${REMOTE_JOB_DESTS[$(($i % $N_REMOTE_JOB_DESTS))]}
+			# ...
+			# All the rest will be called $MAX times in this loop
+			# ...
+		done
 
 		ENV="serverip=$SERVER_IP numjobs=${TH} iodepth=${DP} \
 			direct_write_to_pmem=${REMOTE_DIRECT_WRITE_TO_PMEM} \
