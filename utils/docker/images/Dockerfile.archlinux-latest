@@ -25,6 +25,11 @@ ENV BASE_DEPS "\
 	sudo \
 	which"
 
+ENV EXAMPLES_DEPS "\
+	m4 \
+	protobuf-c \
+	time"
+
 ENV TOOLS_DEPS "\
 	python-jinja"
 
@@ -58,6 +63,7 @@ ENV RPMA_DEPS "\
 # Install required packages
 RUN pacman -S --noconfirm \
 	$BASE_DEPS \
+	$EXAMPLES_DEPS \
 	$TOOLS_DEPS \
 	$TESTS_DEPS \
 	$RDMA_DEPS \
@@ -91,8 +97,9 @@ RUN gpasswd wheel -a $USER
 RUN echo 'Defaults env_keep += "ftp_proxy http_proxy https_proxy no_proxy"' >> /etc/sudoers
 RUN echo 'Defaults env_keep += "FTP_PROXY HTTP_PROXY HTTPS_PROXY NO_PROXY"' >> /etc/sudoers
 
-# Install rdma-core (requires user 'user')
+# Install rdma-core and pmdk (requires user 'user')
 COPY install-archlinux-aur.sh install-archlinux-aur.sh
+RUN ./install-archlinux-aur.sh pmdk
 RUN ./install-archlinux-aur.sh rdma-core
 
 # Switch to user
