@@ -110,6 +110,14 @@ if(NOT LIBPMEM_FOUND)
 	endif()
 endif()
 
+pkg_check_modules(LIBPMEM2 libpmem2>=${LIBPMEM2_REQUIRED_VERSION})
+if(NOT LIBPMEM2_FOUND)
+	find_package(LIBPMEM2 ${LIBPMEM2_REQUIRED_VERSION})
+	if(NOT LIBPMEM2_FOUND)
+		message(WARNING "Since libpmem is missing, the examples will be unable to use PMem. They will be using DRAM instead.")
+	endif()
+endif()
+
 pkg_check_modules(LIBPROTOBUFC libprotobuf-c)
 
 # check if libibverbs has ODP support
