@@ -109,8 +109,7 @@ jobs:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
                  "N=VzLinux8       OS=vzlinux    OS_VER=latest",
                  # Rolling/testing/experimental distributions:
-                 # (the Fedora_Rawhide builds were moved to Nightly_Experimental)
-                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
+                 # (the Fedora_Rawhide and Ubuntu_Rolling builds were moved to Nightly_Experimental)
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
