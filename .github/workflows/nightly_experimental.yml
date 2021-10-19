@@ -34,6 +34,7 @@ jobs:
         CONFIG: ["N=Fedora_Rawhide            OS=fedora  OS_VER=rawhide  CC=gcc    CI_SANITS=ON   PUSH_IMAGE=0",
                  "N=Fedora_Rawhide_SANITS     OS=fedora  OS_VER=rawhide  CC=clang  CI_SANITS=ON   PUSH_IMAGE=0",
                  "N=Fedora_Rawhide_no_SANITS  OS=fedora  OS_VER=rawhide  CC=clang  CI_SANITS=OFF  PUSH_IMAGE=1  REBUILD_ALWAYS=YES",
+                 "N=Ubuntu_Rolling            OS=ubuntu  OS_VER=rolling  CC=clang  CI_SANITS=ON   PUSH_IMAGE=1  REBUILD_ALWAYS=YES",
                  # the OpenSUSE_Tumbleweed build was temporarily moved here, because of the following bug:
                  # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
                  "N=OpenSUSE_Tumbleweed OS=opensuse-tumbleweed OS_VER=latest CC=gcc CI_SANITS=ON  PUSH_IMAGE=1  REBUILD_ALWAYS=YES"]
