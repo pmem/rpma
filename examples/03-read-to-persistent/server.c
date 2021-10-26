@@ -14,12 +14,12 @@
 #include <stdio.h>
 #include "common-conn.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#ifdef USE_LIBPMEM2
+#include <libpmem2.h>
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_LIBPMEM2 */
 
 int
 main(int argc, char *argv[])
@@ -46,25 +46,128 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
 
+#ifdef USE_LIBPMEM2
+
+	struct pmem2_config *cfg = NULL;
+	struct pmem2_map *map = NULL;
+	struct pmem2_source *src = NULL;
+	struct pmem2_persist_fn persist;
+	struct pmem2_memcpy_fn copy;
+	int fd;
+
+	if (argc >= 4)
+	{
+		char *path = argv[3];
+
+		if ((fd = open(argv[1], O_RDWR)) < 0) {
+		perror("open");
+		exit(1);
+	}
+
+
+		if (pmem2_config_new(&cfg) != 0) {
+			pmem2_perror("pmem2_config_new");
+		goto err_source_delete;
+	}
+
+		if (pmem2_source_from_fd(&src, fd) != 0) {
+			pmem2_perror("pmem2_source_from_fd");
+		goto err_close;
+	}
+
+		if (pmem2_config_set_required_store_granularity(cfg,
+			PMEM2_GRANULARITY_PAGE)) {
+		pmem2_perror("pmem2_config_set_required_store_granularity");
+		goto err_config_delete;
+	}
+
+		int err = pmem2_map_new(&map, cfg, src);
+
+
+		/* pmem is expected */
+		if (!err == PMEM2_E_GRANULARITY_NOT_SUPPORTED)
+		{
+			(void)fprintf(stderr, "%s is not an actual PMEM\n",
+				      path);
+			return -1;
+		}
+
+		else if (err)
+		{
+			pmem2_perror("pmem2_map_new");
+			return -1;
+		}
+ 		
+		persist = pmem2_get_persist_fn(map);
+		copy = pmem2_get_memcpy_fn(map);
+		mr_ptr = pmem2_map_get_address(map);
+		mr_size = pmem2_map_get_size(map);
+		
+
+		/*
+		 * At the beginning of the persistent memory, a signature is
+		 * stored which marks its content as valid. So the length
+		 * of the mapped memory has to be at least of the length of
+		 * the signature to convey any meaningful content and be usable
+		 * as a persistent store.
+		 */
+		if (mr_size < SIGNATURE_LEN)
+		{
+			(void)fprintf(stderr, "%s too small (%zu < %zu)\n",
+				      path, mr_size, SIGNATURE_LEN);
+			(void)pmem2_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+		data_offset = SIGNATURE_LEN;
+
+		/*
+		 * The space under the offset is intended for storing the hello
+		 * structure. So the total space is assumed to be at least
+		 * 1 KiB + offset of the string contents.
+		 */
+		if (mr_size - data_offset < sizeof(struct hello_t))
+		{
+			fprintf(stderr, "%s too small (%zu < %zu)\n",
+				path, mr_size, sizeof(struct hello_t));
+			return -1;
+		}
+
+		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
+
+		/*
+		 * If the signature is not in place the persistent content has
+		 * to be initialized and persisted.
+		 */
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0)
+		{
+			/* write an initial value and persist it */
+			write_hello_str(hello, en);
+			persist(hello, sizeof(struct hello_t));
+			/* write the signature to mark the content as valid */
+			copy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN, 0);
+			
+		}
+	}
+#endif
+
 #ifdef USE_LIBPMEM
-	char *pmem_path = NULL;
 	int is_pmem = 0;
 	if (argc >= 4) {
-		pmem_path = argv[3];
+		char *path = argv[3];
 
 		/* map the file */
-		mr_ptr = pmem_map_file(pmem_path, 0 /* len */, 0 /* flags */,
+		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
 				0 /* mode */, &mr_size, &is_pmem);
 		if (mr_ptr == NULL) {
 			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", pmem_path);
+					"failed\n", path);
 			return -1;
 		}
 
 		/* pmem is expected */
 		if (!is_pmem) {
 			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-					pmem_path);
+				path);
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
@@ -78,39 +181,42 @@ main(int argc, char *argv[])
 		 */
 		if (mr_size < SIGNATURE_LEN) {
 			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					pmem_path, mr_size, SIGNATURE_LEN);
+					path, mr_size, SIGNATURE_LEN);
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
-		dst_offset = SIGNATURE_LEN;
+		data_offset = SIGNATURE_LEN;
 
 		/*
-		 * All of the space under the offset is intended for
-		 * the string contents. Space is assumed to be at least 1 KiB.
+		 * The space under the offset is intended for storing the hello
+		 * structure. So the total space is assumed to be at least
+		 * 1 KiB + offset of the string contents.
 		 */
-		if (mr_size - dst_offset < KILOBYTE) {
+		if (mr_size - data_offset < sizeof(struct hello_t)) {
 			fprintf(stderr, "%s too small (%zu < %zu)\n",
-				pmem_path, mr_size, KILOBYTE + dst_offset);
+					path, mr_size, sizeof(struct hello_t));
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
+
+		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
 
 		/*
 		 * If the signature is not in place the persistent content has
 		 * to be initialized and persisted.
 		 */
 		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial empty string and persist it */
-			((char *)mr_ptr + dst_offset)[0] = '\0';
-			pmem_persist(mr_ptr, 1);
+			/* write an initial value and persist it */
+			write_hello_str(hello, en);
+			pmem_persist(hello, sizeof(struct hello_t));
 			/* write the signature to mark the content as valid */
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
 	}
-#endif /* USE_LIBPMEM */
+#endif
 
-	/* if no pmem support or it is not provided */
+	/* if no pmem2 support or it is not provided */
 	if (mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
 		mr_ptr = malloc_aligned(KILOBYTE);
@@ -143,6 +249,17 @@ main(int argc, char *argv[])
 				&dst_mr);
 	if (ret)
 		goto err_ep_shutdown;
+
+#ifdef USE_LIBPMEM2
+	/* rpma_mr_advise() should be called only in case of FsDAX */
+	if (err && strstr(pmem_path, "/dev/dax") == NULL) {
+		ret = rpma_mr_advise(dst_mr, 0, mr_size,
+			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+			IBV_ADVISE_MR_FLAG_FLUSH);
+		if (ret)
+			goto err_mr_dereg;
+	}
+#endif /* USE_LIBPMEM2 */
 
 #ifdef USE_LIBPMEM
 	/* rpma_mr_advise() should be called only in case of FsDAX */
@@ -216,6 +333,12 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
+#ifdef USE_LIBPMEM2
+	if (err) {
+		persist((char *)mr_ptr + dst_offset, KILOBYTE);
+	}
+#endif /* USE_LIBPMEM2 */
+
 #ifdef USE_LIBPMEM
 	if (is_pmem) {
 		pmem_persist((char *)mr_ptr + dst_offset, KILOBYTE);
@@ -245,6 +368,15 @@ err_ep_shutdown:
 err_peer_delete:
 	/* delete the peer object */
 	(void) rpma_peer_delete(&peer);
+
+err_source_delete:
+	(void) pmem2_source_delete(&src);
+
+err_close:
+	(void) close(fd);
+
+err_config_delete:
+	(void) pmem2_config_delete(&cfg);
 
 err_free:
 #ifdef USE_LIBPMEM

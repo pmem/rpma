@@ -20,6 +20,13 @@
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
+#ifdef USE_LIBPMEM2
+#include <libpmem2.h>
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#else
+#define USAGE_STR "usage: %s <server_address> <port>\n"
+#endif /* USE_LIBPMEM2 */
+
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
 {
@@ -60,6 +67,110 @@ main(int argc, char *argv[])
 	size_t data_offset = 0;
 	struct rpma_mr_local *mr = NULL;
 	struct hello_t *hello = NULL;
+
+#ifdef USE_LIBPMEM2
+
+	struct pmem2_config *cfg = NULL;
+	struct pmem2_map *map = NULL;
+	struct pmem2_source *src = NULL;
+	struct pmem2_persist_fn persist;
+	struct pmem2_memcpy_fn copy;
+	int fd;
+
+	if (argc >= 4)
+	{
+		char *path = argv[3];
+
+		if ((fd = open(argv[1], O_RDWR)) < 0) {
+		perror("open");
+		exit(1);
+	}
+
+
+		if (pmem2_config_new(&cfg) != 0) {
+			pmem2_perror("pmem2_config_new");
+		goto err_source_delete;
+	}
+
+		if (pmem2_source_from_fd(&src, fd) != 0) {
+			pmem2_perror("pmem2_source_from_fd");
+		goto err_close;
+	}
+
+		if (pmem2_config_set_required_store_granularity(cfg,
+			PMEM2_GRANULARITY_PAGE)) {
+		pmem2_perror("pmem2_config_set_required_store_granularity");
+		goto err_config_delete;
+	}
+
+		int err = pmem2_map_new(&map, cfg, src);
+
+
+		/* pmem is expected */
+		if (!err == PMEM2_E_GRANULARITY_NOT_SUPPORTED)
+		{
+			(void)fprintf(stderr, "%s is not an actual PMEM\n",
+				      path);
+			return -1;
+		}
+
+		else if (err)
+		{
+			pmem2_perror("pmem2_map_new");
+			return -1;
+		}
+ 		
+		persist = pmem2_get_persist_fn(map);
+		copy = pmem2_get_memcpy_fn(map);
+		mr_ptr = pmem2_map_get_address(map);
+		mr_size = pmem2_map_get_size(map);
+		
+
+		/*
+		 * At the beginning of the persistent memory, a signature is
+		 * stored which marks its content as valid. So the length
+		 * of the mapped memory has to be at least of the length of
+		 * the signature to convey any meaningful content and be usable
+		 * as a persistent store.
+		 */
+		if (mr_size < SIGNATURE_LEN)
+		{
+			(void)fprintf(stderr, "%s too small (%zu < %zu)\n",
+				      path, mr_size, SIGNATURE_LEN);
+			(void)pmem2_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+		data_offset = SIGNATURE_LEN;
+
+		/*
+		 * The space under the offset is intended for storing the hello
+		 * structure. So the total space is assumed to be at least
+		 * 1 KiB + offset of the string contents.
+		 */
+		if (mr_size - data_offset < sizeof(struct hello_t))
+		{
+			fprintf(stderr, "%s too small (%zu < %zu)\n",
+				path, mr_size, sizeof(struct hello_t));
+			return -1;
+		}
+
+		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
+
+		/*
+		 * If the signature is not in place the persistent content has
+		 * to be initialized and persisted.
+		 */
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0)
+		{
+			/* write an initial value and persist it */
+			write_hello_str(hello, en);
+			persist(hello, sizeof(struct hello_t));
+			/* write the signature to mark the content as valid */
+			copy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN, 0);
+			
+		}
+	}
+#endif
 
 #ifdef USE_LIBPMEM
 	int is_pmem = 0;
@@ -195,6 +306,11 @@ main(int argc, char *argv[])
 	 * surprising.
 	 */
 	translate(hello);
+#ifdef USE_LIBPMEM2
+	if (err) {
+		persist(hello, sizeof(struct hello_t));
+	}
+#endif
 #ifdef USE_LIBPMEM
 	if (is_pmem) {
 		pmem_persist(hello, sizeof(struct hello_t));
@@ -210,6 +326,15 @@ err_mr_dereg:
 err_peer_delete:
 	/* delete the peer */
 	(void) rpma_peer_delete(&peer);
+
+err_source_delete:
+	(void) pmem2_source_delete(&src);
+
+err_close:
+	(void) close(fd);
+
+err_config_delete:
+	(void) pmem2_config_delete(&cfg);
 
 err_free:
 #ifdef USE_LIBPMEM
