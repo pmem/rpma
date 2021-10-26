@@ -11,12 +11,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+#ifdef USE_LIBPMEM2
+#include <libpmem2.h>
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_LIBPMEM2 */
 
 #include "common-conn.h"
 #include "hello.h"
@@ -62,7 +62,7 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *mr = NULL;
 	struct hello_t *hello = NULL;
 
-#ifdef USE_LIBPMEM
+#ifdef USE_LIBPMEM2
 	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 	 * surprising.
 	 */
 	translate(hello);
-#ifdef USE_LIBPMEM
+#ifdef USE_LIBPMEM2
 	if (is_pmem) {
 		pmem_persist(hello, sizeof(struct hello_t));
 	}
@@ -213,7 +213,7 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
+#ifdef USE_LIBPMEM2
 	if (is_pmem) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
