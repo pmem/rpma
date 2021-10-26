@@ -76,6 +76,14 @@ function(add_example)
 		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM)
 	endif()
+
+	if(EXAMPLE_USE_LIBPMEM2_IF_FOUND AND LIBPMEM2_FOUND)
+		target_include_directories(${target}
+			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
+		target_compile_definitions(${target}
+			PRIVATE USE_LIBPMEM2)
+	endif()
 	
 	if(EXAMPLE_USE_LIBIBVERBS)
 		target_include_directories(${target}
