@@ -14,12 +14,12 @@
 #include <stdio.h>
 #include "common-conn.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#ifdef USE_LIBPMEM2
+#include <libpmem2.h>
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_LIBPMEM2 */
 
 int
 main(int argc, char *argv[])
@@ -46,26 +46,25 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
 
-#ifdef USE_LIBPMEM
-	char *pmem_path = NULL;
+#ifdef USE_LIBPMEM2
 	int is_pmem = 0;
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
 		/* map the file */
-		mr_ptr = pmem_map_file(pmem_path, 0 /* len */, 0 /* flags */,
+		mr_ptr = pmem2_map_new(path, 0 /* len */, 0 /* flags */,
 				0 /* mode */, &mr_size, &is_pmem);
 		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", pmem_path);
+			(void) fprintf(stderr, "pmem2_map_new() for %s "
+					"failed\n", path);
 			return -1;
 		}
 
-		/* pmem is expected */
+		/* pmem2 is expected */
 		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-					pmem_path);
-			(void) pmem_unmap(mr_ptr, mr_size);
+			(void) fprintf(stderr, "%s is not an actual PMEM2\n",
+					path);
+			(void) pmem2_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 
@@ -78,8 +77,8 @@ main(int argc, char *argv[])
 		 */
 		if (mr_size < SIGNATURE_LEN) {
 			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					pmem_path, mr_size, SIGNATURE_LEN);
-			(void) pmem_unmap(mr_ptr, mr_size);
+					path, mr_size, SIGNATURE_LEN);
+			(void) pmem2_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 		dst_offset = SIGNATURE_LEN;
@@ -90,8 +89,8 @@ main(int argc, char *argv[])
 		 */
 		if (mr_size - dst_offset < KILOBYTE) {
 			fprintf(stderr, "%s too small (%zu < %zu)\n",
-				pmem_path, mr_size, KILOBYTE + dst_offset);
-			(void) pmem_unmap(mr_ptr, mr_size);
+					path, mr_size, KILOBYTE + dst_offset);
+			(void) pmem2_unmap(mr_ptr, mr_size);
 			return -1;
 		}
 
@@ -102,15 +101,15 @@ main(int argc, char *argv[])
 		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
 			/* write an initial empty string and persist it */
 			((char *)mr_ptr + dst_offset)[0] = '\0';
-			pmem_persist(mr_ptr, 1);
+			pmem2_persist(mr_ptr, 1);
 			/* write the signature to mark the content as valid */
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(mr_ptr, SIGNATURE_LEN);
+			pmem2_persist(mr_ptr, SIGNATURE_LEN);
 		}
 	}
 #endif /* USE_LIBPMEM */
 
-	/* if no pmem support or it is not provided */
+	/* if no pmem2 support or it is not provided */
 	if (mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
 		mr_ptr = malloc_aligned(KILOBYTE);
@@ -216,9 +215,9 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
-#ifdef USE_LIBPMEM
+#ifdef USE_LIBPMEM2
 	if (is_pmem) {
-		pmem_persist((char *)mr_ptr + dst_offset, KILOBYTE);
+		pmem2_persist((char *)mr_ptr + dst_offset, KILOBYTE);
 	}
 #endif /* USE_LIBPMEM */
 
@@ -247,9 +246,9 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
+#ifdef USE_LIBPMEM2
 	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
+		pmem2_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
 	}
 #endif
