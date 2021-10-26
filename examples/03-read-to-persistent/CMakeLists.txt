@@ -15,14 +15,14 @@ include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
-set(LIBPMEM_REQUIRED_VERSION 1.6)
+set(LIBPMEM2_REQUIRED_VERSION 1.10)
 
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
 	pkg_check_modules(LIBRPMA librpma)
 	pkg_check_modules(LIBIBVERBS libibverbs)
-	pkg_check_modules(LIBPMEM QUIET libpmem>=${LIBPMEM_REQUIRED_VERSION})
+	pkg_check_modules(LIBPMEM2 QUIET libpmem2>=${LIBPMEM2_REQUIRED_VERSION})
 endif()
 if(NOT LIBRPMA_FOUND)
 	find_package(LIBRPMA REQUIRED librpma)
@@ -30,8 +30,8 @@ endif()
 if(NOT LIBIBVERBS_FOUND)
 	find_package(LIBIBVERBS REQUIRED libibverbs)
 endif()
-if(NOT LIBPMEM_FOUND)
-	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION} QUIET)
+if(NOT LIBPMEM2_FOUND)
+	find_package(LIBPMEM2 ${LIBPMEM2_REQUIRED_VERSION} QUIET)
 endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
@@ -45,12 +45,12 @@ function(add_example name)
 			../common)
 	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 
-	if(LIBPMEM_FOUND)
+	if(LIBPMEM2_FOUND)
 		target_include_directories(${name}
-			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(${name} ${LIBPMEM_LIBRARIES})
+			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
+		target_link_libraries(${name} ${LIBPMEM2_LIBRARIES})
 		target_compile_definitions(${name}
-			PRIVATE USE_LIBPMEM)
+			PRIVATE USE_LIBPMEM2)
 	endif()
 endfunction()
 
