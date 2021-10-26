@@ -20,6 +20,13 @@
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
+#ifdef USE_LIBPMEM2
+#include <libpmem2.h>
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
+#else
+#define USAGE_STR "usage: %s <server_address> <port>\n"
+#endif /* USE_LIBPMEM2 */
+
 #include "common-conn.h"
 
 int
@@ -48,6 +55,69 @@ main(int argc, char *argv[])
 	struct rpma_mr_remote *src_mr = NULL;
 
 #ifdef USE_LIBPMEM
+	int is_pmem = 0;
+	if (argc >= 4) {
+		char *path = argv[3];
+
+		/* map the file */
+		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
+				0 /* mode */, &mr_size, &is_pmem);
+		if (mr_ptr == NULL) {
+			(void) fprintf(stderr, "pmem_map_file() for %s "
+					"failed\n", path);
+			return -1;
+		}
+
+		/* pmem is expected */
+		if (!is_pmem) {
+			(void) fprintf(stderr, "%s is not an actual PMEM\n",
+					path);
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+
+		/*
+		 * At the beginning of the persistent memory, a signature is
+		 * stored which marks its content as valid. So the length
+		 * of the mapped memory has to be at least of the length of
+		 * the signature to convey any meaningful content and be usable
+		 * as a persistent store.
+		 */
+		if (mr_size < SIGNATURE_LEN) {
+			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, SIGNATURE_LEN);
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+		dst_offset = SIGNATURE_LEN;
+
+		/*
+		 * All of the space under the offset is intended for
+		 * the string contents. Space is assumed to be at least 1 KiB.
+		 */
+		if (mr_size - dst_offset < KILOBYTE) {
+			fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, KILOBYTE + dst_offset);
+			(void) pmem_unmap(mr_ptr, mr_size);
+			return -1;
+		}
+
+		/*
+		 * If the signature is not in place the persistent content has
+		 * to be initialized and persisted.
+		 */
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+			/* write an initial empty string and persist it */
+			((char *)mr_ptr + dst_offset)[0] = '\0';
+			pmem_persist(mr_ptr, 1);
+			/* write the signature to mark the content as valid */
+			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+			pmem_persist(mr_ptr, SIGNATURE_LEN);
+		}
+	}
+#endif
+
+#ifdef USE_LIBPMEM2
 	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
@@ -211,6 +281,12 @@ main(int argc, char *argv[])
 	}
 #endif
 
+#ifdef USE_LIBPMEM2
+	if (is_pmem) {
+		pmem_persist((char *)mr_ptr + dst_offset, KILOBYTE);
+	}
+#endif
+
 	(void) printf("New value: %s\n", (char *)mr_ptr + dst_offset);
 
 err_mr_remote_delete:
@@ -237,6 +313,13 @@ err_peer_delete:
 
 err_free:
 #ifdef USE_LIBPMEM
+	if (is_pmem) {
+		pmem_unmap(mr_ptr, mr_size);
+		mr_ptr = NULL;
+	}
+#endif
+
+#ifdef USE_LIBPMEM2
 	if (is_pmem) {
 		pmem_unmap(mr_ptr, mr_size);
 		mr_ptr = NULL;
