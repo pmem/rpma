@@ -27,18 +27,18 @@ You can finding the PCIe Root Port of the network interface knowing its producer
 
 ```sh
 $ lspci -vt | grep Mellanox
- +-[0000:17]-+-00.0-[18]--+-00.0  Mellanox Technologies MT27800 Family [ConnectX-5]
+ +-[1234:56]-+-78.9-[18]--+-00.0  Mellanox Technologies MT27800 Family [ConnectX-5]
  |           |            \-00.1  Mellanox Technologies MT27800 Family [ConnectX-5]
 ```
 
-The `lspci -vt` command shows a tree-like diagram containing all buses, bridges, devices and connections between them. The top most level of this tree is the PCIe Root Port address. In this case it should be written as `0000:17:00.0`. [[3]][lspci]
+The `lspci -vt` command shows a tree-like diagram containing all buses, bridges, devices and connections between them. The top most level of this tree is the PCIe Root Port address. In this case it should be written as `1234:56:78.9`. [[3]][lspci]
 
 ### Turning off DDIO
 
 For turning on and off DDIO on per-PCIe Root Port basis please use the [ddio.sh](https://github.com/pmem/rpma/blob/master/tools/ddio.sh) utility available in the librpma repository.
 
 ```sh
-$ PCIe_Root_Port=0000:17:00.0
+$ PCIe_Root_Port=1234:56:78.9
 $ sudo ./ddio.sh -d $PCIe_Root_Port -q
 $ echo $?
 1
