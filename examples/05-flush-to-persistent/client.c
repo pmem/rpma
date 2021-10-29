@@ -275,6 +275,14 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
+	if (cmpl.op != RPMA_OP_FLUSH) {
+		ret = -1;
+		(void) fprintf(stderr,
+				"unexpected cmpl.op value (%d != %d)\n",
+				cmpl.op, RPMA_OP_FLUSH);
+		goto err_mr_remote_delete;
+	}
+
 	/*
 	 * Translate the message so the next time the greeting will be
 	 * surprising.
