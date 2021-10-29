@@ -148,6 +148,21 @@ read__conn_dst_NULL_flags_0(void **unused)
 }
 
 /*
+ * read__op_context_invalid - op_context > 0x8FFFFFFFFFFFFFFF is invalid
+ */
+static void
+read__op_context_invalid(void **unused)
+{
+	/* run test */
+	int ret = rpma_read(MOCK_CONN, MOCK_RPMA_MR_LOCAL, MOCK_LOCAL_OFFSET,
+				MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
+				MOCK_LEN, 0, MOCK_INVALID_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * read__success - happy day scenario
  */
 static void
@@ -196,6 +211,7 @@ static const struct CMUnitTest tests_read[] = {
 	cmocka_unit_test(read__src_NULL_src_offset_not_NULL),
 	cmocka_unit_test(read__src_NULL_len_not_NULL),
 	cmocka_unit_test(read__src_NULL_dst_offsets_len_not_NULL),
+	cmocka_unit_test(read__op_context_invalid),
 	cmocka_unit_test(read__flags_0),
 	cmocka_unit_test(read__conn_dst_NULL_flags_0),
 	cmocka_unit_test_setup_teardown(read__success,

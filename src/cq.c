@@ -209,7 +209,7 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 		return RPMA_E_UNKNOWN;
 	}
 
-	cmpl->op_context = (void *)wc.wr_id;
+	cmpl->op_context = (void *)(wc.wr_id & OP_CONTEXT_MAX);
 	cmpl->op_status = wc.status;
 
 	/*
@@ -226,7 +226,8 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 
 	switch (wc.opcode) {
 	case IBV_WC_RDMA_READ:
-		cmpl->op = RPMA_OP_READ;
+		cmpl->op = wc.wr_id & OP_CONTEXT_HIGHEST_BIT ?
+				RPMA_OP_FLUSH : RPMA_OP_READ;
 		break;
 	case IBV_WC_RDMA_WRITE:
 		cmpl->op = RPMA_OP_WRITE;

@@ -74,6 +74,21 @@ flush__conn_dst_NULL_flags_0(void **unused)
 }
 
 /*
+ * flush__op_context_invalid - op_context > 0x8FFFFFFFFFFFFFFF is invalid
+ */
+static void
+flush__op_context_invalid(void **unused)
+{
+	/* run test */
+	int ret = rpma_flush(MOCK_CONN, MOCK_RPMA_MR_REMOTE, MOCK_REMOTE_OFFSET,
+			MOCK_LEN, RPMA_FLUSH_TYPE_VISIBILITY, MOCK_FLAGS,
+			MOCK_INVALID_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+}
+
+/*
  * flush__FLUSH_PERSISTENT_NO_DIRECT_WRITE - flush fails with RPMA_E_NOSUPP
  * for RPMA_FLUSH_TYPE_PERSISTENT and not supported direct_write_to_pmem
  */
@@ -227,7 +242,8 @@ flush__success_FLUSH_TYPE_VISIBILITY(void **cstate_ptr)
 	expect_value(rpma_flush_mock_do, dst_offset, MOCK_REMOTE_OFFSET);
 	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
 	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
-	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+	expect_value(rpma_flush_mock_do, op_context,
+			MOCK_OP_CONTEXT_WITH_HIGHEST_BIT);
 
 	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
 	will_return(rpma_mr_remote_get_flush_type,
@@ -264,7 +280,8 @@ flush__success_FLUSH_TYPE_PERSISTENT(void **cstate_ptr)
 	expect_value(rpma_flush_mock_do, dst_offset, MOCK_REMOTE_OFFSET);
 	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
 	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
-	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+	expect_value(rpma_flush_mock_do, op_context,
+			MOCK_OP_CONTEXT_WITH_HIGHEST_BIT);
 
 	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
 	will_return(rpma_mr_remote_get_flush_type,
@@ -286,6 +303,7 @@ static const struct CMUnitTest tests_flush[] = {
 	cmocka_unit_test(flush__dst_NULL),
 	cmocka_unit_test(flush__flags_0),
 	cmocka_unit_test(flush__conn_dst_NULL_flags_0),
+	cmocka_unit_test(flush__op_context_invalid),
 	cmocka_unit_test_setup_teardown(
 		flush__FLUSH_PERSISTENT_NO_DIRECT_WRITE,
 		setup__conn_new, teardown__conn_delete),

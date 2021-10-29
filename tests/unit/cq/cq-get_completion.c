@@ -199,6 +199,7 @@ get_completion__success(void **cq_ptr)
 	enum ibv_wc_opcode opcodes[] = {
 			IBV_WC_RDMA_READ,
 			IBV_WC_RDMA_WRITE,
+			IBV_WC_RDMA_READ,
 			IBV_WC_SEND,
 			IBV_WC_RECV,
 			IBV_WC_RECV,
@@ -207,12 +208,14 @@ get_completion__success(void **cq_ptr)
 	enum rpma_op ops[] = {
 			RPMA_OP_READ,
 			RPMA_OP_WRITE,
+			RPMA_OP_FLUSH,
 			RPMA_OP_SEND,
 			RPMA_OP_RECV,
 			RPMA_OP_RECV,
 			RPMA_OP_RECV_RDMA_WITH_IMM
 	};
 	unsigned flags[] = {
+		0,
 		0,
 		0,
 		0,
@@ -229,7 +232,10 @@ get_completion__success(void **cq_ptr)
 		/* configure mock */
 		expect_value(poll_cq, cq, MOCK_IBV_CQ);
 		will_return(poll_cq, 1);
-		wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+		if (ops[i] == RPMA_OP_FLUSH)
+			wc.wr_id = (uint64_t)MOCK_OP_CONTEXT_WITH_HIGHEST_BIT;
+		else
+			wc.wr_id = (uint64_t)MOCK_OP_CONTEXT;
 		wc.status = IBV_WC_SUCCESS;
 		wc.opcode = opcodes[i];
 		wc.byte_len = MOCK_LEN;

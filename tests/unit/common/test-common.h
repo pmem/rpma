@@ -31,6 +31,8 @@
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
+#define MOCK_INVALID_OP_CONTEXT	((void *)0x9FFFFFFFFFFFFFFF)
+#define MOCK_OP_CONTEXT_WITH_HIGHEST_BIT	(void *)0x800000000000C417
 #define MOCK_NOFENCE		false
 #define MOCK_FENCE		true
 #define MOCK_COMPLETION_FD	0x00FE

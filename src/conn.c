@@ -305,7 +305,7 @@ rpma_read(struct rpma_conn *conn,
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
 	    (src != NULL || dst != NULL || dst_offset != 0 || src_offset != 0 ||
-	    len != 0)))
+	    len != 0)) || CHECK_MAX(op_context))
 		return RPMA_E_INVAL;
 
 	return rpma_mr_read(conn->id->qp,
@@ -391,7 +391,7 @@ rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
-	if (conn == NULL || dst == NULL || flags == 0)
+	if (conn == NULL || dst == NULL || flags == 0 || CHECK_MAX(op_context))
 		return RPMA_E_INVAL;
 
 	if (type == RPMA_FLUSH_TYPE_PERSISTENT && !conn->direct_write_to_pmem) {
@@ -421,7 +421,7 @@ rpma_flush(struct rpma_conn *conn,
 
 	rpma_flush_func flush = conn->flush->func;
 	return flush(conn->id->qp, conn->flush, dst, dst_offset,
-			len, type, flags, op_context);
+			len, type, flags, (void *)SET_HIGHEST_BIT(op_context));
 }
 
 /*
