@@ -2792,9 +2792,13 @@ int rpma_conn_completion_get(struct rpma_conn *conn,
  *	int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  *
  * DESCRIPTION
- * rpma_cq_get_fd() gets the completion file descriptor of the CQ, either
- * for the connection's main CQ or the receive CQ. For details please see
- * rpma_conn_get_cq(3) and rpma_conn_get_rcq(3).
+ * rpma_cq_get_fd() gets the completion file descriptor of the CQ. When
+ * a completion event is generated in the CQ, the event is delivered to
+ * a userspace process via the file descriptor associated with the CQ.
+ * The default mode of file descriptor is blocking and it can be changed
+ * to the non-blocking mode by fcntl(2). The CQ is either the connection's
+ * main CQ or the receive CQ, please see rpma_conn_get_cq(3) and
+ * rpma_conn_get_rcq(3) for details.
  *
  * RETURN VALUE
  * The rpma_cq_get_fd() function returns 0 on success or a negative error
