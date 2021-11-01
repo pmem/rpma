@@ -7,7 +7,7 @@
 """test_new.py -- lib.bench.Bench.new() tests"""
 
 from lib.bench import Bench
-from lib.Benchmark import Benchmark
+from lib.benchmark import Benchmark
 from lib.figure import Figure
 from lib.Requirement import Requirement
 
