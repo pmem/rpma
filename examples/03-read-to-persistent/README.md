@@ -8,9 +8,9 @@ the server receives the client's memory region registered as a reading source.
 The servers performs a read from the remote memory region to a local memory
 region.
 - The client, if provided (and capable of), prepares a local persistent memory
-(including its contents) and registers it as a reading source and exposes
+(including its contents), registers it as a reading source, and exposes
 the memory description along with other parameters required to perform
-a RDMA read. After the connection is established the client just waits for
+a RDMA read. After the connection is established, the client just waits for
 the server to disconnect.
 
 **Note**: If either server or client does not have a pmem path (or it is not
