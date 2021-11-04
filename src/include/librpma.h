@@ -2881,11 +2881,11 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *   either rpma_conn_req_recv(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
  *   rpma_send(3), rpma_send_with_imm(3), rpma_write(3), rpma_write_atomic(3),
  *   rpma_write_with_imm(3)
- * - op - type of the operation, for avaiable values please see
- *   the decription below
+ * - op - type of the operation, for available values please see
+ *   the description below
  * - byte_len - number of bytes transferred
  * - op_status - status of the operation
- * - flags - flags of the operation, for avaiable values please
+ * - flags - flags of the operation, for available values please
  *   see ibv_poll_cq(3)
  * - imm - immediate data (in host byte order)
  *
