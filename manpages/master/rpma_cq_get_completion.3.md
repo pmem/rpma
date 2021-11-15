@@ -56,14 +56,14 @@ The rpma\_completion structure provides the following fields:
     **rpma\_send\_with\_imm**(3), **rpma\_write**(3),
     **rpma\_write\_atomic**(3), **rpma\_write\_with\_imm**(3)
 
--   op - type of the operation, for avaiable values please see the
-    decription below
+-   op - type of the operation, for available values please see the
+    description below
 
 -   byte\_len - number of bytes transferred
 
 -   op\_status - status of the operation
 
--   flags - flags of the operation, for avaiable values please see
+-   flags - flags of the operation, for available values please see
     **ibv\_poll\_cq**(3)
 
 -   imm - immediate data (in host byte order)
