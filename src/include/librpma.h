@@ -2782,7 +2782,7 @@ int rpma_conn_completion_get(struct rpma_conn *conn,
 		struct rpma_completion *cmpl);
 
 /** 3
- * rpma_cq_get_fd - get the completion file descriptor
+ * rpma_cq_get_fd - get the completion queue's file descriptor
  *
  * SYNOPSIS
  *
@@ -2792,9 +2792,18 @@ int rpma_conn_completion_get(struct rpma_conn *conn,
  *	int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  *
  * DESCRIPTION
- * rpma_cq_get_fd() gets the completion file descriptor of the CQ, either
- * for the connection's main CQ or the receive CQ. For details please see
- * rpma_conn_get_cq(3) and rpma_conn_get_rcq(3).
+ * rpma_cq_get_fd() gets the file descriptor of the completion queue (CQ
+ * in short). When a next completion in the CQ is ready to be consumed by
+ * rpma_cq_get_completion(3), the notification is delivered via the file
+ * descriptor. The default mode of the file descriptor is blocking but it
+ * can be changed to non-blocking mode using fcntl(2). The CQ is either
+ * the connection's main CQ or the receive CQ, please see rpma_conn_get_cq(3)
+ * and rpma_conn_get_rcq(3) for details.
+ *
+ * Note after spotting the notification using the provided file descriptor you
+ * do not have to call rpma_cq_wait(3) before consuming the completion but it
+ * may cause that the next call to rpma_cq_wait(3) will notify you of already
+ * consumed completion.
  *
  * RETURN VALUE
  * The rpma_cq_get_fd() function returns 0 on success or a negative error
@@ -2806,7 +2815,7 @@ int rpma_conn_completion_get(struct rpma_conn *conn,
  * - RPMA_E_INVAL - cq or fd is NULL
  *
  * SEE ALSO
- * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
+ * fcntl(2), rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
  * rpma_cq_get_completion(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
