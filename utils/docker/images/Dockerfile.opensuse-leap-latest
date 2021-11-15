@@ -38,6 +38,7 @@ ENV TESTS_DEPS "\
 	python3-setuptools"
 
 ENV PYTHON_DEPS "\
+	deepdiff \
 	markdown2 \
 	matplotlib \
 	pandas"
