@@ -7,8 +7,8 @@ process:
 endpoint
 - a client which will initiate establishing the connection to the server
 
-**Note**: This example after establishing the connection just disconnects. For
-examples how to make real use of the connection please see other examples.
+**Note**: This example, after establishing the connection, just disconnects. For
+examples of how to make real use of the connection, please see other examples.
 
 ## Usage
 
