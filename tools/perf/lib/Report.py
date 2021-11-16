@@ -142,5 +142,5 @@ class Report:
         html = layout_tmpl.render(variables)
         # write the output file
         output_file = os.path.join(self.result_dir, output + '.html')
-        with open(output_file, 'w') as f:
+        with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html)
