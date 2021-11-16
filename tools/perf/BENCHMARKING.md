@@ -41,11 +41,13 @@ $ sudo make install
 ```
 
 To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
+ - deepdiff
  - jinja2
  - markdown2
  - PIL
 
 ```sh
+$ pip3 install --user deepdiff
 $ pip3 install --user jinja2
 $ pip3 install --user markdown2
 $ pip3 install --user PIL

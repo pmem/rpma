@@ -45,6 +45,7 @@ ENV RDMA_DEPS "\
 	file"
 
 ENV PYTHON_DEPS "\
+	deepdiff \
 	markdown2 \
 	matplotlib \
 	pandas"
