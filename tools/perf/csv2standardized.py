@@ -131,7 +131,7 @@ def main():
             output = {key: df.to_dict(orient='records')
                 for key, df in zip(args.keys, dfs)}
             # write the constructed dict() to the output_file
-            with open(args.output_file, 'w') as file:
+            with open(args.output_file, 'w', encoding="utf-8") as file:
                 json.dump(output, file)
     else:
         raise Exception(f"Unsupported output file extension: {ext}")

@@ -27,7 +27,7 @@ def json_from_file(string):
     if not os.path.isfile(string):
         raise FileNotFoundError(string)
     # read the file
-    with open(string, "r") as read_file:
+    with open(string, "r", encoding="utf-8") as read_file:
         data = json.load(read_file)
     # return the content of the file
     return {'input_file': string, 'json': data}

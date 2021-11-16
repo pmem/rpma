@@ -211,5 +211,5 @@ class Benchmark:
             }
         else:
             output = [self._random_point() for i in range(3)]
-        with open(env['OUTPUT_FILE'], 'w') as file:
+        with open(env['OUTPUT_FILE'], 'w', encoding="utf-8") as file:
             json.dump(output, file, indent=4)

@@ -320,5 +320,5 @@ def test_dummy_results(dummy_results, benchmark_dummy, tmpdir, monkeypatch):
         # XXX put the Benchmark file path generation on the API?
         output = os.path.join(str(tmpdir),
             'benchmark_' + benchmark_dummy.get_id() + '.json')
-        with open(output, mode='r') as file:
+        with open(output, 'r', encoding="utf-8") as file:
             assert DUMMY_STR == file.read()

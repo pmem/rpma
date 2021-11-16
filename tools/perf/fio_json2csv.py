@@ -27,8 +27,8 @@ def main():
         default='output.csv', help='an output file')
     args = parser.parse_args()
 
-    with open(args.json_file) as json_file, \
-            open(args.output_file, 'w') as csv_file:
+    with open(args.json_file, 'r', encoding="utf-8") as json_file, \
+            open(args.output_file, 'w', encoding="utf-8") as csv_file:
         # read JSON file
         data = json.load(json_file)
         job = data['jobs'][0]
