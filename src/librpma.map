@@ -6,7 +6,7 @@
 #
 # src/librpma.map -- linker link file for librpma
 #
-LIBRPMA_1.0 {
+LIBRPMA_0.9 {
 	global:
 		rpma_conn_apply_remote_peer_cfg;
 		rpma_conn_cfg_delete;
