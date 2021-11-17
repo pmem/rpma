@@ -11,7 +11,8 @@
 import copy
 import json
 
-from .Benchmark import *
+from .benchmark import Benchmark
+from .common import uniq
 
 class Requirement:
     """A single set of requirements"""

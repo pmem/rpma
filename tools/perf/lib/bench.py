@@ -9,7 +9,7 @@
 import json
 import os
 
-from lib.Benchmark import Benchmark
+from lib.benchmark import Benchmark
 from lib.figure import Figure
 from lib.Requirement import Requirement
 
