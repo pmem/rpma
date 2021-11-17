@@ -62,7 +62,7 @@ class Bench:
         }
 
         output_path = os.path.join(self.result_dir, 'bench.json')
-        with open(output_path, 'w', encoding="utf-8") as file:
+        with open(output_path, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4)
 
     def get_config(self):
