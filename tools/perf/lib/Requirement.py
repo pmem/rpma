@@ -86,8 +86,8 @@ class Requirement:
     def is_met_Cascade_Lake(req, config):
         # For the CLX generation, it is possible to configure Direct Write
         # to PMem from the OS level.
-        if config['REMOTE_SUDO_NOPASSWD'] and \
-                len(config['REMOTE_RNIC_PCIE_ROOT_PORT']):
+        if config.get('REMOTE_SUDO_NOPASSWD', False) and \
+                len(config.get('REMOTE_RNIC_PCIE_ROOT_PORT', '')):
             # If there are available: passwordless sudo access and
             # the PCIe Root Port of the RNIC on the remote side
             # the configuration can be adjusted automatically.
