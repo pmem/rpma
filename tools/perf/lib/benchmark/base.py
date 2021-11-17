@@ -12,7 +12,7 @@ import json
 import os
 
 from ..common import uniq
-from .runner import Bash, Dummy
+from .runner import BaseRunner, Bash, Dummy
 
 ENCODE = json.JSONEncoder(indent=4).encode
 
@@ -130,7 +130,7 @@ class Benchmark:
         elif '.sh' in self.oneseries['tool']:
             runner = Bash
         else:
-            raise NotImplementedError()
+            runner = BaseRunner
 
         runner.run(self, config, result_dir)
         self.oneseries['done'] = True

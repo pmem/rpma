@@ -6,5 +6,6 @@
 
 """__init__.py -- required for python imports"""
 
+from .base import BaseRunner
 from .bash import Bash
 from .dummy import Dummy
