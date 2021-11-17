@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 
 	/* receive an incoming connection request */
 	if ((ret = rpma_ep_next_conn_req(ep, cfg, &req)))
-		goto err_mr_dereg;
+		goto err_req_delete;
 
 	/* prepare buffer for a flush request */
 	if ((ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX,
