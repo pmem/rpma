@@ -11,7 +11,8 @@
 # unused-private-member - XXX for an unknown reason, pylint ignores the uses of private members
 # too-many-locals - (X>15) XXX requires consideration
 # len-as-condition - bug in Pylint, fixed as of Pylint 2.4 (https://github.com/PyCQA/pylint/pull/2815)
-disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member,too-many-locals,len-as-condition
+# duplicate-code - XXX requires consideration
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member,too-many-locals,len-as-condition,duplicate-code
 
 [FORMAT]
 
