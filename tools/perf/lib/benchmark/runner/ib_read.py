@@ -7,7 +7,8 @@
 """ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
 from ...common import json_from_file
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES # XXX RemoteCmd
+# from ...remote_cmd import RemoteCmd
+from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
 
 class IbReadRunner:
     """the ib_read_{lat,bw} tools runner"""
@@ -30,8 +31,6 @@ class IbReadRunner:
 
     def __init__(self, benchmark, config, idfile):
         """create a ib_read_* runner object"""
-        # XXX REQUIRED_REMOTE_DIRECT_WRITE_TO_PMEM=0
-        # XXX set_ddio /dev/shm
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
