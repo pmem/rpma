@@ -9,8 +9,9 @@
 # no-self-use - XXX requires consideration
 # consider-using-f-string - f-string is not supported on Debian 9 with python v3.5.3 and pylint3 v1.6.5
 # unused-private-member - XXX for an unknown reason, pylint ignores the uses of private members
-disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member
-
+# too-many-locals - (X>15) XXX requires consideration
+# len-as-condition - bug in Pylint, fixed as of Pylint 2.4 (https://github.com/PyCQA/pylint/pull/2815)
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member,too-many-locals,len-as-condition
 
 [FORMAT]
 

@@ -72,17 +72,21 @@ class Report:
         self.variables = vars
 
     def _load_parts(self, loader, env, bench):
-        # copy schematic
-        shutil.copy(self.variables['configuration']['schematic'], self.result_dir)
-        self.variables['configuration']['schematic'] = os.path.basename(self.variables['configuration']['schematic'])
-        # prepare preamble part
-        preamble = Part(loader, env, 'preamble')
-        # XXX Part.process_variables_level() should be a function not a method
-        # this way self.variables may be processed in Report._set_variables()
-        # where it belongs.
-        preamble.process_variables_level(self.variables, {})
-        preamble.set_variables(self.variables)
-        self.parts = [preamble]
+        self.parts = []
+        if not bench.config.get('compare', False):
+            # copy schematic
+            shutil.copy(self.variables['configuration']['schematic'],
+                self.result_dir)
+            self.variables['configuration']['schematic'] = \
+                os.path.basename(self.variables['configuration']['schematic'])
+            # prepare preamble part
+            preamble = Part(loader, env, 'preamble')
+            # XXX Part.process_variables_level() should be a function
+            # not a method this way self.variables may be processed
+            # in Report._set_variables() where it belongs.
+            preamble.process_variables_level(self.variables, {})
+            preamble.set_variables(self.variables)
+            self.parts.append(preamble)
         for partname in bench.parts:
             part = Part(loader, env, partname)
             part.set_variables({'figure': self.figures})
