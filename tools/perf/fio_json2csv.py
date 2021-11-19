@@ -4,74 +4,41 @@
 # Copyright 2020-2021, Intel Corporation
 #
 
-#
-# fio-json2csv.py -- generate a CSV from FIO JSON (EXPERIMENTAL)
-#
+"""fio-json2csv.py -- generate a CSV from FIO JSON (EXPERIMENTAL)"""
 
 import argparse
 import csv
-import json
 import yaml
+
+from lib.format import FioFormat
 
 def main():
     parser = argparse.ArgumentParser(
         description='Generate a CSV from FIO JSON (EXPERIMENTAL)')
     parser.add_argument('json_file', metavar='JSON_FILE',
-        help='a FIO json file to process')
-    parser.add_argument('--op', metavar='OP',
-        choices=['read', 'write'], default='read',
-        help='a FIO operation to extract')
+                        help='a FIO json file to process')
+    parser.add_argument('--op', metavar='OP', choices=['read', 'write'],
+                        default='read', help='a FIO operation to extract')
     parser.add_argument('--extra', type=yaml.safe_load,
-        help='additional key:value pairs to append to the output in form of yaml dictionary e.g. "{key: value}"')
+                        help='additional key:value pairs to append ' \
+                        'to the output in form of yaml dictionary ' \
+                        'e.g. "{key: value}"')
     parser.add_argument('--output_file', metavar='CSV_FILE',
-        default='output.csv', help='an output file')
+                        default='output.csv', help='an output file')
     args = parser.parse_args()
 
-    with open(args.json_file, 'r', encoding='utf-8') as json_file, \
-            open(args.output_file, 'w', encoding='utf-8') as csv_file:
-        # read JSON file
-        data = json.load(json_file)
-        job = data['jobs'][0]
-        options = job['job options']
-        op = job[args.op]
-        lat_ns = op['lat_ns']
-        # prepare data for writing
-        csv_columns = ['bs']
-        csv_data = {'bs': options['bs']}
-        # append numjobs
-        for column in ['iodepth', 'numjobs']:
-            csv_columns.append(column)
-            csv_data[column] = options[column] if column in options else "1"
-        for k,v in lat_ns.items():
-            if k == "percentile" or k == "bins":
-                continue
-            column = 'lat_ns_' + k
-            csv_columns.append(column)
-            csv_data[column] = v
-        # prepare percentiles for writing
-        for k, v in lat_ns['percentile'].items():
-            column = 'lat_ns_pctl_' + k
-            csv_columns.append(column)
-            csv_data[column] = v
-        # prepare bw for writing
-        bw_columns = ['bw', 'bw_min', 'bw_max']
-        for column in bw_columns:
-            csv_columns.append(column)
-            csv_data[column] = op[column]
-        # prepare iops for writing
-        iops_columns = ['iops', 'iops_min', 'iops_max']
-        for column in iops_columns:
-            csv_columns.append(column)
-            csv_data[column] = op[column]
-        # append extra key:value pairs
-        if args.extra is not None:
-            for k, v in args.extra.items():
-                csv_columns.append(k)
-                csv_data[k] = v
-        # write CSV file
-        writer = csv.DictWriter(csv_file, fieldnames=csv_columns)
+    # read JSON file
+    with open(args.json_file, 'r', encoding='utf-8') as json_file:
+        json_str = json_file.read()
+    # prepare data for writing
+    op_result = FioFormat.parse(json_str, FioFormat.Output.DUMP)[args.op]
+    # append extra key:value pairs
+    op_result = {**op_result, **args.extra}
+    # write CSV file
+    with open(args.output_file, 'w', encoding='utf-8') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=op_result.keys())
         writer.writeheader()
-        writer.writerow(csv_data)
+        writer.writerow(op_result)
 
 if __name__ == "__main__":
     main()
