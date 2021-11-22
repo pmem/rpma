@@ -6,6 +6,7 @@
 
 """ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
+from shutil import which
 from ...common import json_from_file
 # from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
@@ -25,8 +26,11 @@ class IbReadRunner:
                 present_value = self.__benchmark.oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
+        if not which(self.__settings['ib_tool']):
+            raise ValueError("cannot find the local ib tool: {}"
+                             .format(self.__settings['ib_tool']))
+
         # XXX check if self.__settings['ib_tool'] is:
-        # - present locally
         # - present remotely (using RemoteCmd)
 
     def __init__(self, benchmark, config, idfile):
