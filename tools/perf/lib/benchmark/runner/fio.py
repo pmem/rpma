@@ -28,7 +28,6 @@ class FioRunner:
     def __init__(self, benchmark, config, idfile):
         """create the object"""
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
-        # XXX set_ddio /dev/shm?
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
