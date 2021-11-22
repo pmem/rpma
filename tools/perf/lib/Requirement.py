@@ -144,7 +144,7 @@ class Requirement:
                 # XXX for the non-Bash runners, it is the only viable implementation
                 # so a dedicated variable won't be needed when the Bash runner will
                 # be decommissioned.
-                if config['THE_NEW_DDIO_IMPL']:
+                if config.get('THE_NEW_DDIO_IMPL', True):
                     cls.__set_DDIO(req, config)
                 return True
             else:
