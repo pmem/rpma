@@ -44,12 +44,14 @@ To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_fi
  - deepdiff
  - jinja2
  - markdown2
+ - paramiko
  - PIL
 
 ```sh
 $ pip3 install --user deepdiff
 $ pip3 install --user jinja2
 $ pip3 install --user markdown2
+$ pip3 install --user paramiko
 $ pip3 install --user PIL
 ```
 
