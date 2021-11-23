@@ -123,14 +123,14 @@ class Requirement:
         """The CLX-specific checks"""
 
         @classmethod
-        def __set_DDIO(req, config):
+        def __set_DDIO(cls, req, config):
             # XXX check if the local copy of ddio.sh exists
             # XXX copy the ddio.sh script to the remote side
             # XXX configure the remote node using ddio.sh via RemoteCmd
             raise NotImplementedError()
 
         @classmethod
-        def is_met(req, config):
+        def is_met(cls, req, config):
             # For the CLX generation, it is possible to configure Direct Write
             # to PMem from the OS level.
             if config.get('REMOTE_SUDO_NOPASSWD', False) and \
@@ -157,7 +157,7 @@ class Requirement:
         """The ICX-specific checks"""
 
         @classmethod
-        def is_met(req, config):
+        def is_met(cls, req, config):
             # For the ICX generation, there is no way of toggling Direct Write
             # to PMem from the OS level. The configuration has to be adjusted
             # manually on the BIOS level.
