@@ -6,6 +6,8 @@
 
 """fio.py -- the FIO runner (EXPERIMENTAL)"""
 
+from os.path import join
+from shutil import which
 from ...common import json_from_file
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES # XXX RemoteCmd
 
@@ -21,8 +23,12 @@ class FioRunner:
         filetype = self.__benchmark.oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_FILETYPE_MSG.format(filetype))
+
+        fio_local_path = join(self.__config.get('FIO_PATH', ""), "fio")
+        if which(fio_local_path) is None:
+            raise ValueError("cannot find the local fio: {}"
+                             .format(fio_local_path))
         # XXX check if:
-        # - ${FIO_PATH}fio is present locally
         # - ${REMOTE_FIO_PATH}fio present remotely (using RemoteCmd)
 
     def __init__(self, benchmark, config, idfile):
