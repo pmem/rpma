@@ -48,7 +48,8 @@ ENV PYTHON_DEPS "\
 	deepdiff \
 	markdown2 \
 	matplotlib \
-	pandas"
+	pandas \
+	paramiko"
 
 # RPMA deps
 ENV RPMA_DEPS "\
