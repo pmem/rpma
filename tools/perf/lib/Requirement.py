@@ -141,11 +141,7 @@ class Requirement:
                 # XXX remove when Bash scripts will be removed
                 config['FORCE_REMOTE_DIRECT_WRITE_TO_PMEM'] = \
                     req['direct_write_to_pmem']
-                # XXX for the non-Bash runners, it is the only viable implementation
-                # so a dedicated variable won't be needed when the Bash runner will
-                # be decommissioned.
-                if config['THE_NEW_DDIO_IMPL']:
-                    cls.__set_DDIO(req, config)
+                cls.__set_DDIO(req, config)
                 return True
             else:
                 # Otherwise, the remote Direct Write to PMem configuration
