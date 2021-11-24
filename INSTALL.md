@@ -11,14 +11,16 @@ In order to build librpma, you need to have installed several components:
 - pkg-config
 - libibverbs-dev(el)
 - librdmacm-dev(el)
-- libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-cmocka.sh to install the verified revision)
+- libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see [our docker script](./utils/docker/images/install-cmocka.sh)
+    to install the verified revision)
 
 ### In order to build the documentation you also need:
 
 - diff
 - find
 - groff
-- txt2man == 1.7.0 (please see https://github.com/pmem/rpma/blob/master/utils/docker/images/install-txt2man.sh to install the verified revision)
+- txt2man == 1.7.0 (please see [our docker script](./utils/docker/images/install-txt2man.sh)
+    to install the verified revision)
 
 and optionally:
 
@@ -45,7 +47,7 @@ to generate the Markdown documentation.
 
 **Note**: the above revisions are proven to work correctly.
 
-**Note**: see [the list of the supported OSes](INSTALL.md#supported-oses).
+**Note**: see [the list of the supported OSes](INSTALL.md#os-support).
 
 ## Building
 
