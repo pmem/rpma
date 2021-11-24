@@ -6,9 +6,10 @@
 
 """ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
+from os.path import join
 from shutil import which
 from ...common import json_from_file
-# from ...remote_cmd import RemoteCmd
+from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
 
 class IbReadRunner:
@@ -34,8 +35,13 @@ class IbReadRunner:
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__settings['ib_tool']))
 
-        # XXX check if self.__settings['ib_tool'] is:
-        # - present remotely (using RemoteCmd)
+        ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
+                       self.__settings['ib_tool'])
+        cmd = ' '.join(['which', ib_path])
+        output = RemoteCmd.run_sync(self.__config, cmd, None)
+        if output.exit_status != 0:
+            raise ValueError("cannot find the remote ib tool: {}"
+                             .format(self.__settings['ib_tool']))
 
     def __init__(self, benchmark, config, idfile):
         """create a ib_read_* runner object"""
