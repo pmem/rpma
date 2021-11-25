@@ -22,6 +22,10 @@ class IbReadRunner:
     def __validate(self):
         """validate the object and readiness of the env"""
         for key, value in self.ONESERIES_REQUIRED.items():
+            if key not in self.__benchmark.oneseries:
+                raise ValueError(
+                    "the following key is missing in the figure: {}"
+                    .format(key))
             if self.__benchmark.oneseries[key] != value:
                 present_value = self.__benchmark.oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,
