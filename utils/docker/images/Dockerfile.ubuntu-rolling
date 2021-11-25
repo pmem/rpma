@@ -46,7 +46,8 @@ ENV PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	pandas \
-	paramiko"
+	paramiko \
+	scp"
 
 # RPMA deps
 ENV RPMA_DEPS "\
