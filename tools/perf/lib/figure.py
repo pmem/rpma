@@ -17,9 +17,7 @@ from deepdiff import DeepDiff
 from lib.common import json_from_file, str2key, escape
 from lib.flat import make_flat, process_fstrings
 
-# XXX allow not breaking long strings
-SKIP_NO_AXIS_MSG = "SKIP: Axis '{}' is not provided by the series of id={}. " \
-    "Available keys are: {}"
+SKIP_NO_AXIS_MSG = """SKIP: Axis '{}' is not provided by the series of id={}. Available keys are: {}"""
 SKIP_NO_FILE_MSG = "SKIP: the file does not exist: {}"
 SKIP_NO_ROWS_MSG = "SKIP: No row is provided by the series of id={}."
 

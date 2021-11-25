@@ -30,9 +30,7 @@ PARSER_R.add_argument('--result_dir', type=dir_path, required=True,
                       help='an output directory')
 PARSER_R.add_argument('--dummy_results', dest='dummy_results',
                       action='store_true',
-                      # XXX allow not breaking long strings
-                      help='generate dummy results instead of running ' \
-                           'actual benchmarks')
+                      help='''generate dummy results instead of running actual benchmarks''')
 PARSER_C = SUBPARSERS.add_parser('continue', help='continue the benchmark')
 PARSER_C.add_argument('--bench', type=json_from_file, required=True,
                       help='a bench.json file of an interrupted benchmark')
