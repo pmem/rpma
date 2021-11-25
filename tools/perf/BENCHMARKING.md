@@ -46,6 +46,7 @@ To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_fi
  - markdown2
  - paramiko
  - PIL
+ - scp
 
 ```sh
 $ pip3 install --user deepdiff
@@ -53,6 +54,7 @@ $ pip3 install --user jinja2
 $ pip3 install --user markdown2
 $ pip3 install --user paramiko
 $ pip3 install --user PIL
+$ pip3 install --user scp
 ```
 
 *Note*: All of the scripts presented in the following sections must be run on the client side.

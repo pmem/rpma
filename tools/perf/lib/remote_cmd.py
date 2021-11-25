@@ -7,6 +7,7 @@
 """remote_cmd.py -- running commands on remote node over SSH (EXPERIMENTAL)"""
 
 import paramiko as para
+from scp import SCPClient
 
 class RemoteCmd:
     """run a command on a remote node over SSH"""
@@ -24,6 +25,29 @@ class RemoteCmd:
         self.ssh_client = None
 
     @classmethod
+    def __connect_to_host(cls, config):
+        """connct to remote host"""
+        kwargs = {}
+        kwargs['username'] = config.get('REMOTE_USER', None)
+        kwargs['password'] = config.get('REMOTE_PASS', None)
+
+        ssh_client = para.SSHClient()
+        ssh_client.load_system_host_keys()
+        ssh_client.set_missing_host_key_policy(para.RejectPolicy())
+        ssh_client.connect(hostname=config['server_ip'], **kwargs)
+        return ssh_client
+
+    @classmethod
+    def copy_to_remote(cls, config, local_dir, remote_dir):
+        """copy file to remote host"""
+        ssh_client = cls.__connect_to_host(config)
+
+        scp = SCPClient(ssh_client.get_transport())
+        scp.put(local_dir, remote_dir)
+        scp.close()
+        ssh_client.close()
+
+    @classmethod
     def run_sync(cls, config, cmd, env):
         """run a remote command and wait till it is done"""
         remote_cmd = cls.run_async(config, cmd, env)
@@ -33,14 +57,7 @@ class RemoteCmd:
     @classmethod
     def run_async(cls, config, cmd, env):
         """run a remote command and return a control object"""
-        kwargs = {}
-        kwargs['username'] = config.get('REMOTE_USER', None)
-        kwargs['password'] = config.get('REMOTE_PASS', None)
-
-        ssh_client = para.SSHClient()
-        ssh_client.load_system_host_keys()
-        ssh_client.set_missing_host_key_policy(para.RejectPolicy())
-        ssh_client.connect(hostname=config['server_ip'], **kwargs)
+        ssh_client = cls.__connect_to_host(config)
 
         _, stdout, stderr = ssh_client.exec_command(cmd, environment=env)
 
