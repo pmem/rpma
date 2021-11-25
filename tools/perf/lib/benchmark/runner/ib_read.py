@@ -129,6 +129,10 @@ class IbReadRunner:
                 131072: 3600000,
                 262144: 2100000
             },
+            'it_opt': True,
+            'bs_opt': True,
+            'qp_opt': False,
+            'dp_opt': False,
             'args': ['--perform_warm_up']}
     }
     # XXX TBD
