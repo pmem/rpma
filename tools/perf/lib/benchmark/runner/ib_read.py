@@ -8,7 +8,7 @@
 
 from shutil import which
 from ...common import json_from_file
-# from ...remote_cmd import RemoteCmd
+from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
 
 class IbReadRunner:
@@ -42,6 +42,7 @@ class IbReadRunner:
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
+        self.__server = None
         self.bs_opt = []
         self.qp_opt = []
         self.dp_opt = []
@@ -75,13 +76,28 @@ class IbReadRunner:
                       if _settings['dp_opt'] else []
 
     def __server_start(self, _settings):
-        # XXX start a server on the remote side (using RemoteCmd)
-        # keep an object allowing to control the server on the remote side
-        pass
+        """start a server on the remote side (using RemoteCmd)"""
+        # and keep an object allowing to control the server"""
+        print('[size: {}, threads: {}, tx_depth: {}, iters: {}] '\
+              '(duration: ~60s)'
+              .format(_settings['bs'], _settings['threads'],
+                      _settings['iodepth'], _settings['iterations']))
+        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        r_ib_path = ''.join([self.__config['REMOTE_IB_PATH'],
+                            _settings['ib_tool']])
+        r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *_settings['args']]
+
+        args = ['numactl', '-N', r_numa_n, r_ib_path,
+                *self.bs_opt, *self.qp_opt, *self.dp_opt, *r_aux_params]
+        cmd = ' '.join(args)
+        print("[server]$ {}".format(cmd)) # XXX DEBUG
+        # XXX add option to dump the command
+        self.__server = RemoteCmd.run_async(self.__config, cmd, None)
 
     def __server_stop(self, _settings):
-        # XXX check the server is stopped
-        pass
+        """wait until server finishes"""
+        self.__server.wait()
+        # XXX write outputs to the LOG_ERR file
 
     def __client_run(self, _settings):
         # XXX run the client (locally) and wait till the end of execution
