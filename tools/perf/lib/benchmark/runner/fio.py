@@ -31,8 +31,8 @@ class FioRunner:
                              .format(fio_local_path))
 
         fio_remote_path = join(self.__config.get('REMOTE_FIO_PATH', ''), 'fio')
-        cmd = ' '.join(['which', fio_remote_path])
-        output = RemoteCmd.run_sync(self.__config, cmd, None)
+        output = RemoteCmd.run_sync(self.__config, ['which', fio_remote_path],
+                                    None)
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
                              .format(fio_local_path))
