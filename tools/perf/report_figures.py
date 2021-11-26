@@ -4,7 +4,25 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""report_figures.py -- generate figures (EXPERIMENTAL)"""
+#
+# report_figures.py
+#
+
+"""A script generating images from data collected by the `report_bench`
+(EXPERIMENTAL)
+
+Note: A `lib.bench.Bench` object has an internal state which is written down
+(cached) into a JSON file. When the execution is resumed the content of the file
+is read and the original `lib.bench.Bench` object is recreated. For details on
+this process please see `lib.bench.Bench.carry_on()`.
+
+  For usage:
+
+  $ ./report_figures.py --help
+
+When this script is done you probably will continue processing the results with
+`report_create`.
+"""
 
 import argparse
 
@@ -15,7 +33,7 @@ from lib.bench import Bench
 PARSER = argparse.ArgumentParser(
     description='Generate figures (EXPERIMENTAL)')
 PARSER.add_argument('--report', type=json_from_file,
-                    help='a report configuration file')
+                    help='''a report.json configuration file configures the visualization process''')
 SUBPARSERS = PARSER.add_subparsers(dest='command')
 # Python >= 3.7 accepts 'required' kwarg. For older versions, it is validated
 # manually.
@@ -39,10 +57,11 @@ PARSER_C.add_argument('--names', type=str, required=True, nargs='+',
 PARSER_C.add_argument('--result_dir', type=dir_path, required=True,
                       help='an output directory')
 
-def generate_figures(args):
-    """
-    Restore the Bench object, check whether it has completed the benchmarking,
-    and loop over all figures to generate their png representations.
+def generate_figures(args: argparse.Namespace) -> None:
+    """Restore the `lib.bench.Bench` object, check whether it has completed
+    the ordered benchmarks.
+
+    XXXX Loop over all figures to generate their png representations.
     """
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
@@ -59,8 +78,8 @@ def generate_figures(args):
             figure.set_yaxis_max(bw_max)
         figure.to_png(args.include_titles)
 
-def comparative_figures(args):
-    """generate comparative figures"""
+def comparative_figures(args: argparse.Namespace) -> None:
+    """Restore `lib.bench.Bench` objects. Creat an intermedia `lib.compare.Compare` object and generate JPEG and JSON files comparing all given `lib.bench.Bench` objects."""
     benches = [Bench.carry_on(bench) for bench in args.benches]
     compare = Compare(args.names, benches, args.result_dir)
     compare.prepare_series()
