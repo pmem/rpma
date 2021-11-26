@@ -48,6 +48,7 @@ class IbReadRunner:
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
+        self.__server = None
         # pick the settings predefined for the chosen mode
         mode = self.__benchmark.oneseries['mode']
         self.__settings = self.SETTINGS_BY_MODE.get(mode, None)
@@ -79,13 +80,29 @@ class IbReadRunner:
                               if _settings['dp_opt'] else []
 
     def __server_start(self, _settings):
-        # XXX start a server on the remote side (using RemoteCmd)
-        # keep an object allowing to control the server on the remote side
-        pass
+        """start a server on the remote side (using RemoteCmd)"""
+        # and keep an object allowing to control the server"""
+        print('[size: {}, threads: {}, tx_depth: {}, iters: {}] '\
+              '(duration: ~60s)'
+              .format(_settings['bs'], _settings['threads'],
+                      _settings['iodepth'], _settings['iterations']))
+        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        r_ib_path = ''.join([self.__config['REMOTE_IB_PATH'],
+                             _settings['ib_tool']])
+        r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *_settings['args']]
+
+        args = ['numactl', '-N', r_numa_n, r_ib_path,
+                *_settings['bs_opt'], *_settings['qp_opt'],
+                *_settings['dp_opt'], *r_aux_params]
+        cmd = ' '.join(args)
+        print("[server]$ {}".format(cmd)) # XXX DEBUG
+        # XXX add option to dump the command
+        self.__server = RemoteCmd.run_async(self.__config, cmd, None)
 
     def __server_stop(self, _settings):
-        # XXX check the server is stopped
-        pass
+        """wait until server finishes"""
+        self.__server.wait()
+        # XXX write outputs to the LOG_ERR file
 
     def __client_run(self, _settings):
         # XXX run the client (locally) and wait till the end of execution
