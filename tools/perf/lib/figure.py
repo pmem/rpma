@@ -30,8 +30,8 @@ class Figure:
     def _series_file(self, result_dir):
         return os.path.join(result_dir, self.file + '.json')
 
-    def __init__(self, f, result_dir=""):
-        self.output = f['output']
+    def __init__(self, figure, result_dir=""):
+        self.output = figure['output']
         self.output['done'] = self.output.get('done', False)
         # copies for convenience
         self.title = self.output['title']
@@ -42,7 +42,7 @@ class Figure:
         self.key = self.output['key']
         self.xscale = self.output.get('xscale', 'log')
         self.result_dir = result_dir
-        self.series_in = f['series']
+        self.series_in = figure['series']
         if self.output['done']:
             data = json_from_file(self._series_file(result_dir))
             self.series = data['json'][self.key]['series']
