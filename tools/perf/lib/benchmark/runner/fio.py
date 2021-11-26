@@ -9,7 +9,8 @@
 from os.path import join
 from shutil import which
 from ...common import json_from_file
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES # XXX RemoteCmd
+from ...remote_cmd import RemoteCmd
+from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
 
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
@@ -28,8 +29,15 @@ class FioRunner:
         if which(fio_local_path) is None:
             raise ValueError("cannot find the local fio: {}"
                              .format(fio_local_path))
-        # XXX check if:
-        # - ${REMOTE_FIO_PATH}fio present remotely (using RemoteCmd)
+
+        fio_remote_path = join(self.__config.get('REMOTE_FIO_PATH', ''), 'fio')
+        cmd = ' '.join(['which', fio_remote_path])
+        output = RemoteCmd.run_sync(self.__config, cmd, None)
+        if output.exit_status != 0:
+            raise ValueError("cannot find the remote fio: {}"
+                             .format(fio_local_path))
+
+
 
     def __init__(self, benchmark, config, idfile):
         """create the object"""
