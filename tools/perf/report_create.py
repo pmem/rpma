@@ -4,7 +4,18 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""report_create.py -- generate a performance report (EXPERIMENTAL)"""
+#
+# report_create.py
+#
+
+"""generate a performance report (EXPERIMENTAL)
+
+Restore the lib.Bench object, check whether it has completed the ordered benchmarks. Create a lib.Report object based on the lib.Bench results and provided report.json configuration file. Use the lib.Report object to generate a report document.
+
+  For usage:
+
+  $ ./report_create.py --help
+"""
 
 import argparse
 
@@ -20,7 +31,7 @@ PARSER = argparse.ArgumentParser(
 PARSER.add_argument('--bench', type=json_from_file, required=True,
                     help='a bench.json file of a completed benchmark')
 PARSER.add_argument('--report', type=json_from_file, required=True,
-                    help='a report configuration file')
+                    help='''a report.json configuration file provides textual content and configures the visualization process''')
 PARSER.add_argument('--output', default='report',
                     help='a name of the output file')
 SEARCHPATH = 'templates'
@@ -28,10 +39,7 @@ LOADER = FileSystemLoader(SEARCHPATH)
 ENV = Environment(loader=LOADER)
 
 def main():
-    """
-    Restore the Bench object, check whether it has completed the benchmarking,
-    and create a report based on the results.
-    """
+    """I'm main"""
     args = PARSER.parse_args()
     bench = Bench.carry_on(args.bench)
     bench.check_completed()
