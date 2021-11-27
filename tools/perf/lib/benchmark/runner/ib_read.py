@@ -67,6 +67,16 @@ class IbReadRunner:
             self.__results = {}
         self.__validate()
 
+    def __append_common_args(self, settings):
+        """append arguments common for server and client"""
+        settings['args'].append('--size')
+        settings['args'].append(str(settings['bs']))
+        if settings['ib_tool'] == 'ib_read_bw':
+            settings['args'].append('--qp')
+            settings['args'].append(str(settings['threads']))
+            dp_opt = ''.join(['--tx-depth=', str(settings['iodepth'])])
+            settings['args'].append(dp_opt)
+
     def __server_start(self, _settings):
         # XXX start a server on the remote side (using RemoteCmd)
         # keep an object allowing to control the server on the remote side
@@ -107,6 +117,7 @@ class IbReadRunner:
             if settings['iterations'] is None:
                 raise NotImplementedError(
                     "settings['iterations'][{}] is missing".format(x_value))
+            self.__append_common_args(settings)
             # XXX remote_command --pre
             self.__server_start(settings)
             y_value = self.__client_run(settings)
