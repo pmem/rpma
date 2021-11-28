@@ -6,6 +6,8 @@
 
 """test_new.py -- lib.bench.Bench.new() tests"""
 
+import pytest
+
 from lib.bench import Bench
 from lib.benchmark import Benchmark
 from lib.figure import Figure
@@ -48,8 +50,8 @@ REQUIREMENTS_UNIQ = 'dummy requirements uniq'
 
 RESULT_DIR = '/dummy/path'
 
-def test_simple(monkeypatch):
-    """a very simple test"""
+def bench_instance(monkeypatch):
+    """provide a ready to test lib.bench instance"""
     def flatten_mock(figures_in):
         assert figures_in == FIGURES_DUMMY
         return FIGURES_DUMMY_FLAT
@@ -62,10 +64,24 @@ def test_simple(monkeypatch):
     monkeypatch.setattr(Figure, 'flatten', flatten_mock)
     monkeypatch.setattr(Benchmark, 'uniq', benchmark_uniq_mock)
     monkeypatch.setattr(Requirement, 'uniq', requirements_uniq_mock)
-    bench = Bench.new(CONFIG_DUMMY_INPUT, FIGURES_DUMMY_INPUT, RESULT_DIR)
+    return Bench.new(CONFIG_DUMMY_INPUT, FIGURES_DUMMY_INPUT, RESULT_DIR)
+
+def test_simple(monkeypatch):
+    """a very simple test"""
+    bench = bench_instance(monkeypatch)
     # compare list of parts with the expected list of parts
     assert len(set(bench.parts).intersection(PARTS)) == len(PARTS)
     assert bench.config == CONFIG_DUMMY
     assert bench.figures == FIGURES_DUMMY_FLAT
     assert bench.requirements == REQUIREMENTS_UNIQ
     assert bench.result_dir == RESULT_DIR
+
+@pytest.mark.parametrize('attr', ['parts', 'config', 'figures', 'requirements',
+                                  'result_dir'])
+def test_properties(attr, monkeypatch):
+    """test lib.bench properties setters"""
+    bench = bench_instance(monkeypatch)
+    # setting any of these values should end up with an exception
+    with pytest.raises(AttributeError):
+        # it is an equivalent of bench.attr = 0
+        setattr(bench, attr, 0)
