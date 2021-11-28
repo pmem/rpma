@@ -94,12 +94,12 @@ class Requirement:
                 + "Where supported values are: '"
                 + "', '".join(self.PLATFORMS.keys()) + "'.")
 
-    def benchmarks_run(self, ctx, result_dir):
+    def benchmarks_run(self, ctx, config, result_dir):
         """Run all benchmarks"""
         for _, b in self.benchmarks.items():
             if b.is_done():
                 continue
-            b.run(ctx.get_config(), result_dir)
+            b.run(config, result_dir)
             ctx.cache() # store to a disk the current state of execution
         self.req['done'] = True
         ctx.cache() # store to a disk the final state of execution
