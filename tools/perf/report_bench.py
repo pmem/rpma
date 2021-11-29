@@ -70,9 +70,12 @@ def main():
         raise ValueError('Unsupported command: ' + args.command)
     if args.dump:
         bench.dump()
+        print('Done.')
     else:
-        bench.run()
-    print('Done.')
+        if bench.run():
+            print('Complete.')
+        else:
+            print('Incomplete.')
 
 if __name__ == '__main__':
     main()
