@@ -116,8 +116,7 @@ class Requirement:
     def benchmarks_dump(self, ctx, result_dir):
         """Dump all benchmarks"""
         for _, b in self.benchmarks.items():
-            b.dump(ctx.get_config(), result_dir)
-            print('') # a new line separator
+            print(b)
 
     class CascadeLake:
         """The CLX-specific checks"""
