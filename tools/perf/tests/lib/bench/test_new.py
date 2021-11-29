@@ -17,7 +17,8 @@ from lib.Requirement import Requirement
 
 DICT_DUMMY = {
     'dummy_key_1': 'dummy_value_1',
-    'dummy_key_2': 'dummy_value_2'
+    'dummy_key_2': 'dummy_value_2',
+    'REMOTE_JOB_NUMA': 0
 }
 
 CONFIG_DUMMY = DICT_DUMMY
@@ -52,6 +53,9 @@ REQUIREMENTS_UNIQ = 'dummy requirements uniq'
 
 RESULT_DIR = '/dummy/path'
 
+CPULIST_DUMMY = '1-1'
+CORES_PER_SOCKET_DUMMY = '1'
+
 def bench_instance(monkeypatch):
     """provide a ready to test lib.bench instance"""
     def flatten_mock(figures_in, result_dir):
@@ -64,9 +68,19 @@ def bench_instance(monkeypatch):
     def requirements_uniq_mock(benchmarks):
         assert benchmarks == BENCHMARKS_UNIQ
         return REQUIREMENTS_UNIQ
+    def get_remote_job_numa_cpulist_mock(config):
+        assert config == CONFIG_DUMMY
+        return CPULIST_DUMMY
+    def get_cores_per_socket_mock(config):
+        assert config == CONFIG_DUMMY
+        return CORES_PER_SOCKET_DUMMY
     monkeypatch.setattr(lib.bench, 'flatten', flatten_mock)
     monkeypatch.setattr(Benchmark, 'uniq', benchmark_uniq_mock)
     monkeypatch.setattr(Requirement, 'uniq', requirements_uniq_mock)
+    monkeypatch.setattr(lib.bench, 'get_remote_job_numa_cpulist',
+                        get_remote_job_numa_cpulist_mock)
+    monkeypatch.setattr(lib.bench, 'get_cores_per_socket',
+                        get_cores_per_socket_mock)
     return Bench.new(CONFIG_DUMMY_INPUT, FIGURES_DUMMY_INPUT, RESULT_DIR)
 
 def test_simple(monkeypatch):
