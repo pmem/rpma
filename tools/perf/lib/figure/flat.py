@@ -4,7 +4,20 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""flat.py -- helper flattening sets of objects (EXPERIMENTAL)"""
+#
+# flat.py
+#
+
+"""figure list flattening tools (EXPERIMENTAL)
+
+A 'flat' list of figures is a list where a single element on this list
+represents exactly one output figure with all series representing exactly one
+series of benchmarks.
+
+By default, figures are they are described in part JSON files may be
+multidimensional. A multidimensional figure is a figure in which metadata or
+one of its series is described by a list instead of a 'flat' set of values.
+"""
 
 import copy
 
@@ -84,8 +97,17 @@ def __get_series_desc(oneseries):
     """Getter for accessing the core descriptor of a series"""
     return oneseries
 
-def flatten(figures):
-    """Flatten the figures list"""
+def flatten(figures: list) -> list:
+    """Flatten a figures list
+
+    Args:
+        figures: A list of figures (dictionaries not `lib.figure.base.Figure`
+          instances) where each of the figures and each of the series can be
+          multidimensional.
+    Returns:
+        A list of `lib.figure.base.Figure` objects being a flattened
+        representation of the provided `figures` list.
+    """
     figures = __make_flat(figures, __get_figure_desc, {})
     figures = __process_fstrings(figures, __get_figure_desc)
     output = []

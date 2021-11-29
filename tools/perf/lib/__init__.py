@@ -50,8 +50,8 @@ The files under the `templates/` directory are matched based on the name e.g.
 - `templates/part_write.json` and
 - `templates/part_write.md`
 
-A single figure (`lib.figure.Figure`) consists of one or more series of data
-points, where each of them is a single benchmark run
+A single figure (`lib.figure.base.Figure`) consists of one or more series of
+data points, where each of them is a single benchmark run
 (`lib.benchmark.base.Benchmark`). A series has to describe requirements it
 imposes on the benchmarking environment (`lib.Requirement.Requirement`) e.g.
 
