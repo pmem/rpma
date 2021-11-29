@@ -18,10 +18,13 @@ the ordered benchmarks. Create a `lib.Report` object based on
 the `lib.bench.Bench` results and provided report.json configuration file.
 Use the `lib.Report.Report` object to generate a report document.
 
-Note: A `lib.bench.Bench` object has an internal state which is written down
+**Note**: A `lib.bench.Bench` object has an internal state which is written down
 (cached) into a JSON file. When the execution is resumed the content of the file
 is read and the original `lib.bench.Bench` object is recreated. For details
 on this process please see `lib.bench.Bench.carry_on()`.
+
+**Note**: For more details on how `lib.bench.Bench` and other entities come
+together, please see `lib`.
 
   For usage:
 
