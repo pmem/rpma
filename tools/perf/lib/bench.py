@@ -9,6 +9,7 @@
 import json
 import os
 
+from copy import deepcopy
 from lib.benchmark import Benchmark
 from lib.figure import Figure
 from lib.Requirement import Requirement
@@ -17,11 +18,36 @@ class Bench:
     """A benchmarking control object"""
 
     def __init__(self, config, parts, figures, requirements, result_dir):
-        self.parts = parts
-        self.config = config
-        self.figures = figures
-        self.requirements = requirements
-        self.result_dir = result_dir
+        self.__parts = parts
+        self.__config = config
+        self.__figures = figures
+        self.__requirements = requirements
+        self.__result_dir = result_dir
+
+    @property
+    def parts(self):
+        """get a copy of the parts"""
+        return self.__parts.copy()
+
+    @property
+    def config(self):
+        """get a copy of the config"""
+        return self.__config.copy()
+
+    @property
+    def figures(self):
+        """get a copy of the figures"""
+        return deepcopy(self.__figures)
+
+    @property
+    def requirements(self):
+        """get a copy of the requirements"""
+        return deepcopy(self.__requirements)
+
+    @property
+    def result_dir(self):
+        """get the result dir"""
+        return self.__result_dir
 
     @classmethod
     def new(cls, config, figures, result_dir):
@@ -53,70 +79,78 @@ class Bench:
     def cache(self):
         """cache the current state of execution to a JSON file"""
         output = {
-            'config': self.config,
-            'parts': self.parts,
-            'figures': [f.cache() for f in self.figures],
+            'config': self.__config,
+            'parts': self.__parts,
+            'figures': [f.cache() for f in self.__figures],
             'requirements': {
                 id: r.cache()
-                for id, r in self.requirements.items()}
+                for id, r in self.__requirements.items()}
         }
 
-        output_path = os.path.join(self.result_dir, 'bench.json')
+        output_path = os.path.join(self.__result_dir, 'bench.json')
         with open(output_path, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4)
-
-    def get_config(self):
-        """get the config"""
-        return self.config
 
     def run(self):
         """run all benchmarks one-by-one"""
         skip = False
-        for _, req in self.requirements.items():
+        for _, req in self.__requirements.items():
             if req.is_done():
                 continue
-            if self.config.get('skip_undone', False):
+            if self.__config.get('skip_undone', False):
                 req.benchmarks_skip(self)
                 continue
-            if not req.is_met(self.config):
+            # XXX a local copy of config is required as long as
+            # Requirement.is_met() modifies the configuration in order to pass
+            # some information down to the Bash scripts.
+            # No Bash scripts, no modifications to the config, no need to having
+            # an altered copy of the config.
+            config = self.__config.copy()
+            if not req.is_met(config):
                 skip = True
                 print('Skip: the requirement is not met: ' + str(req))
                 continue
-            req.benchmarks_run(self, self.result_dir)
+            req.benchmarks_run(self, config, self.__result_dir)
 
         # in case of a skip, not all results are ready
         if skip:
             return
 
         # collect data required for all scheduled figures
-        for figure in self.figures:
+        for figure in self.__figures:
             if figure.is_done():
                 continue
-            figure.prepare_series(self.result_dir)
+            figure.prepare_series(self.__result_dir)
             self.cache()
 
     def dump(self):
         """print the current status of bench execution"""
-        for _, req in self.requirements.items():
+        for _, req in self.__requirements.items():
+            # XXX a local copy of config is required as long as
+            # Requirement.is_met() modifies the configuration in order to pass
+            # some information down to the Bash scripts.
+            # No Bash scripts, no modifications to the config, no need to having
+            # an altered copy of the config.
+            config = self.__config.copy()
             if req.is_done():
                 status = "done"
-            elif req.is_met(self.config):
+            elif req.is_met(config):
                 status = "met"
             else:
                 status = "not met"
             print("Requirement: {} {}\n".format(req, status))
-            req.benchmarks_dump(self, self.result_dir)
+            req.benchmarks_dump(self, self.__result_dir)
 
     def check_completed(self):
         """
         if bench is not completed raise an Exception
         (all requirements (benchmarks within them) and all figures)
         """
-        for _, req in self.requirements.items():
+        for _, req in self.__requirements.items():
             if not req.is_done():
                 raise Exception(
                     'Benchmarking not completed. Please use report_bench.py.')
-        for figure in self.figures:
+        for figure in self.__figures:
             if not figure.is_done():
                 raise Exception(
                     'Postprocessing not completed. Please use report_bench.py.')
