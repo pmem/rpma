@@ -12,11 +12,44 @@
 
 import json
 import os
+import re
 
 from copy import deepcopy
 from lib.benchmark import Benchmark
 from lib.figure import Figure, flatten
 from lib.Requirement import Requirement
+from .remote_cmd import RemoteCmd
+
+def get_remote_job_numa_cpulist(config):
+    """get cpulist of the remote NUMA node (REMOTE_JOB_NUMA)"""
+    cpulist_path = "/sys/devices/system/node/node{}/cpulist"\
+        .format(str(config['REMOTE_JOB_NUMA']))
+    cpulist = RemoteCmd.run_sync(config, ['cat', cpulist_path],
+                                 raise_on_error=True)
+    cpulist_value = cpulist.stdout.read().decode('utf8').replace('\n', '')
+    # validate the output
+    if not re.match(r"^[0-9,\-]+$", cpulist_value):
+        raise ValueError("Invalid value REMOTE_JOB_NUMA_CPULIST={}"
+                         .format(cpulist_value))
+
+    return cpulist_value
+
+def get_cores_per_socket(config):
+    """get cores per socket"""
+    cmd = "lscpu"
+    cores = RemoteCmd.run_sync(config, cmd, raise_on_error=True)
+    output = cores.stdout.readlines()
+    filtered = [line for line in output if re.match(r'Core\(s\) per socket',
+                                                    line)]
+    if not filtered:
+        raise ValueError("Cannot find value CORES_PER_SOCKET")
+    cores_value = ''.join(re.findall(r'\d+', str(filtered)))
+    # validate the output
+    if not re.match(r"^[0-9]+$", cores_value):
+        raise ValueError("Invalid value CORES_PER_SOCKET={}"
+                         .format(cores_value))
+
+    return cores_value
 
 class Bench:
     """A benchmarking control object
@@ -127,8 +160,13 @@ class Bench:
         # extract names of the parts ABC.json -> ABC
         parts = [os.path.splitext(os.path.basename(part['input_file']))[0]
                  for part in parts]
+
+        config = config['json']
+        config['REMOTE_JOB_NUMA_CPULIST'] = get_remote_job_numa_cpulist(config)
+        config['CORES_PER_SOCKET'] = get_cores_per_socket(config)
+
         # create and return a 'Bench' object
-        return cls(config['json'], parts, figures, requirements, result_dir)
+        return cls(config, parts, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, cache: dict, skip_undone=False) -> 'Bench':
