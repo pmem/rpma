@@ -6,7 +6,7 @@
 
 """test_html_data_table.py -- lib.figure.Figure.html_data_table() tests"""
 
-import lib.figure
+import lib.figure.html
 
 KEY = 'key'
 
@@ -54,4 +54,5 @@ def test_html_data_table_basic(monkeypatch):
     monkeypatch.setattr(lib.figure.Figure, '_Figure__series_file', series_file_mock)
     monkeypatch.setattr(lib.figure.base, 'json_from_file',
         json_from_file_mock)
-    assert lib.figure.Figure(DATA).html_data_table() == HTML
+    figure = lib.figure.Figure(DATA)
+    assert lib.figure.html.data_table(figure.xcommon, figure.series) == HTML
