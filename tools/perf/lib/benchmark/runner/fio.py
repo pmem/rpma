@@ -31,13 +31,10 @@ class FioRunner:
                              .format(fio_local_path))
 
         fio_remote_path = join(self.__config.get('REMOTE_FIO_PATH', ''), 'fio')
-        output = RemoteCmd.run_sync(self.__config, ['which', fio_remote_path],
-                                    None)
+        output = RemoteCmd.run_sync(self.__config, ['which', fio_remote_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
                              .format(fio_local_path))
-
-
 
     def __init__(self, benchmark, config, idfile):
         """create the object"""
