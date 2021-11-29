@@ -58,7 +58,8 @@ class RemoteCmd:
     def run_async(cls, config, cmd, env):
         """run a remote command and return a control object"""
         ssh_client = cls.__connect_to_host(config)
-        _, stdout, stderr = ssh_client.exec_command(' '.join(cmd),
-                                                    environment=env)
+        if isinstance(cmd, list):
+            cmd = ' '.join(cmd)
+        _, stdout, stderr = ssh_client.exec_command(cmd, environment=env)
 
         return cls(ssh_client, stdout, stderr)

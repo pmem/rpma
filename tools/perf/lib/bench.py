@@ -8,11 +8,13 @@
 
 import json
 import os
+import re
 
 from copy import deepcopy
 from lib.benchmark import Benchmark
 from lib.figure import Figure
 from lib.Requirement import Requirement
+from .remote_cmd import RemoteCmd
 
 class Bench:
     """A benchmarking control object"""
@@ -61,7 +63,36 @@ class Bench:
             for figure in figure_file['json']])
         benchmarks = Benchmark.uniq(figures)
         requirements = Requirement.uniq(benchmarks)
-        return cls(config['json'], parts, figures, requirements, result_dir)
+        config = config['json']
+
+        # get cpulist of the remote NUMA node (REMOTE_JOB_NUMA)
+        cpulist_path = "/sys/devices/system/node/node" +\
+            str(config['REMOTE_JOB_NUMA']) + "/cpulist"
+        cpulist = RemoteCmd.run_sync(config, ['cat', cpulist_path], None)
+        if cpulist.exit_status != 0:
+            raise ValueError(cpulist.stderr.readline())
+        cpulist_value = cpulist.stdout.readline().replace('\n', '')
+        # validate the output
+        if re.match("^[0-9,\-]+$", cpulist_value):
+            config['REMOTE_JOB_NUMA_CPULIST'] = cpulist_value
+        else:
+            raise ValueError("Invalid value REMOTE_JOB_NUMA_CPULIST={}"
+                             .format(cpulist_value))
+
+        # get cores per socket
+        cmd = "lscpu | egrep 'Core\(s\) per socket:' | sed 's/[^0-9]*//g'"
+        cores = RemoteCmd.run_sync(config, cmd, None)
+        if cores.exit_status != 0:
+            raise ValueError(cpulist.stderr.readline())
+        cores_value = cores.stdout.readline().replace('\n', '')
+        # validate the output
+        if re.match("^[0-9]+$", cores_value):
+            config['CORES_PER_SOCKET'] = cores_value
+        else:
+            raise ValueError("Invalid value CORES_PER_SOCKET={}"
+                             .format(cores_value))
+
+        return cls(config, parts, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, bench, skip_undone=False):
