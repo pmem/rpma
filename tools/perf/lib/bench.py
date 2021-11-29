@@ -12,11 +12,39 @@
 
 import json
 import os
+import re
 
 from copy import deepcopy
 from lib.benchmark import Benchmark
 from lib.figure import Figure, flatten
 from lib.Requirement import Requirement
+from .remote_cmd import RemoteCmd
+
+def get_remote_job_numa_cpulist(config):
+    """get cpulist of the remote NUMA node (REMOTE_JOB_NUMA)"""
+    cpulist_path = "/sys/devices/system/node/node{}/cpulist"\
+        .format(str(config['REMOTE_JOB_NUMA']))
+    cpulist = RemoteCmd.run_sync(config, ['cat', cpulist_path],
+                                    raise_on_error=True)
+    cpulist_value = cpulist.stdout.readline().replace('\n', '')
+    # validate the output
+    if re.match(r"^[0-9,\-]+$", cpulist_value):
+        return cpulist_value
+    else:
+        raise ValueError("Invalid value REMOTE_JOB_NUMA_CPULIST={}"
+                            .format(cpulist_value))
+
+def get_cores_per_socket(config):
+    """get cores per socket"""
+    cmd = r"lscpu | egrep 'Core\(s\) per socket:' | sed 's/[^0-9]*//g'"
+    cores = RemoteCmd.run_sync(config, cmd, raise_on_error=True)
+    cores_value = cores.stdout.readline().replace('\n', '')
+    # validate the output
+    if re.match(r"^[0-9]+$", cores_value):
+        return cores_value
+    else:
+        raise ValueError("Invalid value CORES_PER_SOCKET={}"
+                            .format(cores_value))
 
 class Bench:
     """A benchmarking control object
@@ -127,8 +155,13 @@ class Bench:
         # extract names of the parts ABC.json -> ABC
         parts = [os.path.splitext(os.path.basename(part['input_file']))[0]
                  for part in parts]
+
+        config = config['json']
+        config['REMOTE_JOB_NUMA_CPULIST'] = get_remote_job_numa_cpulist(config)
+        config['CORES_PER_SOCKET'] = get_cores_per_socket(config)
+
         # create and return a 'Bench' object
-        return cls(config['json'], parts, figures, requirements, result_dir)
+        return cls(config, parts, figures, requirements, result_dir)
 
     @classmethod
     def carry_on(cls, cache: dict, skip_undone=False) -> 'Bench':

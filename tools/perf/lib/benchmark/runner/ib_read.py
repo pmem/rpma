@@ -37,7 +37,7 @@ class IbReadRunner:
 
         ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
                        self.__settings['ib_tool'])
-        output = RemoteCmd.run_sync(self.__config, ['which', ib_path], None)
+        output = RemoteCmd.run_sync(self.__config, ['which', ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
                              .format(self.__settings['ib_tool']))
