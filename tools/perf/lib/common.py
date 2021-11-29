@@ -52,12 +52,6 @@ def uniq(elems):
             id += 1
     return output
 
-def str2key(input):
-    """Make string a valid jinja2 template key e.g. dictionary.key
-    Ref: https://jinja.palletsprojects.com/en/3.0.x/templates/#variables
-    """
-    return input.replace('.', '')
-
 def escape(x):
     """Escape markdown special characters"""
     if isinstance(x, str):
