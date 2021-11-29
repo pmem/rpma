@@ -51,7 +51,7 @@ def test_html_data_table_basic(monkeypatch):
     def json_from_file_mock(series_file):
         assert series_file == SERIES_FILE
         return SERIES
-    monkeypatch.setattr(lib.figure.Figure, '_series_file', series_file_mock)
-    monkeypatch.setattr(lib.figure, 'json_from_file',
+    monkeypatch.setattr(lib.figure.Figure, '_Figure__series_file', series_file_mock)
+    monkeypatch.setattr(lib.figure.base, 'json_from_file',
         json_from_file_mock)
     assert lib.figure.Figure(DATA).html_data_table() == HTML
