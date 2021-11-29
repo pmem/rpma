@@ -8,9 +8,11 @@
 
 import pytest
 
+import lib.bench
+import lib.figure
+
 from lib.bench import Bench
 from lib.benchmark import Benchmark
-from lib.figure import Figure
 from lib.Requirement import Requirement
 
 DICT_DUMMY = {
@@ -61,7 +63,7 @@ def bench_instance(monkeypatch):
     def requirements_uniq_mock(benchmarks):
         assert benchmarks == BENCHMARKS_UNIQ
         return REQUIREMENTS_UNIQ
-    monkeypatch.setattr(Figure, 'flatten', flatten_mock)
+    monkeypatch.setattr(lib.bench, 'flatten', flatten_mock)
     monkeypatch.setattr(Benchmark, 'uniq', benchmark_uniq_mock)
     monkeypatch.setattr(Requirement, 'uniq', requirements_uniq_mock)
     return Bench.new(CONFIG_DUMMY_INPUT, FIGURES_DUMMY_INPUT, RESULT_DIR)

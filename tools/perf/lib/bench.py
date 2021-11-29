@@ -15,7 +15,7 @@ import os
 
 from copy import deepcopy
 from lib.benchmark import Benchmark
-from lib.figure import Figure
+from lib.figure import Figure, flatten
 from lib.Requirement import Requirement
 
 class Bench:
@@ -77,7 +77,8 @@ class Bench:
         one output figure with all series representing exactly one series
         of benchmarks.
 
-        For details on the flattening process please see the `lib.flat` module.
+        For details on the flattening process please see the `lib.figure.flat`
+        module.
         """
         return deepcopy(self.__figures)
 
@@ -115,7 +116,7 @@ class Bench:
             A `Bench` object allowing to run all the benchmarks.
         """
         # combine figures from all the parts
-        figures = Figure.flatten([
+        figures = flatten([
             figure
             for part in parts
             for figure in part['json']])
@@ -194,7 +195,7 @@ class Bench:
 
         When all series are done, `Bench.figures` are browsed to collect
         all series creating given figures (for details please see
-        `lib.figure.Figure.prepare_series()`).
+        `lib.figure.base.Figure.prepare_series()`).
 
         Returns:
             `True` if all the benchmarking and postprocessing is complete.

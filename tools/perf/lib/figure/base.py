@@ -4,7 +4,7 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""figure.py -- generate figure-related products (EXPERIMENTAL)"""
+"""base.py -- generate figure-related products (EXPERIMENTAL)"""
 
 import json
 import os.path
@@ -14,8 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 from deepdiff import DeepDiff
 
-from lib.common import json_from_file, str2key, escape
-from lib.flat import make_flat, process_fstrings
+from ..common import json_from_file, escape
 
 SKIP_NO_AXIS_MSG = """SKIP: Axis '{}' is not provided by the series of id={}. Available keys are: {}"""
 SKIP_NO_FILE_MSG = "SKIP: the file does not exist: {}"
@@ -27,7 +26,7 @@ class Figure:
     _figure_kwargs = {'figsize': [6.4, 4.8], 'dpi': 200, \
         'tight_layout': {'pad': 1}}
 
-    def _series_file(self, result_dir):
+    def __series_file(self, result_dir):
         return os.path.join(result_dir, self.file + '.json')
 
     def __init__(self, figure, result_dir=""):
@@ -44,7 +43,7 @@ class Figure:
         self.result_dir = result_dir
         self.series_in = figure['series']
         if self.output['done']:
-            data = json_from_file(self._series_file(result_dir))
+            data = json_from_file(self.__series_file(result_dir))
             self.series = data['json'][self.key]['series']
             self.common_params = data['json'][self.key].get('common_params', {})
 
@@ -76,48 +75,6 @@ class Figure:
     def set_yaxis_max(self, max_y):
         """Set y-axis max"""
         self.yaxis_max = max_y
-
-    @staticmethod
-    def get_figure_desc(figure):
-        """Getter for accessing the core descriptor of a figure"""
-        return figure['output']
-
-    @staticmethod
-    def get_oneseries_desc(oneseries):
-        """Getter for accessing the core descriptor of a series"""
-        return oneseries
-
-    @staticmethod
-    def oneseries_derivatives(oneseries):
-        """Generate all derived variables of a series"""
-        output = {}
-        if 'rw' in oneseries.keys():
-            output['rw_order'] = \
-                'rand' if oneseries['rw'] in ['randread', 'randwrite'] \
-                else 'seq'
-        if 'x' in oneseries.keys():
-            output['x_key'] = str2key(oneseries['x'])
-        if 'y' in oneseries.keys():
-            output['y_key'] = str2key(oneseries['y'])
-        return output
-
-    @classmethod
-    def flatten(cls, figures):
-        """Flatten the figures list"""
-        figures = make_flat(figures, cls.get_figure_desc)
-        figures = process_fstrings(figures, cls.get_figure_desc,
-                                   cls.oneseries_derivatives)
-        output = []
-        for figure in figures:
-            # flatten series
-            common = figure.get('series_common', {})
-            figure['series'] = make_flat(
-                figure['series'], cls.get_oneseries_desc, common)
-            figure['series'] = process_fstrings(
-                figure['series'], cls.get_oneseries_desc,
-                cls.oneseries_derivatives)
-            output.append(cls(figure))
-        return output
 
     # a list of possible common params
     COMMON_PARAMS = {
@@ -201,7 +158,7 @@ class Figure:
                 {'label': series['label'], 'points': points})
         output['common_params'] = {} if common is None else common
         # save the series to a file
-        series_path = self._series_file(result_dir)
+        series_path = self.__series_file(result_dir)
         if os.path.exists(series_path):
             figures = json_from_file(series_path)['json']
         else:
