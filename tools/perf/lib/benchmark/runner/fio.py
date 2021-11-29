@@ -36,8 +36,6 @@ class FioRunner:
             raise ValueError("cannot find the remote fio: {}"
                              .format(fio_local_path))
 
-
-
     def __init__(self, benchmark, config, idfile):
         """create the object"""
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
