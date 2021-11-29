@@ -146,7 +146,82 @@ class IbReadRunner:
                 65536:  6002473,
                 131072: 3600000,
                 262144: 2100000
+<<<<<<< HEAD
             }
         }
+||||||| parent of 0c4c6c4... tools: ib_read.py, SETTINGS_BY_MODE filled up
+            },
+            'args': ['--perform_warm_up']}
+=======
+            }
+        },
+        'bw-th': {
+            'ib_tool': 'ib_read_bw',
+            'threads': [1, 2, 4, 8, 12],
+            'bs': 4096,
+            'iodepth': 2,
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                1: 16527218,
+                2: 32344690,
+                4: 61246542,
+                8: 89456698,
+                12: 89591370
+            }
+        },
+        'bw-dp-lin': {
+            'ib_tool': 'ib_read_bw',
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                1: 20609419,
+                2: 30493585,
+                3: 40723132,
+                4: 43536049,
+                5: 50576557,
+                6: 55879517,
+                7: 60512919,
+                8: 65088286,
+                9: 67321386,
+                10: 68566797
+            }
+        },
+        'bw-dp-exp': {
+            'ib_tool': 'ib_read_bw',
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': [1, 2, 4, 8, 16, 32, 64, 128],
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                1:   20769620,
+                2:   30431214,
+                4:   45416656,
+                8:   65543498,
+                16:  85589536,
+                32:  100000000,
+                64:  100000000,
+                128: 100000000
+            }
+        },
+        'bw-bs': {
+            'ib_tool': 'ib_read_bw',
+            'threads': 1,
+            'bs': BS_VALUES,
+            'iodepth': 2,
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                256: 48336720,
+                1024: 48336720,
+                4096: 34951167,
+                8192: 24475088,
+                16384: 23630690,
+                32768: 8299603,
+                65536: 5001135,
+                131072: 4800000,
+                262144: 2600000
+            }
+        }
+>>>>>>> 0c4c6c4... tools: ib_read.py, SETTINGS_BY_MODE filled up
     }
-    # XXX TBD
