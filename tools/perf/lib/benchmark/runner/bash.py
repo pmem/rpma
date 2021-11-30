@@ -48,14 +48,14 @@ class Bash:
         return output
 
     @classmethod
-    def run(cls, benchmark, config, result_dir):
+    def run(cls, benchmark, config, idfile):
         """Run the bash benchmark process.
 
         Args:
             cls (Bash): the Bash class itself
             benchmark (..benchmark.Benchmark): the main benchmark object
             config (dict): a user-provided system config
-            result_dir (str): the directory for the benchmark's results
+            idfile (str): XXX
         Raises:
             ValueError: when a misconfiguration is found
             CalledProcessError: when the benchmark's process returns non-zero
@@ -66,7 +66,7 @@ class Bash:
         args = cls.__benchmark_args(benchmark.oneseries, config)
         env = cls.__get_env(config)
 
-        env['OUTPUT_FILE'] = benchmark.get_output_file(result_dir)
+        env['OUTPUT_FILE'] = idfile
 
         if benchmark.oneseries['filetype'] == 'malloc':
             env['REMOTE_JOB_MEM_PATH'] = 'malloc'
