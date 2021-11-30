@@ -8,6 +8,7 @@
 
 import json
 import os.path
+from copy import deepcopy
 from deepdiff import DeepDiff
 
 from .image import draw_png
@@ -25,47 +26,59 @@ class Figure:
         return os.path.join(result_dir, self.file + '.json')
 
     def __init__(self, figure, result_dir=""):
-        self.output = figure['output']
-        self.output['done'] = self.output.get('done', False)
+        self.__output = figure['output']
+        self.__output['done'] = self.__output.get('done', False)
         # copies for convenience
-        self.title = self.output['title']
-        self.file = self.output['file']
-        self.argx = self.output['x']
-        self.argy = self.output['y']
+        self.title = self.__output['title']
+        self.file = self.__output['file']
+        self.argx = self.__output['x']
+        self.argy = self.__output['y']
         self.yaxis_max = None
-        self.key = self.output['key']
-        self.xscale = self.output.get('xscale', 'log')
+        self.key = self.__output['key']
+        self.xscale = self.__output.get('xscale', 'log')
         self.result_dir = result_dir
-        self.series_in = figure['series']
-        if self.output['done']:
+        self.__series_in = figure['series']
+        if self.__output['done']:
             data = json_from_file(self.__series_file(result_dir))
-            self.series = data['json'][self.key]['series']
+            self.__series = data['json'][self.key]['series']
             self.common_params = data['json'][self.key].get('common_params', {})
+
+    @property
+    def series(self):
+        """XXX"""
+        return deepcopy(self.__series)
+
+    @property
+    def series_in(self):
+        """XXX"""
+        return deepcopy(self.__series_in)
+
+    def set_series_id(self, series_index, identifier):
+        """XXX"""
+        self.__series_in[series_index]['id'] = identifier
 
     def __eq__(self, other):
         """A comparison function"""
-        if DeepDiff(self.output, other.output, exclude_paths=["root['title']"]):
+        # pylint: disable=protected-access
+        if DeepDiff(self.__output, other.__output,
+                    exclude_paths=["root['title']"]):
             return False
-        if len(self.series_in) != len(other.series_in):
+        if len(self.__series_in) != len(other.__series_in):
             return False
         # XXX It may happen that a requirement within a figure is not done
         # despite it is 'done' globally. The exclude below is merely a WA.
-        if DeepDiff(self.series_in, other.series_in,
+        if DeepDiff(self.__series_in, other.__series_in,
                     exclude_regex_paths="['requirements']['done']"):
             return False
         return True
 
     def cache(self):
         """Cache the current state of execution"""
-        return {'output': self.output, 'series': self.series_in}
+        return {'output': self.__output, 'series': self.__series_in}
 
     def is_done(self):
         """Are all steps completed?"""
-        return self.output['done']
-
-    def get_series_in(self):
-        """Get a series input list"""
-        return self.series_in
+        return self.__output['done']
 
     def set_yaxis_max(self, max_y):
         """Set y-axis max"""
@@ -120,7 +133,7 @@ class Figure:
         output['common_params'] = {}
         output['series'] = []
         common = None
-        for series in self.series_in:
+        for series in self.__series_in:
             idfile = os.path.join(result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
             try:
@@ -163,8 +176,8 @@ class Figure:
         with open(series_path, 'w', encoding='utf-8') as file:
             json.dump(figures, file, indent=4)
         # mark as done
-        self.output['done'] = True
-        self.series = output['series']
+        self.__output['done'] = True
+        self.__series = output['series']
         self.common_params = output['common_params']
 
     @property
@@ -186,7 +199,7 @@ class Figure:
             format(key, Figure.__COMMON_PARAMS[key]['format'].format(value))
                                          for key, value in
                                          self.common_params.items()]))
-        draw_png(self.argx, self.argy, self.series, self.xscale,
+        draw_png(self.argx, self.argy, self.__series, self.xscale,
                  self.png_path(), self.yaxis_max, suptitle, title)
 
     def to_html(self, figno):
@@ -194,5 +207,5 @@ class Figure:
         html = "<h4 class='figure'>Figure {}. {}</h4>". \
             format(figno, escape(self.title))
         html += '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
-        html += data_table(self.xcommon, self.series)
+        html += data_table(self.xcommon, self.__series)
         return html
