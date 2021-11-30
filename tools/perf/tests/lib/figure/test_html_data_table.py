@@ -55,4 +55,4 @@ def test_html_data_table_basic(monkeypatch):
     monkeypatch.setattr(lib.figure.base, 'json_from_file',
         json_from_file_mock)
     figure = lib.figure.Figure(DATA)
-    assert lib.figure.html.data_table(figure.xcommon, figure.series) == HTML
+    assert lib.figure.html.data_table(figure._Figure__get_xcommon(), figure.results) == HTML
