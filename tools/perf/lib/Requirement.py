@@ -44,21 +44,26 @@ class Requirement:
                 return False
         return True
 
-    def set_id(self, id):
-        """Required for compatibility with lib.common.uniq()"""
+    @property
+    def identifier(_):
+        """Required for compatibility with `lib.common.uniq()`"""
+        return None
+
+    @identifier.setter
+    def identifier(_self, _):
         pass
 
     def pick(self, benchmarks):
         """Filter out and collect all benchmarks having the requirement"""
         self.benchmarks = {}
         for id, b in benchmarks.items():
-            if self == Requirement(b.get_requirements()):
+            if self == Requirement(b.requirements):
                 self.benchmarks[id] = b
 
     @classmethod
     def uniq(cls, benchmarks):
         """Generate a set of unique requirements"""
-        reqs = [cls(b.get_requirements()) for _, b in benchmarks.items()]
+        reqs = [cls(b.requirements) for _, b in benchmarks.items()]
         reqs = uniq(reqs)
         for _, req in reqs.items():
             req.pick(benchmarks)

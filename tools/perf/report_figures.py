@@ -73,9 +73,9 @@ def generate_figures(args: argparse.Namespace) -> None:
         bw_max *= 1.1
     for figure in bench.figures:
         if args.regenerate_jsons:
-            figure.prepare_series()
+            figure.collect_results()
         if figure.argy == 'bw_avg':
-            figure.set_yaxis_max(bw_max)
+            figure.yaxis_max = bw_max
         figure.to_png(args.include_titles)
 
 def comparative_figures(args: argparse.Namespace) -> None:

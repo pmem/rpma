@@ -28,56 +28,92 @@ class Figure:
     def __init__(self, figure, result_dir=""):
         self.__output = figure['output']
         self.__output['done'] = self.__output.get('done', False)
-        # copies for convenience
-        self.title = self.__output['title']
-        self.file = self.__output['file']
-        self.argx = self.__output['x']
-        self.argy = self.__output['y']
-        self.yaxis_max = None
-        self.key = self.__output['key']
-        self.xscale = self.__output.get('xscale', 'log')
-        self.result_dir = result_dir
-        self.__series_in = figure['series']
+        self.__yaxis_max = None
+        self.__result_dir = result_dir
+        self.__series = figure['series']
         if self.__output['done']:
             data = json_from_file(self.__series_file(result_dir))
-            self.__series = data['json'][self.key]['series']
+            self.__results = data['json'][self.key]['series']
             self.common_params = data['json'][self.key].get('common_params', {})
 
     @property
+    def title(self):
+        """XXX"""
+        return self.__output['title']
+
+    @property
+    def file(self):
+        """XXX"""
+        return self.__output['file']
+
+    @property
+    def key(self):
+        """XXX"""
+        return self.__output['key']
+
+    @property
+    def argx(self):
+        """XXX"""
+        return self.__output['x']
+
+    @property
+    def argy(self):
+        """XXX"""
+        return self.__output['y']
+
+    @property
+    def xscale(self):
+        """XXX"""
+        return self.__output.get('xscale', 'log')
+
+    @property
+    def output(self):
+        """XXX"""
+        return deepcopy(self.__output)
+
+    @property
+    def results(self):
+        """XXX"""
+        return deepcopy(self.__results)
+
+    @property
     def series(self):
+        """XXX"""
         return deepcopy(self.__series)
 
     @property
-    def series_in(self):
-        return deepcopy(self.__series_in)
+    def yaxis_max(self):
+        """XXX"""
+        return self.__yaxis_max
 
-    def set_series_id(self, series_index, identifier):
-        self.__series_in[series_index]['id'] = identifier
+    @yaxis_max.setter
+    def yaxis_max(self, value):
+        self.__yaxis_max = value
+
+    def set_series_identifier(self, series_index, identifier):
+        """XXX"""
+        self.__series[series_index]['id'] = identifier
 
     def __eq__(self, other):
         """A comparison function"""
-        if DeepDiff(self.__output, other.__output, exclude_paths=["root['title']"]):
+        if DeepDiff(self.output, other.output, exclude_paths=["root['title']"]):
             return False
-        if len(self.__series_in) != len(other.__series_in):
+        if len(self.series) != len(other.series):
             return False
         # XXX It may happen that a requirement within a figure is not done
         # despite it is 'done' globally. The exclude below is merely a WA.
-        if DeepDiff(self.__series_in, other.__series_in,
+        if DeepDiff(self.series, other.series,
                     exclude_regex_paths="['requirements']['done']"):
             return False
         return True
 
     def cache(self):
         """Cache the current state of execution"""
-        return {'output': self.__output, 'series': self.__series_in}
+        return {'output': self.__output, 'series': self.__series}
 
     def is_done(self):
         """Are all steps completed?"""
         return self.__output['done']
-
-    def set_yaxis_max(self, max_y):
-        """Set y-axis max"""
-        self.yaxis_max = max_y
 
     # a list of possible common params
     __COMMON_PARAMS = {
@@ -96,7 +132,7 @@ class Figure:
     }
 
     @staticmethod
-    def _get_common_params(params, rows):
+    def __get_common_params(params, rows):
         """lookup common parameters"""
         if params is None:
             # When no initial common parameters dict is provided (params)
@@ -114,13 +150,13 @@ class Figure:
                                     Figure.__COMMON_PARAMS[key]['default'])}
         return params
 
-    def prepare_series(self, result_dir=None):
+    def collect_results(self, result_dir=None):
         """
         Extract all series from the respective benchmark files and append them
         to the series file.
         """
         if result_dir is None:
-            result_dir = self.result_dir
+            result_dir = self.__result_dir
         output = {}
         output['title'] = self.title
         output['x'] = self.argx
@@ -128,7 +164,7 @@ class Figure:
         output['common_params'] = {}
         output['series'] = []
         common = None
-        for series in self.__series_in:
+        for series in self.__series:
             idfile = os.path.join(result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
             try:
@@ -157,7 +193,7 @@ class Figure:
                     self.argy, series['id'], str(keys)))
                 continue
             points = [[row[self.argx], row[self.argy]] for row in rows]
-            common = Figure._get_common_params(common, rows)
+            common = Figure.__get_common_params(common, rows)
             output['series'].append(
                 {'label': series['label'], 'points': points})
         output['common_params'] = {} if common is None else common
@@ -172,35 +208,37 @@ class Figure:
             json.dump(figures, file, indent=4)
         # mark as done
         self.__output['done'] = True
-        self.__series = output['series']
+        self.__results = output['series']
         self.common_params = output['common_params']
 
-    @property
-    def xcommon(self):
+    def __get_xcommon(self):
         """generate an ordered list of common x-values"""
-        xlist = [p[0] for oneseries in self.series for p in oneseries['points']]
+        xlist = [p[0]
+            for oneseries in self.__results
+            for p in oneseries['points']]
         return sorted(list(set(xlist)))
 
-    def png_path(self):
+    def __png_path(self):
         """get a path to the output PNG file"""
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
     def to_png(self, include_title):
         """generate an output PNG file"""
-        os.chdir(self.result_dir)
+        os.chdir(self.__result_dir)
         suptitle = self.title if include_title else None
         title = '[{}]'.format(', '.join(['{}={}'. \
             format(key, Figure.__COMMON_PARAMS[key]['format'].format(value))
                                          for key, value in
                                          self.common_params.items()]))
-        draw_png(self.argx, self.argy, self.__series, self.xscale,
-                 self.png_path(), self.yaxis_max, suptitle, title)
+        draw_png(self.argx, self.argy, self.__results, self.xscale,
+                 self.__png_path(), self.__yaxis_max, suptitle, title)
 
     def to_html(self, figno):
         """Combine a Figure's png and data table into a single HTML snippet"""
         html = "<h4 class='figure'>Figure {}. {}</h4>". \
             format(figno, escape(self.title))
-        html += '<img src="' + self.png_path() + '" alt="' + self.title + '"/>'
-        html += data_table(self.xcommon, self.__series)
+        html += '<img src="' + self.__png_path() + '" alt="' + self.title + \
+                '"/>'
+        html += data_table(self.__get_xcommon(), self.__results)
         return html
