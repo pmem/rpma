@@ -22,6 +22,8 @@ DATA = {
     'series': []
 }
 
+RESULT_DIR = '/dummy/path'
+
 SERIES_FILE = 'dummy/series/file'
 
 SERIES = {
@@ -54,5 +56,5 @@ def test_html_data_table_basic(monkeypatch):
     monkeypatch.setattr(lib.figure.Figure, '_Figure__series_file', series_file_mock)
     monkeypatch.setattr(lib.figure.base, 'json_from_file',
         json_from_file_mock)
-    figure = lib.figure.Figure(DATA)
-    assert lib.figure.html.data_table(figure._Figure__get_xcommon(), figure.results) == HTML
+    figure = lib.figure.Figure(DATA, RESULT_DIR)
+    assert lib.figure.html.data_table(figure.results) == HTML
