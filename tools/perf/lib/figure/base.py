@@ -17,7 +17,7 @@ from deepdiff import DeepDiff
 
 from .image import draw_png
 from .html import data_table
-from ..common import json_from_file, escape
+from ..common import get_benchmark_result_path, json_from_file, escape
 
 SKIP_NO_AXIS_MSG = """SKIP: Axis '{}' is not provided by the series of id={}. Available keys are: {}"""
 SKIP_NO_FILE_MSG = "SKIP: the file does not exist: {}"
@@ -216,8 +216,7 @@ class Figure:
         output['series'] = []
         common = None
         for series in self.__series:
-            idfile = os.path.join(self.__result_dir,
-                                  'benchmark_' + str(series['id']) + '.json')
+            idfile = get_benchmark_result_path(self.__result_dir, series['id'])
             try:
                 rows = json_from_file(idfile)['json']
             except FileNotFoundError:

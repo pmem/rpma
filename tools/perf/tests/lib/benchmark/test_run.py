@@ -10,6 +10,7 @@ import pytest
 
 import lib.benchmark
 import lib.benchmark.base
+import lib.common
 
 IP_DUMMY = '101.102.103.104'
 CONFIG_DUMMY = {'server_ip': IP_DUMMY, 'dummy_results': True}
@@ -34,11 +35,13 @@ def test_no_server_ip(benchmark_dummy, tmpdir):
 def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     """a simple Dummy runner call"""
     run_mock_used = False
-    def run_mock(_self, _config, result_dir):
+    def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
-        assert result_dir == str(tmpdir)
+        assert idfile == output
         run_mock_used = True
     monkeypatch.setattr(lib.benchmark.base.Dummy, 'run', run_mock)
+    output = lib.common.get_benchmark_result_path(str(tmpdir),
+                                                  benchmark_dummy.identifier)
     benchmark_dummy.run(CONFIG_DUMMY, str(tmpdir))
     assert run_mock_used
     assert benchmark_dummy.is_done()
@@ -48,11 +51,13 @@ CONFIG_BASH = {'server_ip': IP_DUMMY}
 def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     """a simple Bash runner call"""
     run_mock_used = False
-    def run_mock(_self, _config, result_dir):
+    def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
-        assert result_dir == str(tmpdir)
+        assert idfile == output
         run_mock_used = True
     monkeypatch.setattr(lib.benchmark.base.Bash, 'run', run_mock)
+    output = lib.common.get_benchmark_result_path(str(tmpdir),
+                                                  benchmark_bash.identifier)
     benchmark_bash.run(CONFIG_BASH, str(tmpdir))
     assert run_mock_used
     assert benchmark_bash.is_done()
