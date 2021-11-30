@@ -119,7 +119,7 @@ class Bench:
         figures = flatten([
             figure
             for part in parts
-            for figure in part['json']])
+            for figure in part['json']], result_dir)
         # generate a list of unique benchmarks to execute
         benchmarks = Benchmark.uniq(figures)
         # generate a list of unique requirements to be met
@@ -228,7 +228,7 @@ class Bench:
         for figure in self.__figures:
             if figure.is_done():
                 continue
-            figure.collect_results(self.__result_dir)
+            figure.collect_results()
             self.cache()
         return True
 
