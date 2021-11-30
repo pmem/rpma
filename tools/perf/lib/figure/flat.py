@@ -22,6 +22,7 @@ one of its series is described by a list instead of a 'flat' set of values.
 import copy
 
 from .base import Figure
+from ..common import ENCODE
 
 def __str2key(_):
     """Make string a valid jinja2 template key e.g. dictionary.key
@@ -97,6 +98,16 @@ def __get_series_desc(oneseries):
     """Getter for accessing the core descriptor of a series"""
     return oneseries
 
+__MISSING_RW_DIR_MSG = """'rw_dir' is required for mixed workloads (['rw'] == '*rw')\n{}"""
+
+def __validate_series(series):
+    for oneseries in series:
+        # validate mixed workload
+        if 'rw' in oneseries and 'rw' in oneseries['rw']:
+            if 'rw_dir' not in oneseries:
+                raise SyntaxError(
+                    __MISSING_RW_DIR_MSG.format(ENCODE(oneseries)))
+
 def flatten(figures: list) -> list:
     """Flatten a figures list
 
@@ -118,5 +129,6 @@ def flatten(figures: list) -> list:
             figure['series'], __get_series_desc, common)
         figure['series'] = __process_fstrings(
             figure['series'], __get_series_desc)
+        __validate_series(figure['series'])
         output.append(Figure(figure))
     return output
