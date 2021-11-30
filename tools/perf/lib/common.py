@@ -11,6 +11,8 @@
 import json
 import os.path
 
+ENCODE = json.JSONEncoder(indent=4).encode
+
 def dir_path(string):
     """Validate provided directory path"""
     if os.path.exists(string):
