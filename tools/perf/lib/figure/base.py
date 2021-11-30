@@ -4,7 +4,11 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""base.py -- generate figure-related products (EXPERIMENTAL)"""
+#
+# base.py
+#
+
+"""controlling a single figure (EXPERIMENTAL)"""
 
 import json
 import os.path
@@ -25,7 +29,7 @@ class Figure:
     def __series_file(self, result_dir):
         return os.path.join(result_dir, self.file + '.json')
 
-    def __init__(self, figure, result_dir=""):
+    def __init__(self, figure, result_dir):
         self.__output = figure['output']
         self.__output['done'] = self.__output.get('done', False)
         self.__yaxis_max = None
@@ -34,68 +38,87 @@ class Figure:
         if self.__output['done']:
             data = json_from_file(self.__series_file(result_dir))
             self.__results = data['json'][self.key]['series']
-            self.common_params = data['json'][self.key].get('common_params', {})
+            self.__common_params = data['json'][self.key].get('common_params',
+                                                              {})
+        else:
+            self.__results = None
+            self.__common_params = None
 
     @property
-    def title(self):
-        """XXX"""
+    def title(self) -> str:
+        """A title of the figure"""
         return self.__output['title']
 
     @property
-    def file(self):
-        """XXX"""
+    def file(self)-> str:
+        """A file name (without extension) where the results of benchmarking the related data series is stored"""
         return self.__output['file']
 
     @property
-    def key(self):
-        """XXX"""
+    def key(self) -> str:
+        """A key within the `lib.figure.base.Figure.file` under which the results of benchmarking the related data series is stored"""
         return self.__output['key']
 
     @property
-    def argx(self):
-        """XXX"""
+    def argx(self) -> str:
+        """An x-axis argument"""
         return self.__output['x']
 
     @property
-    def argy(self):
-        """XXX"""
+    def argy(self) -> str:
+        """An y-axis argument"""
         return self.__output['y']
 
     @property
-    def xscale(self):
-        """XXX"""
+    def xscale(self) -> str:
+        """A x-axis scale. Either linear or log. Log by default."""
         return self.__output.get('xscale', 'log')
 
     @property
-    def output(self):
-        """XXX"""
+    def output(self) -> dict:
+        """(a copy of) the whole `figure['output']` block of figure's
+        definition.
+
+        **Note** it is flattened. Please see `lib.figure.flat.flatten()` for
+        details.
+        """
         return deepcopy(self.__output)
 
     @property
-    def results(self):
-        """XXX"""
+    def results(self) -> dict:
+        """(a copy of) the collected result. Please see `lib.figure.base.Figure.collect_results()` for details."""
         return deepcopy(self.__results)
 
     @property
-    def series(self):
-        """XXX"""
+    def series(self) -> dict:
+        """(a copy of) the whole `figure['series']` block of figure's
+        definition.
+
+        **Note** it is flattened. Please see `lib.figure.flat.flatten()` for
+        details.
+        """
         return deepcopy(self.__series)
 
     @property
-    def yaxis_max(self):
-        """XXX"""
+    def yaxis_max(self) -> int:
+        """A maximum value of the y-axis"""
         return self.__yaxis_max
 
     @yaxis_max.setter
-    def yaxis_max(self, value):
+    def yaxis_max(self, value: int):
         self.__yaxis_max = value
 
-    def set_series_identifier(self, series_index, identifier):
-        """XXX"""
+    def set_series_identifier(self, series_index: int, identifier: int) -> None:
+        """Set an identifier on a given series
+
+        Args:
+            series_index: an index in the `lib.figure.base.Figure.series` list.
+            identifier: a unique identifier allowing to refer to the results
+            of executing a particual `lib.benchmark.base.Benchmark`.
+        """
         self.__series[series_index]['id'] = identifier
 
     def __eq__(self, other):
-        """A comparison function"""
         if DeepDiff(self.output, other.output, exclude_paths=["root['title']"]):
             return False
         if len(self.series) != len(other.series):
@@ -107,12 +130,30 @@ class Figure:
             return False
         return True
 
-    def cache(self):
-        """Cache the current state of execution"""
+    def cache(self) -> dict:
+        """generate a dict representing the current state of the object
+
+        A cache is a dictionary with the following keys:
+
+        - `cache['output']` which store the `Figure.output` property
+        - `cache['series']` which store the `Figure.series` property
+
+        **Note** this method does not create a separate cache file. It is used
+        by the `lib.bench.Bench.cache()` method in order to cache the whole
+        state of the execution into a single JSON file.
+
+        Returns:
+            A `dict` compiling the current state of the figure.
+        """
         return {'output': self.__output, 'series': self.__series}
 
-    def is_done(self):
-        """Are all steps completed?"""
+    def is_done(self) -> bool:
+        """Do the results for the figure have been collected?
+
+        Returns:
+            `True` when all the results have been already collected. `False`
+            otherwise.
+        """
         return self.__output['done']
 
     # a list of possible common params
@@ -132,7 +173,7 @@ class Figure:
     }
 
     @staticmethod
-    def __get_common_params(params, rows):
+    def __get_common_params_from_rows(params: dict, rows: list) -> dict:
         """lookup common parameters"""
         if params is None:
             # When no initial common parameters dict is provided (params)
@@ -150,13 +191,23 @@ class Figure:
                                     Figure.__COMMON_PARAMS[key]['default'])}
         return params
 
-    def collect_results(self, result_dir=None):
+    def collect_results(self) -> None:
+        """Collect all results ordered by the figure
+
+        When all ordered bencharks are done (please see
+        `lib.benchmark.base.Benchmark` for details) the figure has to collect
+        all results belonging to its series. At the begining of the process
+        each of the respecitve series has been assigned an identifier
+        (`lib.benchmark.base.Benchmark.uniq()` and
+        `Figure.set_series_identifier()`) which allows to track back
+        the order benchmark's result file. All of these files are processed
+        to extract only this information which is meant to be presented on
+        the figure.
+
+        When all the results are collected it is write down to a `Figure.file`
+        JSON file under `Figure.key`. The collected results are also available
+        as `Figure.results`.
         """
-        Extract all series from the respective benchmark files and append them
-        to the series file.
-        """
-        if result_dir is None:
-            result_dir = self.__result_dir
         output = {}
         output['title'] = self.title
         output['x'] = self.argx
@@ -165,7 +216,7 @@ class Figure:
         output['series'] = []
         common = None
         for series in self.__series:
-            idfile = os.path.join(result_dir,
+            idfile = os.path.join(self.__result_dir,
                                   'benchmark_' + str(series['id']) + '.json')
             try:
                 rows = json_from_file(idfile)['json']
@@ -193,12 +244,12 @@ class Figure:
                     self.argy, series['id'], str(keys)))
                 continue
             points = [[row[self.argx], row[self.argy]] for row in rows]
-            common = Figure.__get_common_params(common, rows)
+            common = Figure.__get_common_params_from_rows(common, rows)
             output['series'].append(
                 {'label': series['label'], 'points': points})
         output['common_params'] = {} if common is None else common
         # save the series to a file
-        series_path = self.__series_file(result_dir)
+        series_path = self.__series_file(self.__result_dir)
         if os.path.exists(series_path):
             figures = json_from_file(series_path)['json']
         else:
@@ -209,36 +260,46 @@ class Figure:
         # mark as done
         self.__output['done'] = True
         self.__results = output['series']
-        self.common_params = output['common_params']
+        self.__common_params = output['common_params']
 
-    def __get_xcommon(self):
-        """generate an ordered list of common x-values"""
-        xlist = [p[0]
-            for oneseries in self.__results
-            for p in oneseries['points']]
-        return sorted(list(set(xlist)))
-
-    def __png_path(self):
+    def __png_path(self) -> str:
         """get a path to the output PNG file"""
         output = self.file + '_' + self.key + '.png'
         return os.path.join('.', output)
 
-    def to_png(self, include_title):
-        """generate an output PNG file"""
+    def to_png(self, include_title: bool) -> None:
+        """generate an output PNG file
+
+        When `Figure.collect_results()` is done the collected `Figure.results`
+        can be presented as a single PNG file.
+        """
         os.chdir(self.__result_dir)
         suptitle = self.title if include_title else None
         title = '[{}]'.format(', '.join(['{}={}'. \
             format(key, Figure.__COMMON_PARAMS[key]['format'].format(value))
                                          for key, value in
-                                         self.common_params.items()]))
+                                         self.__common_params.items()]))
         draw_png(self.argx, self.argy, self.__results, self.xscale,
                  self.__png_path(), self.__yaxis_max, suptitle, title)
 
-    def to_html(self, figno):
-        """Combine a Figure's png and data table into a single HTML snippet"""
+    def to_html(self, figno: int) -> str:
+        """represent the figure as a HTML snippet
+
+        Combine a figure's PNG file (`Figure.to_png()`) and `Figure.results`
+        rendered as a HTML table (`lib.figure.html.data_table()`) to create
+        a single HTML snippet which can be incorporated into the final
+        `lib.Part.Part` and `lib.Report.Report`.
+
+        Args:
+            figno: an identifier of the figure within the final
+              `lib.Report.Report`.
+
+        Returns:
+            A str containing the generated HTML.
+        """
         html = "<h4 class='figure'>Figure {}. {}</h4>". \
             format(figno, escape(self.title))
         html += '<img src="' + self.__png_path() + '" alt="' + self.title + \
                 '"/>'
-        html += data_table(self.__get_xcommon(), self.__results)
+        html += data_table(self.__results)
         return html

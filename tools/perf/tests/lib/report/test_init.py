@@ -40,7 +40,7 @@ class BenchMock:
     """a lib.Bench.Bench mock"""
     config = {}
     result_dir = RESULT_DIR
-    figures = [Figure(FIGURE_DUMMY)]
+    figures = [Figure(FIGURE_DUMMY, RESULT_DIR)]
     parts = [PART_DUMMY]
 
 class EnvMock:
@@ -122,7 +122,7 @@ def test_init(monkeypatch):
             assert 'file_dummy' in variables['figure']
             assert 'key_dummy' in variables['figure']['file_dummy']
             assert variables['figure']['file_dummy']['key_dummy'] == \
-                Figure(FIGURE_DUMMY)
+                Figure(FIGURE_DUMMY, RESULT_DIR)
     def copy_mock(src, dst):
         assert src == SCHEMATIC_PATH
         assert dst == RESULT_DIR
