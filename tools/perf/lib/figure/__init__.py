@@ -15,3 +15,4 @@ A figure is a set of data series accompanied by the figure metadata
 
 from .base import Figure
 from .flat import flatten
+from .image import draw_png

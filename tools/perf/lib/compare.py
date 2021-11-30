@@ -7,7 +7,7 @@
 """compare.py -- compare multiple benchmarks results (EXPERIMENTAL)"""
 
 from lib.common import json_from_file
-from lib.figure import Figure
+from lib.figure import Figure, draw_png
 
 import json
 import os
@@ -124,5 +124,5 @@ class Comparison:
         keycontent = data.get(self._figure.key)
         output_path = self.png_path()
         # XXX add setters to yaxis_max for bw and lat
-        Figure.draw_png(keycontent['x'], keycontent['y'], keycontent['series'],
-                        keycontent['xscale'], output_path, None, None, None)
+        draw_png(keycontent['x'], keycontent['y'], keycontent['series'],
+                 keycontent['xscale'], output_path, None, None, None)
