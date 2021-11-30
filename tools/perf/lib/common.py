@@ -44,12 +44,12 @@ def uniq(elems):
         for oid, other in output.items():
             if elem == other:
                 # creating a relationship
-                elem.set_id(oid)
+                elem.identifier = oid
                 duplicate = True
                 break
         # a new benchmark found
         if not duplicate:
-            elem.set_id(id)
+            elem.identifier = id
             output[id] = elem
             id += 1
     return output
