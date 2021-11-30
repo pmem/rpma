@@ -25,8 +25,9 @@ DATA = {
     ]
 }
 
+RESULT_DIR = '/dummy/path'
 RELATIVE_PATH = "./file_key.png"
 
 def test_png_path_basic():
     """basic lib.figure.Figure.html_data_table() test"""
-    assert Figure(DATA)._Figure__png_path() == RELATIVE_PATH
+    assert Figure(DATA, RESULT_DIR)._Figure__png_path() == RELATIVE_PATH
