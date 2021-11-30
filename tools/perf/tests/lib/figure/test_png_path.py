@@ -29,4 +29,4 @@ RELATIVE_PATH = "./file_key.png"
 
 def test_png_path_basic():
     """basic lib.figure.Figure.html_data_table() test"""
-    assert Figure(DATA).png_path() == RELATIVE_PATH
+    assert Figure(DATA)._Figure__png_path() == RELATIVE_PATH

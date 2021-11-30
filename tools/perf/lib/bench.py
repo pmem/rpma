@@ -197,7 +197,7 @@ class Bench:
 
         When all series are done, `Bench.figures` are browsed to collect
         all series creating given figures (for details please see
-        `lib.figure.base.Figure.prepare_series()`).
+        `lib.figure.base.Figure.collect_results()`).
 
         Returns:
             `True` if all the benchmarking and postprocessing is complete.
@@ -228,7 +228,7 @@ class Bench:
         for figure in self.__figures:
             if figure.is_done():
                 continue
-            figure.prepare_series(self.__result_dir)
+            figure.collect_results(self.__result_dir)
             self.cache()
         return True
 
