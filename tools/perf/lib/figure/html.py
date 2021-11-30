@@ -8,8 +8,7 @@
 # html.py
 #
 
-"""XXX
-"""
+"""figure HTML tools (EXPERIMENTAL)"""
 
 from ..common import escape
 
@@ -17,16 +16,28 @@ def __points_to_dict(points):
     """transform list of [x, y] into a dict() where {x: y}"""
     return {p[0]: p[1] for p in points}
 
-def data_table(xcommon: list, series: list):
+def __get_xcommon(results):
+    """generate an ordered list of common x-values"""
+    xlist = [p[0]
+             for oneseries in results
+             for p in oneseries['points']]
+    return sorted(list(set(xlist)))
+
+def data_table(results: list) -> str:
+    """combine results as HTML table
+
+    Args:
+        results: a list of results. Please see `lib.figure.base.Figure.results`.
+    Returns:
+        A str containing a HTML table combining all the `results`.
     """
-    Create an HTML snippet string with a table containing the Figure data.
-    """
+    xcommon = __get_xcommon(results)
     # header
     html = '<table class="data"><thead><tr><th></th><th>{}</th></tr>' \
         '</thead><tbody>'. \
         format('</th><th>'.join([str(x) for x in xcommon]))
     # rows
-    for oneseries in series:
+    for oneseries in results:
         # Since the output is processed as markdown,
         # special characters have to be escaped.
         html += "<tr><td>" + escape(oneseries['label']) + "</td>"

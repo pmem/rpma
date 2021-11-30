@@ -33,9 +33,8 @@ class Benchmark:
     def uniq(cls, figures):
         """Generate a set of unique benchmarks"""
         output = [cls(oneseries, figure, index)
-            for figure in figures
-                for index, oneseries in enumerate(figure.series)
-        ]
+                  for figure in figures
+                  for index, oneseries in enumerate(figure.series)]
         return uniq(output)
 
     def __repr__(self):
@@ -74,7 +73,7 @@ class Benchmark:
     def get_output_file(self, result_dir):
         """Get the output file path"""
         return os.path.join(result_dir,
-            'benchmark_' + str(self.identifier) + '.json')
+                            'benchmark_{}.json'.format(str(self.identifier)))
 
     @property
     def oneseries(self):

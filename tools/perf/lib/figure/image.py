@@ -8,8 +8,7 @@
 # image.py
 #
 
-"""XXX
-"""
+"""figure imaging tools (EXPERIMENTAL)"""
 
 from collections import deque
 from textwrap import wrap
@@ -21,12 +20,12 @@ __FIGURE_KWARGS = {'figsize': [6.4, 4.8], 'dpi': 200, \
 
 __LINE_STYLES = ['solid', 'dashed', 'dashdot', 'dotted']
 
-def __points_to_xy(points):
+def __points_to_xy(points: list) -> tuple:
     xslist = [p[0] for p in points]
     yslist = [p[1] for p in points]
     return xslist, yslist
 
-def __label(column, with_better=False):
+def __label(column: str, with_better=False) -> str:
     """Translate the name of a column to a label with a unit"""
     label_by_column = {
         'threads': '# of threads',
@@ -53,9 +52,30 @@ def __label(column, with_better=False):
         output += '\n(' + better_by_column.get(column, column) + ')'
     return output
 
-def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
-                suptitle=None, title=None, oneseries_name='label'):
-    """draw a figure"""
+def draw_png(argx: str, argy: str, results: list, xscale: str, output_path: str,
+             yaxis_max: int=None, suptitle: str=None, title: str=None) -> None:
+    """draw a figure
+
+    Generate a PNG file compiling all the provided results.
+
+    Args:
+        argx: an x-axis argument (`lib.figure.base.Figure.argx`)
+
+        argy: an y-axis argument (`lib.figure.base.Figure.argy`)
+
+        results: a list of results (`lib.figure.base.Figure.results`)
+
+        xscale: an x-axis scale (`lib.figure.base.Figure.xscale`)
+
+        output_path: a path where the output file will be written
+
+        yaxis_max: a maximum value of the y-axis
+          (`lib.figure.base.Figure.yaxis_max`)
+
+        suptitle: a str with the suptitle for the output file
+
+        title: a str with the title for the output file
+    """
     # set output file size, padding and title
     fig = plt.figure(**__FIGURE_KWARGS)
     if suptitle is not None:
@@ -69,7 +89,7 @@ def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
     xticks = []
     line_styles = deque(__LINE_STYLES.copy())
     group_to_line_styles = {}
-    for oneseries in series:
+    for oneseries in results:
         # Pick a line style according to the group to which
         # the line belongs. If no group provided a default one is assumed.
         group = oneseries.get('group', 'default')
@@ -84,7 +104,7 @@ def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
         # draw series ony-by-one
         xslist, yslist = __points_to_xy(oneseries['points'])
         plot.plot(xslist, yslist, marker='.', linestyle=line_style,
-                    label=oneseries[oneseries_name])
+                  label=oneseries['label'])
         # collect all existing x values
         xticks.extend(xslist)
     # make values unique (set) and sort them

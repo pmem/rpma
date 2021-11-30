@@ -108,13 +108,16 @@ def __validate_series(series):
                 raise SyntaxError(
                     __MISSING_RW_DIR_MSG.format(ENCODE(oneseries)))
 
-def flatten(figures: list) -> list:
+def flatten(figures: list, result_dir: str) -> list:
     """Flatten a figures list
 
     Arguments:
         figures: A list of figures (dictionaries not `lib.figure.base.Figure`
           instances) where each of the figures and each of the series can be
           multidimensional.
+
+        result_dir: a directory where the intermediate and final products of
+          the benchmarking process will be stored.
     Returns:
         A list of `lib.figure.base.Figure` objects being a flattened
         representation of the provided `figures` list.
@@ -130,5 +133,5 @@ def flatten(figures: list) -> list:
         figure['series'] = __process_fstrings(
             figure['series'], __get_series_desc)
         __validate_series(figure['series'])
-        output.append(Figure(figure))
+        output.append(Figure(figure, result_dir))
     return output

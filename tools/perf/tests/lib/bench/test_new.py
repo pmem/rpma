@@ -54,8 +54,9 @@ RESULT_DIR = '/dummy/path'
 
 def bench_instance(monkeypatch):
     """provide a ready to test lib.bench instance"""
-    def flatten_mock(figures_in):
+    def flatten_mock(figures_in, result_dir):
         assert figures_in == FIGURES_DUMMY
+        assert result_dir == RESULT_DIR
         return FIGURES_DUMMY_FLAT
     def benchmark_uniq_mock(figures):
         assert figures == FIGURES_DUMMY_FLAT
