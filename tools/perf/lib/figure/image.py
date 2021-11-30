@@ -54,7 +54,7 @@ def __label(column, with_better=False):
     return output
 
 def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
-                suptitle=None, title=None, oneseries_name='label'):
+             suptitle=None, title=None, oneseries_name='label'):
     """draw a figure"""
     # set output file size, padding and title
     fig = plt.figure(**__FIGURE_KWARGS)
@@ -84,7 +84,7 @@ def draw_png(argx, argy, series, xscale, output_path, yaxis_max=None,
         # draw series ony-by-one
         xslist, yslist = __points_to_xy(oneseries['points'])
         plot.plot(xslist, yslist, marker='.', linestyle=line_style,
-                    label=oneseries[oneseries_name])
+                  label=oneseries[oneseries_name])
         # collect all existing x values
         xticks.extend(xslist)
     # make values unique (set) and sort them
