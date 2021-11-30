@@ -10,6 +10,7 @@ import os
 import subprocess
 import pytest
 
+import lib.common
 import lib.benchmark.runner
 
 IP_DUMMY = '101.102.103.104'
@@ -55,8 +56,9 @@ def test_ib_read(mode, oneseries_bash, tmpdir, monkeypatch):
     monkeypatch.setattr(subprocess, 'run', run_mock)
     oneseries = {**oneseries_bash, 'tool': TOOL_IB_READ, 'mode': mode}
     benchmark = lib.benchmark.Benchmark(oneseries)
-    output_file = benchmark.get_output_file(str(tmpdir))
-    lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, str(tmpdir))
+    output_file = lib.common.get_benchmark_result_path(str(tmpdir),
+                                                       benchmark.identifier)
+    lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, output_file)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark.is_done()
 
@@ -85,8 +87,9 @@ def test_rpma_fio_bench(tool_mode, readwrite, mode, oneseries_bash, tmpdir, monk
     oneseries = {**oneseries_bash, 'tool': TOOL_RPMA_FIO_BENCH, 'mode': mode,
         'tool_mode': tool_mode, 'rw': readwrite, 'busy_wait_polling': True}
     benchmark = lib.benchmark.Benchmark(oneseries)
-    output_file = benchmark.get_output_file(str(tmpdir))
-    lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, str(tmpdir))
+    output_file = lib.common.get_benchmark_result_path(str(tmpdir),
+                                                       benchmark.identifier)
+    lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, output_file)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark.is_done()
 
@@ -175,8 +178,10 @@ def test_config_overwrite_env(benchmark_bash, tmpdir, monkeypatch):
         assert check
     monkeypatch.setattr(subprocess, 'run', run_mock)
     monkeypatch.setattr(os, 'environ', ENV_MOCK)
-    output_file = benchmark_bash.get_output_file(str(tmpdir))
-    lib.benchmark.runner.Bash.run(benchmark_bash, CONFIG_BIG, str(tmpdir))
+    output_file = \
+        lib.common.get_benchmark_result_path(str(tmpdir),
+                                             benchmark_bash.identifier)
+    lib.benchmark.runner.Bash.run(benchmark_bash, CONFIG_BIG, output_file)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark_bash.is_done()
 

@@ -8,16 +8,21 @@
 # base.py
 #
 
-"""a single benchmark object (EXPERIMENTAL)"""
+"""controlling a single benchmark (EXPERIMENTAL)"""
 
-import os
 from copy import deepcopy
 
 from ..common import uniq, ENCODE
 from .runner import BaseRunner, Bash, Dummy
 
 class Benchmark:
-    """A single benchmark object"""
+    """A single benchmark
+
+    **Note**: A single benchmark may cover a single series executed for
+    one or more `lib.figure.base.Figure` objects. The `Benchmark` covers a
+    series if `Benchmark.identifier` == `series['id']`. Where `series` is
+    an element of a `lib.figure.base.Figure.series` list.
+    """
 
     def __init__(self, oneseries, figure=None, series_index=-1):
         self.__figure = figure
@@ -30,8 +35,26 @@ class Benchmark:
         self.__oneseries = oneseries
 
     @classmethod
-    def uniq(cls, figures):
-        """Generate a set of unique benchmarks"""
+    def uniq(cls, figures: list) -> list:
+        """Generate a set of unique benchmarks
+
+        `figures` provide `lib.figure.base.Figure.series` which are used to
+        create a list of `Benchmark` objects. From this list are removed all
+        duplicates. The remaining objects have assigned unique
+        `Benchmark.identifier` values which are propagated to
+        `lib.figure.base.Figure.series` via
+        `lib.figure.base.Figure.set_series_identifier()`.
+
+        **Note**: Two `Benchmark` objects are different when either do things
+        differently or make different requirements.
+
+        Args:
+            figures: A list of `lib.figure.base.Figure` objects.
+
+        Returns:
+            A list of `Benchmark` objects where each element describes
+            different benchmark.
+        """
         output = [cls(oneseries, figure, index)
                   for figure in figures
                   for index, oneseries in enumerate(figure.series)]
@@ -59,38 +82,56 @@ class Benchmark:
         return True
 
     @property
-    def identifier(self):
-        """Get the instance id"""
+    def identifier(self) -> int:
+        """a uniqe identifier of the instance
+
+        For details please see `Benchmark.uniq()`.
+        """
         return self.__oneseries.get('id', None)
 
     @identifier.setter
     def identifier(self, value):
-        """Set an instance id"""
         self.__oneseries['id'] = value
         if self.__figure is not None:
             self.__figure.set_series_identifier(self.__series_index, value)
 
-    def get_output_file(self, result_dir):
-        """Get the output file path"""
-        return os.path.join(result_dir,
-                            'benchmark_{}.json'.format(str(self.identifier)))
-
     @property
-    def oneseries(self):
-        """XXX"""
+    def oneseries(self) -> dict:
+        """(a copy of) a description of what and how run the benchmark"""
         return deepcopy(self.__oneseries)
 
     @property
-    def requirements(self):
-        """XXX"""
+    def requirements(self) -> dict:
+        """(a copy of) a description of what requirements have to be met before
+        the `Benchmark` can be started
+
+        It is used to create an instance of `lib.Requirement.Requirement`
+        taking care of all `Benchmark` objects making this requirement.
+        """
         return deepcopy(self.__req)
 
-    def cache(self):
-        """Cache the current state of execution"""
+    def cache(self) -> dict:
+        """generate a dict representing the current state of the object
+
+        The state of the object is fully represented by
+        the `Benchmark.oneseries` property.
+
+        **Note** this method does not create a separate cache file. It is used
+        by the `lib.bench.Bench.cache()` method in order to cache the whole
+        state of the execution into a single JSON file.
+
+        Returns:
+            A `dict` being a compilation of the current state of the benchmark.
+        """
         return self.__oneseries
 
-    def is_done(self):
-        """XXX"""
+    def is_done(self) -> bool:
+        """Have all the benchmark's results been collected?
+
+        Returns:
+            `True` when all the results have been already collected. `False`
+            otherwise.
+        """
         return self.__oneseries['done']
 
     __ONESERIES_REQUIRED = ['filetype', 'id', 'tool', 'mode']
@@ -106,14 +147,21 @@ class Benchmark:
                 raise ValueError(
                     "'{}' is missing in the config".format(required))
 
-    def run(self, config, result_dir):
-        """Run the benchmark and mark it as done.
+    def run(self, config: dict, result_dir: str) -> None:
+        """Pick a runner and run the benchmark.
+
+        Please see the `lib.benchmark.runner` for details how runners execute
+        benchmarks. No matter which runner is used, in the result of succesfull
+        execution the `Benchmark` is marked as done (`Benchmark.is_done()`)
+        and the benchmark's result file
+        (`lib.common.get_benchmark_result_path()`) contains all the collected
+        results.
 
         Args:
-            config (dict): a user-provided system config
-            result_dir (str): the directory for the benchmark's results
-        Returns:
-            None
+            config: the configuration of the benchmarking system
+
+            result_dir: a directory where the intermediate and final products
+             of the benchmarking process will be stored.
         """
         self.__validate(config)
         if config.get('dummy_results', False):
@@ -126,6 +174,6 @@ class Benchmark:
         runner.run(self, config, result_dir)
         self.__oneseries['done'] = True
 
-    def skip(self):
-        """XXX"""
+    def skip(self) -> None:
+        """Mark the benchmark as done."""
         self.__oneseries['done'] = True

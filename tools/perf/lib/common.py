@@ -34,6 +34,21 @@ def json_from_file(string):
     # return the content of the file
     return {'input_file': string, 'json': data}
 
+def get_benchmark_result_path(result_dir: str, identifier: int) -> str:
+    """a path to the file with all the collected results
+
+    Args:
+        result_dir: a directory where the intermediate and final products
+          of the benchmarking process will be stored.
+
+        identifier: an identifier of `lib.benchmark.base.Benchmark` you
+          are looking for.
+
+    Returns:
+        The path to the file with all the collected results.
+    """
+    return os.path.join(result_dir, 'benchmark_{}.json'.format(str(identifier)))
+
 def uniq(elems):
     """Generate a set of unique objects"""
     output = {}
