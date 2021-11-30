@@ -5,8 +5,10 @@
 #
 
 #
-# base.py -- a single benchmark object (EXPERIMENTAL)
+# base.py
 #
+
+"""a single benchmark object (EXPERIMENTAL)"""
 
 import os
 from copy import deepcopy
@@ -32,7 +34,7 @@ class Benchmark:
         """Generate a set of unique benchmarks"""
         output = [cls(oneseries, figure, index)
             for figure in figures
-                for index, oneseries in enumerate(figure.series_in)
+                for index, oneseries in enumerate(figure.series)
         ]
         return uniq(output)
 
@@ -43,40 +45,45 @@ class Benchmark:
     def __eq__(self, other):
         """A comparison function"""
         # Benchmark is defined also by its requirements.
-        if self.__req != other.__req:
+        if self.requirements != other.requirements:
             return False
         # a complete list of all keys from both objects (without duplicates)
-        keys = list(set([*self.__oneseries.keys(), *other.__oneseries.keys()]))
+        keys = list(set([*self.oneseries.keys(), *other.oneseries.keys()]))
         for k in keys:
             # ignore series-specific or instance-specific keys
             if k == 'id':
                 continue
-            sv = self.__oneseries.get(k, None)
-            ov = other.__oneseries.get(k, None)
-            if sv != ov:
+            self_value = self.oneseries.get(k, None)
+            other_value = other.oneseries.get(k, None)
+            if self_value != other_value:
                 return False
         return True
 
-    def set_id(self, id):
-        """Set an instance id"""
-        self.__oneseries['id'] = id
-        if self.__figure is not None:
-            self.__figure.set_series_id(self.__series_index, id)
-
-    def get_id(self):
+    @property
+    def identifier(self):
         """Get the instance id"""
         return self.__oneseries.get('id', None)
+
+    @identifier.setter
+    def identifier(self, value):
+        """Set an instance id"""
+        self.__oneseries['id'] = value
+        if self.__figure is not None:
+            self.__figure.set_series_identifier(self.__series_index, value)
 
     def get_output_file(self, result_dir):
         """Get the output file path"""
         return os.path.join(result_dir,
-            'benchmark_' + str(self.get_id()) + '.json')
+            'benchmark_' + str(self.identifier) + '.json')
 
     @property
     def oneseries(self):
+        """XXX"""
         return deepcopy(self.__oneseries)
 
-    def get_requirements(self):
+    @property
+    def requirements(self):
+        """XXX"""
         return deepcopy(self.__req)
 
     def cache(self):
@@ -84,18 +91,21 @@ class Benchmark:
         return self.__oneseries
 
     def is_done(self):
+        """XXX"""
         return self.__oneseries['done']
 
-    ONESERIES_REQUIRED = ['filetype', 'id', 'tool', 'mode']
-    CONFIG_REQUIRED = ['server_ip']
+    __ONESERIES_REQUIRED = ['filetype', 'id', 'tool', 'mode']
+    __CONFIG_REQUIRED = ['server_ip']
 
     def __validate(self, config):
-        for required in self.ONESERIES_REQUIRED:
+        for required in self.__ONESERIES_REQUIRED:
             if required not in self.__oneseries:
-                raise ValueError("'{}' is missing in the figure".format(required))
-        for required in self.CONFIG_REQUIRED:
+                raise ValueError(
+                    "'{}' is missing in the figure".format(required))
+        for required in self.__CONFIG_REQUIRED:
             if required not in config:
-                raise ValueError("'{}' is missing in the config".format(required))
+                raise ValueError(
+                    "'{}' is missing in the config".format(required))
 
     def run(self, config, result_dir):
         """Run the benchmark and mark it as done.
@@ -118,4 +128,5 @@ class Benchmark:
         self.__oneseries['done'] = True
 
     def skip(self):
+        """XXX"""
         self.__oneseries['done'] = True
