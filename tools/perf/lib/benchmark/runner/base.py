@@ -18,10 +18,9 @@ class BaseRunner:
     }
 
     @classmethod
-    def run(cls, benchmark, config, result_dir):
+    def run(cls, benchmark, config, idfile):
         """XXX"""
         # XXX DUMP_CMDS?
-        idfile = benchmark.get_output_file(result_dir)
         runner_cls = cls.RUNNERS.get(benchmark.oneseries['tool'], None)
         if runner_cls is None:
             raise NotImplementedError()

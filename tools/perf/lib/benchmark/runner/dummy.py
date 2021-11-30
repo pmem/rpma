@@ -21,14 +21,14 @@ class Dummy:
         return {k: random.randint(0, 10) for k in keys}
 
     @classmethod
-    def run(cls, benchmark, _, result_dir):
+    def run(cls, benchmark, _, idfile):
         """Run the benchmark process.
 
         Args:
             cls (Dummy): the Dummy class itself
             benchmark (..benchmark.Benchmark): the main benchmark object
             _: (ignored)
-            result_dir (str): the directory for the benchmark's results
+            idfile (str): XXX
         Returns:
             None
         """
@@ -39,6 +39,5 @@ class Dummy:
             }
         else:
             output = [cls.__random_point() for _ in range(3)]
-        with open(benchmark.get_output_file(result_dir), 'w',
-                  encoding='utf-8') as file:
+        with open(idfile, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4)
