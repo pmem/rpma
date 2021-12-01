@@ -17,4 +17,5 @@ add_cstyle_pep8(tools_perf
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/remote_cmd.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/figure/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/*.py
-	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/runner/*.py)
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/runner/*.py
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/report/*.py)
