@@ -6,6 +6,7 @@
 
 """ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
+from datetime import datetime
 from os.path import join
 from shutil import which
 from ...common import json_from_file
@@ -48,10 +49,10 @@ class IbReadRunner:
         self.__config = config
         self.__idfile = idfile
         # pick the settings predefined for the chosen mode
-        mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.SETTINGS_BY_MODE.get(mode, None)
+        self.__mode = self.__benchmark.oneseries['mode']
+        self.__settings = self.SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
-            raise NotImplementedError(UNKNOWN_MODE_MSG.format(mode))
+            raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
         # find the x-axis key
         self.__x_key = None
         for x_key in self.X_KEYS:
@@ -59,7 +60,7 @@ class IbReadRunner:
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
-            raise NotImplementedError(NO_X_AXIS_MSG.format(mode))
+            raise NotImplementedError(NO_X_AXIS_MSG.format(self.__mode))
         # load the already collected results
         try:
             self.__results = json_from_file(idfile)
@@ -106,8 +107,16 @@ class IbReadRunner:
         """check if the result for a given x value is already collected"""
         # XXX
 
+    def __set_log_files_names(self):
+        """set names of log files"""
+        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S-%f")
+        name = '/tmp/ib_read_{}-{}'.format(self.__mode, time_stamp)
+        self.__settings['logfile_server'] = name + '-server.log'
+        self.__settings['logfile_client'] = name + '-client.log'
+
     def run(self):
         """run the benchmarking sequence"""
+        self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
