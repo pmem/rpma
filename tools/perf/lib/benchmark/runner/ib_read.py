@@ -48,6 +48,7 @@ class IbReadRunner:
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
+        self.__server = None
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.SETTINGS_BY_MODE.get(self.__mode, None)
@@ -80,14 +81,29 @@ class IbReadRunner:
             args.append('--perform_warm_up')
         return args
 
-    def __server_start(self, _settings):
-        # XXX start a server on the remote side (using RemoteCmd)
-        # keep an object allowing to control the server on the remote side
-        pass
+    def __server_start(self, settings):
+        """Start the server on the remote side (using RemoteCmd)
+           and keep an object allowing to control the server.
+        """
+        print('[size: {}, threads: {}, tx_depth: {}, iters: {}] '\
+              '(duration: ~60s)'
+              .format(settings['bs'], settings['threads'],
+                      settings['iodepth'], settings['iterations']))
+        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        r_ib_path = join(self.__config['REMOTE_IB_PATH'], settings['ib_tool'])
+        r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *settings['args']]
 
-    def __server_stop(self, _settings):
-        # XXX check the server is stopped
-        pass
+        args = ['numactl', '-N', r_numa_n, r_ib_path, *r_aux_params]
+        # XXX add option to dump the command
+        self.__server = RemoteCmd.run_async(self.__config, args, None)
+
+    def __server_stop(self, settings):
+        """wait until server finishes"""
+        self.__server.wait()
+        stdout = self.__server.stdout.read().decode().strip()
+        stderr = self.__server.stderr.read().decode().strip()
+        with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
+            log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
     def __client_run(self, _settings):
         # XXX run the client (locally) and wait till the end of execution
