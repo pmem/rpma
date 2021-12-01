@@ -6,7 +6,7 @@
 
 """test_lines2str.py -- lib.kvtable.lines2str() tests"""
 
-import lib.kvtable
+import lib.report.utils
 import pytest
 
 DUMMY_STR = "dummy"
@@ -29,10 +29,10 @@ DUMMY_LIST_STR_CUSTOM = "adefbbdefccc"
     (DUMMY_LIST, DUMMY_LIST_STR_DEFAULT)])
 def test_sep_default(arg, expected):
     """test lines2str() with the default separator value"""
-    output = lib.kvtable.lines2str(arg)
+    output = lib.report.utils.lines2str(arg)
     assert output == expected
 
 def test_sep_custom():
     """test lines2str() with a custom separator value"""
-    output = lib.kvtable.lines2str(DUMMY_LIST, CUSTOM_SEP)
+    output = lib.report.utils.lines2str(DUMMY_LIST, CUSTOM_SEP)
     assert output == DUMMY_LIST_STR_CUSTOM
