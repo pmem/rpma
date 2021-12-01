@@ -6,6 +6,7 @@
 
 """ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
+from datetime import datetime
 from os.path import join
 from shutil import which
 from ...common import json_from_file
@@ -66,6 +67,7 @@ class IbReadRunner:
         except FileNotFoundError:
             self.__results = {}
         self.__validate()
+        self.__mode = mode
 
     def __common_args(self, settings):
         """append arguments common for server and client"""
@@ -106,8 +108,18 @@ class IbReadRunner:
         """check if the result for a given x value is already collected"""
         # XXX
 
+    def __set_log_files_names(self):
+        """set names of log files"""
+        time_stamp = str(datetime.now())
+        time_stamp = time_stamp.replace(' ', '-')
+        time_stamp = time_stamp.replace('.', '-')
+        name = '/tmp/ib_read_{}-{}'.format(self.__mode, time_stamp)
+        self.__settings['logfile_server'] = name + '-server.log'
+        self.__settings['logfile_client'] = name + '-client.log'
+
     def run(self):
         """run the benchmarking sequence"""
+        self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
