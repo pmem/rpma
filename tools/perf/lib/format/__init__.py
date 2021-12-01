@@ -9,3 +9,4 @@
 from .fio import FioFormat
 from .ib_read_bw import IbReadBwFormat
 from .ib_read_lat import IbReadLatFormat
+from .csv2standard import Csv2Standard
