@@ -9,7 +9,7 @@
 import json
 import random
 
-import lib.benchmark.runner
+import lib.benchmark
 
 DUMMY_STR = 'dummy'
 DUMMY_RANDOM = 138
@@ -32,9 +32,10 @@ def test_dummy_results(benchmark_dummy, tmpdir, monkeypatch):
         return DUMMY_RANDOM
     monkeypatch.setattr(random, 'randint', randint_mock)
     monkeypatch.setattr(json, 'dump', dump_mock)
-    lib.benchmark.runner.Dummy.run(benchmark_dummy, None, str(tmpdir))
+    output = lib.benchmark.get_result_path(str(tmpdir),
+                                           benchmark_dummy.identifier)
+    lib.benchmark.runner.Dummy.run(benchmark_dummy, None, output)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark_dummy.is_done()
-    output = benchmark_dummy.get_output_file(str(tmpdir))
     with open(output, mode='r', encoding='utf-8') as file:
         assert DUMMY_STR == file.read()
