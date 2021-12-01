@@ -81,7 +81,7 @@ class Comparison:
         """combine series from all figures involved into a single figure"""
         benchlines = []
         for name, figure in self._figures.items():
-            for oneseries in figure.series:
+            for oneseries in figure.results:
                 benchline = {}
                 benchline['label'] = '{} {}'.format(name, oneseries['label'])
                 benchline['group'] = name
