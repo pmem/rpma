@@ -130,36 +130,39 @@ class IbReadRunner:
     X_KEYS = ['threads', 'bs', 'iodepth']
 
     SETTINGS_BY_MODE = {
-        'lat': {
-            'ib_tool': 'ib_read_lat',
+        'bw-bs': {
+            'ib_tool': 'ib_read_bw',
             'threads': 1,
             'bs': BS_VALUES,
-            'iodepth': 1,
-            # values measured empirically, so that duration was ~60s
-            'iterations': {
-                256:    27678723,
-                1024:   27678723,
-                4096:   20255739,
-                8192:   16778088,
-                16384:  11423082,
-                32768:  8138946,
-                65536:  6002473,
-                131072: 3600000,
-                262144: 2100000
-            }
-        },
-        'bw-th': {
-            'ib_tool': 'ib_read_bw',
-            'threads': [1, 2, 4, 8, 12],
-            'bs': 4096,
             'iodepth': 2,
             # values measured empirically, so that duration was ~60s
             'iterations': {
-                1: 16527218,
-                2: 32344690,
-                4: 61246542,
-                8: 89456698,
-                12: 89591370
+                256: 48336720,
+                1024: 48336720,
+                4096: 34951167,
+                8192: 24475088,
+                16384: 23630690,
+                32768: 8299603,
+                65536: 5001135,
+                131072: 4800000,
+                262144: 2600000
+            }
+        },
+        'bw-dp-exp': {
+            'ib_tool': 'ib_read_bw',
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': [1, 2, 4, 8, 16, 32, 64, 128],
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                1:   20769620,
+                2:   30431214,
+                4:   45416656,
+                8:   65543498,
+                16:  85589536,
+                32:  100000000,
+                64:  100000000,
+                128: 100000000
             }
         },
         'bw-dp-lin': {
@@ -181,39 +184,36 @@ class IbReadRunner:
                 10: 68566797
             }
         },
-        'bw-dp-exp': {
+        'bw-th': {
             'ib_tool': 'ib_read_bw',
-            'threads': 1,
+            'threads': [1, 2, 4, 8, 12],
             'bs': 4096,
-            'iodepth': [1, 2, 4, 8, 16, 32, 64, 128],
-            # values measured empirically, so that duration was ~60s
-            'iterations': {
-                1:   20769620,
-                2:   30431214,
-                4:   45416656,
-                8:   65543498,
-                16:  85589536,
-                32:  100000000,
-                64:  100000000,
-                128: 100000000
-            }
-        },
-        'bw-bs': {
-            'ib_tool': 'ib_read_bw',
-            'threads': 1,
-            'bs': BS_VALUES,
             'iodepth': 2,
             # values measured empirically, so that duration was ~60s
             'iterations': {
-                256: 48336720,
-                1024: 48336720,
-                4096: 34951167,
-                8192: 24475088,
-                16384: 23630690,
-                32768: 8299603,
-                65536: 5001135,
-                131072: 4800000,
-                262144: 2600000
+                1: 16527218,
+                2: 32344690,
+                4: 61246542,
+                8: 89456698,
+                12: 89591370
+            }
+        },
+        'lat': {
+            'ib_tool': 'ib_read_lat',
+            'threads': 1,
+            'bs': BS_VALUES,
+            'iodepth': 1,
+            # values measured empirically, so that duration was ~60s
+            'iterations': {
+                256:    27678723,
+                1024:   27678723,
+                4096:   20255739,
+                8192:   16778088,
+                16384:  11423082,
+                32768:  8138946,
+                65536:  6002473,
+                131072: 3600000,
+                262144: 2100000
             }
         }
     }
