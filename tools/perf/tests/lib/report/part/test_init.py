@@ -8,10 +8,10 @@
 
 import copy
 import json
-import lib.kvtable
+import lib.report.variable
 import pytest
 
-from lib.Part import Part
+from lib.report.part import Part
 
 NAME_DUMMY = 'dummy'
 TEMPLATE_DUMMY = 'dummy'
@@ -35,6 +35,8 @@ class EnvMock:
         assert name == 'part_' + NAME_DUMMY + '.md'
         return TEMPLATE_DUMMY
 
+    loader = LoaderMock()
+
 def object_cmp(obj1, obj2):
     """compare objects by stringification"""
     dump1 = json.dumps(obj1, sort_keys=True)
@@ -49,7 +51,7 @@ def test_empty(input_json, expected_constants, monkeypatch):
         assert arg == SOURCE_DUMMY
         return input_json
     monkeypatch.setattr(json, 'loads', loads_mock)
-    part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
+    part = Part(EnvMock(), NAME_DUMMY)
     assert object_cmp(part.constants, expected_constants)
 
 JSON_NESTED = {
@@ -94,7 +96,7 @@ COMMON_DUMMY_WITH_LIST = {
     VAR_DUMMY_3: STR_LIST_DUMMY_3
 }
 
-STRING_DUMMY_3_CONCAT = 'jlkfsdlkjrwklj'
+STRING_DUMMY_3_CONCAT = '\n'.join(STR_LIST_DUMMY_3)
 
 COMMON_DUMMY_WITH_LIST_PROCESSED = {
     VAR_DUMMY_3: STRING_DUMMY_3_CONCAT
@@ -145,7 +147,7 @@ def test_nested_misc(input_json, expected_constants, monkeypatch):
         assert arg == SOURCE_DUMMY
         return input_json
     monkeypatch.setattr(json, 'loads', loads_mock)
-    part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
+    part = Part(EnvMock(), NAME_DUMMY)
     assert object_cmp(part.constants, expected_constants)
 
 @pytest.mark.parametrize('input_json,expected_constants', [
@@ -173,8 +175,8 @@ def test_nested_lines_misc(input_json, expected_constants, monkeypatch):
     # A function when imported becomes a part of the module. So, to mock
     # lib.kvtable.lines2str, the mock has to point where the function was
     # imported instead of the source module.
-    monkeypatch.setattr(lib.Part, 'lines2str', lines2str_mock)
-    part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
+    monkeypatch.setattr(lib.report.variable, 'lines2str', lines2str_mock)
+    part = Part(EnvMock(), NAME_DUMMY)
     assert object_cmp(part.constants, expected_constants)
 
 TYPE_INVALID = {
@@ -189,7 +191,7 @@ def test_type_invalid(monkeypatch):
         return json_nested(None, TYPE_INVALID)
     monkeypatch.setattr(json, 'loads', loads_mock)
     with pytest.raises(ValueError):
-        _ = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
+        _ = Part(EnvMock(), NAME_DUMMY)
 
 KVTABLE_DUMMY = {
     'type': 'kvtable',
@@ -231,7 +233,7 @@ def test_nested_kvtable_misc(input_json, expected_env, expected_constants,
         return KVTABLE_OUTPUT_DUMMY
     monkeypatch.setattr(json, 'loads', loads_mock)
     # A function when imported becomes a part of the module.
-    monkeypatch.setattr(lib.Part, 'lines2str', lines2str_mock)
-    monkeypatch.setattr(lib.Part, 'dict2kvtable', dict2kvtable_mock)
-    part = Part(LoaderMock(), EnvMock(), NAME_DUMMY)
+    monkeypatch.setattr(lib.report.variable, 'lines2str', lines2str_mock)
+    monkeypatch.setattr(lib.report.variable, 'dict2kvtable', dict2kvtable_mock)
+    part = Part(EnvMock(), NAME_DUMMY)
     assert object_cmp(part.constants, expected_constants)

@@ -288,11 +288,11 @@ class Figure:
         Combine a figure's PNG file (`Figure.to_png()`) and `Figure.results`
         rendered as a HTML table (`lib.figure.html.data_table()`) to create
         a single HTML snippet which can be incorporated into the final
-        `lib.Part.Part` and `lib.Report.Report`.
+        `lib.report.part.Part` and `lib.report.base.Report`.
 
         Args:
             figno: an identifier of the figure within the final
-              `lib.Report.Report`.
+              `lib.report.base.Report`.
 
         Returns:
             A str containing the generated HTML.
