@@ -8,12 +8,13 @@
 # base.py
 #
 
-"""a report object (EXPERIMENTAL)"""
+"""generating a report (EXPERIMENTAL)"""
 
 import os
 import shutil
 from copy import deepcopy
 import markdown2
+import jinja2
 
 from .part import Part
 from ..common import escape
@@ -26,8 +27,32 @@ def __preprocess_config_table(table, variables):
     table['type'] = 'kvtable'
     table[__TESTING_DATE] = variables['test_date']
 
-def preprocess_vars(variables):
-    """XXX"""
+def preprocess_vars(variables: dict) -> dict:
+    """Preprocess provided textual content
+
+    **Note**: The `variable` in the description below means what on the input
+    is provided under `variable['json']`. The `variables['input_file']` is
+    omitted.
+
+    - merging `variable['authors']` list into a list of authors each prepended
+      with `- `.
+    - escaping (`lib.common.escape()`):
+      - `variable['ref']`
+      - `variables['configuration']['security']`
+      - `variables['configuration']['description']`
+    - all known tables are:
+      - extended by additional row remainding the test date and
+      - being prepare for further processing
+        (`lib.report.variable.dict2kvtable()`)
+
+    Args:
+        variables: provided textual content read from the JSON file where
+          `variables['input_file']` is the name of the input JSON file and
+          `variables['json']` is the content to be processed.
+
+    Returns:
+        The preprocessed `variables`.
+    """
     input_file = variables['input_file']
     variables = variables['json']
     missing = None
@@ -74,7 +99,7 @@ def preprocess_vars(variables):
     return variables
 
 class Report:
-    """A report object"""
+    """A single report"""
 
     def __load_parts(self, env, bench):
         parts = []
@@ -99,6 +124,9 @@ class Report:
         return parts
 
     def __load_figures(self, bench):
+        """combine all bench's `lib.figure.base.Figure` objects. Please see
+        `Report.figures`.
+        """
         figures = {}
         for figure in bench.figures:
             # add to 2-level figure dictionary
@@ -108,7 +136,7 @@ class Report:
         return figures
 
     # a global figure counter needed for numbering figures within the report
-    figno = 0
+    __FIGNO = 0
 
     def __add_filters(self):
         """add custom filters to the environment
@@ -120,12 +148,19 @@ class Report:
         assign numbers to the figures.
         """
         def figure_filter(figure):
-            """XXX"""
-            Report.figno += 1
-            return figure.to_html(Report.figno)
+            """assign the number and render `lib.figure.base.Figure`"""
+            Report.__FIGNO += 1
+            return figure.to_html(Report.__FIGNO)
         self.__env.filters['figure'] = figure_filter
 
-    def __init__(self, env, bench, variables):
+    def __init__(self, env: jinja2.Environment, bench, variables: dict) \
+        -> 'Report':
+        """
+        Args:
+            env: an initialized Jinja2 Environment allowing loading templates
+            bench: a benchmarking control object
+            variables: textual contents to be merged into the report's templates
+        """
         self.__env = env # jinja2.Environment
         self.__add_filters()
         self.__variables = preprocess_vars(variables)
@@ -134,13 +169,21 @@ class Report:
         self.__parts = self.__load_parts(env, bench)
 
     @property
-    def variables(self):
-        """XXX"""
+    def variables(self) -> dict:
+        """(a copy of) preprocessed (`preprocess_vars()`) `variables` provided
+        during the initialization of the `Report` object. It provides textual
+        contents to be merged into the report's templates.
+        """
         return deepcopy(self.__variables)
 
     @property
-    def figures(self):
-        """XXX"""
+    def figures(self) -> dict:
+        """(a copy of) all `Report`'s `lib.figure.base.Figure` objects combined
+        into 2-level dictionary where keys are:
+
+        1. `lib.figure.base.Figure.file`
+        2. `lib.figure.base.Figure.key`
+        """
         return deepcopy(self.__figures)
 
     def __create_menu(self):
@@ -157,8 +200,16 @@ class Report:
         html = markdown2.markdown(markdown)
         return html
 
-    def create(self, output):
-        """Generate a report and write it to the output file"""
+    def create(self, output: str) -> None:
+        """Generate a report and write it to the output file.
+
+        The report is written down to a file `output`.html file which is created
+        into a `lib.bench.Bench.result_dir` directory. The `bench` is provided
+        when the `Report` object is created.
+
+        Args:
+            output: a name of the output file without the extension.
+        """
         variables = {}
         variables['menu'] = self.__create_menu()
         variables['header'] = self.__create_header()
