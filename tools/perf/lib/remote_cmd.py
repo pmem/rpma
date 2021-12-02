@@ -4,8 +4,13 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""remote_cmd.py -- running commands on remote node over SSH (EXPERIMENTAL)"""
+#
+# remote_cmd.py
+#
 
+"""running commands on remote node over SSH (EXPERIMENTAL)"""
+
+from typing import Union
 import paramiko as para
 from scp import SCPClient
 
@@ -18,14 +23,14 @@ class RemoteCmd:
         self.stderr = stderr
         self.exit_status = None
 
-    def wait(self):
+    def wait(self) -> None:
         """wait for the command to finish"""
         self.exit_status = self.stdout.channel.recv_exit_status()
         self.ssh_client.close()
         self.ssh_client = None
 
     @classmethod
-    def __connect_to_host(cls, config):
+    def __connect_to_host(cls, config: dict) -> para.SSHClient:
         """connect to remote host"""
         kwargs = {}
         kwargs['username'] = config.get('REMOTE_USER', None)
@@ -38,8 +43,15 @@ class RemoteCmd:
         return ssh_client
 
     @classmethod
-    def copy_to_remote(cls, config, files, remote_dir):
-        """copy file to remote host"""
+    def copy_to_remote(cls, config: dict, files: Union[list, str],
+                       remote_dir: str) -> None:
+        """copy file(s) to remote host
+
+        Args:
+            config: the configuration of the benchmarking system
+            files: path of a file to copy or list of paths
+            remote_dir: remote directory path
+        """
         ssh_client = cls.__connect_to_host(config)
 
         scp = SCPClient(ssh_client.get_transport())
@@ -48,8 +60,21 @@ class RemoteCmd:
         ssh_client.close()
 
     @classmethod
-    def run_sync(cls, config, cmd, env=None, raise_on_error=False):
-        """run a remote command and wait till it is done"""
+    def run_sync(cls, config: dict, cmd: Union[list, str], env: dict,
+                 raise_on_error : bool =False) -> 'RemoteCmd':
+        """run a remote command and wait till it is done
+
+        Calls `RemoteCmd.run_async()` + `RemoteCmd.wait()`.
+
+        Args:
+            config: the configuration of the benchmarking system
+            cmd: a command to run on a remote node
+            env: an environment for the command
+            raise_on_error: raise an error when `exit_status` is nonzero
+
+        Returns:
+            A `RemoteCmd` object allowing to read the results of execution.
+        """
         remote_cmd = cls.run_async(config, cmd, env)
         remote_cmd.wait()
         if raise_on_error:
@@ -58,8 +83,19 @@ class RemoteCmd:
         return remote_cmd
 
     @classmethod
-    def run_async(cls, config, cmd, env=None):
-        """run a remote command and return a control object"""
+    def run_async(cls, config: dict, cmd: Union[list, str],
+                  env: dict = None) -> 'RemoteCmd':
+        """run a remote command and return a control object
+
+        Args:
+            config: the configuration of the benchmarking system
+            cmd: a command to run on a remote node
+            env: an environment for the command
+
+        Returns:
+            A `RemoteCmd` object allowing to wait for the command to end
+            (`RemoteCmd.wait()`) and read the results of execution.
+        """
         ssh_client = cls.__connect_to_host(config)
         if isinstance(cmd, list):
             cmd = ' '.join(cmd)
