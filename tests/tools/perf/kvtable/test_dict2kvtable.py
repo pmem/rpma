@@ -4,9 +4,9 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""test_dict2kvtable.py -- lib.kvtable.dict2kvtable() tests"""
+"""test_dict2kvtable.py -- lib.report.utils.dict2kvtable() tests"""
 
-import lib.kvtable
+import lib.report.utils
 
 HEADER = '<tr><th>Item</th><th>Description</th></tr></thead><tbody>'
 START = '<table><thead>'
@@ -24,12 +24,12 @@ EMPTY_KVTABLE = {"type": "kvtable"}
 
 def test_empty_empty():
     """produce an empty table"""
-    output = lib.kvtable.dict2kvtable(EMPTY_KVTABLE, {})
+    output = lib.report.utils.dict2kvtable(EMPTY_KVTABLE, {})
     assert(output == EMPTY)
 
 def test_simple():
     """produce a simple table n -> (n + 1)"""
     kvt = {str(k): str(k + 1) for k in range(SIMPLE_RANGE)}
     kvt["type"] = "kvtable"
-    output = lib.kvtable.dict2kvtable(kvt, {})
+    output = lib.report.utils.dict2kvtable(kvt, {})
     assert(output == SIMPLE)
