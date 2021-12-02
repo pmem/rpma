@@ -4,7 +4,11 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""fio.py -- the FIO runner (EXPERIMENTAL)"""
+#
+# fio.py
+#
+
+"""the FIO runner (EXPERIMENTAL)"""
 
 from os.path import join
 from shutil import which
@@ -16,7 +20,11 @@ UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
 
 class FioRunner:
-    """the FIO runner"""
+    """the FIO runner
+
+    The runner executes directly the `fio` binary on both ends of
+    the connection.
+    """
 
     def __validate(self):
         """validate the object and readiness of the env"""
@@ -37,10 +45,7 @@ class FioRunner:
             raise ValueError("cannot find the remote fio: {}"
                              .format(fio_local_path))
 
-
-
-    def __init__(self, benchmark, config, idfile):
-        """create the object"""
+    def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
         self.__benchmark = benchmark
         self.__config = config
@@ -57,12 +62,12 @@ class FioRunner:
             raise ValueError(UNKNOWN_RW_MSG.format(readwrite))
         # pick the settings predefined for the chosen mode
         mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.SETTINGS_BY_MODE.get(mode, None)
+        self.__settings = self.__SETTINGS_BY_MODE.get(mode, None)
         if not isinstance(self.__settings, dict):
             raise NotImplementedError(UNKNOWN_MODE_MSG.format(mode))
         # find the x-axis key
         self.__x_key = None
-        for x_key in self.X_KEYS:
+        for x_key in self.__X_KEYS:
             if isinstance(self.__settings.get(x_key), list):
                 self.__x_key = x_key
                 break
@@ -129,7 +134,7 @@ class FioRunner:
         # XXX check the server is stopped
         pass
 
-    TIME = {
+    __TIME = {
         'short': {
             'ramp': 0,
             'run': 10,
@@ -143,7 +148,7 @@ class FioRunner:
     def __client_run(self, settings):
         # pylint: disable=unused-variable
         short_runtime = self.__config.get('SHORT_RUNTIME', False)
-        time = self.TIME['short' if short_runtime else 'full']
+        time = self.__TIME['short' if short_runtime else 'full']
         args = []
         env = {
             'serverip': self.__config['server_ip'],
@@ -173,8 +178,16 @@ class FioRunner:
         """check if the result for a given x value is already collected"""
         # XXX
 
-    def run(self):
-        """run the benchmarking sequence"""
+    def run(self) -> None:
+        """collects the `benchmark` results using `fio`
+
+        For each of the x values:
+
+        1. starts the `fio` server on the remote side.
+        2. starts and waits for the `fio` client to the end.
+            - the results are collected and written to the `idfile` file.
+        3. stops the `fio` server on the remote side.
+        """
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
@@ -189,9 +202,9 @@ class FioRunner:
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
 
-    X_KEYS = ['threads', 'bs', 'iodepth']
+    __X_KEYS = ['threads', 'bs', 'iodepth']
 
-    SETTINGS_BY_MODE = {
+    __SETTINGS_BY_MODE = {
         'lat': {
             'threads': 1,
             'bs': BS_VALUES,

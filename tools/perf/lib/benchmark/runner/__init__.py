@@ -4,7 +4,16 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""__init__.py -- required for python imports"""
+#
+# __init__.py -- required for python imports
+#
+
+"""Executing the benchmarking process related to a single series
+
+Taking into account many circumstances `lib.benchmark.base.Benchmark` may
+choose to collect the results using one of available runners. Please see
+`lib.benchmark.base.Benchmark.run()` for details.
+"""
 
 from .base import BaseRunner
 from .bash import Bash

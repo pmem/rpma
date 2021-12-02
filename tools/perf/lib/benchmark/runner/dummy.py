@@ -4,13 +4,20 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""dummy.py -- a dummy benchmark runner (EXPERIMENTAL)"""
+#
+# dummy.py
+#
+
+"""a dummy benchmark runner (EXPERIMENTAL)"""
 
 import json
 import random
 
 class Dummy:
-    """A dummy benchmark runner"""
+    """A dummy benchmark runner
+
+    When no actual results are expected.
+    """
 
     @staticmethod
     def __random_point():
@@ -21,16 +28,14 @@ class Dummy:
         return {k: random.randint(0, 10) for k in keys}
 
     @classmethod
-    def run(cls, benchmark, _, idfile):
-        """Run the benchmark process.
+    def run(cls, benchmark, _, idfile: str) -> None:
+        """Generate random results
 
         Args:
-            cls (Dummy): the Dummy class itself
-            benchmark (..benchmark.Benchmark): the main benchmark object
-            _: (ignored)
-            idfile (str): XXX
-        Returns:
-            None
+            benchmark: the `lib.benchmark.base.Benchmark` object that has
+              ordered running a series.
+            _: ignored.
+            idfile: the output file to store the results.
         """
         if 'rw' in benchmark.oneseries and 'rw' in benchmark.oneseries['rw']:
             output = {

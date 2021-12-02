@@ -4,7 +4,11 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""ib_read.py -- the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
+#
+# ib_read.py
+#
+
+"""the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
 from os.path import join
 from shutil import which
@@ -13,16 +17,20 @@ from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
 
 class IbReadRunner:
-    """the ib_read_{lat,bw} tools runner"""
+    """the ib_read_{lat,bw} tools runner
 
-    ONESERIES_REQUIRED = {
+    The runner executes directly either the `ib_read_lat` or `ib_read_bw` binary
+    on both ends of the connection.
+    """
+
+    __ONESERIES_REQUIRED = {
         'rw': 'read',
         'filetype': 'malloc'
     }
 
     def __validate(self):
         """validate the object and readiness of the env"""
-        for key, value in self.ONESERIES_REQUIRED.items():
+        for key, value in self.__ONESERIES_REQUIRED.items():
             if key not in self.__benchmark.oneseries:
                 raise ValueError(
                     "the following key is missing in the figure: {}"
@@ -43,18 +51,17 @@ class IbReadRunner:
                              .format(self.__settings['ib_tool']))
 
     def __init__(self, benchmark, config, idfile):
-        """create a ib_read_* runner object"""
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
         # pick the settings predefined for the chosen mode
         mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.SETTINGS_BY_MODE.get(mode, None)
+        self.__settings = self.__SETTINGS_BY_MODE.get(mode, None)
         if not isinstance(self.__settings, dict):
             raise NotImplementedError(UNKNOWN_MODE_MSG.format(mode))
         # find the x-axis key
         self.__x_key = None
-        for x_key in self.X_KEYS:
+        for x_key in self.__X_KEYS:
             if isinstance(self.__settings.get(x_key), list):
                 self.__x_key = x_key
                 break
@@ -106,8 +113,21 @@ class IbReadRunner:
         """check if the result for a given x value is already collected"""
         # XXX
 
-    def run(self):
-        """run the benchmarking sequence"""
+    def run(self) -> None:
+        """collects the `benchmark` results using `ib_read_lat` or `ib_read_bw`
+
+        For each of the x values:
+
+        1. starts the `ib_read_*` server on the remote side.
+        2. starts and waits for the `ib_read_*` client to the end.
+            - the results are collected and written to the `idfile` file.
+        3. stops the `ib_read_*` server on the remote side.
+
+        Raises:
+            NotImplementedError: If the number of iterations for a given x value
+              is not set. `--iters` is used instead of `--duration` because
+              the latter produces significantly less detailed output.
+        """
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
@@ -127,9 +147,9 @@ class IbReadRunner:
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
 
-    X_KEYS = ['threads', 'bs', 'iodepth']
+    __X_KEYS = ['threads', 'bs', 'iodepth']
 
-    SETTINGS_BY_MODE = {
+    __SETTINGS_BY_MODE = {
         'bw-bs': {
             'ib_tool': 'ib_read_bw',
             'threads': 1,
