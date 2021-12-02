@@ -4,13 +4,21 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""bash.py -- a bash benchmark runner (EXPERIMENTAL)"""
+#
+# bash.py
+#
+
+"""a bash benchmark runner (EXPERIMENTAL)"""
 
 import os
 import subprocess
 
 class Bash:
-    """A bash benchmark runner"""
+    """A bash benchmark runner
+
+    This runner is always called directly by
+    `lib.benchmark.base.Benchmark.run()`.
+    """
 
     @classmethod
     def __benchmark_args(cls, oneseries, config):
@@ -48,20 +56,20 @@ class Bash:
         return output
 
     @classmethod
-    def run(cls, benchmark, config, idfile):
-        """Run the bash benchmark process.
+    def run(cls, benchmark, config, idfile) -> None:
+        """Run the `benchmark` using the external Bash scripts (`ib_read.sh` and
+        `rpma_fio_bench.sh`) accompanied by a number of accessory scripts.
 
         Args:
-            cls (Bash): the Bash class itself
-            benchmark (..benchmark.Benchmark): the main benchmark object
-            config (dict): a user-provided system config
-            idfile (str): XXX
+            benchmark: the `lib.benchmark.base.Benchmark` object that has
+              ordered running a series.
+            config: the configuration of the benchmarking system.
+            idfile: the output file to store the results.
+
         Raises:
-            ValueError: when a misconfiguration is found
+            ValueError: when a misconfiguration is found.
             CalledProcessError: when the benchmark's process returns non-zero
-                code
-        Returns:
-            None
+                code.
         """
         args = cls.__benchmark_args(benchmark.oneseries, config)
         env = cls.__get_env(config)
