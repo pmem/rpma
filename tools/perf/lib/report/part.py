@@ -8,7 +8,7 @@
 # Part.py
 #
 
-"""a single part object (EXPERIMENTAL)"""
+"""generating a part of the report (EXPERIMENTAL)"""
 
 from copy import deepcopy
 import json
@@ -19,7 +19,7 @@ import markdown2
 from .utils import lines2str, process_level
 
 class Part:
-    """A single report object"""
+    """A single part object"""
 
     def __load_constants(self) -> dict:
         try:
@@ -40,7 +40,7 @@ class Part:
     def __init__(self, env: jinja2.Environment, name: str):
         """
         Args:
-            env: allows loading and render templates
+            env: an initialized Jinja2 Environment allowing loading templates
             name: a name of the part
         """
         self.__env = env
@@ -51,8 +51,9 @@ class Part:
             self.__env.get_template('part_{}.md'.format(self.__name))
 
     @property
-    def variables(self):
-        """XXX"""
+    def variables(self) -> dict:
+        """(a copy of) preprocessed (`lib.report.variable.process_level()`)
+        `variables` providing textual contents to be merged into the part's template."""
         return deepcopy(self.__variables)
 
     @variables.setter
@@ -62,10 +63,12 @@ class Part:
 
     @property
     def constants(self):
-        """XXX"""
+        """(a copy of) preprocessed (`lib.report.variable.process_level()`)
+        textual contents loaded from `templates/part_{name}.json`. Where `name`
+        is provided during the `Part` object's initialization."""
         return deepcopy(self.__constants)
 
-    def __render(self, variables, md_to_html=True):
+    def __render(self, variables: dict, md_to_html=True) -> str:
         """
         Render the part:
         1. jinja2 markdown template
@@ -78,12 +81,12 @@ class Part:
             return html
         return markdown
 
-    def menu(self):
+    def menu(self) -> str:
         """Render the part's menu"""
         variables = dict(**self.__constants, **self.variables, **{'menu': True})
         return self.__render(variables, md_to_html=False)
 
-    def content(self):
+    def content(self) -> str:
         """Render the part's content"""
         variables = dict(**self.__constants, **self.variables)
         return self.__render(variables)
