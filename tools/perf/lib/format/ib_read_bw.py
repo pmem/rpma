@@ -4,31 +4,56 @@
 # Copyright 2020-2021, Intel Corporation
 #
 
-"""ib_read_bw.py -- helpers for handling ib_read_bw formats (EXPERIMENTAL)"""
+#
+# ib_read_bw.py
+#
+
+"""ib_read_bw output format tools (EXPERIMENTAL)"""
 
 import pandas as pd
 
 class IbReadBwFormat:
-    """handling ib_read_bw data"""
+    """handling ib_read_bw output"""
 
-    # XXX INPUT_NAMES, OUTPUT_NAMES and read_csv are needed only
+    # XXX __INPUT_NAMES, __OUTPUT_NAMES and read_csv are needed only
     # when using ib_read.sh
-    INPUT_NAMES = ['threads', 'iodepth', 'bs', 'ops', 'bw_peak', 'bw_avg',
-        'msg_rate']
+    __INPUT_NAMES = [
+        'threads', 'iodepth', 'bs', 'ops', 'bw_peak', 'bw_avg', 'msg_rate']
 
-    OUTPUT_NAMES = ['threads', 'iodepth', 'bs', 'ops', 'bw_avg']
+    __OUTPUT_NAMES = ['threads', 'iodepth', 'bs', 'ops', 'bw_avg']
 
     @classmethod
-    def read_csv(cls, filepath):
-        """read a CSV file into pandas.DataFrame"""
-        dataframe = pd.read_csv(filepath, header=0, names=cls.INPUT_NAMES)
-        dataframe = dataframe.reindex(columns=cls.OUTPUT_NAMES)
+    def read_csv(cls, filepath: str) -> pd.DataFrame:
+        # pylint: disable=no-member
+        # XXX maybe it is no longer a problem for pylint > Debian 9
+        """read a CSV file into `pandas.DataFrame`
+
+        Includes:
+
+        - rounding `bw_avg` to 2 decimal places
+        - reindex to standardized selection and order of columns
+
+        Args:
+            filepath: a path to the CSV file
+
+        Returns:
+            The adjusted `pandas.DataFrame`.
+        """
+        dataframe = pd.read_csv(filepath, header=0, names=cls.__INPUT_NAMES)
+        dataframe = dataframe.reindex(columns=cls.__OUTPUT_NAMES)
         return dataframe.apply(lambda x: round(x, 2) \
             if x.name == 'bw_avg' else x)
 
     @classmethod
-    def parse(cls, _output):
-        """parse the tool output and return a row of data"""
+    def parse(cls, _output: str) -> dict:
+        """parse the ib_read_bw output and return a row of data
+
+        Args:
+            _output: a string collected from the ib_read_bw standard output
+
+        Returns:
+            A `dict`... XXX
+        """
         # XXX
         return {
             'threads': 0,
