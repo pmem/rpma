@@ -52,8 +52,9 @@ def __label(column: str, with_better=False) -> str:
         output += '\n(' + better_by_column.get(column, column) + ')'
     return output
 
-def draw_png(argx: str, argy: str, results: list, xscale: str, output_path: str,
-             yaxis_max: int=None, suptitle: str=None, title: str=None) -> None:
+def draw_png(argx: str, argy: str, results: list, xscale: str,
+             output_path: str, yaxis_max: int = None,
+             suptitle: str = None, title: str = None) -> None:
     """draw a figure
 
     Generate a PNG file compiling all the provided results.
