@@ -4,30 +4,57 @@
 # Copyright 2020-2021, Intel Corporation
 #
 
-"""ib_read_lat.py -- helpers for handling ib_read_lat formats (EXPERIMENTAL)"""
+#
+# ib_read_lat.py
+#
+
+"""ib_read_lat output format tools (EXPERIMENTAL)"""
+
 
 import pandas as pd
 
 class IbReadLatFormat:
-    """handling ib_read_lat data"""
+    """handling ib_read_lat output"""
 
-    # XXX INPUT_NAMES, OUTPUT_NAMES and read_csv are needed only
+    # XXX __INPUT_NAMES, __OUTPUT_NAMES and read_csv are needed only
     # when using ib_read.sh
-    INPUT_NAMES = ['bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg',
-        'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9']
+    __INPUT_NAMES = [
+        'bs', 'ops', 'lat_min', 'lat_max', 'lat_mode', 'lat_avg', 'lat_stdev',
+        'lat_pctl_99.0', 'lat_pctl_99.9']
 
-    OUTPUT_NAMES = ['bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev',
+    __OUTPUT_NAMES = [
+        'bs', 'ops', 'lat_min', 'lat_max', 'lat_avg', 'lat_stdev',
         'lat_pctl_99.0', 'lat_pctl_99.9']
 
     @classmethod
-    def read_csv(cls, filepath):
-        """read a CSV file into pandas.DataFrame"""
-        dataframe = pd.read_csv(filepath, header=0, names=cls.INPUT_NAMES)
-        return dataframe.reindex(columns=cls.OUTPUT_NAMES)
+    def read_csv(cls, filepath: str) -> pd.DataFrame:
+        # pylint: disable=no-member
+        # XXX maybe it is no longer a problem for pylint > Debian 9
+        """read a CSV file into `pandas.DataFrame`
+
+        Includes:
+
+        - reindex to standardized selection and order of columns
+
+        Args:
+            filepath: a path to the CSV file
+
+        Returns:
+            The `pandas.DataFrame`.
+        """
+        dataframe = pd.read_csv(filepath, header=0, names=cls.__INPUT_NAMES)
+        return dataframe.reindex(columns=cls.__OUTPUT_NAMES)
 
     @classmethod
     def parse(cls, _output):
-        """parse the tool output and return a row of data"""
+        """parse the ib_read_lat output and return a row of data
+
+        Args:
+            _output: a string collected from the ib_read_lat standard output
+
+        Returns:
+            A `dict`... XXX
+        """
         # XXX
         return {
             'bs': 0,
