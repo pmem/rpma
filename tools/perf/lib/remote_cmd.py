@@ -48,14 +48,17 @@ class RemoteCmd:
         ssh_client.close()
 
     @classmethod
-    def run_sync(cls, config, cmd, env):
+    def run_sync(cls, config, cmd, env=None, raise_on_error=False):
         """run a remote command and wait till it is done"""
         remote_cmd = cls.run_async(config, cmd, env)
         remote_cmd.wait()
+        if raise_on_error:
+            if remote_cmd.exit_status != 0:
+                raise ValueError(remote_cmd.stderr.read())
         return remote_cmd
 
     @classmethod
-    def run_async(cls, config, cmd, env):
+    def run_async(cls, config, cmd, env=None):
         """run a remote command and return a control object"""
         ssh_client = cls.__connect_to_host(config)
         if isinstance(cmd, list):
