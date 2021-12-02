@@ -112,6 +112,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env TEST_BUILD=$TEST_BUILD \
 	--env DEFAULT_TEST_DIR=/dev/shm \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
+	--env TEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS:-ON} \
 	--env CHECK_CSTYLE=${CHECK_CSTYLE:-ON} \
 	--env FAULT_INJECTION=$FAULT_INJECTION \
 	--env CC=${CC:-gcc} \
