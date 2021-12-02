@@ -4,24 +4,39 @@
 # Copyright 2021, Intel Corporation
 #
 
-"""base.py -- the base benchmark runner (EXPERIMENTAL)"""
+#
+# base.py
+#
+
+"""the base benchmark runner (EXPERIMENTAL)"""
 
 from .fio import FioRunner
 from .ib_read import IbReadRunner
 
 class BaseRunner:
-    """XXX"""
+    """The base benchmark runner
 
-    RUNNERS = {
+    Depending on the workload to run it either invokes
+    `lib.benchmark.runner.fio` or `lib.benchmark.runner.ib_read`.
+    """
+
+    __RUNNERS = {
         'fio': FioRunner,
         'ib_read': IbReadRunner
     }
 
     @classmethod
-    def run(cls, benchmark, config, idfile):
-        """XXX"""
+    def run(cls, benchmark, config: dict, idfile: str) -> None:
+        """Run the given `benchmark`
+
+        Args:
+            benchmark: the `lib.benchmark.base.Benchmark` object that has
+              ordered running a series.
+            config: the configuration of the benchmarking system.
+            idfile: the output file to store the results.
+        """
         # XXX DUMP_CMDS?
-        runner_cls = cls.RUNNERS.get(benchmark.oneseries['tool'], None)
+        runner_cls = cls.__RUNNERS.get(benchmark.oneseries['tool'], None)
         if runner_cls is None:
             raise NotImplementedError()
         runner = runner_cls(benchmark, config, idfile)

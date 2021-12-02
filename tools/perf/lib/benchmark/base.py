@@ -168,8 +168,15 @@ class Benchmark:
     def run(self, config: dict, result_dir: str) -> None:
         """Pick a runner and run the benchmark.
 
-        Please see the `lib.benchmark.runner` for details how runners execute
-        benchmarks. No matter which runner is used, in the result of succesfull
+        Either:
+
+        - `lib.benchmark.runner.dummy.Dummy.run()` when not the actual results
+          are expected,
+        - `lib.benchmark.runner.bash.Bash.run()` when the legacy `ib_read.sh`
+          and `rpma_fio_bench.sh` are meant to be used or
+        - `lib.benchmark.runner.base.BaseRunner.run()`.
+
+        No matter which runner is used, in the result of succesfull
         execution the `Benchmark` is marked as done (`Benchmark.is_done()`)
         and the benchmark's result file (`get_result_path()`) contains all
         the collected results.
