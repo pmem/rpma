@@ -13,3 +13,4 @@
 from .fio import FioFormat
 from .ib_read_bw import IbReadBwFormat
 from .ib_read_lat import IbReadLatFormat
+from .ib_read_common import *
