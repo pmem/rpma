@@ -11,6 +11,7 @@
 """ib_read_bw output format tools (EXPERIMENTAL)"""
 
 import pandas as pd
+from .ib_read_common import grep_output, line2csv
 
 class IbReadBwFormat:
     """handling ib_read_bw output"""
@@ -45,20 +46,29 @@ class IbReadBwFormat:
             if x.name == 'bw_avg' else x)
 
     @classmethod
-    def parse(cls, _output: str) -> dict:
+    def parse(cls, output : str, pattern : str) -> dict:
         """parse the ib_read_bw output and return a row of data
 
+        Includes:
+
+        - rounding `bw_avg` to 2 decimal places
+
         Args:
-            _output: a string collected from the ib_read_bw standard output
+            output: a string collected from the ib_read_bw standard output
+            pattern: a pattern to grep for the line with the results
 
         Returns:
-            A `dict`... XXX
+            A `dict` of results.
         """
-        # XXX
+
+        line = grep_output(output, pattern)
+        csv = line2csv(line)
+        data = csv.split(',')
+
         return {
-            'threads': 0,
-            'iodepth': 0,
-            'bs': 0,
-            'ops': 0,
-            'bw_avg': 0
+            'threads': data[0],
+            'iodepth': data[1],
+            'bs': data[2],
+            'ops': data[3],
+            'bw_avg': round(data[5], 2)
         }
