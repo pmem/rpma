@@ -43,7 +43,7 @@ def preprocess_vars(variables: dict) -> dict:
     - all known tables are:
       - extended by an additional row reminding the test date and
       - being prepared for further processing
-        (`lib.report.variable.dict2kvtable()`)
+        (`lib.report.utils.dict2kvtable()`)
 
     Args:
         variables: provided textual content read from the JSON file where
