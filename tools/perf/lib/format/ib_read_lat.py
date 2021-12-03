@@ -10,8 +10,8 @@
 
 """ib_read_lat output format tools (EXPERIMENTAL)"""
 
-
 import pandas as pd
+from .ib_read_common import grep_output, line2csv
 
 class IbReadLatFormat:
     """handling ib_read_lat output"""
@@ -46,7 +46,7 @@ class IbReadLatFormat:
         return dataframe.reindex(columns=cls.__OUTPUT_NAMES)
 
     @classmethod
-    def parse(cls, _output):
+    def parse(cls, output : str, pattern : str):
         """parse the ib_read_lat output and return a row of data
 
         Args:
@@ -55,14 +55,10 @@ class IbReadLatFormat:
         Returns:
             A `dict`... XXX
         """
-        # XXX
-        return {
-            'bs': 0,
-            'ops': 0,
-            'lat_min': 0,
-            'lat_max': 0,
-            'lat_avg': 0,
-            'lat_stdev': 0,
-            'lat_pctl_99.0': 0,
-            'lat_pctl_99.9': 0
-        }
+
+        line = grep_output(output, pattern)
+        csv = line2csv(line)
+
+        # XXX convert csv
+
+        return csv
