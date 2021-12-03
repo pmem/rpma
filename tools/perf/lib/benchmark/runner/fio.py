@@ -14,7 +14,8 @@ from os.path import join
 from shutil import which
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
+from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
+                    CPU_LOAD_00_99, THREADS_VALUES
 
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
@@ -202,12 +203,67 @@ class FioRunner:
             self.__result_append(x_value, y_value)
 
     __X_KEYS = ['threads', 'bs', 'iodepth']
+    __BW_DP_EXP_DEPTH = [1, 2, 4, 8, 16, 32, 64, 128]
+    __BW_DP_LIN_DEPTH = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     __SETTINGS_BY_MODE = {
+        'bw-bs': {
+            'threads': 1,
+            'bs': BS_VALUES,
+            'iterations': len(BS_VALUES),
+            'iodepth': 2,
+            'sync': False
+            },
+        'bw-dp-exp': {
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': __BW_DP_EXP_DEPTH,
+            'iterations': len(__BW_DP_EXP_DEPTH),
+            'sync': False
+            },
+        'bw-dp-lin': {
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': __BW_DP_LIN_DEPTH,
+            'iterations': len(__BW_DP_LIN_DEPTH),
+            'sync': False
+            },
+        'bw-th': {
+            'threads': THREADS_VALUES,
+            'bs': 4096,
+            'iodepth': 2,
+            'iterations': len(THREADS_VALUES),
+            'sync': False
+            },
+        'bw-cpu': {
+            'threads': 1,
+            'bs': 65536,
+            'iodepth': 2,
+            'cpuload': CPU_LOAD_00_99,
+            'iterations': len(CPU_LOAD_00_99),
+            'sync': False
+            },
+        'bw-cpu-mt': {
+            'threads': THREADS_VALUES,
+            'bs': 4096,
+            'iodepth': 2,
+            'cpuload': CPU_LOAD_00_99,
+            'iterations': len(CPU_LOAD_00_99),
+            'sync': False
+            },
         'lat': {
             'threads': 1,
             'bs': BS_VALUES,
             'iodepth': 1,
-            'sync': True}
+            'iterations': len(BS_VALUES),
+            'sync': True
+            },
+        'lat-cpu': {
+            'threads': 1,
+            'bs': 4096,
+            'iodepth': 1,
+            'cpuload': CPU_LOAD_00_99,
+            'iterations': len(CPU_LOAD_00_99),
+            'sync': True
+            }
     }
-    # XXX TBD
