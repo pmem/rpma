@@ -19,3 +19,4 @@ NO_X_AXIS_MSG = \
 
 #: a common block sizes list
 BS_VALUES = [256, 1024, 4096, 8192, 16384, 32768, 65536, 131072, 262144]
+CPU_LOAD_00_99 = [0, 25, 50, 75, 99]
