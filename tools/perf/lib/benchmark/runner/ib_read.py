@@ -10,9 +10,11 @@
 
 """the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
+import subprocess
 from datetime import datetime
 from os.path import join
 from shutil import which
+import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES
@@ -75,6 +77,8 @@ class IbReadRunner:
         except FileNotFoundError:
             self.__results = {}
         self.__validate()
+        self.__formatter = fmt.IbReadLatFormat if self.__mode == 'lat' \
+                                               else fmt.IbReadBwFormat
 
     def __common_args(self, settings):
         """append arguments common for server and client"""
@@ -112,12 +116,32 @@ class IbReadRunner:
         with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
-    def __client_run(self, _settings):
-        # XXX run the client (locally) and wait till the end of execution
+    def __client_run(self, settings):
+        """run the client (locally) and wait till the end of execution"""
+        numa_n = str(self.__config['JOB_NUMA'])
+        ib_path = join(self.__config['IB_PATH'], settings['ib_tool'])
+        it_opt = '--iters=' + str(settings['iterations'])
+        aux_params = [*self.__config['AUX_PARAMS'], *settings['args']]
+        server_ip = self.__config['server_ip']
+        args = ['numactl', '-N', numa_n, ib_path, *aux_params,
+                it_opt, server_ip]
+
+        # XXX add option to dump the command
         # XXX optionally measure the run time and assert exe_time >= 60s
-        # XXX convert the ./csv2standardized.py script into a module?
-        # XXX return the measured value
-        return 0
+        try:
+            ret = subprocess.run(args, capture_output = True,
+                                 text = True, check = True)
+        except subprocess.CalledProcessError as err:
+            print('\nstdout:\n{}\nstderr:\n{}\n'.format(err.stdout, err.stderr))
+            raise # re-raise the current exception
+
+        # save stderr in the log file
+        with open(settings['logfile_client'], 'w', encoding='utf-8') as log:
+            log.write('\nstderr:\n{}\n'.format(ret.stderr))
+
+        line = fmt.grep_output(ret.stdout, str(settings['bs']))
+        csv = fmt.line2csv(line)
+        return self.__formatter.parse(csv)
 
     def __result_append(self, x_value, y_value):
         # XXX this part is probably common betwen ib_read and fio classes
