@@ -37,3 +37,5 @@ def result_is_done(data: list, x_key: str, x_value: int) -> bool:
         if result[x_key] == x_value:
             return True
     return False
+CPU_LOAD_00_99 = [0, 25, 50, 75, 99]
+THREADS_VALUES = [1, 2, 4, 8, 12, 16, 32, 64]
