@@ -52,7 +52,7 @@ class Part:
 
     @property
     def variables(self) -> dict:
-        """(a copy of) preprocessed (`lib.report.variable.process_level()`)
+        """(a copy of) preprocessed (`lib.report.utils.process_level()`)
         `variables` providing textual contents to be merged into the part's template."""
         return deepcopy(self.__variables)
 
@@ -63,7 +63,7 @@ class Part:
 
     @property
     def constants(self):
-        """(a copy of) preprocessed (`lib.report.variable.process_level()`)
+        """(a copy of) preprocessed (`lib.report.utils.process_level()`)
         textual contents loaded from `templates/part_{name}.json`. Where `name`
         is provided during the `Part` object's initialization."""
         return deepcopy(self.__constants)
