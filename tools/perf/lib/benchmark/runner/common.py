@@ -21,6 +21,8 @@ NO_X_AXIS_MSG = \
 
 #: a common block sizes list
 BS_VALUES = [256, 1024, 4096, 8192, 16384, 32768, 65536, 131072, 262144]
+#: a common thread values list
+THREADS_VALUES = [1, 2, 4, 8, 12, 16, 32, 64]
 
 def result_append(data: list, idfile: str, result: dict) -> None:
     """append new result to internal data and file"""
