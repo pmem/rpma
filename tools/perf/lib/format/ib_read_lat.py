@@ -10,7 +10,7 @@
 
 """ib_read_lat output format tools (EXPERIMENTAL)"""
 
-
+import re
 import pandas as pd
 
 class IbReadLatFormat:
@@ -46,23 +46,30 @@ class IbReadLatFormat:
         return dataframe.reindex(columns=cls.__OUTPUT_NAMES)
 
     @classmethod
-    def parse(cls, _output):
+    def parse(cls, output : str, pattern : str, _threads : int, \
+              _iodepth : int) -> dict:
         """parse the ib_read_lat output and return a row of data
 
         Args:
-            _output: a string collected from the ib_read_lat standard output
+            output: a string collected from the ib_read_lat standard output
+            pattern: a pattern to grep for the line with the results
 
         Returns:
-            A `dict`... XXX
+            A `dict` of results.
         """
-        # XXX
+
+        pattern = '([0-9]+)[ ]+([0-9]+)[ ]+([0-9.]+)[ ]+([0-9.]+)[\t ]+'\
+                  '([0-9.]+)[\t ]+([0-9.]+)[\t ]+([0-9.]+)[\t ]+([0-9.]+)'\
+                  '[\t ]+([0-9.]+)'
+        found = re.search(pattern, output)
+
         return {
-            'bs': 0,
-            'ops': 0,
-            'lat_min': 0,
-            'lat_max': 0,
-            'lat_avg': 0,
-            'lat_stdev': 0,
-            'lat_pctl_99.0': 0,
-            'lat_pctl_99.9': 0
+            'bs': int(found.group(1)),
+            'ops': int(found.group(2)),
+            'lat_min': float(found.group(3)),
+            'lat_max': float(found.group(4)),
+            'lat_avg': float(found.group(6)),
+            'lat_stdev': float(found.group(7)),
+            'lat_pctl_99.0': float(found.group(8)),
+            'lat_pctl_99.9': float(found.group(9))
         }
