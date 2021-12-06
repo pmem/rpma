@@ -10,6 +10,8 @@
 
 """the runner's helpers (EXPERIMENTAL)"""
 
+import json
+
 #: an error message when an unexpected mode is detected
 UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
 
@@ -19,3 +21,19 @@ NO_X_AXIS_MSG = \
 
 #: a common block sizes list
 BS_VALUES = [256, 1024, 4096, 8192, 16384, 32768, 65536, 131072, 262144]
+
+def result_append(result: dict, data: list, idfile: str) -> None:
+    """append new result to internal data and file"""
+    data.append(result)
+    with open(idfile, 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4)
+
+def result_is_done(data: list, x_key: str, x_value: int) -> bool:
+    """check if the result for the given x_value of x_key is already collected"""
+    for result in data:
+        if x_key not in result:
+            raise ValueError('key \'{}\' is missing the previous results'
+                             .format(x_key))
+        if result[x_key] == x_value:
+            return True
+    return False
