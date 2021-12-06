@@ -10,7 +10,7 @@
         },
         "series_common": {
             "mode": "lat",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
@@ -44,7 +44,7 @@
         "series_common": {
             "filetype": "pmem",
             "mode": "lat",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -86,7 +86,7 @@
         },
         "series_common": {
             "mode": "bw-bs",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
@@ -120,7 +120,7 @@
         },
         "series_common": {
             "mode": "bw-th",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
@@ -155,7 +155,7 @@
         "series_common": {
             "filetype": "pmem",
             "mode": "bw-bs",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
@@ -198,7 +198,7 @@
         "series_common": {
             "filetype": "pmem",
             "mode": "bw-th",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "fstrings": ["label"]
         },
