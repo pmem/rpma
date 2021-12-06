@@ -201,7 +201,7 @@ class FioRunner:
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
 
-    __X_KEYS = ['threads', 'bs', 'iodepth']
+    __X_KEYS = ['threads', 'bs', 'iodepth', 'cpuload']
 
     __SETTINGS_BY_MODE = {
         'lat': {
