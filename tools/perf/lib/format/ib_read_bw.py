@@ -10,6 +10,7 @@
 
 """ib_read_bw output format tools (EXPERIMENTAL)"""
 
+import re
 import pandas as pd
 
 class IbReadBwFormat:
@@ -45,20 +46,32 @@ class IbReadBwFormat:
             if x.name == 'bw_avg' else x)
 
     @classmethod
-    def parse(cls, _output: str) -> dict:
+    def parse(cls, output : str, pattern : str, threads : int, iodepth : int) \
+              -> dict:
         """parse the ib_read_bw output and return a row of data
 
+        Includes:
+
+        - rounding `bw_avg` to 2 decimal places
+
         Args:
-            _output: a string collected from the ib_read_bw standard output
+            output: a string collected from the ib_read_bw standard output
+            pattern: a pattern to grep for the line with the results
+            threads: number of threads
+            iodepth: value of iodepth
 
         Returns:
-            A `dict`... XXX
+            A `dict` of results.
         """
-        # XXX
+
+        pattern = \
+            '([0-9]+)[ ]+([0-9]+)[ ]+([0-9.]+)[ ]+([0-9.]+)[\t ]+([0-9.]+)'
+        found = re.search(pattern, output)
+
         return {
-            'threads': 0,
-            'iodepth': 0,
-            'bs': 0,
-            'ops': 0,
-            'bw_avg': 0
+            'threads': threads,
+            'iodepth': iodepth,
+            'bs': int(found.group(1)),
+            'ops': int(found.group(2)),
+            'bw_avg': round(float(found.group(4)), 2)
         }
