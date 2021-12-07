@@ -101,7 +101,7 @@ class IbReadRunner:
         r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *settings['args']]
 
         args = ['numactl', '-N', r_numa_n, r_ib_path, *r_aux_params]
-        # XXX add option to dump the command
+        # XXX add option to dump the command (DUMP_CMDS)
         self.__server = RemoteCmd.run_async(self.__config, args)
 
     def __server_stop(self, settings):
@@ -114,6 +114,7 @@ class IbReadRunner:
 
     def __client_run(self, _settings):
         # XXX run the client (locally) and wait till the end of execution
+        # XXX add option to dump the command (DUMP_CMDS)
         # XXX optionally measure the run time and assert exe_time >= 60s
         # XXX convert the ./csv2standardized.py script into a module?
         # XXX return the measured value

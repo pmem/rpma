@@ -126,6 +126,7 @@ class FioRunner:
         # XXX nice to have REMOTE_TRACER
         # XXX copy the job file to the server
         # XXX start a server on the remote side (using RemoteCmd)
+        # XXX add option to dump the command (DUMP_CMDS)
         # keep an object allowing to control the server on the remote side
         _unused = args
 
@@ -160,6 +161,7 @@ class FioRunner:
             'runtime': time['run']
         }
         # XXX run the client (locally) and wait till the end of execution
+        # XXX add option to dump the command (DUMP_CMDS)
         # XXX convert the fio_json2csv.py script into a module?
         # XXX return the measured value (Note: self.__result_keys)
         # XXX convert the ./csv2standardized.py script into a module?
