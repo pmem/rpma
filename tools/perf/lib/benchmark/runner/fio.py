@@ -15,7 +15,7 @@ from shutil import which
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
-                    result_append, result_is_done
+                    result_append, result_is_done, print_start_message
 
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
@@ -188,6 +188,8 @@ class FioRunner:
             - the results are collected and written to the `idfile` file.
         3. stops the `fio` server on the remote side.
         """
+        print_start_message(self.__mode, self.__benchmark.oneseries,
+                            self.__config)
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
