@@ -153,6 +153,8 @@ class IbReadRunner:
               is not set. `--iters` is used instead of `--duration` because
               the latter produces significantly less detailed output.
         """
+        print('STARTING benchmark for MODE={} IP={} ...'
+              .format(self.__mode, self.__config['server_ip']))
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
