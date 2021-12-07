@@ -130,7 +130,7 @@ class Report:
         figures = {}
         for figure in bench.figures:
             # add to 2-level figure dictionary
-            if figure.file not in figures.keys():
+            if figure.file not in figures:
                 figures[figure.file] = {}
             figures[figure.file][figure.key] = figure
         return figures
