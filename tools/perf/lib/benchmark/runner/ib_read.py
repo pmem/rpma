@@ -43,22 +43,27 @@ class IbReadRunner:
                 present_value = self.__benchmark.oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
-        if which(self.__settings['ib_tool']) is None:
+        # check if the local ib tool is present
+        if which(self.__ib_path) is None:
             raise ValueError("cannot find the local ib tool: {}"
-                             .format(self.__settings['ib_tool']))
-
-        ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
-                       self.__settings['ib_tool'])
-        output = RemoteCmd.run_sync(self.__config, ['which', ib_path])
+                             .format(self.__ib_path))
+        # check if the remote ib tool is present
+        output = RemoteCmd.run_sync(self.__config, ['which', self.__r_ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
-                             .format(self.__settings['ib_tool']))
+                             .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
         self.__server = None
+        # path to the local ib tool
+        self.__ib_path = join(self.config.get('IB_PATH', ''),
+                              self.settings['ib_tool'])
+        # path to the remote ib tool
+        self.__r_ib_path = join(self.config.get('REMOTE_IB_PATH', ''),
+                                self.settings['ib_tool'])
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
@@ -103,11 +108,9 @@ class IbReadRunner:
               .format(settings['bs'], settings['threads'],
                       settings['iodepth'], settings['iterations']))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
-        r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
-                         settings['ib_tool'])
         r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *settings['args']]
 
-        args = ['numactl', '-N', r_numa_n, r_ib_path, *r_aux_params]
+        args = ['numactl', '-N', r_numa_n, self.__r_ib_path, *r_aux_params]
         # XXX add option to dump the command (DUMP_CMDS)
         self.__server = RemoteCmd.run_async(self.__config, args)
 
@@ -122,11 +125,10 @@ class IbReadRunner:
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
         numa_n = str(self.__config['JOB_NUMA'])
-        ib_path = join(self.__config.get('IB_PATH', ''), settings['ib_tool'])
         it_opt = '--iters=' + str(settings['iterations'])
         aux_params = [*self.__config['AUX_PARAMS'], *settings['args']]
         server_ip = self.__config['server_ip']
-        args = ['numactl', '-N', numa_n, ib_path, *aux_params,
+        args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
 
         # XXX add option to dump the command (DUMP_CMDS)
