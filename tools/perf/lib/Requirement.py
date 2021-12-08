@@ -21,9 +21,11 @@ a `lib.benchmark.base.Benchmark` e.g.:
 """
 
 import copy
+from shutil import which
 
 from .benchmark import Benchmark
 from .common import uniq, ENCODE
+from .remote_cmd import RemoteCmd
 
 class Requirement:
     """A single requirement"""
@@ -209,10 +211,34 @@ class Requirement:
 
         @classmethod
         def __set_DDIO(cls, req, config):
-            # XXX check if the local copy of ddio.sh exists
-            # XXX copy the ddio.sh script to the remote side
-            # XXX configure the remote node using ddio.sh via RemoteCmd
-            raise NotImplementedError()
+            """set DDIO to the required value"""
+            ddio = '../ddio.sh'
+            remote_dir = '/dev/shm'
+            remote_ddio = '/dev/shm/ddio.sh'
+
+            # check if the local copy of ddio.sh exists
+            if which(ddio) is None:
+                raise ValueError('the {} script does not exist!'.format(ddio))
+
+            # copy the ddio.sh script to the remote side
+            RemoteCmd.copy_to_remote(config, ddio, remote_dir)
+
+            # configure the remote node using ddio.sh via RemoteCmd
+            ddio_mode = 'disable' if req['direct_write_to_pmem'] else 'enable'
+            ddio_query = 0 if req['direct_write_to_pmem'] else 1
+            port = config['REMOTE_RNIC_PCIE_ROOT_PORT']
+            # set DDIO on the server
+            args = ['sudo', remote_ddio, '-d', port, '-s', ddio_mode]
+            rv = RemoteCmd.run_sync(config, args)
+            if rv.exit_status != 0:
+                raise ValueError('setting DDIO on the remote node failed: {}'
+                                 .format(rv.stderr))
+            # query DDIO on the server
+            args = ['sudo', remote_ddio, '-d', port, '-q']
+            rv = RemoteCmd.run_sync(config, args)
+            if rv.exit_status != ddio_query:
+                raise ValueError('setting DDIO to \'{}\' failed'
+                                 .format(ddio_mode))
 
         @classmethod
         def is_met(cls, req, config):
