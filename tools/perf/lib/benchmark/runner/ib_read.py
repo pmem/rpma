@@ -11,6 +11,7 @@
 """the ib_read_{lat,bw} tools runner (EXPERIMENTAL)"""
 
 import subprocess
+import time
 from datetime import datetime
 from os.path import join
 from shutil import which
@@ -122,6 +123,17 @@ class IbReadRunner:
         with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
+    @staticmethod
+    def __probably_no_server(error: subprocess.CalledProcessError) -> bool:
+        """If the following error messages were found in the stderr,
+           it can indicate that the server has probably not been started yet.
+        """
+        if 'Unable to init the socket connection' in error.stderr:
+            return True
+        if 'Unable to perform rdma_client function' in error.stderr:
+            return True
+        return False
+
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
         numa_n = str(self.__config['JOB_NUMA'])
@@ -133,15 +145,24 @@ class IbReadRunner:
 
         # XXX add option to dump the command (DUMP_CMDS)
         # XXX optionally measure the run time and assert exe_time >= 60s
-        try:
-            ret = subprocess.run(args, check = True,
-                                 stdout = subprocess.PIPE,
-                                 stderr = subprocess.PIPE,
-                                 encoding='utf-8')
-        except subprocess.CalledProcessError as err:
-            print('\nstdout:\n{}\nstderr:\n{}\n'
-                  .format(err.stdout, err.stderr))
-            raise # re-raise the current exception
+
+        # try to connect with the server 10 times at most
+        counter = 1
+        while True:
+            try:
+                ret = subprocess.run(args, check = True,
+                                     stdout = subprocess.PIPE,
+                                     stderr = subprocess.PIPE,
+                                     encoding='utf-8')
+                break
+            except subprocess.CalledProcessError as err:
+                if not self.__probably_no_server(err) or counter == 10:
+                    print('\nstdout:\n{}\nstderr:\n{}\n'
+                        .format(err.stdout, err.stderr))
+                    raise # re-raise the current exception
+                print('Retrying #{} ...'.format(counter))
+                time.sleep(0.1) # wait 0.1 sec for server to start
+                counter = counter + 1
 
         # save stderr in the log file
         with open(settings['logfile_client'], 'w', encoding='utf-8') as log:
