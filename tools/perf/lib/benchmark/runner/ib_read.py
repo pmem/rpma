@@ -103,7 +103,8 @@ class IbReadRunner:
               .format(settings['bs'], settings['threads'],
                       settings['iodepth'], settings['iterations']))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
-        r_ib_path = join(self.__config['REMOTE_IB_PATH'], settings['ib_tool'])
+        r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
+                         settings['ib_tool'])
         r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'], *settings['args']]
 
         args = ['numactl', '-N', r_numa_n, r_ib_path, *r_aux_params]
@@ -121,7 +122,7 @@ class IbReadRunner:
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
         numa_n = str(self.__config['JOB_NUMA'])
-        ib_path = join(self.__config['IB_PATH'], settings['ib_tool'])
+        ib_path = join(self.__config.get('IB_PATH', ''), settings['ib_tool'])
         it_opt = '--iters=' + str(settings['iterations'])
         aux_params = [*self.__config['AUX_PARAMS'], *settings['args']]
         server_ip = self.__config['server_ip']
