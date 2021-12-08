@@ -61,10 +61,10 @@ class FioRunner:
         else:
             raise ValueError(UNKNOWN_RW_MSG.format(readwrite))
         # pick the settings predefined for the chosen mode
-        mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.__SETTINGS_BY_MODE.get(mode, None)
+        self.__mode = self.__benchmark.oneseries['mode']
+        self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
-            raise NotImplementedError(UNKNOWN_MODE_MSG.format(mode))
+            raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
@@ -72,7 +72,7 @@ class FioRunner:
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
-            raise NotImplementedError(NO_X_AXIS_MSG.format(mode))
+            raise NotImplementedError(NO_X_AXIS_MSG.format(self.__mode))
         # load the already collected results
         try:
             self.__results = json_from_file(idfile)
