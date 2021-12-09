@@ -153,9 +153,9 @@ class IbReadRunner:
         counter = 1
         while True:
             try:
-                ret = subprocess.run(args, check = True,
-                                     stdout = subprocess.PIPE,
-                                     stderr = subprocess.PIPE,
+                ret = subprocess.run(args, check=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
                                      encoding='utf-8')
                 break
             except subprocess.CalledProcessError as err:
