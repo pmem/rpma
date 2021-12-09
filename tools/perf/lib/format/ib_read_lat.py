@@ -46,8 +46,8 @@ class IbReadLatFormat:
         return dataframe.reindex(columns=cls.__OUTPUT_NAMES)
 
     @classmethod
-    def parse(cls, output : str, pattern : str, _threads : int, \
-              _iodepth : int) -> dict:
+    def parse(cls, output: str, pattern: str, _threads: int, \
+              _iodepth: int) -> dict:
         """parse the ib_read_lat output and return a row of data
 
         Args:
