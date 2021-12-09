@@ -109,8 +109,10 @@ class IbReadRunner:
               .format(settings['bs'], settings['threads'],
                       settings['iodepth'], settings['iterations']))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
-        r_aux_params = [*self.__config['REMOTE_AUX_PARAMS'].split(' '),
-                        *settings['args']]
+        r_aux_params = [*settings['args']]
+        cfg_r_aux_params = self.__config['REMOTE_AUX_PARAMS'].split(' ')
+        if cfg_r_aux_params != ['']:
+            r_aux_params = r_aux_params + cfg_r_aux_params
 
         args = ['numactl', '-N', r_numa_n, self.__r_ib_path, *r_aux_params]
         # XXX add option to dump the command (DUMP_CMDS)
@@ -140,8 +142,10 @@ class IbReadRunner:
         """run the client (locally) and wait till the end of execution"""
         numa_n = str(self.__config['JOB_NUMA'])
         it_opt = '--iters=' + str(settings['iterations'])
-        aux_params = [*self.__config['AUX_PARAMS'].split(' '),
-                      *settings['args']]
+        aux_params = [*settings['args']]
+        cfg_aux_params = self.__config['AUX_PARAMS'].split(' ')
+        if cfg_aux_params != ['']:
+            aux_params = aux_params + cfg_aux_params
         server_ip = self.__config['server_ip']
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
