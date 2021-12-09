@@ -46,7 +46,7 @@ class IbReadBwFormat:
             if x.name == 'bw_avg' else x)
 
     @classmethod
-    def parse(cls, output : str, pattern : str, threads : int, iodepth : int) \
+    def parse(cls, output: str, pattern: str, threads: int, iodepth: int) \
               -> dict:
         """parse the ib_read_bw output and return a row of data
 

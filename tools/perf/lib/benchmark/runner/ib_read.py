@@ -134,8 +134,8 @@ class IbReadRunner:
         # XXX add option to dump the command (DUMP_CMDS)
         # XXX optionally measure the run time and assert exe_time >= 60s
         try:
-            ret = subprocess.run(args, capture_output = True,
-                                 text = True, check = True)
+            ret = subprocess.run(args, capture_output=True,
+                                 text=True, check=True)
         except subprocess.CalledProcessError as err:
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
