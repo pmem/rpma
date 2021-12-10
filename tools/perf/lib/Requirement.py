@@ -247,6 +247,8 @@ class Requirement:
         def is_met(cls, req, config):
             # For the CLX generation, it is possible to configure Direct Write
             # to PMem from the OS level.
+            if len(config.get('REMOTE_RNIC_PCIE_ROOT_PORT', '')) == 0:
+                print('''WARNINIG: REMOTE_RNIC_PCIE_ROOT_PORT is not set in config.json, so DDIO cannot be set!''')
             if config.get('REMOTE_SUDO_NOPASSWD', False) and \
                     len(config.get('REMOTE_RNIC_PCIE_ROOT_PORT', '')):
                 # If there are available: passwordless sudo access and
