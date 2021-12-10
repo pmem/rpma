@@ -260,8 +260,15 @@ class Requirement:
             else:
                 # Otherwise, the remote Direct Write to PMem configuration
                 # has to match the requirement.
-                return req['direct_write_to_pmem'] == \
-                    config['REMOTE_DIRECT_WRITE_TO_PMEM']
+                if req['direct_write_to_pmem'] == \
+                    config['REMOTE_DIRECT_WRITE_TO_PMEM']:
+                    return True
+                # the requirement is not met
+                if config.get('REMOTE_SUDO_NOPASSWD', False) is False:
+                    print('''WARNINIG: REMOTE_SUDO_NOPASSWD is not True in config.json, so DDIO cannot be set!''')
+                if len(config.get('REMOTE_RNIC_PCIE_ROOT_PORT', '')) == 0:
+                    print('''WARNINIG: REMOTE_RNIC_PCIE_ROOT_PORT is not set in config.json, so DDIO cannot be set!''')
+                return False
 
     class __IceLake:
         """The ICX-specific checks"""
