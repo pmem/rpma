@@ -14,6 +14,7 @@
 #include "flush.h"
 #include "flush-common.h"
 #include "mocks-stdlib.h"
+#include "mocks-unistd.h"
 #include "test-common.h"
 #include <sys/mman.h>
 
@@ -203,6 +204,8 @@ delete__apm_munmap_ERRNO(void **unused)
 int
 main(int argc, char *argv[])
 {
+	enable_unistd_mocks();
+
 	const struct CMUnitTest tests[] = {
 		/* rpma_flush_new() unit tests */
 		cmocka_unit_test(new__malloc_ERRNO),
@@ -218,5 +221,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test(delete__apm_munmap_ERRNO),
 	};
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+	int ret = cmocka_run_group_tests(tests, NULL, NULL);
+
+	disable_unistd_mocks();
+
+	return ret;
 }
