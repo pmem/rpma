@@ -10,6 +10,8 @@
 
 """the FIO runner (EXPERIMENTAL)"""
 
+import time
+from datetime import datetime
 from os.path import join
 from shutil import which
 from ...common import json_from_file
@@ -34,22 +36,23 @@ class FioRunner:
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_FILETYPE_MSG.format(filetype))
 
-        fio_local_path = join(self.__config.get('FIO_PATH', ''), 'fio')
-        if which(fio_local_path) is None:
+        # check if the local fio is present
+        if which(self.__fio_path) is None:
             raise ValueError("cannot find the local fio: {}"
-                             .format(fio_local_path))
+                             .format(self.__fio_path))
 
-        fio_remote_path = join(self.__config.get('REMOTE_FIO_PATH', ''), 'fio')
-        output = RemoteCmd.run_sync(self.__config, ['which', fio_remote_path])
+        # check if the remote fio is present
+        output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
-                             .format(fio_local_path))
+                             .format(self.__r_fio_path))
 
     def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
+        self.__server = None
         # pick the result keys base on the benchmark's rw
         readwrite = benchmark.oneseries['rw']
         if 'read' in readwrite:
@@ -62,9 +65,15 @@ class FioRunner:
             raise ValueError(UNKNOWN_RW_MSG.format(readwrite))
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
+        self.__tool_mode = self.__benchmark.oneseries['tool_mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
+        # path to the local fio
+        self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
+        # path to the remote fio
+        self.__r_fio_path = join(self.__config.get('REMOTE_FIO_PATH', ''),
+                                 'fio')
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
@@ -82,21 +91,25 @@ class FioRunner:
         self.__validate()
 
     def __server_start(self, settings):
-        # XXX to be removed when the implementation will be complete
-        # pylint: disable=unused-variable
-        args = []
+        """Start the server on the remote side (using RemoteCmd)
+           and keep an object allowing to control the server.
+        """
+        print('[mode: {},  size: {}, threads: {}, tx_depth: {}, sync: {} ] '\
+              .format(self.__tool_mode, settings['bs'], settings['threads'],
+                      settings['iodepth'], settings['sync']))
+        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        args = ['numactl', '-N', r_numa_n, self.__r_fio_path]
         env = {
             'serverip': self.__config['server_ip'],
-            'numjobs': settings['threads'],
-            'iodepth': settings['iodepth'],
-            'direct_write_to_pmem': False, # XXX
+            'numjobs': str(settings['threads']),
+            'iodepth': str(settings['iodepth']),
+            'direct_write_to_pmem': str(False), # XXX
             'busy_wait_polling':
-                self.__benchmark.oneseries.get('busy_wait_polling', True),
-            # XXX CORES_PER_SOCKET may be a new required config.json argument
-            # or has to be read from the remote system.
+                str(self.__benchmark.oneseries.get('busy_wait_polling', True)),
             'cores_per_socket': self.__config['CORES_PER_SOCKET']
         }
         if 'cpu' in settings.keys():
+            # XXX
             env['cpuload'] = settings['cpu']
         else:
             # no CPU load
@@ -126,15 +139,24 @@ class FioRunner:
             args.append(
                 '--filename_format={}.\\$jobnum'.format(pmem_path))
         # XXX nice to have REMOTE_TRACER
-        # XXX copy the job file to the server
-        # XXX start a server on the remote side (using RemoteCmd)
+        # copy the job file to the server
+        r_job_path = self.__config.get('REMOTE_JOB_PATH',
+                                       '/dev/shm/librpma_{}-server.fio'\
+                                       .format(self.__tool_mode))
+        RemoteCmd.copy_to_remote(self.__config,
+                                 "./fio_jobs/librpma_{}-server.fio"\
+                                 .format(self.__tool_mode), r_job_path)
         # XXX add option to dump the command (DUMP_CMDS)
-        # keep an object allowing to control the server on the remote side
-        _unused = args
+        self.__server = RemoteCmd.run_async(self.__config, args, env)
+        time.sleep(0.1) # wait 0.1 sec for server to start listening
 
-    def __server_stop(self, _settings):
-        # XXX check the server is stopped
-        pass
+    def __server_stop(self, settings):
+        """wait until server finishes"""
+        self.__server.wait()
+        stdout = self.__server.stdout.read().decode().strip()
+        stderr = self.__server.stderr.read().decode().strip()
+        with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
+            log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
     __TIME = {
         'short': {
@@ -150,7 +172,7 @@ class FioRunner:
     def __client_run(self, settings):
         # pylint: disable=unused-variable
         short_runtime = self.__config.get('SHORT_RUNTIME', False)
-        time = self.__TIME['short' if short_runtime else 'full']
+        c_time = self.__TIME['short' if short_runtime else 'full']
         args = []
         env = {
             'serverip': self.__config['server_ip'],
@@ -159,8 +181,8 @@ class FioRunner:
             'blocksize': settings['bs'],
             'sync': settings['sync'],
             'readwrite': self.__benchmark.oneseries['rw'],
-            'ramp_time': time['ramp'],
-            'runtime': time['run']
+            'ramp_time': c_time['ramp'],
+            'runtime': c_time['run']
         }
         # XXX run the client (locally) and wait till the end of execution
         # XXX add option to dump the command (DUMP_CMDS)
@@ -178,6 +200,14 @@ class FioRunner:
         """check if the result for the given x value is already collected"""
         return result_is_done(self.__data, self.__x_key, x_value)
 
+    def __set_log_files_names(self):
+        """set names of log files"""
+        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
+        name = '/tmp/fio-{}_{}-{}'.format(self.__tool_mode, self.__mode,
+                                          time_stamp)
+        self.__settings['logfile_server'] = name + '-server.log'
+        self.__settings['logfile_client'] = name + '-client.log'
+
     def run(self) -> None:
         """collects the `benchmark` results using `fio`
 
@@ -190,6 +220,7 @@ class FioRunner:
         """
         print_start_message(self.__mode, self.__benchmark.oneseries,
                             self.__config)
+        self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
             if self.__result_is_done(x_value):
