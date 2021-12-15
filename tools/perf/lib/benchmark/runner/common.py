@@ -34,7 +34,7 @@ def result_is_done(data: list, x_key: str, x_value: int) -> bool:
         if x_key not in result:
             raise ValueError('key \'{}\' is missing the previous results'
                              .format(x_key))
-        if result[x_key] == x_value:
+        if str(result[x_key]) == str(x_value):
             return True
     return False
 
