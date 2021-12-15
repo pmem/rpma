@@ -10,8 +10,10 @@
 
 """the FIO runner (EXPERIMENTAL)"""
 
+import subprocess
 from os.path import join
 from shutil import which
+from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
@@ -172,27 +174,56 @@ class FioRunner:
     }
 
     def __client_run(self, settings):
-        # pylint: disable=unused-variable
+        """run the client (locally) and wait till the end of execution"""
         short_runtime = self.__config.get('SHORT_RUNTIME', False)
         time = self.__TIME['short' if short_runtime else 'full']
-        args = []
         env = {
             'serverip': self.__config['server_ip'],
-            'numjobs': settings['threads'],
-            'iodepth': settings['iodepth'],
-            'blocksize': settings['bs'],
-            'sync': settings['sync'],
+            'numjobs': str(settings['threads']),
+            'iodepth': str(settings['iodepth']),
+            'blocksize': str(settings['bs']),
+            'sync': str(int(settings['sync'])),
             'readwrite': self.__benchmark.oneseries['rw'],
-            'ramp_time': time['ramp'],
-            'runtime': time['run']
+            'ramp_time': str(time['ramp']),
+            'runtime': str(time['run'])
         }
-        # XXX run the client (locally) and wait till the end of execution
+        if 'TRACER' in self.__config and self.__config['TRACER'] != '':
+            args = str(self.__config['TRACER']).split(' ')
+        else:
+            args = ['numactl', '-N', str(self.__config['JOB_NUMA'])]
+
+        fio_path = join(self.__config.get('FIO_PATH', ''),
+                        self.__benchmark.oneseries.get('tool', 'fio'))
+        persist_mode = self.__benchmark.oneseries['tool_mode']
+        job_file = './fio_jobs/librpma_{}-client.fio'.format(persist_mode)
+        args.extend([fio_path, job_file, '--output-format=json+'])
+
         # XXX add option to dump the command (DUMP_CMDS)
-        # XXX convert the fio_json2csv.py script into a module?
-        # XXX return the measured value (Note: self.__result_keys)
-        # XXX convert the ./csv2standardized.py script into a module?
+        try:
+            ret = subprocess.run(args, check=True, env=env,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    encoding='utf-8')
+        except subprocess.CalledProcessError as err:
+            print('\nstdout:\n{}\nstderr:\n{}\n'
+                   .format(err.stdout, err.stderr))
+            raise # re-raise the current exception
+
+        result = FioFormat.parse(ret.stdout)
+
+        # append cpuload to the results
+        if 'cpuload' in settings:
+            for key in self.__result_keys:
+                result[key]['cpuload'] = settings['cpuload']
+
+        # return the measured value
         # in case of a mixed workload the result is a tuple
-        return 0
+        if len(self.__result_keys) == 1:
+            ret_val = result[self.__result_keys[0]]
+        else:
+            ret_val = (result[self.__result_keys[0]],
+                       result[self.__result_keys[1]])
+        return ret_val
 
     def __result_append(self, _, y_value: dict):
         """append new result to internal __data and the '__idfile' file"""
