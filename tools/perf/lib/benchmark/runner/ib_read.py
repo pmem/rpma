@@ -124,7 +124,7 @@ class IbReadRunner:
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
-        with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
+        with open(settings['errfile_server'], 'w', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
     @staticmethod
@@ -172,7 +172,7 @@ class IbReadRunner:
                 counter = counter + 1
 
         # save stderr in the log file
-        with open(settings['logfile_client'], 'w', encoding='utf-8') as log:
+        with open(settings['errfile_client'], 'w', encoding='utf-8') as log:
             log.write('\nstderr:\n{}\n'.format(ret.stderr))
 
         return self.__formatter.parse(ret.stdout, str(settings['bs']),
@@ -190,8 +190,8 @@ class IbReadRunner:
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
         name = '/tmp/ib_read_{}-{}'.format(self.__mode, time_stamp)
-        self.__settings['logfile_server'] = name + '-server.log'
-        self.__settings['logfile_client'] = name + '-client.log'
+        self.__settings['errfile_server'] = name + '-server.err'
+        self.__settings['errfile_client'] = name + '-client.err'
 
     def run(self):
         """collects the `benchmark` results using `ib_read_lat` or `ib_read_bw`
