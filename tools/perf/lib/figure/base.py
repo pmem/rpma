@@ -223,15 +223,15 @@ class Figure:
             except FileNotFoundError:
                 print(SKIP_NO_FILE_MSG.format(idfile))
                 continue
-            # If it is dict() it indicates a mix workload consisting of
-            # two parts: 'read' and 'write'. In this case, the series
-            # has to provide 'rw_dir' to pick one of them.
-            if isinstance(rows, dict):
-                rw_dir = series['rw_dir']
-                rows = rows[rw_dir]
             if not rows:
                 print(SKIP_NO_ROWS_MSG.format(series['id']))
                 continue
+            # 'rows' can be:
+            # - a list of dicts or
+            # - a list of lists of two dicts
+            if isinstance(rows[0], list):
+                # rows[0] has to be a dict
+                rows = rows[0]
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
