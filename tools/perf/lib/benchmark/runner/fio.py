@@ -88,6 +88,7 @@ class FioRunner:
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
+        self.__set_settings_by_mode()
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
@@ -103,7 +104,6 @@ class FioRunner:
             self.__results = {'input_file': idfile, 'json': []}
         self.__data = self.__results['json']
         self.__validate()
-        self.__set_settings_by_mode()
 
     def __server_start(self, settings):
         # XXX to be removed when the implementation will be complete
@@ -228,7 +228,7 @@ class FioRunner:
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
 
-    __X_KEYS = ['threads', 'bs', 'iodepth']
+    __X_KEYS = ['threads', 'bs', 'iodepth', 'cpuload']
 
     __BW_DP_EXP_DEPTHS = [1, 2, 4, 8, 16, 32, 64, 128]
     __BW_DP_LIN_DEPTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
