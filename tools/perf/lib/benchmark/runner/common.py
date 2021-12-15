@@ -31,6 +31,11 @@ def result_append(data: list, idfile: str, result: dict) -> None:
 def result_is_done(data: list, x_key: str, x_value: int) -> bool:
     """check if the result for the given x_value of x_key is already collected"""
     for result in data:
+        # A result can be a tuple (read, write),
+        # in this case it is enough to check the first dict (read),
+        # because they both have to have the same keys.
+        if isinstance(result, tuple):
+            result = result[0]
         if x_key not in result:
             raise ValueError('key \'{}\' is missing the previous results'
                              .format(x_key))
