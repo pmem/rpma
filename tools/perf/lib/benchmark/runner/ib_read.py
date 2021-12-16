@@ -19,7 +19,8 @@ import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
-                    result_append, result_is_done, print_start_message
+                    result_append, result_is_done, print_start_message, \
+                    run_pre_command, run_post_command
 
 class IbReadRunner:
     """the ib_read_{lat,bw} tools runner
@@ -173,6 +174,7 @@ class IbReadRunner:
                     print('\nstdout:\n{}\nstderr:\n{}\n'
                           .format(err.stdout, err.stderr))
                     self.__server_stop(settings)
+                    run_post_command(self.__config, self.__benchmark.oneseries)
                     raise # re-raise the current exception
                 print('Retrying #{} ...'.format(counter))
                 time.sleep(0.1) # wait 0.1 sec for server to start listening
@@ -232,11 +234,12 @@ class IbReadRunner:
                 raise NotImplementedError(
                     "settings['iterations'][{}] is missing".format(x_value))
             settings['args'] = self.__common_args(settings)
-            # XXX remote_command --pre
+            pre_cmd = run_pre_command(self.__config,
+                                      self.__benchmark.oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            # XXX remote_command --post
+            run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = {
