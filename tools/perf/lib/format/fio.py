@@ -93,24 +93,24 @@ class FioFormat:
         lat_ns = op_result['lat_ns']
         lat_pctl_ns = lat_ns.get('percentile', {})
         return {
-            'bs': op_result['bs'],
-            'iodepth': op_result['iodepth'],
-            'threads': op_result['numjobs'],
-            'lat_ns_min': lat_ns['min'],
-            'lat_ns_max': lat_ns['max'],
-            'lat_ns_mean': lat_ns['mean'],
-            'lat_ns_stddev': lat_ns['stddev'],
-            'ops': lat_ns['N'],
-            'lat_ns_pctl_99.0': lat_pctl_ns.get('99.000000', 0),
-            'lat_ns_pctl_99.9': lat_pctl_ns.get('99.900000', 0),
-            'lat_ns_pctl_99.99': lat_pctl_ns.get('99.990000', 0),
-            'lat_ns_pctl_99.999': lat_pctl_ns.get('99.999000', 0),
-            'bw_avg': op_result['bw'],
-            'bw_min': op_result['bw_min'],
-            'bw_max': op_result['bw_max'],
-            'iops_avg': op_result['iops'],
-            'iops_min': op_result['iops_min'],
-            'iops_max': op_result['iops_max']
+            'bs': int(op_result['bs']),
+            'iodepth': int(op_result['iodepth']),
+            'threads': int(op_result['numjobs']),
+            'lat_ns_min': float(lat_ns['min']),
+            'lat_ns_max': float(lat_ns['max']),
+            'lat_ns_mean': float(lat_ns['mean']),
+            'lat_ns_stddev': float(lat_ns['stddev']),
+            'ops': int(lat_ns['N']),
+            'lat_ns_pctl_99.0': float(lat_pctl_ns.get('99.000000', 0)),
+            'lat_ns_pctl_99.9': float(lat_pctl_ns.get('99.900000', 0)),
+            'lat_ns_pctl_99.99': float(lat_pctl_ns.get('99.990000', 0)),
+            'lat_ns_pctl_99.999': float(lat_pctl_ns.get('99.999000', 0)),
+            'bw_avg': float(op_result['bw']),
+            'bw_min': float(op_result['bw_min']),
+            'bw_max': float(op_result['bw_max']),
+            'iops_avg': float(op_result['iops']),
+            'iops_min': float(op_result['iops_min']),
+            'iops_max': float(op_result['iops_max'])
         }
 
     @classmethod
@@ -118,24 +118,24 @@ class FioFormat:
         lat_ns = op_result['lat_ns']
         lat_pctl_ns = lat_ns.get('percentile', {})
         output = {
-            'threads': op_result['numjobs'],
-            'iodepth': op_result['iodepth'],
-            'bs': op_result['bs'],
-            'ops': lat_ns['N'],
-            'lat_min': lat_ns['min'],
-            'lat_max': lat_ns['max'],
-            'lat_avg': lat_ns['mean'],
-            'lat_stdev': lat_ns['stddev'],
-            'lat_pctl_99.0': lat_pctl_ns.get('99.000000', 0),
-            'lat_pctl_99.9': lat_pctl_ns.get('99.900000', 0),
-            'lat_pctl_99.99': lat_pctl_ns.get('99.990000', 0),
-            'lat_pctl_99.999': lat_pctl_ns.get('99.999000', 0),
-            'bw_min': op_result['bw_min'],
-            'bw_max': op_result['bw_max'],
-            'bw_avg': op_result['bw'],
-            'iops_min': op_result['iops_min'],
-            'iops_max': op_result['iops_max'],
-            'iops_avg': op_result['iops']
+            'threads': int(op_result['numjobs']),
+            'iodepth': int(op_result['iodepth']),
+            'bs': int(op_result['bs']),
+            'ops': int(lat_ns['N']),
+            'lat_min': float(lat_ns['min']),
+            'lat_max': float(lat_ns['max']),
+            'lat_avg': float(lat_ns['mean']),
+            'lat_stdev': float(lat_ns['stddev']),
+            'lat_pctl_99.0': float(lat_pctl_ns.get('99.000000', 0)),
+            'lat_pctl_99.9': float(lat_pctl_ns.get('99.900000', 0)),
+            'lat_pctl_99.99': float(lat_pctl_ns.get('99.990000', 0)),
+            'lat_pctl_99.999': float(lat_pctl_ns.get('99.999000', 0)),
+            'bw_min': float(op_result['bw_min']),
+            'bw_max': float(op_result['bw_max']),
+            'bw_avg': float(op_result['bw']),
+            'iops_min': float(op_result['iops_min']),
+            'iops_max': float(op_result['iops_max']),
+            'iops_avg': float(op_result['iops'])
         }
         # convert nsec to usec
         for key in cls.__NSEC_2_USEC_NAMES:
