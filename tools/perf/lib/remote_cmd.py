@@ -17,10 +17,11 @@ from scp import SCPClient
 class RemoteCmd:
     """run a command on a remote node over SSH"""
 
-    def __init__(self, ssh_client, stdout, stderr):
+    def __init__(self, ssh_client, stdout, stderr, exec_stderr):
         self.ssh_client = ssh_client
         self.stdout = stdout
         self.stderr = stderr
+        self.exec_stderr = exec_stderr
         self.exit_status = None
 
     def wait(self) -> None:
@@ -100,5 +101,7 @@ class RemoteCmd:
         if isinstance(cmd, list):
             cmd = ' '.join(cmd)
         _, stdout, stderr = ssh_client.exec_command(cmd, environment=env)
+        # workaround when stderr becomes empty
+        exec_stderr = stderr.read().decode().strip()
 
-        return cls(ssh_client, stdout, stderr)
+        return cls(ssh_client, stdout, stderr, exec_stderr)
