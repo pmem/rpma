@@ -79,7 +79,7 @@ class RemoteCmd:
         remote_cmd.wait()
         if raise_on_error:
             if remote_cmd.exit_status != 0:
-                raise ValueError(remote_cmd.stderr.read())
+                raise ValueError(remote_cmd.stderr.read().decode().strip())
         return remote_cmd
 
     @classmethod
