@@ -20,7 +20,7 @@ class RemoteCmd:
     def __init__(self, ssh_client, stdout, stderr):
         self.ssh_client = ssh_client
         self.stdout = stdout
-        self.stderr = stderr
+        self.stderr = stderr.read().decode().strip()
         self.exit_status = None
 
     def wait(self) -> None:
