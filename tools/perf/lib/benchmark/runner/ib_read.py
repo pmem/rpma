@@ -161,6 +161,7 @@ class IbReadRunner:
                 if not self.__probably_no_server(err) or counter == 10:
                     print('\nstdout:\n{}\nstderr:\n{}\n'
                           .format(err.stdout, err.stderr))
+                    self.__server_stop(settings)
                     raise # re-raise the current exception
                 print('Retrying #{} ...'.format(counter))
                 time.sleep(0.1) # wait 0.1 sec for server to start listening
