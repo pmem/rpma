@@ -117,7 +117,7 @@ class FioRunner:
         """Start the server on the remote side (using RemoteCmd)
            and keep an object allowing to control the server.
         """
-        print('[mode: {},  size: {}, threads: {}, tx_depth: {}, sync: {} ] '\
+        print('[mode: {}, size: {}, threads: {}, tx_depth: {}, sync: {}] '\
               .format(self.__tool_mode, settings['bs'], settings['threads'],
                       settings['iodepth'], settings['sync']))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
