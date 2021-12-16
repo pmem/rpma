@@ -11,6 +11,9 @@
 """the runner's helpers (EXPERIMENTAL)"""
 
 import json
+import re
+
+from ...remote_cmd import RemoteCmd
 
 #: an error message when an unexpected mode is detected
 UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
@@ -50,3 +53,53 @@ def print_start_message(mode, oneseries, config):
         tool = tool + '({})'.format(oneseries['tool_mode'])
     print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
           .format(tool, mode, config['server_ip']))
+
+def prepare_cmd(config, oneseries, cmd_exec, x_value = ''):
+    """prepare cmd"""
+    cmd = cmd_exec
+    cmd_vars = re.findall(r'\${.+?}', cmd)
+    for item in cmd_vars:
+        replace_item = item.replace('${', '').replace('}', '')
+        if replace_item in config:
+            cmd = cmd.replace(item, str(config[replace_item]))
+        elif replace_item == 'RUN_NAME' and x_value != '':
+            run_name = 'benchmark_{}_x_value_{}'\
+                .format(oneseries['id'], x_value)
+            cmd = cmd.replace(item, run_name)
+    return cmd
+
+def run_pre_command(config, oneseries, x_value):
+    """run pre command"""
+    run_pre = None
+    if 'REMOTE_CMD_PRE' in config and config['REMOTE_CMD_PRE'] != '':
+        cmd = prepare_cmd(config, oneseries, config['REMOTE_CMD_PRE'], x_value)
+        run_pre = RemoteCmd.run_async(config, cmd)
+    return run_pre
+
+def __wait_for_pre_command(pre_command, raise_on_error = True):
+    """wait for the end of the pre command"""
+    if pre_command is None:
+        return
+    print('Waiting for pre-command ...')
+    pre_command.wait()
+    if pre_command.exit_status == 0:
+        return
+    print('--- pre-command\'s stderr: ---')
+    stderr_msg = pre_command.stderr.read().decode().strip()
+    if raise_on_error:
+        raise ValueError(stderr_msg)
+    print(stderr_msg)
+    print('--- end of pre-command\'s stderr ---\n')
+
+def run_post_command(config, oneseries, pre_command = None):
+    """run post command and wait for the end of the pre command"""
+    if 'REMOTE_CMD_POST' in config and config['REMOTE_CMD_POST'] != '':
+        cmd = prepare_cmd(config, oneseries, config['REMOTE_CMD_POST'])
+        try:
+            RemoteCmd.run_sync(config, cmd, raise_on_error=True)
+        except:
+            print('Post-command failed!')
+            __wait_for_pre_command(pre_command, raise_on_error = False)
+            print('--- post-command\'s output: ---')
+            raise
+    __wait_for_pre_command(pre_command)
