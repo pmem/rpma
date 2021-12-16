@@ -131,7 +131,7 @@ class FioRunner:
                'direct_write_to_pmem={}'.format(self.__direct_write_to_pmem),
                'busy_wait_polling={}'.format(busy_wait_polling),
                'cores_per_socket={}'.format(self.__config['CORES_PER_SOCKET'])]
-        if 'cpuload' in settings:
+        if 'cpuload' in settings and settings['cpuload'] > 0:
             env.append('cpuload={}'.format(settings['cpuload']))
         else:
             # no CPU load
