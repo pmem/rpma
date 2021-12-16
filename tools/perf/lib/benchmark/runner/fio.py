@@ -229,6 +229,7 @@ class FioRunner:
         except subprocess.CalledProcessError as err:
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
+            self.__server_stop(settings)
             raise # re-raise the current exception
 
         result = FioFormat.parse(ret.stdout)
