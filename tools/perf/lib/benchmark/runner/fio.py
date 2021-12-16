@@ -19,7 +19,8 @@ from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
-                    result_append, result_is_done, print_start_message
+                    result_append, result_is_done, print_start_message, \
+                    run_pre_command, run_post_command
 
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
@@ -267,11 +268,11 @@ class FioRunner:
             # prepare settings for the current x-axis value
             settings = self.__settings.copy()
             settings[self.__x_key] = x_value
-            # XXX remote_command --pre
+            run_pre_command(self.__config, self.__benchmark.oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            # XXX remote_command --post
+            run_post_command(self.__config, self.__benchmark.oneseries, x_value)
             self.__result_append(x_value, y_value)
 
     __CPU_LOAD_RANGE = {

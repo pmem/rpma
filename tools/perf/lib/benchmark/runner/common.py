@@ -11,6 +11,9 @@
 """the runner's helpers (EXPERIMENTAL)"""
 
 import json
+import re
+
+from ...remote_cmd import RemoteCmd
 
 #: an error message when an unexpected mode is detected
 UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
@@ -50,3 +53,33 @@ def print_start_message(mode, oneseries, config):
         tool = tool + '({})'.format(oneseries['tool_mode'])
     print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
           .format(tool, mode, config['server_ip']))
+
+def prepare_cmd(config, oneseries, x_value, cmd_exec):
+    """prepare cmd"""
+    cmd = cmd_exec
+    cmd_vars = re.findall(r'\${.+?}', cmd)
+    for item in cmd_vars:
+        replace_item = item.replace('${', '').replace('}', '')
+        if replace_item in config:
+            cmd = cmd.replace(item, str(config[replace_item]))
+        elif replace_item == 'RUN_NAME':
+            run_name = 'benchmark_{}_x_value_{}'\
+                .format(oneseries['id'], x_value)
+            cmd = cmd.replace(item, run_name)
+    return cmd
+
+def run_pre_command(config, oneseries, x_value):
+    """run pre command"""
+    if 'REMOTE_CMD_PRE' in config and config['REMOTE_CMD_PRE'] != '':
+        cmd = prepare_cmd(config, oneseries, x_value, config['REMOTE_CMD_PRE'])
+        cmd = cmd + " &"
+        run_pre = RemoteCmd.run_sync(config, cmd, raise_on_error=True)
+        # XXX - by '&' exit_status is always 0
+        if run_pre.stderr.readline():
+            raise ValueError(run_pre.stderr.readline())
+
+def run_post_command(config, oneseries, x_value):
+    """run post command"""
+    if 'REMOTE_CMD_POST' in config and config['REMOTE_CMD_POST'] != '':
+        cmd = prepare_cmd(config, oneseries, x_value, config['REMOTE_CMD_POST'])
+        RemoteCmd.run_sync(config, cmd, raise_on_error=True)
