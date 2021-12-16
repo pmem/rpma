@@ -74,8 +74,8 @@ class IbReadBwFormat:
         found = re.search(pattern, output)
 
         return {
-            'threads': threads,
-            'iodepth': iodepth,
+            'threads': int(threads),
+            'iodepth': int(iodepth),
             'bs': int(found.group(1)),
             'ops': int(found.group(2)),
             'bw_avg': round(float(found.group(4)), 2)
