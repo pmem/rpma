@@ -108,6 +108,8 @@ def draw_png(argx: str, argy: str, results: list, xscale: str,
                   label=oneseries['label'])
         # collect all existing x values
         xticks.extend(xslist)
+    # make sure all values are ints before sorting them
+    xticks = [int(item) for item in xticks]
     # make values unique (set) and sort them
     xticks = sorted(list(set(xticks)))
     # set the x-axis scale
