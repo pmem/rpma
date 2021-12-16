@@ -28,11 +28,6 @@ class IbReadRunner:
     on both ends of the connection.
     """
 
-    __ONESERIES_REQUIRED = {
-        'rw': 'read',
-        'filetype': 'malloc'
-    }
-
     def __validate(self):
         """validate the object and readiness of the env"""
         for key, value in self.__ONESERIES_REQUIRED.items():
@@ -229,6 +224,11 @@ class IbReadRunner:
             self.__server_stop(settings)
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
+
+    __ONESERIES_REQUIRED = {
+        'rw': 'read',
+        'filetype': 'malloc'
+    }
 
     __X_KEYS = ['threads', 'bs', 'iodepth']
 

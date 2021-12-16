@@ -49,11 +49,6 @@ class FioRunner:
             raise ValueError("cannot find the remote fio: {}"
                              .format(self.__r_fio_path))
 
-    __CPU_LOAD_RANGE = {
-        '00_99' : [0, 25, 50, 75, 99],
-        '75_99' : [75, 80, 85, 90, 95, 99]
-    }
-
     def __set_settings_by_mode(self):
         """set all variable elements of __SETTINGS_BY_MODE"""
         # set 'threads' to CORES_PER_SOCKET in the 'bw-cpu-mt' mode
@@ -186,17 +181,6 @@ class FioRunner:
         with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
-    __DURATION = {
-        'short': {
-            'ramp': 0,
-            'run': 10,
-        },
-        'full': {
-            'ramp': 15,
-            'run': 60
-        }
-    }
-
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
         short_runtime = self.__config.get('SHORT_RUNTIME', False)
@@ -290,8 +274,23 @@ class FioRunner:
             # XXX remote_command --post
             self.__result_append(x_value, y_value)
 
-    __X_KEYS = ['threads', 'bs', 'iodepth', 'cpuload']
+    __CPU_LOAD_RANGE = {
+        '00_99' : [0, 25, 50, 75, 99],
+        '75_99' : [75, 80, 85, 90, 95, 99]
+    }
 
+    __DURATION = {
+        'short': {
+            'ramp': 0,
+            'run': 10,
+        },
+        'full': {
+            'ramp': 15,
+            'run': 60
+        }
+    }
+
+    __X_KEYS = ['threads', 'bs', 'iodepth', 'cpuload']
     __BW_DP_EXP_DEPTHS = [1, 2, 4, 8, 16, 32, 64, 128]
     __BW_DP_LIN_DEPTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     __THREADS_VALUES = [1, 2, 4, 8, 12, 16, 32, 64]
