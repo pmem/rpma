@@ -233,6 +233,8 @@ class FioRunner:
                                           time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self.__settings['logfile_server']))
+        print('Client log: {}'.format(self.__settings['logfile_client']))
 
     def run(self) -> None:
         """collects the `benchmark` results using `fio`

@@ -192,6 +192,8 @@ class IbReadRunner:
         name = '/tmp/ib_read_{}-{}'.format(self.__mode, time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self.__settings['logfile_server']))
+        print('Client log: {}'.format(self.__settings['logfile_client']))
 
     def run(self):
         """collects the `benchmark` results using `ib_read_lat` or `ib_read_bw`
