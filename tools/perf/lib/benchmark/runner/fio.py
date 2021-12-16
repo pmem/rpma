@@ -129,7 +129,7 @@ class FioRunner:
         # XXX nice to have REMOTE_TRACER
         args = ['numactl', '-N', r_numa_n, self.__r_fio_path]
         busy_wait_polling = \
-            self.__benchmark.oneseries.get('busy_wait_polling', True)
+            int(self.__benchmark.oneseries.get('busy_wait_polling', True))
         env = ['serverip={}'.format(self.__config['server_ip']),
                'numjobs={}'.format(settings['threads']),
                'iodepth={}'.format(settings['iodepth']),
