@@ -4,6 +4,11 @@ Down below you'll find instructions on how to contribute to the RPMA performance
 
 **Note**: [The general contributing rules of this repository](https://github.com/pmem/rpma/blob/master/CONTRIBUTING.md) still applies. Moreover what is stated below.
 
+## Prerequisites
+
+Before you start developing the performance tools, ensure that you have installed all components required to run the tools as it is described in
+[BENCHMARKING.md](https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md#requirements) document.
+
 ## Requirements
 
 To develop the Python performance tools, you must have several components installed in your system:
