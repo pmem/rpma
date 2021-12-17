@@ -16,12 +16,13 @@ from datetime import datetime
 from os.path import join
 from shutil import which
 import lib.format as fmt
+from .runner import Runner
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
                     result_append, result_is_done, print_start_message
 
-class IbReadRunner:
+class IbReadRunner(Runner):
     """the ib_read_{lat,bw} tools runner
 
     The runner executes directly either the `ib_read_lat` or `ib_read_bw` binary
@@ -50,10 +51,7 @@ class IbReadRunner:
                              .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
-        self.__benchmark = benchmark
-        self.__config = config
-        self.__idfile = idfile
-        self.__server = None
+        super.__init__(self, benchmark, config, idfile)
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)

@@ -16,6 +16,7 @@ from datetime import datetime
 from os.path import join
 from shutil import which
 from lib.format import FioFormat
+from .runner import Runner
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
@@ -24,7 +25,7 @@ from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
 
-class FioRunner:
+class FioRunner(Runner):
     """the FIO runner
 
     The runner executes directly the `fio` binary on both ends of
@@ -69,10 +70,7 @@ class FioRunner:
 
     def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
-        self.__benchmark = benchmark
-        self.__config = config
-        self.__idfile = idfile
-        self.__server = None
+        super.__init__(self, benchmark, config, idfile)
         # pick the result keys base on the benchmark's rw
         readwrite = benchmark.oneseries['rw']
         if 'read' in readwrite:
