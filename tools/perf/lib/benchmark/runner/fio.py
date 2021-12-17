@@ -180,12 +180,12 @@ class FioRunner:
                 .format(self.__tool_mode)
         job_file = "./fio_jobs/librpma_{}-server.fio".format(self.__tool_mode)
         RemoteCmd.copy_to_remote(self.__config, job_file, r_job_path)
+        args.append(r_job_path)
+        args = env + args
         # dump a command to the log file
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-        args.append(r_job_path)
-        args = env + args
         self.__server = RemoteCmd.run_async(self.__config, args)
         time.sleep(0.1) # wait 0.1 sec for server to start listening
 
