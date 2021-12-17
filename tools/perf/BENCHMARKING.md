@@ -143,8 +143,8 @@ To see all available configuration options please take a look at the help:
 $ ./report_figures.py compare -h
 ```
 
-## Running seperate workloads
-Instead of running a comprehensive set of workloads you can run any seperate subset of them. There are a few tools that can be used for automatic running RPMA-related workloads:
+## Running separate workloads
+Instead of running a comprehensive set of workloads you can run any separate subset of them. There are a few tools that can be used for automatic running RPMA-related workloads:
 
 - `ib_read.sh` - a tool using `ib_read_lat` and `ib_read_bw` to benchmark the baseline performance of RDMA read operation
 - `rpma_fio_bench.sh` - a tool using librpma-dedicated FIO engines for benchmarking remote memory manipulation (reading, writing APM-style, writing GPSPM-style, mixed). These workloads can be run against PMem and DRAM as well.

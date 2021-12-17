@@ -82,7 +82,7 @@ def generate_figures(args: argparse.Namespace) -> None:
         figure.to_png(args.include_titles)
 
 def comparative_figures(args: argparse.Namespace) -> None:
-    """Restore `lib.bench.Bench` objects. Creat an intermedia `lib.compare.Compare` object and generate JPEG and JSON files comparing all given `lib.bench.Bench` objects."""
+    """Restore `lib.bench.Bench` objects. Create an intermedia `lib.compare.Compare` object and generate JPEG and JSON files comparing all given `lib.bench.Bench` objects."""
     benches = [Bench.carry_on(bench) for bench in args.benches]
     compare = Compare(args.names, benches, args.result_dir)
     compare.prepare_series()

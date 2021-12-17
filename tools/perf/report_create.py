@@ -10,7 +10,7 @@
 
 """Generate a performance report (EXPERIMENTAL)
 
-Before running this script you definitly should check `report_bench` and
+Before running this script you definitely should check `report_bench` and
 `report_figures`.
 
 Recreate the `lib.bench.Bench` object, check whether it has completed

@@ -101,7 +101,7 @@ class Benchmark:
 
     @property
     def identifier(self) -> int:
-        """a uniqe identifier of the instance
+        """a unique identifier of the instance
 
         For details please see `Benchmark.uniq()`.
         """
@@ -176,7 +176,7 @@ class Benchmark:
           and `rpma_fio_bench.sh` are meant to be used or
         - `lib.benchmark.runner.base.BaseRunner.run()`.
 
-        No matter which runner is used, in the result of succesfull
+        No matter which runner is used, in the result of successful
         execution the `Benchmark` is marked as done (`Benchmark.is_done()`)
         and the benchmark's result file (`get_result_path()`) contains all
         the collected results.

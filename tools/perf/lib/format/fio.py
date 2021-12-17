@@ -172,9 +172,9 @@ class FioFormat:
             The row of data.
         """
         job = json.loads(json_str)['jobs'][0]
-        opions = job['job options']
-        read = {**job['read'], **opions}
-        write = {**job['write'], **opions}
+        options = job['job options']
+        read = {**job['read'], **options}
+        write = {**job['write'], **options}
         formats = {
             Output.DUMP: cls.__job_op_dump,
             Output.STANDARDIZED: cls.__job_op_standardized
