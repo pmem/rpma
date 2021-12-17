@@ -15,6 +15,6 @@ choose to collect the results using one of available runners. Please see
 `lib.benchmark.base.Benchmark.run()` for details.
 """
 
-from .base import BaseRunner
+from .factory import RunnerFactory
 from .bash import Bash
 from .dummy import Dummy
