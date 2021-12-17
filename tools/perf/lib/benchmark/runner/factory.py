@@ -8,13 +8,13 @@
 # base.py
 #
 
-"""the base benchmark runner (EXPERIMENTAL)"""
+"""the benchmark runner factory(EXPERIMENTAL)"""
 
 from .fio import FioRunner
 from .ib_read import IbReadRunner
 
-class BaseRunner:
-    """The base benchmark runner
+class RunnerFactory:
+    """The benchmark runner factory
 
     Depending on the workload to run it either invokes
     `lib.benchmark.runner.fio` or `lib.benchmark.runner.ib_read`.

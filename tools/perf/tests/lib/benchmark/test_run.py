@@ -67,7 +67,7 @@ def test_base_runner(benchmark_base, tmpdir, monkeypatch):
         nonlocal run_mock_used, tmpdir
         assert idfile == output
         run_mock_used = True
-    monkeypatch.setattr(lib.benchmark.base.BaseRunner, 'run', run_mock)
+    monkeypatch.setattr(lib.benchmark.base.RunnerFactory, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_base.identifier)
     benchmark_base.run(CONFIG_DEFAULT, str(tmpdir))

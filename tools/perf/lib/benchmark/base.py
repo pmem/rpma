@@ -15,7 +15,7 @@ import os
 from copy import deepcopy
 
 from ..common import uniq, ENCODE
-from .runner import BaseRunner, Bash, Dummy
+from .runner import RunnerFactory, Bash, Dummy
 
 def get_result_path(result_dir: str, identifier: int) -> str:
     """a path to the file with all the collected results of the particular
@@ -174,7 +174,7 @@ class Benchmark:
           are expected,
         - `lib.benchmark.runner.bash.Bash.run()` when the legacy `ib_read.sh`
           and `rpma_fio_bench.sh` are meant to be used or
-        - `lib.benchmark.runner.base.BaseRunner.run()`.
+        - `lib.benchmark.runner.factory.RunnerFactory.run()`.
 
         No matter which runner is used, in the result of successful
         execution the `Benchmark` is marked as done (`Benchmark.is_done()`)
@@ -193,7 +193,7 @@ class Benchmark:
         elif '.sh' in self.__oneseries['tool']:
             runner = Bash
         else:
-            runner = BaseRunner
+            runner = RunnerFactory
 
         idfile = get_result_path(result_dir, self.identifier)
         runner.run(self, config, idfile)
