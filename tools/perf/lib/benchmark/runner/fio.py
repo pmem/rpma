@@ -117,9 +117,18 @@ class FioRunner:
         """Start the server on the remote side (using RemoteCmd)
            and keep an object allowing to control the server.
         """
-        print('[mode: {},  size: {}, threads: {}, tx_depth: {}, sync: {} ] '\
-              .format(self.__tool_mode, settings['bs'], settings['threads'],
-                      settings['iodepth'], settings['sync']))
+        operation = self.__benchmark.oneseries['rw']
+        if 'rw_dir' in self.__benchmark.oneseries:
+            operation = operation + '-' + self.__benchmark.oneseries['rw_dir']
+        if 'cpuload' in settings:
+            cpuload = settings['cpuload']
+        else:
+            cpuload = 0
+        print('[mode: {}, op: {}, size: {}, threads: {}, tx_depth: {}, '\
+              'sync: {}, cpuload: {}]'\
+              .format(self.__tool_mode, operation, settings['bs'],
+                      settings['threads'], settings['iodepth'],
+                      settings['sync'], cpuload))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
         # XXX nice to have REMOTE_TRACER
         args = ['numactl', '-N', r_numa_n, self.__r_fio_path]
