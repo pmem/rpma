@@ -73,6 +73,10 @@ class FioRunner:
         self.__config = config
         self.__idfile = idfile
         self.__server = None
+        self.__dump_cmds = False
+        # set dumping commands
+        if 'DUMP_CMDS' in self.__config and self.__config['DUMP_CMDS']:
+            self.__dump_cmds = True
         # pick the result keys base on the benchmark's rw
         readwrite = benchmark.oneseries['rw']
         if 'read' in readwrite:
@@ -176,7 +180,10 @@ class FioRunner:
                 .format(self.__tool_mode)
         job_file = "./fio_jobs/librpma_{}-server.fio".format(self.__tool_mode)
         RemoteCmd.copy_to_remote(self.__config, job_file, r_job_path)
-        # XXX add option to dump the command (DUMP_CMDS)
+        # dump a command to the log file
+        if self.__dump_cmds:
+            with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
+                log.write("[server]$ {}".format(' '.join(args)))
         args.append(r_job_path)
         args = env + args
         self.__server = RemoteCmd.run_async(self.__config, args)
@@ -187,7 +194,7 @@ class FioRunner:
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
-        with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
+        with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
     def __client_run(self, settings):
@@ -213,7 +220,10 @@ class FioRunner:
         job_file = './fio_jobs/librpma_{}-client.fio'.format(self.__tool_mode)
         args.extend([self.__fio_path, job_file, '--output-format=json+'])
 
-        # XXX add option to dump the command (DUMP_CMDS)
+        # dump a command to the log file
+        if self.__dump_cmds:
+            with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
+                log.write("[client]$ {}".format(' '.join(args)))
         try:
             ret = subprocess.run(args, check=True, env=env,
                                  stdout=subprocess.PIPE,

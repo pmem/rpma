@@ -54,6 +54,10 @@ class IbReadRunner:
         self.__config = config
         self.__idfile = idfile
         self.__server = None
+        self.__dump_cmds = False
+        # set dumping commands
+        if 'DUMP_CMDS' in self.__config and self.__config['DUMP_CMDS']:
+            self.__dump_cmds = True
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
@@ -110,7 +114,11 @@ class IbReadRunner:
             r_aux_params = r_aux_params + cfg_r_aux_params
 
         args = ['numactl', '-N', r_numa_n, self.__r_ib_path, *r_aux_params]
-        # XXX add option to dump the command (DUMP_CMDS)
+        # dump a command to the log file
+        if self.__dump_cmds:
+            with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
+                log.write("[server]$ {}".format(' '.join(args)))
+
         self.__server = RemoteCmd.run_async(self.__config, args)
         time.sleep(0.1) # wait 0.1 sec for server to start listening
 
@@ -119,7 +127,7 @@ class IbReadRunner:
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
-        with open(settings['logfile_server'], 'w', encoding='utf-8') as log:
+        with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
             log.write('\nstdout:\n{}\nstderr:\n{}\n'.format(stdout, stderr))
 
     @staticmethod
@@ -144,8 +152,11 @@ class IbReadRunner:
         server_ip = self.__config['server_ip']
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
+        # dump a command to the log file
+        if self.__dump_cmds:
+            with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
+                log.write("[client]$ {}".format(' '.join(args)))
 
-        # XXX add option to dump the command (DUMP_CMDS)
         # XXX optionally measure the run time and assert exe_time >= 60s
 
         # try to connect with the server 10 times at most
@@ -168,7 +179,7 @@ class IbReadRunner:
                 counter = counter + 1
 
         # save stderr in the log file
-        with open(settings['logfile_client'], 'w', encoding='utf-8') as log:
+        with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
             log.write('\nstderr:\n{}\n'.format(ret.stderr))
 
         return self.__formatter.parse(ret.stdout, str(settings['bs']),
