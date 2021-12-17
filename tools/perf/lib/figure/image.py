@@ -21,7 +21,8 @@ __FIGURE_KWARGS = {'figsize': [6.4, 4.8], 'dpi': 200, \
 __LINE_STYLES = ['solid', 'dashed', 'dashdot', 'dotted']
 
 def __points_to_xy(points: list) -> tuple:
-    xslist = [p[0] for p in points]
+    # make sure all Xs are ints, because they will be sorted
+    xslist = [int(p[0]) for p in points]
     yslist = [p[1] for p in points]
     return xslist, yslist
 
