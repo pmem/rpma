@@ -10,7 +10,7 @@
 
 """Controlling generating the final report
 
-To initiate the benchmarking proces you provide figures in sets known as parts
+To initiate the benchmarking process you provide figures in sets known as parts
 (`report_bench`, `lib.bench.Bench.parts`). This package combines these
 parts and figures you have already generated into a final
 `lib.report.base.Report`. For details please see `lib`.

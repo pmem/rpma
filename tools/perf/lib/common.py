@@ -28,7 +28,7 @@ def dir_path(string: str) -> str:
         string: a path to process
 
     Returns
-        An abolute path made from `string`.
+        An absolute path made from `string`.
 
     Raises:
         NotADirectoryError: If the `string` exists but it is not a directory.
