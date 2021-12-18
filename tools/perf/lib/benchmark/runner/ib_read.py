@@ -59,6 +59,7 @@ class IbReadRunner:
         if 'DUMP_CMDS' in self.__config and self.__config['DUMP_CMDS']:
             self.__dump_cmds = True
         # pick the settings predefined for the chosen mode
+        self.__tool = self.__benchmark.oneseries['tool']
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
@@ -196,7 +197,7 @@ class IbReadRunner:
     def __set_log_files_names(self):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/ib_read_{}-{}'.format(self.__mode, time_stamp)
+        name = '/tmp/{}_{}-{}'.format(self.__tool, self.__mode, time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
         print('Server log: {}'.format(self.__settings['logfile_server']))
