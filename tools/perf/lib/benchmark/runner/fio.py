@@ -90,6 +90,7 @@ class FioRunner:
         # pick the settings predefined for the chosen mode
         self.__mode = self.__benchmark.oneseries['mode']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
+        self.__tool = self.__benchmark.oneseries['tool']
         self.__direct_write_to_pmem = \
             int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
@@ -262,7 +263,7 @@ class FioRunner:
     def __set_log_files_names(self):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/fio-{}_{}-{}'.format(self.__tool_mode, self.__mode,
+        name = '/tmp/{}_{}_{}-{}'.format(self.__tool, self.__tool_mode, self.__mode,
                                           time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
