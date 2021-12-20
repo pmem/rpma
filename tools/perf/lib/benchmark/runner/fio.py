@@ -46,7 +46,7 @@ class FioRunner:
 
         # check if the remote fio is present
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
-        if output.exit_status != 0:
+        if output.__exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
                              .format(self.__r_fio_path))
 
