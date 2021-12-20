@@ -17,17 +17,17 @@ from scp import SCPClient
 class RemoteCmd:
     """run a command on a remote node over SSH"""
 
-    def __init__(self, ssh_client, stdout, stderr):
-        self.ssh_client = ssh_client
+    def __init__(self, ssh_client, stdout, stderr, exit_status = None):
+        self.__ssh_client = ssh_client
         self.stdout = stdout
         self.stderr = stderr
-        self.exit_status = None
+        self.exit_status = exit_status
 
     def wait(self) -> None:
         """wait for the command to finish"""
         self.exit_status = self.stdout.channel.recv_exit_status()
-        self.ssh_client.close()
-        self.ssh_client = None
+        self.__ssh_client.close()
+        self.__ssh_client = None
 
     @classmethod
     def __connect_to_host(cls, config: dict) -> para.SSHClient:
