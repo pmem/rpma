@@ -18,12 +18,9 @@ from os.path import join
 from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
+from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
                     result_append, result_is_done, print_start_message
-
-UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
-UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
 
 class FioRunner:
     """the FIO runner
@@ -37,7 +34,7 @@ class FioRunner:
         # XXX validate the object
         filetype = self.__benchmark.oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
-            raise ValueError(UNKNOWN_FILETYPE_MSG.format(filetype))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
 
         # check if the local fio is present
         if shutil.which(self.__fio_path) is None:
@@ -62,8 +59,8 @@ class FioRunner:
             else:
                 cpu_load = '00_99'
             if cpu_load not in self.__CPU_LOAD_RANGE:
-                raise ValueError('wrong value of \'cpu_load_range\': {}'
-                                 .format(cpu_load))
+                raise ValueError(UNKNOWN_VALUE_MSG
+                                 .format('cpu_load_range', cpu_load))
             cpu_load_range = self.__CPU_LOAD_RANGE[cpu_load]
             self.__settings['cpuload'] = cpu_load_range
             self.__settings['iterations'] = len(cpu_load_range)
@@ -90,7 +87,7 @@ class FioRunner:
         elif 'rw' in readwrite:
             self.__result_keys = ['read', 'write']
         else:
-            raise ValueError(UNKNOWN_RW_MSG.format(readwrite))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('rw', readwrite))
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
@@ -99,7 +96,7 @@ class FioRunner:
             int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
-            raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         self.__set_settings_by_mode()
         # path to the local fio
         self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
