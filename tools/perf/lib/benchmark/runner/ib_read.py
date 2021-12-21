@@ -18,7 +18,7 @@ from shutil import which
 import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
+from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
                     result_append, result_is_done, print_start_message
 
@@ -62,7 +62,7 @@ class IbReadRunner:
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
-            raise NotImplementedError(UNKNOWN_MODE_MSG.format(self.__mode))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         # path to the local ib tool
         self.__ib_path = join(self.__config.get('IB_PATH', ''),
                               self.__settings['ib_tool'])
