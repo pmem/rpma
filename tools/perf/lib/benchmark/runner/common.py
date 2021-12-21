@@ -15,8 +15,8 @@ import re
 
 from ...remote_cmd import RemoteCmd
 
-#: an error message when an unexpected mode is detected
-UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
+#: an error message when an unexpected value of a key is detected
+UNKNOWN_VALUE_MSG = "An unexpected '{}' value: {}"
 
 #: an error message when x-axis cannot be identified
 NO_X_AXIS_MSG = \
