@@ -9,7 +9,8 @@
 #
 
 """the abstract runner (EXPERIMENTAL)"""
-#from ..base import Benchmark
+
+import json
 
 from .common import MISSING_KEY_MSG
 
@@ -24,6 +25,7 @@ class Runner:
         self.__benchmark = benchmark
         self.__config = config
         self.__idfile = idfile
+        self.__data = []
         self.__validate()
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
@@ -56,8 +58,15 @@ class Runner:
         return self.__config
 
     @property
-    def _idfile(self):
+    def _idfile(self) -> str:
         return self.__idfile
+
+    @property
+    def _data(self):
+        return self.__data
+    @_data.setter
+    def _data(self, data):
+        self.__data = data
 
     @property
     def _oneseries(self):
@@ -78,6 +87,33 @@ class Runner:
     @property
     def _mode(self):
         return self._oneseries['mode']
+
+    def _print_start_message(self):
+        """print the STARTING message"""
+        tool = self._tool + '({})'.format(self._tool_mode)
+        print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
+              .format(tool, self._mode, self._config['server_ip']))
+
+    def _result_append(self, result: dict) -> None:
+        """append new result to internal data and file"""
+        self._data.append(result)
+        with open(self._idfile, 'w', encoding='utf-8') as file:
+            json.dump(self._data, file, indent=4)
+
+    def _result_is_done(self, x_key: str, x_value: int) -> bool:
+        """check if the result for the given x_value of x_key is already collected"""
+        for result in self._data:
+            # A result can be a tuple (read, write) or a list of two elements
+            # in case of the fio 'rw' mode and then it is enough to check
+            # only the first item, because they both have to have the same keys.
+            if isinstance(result, (tuple, list)):
+                result = result[0]
+            if x_key not in result:
+                raise ValueError('key \'{}\' is missing the previous results'
+                                 .format(x_key))
+            if str(result[x_key]) == str(x_value):
+                return True
+        return False
 
     __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']
