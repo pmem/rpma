@@ -18,9 +18,9 @@ from os.path import join
 import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
-                    result_append, result_is_done, print_start_message, \
-                    run_pre_command, run_post_command
+from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
+                    BS_VALUES, run_pre_command, run_post_command, \
+                    result_append, result_is_done, print_start_message
 
 class IbReadRunner:
     """the ib_read_{lat,bw} tools runner
@@ -33,9 +33,7 @@ class IbReadRunner:
         """validate the object and readiness of the env"""
         for key, value in self.__ONESERIES_REQUIRED.items():
             if key not in self.__benchmark.oneseries:
-                raise ValueError(
-                    "the following key is missing in the figure: {}"
-                    .format(key))
+                raise ValueError(MISSING_KEY_MSG.format(key))
             if self.__benchmark.oneseries[key] != value:
                 present_value = self.__benchmark.oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,

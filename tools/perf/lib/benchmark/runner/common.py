@@ -22,6 +22,9 @@ UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
 NO_X_AXIS_MSG = \
     "SETTINGS_BY_MODE[{}] is missing a key defined as a list (x-axis)"
 
+#: an error message when a key is missing in the figure
+MISSING_KEY_MSG = "the following key is missing in the figure: {}"
+
 #: a common block sizes list
 BS_VALUES = [256, 1024, 4096, 8192, 16384, 32768, 65536, 131072, 262144]
 
