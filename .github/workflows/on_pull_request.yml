@@ -28,8 +28,11 @@ jobs:
                  "N=3 OS=fedora OS_VER=34    TYPE=normal CC=gcc   PUSH_IMAGE=1",
                  "N=4 OS=fedora OS_VER=34    TYPE=normal CC=clang AUTO_DOC_UPDATE=1",
                  # Debian 9 has older Python v3.5.3
-                 "N=5 OS=debian OS_VER=9     TYPE=normal CC=gcc   PUSH_IMAGE=1  TEST_PYTHON_TOOLS=OFF"]
-               # "N=5 OS=ubuntu OS_VER=20.04 TYPE=coverity CC=gcc"]
+                 # (it will have Long Term Support (LTS) until the end of June 2022)
+                 "N=5 OS=debian OS_VER=9     TYPE=normal CC=gcc   PUSH_IMAGE=1  TEST_PYTHON_TOOLS=OFF",
+                 # Debian 10 is a representative of OSes that have
+                 # different behavior of the pytest bad-whitespace error (C0326)
+                 "N=6 OS=debian OS_VER=10    TYPE=normal CC=gcc   PUSH_IMAGE=1"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
