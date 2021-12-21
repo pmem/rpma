@@ -12,9 +12,9 @@
 
 import time
 import subprocess
+import shutil
 from datetime import datetime
 from os.path import join
-from shutil import which
 from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
@@ -40,7 +40,7 @@ class FioRunner:
             raise ValueError(UNKNOWN_FILETYPE_MSG.format(filetype))
 
         # check if the local fio is present
-        if which(self.__fio_path) is None:
+        if shutil.which(self.__fio_path) is None:
             raise ValueError("cannot find the local fio: {}"
                              .format(self.__fio_path))
 
