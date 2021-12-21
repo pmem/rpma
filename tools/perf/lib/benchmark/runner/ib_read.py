@@ -12,9 +12,9 @@
 
 import subprocess
 import time
+import shutil
 from datetime import datetime
 from os.path import join
-from shutil import which
 import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
@@ -41,7 +41,7 @@ class IbReadRunner:
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # check if the local ib tool is present
-        if which(self.__ib_path) is None:
+        if shutil.which(self.__ib_path) is None:
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__ib_path))
         # check if the remote ib tool is present
