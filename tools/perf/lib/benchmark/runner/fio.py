@@ -18,9 +18,9 @@ from shutil import which
 from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
-from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, BS_VALUES, \
-                    result_append, result_is_done, print_start_message, \
-                    run_pre_command, run_post_command
+from .common import UNKNOWN_MODE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
+                    BS_VALUES, run_pre_command, run_post_command, \
+                    result_append, result_is_done, print_start_message
 
 UNKNOWN_RW_MSG = "An unexpected 'rw' value: {}"
 UNKNOWN_FILETYPE_MSG = "An unexpected 'filetype' value: {}"
@@ -78,6 +78,9 @@ class FioRunner:
         # set dumping commands
         if 'DUMP_CMDS' in self.__config and self.__config['DUMP_CMDS']:
             self.__dump_cmds = True
+        for key in self.__ONESERIES_REQUIRED:
+            if key not in self.__benchmark.oneseries:
+                raise ValueError(MISSING_KEY_MSG.format(key))
         # pick the result keys base on the benchmark's rw
         readwrite = benchmark.oneseries['rw']
         if 'read' in readwrite:
@@ -299,6 +302,8 @@ class FioRunner:
             self.__server_stop(settings)
             run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
+
+    __ONESERIES_REQUIRED = ['tool_mode', 'mode', 'rw']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
