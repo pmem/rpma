@@ -71,10 +71,8 @@ class FioRunner:
         self.__config = config
         self.__idfile = idfile
         self.__server = None
-        self.__dump_cmds = False
         # set dumping commands
-        if 'DUMP_CMDS' in self.__config and self.__config['DUMP_CMDS']:
-            self.__dump_cmds = True
+        self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
         for key in self.__ONESERIES_REQUIRED:
             if key not in self.__benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
