@@ -231,7 +231,13 @@ class Figure:
             # - a list of lists of two dicts
             if isinstance(rows[0], list):
                 # rows[0] has to be a dict
-                rows = rows[0]
+                # FioFormat.parse() arranges the results this way
+                if series['rw_dir'] == 'read':
+                    rw_dir = 0
+                else:
+                    rw_dir = 1
+                for i, _ in enumerate(rows):
+                    rows[i] = rows[i][rw_dir]
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys
