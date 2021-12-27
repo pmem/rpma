@@ -29,7 +29,7 @@ def test_IbReadRunner_init(monkeypatch):
         return remoteCmd
     monkeypatch.setattr(RemoteCmd, 'run_sync', run_sync_mock)
 
-    oneseries = {'tool': 'ib_read', 'mode': 'lat',
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat', 'mode': 'lat',
                 'rw': 'read', 'filetype': 'malloc',
                 'requirements' : {'direct_write_to_pmem': True}}
     config = {'server_ip':'server_ip'}
@@ -78,7 +78,7 @@ def test_IbReadRunner_init_oneserises_no_rw():
 
 def test_IbReadRunner_init_oneserises_no_filetype():
     """failed initialization of IbReadRunner object - no mode rw provided """
-    oneseries = {'tool': 'ib_read', 'mode' : 'lat', 'rw':'read', }
+    oneseries = {'tool': 'ib_read', 'tool_mode' : 'lat', 'mode' : 'lat', 'rw':'read', }
     config = {'server_ip':'server_ip'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -87,7 +87,7 @@ def test_IbReadRunner_init_oneserises_no_filetype():
 
 def test_IbReadRunner_init_no_config():
     """failed initialization of IbReadRunner object - no config provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat', 
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat', 'mode': 'lat', 
                 'rw':'read',  'filetype': 'malloc',
                 'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
