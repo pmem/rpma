@@ -59,7 +59,11 @@ class IbReadRunner:
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # pick the settings predefined for the chosen mode
+        if 'tool' not in self.__benchmark.oneseries:
+            raise ValueError(MISSING_KEY_MSG.format('tool'))
         self.__tool = self.__benchmark.oneseries['tool']
+        if 'mode' not in self.__benchmark.oneseries:
+            raise ValueError(MISSING_KEY_MSG.format('mode'))
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
