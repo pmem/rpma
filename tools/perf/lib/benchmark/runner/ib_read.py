@@ -42,10 +42,10 @@ class IbReadRunner(Runner):
                              .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
-        super().__init__(benchmark, config)
+        super().__init__(benchmark, config, idfile)
 #        self.__benchmark = benchmark
 #        self.__config = config
-        self.__idfile = idfile
+#        self.__idfile = idfile
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
@@ -196,8 +196,8 @@ class IbReadRunner(Runner):
                                       settings['threads'], settings['iodepth'])
 
     def __result_append(self, _, y_value: dict):
-        """append new result to internal __data and the '__idfile' file"""
-        result_append(self.__data, self.__idfile, y_value)
+        """append new result to internal __data and the '_idfile' file"""
+        result_append(self.__data, self._idfile, y_value)
 
     def __result_is_done(self, x_value: int):
         """check if the result for the given x value is already collected"""

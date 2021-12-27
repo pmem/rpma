@@ -41,6 +41,8 @@ def test_FioRunner_init(monkeypatch):
 
     assert runner._benchmark == benchmark
     assert runner._config == config
+    assert runner._idfile == 'idfile'
+
     assert runner._tool == oneseries['tool']
     assert runner._tool_mode == oneseries['tool_mode']
     assert runner._mode == oneseries['mode']
@@ -122,8 +124,8 @@ def test_FioRunner_init_no_config():
                 'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
-        runner = FioRunner(benchmark,None, 'idfile')
+    with pytest.raises(RuntimeError):
+        runner = FioRunner(benchmark, None, 'idfile')
 
 def test_FioRunner_init_config_no_fio_path():
     """failed initialization of FioRunner object -
