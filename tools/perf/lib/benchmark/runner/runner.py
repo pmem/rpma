@@ -11,9 +11,7 @@
 """the abstract runner (EXPERIMENTAL)"""
 #from ..base import Benchmark
 
-from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command, \
-                    result_append, result_is_done, print_start_message
+from .common import MISSING_KEY_MSG
 
 class Runner:
     """the abstract runner
@@ -32,17 +30,17 @@ class Runner:
 
 
     def __validate(self):
-        if self._benchmark == None:
+        if self._benchmark is None:
             raise RuntimeError("Benchmark is missing")
 
-        if self._oneseries == None:
+        if self._oneseries is None:
             raise RuntimeError("OneSeries is missing")
 
         for key in self.__ONESERIES_REQUIRED:
             if key not in self._benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
 
-        if self._config == None:
+        if self._config is None:
             raise RuntimeError("Config is missing")
 
         for key in self.__CONFIG_REQUIRED:
