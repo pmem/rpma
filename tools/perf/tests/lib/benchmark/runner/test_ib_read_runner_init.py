@@ -36,6 +36,10 @@ def test_IbReadRunner_init(monkeypatch):
 
     benchmark = lib.benchmark.Benchmark(oneseries)
     runner = IbReadRunner(benchmark,config, 'idfile')
+    assert runner._benchmark == benchmark
+    assert runner._config == config
+    assert runner._idfile == 'idfile'
+
 
 def test_IbReadRunner_init_oneserises_no_tool():
     """failed initialization of IbReadRunner object - no tool param provided """

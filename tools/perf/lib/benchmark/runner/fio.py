@@ -69,8 +69,7 @@ class FioRunner(Runner):
 
     def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
-        super().__init__(benchmark, config)
-        self.__idfile = idfile
+        super().__init__(benchmark, config, idfile)
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
@@ -253,8 +252,8 @@ class FioRunner(Runner):
         return ret_val
 
     def __result_append(self, _, y_value: dict):
-        """append new result to internal __data and the '__idfile' file"""
-        result_append(self.__data, self.__idfile, y_value)
+        """append new result to internal __data and the '_idfile' file"""
+        result_append(self.__data, self._idfile, y_value)
 
     def __result_is_done(self, x_value: int):
         """check if the result for the given x value is already collected"""

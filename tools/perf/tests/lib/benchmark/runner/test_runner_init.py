@@ -22,9 +22,10 @@ def test_Runner_init():
     config = {'server_ip':'server_ip'}
     
     benchmark = lib.benchmark.Benchmark(oneseries)
-    runner = Runner(benchmark,config)
+    runner = Runner(benchmark, config, 'idfile')
     assert runner._benchmark == benchmark
     assert runner._config == config
+    assert runner._idfile == 'idfile'
     
     assert runner._tool == oneseries['tool']
     assert runner._tool_mode == oneseries['tool_mode']

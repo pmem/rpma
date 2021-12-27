@@ -41,6 +41,8 @@ def test_FioRunner_init(monkeypatch):
 
     assert runner._benchmark == benchmark
     assert runner._config == config
+    assert runner._idfile == 'idfile'
+
     assert runner._tool == oneseries['tool']
     assert runner._tool_mode == oneseries['tool_mode']
     assert runner._mode == oneseries['mode']
