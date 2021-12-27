@@ -103,7 +103,6 @@ class FioRunner:
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         self.__set_settings_by_mode()
-
         # path to the local fio
         self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
         # path to the remote fio
@@ -306,7 +305,7 @@ class FioRunner:
             run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['tool_mode', 'mode', 'rw']
+    __ONESERIES_REQUIRED = ['tool_mode', 'mode', 'rw', 'filetype']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
