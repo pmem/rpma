@@ -69,8 +69,6 @@ class FioRunner(Runner):
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
         super().__init__(benchmark, config, idfile)
         self.__server = None
-        # set dumping commands
-        self.__dump_cmds = self._config.get('DUMP_CMDS', False)
         for key in self.__ONESERIES_REQUIRED:
             if key not in self._oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
@@ -180,7 +178,7 @@ class FioRunner(Runner):
         args.append(r_job_path)
         args = env + args
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
         self.__server = RemoteCmd.run_async(self._config, args)
@@ -218,7 +216,7 @@ class FioRunner(Runner):
         args.extend([self.__fio_path, job_file, '--output-format=json+'])
 
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
         try:

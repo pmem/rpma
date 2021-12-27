@@ -27,6 +27,9 @@ class Runner:
         self.__config = config
         self.__idfile = idfile
         self.__validate()
+        # set dumping commands
+        self.__dump_cmds = self._config.get('DUMP_CMDS', False)
+
 
     def __validate(self):
         if self._benchmark == None:
@@ -61,6 +64,10 @@ class Runner:
     @property
     def _oneseries(self):
         return self._benchmark.oneseries
+
+    @property
+    def _dump_cmds(self):
+        return self.__dump_cmds
 
     @property
     def _mode(self):
