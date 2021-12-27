@@ -177,8 +177,8 @@ class FioRunner(Runner):
         r_job_path = self._config.get('REMOTE_JOB_PATH', '')
         if r_job_path == '':
             r_job_path = '/dev/shm/librpma_{}-server.fio'\
-                .format(self.__tool_mode)
-        job_file = "./fio_jobs/librpma_{}-server.fio".format(self.__tool_mode)
+                .format(self._tool_mode)
+        job_file = "./fio_jobs/librpma_{}-server.fio".format(self._tool_mode)
         RemoteCmd.copy_to_remote(self._config, job_file, r_job_path)
         args.append(r_job_path)
         args = env + args
@@ -217,7 +217,7 @@ class FioRunner(Runner):
         else:
             args = ['numactl', '-N', str(self._config['JOB_NUMA'])]
 
-        job_file = './fio_jobs/librpma_{}-client.fio'.format(self.__tool_mode)
+        job_file = './fio_jobs/librpma_{}-client.fio'.format(self._tool_mode)
         args.extend([self.__fio_path, job_file, '--output-format=json+'])
 
         # dump a command to the log file
@@ -263,7 +263,7 @@ class FioRunner(Runner):
     def __set_log_files_names(self):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/{}_{}_{}-{}'.format(self.__tool, self.__tool_mode,
+        name = '/tmp/{}_{}_{}-{}'.format(self._tool, self._tool_mode,
                                          self._mode, time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
