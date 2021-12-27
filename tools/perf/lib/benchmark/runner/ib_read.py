@@ -65,11 +65,12 @@ class IbReadRunner:
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         # path to the local ib tool
-        self.__ib_path = join(self.__config.get('IB_PATH', ''),
-                              self.__settings['ib_tool'])
+        ib_name = self.__benchmark.oneseries.get('tool', '') + '_' + \
+            self.__benchmark.oneseries.get('tool_mode', '')
+        self.__ib_path = join(self.__config.get('IB_PATH', ''), ib_name)
         # path to the remote ib tool
         self.__r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
-                                self.__settings['ib_tool'])
+                                ib_name)
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
@@ -249,7 +250,8 @@ class IbReadRunner:
         'rw': 'read',
         'filetype': 'malloc',
         'tool': 'ib_read',
-        'mode': None
+        'mode': None,
+        'tool_mode': None
     }
 
     __X_KEYS = ['threads', 'bs', 'iodepth']
