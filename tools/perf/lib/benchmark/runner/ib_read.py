@@ -21,8 +21,8 @@ from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
                     result_append, result_is_done, print_start_message
-
-class IbReadRunner:
+from .runner import Runner
+class IbReadRunner(Runner):
     """the ib_read_{lat,bw} tools runner
 
     The runner executes directly either the `ib_read_lat` or `ib_read_bw` binary
@@ -34,43 +34,44 @@ class IbReadRunner:
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__ib_path))
         # check if the remote ib tool is present
-        if 'server_ip' not in self.__config:
+        if 'server_ip' not in self._config:
             raise ValueError(MISSING_KEY_MSG.format('server_ip'))
-        output = RemoteCmd.run_sync(self.__config, ['which', self.__r_ib_path])
+        output = RemoteCmd.run_sync(self._config, ['which', self.__r_ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
                              .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
-        self.__benchmark = benchmark
-        self.__config = config
+        super().__init__(benchmark, config)
+#        self.__benchmark = benchmark
+#        self.__config = config
         self.__idfile = idfile
         self.__server = None
         # set dumping commands
-        self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__dump_cmds = self._config.get('DUMP_CMDS', False)
         """validate the object and readiness of the env"""
         for key, value in self.__ONESERIES_REQUIRED.items():
-            if key not in self.__benchmark.oneseries:
+            if key not in self._benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
-            if self.__benchmark.oneseries[key] != value:
-                present_value = self.__benchmark.oneseries[key]
+            if self._benchmark.oneseries[key] != value:
+                present_value = self._benchmark.oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # pick the settings predefined for the chosen mode
-        if 'tool' not in self.__benchmark.oneseries:
+        if 'tool' not in self._benchmark.oneseries:
             raise ValueError(MISSING_KEY_MSG.format('tool'))
-        self.__tool = self.__benchmark.oneseries['tool']
-        if 'mode' not in self.__benchmark.oneseries:
+#        self.__tool = self._benchmark.oneseries['tool']
+        if 'mode' not in self._benchmark.oneseries:
             raise ValueError(MISSING_KEY_MSG.format('mode'))
-        self.__mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
+#        self.__mode = self._benchmark.oneseries['mode']
+        self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
         if not isinstance(self.__settings, dict):
-            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))
         # path to the local ib tool
-        self.__ib_path = join(self.__config.get('IB_PATH', ''),
+        self.__ib_path = join(self._config.get('IB_PATH', ''),
                               self.__settings['ib_tool'])
         # path to the remote ib tool
-        self.__r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
+        self.__r_ib_path = join(self._config.get('REMOTE_IB_PATH', ''),
                                 self.__settings['ib_tool'])
         # find the x-axis key
         self.__x_key = None
@@ -79,7 +80,7 @@ class IbReadRunner:
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
-            raise NotImplementedError(NO_X_AXIS_MSG.format(self.__mode))
+            raise NotImplementedError(NO_X_AXIS_MSG.format(self._mode))
         # load the already collected results
         try:
             self.__results = json_from_file(idfile)
@@ -87,7 +88,7 @@ class IbReadRunner:
             self.__results = {'input_file': idfile, 'json': []}
         self.__data = self.__results['json']
         self.__validate()
-        self.__formatter = fmt.IbReadLatFormat if self.__mode == 'lat' \
+        self.__formatter = fmt.IbReadLatFormat if self._mode == 'lat' \
                                                else fmt.IbReadBwFormat
 
     def __common_args(self, settings):
@@ -110,9 +111,9 @@ class IbReadRunner:
               '(duration: ~60s)'
               .format(settings['bs'], settings['threads'],
                       settings['iodepth'], settings['iterations']))
-        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        r_numa_n = str(self._config['REMOTE_JOB_NUMA'])
         r_aux_params = [*settings['args']]
-        cfg_r_aux_params = self.__config['REMOTE_AUX_PARAMS'].split(' ')
+        cfg_r_aux_params = self._config['REMOTE_AUX_PARAMS'].split(' ')
         if cfg_r_aux_params != ['']:
             r_aux_params = r_aux_params + cfg_r_aux_params
 
@@ -122,7 +123,7 @@ class IbReadRunner:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
 
-        self.__server = RemoteCmd.run_async(self.__config, args)
+        self.__server = RemoteCmd.run_async(self._config, args)
         time.sleep(0.1) # wait 0.1 sec for server to start listening
 
     def __server_stop(self, settings):
@@ -146,13 +147,13 @@ class IbReadRunner:
 
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
-        numa_n = str(self.__config['JOB_NUMA'])
+        numa_n = str(self._config['JOB_NUMA'])
         it_opt = '--iters=' + str(settings['iterations'])
         aux_params = [*settings['args']]
-        cfg_aux_params = self.__config['AUX_PARAMS'].split(' ')
+        cfg_aux_params = self._config['AUX_PARAMS'].split(' ')
         if cfg_aux_params != ['']:
             aux_params = aux_params + cfg_aux_params
-        server_ip = self.__config['server_ip']
+        server_ip = self._config['server_ip']
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
         # dump a command to the log file
@@ -176,7 +177,7 @@ class IbReadRunner:
                     print('\nstdout:\n{}\nstderr:\n{}\n'
                           .format(err.stdout, err.stderr))
                     self.__server_stop(settings)
-                    run_post_command(self.__config, self.__benchmark.oneseries)
+                    run_post_command(self._config, self._benchmark.oneseries)
                     raise # re-raise the current exception
                 print('Retrying #{} ...'.format(counter))
                 time.sleep(0.1) # wait 0.1 sec for server to start listening
@@ -200,7 +201,7 @@ class IbReadRunner:
     def __set_log_files_names(self):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/{}_{}-{}'.format(self.__tool, self.__mode, time_stamp)
+        name = '/tmp/{}_{}-{}'.format(self._tool, self._mode, time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
         print('Server log: {}'.format(self.__settings['logfile_server']))
@@ -221,8 +222,8 @@ class IbReadRunner:
               is not set. `--iters` is used instead of `--duration` because
               the latter produces significantly less detailed output.
         """
-        print_start_message(self.__mode, self.__benchmark.oneseries,
-                            self.__config)
+        print_start_message(self._mode, self._benchmark.oneseries,
+                            self._config)
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
@@ -236,12 +237,12 @@ class IbReadRunner:
                 raise NotImplementedError(
                     "settings['iterations'][{}] is missing".format(x_value))
             settings['args'] = self.__common_args(settings)
-            pre_cmd = run_pre_command(self.__config,
-                                      self.__benchmark.oneseries, x_value)
+            pre_cmd = run_pre_command(self._config,
+                                      self._benchmark.oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
+            run_post_command(self._config, self._benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = {
