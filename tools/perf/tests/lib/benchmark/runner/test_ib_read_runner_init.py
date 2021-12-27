@@ -92,7 +92,7 @@ def test_IbReadRunner_init_no_config():
                 'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(RuntimeError):
         runner = IbReadRunner(benchmark,None, 'idfile')
 
 def test_IbReadRunner_init_config_no_server_ip(monkeypatch):

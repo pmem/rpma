@@ -297,7 +297,7 @@ class FioRunner(Runner):
             run_post_command(self._config, self._benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode', 'rw', 'filetype']
+    __ONESERIES_REQUIRED = ['tool_mode', 'rw', 'filetype']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],

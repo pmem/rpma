@@ -124,8 +124,8 @@ def test_FioRunner_init_no_config():
                 'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
-        runner = FioRunner(benchmark,None, 'idfile')
+    with pytest.raises(RuntimeError):
+        runner = FioRunner(benchmark, None, 'idfile')
 
 def test_FioRunner_init_config_no_fio_path():
     """failed initialization of FioRunner object -

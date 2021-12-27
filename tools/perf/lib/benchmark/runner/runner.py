@@ -32,6 +32,9 @@ class Runner:
             if key not in self._benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
 
+        if self._config == None:
+            raise RuntimeError("Config is missing")
+
         for key in self.__CONFIG_REQUIRED:
             if key not in self._config:
                 raise ValueError(MISSING_KEY_MSG.format(key))
