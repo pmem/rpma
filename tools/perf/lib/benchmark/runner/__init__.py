@@ -18,3 +18,5 @@ choose to collect the results using one of available runners. Please see
 from .base import BaseRunner
 from .bash import Bash
 from .dummy import Dummy
+from .runner import Runner
+from .ib_read import IbReadRunner
