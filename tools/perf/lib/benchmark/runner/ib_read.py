@@ -34,8 +34,6 @@ class IbReadRunner(Runner):
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__ib_path))
         # check if the remote ib tool is present
-        if 'server_ip' not in self._config:
-            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
         output = RemoteCmd.run_sync(self._config, ['which', self.__r_ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
@@ -55,10 +53,6 @@ class IbReadRunner(Runner):
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # pick the settings predefined for the chosen mode
-        if 'tool' not in self._oneseries:
-            raise ValueError(MISSING_KEY_MSG.format('tool'))
-        if 'mode' not in self._oneseries:
-            raise ValueError(MISSING_KEY_MSG.format('mode'))
         self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))

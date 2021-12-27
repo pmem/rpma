@@ -42,8 +42,6 @@ class FioRunner(Runner):
                              .format(self.__fio_path))
 
         # check if the remote fio is present
-        if 'server_ip' not in self._config:
-            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
         output = RemoteCmd.run_sync(self._config, ['which', self.__r_fio_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
