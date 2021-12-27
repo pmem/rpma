@@ -46,6 +46,8 @@ class FioRunner:
                              .format(self.__fio_path))
 
         # check if the remote fio is present
+        if 'server_ip' not in self.__config:
+            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
@@ -69,6 +71,18 @@ class FioRunner:
             self.__settings['cpuload'] = cpu_load_range
             self.__settings['iterations'] = len(cpu_load_range)
 
+    def __set_results_key(self) -> None:
+        # pick the result keys base on the benchmark's rw
+        readwrite = self.__benchmark.oneseries['rw']
+        if 'read' in readwrite:
+            self.__result_keys = ['read']
+        elif 'write' in readwrite:
+            self.__result_keys = ['write']
+        elif 'rw' in readwrite:
+            self.__result_keys = ['read', 'write']
+        else:
+            raise ValueError(UNKNOWN_VALUE_MSG.format('rw', readwrite))
+
     def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
         self.__benchmark = benchmark
@@ -81,19 +95,15 @@ class FioRunner:
             if key not in self.__benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
         # pick the result keys base on the benchmark's rw
-        readwrite = benchmark.oneseries['rw']
-        if 'read' in readwrite:
-            self.__result_keys = ['read']
-        elif 'write' in readwrite:
-            self.__result_keys = ['write']
-        elif 'rw' in readwrite:
-            self.__result_keys = ['read', 'write']
-        else:
-            raise ValueError(UNKNOWN_VALUE_MSG.format('rw', readwrite))
+        self.__set_results_key()
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
         self.__mode = self.__benchmark.oneseries['mode']
+        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
+            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
+        self.__direct_write_to_pmem = \
+            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
@@ -305,7 +315,7 @@ class FioRunner:
             run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['tool_mode', 'mode', 'rw']
+    __ONESERIES_REQUIRED = ['tool_mode', 'mode', 'rw', 'filetype']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
