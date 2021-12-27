@@ -49,14 +49,6 @@ def result_is_done(data: list, x_key: str, x_value: int) -> bool:
             return True
     return False
 
-def print_start_message(mode, oneseries, config):
-    """print the STARTING message"""
-    tool = oneseries['tool']
-    if 'tool_mode' in oneseries:
-        tool = tool + '({})'.format(oneseries['tool_mode'])
-    print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
-          .format(tool, mode, config['server_ip']))
-
 def prepare_cmd(config, oneseries, cmd_exec, x_value=None):
     """prepare cmd"""
     cmd = cmd_exec

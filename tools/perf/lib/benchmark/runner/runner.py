@@ -78,6 +78,12 @@ class Runner:
     @property
     def _tool(self):
         return self._oneseries['tool']
+        
+    def _print_start_message(self):
+        """print the STARTING message"""
+        tool = self._tool + '({})'.format(self._tool_mode)
+        print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
+              .format(tool, self._mode, self._config['server_ip']))
 
     __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']
