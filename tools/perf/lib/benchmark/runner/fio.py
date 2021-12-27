@@ -112,7 +112,6 @@ class FioRunner:
         self.__direct_write_to_pmem = \
             int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__set_settings_by_mode()
-
         # path to the local fio
         self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
         # path to the remote fio
