@@ -47,6 +47,16 @@ def test_fiorunner_init(monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries)
     runner = FioRunner(benchmark, CONFIG_MINI, 'idfile')
     runner.run()
+    #pylint: disable=protected-access
+    assert runner._benchmark == benchmark
+    assert runner._config == CONFIG_MINI
+    assert runner._idfile == 'idfile'
+
+    assert runner._tool == oneseries['tool']
+    assert runner._tool_mode == oneseries['tool_mode']
+    assert runner._mode == oneseries['mode']
+    assert runner._config['server_ip'] == CONFIG_MINI['server_ip']
+    #pylint: enable=protected-access
 
 def test_fiorunner_init_oneserises_no_tool():
     """failed initialization of FioRunner object - no tool param provided """
@@ -114,7 +124,7 @@ def test_fiorunner_init_no_config():
                  'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(RuntimeError):
         FioRunner(benchmark, None, 'idfile')
 
 def test_fiorunner_init_config_no_fio_path():

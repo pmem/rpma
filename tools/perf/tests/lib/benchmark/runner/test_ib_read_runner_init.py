@@ -44,61 +44,92 @@ def test_ibreadrunner_init(monkeypatch):
                  'requirements' : {'direct_write_to_pmem': True}}
 
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
+
     runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
     runner.run()
+
+    #pylint: disable=protected-access
+    assert runner._benchmark == benchmark
+    assert runner._config == CONFIG_MINI
+    assert runner._idfile == 'idfile'
+
+    assert runner._tool == oneseries['tool']
+    assert runner._tool_mode == oneseries['tool_mode']
+    assert runner._mode == oneseries['mode']
+    assert runner._config['server_ip'] == CONFIG_MINI['server_ip']
+    #pylint: enable=protected-access
 
 def test_ibreadrunner_init_oneserises_no_tool():
     """failed initialization of IbReadRunner object - no tool param provided """
     oneseries = {}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
+
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+
+    assert runner is None
 
 def test_ibreadrunner_init_oneserises_no_toolmode():
     """failed initialization of IbReadRunner object - no tool_mode param provided """
     oneseries = {'tool': 'ib_read'}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+
+    assert runner is None
 
 def test_ibreadrunner_init_oneserises_no_mode():
     """failed initialization of IbReadRunner object - no mode param provided """
     oneseries = {'tool': 'ib_read', 'tool_mode' : 'lat'}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+
+    assert runner is None
 
 def test_ibreadrunner_init_oneserises_no_rw():
     """failed initialization of IbReadRunner object - no mode rw provided """
     oneseries = {'tool': 'ib_read', 'mode' : 'lat'}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+
+    assert runner is None
 
 def test_ibreadrunner_init_oneserises_no_filetype():
     """failed initialization of IbReadRunner object - no mode rw provided """
     oneseries = {'tool': 'ib_read', 'mode' : 'lat', 'rw':'read'}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+    assert runner is None
 
 def test_ibreadrunner_init_no_config():
     """failed initialization of IbReadRunner object - no config provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat',
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat', 'mode': 'lat',
                  'rw':'read', 'filetype': 'malloc',
                  'requirements' : {}}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
-    with pytest.raises(AttributeError):
-        IbReadRunner(benchmark, None, 'idfile')
+    with pytest.raises(RuntimeError):
+        runner = IbReadRunner(benchmark, None, 'idfile')
+
+    assert runner is None
 
 def test_ibreadrunner_init_config_no_server_ip(monkeypatch):
     """failed initialization of IbReadRunner object -
-    - no server_ip in config provided """
+       - no server_ip in config provided """
     def which_mock(path: str) ->str:
         assert path == 'ib_read_lat'
         return path
@@ -108,6 +139,9 @@ def test_ibreadrunner_init_config_no_server_ip(monkeypatch):
                  'rw':'read', 'filetype': 'malloc'}
     config = {}
     benchmark = lib.benchmark.Benchmark(oneseries)
+    runner = None
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, config, 'idfile')
+        runner = IbReadRunner(benchmark, config, 'idfile')
+
+    assert runner is None
