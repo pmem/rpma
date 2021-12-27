@@ -42,8 +42,6 @@ class IbReadRunner(Runner):
     def __init__(self, benchmark, config, idfile):
         super().__init__(benchmark, config, idfile)
         self.__server = None
-        # set dumping commands
-        self.__dump_cmds = self._config.get('DUMP_CMDS', False)
         """validate the object and readiness of the env"""
         for key, value in self.__ONESERIES_REQUIRED.items():
             if key not in self._oneseries:
@@ -108,7 +106,7 @@ class IbReadRunner(Runner):
 
         args = ['numactl', '-N', r_numa_n, self.__r_ib_path, *r_aux_params]
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
 
@@ -150,7 +148,7 @@ class IbReadRunner(Runner):
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
 
