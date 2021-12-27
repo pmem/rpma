@@ -42,6 +42,8 @@ class FioRunner:
                              .format(self.__fio_path))
 
         # check if the remote fio is present
+        if 'server_ip' not in self.__config:
+            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
@@ -93,13 +95,14 @@ class FioRunner:
             raise ValueError(UNKNOWN_VALUE_MSG
                              .format('tool_mode', self.__tool_mode))
         self.__mode = self.__benchmark.oneseries['mode']
+        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
+            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
+        self.__direct_write_to_pmem = \
+            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
-        self.__direct_write_to_pmem = \
-            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__set_settings_by_mode()
-
         # path to the local fio
         self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
         # path to the remote fio
