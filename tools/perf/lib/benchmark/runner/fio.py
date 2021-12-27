@@ -19,8 +19,7 @@ from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command, \
-                    result_append, result_is_done
+                    BS_VALUES, run_pre_command, run_post_command
 from .runner import Runner
 class FioRunner(Runner):
     """the FIO runner
@@ -32,6 +31,9 @@ class FioRunner(Runner):
     def __validate(self):
         """validate the object and readiness of the env"""
         # XXX validate the object
+        if self._tool_mode not in ['apm', 'gpspm']:
+            raise ValueError(UNKNOWN_VALUE_MSG
+                             .format('tool_mode', self._tool_mode))
         filetype = self._oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
@@ -109,7 +111,7 @@ class FioRunner(Runner):
             self.__results = json_from_file(idfile)
         except FileNotFoundError:
             self.__results = {'input_file': idfile, 'json': []}
-        self.__data = self.__results['json']
+        self._data = self.__results['json']
         self.__validate()
 
     def __server_start(self, settings):
@@ -249,11 +251,11 @@ class FioRunner(Runner):
 
     def __result_append(self, _, y_value: dict):
         """append new result to internal __data and the '_idfile' file"""
-        result_append(self.__data, self._idfile, y_value)
+        self._result_append(y_value)
 
     def __result_is_done(self, x_value: int):
         """check if the result for the given x value is already collected"""
-        return result_is_done(self.__data, self.__x_key, x_value)
+        return self._result_is_done(self.__x_key, x_value)
 
     def __set_log_files_names(self):
         """set names of log files"""
