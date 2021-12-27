@@ -50,8 +50,8 @@ class IbReadRunner(Runner):
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # pick the settings predefined for the chosen mode
-        self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
-        if not isinstance(self.__settings, dict):
+        self._settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
+        if not isinstance(self._settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))
         # path to the local ib tool
         ib_name = self._oneseries.get('tool', '') + '_' + \
@@ -62,7 +62,7 @@ class IbReadRunner(Runner):
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
-            if isinstance(self.__settings.get(x_key), list):
+            if isinstance(self._settings.get(x_key), list):
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
@@ -191,10 +191,10 @@ class IbReadRunner(Runner):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
         name = '/tmp/{}_{}-{}'.format(self._tool, self._mode, time_stamp)
-        self.__settings['logfile_server'] = name + '-server.log'
-        self.__settings['logfile_client'] = name + '-client.log'
-        print('Server log: {}'.format(self.__settings['logfile_server']))
-        print('Client log: {}'.format(self.__settings['logfile_client']))
+        self._settings['logfile_server'] = name + '-server.log'
+        self._settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self._settings['logfile_server']))
+        print('Client log: {}'.format(self._settings['logfile_client']))
 
     def run(self):
         """collects the `benchmark` results using `ib_read_lat` or `ib_read_bw`
@@ -214,11 +214,11 @@ class IbReadRunner(Runner):
         self._print_start_message()
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
-        for x_value in self.__settings[self.__x_key]:
+        for x_value in self._settings[self.__x_key]:
             if self.__result_is_done(x_value):
                 continue
             # prepare settings for the current x-axis value
-            settings = self.__settings.copy()
+            settings = self._settings.copy()
             settings[self.__x_key] = x_value
             settings['iterations'] = settings['iterations'].get(x_value, None)
             if settings['iterations'] is None:
