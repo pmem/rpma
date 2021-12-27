@@ -7,7 +7,6 @@
 """test_ib_read_runner_init.py -- lib.benchmark.runner.ib_read init tests"""
 
 import pytest
-
 import shutil
 
 import lib.benchmark
@@ -100,12 +99,11 @@ def test_IbReadRunner_init_config_no_server_ip(monkeypatch):
         return path
     monkeypatch.setattr(shutil, 'which', which_mock)
 
+
     oneseries = {'tool': 'ib_read', 'mode': 'lat', 
                 'rw':'read',  'filetype': 'malloc'}
     config = {}
     benchmark = lib.benchmark.Benchmark(oneseries)
-    
     with pytest.raises(ValueError) as excinfo:
         runner = IbReadRunner(benchmark,config, 'idfile')
-
     
