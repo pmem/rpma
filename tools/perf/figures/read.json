@@ -18,6 +18,7 @@
         "series": [
             {
                 "tool": "ib_read",
+                "tool_mode": "lat",
                 "label": "ib_read_lat",
                 "rw": "read"
             },
@@ -83,6 +84,7 @@
         "series": [
             {
                 "tool": "ib_read",
+                "tool_mode": "bw",
                 "label": "ib_read_bw",
                 "rw": "read"
             },
@@ -115,6 +117,7 @@
         "series": [
             {
                 "tool": "ib_read",
+                "tool_mode": "bw",
                 "label": "ib_read_bw",
                 "rw": "read"
             },

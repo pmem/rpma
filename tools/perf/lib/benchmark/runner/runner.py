@@ -79,5 +79,5 @@ class Runner:
     def _tool(self):
         return self._oneseries['tool']
 
-    __ONESERIES_REQUIRED = ['tool', 'mode']
+    __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']

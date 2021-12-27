@@ -22,6 +22,7 @@ from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
                     result_append, result_is_done, print_start_message
 from .runner import Runner
+
 class FioRunner(Runner):
     """the FIO runner
 
@@ -295,7 +296,7 @@ class FioRunner(Runner):
             run_post_command(self._config, self._oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['tool_mode', 'rw', 'filetype']
+    __ONESERIES_REQUIRED = ['rw', 'filetype']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
