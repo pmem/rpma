@@ -28,21 +28,14 @@ class IbReadRunner:
     The runner executes directly either the `ib_read_lat` or `ib_read_bw` binary
     on both ends of the connection.
     """
-
     def __validate(self):
-        """validate the object and readiness of the env"""
-        for key, value in self.__ONESERIES_REQUIRED.items():
-            if key not in self.__benchmark.oneseries:
-                raise ValueError(MISSING_KEY_MSG.format(key))
-            if self.__benchmark.oneseries[key] != value:
-                present_value = self.__benchmark.oneseries[key]
-                raise ValueError(".{} == {} != {}".format(key, present_value,
-                                                          value))
         # check if the local ib tool is present
         if shutil.which(self.__ib_path) is None:
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__ib_path))
         # check if the remote ib tool is present
+        if 'server_ip' not in self.__config:
+            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
@@ -55,8 +48,20 @@ class IbReadRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        """validate the object and readiness of the env"""
+        for key, value in self.__ONESERIES_REQUIRED.items():
+            if key not in self.__benchmark.oneseries:
+                raise ValueError(MISSING_KEY_MSG.format(key))
+            if self.__benchmark.oneseries[key] != value:
+                present_value = self.__benchmark.oneseries[key]
+                raise ValueError(".{} == {} != {}".format(key, present_value,
+                                                          value))
         # pick the settings predefined for the chosen mode
+        if 'tool' not in self.__benchmark.oneseries:
+            raise ValueError(MISSING_KEY_MSG.format('tool'))
         self.__tool = self.__benchmark.oneseries['tool']
+        if 'mode' not in self.__benchmark.oneseries:
+            raise ValueError(MISSING_KEY_MSG.format('mode'))
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
@@ -241,7 +246,8 @@ class IbReadRunner:
 
     __ONESERIES_REQUIRED = {
         'rw': 'read',
-        'filetype': 'malloc'
+        'filetype': 'malloc',
+        'tool': 'ib_read'
     }
 
     __X_KEYS = ['threads', 'bs', 'iodepth']
