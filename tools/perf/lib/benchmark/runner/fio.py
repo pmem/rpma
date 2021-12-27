@@ -32,7 +32,7 @@ class FioRunner(Runner):
     def __validate(self):
         """validate the object and readiness of the env"""
         # XXX validate the object
-        filetype = self._benchmark.oneseries['filetype']
+        filetype = self._oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
 
@@ -55,8 +55,8 @@ class FioRunner(Runner):
             self.__settings['threads'] = self._config['CORES_PER_SOCKET']
         # set values of 'cpuload' and their 'iterations':
         if 'cpu' in self._mode:
-            if 'cpu_load_range' in self._benchmark.oneseries:
-                cpu_load = self._benchmark.oneseries['cpu_load_range']
+            if 'cpu_load_range' in self._oneseries:
+                cpu_load = self._oneseries['cpu_load_range']
             else:
                 cpu_load = '00_99'
             if cpu_load not in self.__CPU_LOAD_RANGE:
@@ -73,10 +73,10 @@ class FioRunner(Runner):
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
         for key in self.__ONESERIES_REQUIRED:
-            if key not in self._benchmark.oneseries:
+            if key not in self._oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
         # pick the result keys base on the benchmark's rw
-        readwrite = self._benchmark.oneseries['rw']
+        readwrite = self._oneseries['rw']
         if 'read' in readwrite:
             self.__result_keys = ['read']
         elif 'write' in readwrite:
@@ -120,9 +120,9 @@ class FioRunner(Runner):
         """Start the server on the remote side (using RemoteCmd)
            and keep an object allowing to control the server.
         """
-        operation = self._benchmark.oneseries['rw']
-        if 'rw_dir' in self._benchmark.oneseries:
-            operation = operation + '-' + self._benchmark.oneseries['rw_dir']
+        operation = self._oneseries['rw']
+        if 'rw_dir' in self._oneseries:
+            operation = operation + '-' + self._oneseries['rw_dir']
         if 'cpuload' in settings:
             cpuload = settings['cpuload']
         else:
@@ -136,7 +136,7 @@ class FioRunner(Runner):
         # XXX nice to have REMOTE_TRACER
         args = ['numactl', '-N', r_numa_n, self.__r_fio_path]
         busy_wait_polling = \
-            int(self._benchmark.oneseries.get('busy_wait_polling', True))
+            int(self._oneseries.get('busy_wait_polling', True))
         env = ['serverip={}'.format(self._config['server_ip']),
                'numjobs={}'.format(settings['threads']),
                'iodepth={}'.format(settings['iodepth']),
@@ -157,7 +157,7 @@ class FioRunner(Runner):
         # PMem modes.
         pmem_path = self._config['REMOTE_JOB_MEM_PATH']
         # pick either a DRAM, DeviceDAX or a FileSystemDAX
-        if self._benchmark.oneseries['filetype'] == 'malloc':
+        if self._oneseries['filetype'] == 'malloc':
             # create_on_open prevents FIO from creating files
             # where the engines won't make use of them anyways
             # since they are using DRAM instead
@@ -206,7 +206,7 @@ class FioRunner(Runner):
             'iodepth': str(settings['iodepth']),
             'blocksize': str(settings['bs']),
             'sync': str(int(settings['sync'])),
-            'readwrite': self._benchmark.oneseries['rw'],
+            'readwrite': self._oneseries['rw'],
             'ramp_time': str(duration['ramp']),
             'runtime': str(duration['run'])
         }
@@ -232,7 +232,7 @@ class FioRunner(Runner):
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
             self.__server_stop(settings)
-            run_post_command(self._config, self._benchmark.oneseries)
+            run_post_command(self._config, self._oneseries)
             raise # re-raise the current exception
 
         result = FioFormat.parse(ret.stdout)
@@ -279,7 +279,7 @@ class FioRunner(Runner):
             - the results are collected and written to the `idfile` file.
         3. stops the `fio` server on the remote side.
         """
-        print_start_message(self._mode, self._benchmark.oneseries,
+        print_start_message(self._mode, self._oneseries,
                             self._config)
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
@@ -290,11 +290,11 @@ class FioRunner(Runner):
             settings = self.__settings.copy()
             settings[self.__x_key] = x_value
             pre_cmd = run_pre_command(self._config,
-                                      self._benchmark.oneseries, x_value)
+                                      self._oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self._config, self._benchmark.oneseries, pre_cmd)
+            run_post_command(self._config, self._oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = ['tool_mode', 'rw', 'filetype']
