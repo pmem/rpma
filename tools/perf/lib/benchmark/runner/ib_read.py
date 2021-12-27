@@ -19,8 +19,7 @@ import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command, \
-                    result_append, result_is_done
+                    BS_VALUES, run_pre_command, run_post_command
 from .runner import Runner
 class IbReadRunner(Runner):
     """the ib_read_{lat,bw} tools runner
@@ -75,7 +74,7 @@ class IbReadRunner(Runner):
             self.__results = json_from_file(idfile)
         except FileNotFoundError:
             self.__results = {'input_file': idfile, 'json': []}
-        self.__data = self.__results['json']
+        self._data = self.__results['json']
         self.__validate()
         self.__formatter = fmt.IbReadLatFormat if self._mode == 'lat' \
                                                else fmt.IbReadBwFormat
@@ -185,11 +184,11 @@ class IbReadRunner(Runner):
 
     def __result_append(self, _, y_value: dict):
         """append new result to internal __data and the '_idfile' file"""
-        result_append(self.__data, self._idfile, y_value)
+        self._result_append(y_value)
 
     def __result_is_done(self, x_value: int):
         """check if the result for the given x value is already collected"""
-        return result_is_done(self.__data, self.__x_key, x_value)
+        return self._result_is_done(self.__x_key, x_value)
 
     def __set_log_files_names(self):
         """set names of log files"""
