@@ -103,7 +103,6 @@ class FioRunner:
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         self.__set_settings_by_mode()
-
         # path to the local fio
         self.__fio_path = join(self.__config.get('FIO_PATH', ''), 'fio')
         # path to the remote fio
