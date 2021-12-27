@@ -9,6 +9,7 @@
 #
 
 """the abstract runner (EXPERIMENTAL)"""
+#from ..base import Benchmark
 
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
@@ -28,6 +29,12 @@ class Runner:
         self.__validate()
 
     def __validate(self):
+        if self._benchmark == None:
+            raise RuntimeError("Benchmark is missing")
+
+        if self._oneseries == None:
+            raise RuntimeError("OneSeries is missing")
+
         for key in self.__ONESERIES_REQUIRED:
             if key not in self._benchmark.oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
@@ -52,16 +59,20 @@ class Runner:
         return self.__idfile
 
     @property
+    def _oneseries(self):
+        return self._benchmark.oneseries
+
+    @property
     def _mode(self):
-        return self._benchmark.oneseries['mode']
+        return self._oneseries['mode']
 
     @property
     def _tool_mode(self):
-        return self._benchmark.oneseries['tool_mode']
+        return self._oneseries['tool_mode']
 
     @property
     def _tool(self):
-        return self._benchmark.oneseries['tool']
+        return self._oneseries['tool']
 
     __ONESERIES_REQUIRED = ['tool', 'mode']
     __CONFIG_REQUIRED = ['server_ip']
