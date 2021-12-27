@@ -43,27 +43,22 @@ class IbReadRunner(Runner):
 
     def __init__(self, benchmark, config, idfile):
         super().__init__(benchmark, config, idfile)
-#        self.__benchmark = benchmark
-#        self.__config = config
-#        self.__idfile = idfile
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
         """validate the object and readiness of the env"""
         for key, value in self.__ONESERIES_REQUIRED.items():
-            if key not in self._benchmark.oneseries:
+            if key not in self._oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
-            if self._benchmark.oneseries[key] != value:
-                present_value = self._benchmark.oneseries[key]
+            if self._oneseries[key] != value:
+                present_value = self._oneseries[key]
                 raise ValueError(".{} == {} != {}".format(key, present_value,
                                                           value))
         # pick the settings predefined for the chosen mode
-        if 'tool' not in self._benchmark.oneseries:
+        if 'tool' not in self._oneseries:
             raise ValueError(MISSING_KEY_MSG.format('tool'))
-#        self.__tool = self._benchmark.oneseries['tool']
-        if 'mode' not in self._benchmark.oneseries:
+        if 'mode' not in self._oneseries:
             raise ValueError(MISSING_KEY_MSG.format('mode'))
-#        self.__mode = self._benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))
@@ -151,7 +146,6 @@ class IbReadRunner(Runner):
         short_runtime = self._config.get('SHORT_RUNTIME', False)
         if short_runtime:
             it_opt = '--iters= 5'
-            print('short run {}'.format(it_opt))
         else:
             it_opt = '--iters=' + str(settings['iterations'])
         aux_params = [*settings['args']]
@@ -182,7 +176,7 @@ class IbReadRunner(Runner):
                     print('\nstdout:\n{}\nstderr:\n{}\n'
                           .format(err.stdout, err.stderr))
                     self.__server_stop(settings)
-                    run_post_command(self._config, self._benchmark.oneseries)
+                    run_post_command(self._config, self._oneseries)
                     raise # re-raise the current exception
                 print('Retrying #{} ...'.format(counter))
                 time.sleep(0.1) # wait 0.1 sec for server to start listening
@@ -227,7 +221,7 @@ class IbReadRunner(Runner):
               is not set. `--iters` is used instead of `--duration` because
               the latter produces significantly less detailed output.
         """
-        print_start_message(self._mode, self._benchmark.oneseries,
+        print_start_message(self._mode, self._oneseries,
                             self._config)
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
@@ -243,11 +237,11 @@ class IbReadRunner(Runner):
                     "settings['iterations'][{}] is missing".format(x_value))
             settings['args'] = self.__common_args(settings)
             pre_cmd = run_pre_command(self._config,
-                                      self._benchmark.oneseries, x_value)
+                                      self._oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self._config, self._benchmark.oneseries, pre_cmd)
+            run_post_command(self._config, self._oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = {
