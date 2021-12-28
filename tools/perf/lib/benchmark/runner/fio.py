@@ -19,7 +19,7 @@ from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command
+                    BS_VALUES
 from .runner import Runner
 class FioRunner(Runner):
     """the FIO runner
@@ -227,7 +227,7 @@ class FioRunner(Runner):
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
             self.__server_stop(settings)
-            run_post_command(self._config, self._oneseries)
+            self._run_post_command()
             raise # re-raise the current exception
 
         result = FioFormat.parse(ret.stdout)
@@ -283,12 +283,11 @@ class FioRunner(Runner):
             # prepare settings for the current x-axis value
             settings = self.__settings.copy()
             settings[self.__x_key] = x_value
-            pre_cmd = run_pre_command(self._config,
-                                      self._oneseries, x_value)
+            pre_cmd = self._run_pre_command(x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self._config, self._oneseries, pre_cmd)
+            self._run_post_command(pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = ['tool_mode', 'rw', 'filetype']
