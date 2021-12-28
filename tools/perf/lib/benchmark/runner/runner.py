@@ -26,6 +26,7 @@ class Runner:
         self.__config = config
         self.__idfile = idfile
         self.__data = []
+        self.__settings = []
         self.__validate()
         # set dumping commands
         self.__dump_cmds = self._config.get('DUMP_CMDS', False)
@@ -67,6 +68,13 @@ class Runner:
     @_data.setter
     def _data(self, data):
         self.__data = data
+
+    @property
+    def _settings(self):
+        return self.__settings
+    @_settings.setter
+    def _settings(self, settings):
+        self.__settings = settings
 
     @property
     def _oneseries(self):

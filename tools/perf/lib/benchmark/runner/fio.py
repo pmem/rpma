@@ -50,7 +50,7 @@ class FioRunner(Runner):
         """set all variable elements of __SETTINGS_BY_MODE"""
         # set 'threads' to CORES_PER_SOCKET in the 'bw-cpu-mt' mode
         if self._mode == 'bw-cpu-mt':
-            self.__settings['threads'] = self._config['CORES_PER_SOCKET']
+            self._settings['threads'] = self._config['CORES_PER_SOCKET']
         # set values of 'cpuload' and their 'iterations':
         if 'cpu' in self._mode:
             if 'cpu_load_range' in self._oneseries:
@@ -61,8 +61,8 @@ class FioRunner(Runner):
                 raise ValueError(UNKNOWN_VALUE_MSG
                                  .format('cpu_load_range', cpu_load))
             cpu_load_range = self.__CPU_LOAD_RANGE[cpu_load]
-            self.__settings['cpuload'] = cpu_load_range
-            self.__settings['iterations'] = len(cpu_load_range)
+            self._settings['cpuload'] = cpu_load_range
+            self._settings['iterations'] = len(cpu_load_range)
 
     def __init__(self, benchmark, config: dict, idfile: str) -> 'FioRunner':
         # XXX nice to have REMOTE_JOB_NUMA_CPULIST, CORES_PER_SOCKET
@@ -86,8 +86,8 @@ class FioRunner(Runner):
             raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
         self.__direct_write_to_pmem = \
             int(self._benchmark.requirements['direct_write_to_pmem'])
-        self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
-        if not isinstance(self.__settings, dict):
+        self._settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
+        if not isinstance(self._settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))
         self.__set_settings_by_mode()
         # path to the local fio
@@ -98,7 +98,7 @@ class FioRunner(Runner):
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
-            if isinstance(self.__settings.get(x_key), list):
+            if isinstance(self._settings.get(x_key), list):
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
@@ -259,10 +259,10 @@ class FioRunner(Runner):
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
         name = '/tmp/{}_{}_{}-{}'.format(self._tool, self._tool_mode,
                                          self._mode, time_stamp)
-        self.__settings['logfile_server'] = name + '-server.log'
-        self.__settings['logfile_client'] = name + '-client.log'
-        print('Server log: {}'.format(self.__settings['logfile_server']))
-        print('Client log: {}'.format(self.__settings['logfile_client']))
+        self._settings['logfile_server'] = name + '-server.log'
+        self._settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self._settings['logfile_server']))
+        print('Client log: {}'.format(self._settings['logfile_client']))
 
     def run(self) -> None:
         """collects the `benchmark` results using `fio`
@@ -277,11 +277,11 @@ class FioRunner(Runner):
         self._print_start_message()
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
-        for x_value in self.__settings[self.__x_key]:
+        for x_value in self._settings[self.__x_key]:
             if self.__result_is_done(x_value):
                 continue
             # prepare settings for the current x-axis value
-            settings = self.__settings.copy()
+            settings = self._settings.copy()
             settings[self.__x_key] = x_value
             pre_cmd = run_pre_command(self._config,
                                       self._oneseries, x_value)
