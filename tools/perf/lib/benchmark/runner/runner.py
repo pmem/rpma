@@ -11,6 +11,7 @@
 """the abstract runner (EXPERIMENTAL)"""
 
 import json
+from datetime import datetime
 
 from .common import MISSING_KEY_MSG
 
@@ -122,6 +123,16 @@ class Runner:
             if str(result[x_key]) == str(x_value):
                 return True
         return False
+
+    def _set_log_files_names(self):
+        """set names of log files"""
+        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
+        name = '/tmp/{}_{}_{}-{}'.format(self._tool, self._tool_mode,
+                                         self._mode, time_stamp)
+        self._settings['logfile_server'] = name + '-server.log'
+        self._settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self._settings['logfile_server']))
+        print('Client log: {}'.format(self._settings['logfile_client']))
 
     __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']
