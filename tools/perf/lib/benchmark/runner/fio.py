@@ -32,6 +32,9 @@ class FioRunner(Runner):
     def __validate(self):
         """validate the object and readiness of the env"""
         # XXX validate the object
+        if self._tool_mode not in ['apm', 'gpspm']:
+            raise ValueError(UNKNOWN_VALUE_MSG
+                             .format('tool_mode', self._tool_mode))
         filetype = self._oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
@@ -45,6 +48,7 @@ class FioRunner(Runner):
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
                              .format(self.__r_fio_path))
+
     def __set_settings_by_mode(self):
         """set all variable elements of __SETTINGS_BY_MODE"""
         # set 'threads' to CORES_PER_SOCKET in the 'bw-cpu-mt' mode
@@ -93,7 +97,7 @@ class FioRunner(Runner):
         self.__fio_path = join(self._config.get('FIO_PATH', ''), 'fio')
         # path to the remote fio
         self.__r_fio_path = join(self._config.get('REMOTE_FIO_PATH', ''),
-                                'fio')
+                                 'fio')
         # find the x-axis key
         self.__x_key = None
         for x_key in self.__X_KEYS:
