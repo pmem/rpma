@@ -14,13 +14,14 @@ import lib.benchmark
 DUMMY_STR = 'dummy'
 DUMMY_RANDOM = 138
 VALID_KEYS = ['threads', 'iodepth', 'bs', 'ops', 'lat_min', 'lat_max',
-    'lat_avg', 'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9',
-    'lat_pctl_99.99', 'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg',
-    'iops_min', 'iops_max', 'iops_avg', 'cpuload']
+              'lat_avg', 'lat_stdev', 'lat_pctl_99.0', 'lat_pctl_99.9',
+              'lat_pctl_99.99', 'lat_pctl_99.999', 'bw_min', 'bw_max', 'bw_avg',
+              'iops_min', 'iops_max', 'iops_avg', 'cpuload']
 
 def test_dummy_results(benchmark_dummy, tmpdir, monkeypatch):
     """happy day scenario + validation of the generated output"""
     def dump_mock(obj, filepointer, indent=None):
+        """mock of json.dump()"""
         for point in obj:
             assert len(point.items()) == len(VALID_KEYS)
             for key, value in point.items():
@@ -29,6 +30,7 @@ def test_dummy_results(benchmark_dummy, tmpdir, monkeypatch):
         filepointer.write(DUMMY_STR)
         assert indent is None or isinstance(indent, int)
     def randint_mock(_a, _b):
+        """mock of random.randint()"""
         return DUMMY_RANDOM
     monkeypatch.setattr(random, 'randint', randint_mock)
     monkeypatch.setattr(json, 'dump', dump_mock)

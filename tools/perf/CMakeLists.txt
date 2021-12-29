@@ -21,4 +21,5 @@ add_cstyle_pep8(tools_perf
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/format/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/runner/*.py
-	${CMAKE_CURRENT_SOURCE_DIR}/lib/report/*.py)
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/report/*.py
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/lib/benchmark/runner/*.py)
