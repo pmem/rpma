@@ -87,6 +87,8 @@ class FioRunner:
         else:
             raise ValueError(UNKNOWN_VALUE_MSG.format('rw', readwrite))
         # pick the settings predefined for the chosen mode
+        if 'direct_write_to_pmem' not in self._benchmark.requirements:
+            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
         if self.__tool_mode not in ['apm', 'gpspm']:
