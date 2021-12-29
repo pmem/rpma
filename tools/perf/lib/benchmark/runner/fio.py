@@ -32,6 +32,10 @@ class FioRunner:
     def __validate(self):
         """validate the object and readiness of the env"""
         # XXX validate the object
+        if self.__tool_mode not in ['apm', 'gpspm']:
+            raise ValueError(UNKNOWN_VALUE_MSG
+                             .format('tool_mode', self.__tool_mode))
+
         filetype = self.__benchmark.oneseries['filetype']
         if filetype not in ['malloc', 'pmem']:
             raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
@@ -89,13 +93,12 @@ class FioRunner:
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
-        if self.__tool_mode not in ['apm', 'gpspm']:
-            raise ValueError(UNKNOWN_VALUE_MSG
-                             .format('tool_mode', self.__tool_mode))
         self.__mode = self.__benchmark.oneseries['mode']
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
+        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
+            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
         self.__direct_write_to_pmem = \
             int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__set_settings_by_mode()
