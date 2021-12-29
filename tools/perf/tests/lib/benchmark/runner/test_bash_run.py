@@ -18,6 +18,8 @@ CONFIG_DUMMY = {'server_ip': IP_DUMMY}
 def test_process_success(benchmark_bash, tmpdir, monkeypatch):
     """a basic subprocess test"""
     def run_mock(_args, env, check):
+        """mock of subprocess.run()"""
+        assert env is not None
         assert check
     monkeypatch.setattr(subprocess, 'run', run_mock)
     lib.benchmark.runner.Bash.run(benchmark_bash, CONFIG_DUMMY, str(tmpdir))
@@ -27,6 +29,8 @@ def test_process_success(benchmark_bash, tmpdir, monkeypatch):
 def test_process_fail(benchmark_bash, tmpdir, monkeypatch):
     """a negative subprocess test"""
     def run_mock(_args, env, check):
+        """mock of subprocess.run()"""
+        assert env is not None
         assert check
         raise subprocess.CalledProcessError(-1, "")
     monkeypatch.setattr(subprocess, 'run', run_mock)
@@ -39,10 +43,11 @@ TOOL_IB_READ = 'ib_read.sh'
 TOOL_RPMA_FIO_BENCH = 'rpma_fio_bench.sh'
 
 @pytest.mark.parametrize('mode',
-    ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'lat'])
+                         ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'lat'])
 def test_ib_read(mode, oneseries_bash, tmpdir, monkeypatch):
     """test all arguments variants of ib_read.sh"""
     def run_mock(args, env, check):
+        """mock of subprocess.run()"""
         nonlocal output_file
         assert len(args) == 3
         # XXX is it always correct to assume the tool is in the current working
@@ -56,21 +61,24 @@ def test_ib_read(mode, oneseries_bash, tmpdir, monkeypatch):
     oneseries = {**oneseries_bash, 'tool': TOOL_IB_READ, 'mode': mode}
     benchmark = lib.benchmark.Benchmark(oneseries)
     output_file = lib.benchmark.get_result_path(str(tmpdir),
-                                                       benchmark.identifier)
+                                                benchmark.identifier)
     lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, output_file)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark.is_done()
 
 @pytest.mark.parametrize('tool_mode',
-    ['apm', 'gpspm', 'aof_sw', 'aof_hw'])
+                         ['apm', 'gpspm', 'aof_sw', 'aof_hw'])
 @pytest.mark.parametrize('readwrite',
-    ['read', 'randread', 'write', 'randwrite', 'rw', 'randrw'])
+                         ['read', 'randread', 'write', 'randwrite', 'rw',
+                          'randrw'])
 @pytest.mark.parametrize('mode',
-    ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'bw-cpu', 'bw-cpu-mt', 'lat',
-        'lat-cpu'])
-def test_rpma_fio_bench(tool_mode, readwrite, mode, oneseries_bash, tmpdir, monkeypatch):
+                         ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'bw-cpu',
+                          'bw-cpu-mt', 'lat', 'lat-cpu'])
+def test_rpma_fio_bench(tool_mode, readwrite, mode, oneseries_bash, tmpdir,
+                        monkeypatch):
     """test all arguments variants of rpma_fio_bench.sh"""
     def run_mock(args, env, check):
+        """mock of subprocess.run()"""
         nonlocal output_file
         assert len(args) == 5
         # XXX is it always correct to assume the tool is in the current working
@@ -84,10 +92,11 @@ def test_rpma_fio_bench(tool_mode, readwrite, mode, oneseries_bash, tmpdir, monk
         assert check
     monkeypatch.setattr(subprocess, 'run', run_mock)
     oneseries = {**oneseries_bash, 'tool': TOOL_RPMA_FIO_BENCH, 'mode': mode,
-        'tool_mode': tool_mode, 'rw': readwrite, 'busy_wait_polling': True}
+                 'tool_mode': tool_mode, 'rw': readwrite,
+                 'busy_wait_polling': True}
     benchmark = lib.benchmark.Benchmark(oneseries)
     output_file = lib.benchmark.get_result_path(str(tmpdir),
-                                                       benchmark.identifier)
+                                                benchmark.identifier)
     lib.benchmark.runner.Bash.run(benchmark, CONFIG_DUMMY, output_file)
     # marking a benchmark as 'done' is done outside of the runner
     assert not benchmark.is_done()
@@ -159,7 +168,10 @@ CONFIG_BIG = {
 
 def test_config_overwrite_env(benchmark_bash, tmpdir, monkeypatch):
     """overwrite environment by config"""
+    # WA for the bug: https://github.com/PyCQA/pylint/issues/4630
+    # pylint: disable=unnecessary-dict-index-lookup
     def run_mock(_args, env, check):
+        """mock of subprocess.run()"""
         nonlocal output_file
         for k, _ in CONFIG_BIG.items():
             if k == 'OUTPUT_FILE':
@@ -190,6 +202,7 @@ def test_filetype(filetype, oneseries_bash, tmpdir, monkeypatch):
     # sanity check
     assert CONFIG_BIG['REMOTE_JOB_MEM_PATH'] != 'malloc'
     def run_mock(_args, env, check):
+        """mock of subprocess.run()"""
         if filetype == 'malloc':
             assert env['REMOTE_JOB_MEM_PATH'] == 'malloc'
         else:
@@ -205,9 +218,10 @@ def test_filetype(filetype, oneseries_bash, tmpdir, monkeypatch):
 
 @pytest.mark.parametrize('config_remote_job_mem_path', ['malloc', None])
 def test_filetype_pmem_no_mem_path(config_remote_job_mem_path, oneseries_bash,
-        tmpdir, monkeypatch):
+                                   tmpdir, monkeypatch):
     """filetype=pmem when no REMOTE_JOB_MEM_PATH provided"""
     def run_mock(_args, **_):
+        """mock of subprocess.run()"""
         assert False, "subprocess.run() should not be called"
     monkeypatch.setattr(subprocess, 'run', run_mock)
     oneseries = {**oneseries_bash, 'filetype': 'pmem'}
@@ -225,9 +239,11 @@ def test_filetype_pmem_no_mem_path(config_remote_job_mem_path, oneseries_bash,
     'config_busy_wait_polling,busy_wait_polling,expected_busy_wait_polling',
     [(True, False, '0'), (False, True, '1')])
 def test_busy_wait_polling(config_busy_wait_polling, busy_wait_polling,
-        expected_busy_wait_polling, oneseries_bash, tmpdir, monkeypatch):
+                           expected_busy_wait_polling, oneseries_bash, tmpdir,
+                           monkeypatch):
     """busy_wait_polling to BUSY_WAIT_POLLING mapping"""
     def run_mock(_args, env, check):
+        """mock of subprocess.run()"""
         assert env['BUSY_WAIT_POLLING'] == expected_busy_wait_polling
         assert check
     monkeypatch.setattr(subprocess, 'run', run_mock)
@@ -240,15 +256,17 @@ def test_busy_wait_polling(config_busy_wait_polling, busy_wait_polling,
 
 @pytest.mark.parametrize('readwrite', ['write', 'randwrite'])
 @pytest.mark.parametrize('mode',
-    ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'bw-cpu', 'bw-cpu-mt', 'lat',
-        'lat-cpu'])
-def test_gpspm_no_busy_wait_polling(readwrite, mode, oneseries_bash, tmpdir, monkeypatch):
+                         ['bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th', 'bw-cpu',
+                          'bw-cpu-mt', 'lat', 'lat-cpu'])
+def test_gpspm_no_busy_wait_polling(readwrite, mode, oneseries_bash, tmpdir,
+                                    monkeypatch):
     """busy_wait_polling is required in all cases when tool_mode=gpspm"""
     def run_mock(_args, **_):
+        """mock of subprocess.run()"""
         assert False, "subprocess.run() should not be called"
     monkeypatch.setattr(subprocess, 'run', run_mock)
     oneseries = {**oneseries_bash, 'tool': TOOL_RPMA_FIO_BENCH, 'mode': mode,
-        'tool_mode': 'gpspm', 'rw': readwrite}
+                 'tool_mode': 'gpspm', 'rw': readwrite}
     benchmark = lib.benchmark.Benchmark(oneseries)
     with pytest.raises(ValueError):
         lib.benchmark.runner.Bash.run(benchmark, CONFIG_BIG, str(tmpdir))
