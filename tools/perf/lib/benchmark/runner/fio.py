@@ -32,6 +32,9 @@ class FioRunner:
 
     def __validate(self):
         """validate the object and readiness of the env"""
+        if (self.__tool_mode == 'gpspm' and
+                'busy_wait_polling' not in self.__benchmark.oneseries):
+            raise ValueError(MISSING_KEY_MSG.format('busy_wait_polling'))
         # check if the local fio is present
         if shutil.which(self.__fio_path) is None:
             raise ValueError("cannot find the local fio: {}"
