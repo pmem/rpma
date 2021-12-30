@@ -19,8 +19,7 @@ from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command, \
-                    print_start_message
+                    BS_VALUES, run_pre_command, run_post_command
 from .runner import Runner
 class FioRunner(Runner):
     """the FIO runner
@@ -281,8 +280,7 @@ class FioRunner(Runner):
             - the results are collected and written to the `idfile` file.
         3. stops the `fio` server on the remote side.
         """
-        print_start_message(self._mode, self._oneseries,
-                            self._config)
+        self._print_start_message()
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:

@@ -19,8 +19,7 @@ import lib.format as fmt
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command, \
-                    print_start_message
+                    BS_VALUES, run_pre_command, run_post_command
 from .runner import Runner
 class IbReadRunner(Runner):
     """the ib_read_{lat,bw} tools runner
@@ -212,8 +211,7 @@ class IbReadRunner(Runner):
               is not set. `--iters` is used instead of `--duration` because
               the latter produces significantly less detailed output.
         """
-        print_start_message(self._mode, self._oneseries,
-                            self._config)
+        self._print_start_message()
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:

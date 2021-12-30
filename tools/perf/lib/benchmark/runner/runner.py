@@ -88,6 +88,12 @@ class Runner:
     def _mode(self):
         return self._oneseries['mode']
 
+    def _print_start_message(self):
+        """print the STARTING message"""
+        tool = self._tool + '({})'.format(self._tool_mode)
+        print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
+              .format(tool, self._mode, self._config['server_ip']))
+
     def _result_append(self, result: dict) -> None:
         """append new result to internal data and file"""
         self._data.append(result)
