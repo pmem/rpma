@@ -17,14 +17,19 @@ import lib.benchmark.runner.ib_read
 from lib.remote_cmd import RemoteCmd
 from lib.benchmark.runner.ib_read import IbReadRunner
 
-CONFIG_MINI = {'server_ip': 'server_ip'}
+__CONFIG_IB_READ = {'server_ip': 'server_ip'}
+
+@pytest.fixture(scope='function')
+def config_ib_read():
+    """provide a fio oneseries"""
+    return __CONFIG_IB_READ.copy()
 
 def which_mock(path: str) -> str:
     """mock of shutil.which()"""
     assert path == 'ib_read_lat'
     return path
 
-def test_ib_read_runner_init(monkeypatch):
+def test_ib_read_runner_init(oneseries_ib_read, config_ib_read, monkeypatch):
     """test proper initialization of IbReadRunner object
        with all mandatory parameters"""
     def run_sync_mock(_arg1, _arg2) -> RemoteCmd:
@@ -38,64 +43,74 @@ def test_ib_read_runner_init(monkeypatch):
     monkeypatch.setattr(RemoteCmd, 'run_sync', run_sync_mock)
     monkeypatch.setattr(IbReadRunner, 'run', run_mock)
 
-    oneseries = {'tool': 'ib_read', 'mode': 'lat',
-                 'rw': 'read', 'filetype': 'malloc',
-                 'requirements': {'direct_write_to_pmem': True}}
-
-    benchmark = lib.benchmark.Benchmark(oneseries)
-    runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+    benchmark = lib.benchmark.Benchmark(oneseries_ib_read)
+    runner = IbReadRunner(benchmark, config_ib_read, 'idfile')
     runner.run()
 
-def test_ib_read_runner_init_oneserises_no_tool():
-    """failed initialization of IbReadRunner object - no tool param provided """
-    oneseries = {}
-    benchmark = lib.benchmark.Benchmark(oneseries)
-    with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
-
-def test_ib_read_runner_init_oneserises_no_mode():
-    """failed initialization of IbReadRunner object - no mode param provided """
-    oneseries = {'tool': 'ib_read'}
-    benchmark = lib.benchmark.Benchmark(oneseries)
-
-    with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
-
-def test_ib_read_runner_init_oneserises_no_rw():
-    """failed initialization of IbReadRunner object - no rw provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat'}
+# XXX 'requirements' and 'tool_mode' are not yet suported by ib_read_runner
+# to be added later
+#@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw',
+#                                 'filetype', 'requirements'])
+@pytest.mark.parametrize('key', ['tool', 'mode', 'rw', 'filetype'])
+def test_ib_read_runner_init_oneserises_incomplete(oneseries_ib_read,
+        config_ib_read, key):
+    """failed initialization of IbReadRunner object - incomlete oneseries"""
+    oneseries = {**oneseries_ib_read}
+    oneseries.pop(key)
     benchmark = lib.benchmark.Benchmark(oneseries)
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        IbReadRunner(benchmark, config_ib_read, 'idfile')
 
-def test_ib_read_runner_init_oneserises_no_filetype():
-    """failed initialization of IbReadRunner object - no filetype provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat', 'rw': 'read'}
+# XXX shall ib_read_runner anyhow control direct_write_to_pmem
+@pytest.mark.skip(reason="ib_read does not control direct_write_to_pmem")
+def test_ib_read_runner_init_no_direct_write_to_pmem(oneseries_ib_read,
+         config_ib_read, monkeypatch):
+    """failed initialization of IbReadRunner object
+       - no direct_write_to_pmem provided"""
+    def run_sync_mock(_arg1, _arg2) -> RemoteCmd:
+        """mock of RemoteCmd.run_sync()"""
+        return RemoteCmd(None, None, None, exit_status=0)
+
+    monkeypatch.setattr(RemoteCmd, 'run_sync', run_sync_mock)
+
+    oneseries = {**oneseries_ib_read}
+    oneseries.pop('requirements')
+    oneseries['requirements'] = {}
+
     benchmark = lib.benchmark.Benchmark(oneseries)
 
     with pytest.raises(ValueError):
-        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+        IbReadRunner(benchmark, config_ib_read, 'idfile')
 
-def test_ib_read_runner_init_no_config():
-    """failed initialization of IbReadRunner object - no config provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat', 'rw': 'read',
-                 'filetype': 'malloc',
-                 'requirements': {'direct_write_to_pmem': True}}
+def test_ib_read_runner_init_no_config(oneseries_ib_read):
+    """failed initialization of IbReadRunner object - no config provided"""
+    oneseries = {**oneseries_ib_read}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
     with pytest.raises(AttributeError):
         IbReadRunner(benchmark, None, 'idfile')
 
-def test_ib_read_runner_init_config_no_server_ip(monkeypatch):
+@pytest.mark.parametrize('key', ['server_ip'])
+def test_ib_read_runner_init_config_incomplete(oneseries_ib_read,
+        config_ib_read, key):
     """failed initialization of IbReadRunner object -
-    - no server_ip in config provided """
-    monkeypatch.setattr(shutil, 'which', which_mock)
-
-    oneseries = {'tool': 'ib_read', 'mode': 'lat',
-                 'rw': 'read', 'filetype': 'malloc'}
-    config = {}
+       - incomplete config provided """
+    oneseries = {**oneseries_ib_read}
+    config = {**config_ib_read}
+    config.pop(key)
     benchmark = lib.benchmark.Benchmark(oneseries)
-
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, config, 'idfile')
+
+@pytest.mark.parametrize('key', ['rw', 'filetype', 'tool'])
+def test_ib_read_runner_init_wrong_value(oneseries_ib_read,
+        config_ib_read, key):
+    """failed initialization of IbReadRunner object -
+       - invalid value provided"""
+    oneseries = {**oneseries_ib_read}
+    oneseries.pop(key)
+    oneseries[key] = '!@#$%^)(*&dsaf;a;ljka;sdfja'
+    benchmark = lib.benchmark.Benchmark(oneseries)
+    with pytest.raises(ValueError):
+        IbReadRunner(benchmark, config_ib_read, 'idfile')
