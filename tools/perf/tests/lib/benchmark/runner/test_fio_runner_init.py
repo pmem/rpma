@@ -55,7 +55,6 @@ def test_fio_runner_init(oneseries_fio, config_fio, fio_path, monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries_fio)
     runner = FioRunner(benchmark, config_fio, 'idfile')
     runner.run()
-
     #pylint: disable=protected-access
     #pylint: disable=no-member
     assert runner._FioRunner__benchmark == benchmark

@@ -47,7 +47,6 @@ def test_ib_read_runner_init(oneseries_ib_read, config_ib_read, monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries_ib_read)
     runner = IbReadRunner(benchmark, config_ib_read, 'idfile')
     runner.run()
-
     #pylint: disable=protected-access
     #pylint: disable=no-member
     assert runner._IbReadRunner__benchmark == benchmark
