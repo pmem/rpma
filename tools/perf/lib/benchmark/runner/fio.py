@@ -343,7 +343,8 @@ class FioRunner:
         'mode': ['lat', 'lat-cpu', 'bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th',
                  'bw-cpu', 'bw-cpu-mt'],
         'rw': ['read', 'write', 'rw', 'randread', 'randwrite', 'randrw'],
-        'filetype': ['malloc', 'pmem']
+        'filetype': ['malloc', 'pmem'],
+        'busy_wait_polling': [True, False]
     }
 
     __CPU_LOAD_RANGE = {
