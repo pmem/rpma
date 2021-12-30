@@ -17,3 +17,5 @@ choose to collect the results using one of available runners. Please see
 
 from .executor import Executor
 from .dummy import Dummy
+from .fio import FioRunner
+from .ib_read import IbReadRunner
