@@ -55,20 +55,19 @@ def test_fio_runner_init(oneseries_fio, config_fio, fio_path, monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries_fio)
     runner = FioRunner(benchmark, config_fio, 'idfile')
     runner.run()
-
     #pylint: disable=protected-access
     #pylint: disable=no-member
-    assert runner._FioRunner__benchmark == benchmark
-    assert runner._FioRunner__config == config_fio
-    assert runner._FioRunner__idfile == 'idfile'
-    assert runner._FioRunner__tool == oneseries_fio['tool']
-    assert runner._FioRunner__tool_mode == oneseries_fio['tool_mode']
-    assert runner._FioRunner__mode == oneseries_fio['mode']
+    assert runner._benchmark == benchmark
+    assert runner._config == config_fio
+    assert runner._idfile == 'idfile'
+    assert runner._tool == oneseries_fio['tool']
+    assert runner._tool_mode == oneseries_fio['tool_mode']
+    assert runner._mode == oneseries_fio['mode']
     #pylint: enable=no-member
     #pylint: enable=protected-access
 
 @pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', \
-                         'filetype', 'requirements'])
+                         'busy_wait_polling', 'filetype', 'requirements'])
 def test_fio_runner_init_oneserises_incomplete(oneseries_fio, config_fio, key):
     """failed initialization of FioRunner object - incomplete oneseries """
     oneseries_fio.pop(key)

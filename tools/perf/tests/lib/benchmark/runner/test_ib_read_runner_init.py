@@ -47,14 +47,14 @@ def test_ib_read_runner_init(oneseries_ib_read, config_ib_read, monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries_ib_read)
     runner = IbReadRunner(benchmark, config_ib_read, 'idfile')
     runner.run()
-
     #pylint: disable=protected-access
     #pylint: disable=no-member
-    assert runner._IbReadRunner__benchmark == benchmark
-    assert runner._IbReadRunner__config == config_ib_read
-    assert runner._IbReadRunner__idfile == 'idfile'
-    assert runner._IbReadRunner__tool == oneseries_ib_read['tool']
-    assert runner._IbReadRunner__mode == oneseries_ib_read['mode']
+    assert runner._benchmark == benchmark
+    assert runner._config == config_ib_read
+    assert runner._idfile == 'idfile'
+    assert runner._tool == oneseries_ib_read['tool']
+    assert runner._tool_mode == oneseries_ib_read['tool_mode']
+    assert runner._mode == oneseries_ib_read['mode']
     #pylint: enable=no-member
     #pylint: enable=protected-access
 
@@ -68,6 +68,27 @@ def test_ib_read_runner_init_oneserises_incomplete(oneseries_ib_read,
     oneseries = {**oneseries_ib_read}
     oneseries.pop(key)
     benchmark = lib.benchmark.Benchmark(oneseries)
+    with pytest.raises(ValueError):
+        IbReadRunner(benchmark, config_ib_read, 'idfile')
+
+# XXX shall ib_read_runner anyhow control direct_write_to_pmem
+@pytest.mark.skip(reason="ib_read does not control direct_write_to_pmem")
+def test_ib_read_runner_init_no_direct_write_to_pmem(oneseries_ib_read,
+         config_ib_read, monkeypatch):
+    """failed initialization of IbReadRunner object
+       - no direct_write_to_pmem provided"""
+    def run_sync_mock(_arg1, _arg2) -> RemoteCmd:
+        """mock of RemoteCmd.run_sync()"""
+        return RemoteCmd(None, None, None, exit_status=0)
+
+    monkeypatch.setattr(RemoteCmd, 'run_sync', run_sync_mock)
+
+    oneseries = {**oneseries_ib_read}
+    oneseries.pop('requirements')
+    oneseries['requirements'] = {}
+
+    benchmark = lib.benchmark.Benchmark(oneseries)
+
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, config_ib_read, 'idfile')
 
