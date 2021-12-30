@@ -19,9 +19,9 @@ from lib.benchmark.runner.fio import FioRunner
 
 __CONFIG_FIO = {'server_ip': 'server_ip', 'FIO_PATH': '/tmp'}
 
-@pytest.fixture(scope='function')
-def config_fio():
-    """provide a fio oneseries"""
+@pytest.fixture(scope='function', name='config_fio')
+def __config_fio():
+    """provide a fio oneseries_fio"""
     return __CONFIG_FIO.copy()
 
 def which_mock(path: str) ->str:
@@ -50,10 +50,9 @@ def test_fio_runner_init(oneseries_fio, config_fio, monkeypatch):
 @pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', \
                          'busy_wait_polling', 'filetype', 'requirements'])
 def test_fio_runner_init_oneserises_incomplete(oneseries_fio, config_fio, key):
-    """failed initialization of FioRunner object - incomlete oneseries """
-    oneseries = {**oneseries_fio}
-    oneseries.pop(key)
-    benchmark = lib.benchmark.Benchmark(oneseries)
+    """failed initialization of FioRunner object - incomlete oneseries_fio """
+    oneseries_fio.pop(key)
+    benchmark = lib.benchmark.Benchmark(oneseries_fio)
 
     with pytest.raises(ValueError):
         FioRunner(benchmark, config_fio, 'idfile')
@@ -61,19 +60,17 @@ def test_fio_runner_init_oneserises_incomplete(oneseries_fio, config_fio, key):
 def test_fio_runner_init_no_direct_write_to_pmem(oneseries_fio, config_fio):
     """failed initialization of FioRunner object
        - no direct_write_to_pmem provided"""
-    oneseries = {**oneseries_fio}
-    oneseries.pop('requirements')
-    oneseries['requirements'] = {}
+    oneseries_fio.pop('requirements')
+    oneseries_fio['requirements'] = {}
 
-    benchmark = lib.benchmark.Benchmark(oneseries)
+    benchmark = lib.benchmark.Benchmark(oneseries_fio)
 
     with pytest.raises(ValueError):
         FioRunner(benchmark, config_fio, 'idfile')
 
 def test_fio_runner_init_no_config(oneseries_fio):
     """failed initialization of FioRunner object - no config provided """
-    oneseries = {**oneseries_fio}
-    benchmark = lib.benchmark.Benchmark(oneseries)
+    benchmark = lib.benchmark.Benchmark(oneseries_fio)
 
     with pytest.raises(AttributeError):
         FioRunner(benchmark, None, 'idfile')
@@ -82,21 +79,18 @@ def test_fio_runner_init_no_config(oneseries_fio):
 def test_fio_runner_init_config_incomplete(oneseries_fio, config_fio, key):
     """failed initialization of FioRunner object -
        - no fio_path in config provided """
-    oneseries = {**oneseries_fio}
-    config = {**config_fio}
-    config.pop(key)
-    benchmark = lib.benchmark.Benchmark(oneseries)
+    config_fio.pop(key)
+    benchmark = lib.benchmark.Benchmark(oneseries_fio)
     with pytest.raises(ValueError):
-        FioRunner(benchmark, config, 'idfile')
+        FioRunner(benchmark, config_fio, 'idfile')
 
 @pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw',
                                  'filetype'])
 def test_fio_runner_init_wrong_value(oneseries_fio, config_fio, key):
     """failed initialization of IbReadRunner object -
        - no fio_path in config provided """
-    oneseries = {**oneseries_fio}
-    oneseries.pop(key)
-    oneseries[key] = '!@#$%^)(*&dsaf;a;ljka;sdfja'
-    benchmark = lib.benchmark.Benchmark(oneseries)
+    oneseries_fio.pop(key)
+    oneseries_fio[key] = '!@#$%^)(*&dsaf;a;ljka;sdfja'
+    benchmark = lib.benchmark.Benchmark(oneseries_fio)
     with pytest.raises(ValueError):
         FioRunner(benchmark, config_fio, 'idfile')
