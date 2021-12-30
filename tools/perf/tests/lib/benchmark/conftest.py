@@ -25,28 +25,28 @@ __ONESERIES_IB_READ = \
     'mode': 'lat', 'rw': 'read', 'filetype': 'malloc',
     'requirements': {'direct_write_to_pmem': True}}}
 
-@pytest.fixture(scope='function')
-def oneseries_dummy():
+@pytest.fixture(scope='function', name='oneseries_dummy')
+def __oneseries_dummy():
     """provide a oneseries dummy"""
     return __ONESERIES_DUMMY.copy()
 
-@pytest.fixture(scope='function')
-def oneseries_bash():
+@pytest.fixture(scope='function', name='oneseries_bash')
+def __oneseries_bash():
     """provide a oneseries bash"""
     return __ONESERIES_BASH.copy()
 
-@pytest.fixture(scope='function')
-def oneseries_base():
+@pytest.fixture(scope='function', name='oneseries_base')
+def __oneseries_base():
     """provide a oneseries base"""
     return __ONESERIES_BASE.copy()
 
-@pytest.fixture(scope='function')
-def oneseries_fio():
+@pytest.fixture(scope='function', name='oneseries_fio')
+def __oneseries_fio():
     """provide a fio oneseries"""
     return __ONESERIES_FIO.copy()
 
-@pytest.fixture(scope='function')
-def oneseries_ib_read():
+@pytest.fixture(scope='function', name='oneseries_ib_read')
+def __oneseries_ib_read():
     """provide a fio oneseries"""
     return __ONESERIES_IB_READ.copy()
 

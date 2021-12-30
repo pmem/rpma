@@ -19,8 +19,8 @@ from lib.benchmark.runner.ib_read import IbReadRunner
 
 __CONFIG_IB_READ = {'server_ip': 'server_ip'}
 
-@pytest.fixture(scope='function')
-def config_ib_read():
+@pytest.fixture(scope='function', name='config_ib_read')
+def __config_ib_read():
     """provide a fio oneseries"""
     return __CONFIG_IB_READ.copy()
 
