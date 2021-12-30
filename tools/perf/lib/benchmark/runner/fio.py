@@ -19,7 +19,7 @@ from lib.format import FioFormat
 from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
-                    BS_VALUES, run_pre_command, run_post_command
+                    BS_VALUES
 from .runner import Runner
 class FioRunner(Runner):
     """the FIO runner
@@ -66,7 +66,7 @@ class FioRunner(Runner):
             self.__settings['cpuload'] = cpu_load_range
             self.__settings['iterations'] = len(cpu_load_range)
 
-    def __set_results_key(self) -> None:
+    def __set_results_key__(self) -> None:
         # pick the result keys base on the benchmark's rw
         readwrite = self._benchmark.oneseries['rw']
         if 'read' in readwrite:
@@ -86,7 +86,7 @@ class FioRunner(Runner):
             if key not in self._oneseries:
                 raise ValueError(MISSING_KEY_MSG.format(key))
         # pick the result keys base on the benchmark's rw
-        self.__set_results_key()
+        self.__set_results_key__()
         # pick the settings predefined for the chosen mode
         if 'direct_write_to_pmem' not in self._benchmark.requirements:
             raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
@@ -233,7 +233,7 @@ class FioRunner(Runner):
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
             self.__server_stop(settings)
-            run_post_command(self._config, self._oneseries)
+            self._run_post_command()
             raise # re-raise the current exception
 
         result = FioFormat.parse(ret.stdout)
@@ -289,15 +289,14 @@ class FioRunner(Runner):
             # prepare settings for the current x-axis value
             settings = self.__settings.copy()
             settings[self.__x_key] = x_value
-            pre_cmd = run_pre_command(self._config,
-                                      self._oneseries, x_value)
+            pre_cmd = self._run_pre_command(x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self._config, self._oneseries, pre_cmd)
+            self._run_post_command(pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['rw', 'filetype']
+    __ONESERIES_REQUIRED = ['tool_mode', 'rw', 'filetype']
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
