@@ -12,7 +12,8 @@
 # too-many-locals - (X>15) XXX requires consideration
 # len-as-condition - bug in Pylint, fixed as of Pylint 2.4 (https://github.com/PyCQA/pylint/pull/2815)
 # duplicate-code - XXX requires consideration
-disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member,too-many-locals,len-as-condition,duplicate-code
+# bad-continuation - still enabled by default on old releases https://github.com/PyCQA/pylint/pull/3571
+disable=fixme,too-few-public-methods,too-many-arguments,too-many-instance-attributes,no-self-use,consider-using-f-string,unused-private-member,too-many-locals,len-as-condition,duplicate-code,bad-continuation
 
 [FORMAT]
 
