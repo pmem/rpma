@@ -168,6 +168,9 @@ class FioRunner:
 
         args.append(self.__r_fio_path)
 
+        if (self.__tool_mode == 'gpspm' and
+                'busy_wait_polling' not in self.__benchmark.oneseries):
+            raise ValueError(MISSING_KEY_MSG.format('busy_wait_polling'))
         busy_wait_polling = \
             int(self.__benchmark.oneseries.get('busy_wait_polling', True))
         env = ['serverip={}'.format(self.__config['SERVER_IP']),
