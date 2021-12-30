@@ -38,7 +38,7 @@ def test_ib_read_runner_init(monkeypatch):
     monkeypatch.setattr(RemoteCmd, 'run_sync', run_sync_mock)
     monkeypatch.setattr(IbReadRunner, 'run', run_mock)
 
-    oneseries = {'tool': 'ib_read', 'mode': 'lat',
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat', 'mode': 'lat',
                  'rw': 'read', 'filetype': 'malloc',
                  'requirements': {'direct_write_to_pmem': True}}
 
@@ -46,23 +46,42 @@ def test_ib_read_runner_init(monkeypatch):
     runner = IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
     runner.run()
 
+    #pylint: disable=protected-access
+    assert runner._benchmark == benchmark
+    assert runner._config == CONFIG_MINI
+    assert runner._idfile == 'idfile'
+    assert runner._tool == oneseries['tool']
+    assert runner._tool_mode == oneseries['tool_mode']
+    assert runner._mode == oneseries['mode']
+    assert runner._config['server_ip'] == CONFIG_MINI['server_ip']
+    #pylint: enable=protected-access
+
 def test_ib_read_runner_init_oneserises_no_tool():
     """failed initialization of IbReadRunner object - no tool param provided """
     oneseries = {}
     benchmark = lib.benchmark.Benchmark(oneseries)
+
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
 
-def test_ib_read_runner_init_oneserises_no_mode():
-    """failed initialization of IbReadRunner object - no mode param provided """
+def test_ib_read_runner_init_oneserises_no_toolmode():
+    """failed initialization of IbReadRunner object - no tool_mode param provided """
     oneseries = {'tool': 'ib_read'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
 
+def test_ib_read_runner_init_oneserises_no_mode():
+    """failed initialization of IbReadRunner object - no mode param provided """
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat'}
+    benchmark = lib.benchmark.Benchmark(oneseries)
+
+    with pytest.raises(ValueError):
+        IbReadRunner(benchmark, CONFIG_MINI, 'idfile')
+
 def test_ib_read_runner_init_oneserises_no_rw():
-    """failed initialization of IbReadRunner object - no rw provided """
+    """failed initialization of IbReadRunner object - no mode rw provided """
     oneseries = {'tool': 'ib_read', 'mode': 'lat'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -79,17 +98,17 @@ def test_ib_read_runner_init_oneserises_no_filetype():
 
 def test_ib_read_runner_init_no_config():
     """failed initialization of IbReadRunner object - no config provided """
-    oneseries = {'tool': 'ib_read', 'mode': 'lat', 'rw': 'read',
-                 'filetype': 'malloc',
+    oneseries = {'tool': 'ib_read', 'tool_mode': 'lat', 'mode': 'lat',
+                 'rw': 'read', 'filetype': 'malloc',
                  'requirements': {'direct_write_to_pmem': True}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(RuntimeError):
         IbReadRunner(benchmark, None, 'idfile')
 
 def test_ib_read_runner_init_config_no_server_ip(monkeypatch):
     """failed initialization of IbReadRunner object -
-    - no server_ip in config provided """
+        - no server_ip in config provided """
     monkeypatch.setattr(shutil, 'which', which_mock)
 
     oneseries = {'tool': 'ib_read', 'mode': 'lat',

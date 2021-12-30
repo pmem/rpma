@@ -46,9 +46,19 @@ def test_fio_runner_init(monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries)
     runner = FioRunner(benchmark, CONFIG_MINI, 'idfile')
     runner.run()
+    #pylint: disable=protected-access
+    assert runner._benchmark == benchmark
+    assert runner._config == CONFIG_MINI
+    assert runner._idfile == 'idfile'
+
+    assert runner._tool == oneseries['tool']
+    assert runner._tool_mode == oneseries['tool_mode']
+    assert runner._mode == oneseries['mode']
+    assert runner._config['server_ip'] == CONFIG_MINI['server_ip']
+    #pylint: enable=protected-access
 
 def test_fio_runner_init_oneserises_no_tool():
-    """failed initialization of FioRunner object - no tool param provided """
+    """failed initialization of FioRunner object - no tool provided """
     oneseries = {}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -56,7 +66,7 @@ def test_fio_runner_init_oneserises_no_tool():
         FioRunner(benchmark, CONFIG_MINI, 'idfile')
 
 def test_fio_runner_init_oneserises_no_toolmode():
-    """failed initialization of FioRunner object - no tool_mode param provided """
+    """failed initialization of FioRunner object - no tool_mode provided """
     oneseries = {'tool': 'fio'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -64,7 +74,7 @@ def test_fio_runner_init_oneserises_no_toolmode():
         FioRunner(benchmark, CONFIG_MINI, 'idfile')
 
 def test_fio_runner_init_oneserises_no_mode():
-    """failed initialization of FioRunner object - no mode param provided """
+    """failed initialization of FioRunner object - no mode provided """
     oneseries = {'tool': 'fio', 'tool_mode': 'apm'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -72,7 +82,7 @@ def test_fio_runner_init_oneserises_no_mode():
         FioRunner(benchmark, CONFIG_MINI, 'idfile')
 
 def test_fio_runner_init_oneserises_no_rw():
-    """failed initialization of FioRunner object - no mode rw provided """
+    """failed initialization of FioRunner object - no rw provided """
     oneseries = {'tool': 'fio', 'tool_mode': 'apm', 'mode': 'lat'}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
@@ -115,12 +125,12 @@ def test_fio_runner_init_no_config():
                  'requirements': {'direct_write_to_pmem': True}}
     benchmark = lib.benchmark.Benchmark(oneseries)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(RuntimeError):
         FioRunner(benchmark, None, 'idfile')
 
 def test_fio_runner_init_config_no_fio_path():
     """failed initialization of FioRunner object -
-       - no fio_path in config provided """
+       - no fio_path in config provided"""
     oneseries = {'tool': 'fio', 'tool_mode': 'apm', 'mode': 'lat',
                  'rw': 'readwrite', 'filetype': 'malloc',
                  'requirements': {'direct_write_to_pmem': True}}
