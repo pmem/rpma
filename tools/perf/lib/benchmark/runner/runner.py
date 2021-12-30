@@ -11,9 +11,10 @@
 """the abstract runner (EXPERIMENTAL)"""
 
 import json
+import re
 
+from ...remote_cmd import RemoteCmd
 from .common import MISSING_KEY_MSG
-
 class Runner:
     """the abstract runner
 
@@ -114,6 +115,58 @@ class Runner:
             if str(result[x_key]) == str(x_value):
                 return True
         return False
+
+    def __prepare_cmd(self, cmd_exec, x_value=None):
+        """prepare cmd"""
+        cmd = cmd_exec
+        cmd_vars = re.findall(r'\${.+?}', cmd)
+        for item in cmd_vars:
+            replace_item = item.replace('${', '').replace('}', '')
+            if replace_item in self._config:
+                cmd = cmd.replace(item, str(self._config[replace_item]))
+            elif replace_item == 'RUN_NAME' and x_value is not None:
+                run_name = 'benchmark_{}_x_value_{}'\
+                            .format(self._oneseries['id'], x_value)
+                cmd = cmd.replace(item, run_name)
+        return cmd
+
+    def _run_pre_command(self, x_value):
+        """run pre command"""
+        run_pre = None
+        if 'REMOTE_CMD_PRE' in self._config and \
+                                        self._config['REMOTE_CMD_PRE'] != '':
+            cmd = self.__prepare_cmd(self._config['REMOTE_CMD_PRE'], x_value)
+            run_pre = RemoteCmd.run_async(self._config, cmd)
+        return run_pre
+
+    def __wait_for_pre_command(self, pre_command, raise_on_error=True):
+        """wait for the end of the pre command"""
+        if pre_command is None:
+            return
+        print('Waiting for pre-command ...')
+        pre_command.wait()
+        if pre_command.exit_status == 0:
+            return
+        print('--- pre-command\'s stderr: ---')
+        stderr_msg = pre_command.stderr.read().decode().strip()
+        if raise_on_error:
+            raise ValueError(stderr_msg)
+        print(stderr_msg)
+        print('--- end of pre-command\'s stderr ---\n')
+
+    def _run_post_command(self, pre_command=None):
+        """run post command and wait for the end of the pre command"""
+        if 'REMOTE_CMD_POST' in self._config and \
+                                        self._config['REMOTE_CMD_POST'] != '':
+            cmd = self.__prepare_cmd(self._config['REMOTE_CMD_POST'])
+            try:
+                RemoteCmd.run_sync(self._config, cmd, raise_on_error=True)
+            except:
+                print('Post-command failed!')
+                self.__wait_for_pre_command(pre_command, raise_on_error=False)
+                print('--- post-command\'s output: ---')
+                raise
+        self.__wait_for_pre_command(pre_command)
 
     __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']
