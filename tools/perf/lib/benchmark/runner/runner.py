@@ -12,8 +12,10 @@
 
 import json
 import re
+from datetime import datetime
 
 from ...remote_cmd import RemoteCmd
+
 from .common import MISSING_KEY_MSG
 
 class Runner:
@@ -176,6 +178,15 @@ class Runner:
                 print('--- post-command\'s output: ---')
                 raise
         self.__wait_for_pre_command(pre_command)
+    def _set_log_files_names(self):
+        """set names of log files"""
+        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
+        name = '/tmp/{}_{}_{}-{}'.format(self._tool, self._tool_mode,
+                                         self._mode, time_stamp)
+        self._settings['logfile_server'] = name + '-server.log'
+        self._settings['logfile_client'] = name + '-client.log'
+        print('Server log: {}'.format(self._settings['logfile_server']))
+        print('Client log: {}'.format(self._settings['logfile_client']))
 
     __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode']
     __CONFIG_REQUIRED = ['server_ip']

@@ -13,7 +13,6 @@
 import subprocess
 import time
 import shutil
-from datetime import datetime
 from os.path import join
 import lib.format as fmt
 from ...common import json_from_file
@@ -187,15 +186,6 @@ class IbReadRunner(Runner):
         """check if the result for the given x value is already collected"""
         return self._result_is_done(self.__x_key, x_value)
 
-    def __set_log_files_names(self):
-        """set names of log files"""
-        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/{}_{}-{}'.format(self._tool, self._mode, time_stamp)
-        self._settings['logfile_server'] = name + '-server.log'
-        self._settings['logfile_client'] = name + '-client.log'
-        print('Server log: {}'.format(self._settings['logfile_server']))
-        print('Client log: {}'.format(self._settings['logfile_client']))
-
     def run(self):
         """collects the `benchmark` results using `ib_read_lat` or `ib_read_bw`
 
@@ -212,7 +202,7 @@ class IbReadRunner(Runner):
               the latter produces significantly less detailed output.
         """
         self._print_start_message()
-        self.__set_log_files_names()
+        self._set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self._settings[self.__x_key]:
             if self.__result_is_done(x_value):

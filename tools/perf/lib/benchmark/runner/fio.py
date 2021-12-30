@@ -13,7 +13,6 @@
 import time
 import subprocess
 import shutil
-from datetime import datetime
 from os.path import join
 from lib.format import FioFormat
 from ...common import json_from_file
@@ -260,16 +259,6 @@ class FioRunner(Runner):
         """check if the result for the given x value is already collected"""
         return self._result_is_done(self.__x_key, x_value)
 
-    def __set_log_files_names(self):
-        """set names of log files"""
-        time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/{}_{}_{}-{}'.format(self._tool, self._tool_mode,
-                                         self._mode, time_stamp)
-        self._settings['logfile_server'] = name + '-server.log'
-        self._settings['logfile_client'] = name + '-client.log'
-        print('Server log: {}'.format(self._settings['logfile_server']))
-        print('Client log: {}'.format(self._settings['logfile_client']))
-
     def run(self) -> None:
         """collects the `benchmark` results using `fio`
 
@@ -281,7 +270,7 @@ class FioRunner(Runner):
         3. stops the `fio` server on the remote side.
         """
         self._print_start_message()
-        self.__set_log_files_names()
+        self._set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self._settings[self.__x_key]:
             if self.__result_is_done(x_value):
