@@ -28,3 +28,6 @@ ignore-long-lines=(.*('''|""")[),]?$|^[a-zA-Z,. ]+$)
 
 # Maximum number of lines in a module.
 max-module-lines=500
+
+#Regular expressions for the functions names (to extend a name size from 30 (default) to 60 (needed for unit tests)) 
+function-rgx=[a-z_][a-z0-9_]{2,60}$
