@@ -46,6 +46,14 @@ def test_fio_runner_init(oneseries_fio, config_fio, monkeypatch):
     benchmark = lib.benchmark.Benchmark(oneseries_fio)
     runner = FioRunner(benchmark, config_fio, 'idfile')
     runner.run()
+    #pylint: disable=protected-access
+    assert runner._benchmark == benchmark
+    assert runner._config == config_fio
+    assert runner._idfile == 'idfile'
+    assert runner._tool == oneseries_fio['tool']
+    assert runner._tool_mode == oneseries_fio['tool_mode']
+    assert runner._mode == oneseries_fio['mode']
+    #pylint: enable=protected-access
 
 @pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', \
                          'busy_wait_polling', 'filetype', 'requirements'])
@@ -72,7 +80,7 @@ def test_fio_runner_init_no_config(oneseries_fio):
     """failed initialization of FioRunner object - no config provided """
     benchmark = lib.benchmark.Benchmark(oneseries_fio)
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(RuntimeError):
         FioRunner(benchmark, None, 'idfile')
 
 @pytest.mark.parametrize('key', ['server_ip', 'FIO_PATH'])
