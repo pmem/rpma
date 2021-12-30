@@ -46,9 +46,7 @@ class IbReadRunner:
                                  .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
-        self.__benchmark = benchmark
-        self.__config = config
-        self.__idfile = idfile
+        super().__init__(benchmark, config, idfile)
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DEBUG_DUMP_CMDS', False)
@@ -58,17 +56,15 @@ class IbReadRunner:
             self.__config.get('DEBUG_SKIP_REMOTE_CMDS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the settings predefined for the chosen mode
-        self.__tool = self.__benchmark.oneseries['tool']
-        self.__mode = self.__benchmark.oneseries['mode']
-        self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
+        self.__settings = self.__SETTINGS_BY_MODE.get(self._mode, None)
         if not isinstance(self.__settings, dict):
-            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
+            raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self._mode))
         # path to the local ib tool
         ib_name = self.__benchmark.oneseries['tool'] + '_' + \
             self.__benchmark.oneseries['tool_mode']
         self.__ib_path = join(self.__config.get('IB_PATH', ''), ib_name)
         # path to the remote ib tool
-        self.__r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
+        self.__r_ib_path = join(self._config.get('REMOTE_IB_PATH', ''),
                                 ib_name)
         # find the x-axis key
         self.__x_key = None
@@ -77,7 +73,7 @@ class IbReadRunner:
                 self.__x_key = x_key
                 break
         if self.__x_key is None:
-            raise NotImplementedError(NO_X_AXIS_MSG.format(self.__mode))
+            raise NotImplementedError(NO_X_AXIS_MSG.format(self._mode))
         # load the already collected results
         try:
             self.__results = json_from_file(idfile)
@@ -85,7 +81,7 @@ class IbReadRunner:
             self.__results = {'input_file': idfile, 'json': []}
         self.__data = self.__results['json']
         self.__validate()
-        self.__formatter = fmt.IbReadLatFormat if self.__mode == 'lat' \
+        self.__formatter = fmt.IbReadLatFormat if self._mode == 'lat' \
                                                else fmt.IbReadBwFormat
 
     def __common_args(self, settings):
@@ -108,7 +104,7 @@ class IbReadRunner:
               '(duration: ~60s)'
               .format(settings['bs'], settings['threads'],
                       settings['iodepth'], settings['iterations']))
-        r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
+        r_numa_n = str(self._config['REMOTE_JOB_NUMA'])
         r_aux_params = [*settings['args']]
         cfg_r_aux_params = self.__config.get('REMOTE_AUX_PARAMS', '').split(' ')
         if cfg_r_aux_params != ['']:
@@ -116,7 +112,7 @@ class IbReadRunner:
 
         args = ['numactl', '-N', r_numa_n, self.__r_ib_path, *r_aux_params]
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
         if not (self.__skip_running_tools or self.__skip_remote_cmds):
@@ -159,7 +155,7 @@ class IbReadRunner:
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
         # dump a command to the log file
-        if self.__dump_cmds:
+        if self._dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
 
@@ -201,8 +197,8 @@ class IbReadRunner:
         return result
 
     def __result_append(self, _, y_value: dict):
-        """append new result to internal __data and the '__idfile' file"""
-        result_append(self.__data, self.__idfile, y_value)
+        """append new result to internal __data and the '_idfile' file"""
+        result_append(self.__data, self._idfile, y_value)
 
     def __result_is_done(self, x_value: int):
         """check if the result for the given x value is already collected"""
@@ -211,7 +207,7 @@ class IbReadRunner:
     def __set_log_files_names(self):
         """set names of log files"""
         time_stamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")
-        name = '/tmp/{}_{}-{}'.format(self.__tool, self.__mode, time_stamp)
+        name = '/tmp/{}_{}-{}'.format(self._tool, self._mode, time_stamp)
         self.__settings['logfile_server'] = name + '-server.log'
         self.__settings['logfile_client'] = name + '-client.log'
         print('Server log: {}'.format(self.__settings['logfile_server']))
@@ -232,8 +228,8 @@ class IbReadRunner:
               is not set. `--iters` is used instead of `--duration` because
               the latter produces significantly less detailed output.
         """
-        print_start_message(self.__mode, self.__benchmark.oneseries,
-                            self.__config)
+        print_start_message(self._mode, self._oneseries,
+                            self._config)
         self.__set_log_files_names()
         # benchmarks are run for all x values one-by-one
         for x_value in self.__settings[self.__x_key]:
@@ -247,12 +243,12 @@ class IbReadRunner:
                 raise NotImplementedError(
                     "settings['iterations'][{}] is missing".format(x_value))
             settings['args'] = self.__common_args(settings)
-            pre_cmd = run_pre_command(self.__config,
-                                      self.__benchmark.oneseries, x_value)
+            pre_cmd = run_pre_command(self._config,
+                                      self._oneseries, x_value)
             self.__server_start(settings)
             y_value = self.__client_run(settings)
             self.__server_stop(settings)
-            run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
+            run_post_command(self._config, self._oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = {

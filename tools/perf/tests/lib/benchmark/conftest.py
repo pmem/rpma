@@ -12,6 +12,8 @@ import lib.benchmark
 
 __ONESERIES_DUMMY = \
     {'tool': 'dummy', 'mode': 'dummy', 'filetype': 'malloc', 'id': 'di'}
+__ONESERIES_BASH = {**__ONESERIES_DUMMY, **{'tool': 'tool.sh'}}
+__ONESERIES_BASE = {**__ONESERIES_DUMMY, **{'tool': 'tool'}}
 __ONESERIES_EXECUTOR = {**__ONESERIES_DUMMY, **{'tool': 'tool'}}
 
 __ONESERIES_FIO = \
@@ -23,6 +25,16 @@ __ONESERIES_IB_READ = \
     {**__ONESERIES_DUMMY, **{'tool': 'ib_read', 'tool_mode': 'lat',
     'mode': 'lat', 'rw': 'read', 'filetype': 'malloc',
     'requirements': {'direct_write_to_pmem': True}}}
+
+@pytest.fixture(scope='function')
+def oneseries_dummy():
+    """provide a oneseries dummy"""
+    return __ONESERIES_DUMMY.copy()
+
+@pytest.fixture(scope='function')
+def oneseries_bash():
+    """provide a oneseries bash"""
+    return __ONESERIES_BASH.copy()
 
 @pytest.fixture(scope='function', name='oneseries_dummy')
 def __oneseries_dummy():

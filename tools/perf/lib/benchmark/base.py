@@ -87,6 +87,9 @@ class Benchmark:
 
     def __eq__(self, other):
         """A comparison function"""
+        # compare to empty object return false
+        if other is None:
+            return False
         # Benchmark is defined also by its requirements.
         if self.requirements != other.requirements:
             return False
