@@ -47,6 +47,14 @@ def test_ib_read_runner_init(oneseries_ib_read, config_ib_read, monkeypatch):
     runner = IbReadRunner(benchmark, config_ib_read, 'idfile')
     runner.run()
 
+    #pylint: disable=protected-access
+    assert runner._IbReadRunner__benchmark == benchmark
+    assert runner._IbReadRunner__config == config_ib_read
+    assert runner._IbReadRunner__idfile == 'idfile'
+    assert runner._IbReadRunner__tool == oneseries_ib_read['tool']
+    assert runner._IbReadRunner__mode == oneseries_ib_read['mode']
+    #pylint: enable=protected-access
+
 # XXX 'requirements' and 'tool_mode' are not yet suported by ib_read_runner
 # to be added later
 #@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw',
