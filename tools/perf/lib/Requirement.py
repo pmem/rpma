@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -253,6 +253,8 @@ class Requirement:
                 # the PCIe Root Port of the RNIC on the remote side
                 # the configuration can be adjusted automatically.
                 # XXX remove when Bash scripts will be removed
+                if 'FORCE_REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                    raise ValueError('FORCE_REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
                 config['FORCE_REMOTE_DIRECT_WRITE_TO_PMEM'] = \
                     req['direct_write_to_pmem']
                 cls.__set_DDIO(req, config)
@@ -260,6 +262,8 @@ class Requirement:
             else:
                 # Otherwise, the remote Direct Write to PMem configuration
                 # has to match the requirement.
+                if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                    raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
                 if req['direct_write_to_pmem'] == \
                     config['REMOTE_DIRECT_WRITE_TO_PMEM']:
                     return True
@@ -275,6 +279,8 @@ class Requirement:
 
         @classmethod
         def is_met(cls, req, config):
+            if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
             # For the ICX generation, there is no way of toggling Direct Write
             # to PMem from the OS level. The configuration has to be adjusted
             # manually on the BIOS level.
