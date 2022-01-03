@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """test_run.py -- lib.benchmark.Benchmark.run() tests"""
@@ -14,6 +14,7 @@ import lib.common
 IP_DUMMY = '101.102.103.104'
 CONFIG_DEFAULT = {'server_ip': IP_DUMMY}
 CONFIG_DUMMY = {**CONFIG_DEFAULT, 'dummy_results': True}
+REQ_DUMMY = True
 
 @pytest.mark.parametrize('key', ['tool', 'mode', 'id', 'filetype'])
 def test_incomplete_benchmark(oneseries_dummy, key, tmpdir):
@@ -21,7 +22,7 @@ def test_incomplete_benchmark(oneseries_dummy, key, tmpdir):
     oneseries_dummy.pop(key, None)
     benchmark = lib.benchmark.Benchmark(oneseries_dummy)
     with pytest.raises(ValueError):
-        benchmark.run(CONFIG_DUMMY, str(tmpdir))
+        benchmark.run(CONFIG_DUMMY, str(tmpdir), REQ_DUMMY)
     assert not benchmark.is_done()
 
 def test_no_server_ip(benchmark_dummy, tmpdir):
@@ -29,7 +30,7 @@ def test_no_server_ip(benchmark_dummy, tmpdir):
     config = {**CONFIG_DUMMY}
     config.pop('server_ip', None)
     with pytest.raises(ValueError):
-        benchmark_dummy.run(config, str(tmpdir))
+        benchmark_dummy.run(config, str(tmpdir), REQ_DUMMY)
     assert not benchmark_dummy.is_done()
 
 def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
@@ -42,7 +43,7 @@ def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Dummy, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_dummy.identifier)
-    benchmark_dummy.run(CONFIG_DUMMY, str(tmpdir))
+    benchmark_dummy.run(CONFIG_DUMMY, str(tmpdir), REQ_DUMMY)
     assert run_mock_used
     assert benchmark_dummy.is_done()
 
@@ -56,7 +57,7 @@ def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Bash, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_bash.identifier)
-    benchmark_bash.run(CONFIG_DEFAULT, str(tmpdir))
+    benchmark_bash.run(CONFIG_DEFAULT, str(tmpdir), REQ_DUMMY)
     assert run_mock_used
     assert benchmark_bash.is_done()
 
@@ -70,6 +71,6 @@ def test_base_runner(benchmark_base, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Executor, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_base.identifier)
-    benchmark_base.run(CONFIG_DEFAULT, str(tmpdir))
+    benchmark_base.run(CONFIG_DEFAULT, str(tmpdir), REQ_DUMMY)
     assert run_mock_used
     assert benchmark_base.is_done()

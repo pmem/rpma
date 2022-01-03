@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -165,7 +165,7 @@ class Benchmark:
                 raise ValueError(
                     "'{}' is missing in the config".format(required))
 
-    def run(self, config: dict, result_dir: str) -> None:
+    def run(self, config: dict, result_dir: str, req: bool) -> None:
         """Pick a runner and run the benchmark.
 
         Either:
@@ -186,7 +186,10 @@ class Benchmark:
 
             result_dir: a directory where the intermediate and final products
              of the benchmarking process will be stored.
+
+             req: requirement direct write to pmem value
         """
+        self.__req['direct_write_to_pmem'] = req
         self.__validate(config)
         if config.get('dummy_results', False):
             runner = Dummy
