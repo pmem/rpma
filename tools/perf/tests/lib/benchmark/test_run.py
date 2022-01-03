@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """test_run.py -- lib.benchmark.Benchmark.run() tests"""
@@ -60,8 +60,8 @@ def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     assert run_mock_used
     assert benchmark_bash.is_done()
 
-def test_base_runner(benchmark_base, tmpdir, monkeypatch):
-    """a simple base runner call"""
+def test_executor_runner(benchmark_executor, tmpdir, monkeypatch):
+    """a simple Executor runner call"""
     run_mock_used = False
     def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
@@ -69,7 +69,7 @@ def test_base_runner(benchmark_base, tmpdir, monkeypatch):
         run_mock_used = True
     monkeypatch.setattr(lib.benchmark.base.Executor, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
-                                           benchmark_base.identifier)
-    benchmark_base.run(CONFIG_DEFAULT, str(tmpdir))
+                                           benchmark_executor.identifier)
+    benchmark_executor.run(CONFIG_DEFAULT, str(tmpdir))
     assert run_mock_used
-    assert benchmark_base.is_done()
+    assert benchmark_executor.is_done()
