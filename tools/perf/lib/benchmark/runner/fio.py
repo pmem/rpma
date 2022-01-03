@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -100,17 +100,11 @@ class FioRunner:
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
         self.__mode = self.__benchmark.oneseries['mode']
-        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
-            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
         self.__direct_write_to_pmem = \
             int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
-        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
-            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
-        self.__direct_write_to_pmem = \
-            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__set_settings_by_mode()
 
         # path to the local fio
