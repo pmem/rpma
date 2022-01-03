@@ -58,8 +58,8 @@ def test_fio_runner_init(oneseries_fio, config_fio, monkeypatch):
     #pylint: enable=no-member
     #pylint: enable=protected-access
 
-@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', \
-                         'busy_wait_polling', 'filetype', 'requirements'])
+@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', 'filetype',
+                         'requirements'])
 def test_fio_runner_init_oneserises_incomplete(oneseries_fio, config_fio, key):
     """failed initialization of FioRunner object - incomlete oneseries_fio """
     oneseries_fio.pop(key)
