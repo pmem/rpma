@@ -14,10 +14,11 @@ STOP = '</tbody></table>'
 
 EMPTY = START + HEADER + STOP
 SIMPLE_RANGE = 10
+KVT = {str(k): str(k + 1) for k in range(SIMPLE_RANGE)}
 SIMPLE = START + HEADER \
     + "".join([
-        '<tr><td>{}</td><td><pre>{}</pre></td></tr>'.format(k, k + 1)
-            for k in range(SIMPLE_RANGE)]) \
+        '<tr><td>{}</td><td><pre>{}</pre></td></tr>'.format(k, KVT[k])
+            for k in KVT.keys()]) \
     + STOP
 
 EMPTY_KVTABLE = {"type": "kvtable"}
@@ -29,7 +30,6 @@ def test_empty_empty():
 
 def test_simple():
     """produce a simple table n -> (n + 1)"""
-    kvt = {str(k): str(k + 1) for k in range(SIMPLE_RANGE)}
-    kvt["type"] = "kvtable"
-    output = lib.report.utils.dict2kvtable(kvt, {})
+    KVT["type"] = "kvtable"
+    output = lib.report.utils.dict2kvtable(KVT, {})
     assert(output == SIMPLE)
