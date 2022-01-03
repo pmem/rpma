@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """test_run.py -- lib.benchmark.Benchmark.run() tests"""
@@ -20,20 +20,23 @@ def test_incomplete_benchmark(oneseries_dummy, key, tmpdir):
     """an incomplete benchmark definition"""
     oneseries_dummy.pop(key, None)
     benchmark = lib.benchmark.Benchmark(oneseries_dummy)
+    req = {'direct_write_to_pmem': False}
     with pytest.raises(ValueError):
-        benchmark.run(CONFIG_DUMMY, str(tmpdir))
+        benchmark.run(CONFIG_DUMMY, str(tmpdir), req)
     assert not benchmark.is_done()
 
 def test_no_server_ip(benchmark_dummy, tmpdir):
     """a config without 'server_ip'"""
     config = {**CONFIG_DUMMY}
     config.pop('server_ip', None)
+    req = {'direct_write_to_pmem': False}
     with pytest.raises(ValueError):
-        benchmark_dummy.run(config, str(tmpdir))
+        benchmark_dummy.run(config, str(tmpdir), req)
     assert not benchmark_dummy.is_done()
 
 def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     """a simple Dummy runner call"""
+    req = {'direct_write_to_pmem': False}
     run_mock_used = False
     def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
@@ -42,12 +45,13 @@ def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Dummy, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_dummy.identifier)
-    benchmark_dummy.run(CONFIG_DUMMY, str(tmpdir))
+    benchmark_dummy.run(CONFIG_DUMMY, str(tmpdir), req)
     assert run_mock_used
     assert benchmark_dummy.is_done()
 
 def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     """a simple Bash runner call"""
+    req = {'direct_write_to_pmem': False}
     run_mock_used = False
     def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
@@ -56,12 +60,13 @@ def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Bash, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_bash.identifier)
-    benchmark_bash.run(CONFIG_DEFAULT, str(tmpdir))
+    benchmark_bash.run(CONFIG_DEFAULT, str(tmpdir), req)
     assert run_mock_used
     assert benchmark_bash.is_done()
 
 def test_base_runner(benchmark_base, tmpdir, monkeypatch):
     """a simple base runner call"""
+    req = {'direct_write_to_pmem': False}
     run_mock_used = False
     def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir
@@ -70,6 +75,6 @@ def test_base_runner(benchmark_base, tmpdir, monkeypatch):
     monkeypatch.setattr(lib.benchmark.base.Executor, 'run', run_mock)
     output = lib.benchmark.get_result_path(str(tmpdir),
                                            benchmark_base.identifier)
-    benchmark_base.run(CONFIG_DEFAULT, str(tmpdir))
+    benchmark_base.run(CONFIG_DEFAULT, str(tmpdir), req)
     assert run_mock_used
     assert benchmark_base.is_done()
