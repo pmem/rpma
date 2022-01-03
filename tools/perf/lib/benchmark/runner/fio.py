@@ -100,17 +100,9 @@ class FioRunner:
         self.__tool = self.__benchmark.oneseries['tool']
         self.__tool_mode = self.__benchmark.oneseries['tool_mode']
         self.__mode = self.__benchmark.oneseries['mode']
-        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
-            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
-        self.__direct_write_to_pmem = \
-            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__settings = self.__SETTINGS_BY_MODE.get(self.__mode, None)
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
-        if 'direct_write_to_pmem' not in self.__benchmark.requirements:
-            raise ValueError(MISSING_KEY_MSG.format('direct_write_to_pmem'))
-        self.__direct_write_to_pmem = \
-            int(self.__benchmark.requirements['direct_write_to_pmem'])
         self.__set_settings_by_mode()
 
         # path to the local fio
@@ -158,7 +150,9 @@ class FioRunner:
         env = ['serverip={}'.format(self.__config['server_ip']),
                'numjobs={}'.format(settings['threads']),
                'iodepth={}'.format(settings['iodepth']),
-               'direct_write_to_pmem={}'.format(self.__direct_write_to_pmem),
+               'direct_write_to_pmem={}'\
+                   .format(str(int(
+                       self.__config['REMOTE_DIRECT_WRITE_TO_PMEM']))),
                'busy_wait_polling={}'.format(busy_wait_polling),
                'cores_per_socket={}'.format(self.__config['CORES_PER_SOCKET'])]
         if 'cpuload' in settings and settings['cpuload'] > 0:
