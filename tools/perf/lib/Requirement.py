@@ -176,7 +176,8 @@ class Requirement:
         for _, b in self.__benchmarks.items():
             if b.is_done():
                 continue
-            b.run(config, result_dir)
+            self.__req.pop('benchmarks', None)
+            b.run(config, self.__req, result_dir)
             ctx.cache() # store to a disk the current state of execution
         self.__req['done'] = True
         ctx.cache() # store to a disk the final state of execution
