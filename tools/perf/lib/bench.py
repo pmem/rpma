@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -153,7 +153,16 @@ class Bench:
         # generate a list of unique benchmarks to execute
         benchmarks = Benchmark.uniq(figures)
         # generate a list of unique requirements to be met
-        requirements = Requirement.uniq(benchmarks)
+        # if bench.json exists, restore the dictionary of requirements
+        output_path = os.path.join(result_dir, 'bench.json')
+        if os.path.exists(output_path):
+            with open(output_path, 'r', encoding='utf-8') as file:
+                file = json.load(file)
+            requirements = {
+                id: Requirement(r)
+                for id, r in file['requirements'].items()}
+        else:
+            requirements = Requirement.uniq(benchmarks)
         # extract names of the parts ABC.json -> ABC
         parts = [os.path.splitext(os.path.basename(part['input_file']))[0]
                  for part in parts]
