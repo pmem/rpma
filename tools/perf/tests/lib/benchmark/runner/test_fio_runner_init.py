@@ -101,7 +101,7 @@ def test_fio_runner_init_wrong_value(oneseries_fio, config_fio, key):
     """failed initialization of IbReadRunner object -
        - no fio_path in config provided """
     oneseries_fio.pop(key)
-    oneseries_fio[key] = '!@#$%^)(*&dsaf;a;ljka;sdfja'
+    oneseries_fio[key] = 'an incorrect value'
     benchmark = lib.benchmark.Benchmark(oneseries_fio)
     with pytest.raises(ValueError):
         FioRunner(benchmark, config_fio, 'idfile')

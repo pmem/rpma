@@ -120,7 +120,7 @@ def test_ib_read_runner_init_wrong_value(oneseries_ib_read,
        - invalid value provided"""
     oneseries = {**oneseries_ib_read}
     oneseries.pop(key)
-    oneseries[key] = '!@#$%^)(*&dsaf;a;ljka;sdfja'
+    oneseries[key] = 'an incorrect value'
     benchmark = lib.benchmark.Benchmark(oneseries)
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, config_ib_read, 'idfile')
