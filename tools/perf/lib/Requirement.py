@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -245,6 +245,8 @@ class Requirement:
 
         @classmethod
         def is_met(cls, req, config):
+            if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
             # For the CLX generation, it is possible to configure Direct Write
             # to PMem from the OS level.
             if config.get('REMOTE_SUDO_NOPASSWD', False) and \
@@ -275,6 +277,8 @@ class Requirement:
 
         @classmethod
         def is_met(cls, req, config):
+            if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
             # For the ICX generation, there is no way of toggling Direct Write
             # to PMem from the OS level. The configuration has to be adjusted
             # manually on the BIOS level.
