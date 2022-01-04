@@ -58,11 +58,10 @@ def test_ib_read_runner_init(oneseries_ib_read, config_ib_read, monkeypatch):
     #pylint: enable=no-member
     #pylint: enable=protected-access
 
-# XXX 'requirements' and 'tool_mode' are not yet supported by IbReadRunner
-# to be added later
+# XXX 'requirements' is not yet supported by IbReadRunner - to be added later
 #@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw',
 #                                 'filetype', 'requirements'])
-@pytest.mark.parametrize('key', ['tool', 'mode', 'rw', 'filetype'])
+@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', 'filetype'])
 def test_ib_read_runner_init_oneserises_incomplete(oneseries_ib_read,
         config_ib_read, key):
     """failed initialization of IbReadRunner object - incomplete oneseries"""
@@ -92,7 +91,7 @@ def test_ib_read_runner_init_config_incomplete(oneseries_ib_read,
     with pytest.raises(ValueError):
         IbReadRunner(benchmark, config, 'idfile')
 
-@pytest.mark.parametrize('key', ['mode', 'rw', 'filetype', 'tool'])
+@pytest.mark.parametrize('key', ['tool', 'tool_mode', 'mode', 'rw', 'filetype'])
 def test_ib_read_runner_init_wrong_value(oneseries_ib_read,
         config_ib_read, key):
     """failed initialization of IbReadRunner object -

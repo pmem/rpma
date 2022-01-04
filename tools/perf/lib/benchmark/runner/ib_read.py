@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -20,7 +20,8 @@ from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
-                    result_append, result_is_done, print_start_message
+                    result_append, result_is_done, print_start_message, \
+                    verify_oneseries
 
 class IbReadRunner:
     """the ib_read_{lat,bw} tools runner
@@ -29,6 +30,7 @@ class IbReadRunner:
     on both ends of the connection.
     """
     def __validate(self):
+        """validate the object and readiness of the env"""
         # check if the local ib tool is present
         if shutil.which(self.__ib_path) is None:
             raise ValueError("cannot find the local ib tool: {}"
@@ -48,16 +50,7 @@ class IbReadRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
-        """validate the object and readiness of the env"""
-        for key, value in self.__ONESERIES_REQUIRED.items():
-            if key not in self.__benchmark.oneseries:
-                raise ValueError(MISSING_KEY_MSG.format(key))
-            if value is None:
-                continue
-            if self.__benchmark.oneseries[key] != value:
-                present_value = self.__benchmark.oneseries[key]
-                raise ValueError(".{} == {} != {}".format(key, present_value,
-                                                          value))
+        verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
         self.__mode = self.__benchmark.oneseries['mode']
@@ -247,11 +240,11 @@ class IbReadRunner:
             self.__result_append(x_value, y_value)
 
     __ONESERIES_REQUIRED = {
-        'rw': 'read',
-        'filetype': 'malloc',
-        'tool': 'ib_read',
-        'mode': None,
-        'tool_mode': None
+        'tool': ['ib_read'],
+        'tool_mode': ['lat', 'bw'],
+        'mode': ['lat', 'bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th'],
+        'rw': ['read'],
+        'filetype': ['malloc']
     }
 
     __X_KEYS = ['threads', 'bs', 'iodepth']

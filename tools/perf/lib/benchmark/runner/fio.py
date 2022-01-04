@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -20,7 +20,8 @@ from ...common import json_from_file
 from ...remote_cmd import RemoteCmd
 from .common import UNKNOWN_VALUE_MSG, NO_X_AXIS_MSG, MISSING_KEY_MSG, \
                     BS_VALUES, run_pre_command, run_post_command, \
-                    result_append, result_is_done, print_start_message
+                    result_append, result_is_done, print_start_message, \
+                    verify_oneseries
 
 class FioRunner:
     """the FIO runner
@@ -31,15 +32,6 @@ class FioRunner:
 
     def __validate(self):
         """validate the object and readiness of the env"""
-        # XXX validate the object
-        if self.__tool_mode not in ['apm', 'gpspm']:
-            raise ValueError(UNKNOWN_VALUE_MSG
-                             .format('tool_mode', self.__tool_mode))
-
-        filetype = self.__benchmark.oneseries['filetype']
-        if filetype not in ['malloc', 'pmem']:
-            raise ValueError(UNKNOWN_VALUE_MSG.format('filetype', filetype))
-
         # check if the local fio is present
         if shutil.which(self.__fio_path) is None:
             raise ValueError("cannot find the local fio: {}"
@@ -91,9 +83,7 @@ class FioRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
-        for key in self.__ONESERIES_REQUIRED:
-            if key not in self.__benchmark.oneseries:
-                raise ValueError(MISSING_KEY_MSG.format(key))
+        verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the result keys base on the benchmark's rw
         self.__set_results_key()
         # pick the settings predefined for the chosen mode
@@ -315,7 +305,14 @@ class FioRunner:
             run_post_command(self.__config, self.__benchmark.oneseries, pre_cmd)
             self.__result_append(x_value, y_value)
 
-    __ONESERIES_REQUIRED = ['tool', 'tool_mode', 'mode', 'rw', 'filetype']
+    __ONESERIES_REQUIRED = {
+        'tool': ['fio'],
+        'tool_mode': ['apm', 'gpspm'],
+        'mode': ['lat', 'lat-cpu', 'bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th',
+                 'bw-cpu', 'bw-cpu-mt'],
+        'rw': ['read', 'write', 'rw'],
+        'filetype': ['malloc', 'pmem']
+    }
 
     __CPU_LOAD_RANGE = {
         '00_99' : [0, 25, 50, 75, 99],
