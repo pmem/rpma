@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """conftest.py -- a common for lib.benchmark.* tests"""
@@ -13,7 +13,7 @@ import lib.benchmark
 __ONESERIES_DUMMY = \
     {'tool': 'dummy', 'mode': 'dummy', 'filetype': 'malloc', 'id': 'di'}
 __ONESERIES_BASH = {**__ONESERIES_DUMMY, **{'tool': 'tool.sh'}}
-__ONESERIES_BASE = {**__ONESERIES_DUMMY, **{'tool': 'tool'}}
+__ONESERIES_EXECUTOR = {**__ONESERIES_DUMMY, **{'tool': 'tool'}}
 
 __ONESERIES_FIO = \
     {**__ONESERIES_DUMMY, **{'tool': 'fio', 'tool_mode': 'apm', 'mode': 'lat',
@@ -35,10 +35,10 @@ def __oneseries_bash():
     """provide a oneseries bash"""
     return __ONESERIES_BASH.copy()
 
-@pytest.fixture(scope='function', name='oneseries_base')
-def __oneseries_base():
+@pytest.fixture(scope='function', name='oneseries_executor')
+def __oneseries_executor():
     """provide a oneseries base"""
-    return __ONESERIES_BASE.copy()
+    return __ONESERIES_EXECUTOR.copy()
 
 @pytest.fixture(scope='function', name='oneseries_fio')
 def __oneseries_fio():
@@ -61,6 +61,16 @@ def benchmark_bash(oneseries_bash):
     return lib.benchmark.Benchmark(oneseries_bash)
 
 @pytest.fixture(scope='function')
-def benchmark_base(oneseries_base):
+def benchmark_executor(oneseries_executor):
+    """create an executor Benchmark instance"""
+    return lib.benchmark.Benchmark(oneseries_executor)
+
+@pytest.fixture(scope='function')
+def benchmark_ib_read(oneseries_ib_read):
     """create an ib_read Benchmark instance"""
-    return lib.benchmark.Benchmark(oneseries_base)
+    return lib.benchmark.Benchmark(oneseries_ib_read)
+
+@pytest.fixture(scope='function')
+def benchmark_fio(oneseries_fio):
+    """create a fio Benchmark instance"""
+    return lib.benchmark.Benchmark(oneseries_fio)
