@@ -18,4 +18,3 @@ choose to collect the results using one of available runners. Please see
 from .executor import Executor
 from .bash import Bash
 from .dummy import Dummy
-
