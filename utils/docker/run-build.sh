@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 #
 
 #
@@ -130,6 +130,7 @@ function test_compile_all_examples_standalone() {
 }
 
 function run_pytest() {
+	[ "$TEST_PYTHON_TOOLS" != "ON" ] && return
 	# find pytest
 	PYTESTS="pytest pytest3 pytest-3"
 	for bin in $PYTESTS; do
