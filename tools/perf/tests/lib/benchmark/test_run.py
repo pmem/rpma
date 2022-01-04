@@ -47,21 +47,6 @@ def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     assert run_mock_used
     assert benchmark_dummy.is_done()
 
-def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
-    """a simple Bash runner call"""
-    run_mock_used = False
-    def run_mock(_self, _config, idfile):
-        """mock of Bash.run()"""
-        nonlocal run_mock_used, tmpdir
-        assert idfile == output
-        run_mock_used = True
-    monkeypatch.setattr(lib.benchmark.base.Bash, 'run', run_mock)
-    output = lib.benchmark.get_result_path(str(tmpdir),
-                                           benchmark_bash.identifier)
-    benchmark_bash.run(CONFIG_DEFAULT, str(tmpdir))
-    assert run_mock_used
-    assert benchmark_bash.is_done()
-
 def test_executor_runner(benchmark_executor, tmpdir, monkeypatch):
     """a simple Executor runner call"""
     run_mock_used = False

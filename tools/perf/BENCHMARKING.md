@@ -142,7 +142,7 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./report_figures.py compare -h
 ```
-
+# XXX to be removed [BEGIN]
 ## Running separate workloads
 Instead of running a comprehensive set of workloads you can run any separate subset of them. There are a few tools that can be used for automatic running RPMA-related workloads:
 
@@ -201,3 +201,4 @@ $ ./csv_compare.py --output_layout lat_avg ib_read_lat-21-01-31-072033.csv rpma_
 ```
 
 With the help of additional parameters, you can adjust various aspects of the output.
+# XXX to be removed [END]

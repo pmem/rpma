@@ -150,9 +150,6 @@ class FioRunner:
         else:
             # no CPU load
             args.append('--section=server')
-        # XXX the name REMOTE_JOB_MEM_PATH is unfortunate since for
-        # rpma_fio_bench.sh it is meant to store also a possible 'malloc'
-        # value
         # XXX pmem_path accommodates both DeviceDAX and FileSystemDAX where
         # the config may have both provided in the future allowing to pick
         # either one or another here and generate a figure comparing both
