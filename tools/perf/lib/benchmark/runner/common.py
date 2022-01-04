@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -106,3 +106,20 @@ def run_post_command(config, oneseries, pre_command=None):
             print('--- post-command\'s output: ---')
             raise
     __wait_for_pre_command(pre_command)
+
+def verify_oneseries(actual, required):
+    """verify if oneseries contains all required keys
+       and if they have required/allowed values
+    """
+    for key, values in required.items():
+        if key not in actual:
+            raise ValueError(MISSING_KEY_MSG.format(key))
+        if values is None:
+            continue
+        if not isinstance(values, list):
+            raise ValueError('value of the {} key has to be a list'
+                             .format(key))
+        actual_value = actual[key]
+        if actual_value not in values:
+            raise ValueError('.{} == {} not in {}'
+                             .format(key, actual_value, values))
