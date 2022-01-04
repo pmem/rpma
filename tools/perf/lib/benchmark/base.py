@@ -15,7 +15,7 @@ import os
 from copy import deepcopy
 
 from ..common import uniq, ENCODE
-from .runner import Executor, Bash, Dummy
+from .runner import Executor, Dummy
 
 def get_result_path(result_dir: str, identifier: int) -> str:
     """a path to the file with all the collected results of the particular
@@ -175,8 +175,6 @@ class Benchmark:
 
         - `lib.benchmark.runner.dummy.Dummy.run()` when not the actual results
           are expected,
-        - `lib.benchmark.runner.bash.Bash.run()` when the legacy `ib_read.sh`
-          and `rpma_fio_bench.sh` are meant to be used or
         - `lib.benchmark.runner.executor.Executor.run()`.
 
         No matter which runner is used, in the result of successful
@@ -193,8 +191,6 @@ class Benchmark:
         self.__validate(config)
         if config.get('dummy_results', False):
             runner = Dummy
-        elif '.sh' in self.__oneseries['tool']:
-            runner = Bash
         else:
             runner = Executor
 
