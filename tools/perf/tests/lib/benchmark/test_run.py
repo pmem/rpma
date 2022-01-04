@@ -36,6 +36,7 @@ def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     """a simple Dummy runner call"""
     run_mock_used = False
     def run_mock(_self, _config, idfile):
+        """mock of Dummy.run()"""
         nonlocal run_mock_used, tmpdir
         assert idfile == output
         run_mock_used = True
@@ -50,6 +51,7 @@ def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
     """a simple Bash runner call"""
     run_mock_used = False
     def run_mock(_self, _config, idfile):
+        """mock of Bash.run()"""
         nonlocal run_mock_used, tmpdir
         assert idfile == output
         run_mock_used = True
@@ -64,6 +66,7 @@ def test_executor_runner(benchmark_executor, tmpdir, monkeypatch):
     """a simple Executor runner call"""
     run_mock_used = False
     def run_mock(_self, _config, idfile):
+        """mock of Executor.run()"""
         nonlocal run_mock_used, tmpdir
         assert idfile == output
         run_mock_used = True
