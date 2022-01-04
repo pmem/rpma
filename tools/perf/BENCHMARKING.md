@@ -142,7 +142,7 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./report_figures.py compare -h
 ```
-
+# To be deleted
 ## Running separate workloads
 Instead of running a comprehensive set of workloads you can run any separate subset of them. There are a few tools that can be used for automatic running RPMA-related workloads:
 
