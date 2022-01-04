@@ -65,8 +65,8 @@ class IbReadRunner:
         if not isinstance(self.__settings, dict):
             raise ValueError(UNKNOWN_VALUE_MSG.format('mode', self.__mode))
         # path to the local ib tool
-        ib_name = self.__benchmark.oneseries.get('tool', '') + '_' + \
-            self.__benchmark.oneseries.get('tool_mode', '')
+        ib_name = self.__benchmark.oneseries['tool'] + '_' + \
+            self.__benchmark.oneseries['tool_mode']
         self.__ib_path = join(self.__config.get('IB_PATH', ''), ib_name)
         # path to the remote ib tool
         self.__r_ib_path = join(self.__config.get('REMOTE_IB_PATH', ''),
