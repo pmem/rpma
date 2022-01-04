@@ -252,9 +252,6 @@ class Requirement:
                 # If there are available: passwordless sudo access and
                 # the PCIe Root Port of the RNIC on the remote side
                 # the configuration can be adjusted automatically.
-                # XXX remove when Bash scripts will be removed
-                config['FORCE_REMOTE_DIRECT_WRITE_TO_PMEM'] = \
-                    req['direct_write_to_pmem']
                 cls.__set_DDIO(req, config)
                 return True
             else:

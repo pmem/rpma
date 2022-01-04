@@ -12,7 +12,6 @@ import lib.benchmark
 
 __ONESERIES_DUMMY = \
     {'tool': 'dummy', 'mode': 'dummy', 'filetype': 'malloc', 'id': 'di'}
-__ONESERIES_BASH = {**__ONESERIES_DUMMY, **{'tool': 'tool.sh'}}
 __ONESERIES_EXECUTOR = {**__ONESERIES_DUMMY, **{'tool': 'tool'}}
 
 __ONESERIES_FIO = \
@@ -29,11 +28,6 @@ __ONESERIES_IB_READ = \
 def __oneseries_dummy():
     """provide a oneseries dummy"""
     return __ONESERIES_DUMMY.copy()
-
-@pytest.fixture(scope='function', name='oneseries_bash')
-def __oneseries_bash():
-    """provide a oneseries bash"""
-    return __ONESERIES_BASH.copy()
 
 @pytest.fixture(scope='function', name='oneseries_executor')
 def __oneseries_executor():
@@ -54,11 +48,6 @@ def __oneseries_ib_read():
 def benchmark_dummy(oneseries_dummy):
     """create a dummy Benchmark instance"""
     return lib.benchmark.Benchmark(oneseries_dummy)
-
-@pytest.fixture(scope='function')
-def benchmark_bash(oneseries_bash):
-    """create a bash Benchmark instance"""
-    return lib.benchmark.Benchmark(oneseries_bash)
 
 @pytest.fixture(scope='function')
 def benchmark_executor(oneseries_executor):
