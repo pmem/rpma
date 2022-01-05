@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -42,14 +42,17 @@ class Benchmark:
     an element of a `lib.figure.base.Figure.series` list.
     """
 
-    def __init__(self, oneseries, figure=None, series_index=-1):
+    def __init__(self, oneseries, req=None, figure=None, series_index=-1):
         self.__figure = figure
         self.__series_index = series_index
         # remove unnecessary fields
         oneseries.pop('label', None)
         oneseries.pop('rw_dir', None)
         oneseries['done'] = oneseries.get('done', False)
-        self.__req = oneseries.pop('requirements', {})
+        if req:
+            self.__req = deepcopy(req)
+        else:
+            self.__req = oneseries.pop('requirements', {})
         self.__oneseries = oneseries
 
     @classmethod
@@ -73,7 +76,7 @@ class Benchmark:
             A list of `Benchmark` objects where each element describes
             different benchmark.
         """
-        output = [cls(oneseries, figure, index)
+        output = [cls(oneseries, None, figure, index)
                   for figure in figures
                   for index, oneseries in enumerate(figure.series)]
         return uniq(output)
