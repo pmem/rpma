@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -151,8 +151,15 @@ class FioRunner:
                       settings['threads'], settings['iodepth'],
                       settings['sync'], cpuload))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
-        # XXX nice to have REMOTE_TRACER
-        args = ['numactl', '-N', r_numa_n, self.__r_fio_path]
+
+        if 'REMOTE_TRACER' in self.__config and \
+            self.__config['REMOTE_TRACER'] != '':
+            args = str(self.__config['REMOTE_TRACER']).split(' ')
+        else:
+            args = ['numactl', '-N', r_numa_n]
+
+        args.extend([self.__r_fio_path])
+
         busy_wait_polling = \
             int(self.__benchmark.oneseries.get('busy_wait_polling', True))
         env = ['serverip={}'.format(self.__config['server_ip']),
