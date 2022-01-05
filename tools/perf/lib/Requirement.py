@@ -32,10 +32,18 @@ class Requirement:
     """A single requirement"""
 
     def __init__(self, req: dict):
+        # When we create a new requirement,
+        # we need to create a list of benchmarks for it.
+        # When we restore the list of requirements, we need to extract
+        # the information about the benchmark from the requirements.
+        if 'benchmarks' in req.keys():
+            benchmarks = req.pop('benchmarks')
+            self.__benchmarks = {id: Benchmark(b, req)
+                for id, b in benchmarks.items()}
+        else:
+            self.__benchmarks = {}
         req['done'] = req.get('done', False)
         self.__req = req
-        self.__benchmarks = {id: Benchmark(b)
-            for id, b in req.get('benchmarks', {}).items()}
 
     @property
     def identifier(_):
