@@ -221,6 +221,11 @@ class FioRunner:
         job_file = './fio_jobs/librpma_{}-client.fio'.format(self.__tool_mode)
         args.extend([self.__fio_path, job_file, '--output-format=json+'])
 
+        # set timeout in seconds
+        if 'TIMEOUT' in self.__config and self.__config['TIMEOUT'] != '':
+            timeout = self.__config['TIMEOUT']
+        else:
+            timeout = 300 # the default timeout is 5 minutes
         # dump a command to the log file
         if self.__dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
@@ -229,8 +234,9 @@ class FioRunner:
             ret = subprocess.run(args, check=True, env=env,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE,
-                                 encoding='utf-8')
-        except subprocess.CalledProcessError as err:
+                                 encoding='utf-8', timeout=timeout)
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) \
+            as err:
             print('\nstdout:\n{}\nstderr:\n{}\n'
                   .format(err.stdout, err.stderr))
             self.__server_stop(settings)

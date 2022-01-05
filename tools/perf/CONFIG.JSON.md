@@ -57,3 +57,9 @@ During in-depth analysis of the benchmarking process itself, you may find useful
     "DO_NOTHING": true,
     "DUMP_CMDS": true
 ```
+
+Set the timeout in seconds, the default value is 5 minutes.
+
+```json
+    "TIMEOUT": 300
+```
