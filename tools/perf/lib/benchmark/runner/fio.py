@@ -81,6 +81,7 @@ class FioRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__do_nothing = self.__config.get('DO_NOTHING', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the result keys base on the benchmark's rw
         self.__set_results_key()
@@ -187,11 +188,14 @@ class FioRunner:
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-        self.__server = RemoteCmd.run_async(self.__config, args)
-        time.sleep(0.1) # wait 0.1 sec for server to start listening
+        if not self.__do_nothing:
+            self.__server = RemoteCmd.run_async(self.__config, args)
+            time.sleep(0.1) # wait 0.1 sec for server to start listening
 
     def __server_stop(self, settings):
         """wait until server finishes"""
+        if self.__do_nothing:
+            return
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
@@ -230,20 +234,23 @@ class FioRunner:
         if self.__dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
-        try:
-            ret = subprocess.run(args, check=True, env=env,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 encoding='utf-8', timeout=timeout)
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) \
-            as err:
-            print('\nstdout:\n{}\nstderr:\n{}\n'
-                  .format(err.stdout, err.stderr))
-            self.__server_stop(settings)
-            run_post_command(self.__config, self.__benchmark.oneseries)
-            raise # re-raise the current exception
+        if not self.__do_nothing:
+            try:
+                ret = subprocess.run(args, check=True, env=env,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     encoding='utf-8', timeout=timeout)
+            except (subprocess.CalledProcessError,
+                    subprocess.TimeoutExpired) as err:
+                print('\nstdout:\n{}\nstderr:\n{}\n'
+                      .format(err.stdout, err.stderr))
+                self.__server_stop(settings)
+                run_post_command(self.__config, self.__benchmark.oneseries)
+                raise # re-raise the current exception
 
-        result = FioFormat.parse(ret.stdout)
+            result = FioFormat.parse(ret.stdout)
+        else:
+            result = FioFormat.null_results(env)
 
         # append cpuload to the results
         if 'cpuload' in settings:
