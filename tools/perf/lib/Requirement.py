@@ -221,6 +221,8 @@ class Requirement:
         @classmethod
         def __set_DDIO(cls, req, config):
             """set DDIO to the required value"""
+            if config.get('SKIP_RUNNING_TOOLS', False):
+                return
             ddio = 'ddio.sh'
             local_dir = '..'
             remote_dir = '/dev/shm'
