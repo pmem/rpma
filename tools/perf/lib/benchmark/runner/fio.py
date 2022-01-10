@@ -304,7 +304,7 @@ class FioRunner:
         'tool_mode': ['apm', 'gpspm'],
         'mode': ['lat', 'lat-cpu', 'bw-bs', 'bw-dp-exp', 'bw-dp-lin', 'bw-th',
                  'bw-cpu', 'bw-cpu-mt'],
-        'rw': ['read', 'write', 'rw'],
+        'rw': ['read', 'write', 'rw', 'randread', 'randwrite', 'randrw'],
         'filetype': ['malloc', 'pmem']
     }
 
