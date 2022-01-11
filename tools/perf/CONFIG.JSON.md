@@ -4,11 +4,55 @@ Mandatory and optional parameters available to control the `report_bench.py` beh
 
 ## Mandatory parameters
 
-All mandatory parameters are listed in the [`config.json.example`](./config.json.example).
+All mandatory parameters are also listed in the [`config.json.example`](./config.json.example).
+
+- "platform_generation" - generation of the platform, supported values: "Cascade Lake" or "Ice Lake",
+- "server_ip" - an IP address of the remote node (the RDMA target) (for example: "192.168.0.1"),
+- "JOB_NUMA" - a number of the NUMA node of the RDMA initiator,
+- "REMOTE_JOB_NUMA" - a number of the NUMA node of the RDMA target,
+- "REMOTE_DIRECT_WRITE_TO_PMEM" - a state of 'Direct Write to PMem' (true or false)
+- "REMOTE_JOB_MEM_PATH" - a path to a remote PMem (Device DAX or File System DAX), it is not used and can be set to any value if 'filetype' is set to 'malloc' in a figure used in the benchmark.
+
+For example:
+
+```json
+{
+    "platform_generation": "Cascade Lake",
+    "server_ip": "192.168.0.1",
+    "REMOTE_USER": "user",
+    "REMOTE_PASS": "pass",
+    "JOB_NUMA": 0,
+    "REMOTE_JOB_NUMA": 0,
+    "REMOTE_DIRECT_WRITE_TO_PMEM": true,
+    "REMOTE_JOB_MEM_PATH": "/dev/dax0.0"
+}
+```
 
 ## Optional parameters
 
-For Cascade Lake platforms you can allow to set up DDIO automatically during the benchmark execution. To make it possible you have to allow password-less sudo for the user you are using on the target system and provide a PCIe Root Port of the RNIC you are using on the target system. For details please read [Direct Write to PMem][direct-write]. e.g.:
+The optional parameters are following:
+
+- "AUX_PARAMS" - auxiliary parameters for the local ib_read_* tools,
+- "REMOTE_AUX_PARAMS" - auxiliary parameters for the remote ib_read_* tools,
+- "REMOTE_JOB_PATH" - a full absolute path to the fio job file on the remote node,
+- "IB_PATH" - an absolute path where the ib_read_* binaries are located on the local node,
+- "REMOTE_IB_PATH" - an absolute path where the ib_read_* binaries are located on the remote node,
+- "FIO_PATH" - an absolute path where the fio binary is located on the local node,
+- "REMOTE_FIO_PATH" - an absolute path where the fio binary is located on the remote node.
+
+```json
+{
+    "AUX_PARAMS": "-d mlx5_0 -R",
+    "REMOTE_AUX_PARAMS": "-d mlx5_0 -R",
+    "REMOTE_JOB_PATH": "/dev/shm/librpma_apm-server.fio",
+    "IB_PATH": "/usr/local/bin/",
+    "REMOTE_IB_PATH": "/usr/local/bin/",
+    "FIO_PATH": "/usr/local/bin/",
+    "REMOTE_FIO_PATH": "/usr/local/bin/"
+}
+```
+
+For Cascade Lake platforms you can allow to set up DDIO automatically during the benchmark execution. To make it possible you have to allow passwordless sudo for the user you are using on the target system and provide a PCIe Root Port of the RNIC you are using on the target system. For details please read [Direct Write to PMem][direct-write]. e.g.:
 
 ```json
     "REMOTE_SUDO_NOPASSWD": true,
