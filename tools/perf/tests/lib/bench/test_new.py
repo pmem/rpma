@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """test_new.py -- lib.bench.Bench.new() tests"""
@@ -16,9 +16,12 @@ from lib.benchmark import Benchmark
 from lib.Requirement import Requirement
 
 DICT_DUMMY = {
-    'dummy_key_1': 'dummy_value_1',
-    'dummy_key_2': 'dummy_value_2',
-    'REMOTE_JOB_NUMA': 0
+    'platform_generation': 'platform_generation',
+    'server_ip': 'server_ip',
+    'JOB_NUMA': 0,
+    'REMOTE_JOB_NUMA': 0,
+    'REMOTE_DIRECT_WRITE_TO_PMEM': True,
+    'REMOTE_JOB_MEM_PATH': 'path'
 }
 
 CONFIG_DUMMY = DICT_DUMMY
