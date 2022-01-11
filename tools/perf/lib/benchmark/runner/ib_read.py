@@ -50,6 +50,8 @@ class IbReadRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__skip_running_tools = \
+            self.__config.get('SKIP_RUNNING_TOOLS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
@@ -113,12 +115,14 @@ class IbReadRunner:
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-
-        self.__server = RemoteCmd.run_async(self.__config, args)
-        time.sleep(0.1) # wait 0.1 sec for server to start listening
+        if not self.__skip_running_tools:
+            self.__server = RemoteCmd.run_async(self.__config, args)
+            time.sleep(0.1) # wait 0.1 sec for server to start listening
 
     def __server_stop(self, settings):
         """wait until server finishes"""
+        if self.__skip_running_tools:
+            return
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
@@ -155,34 +159,42 @@ class IbReadRunner:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
 
-        # XXX optionally measure the run time and assert exe_time >= 60s
+        if not self.__skip_running_tools:
+            # XXX optionally measure the run time and assert exe_time >= 60s
+            # try to connect with the server 10 times at most
+            counter = 1
+            while True:
+                try:
+                    ret = subprocess.run(args, check=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         encoding='utf-8')
+                    break
+                except subprocess.CalledProcessError as err:
+                    if not self.__probably_no_server(err) or counter == 10:
+                        print('\nstdout:\n{}\nstderr:\n{}\n'
+                              .format(err.stdout, err.stderr))
+                        self.__server_stop(settings)
+                        run_post_command(self.__config,
+                                         self.__benchmark.oneseries)
+                        raise # re-raise the current exception
+                    print('Retrying #{} ...'.format(counter))
+                    time.sleep(0.1) # wait 0.1 sec for server to start listening
+                    counter = counter + 1
 
-        # try to connect with the server 10 times at most
-        counter = 1
-        while True:
-            try:
-                ret = subprocess.run(args, check=True,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     encoding='utf-8')
-                break
-            except subprocess.CalledProcessError as err:
-                if not self.__probably_no_server(err) or counter == 10:
-                    print('\nstdout:\n{}\nstderr:\n{}\n'
-                          .format(err.stdout, err.stderr))
-                    self.__server_stop(settings)
-                    run_post_command(self.__config, self.__benchmark.oneseries)
-                    raise # re-raise the current exception
-                print('Retrying #{} ...'.format(counter))
-                time.sleep(0.1) # wait 0.1 sec for server to start listening
-                counter = counter + 1
+            # save stderr in the log file
+            with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
+                log.write('\nstderr:\n{}\n'.format(ret.stderr))
+            result = self.__formatter.parse(ret.stdout,
+                                            str(settings['bs']),
+                                            settings['threads'],
+                                            settings['iodepth'])
+        else:
+            result = self.__formatter.null_results(settings['bs'],
+                                            settings['threads'],
+                                            settings['iodepth'])
 
-        # save stderr in the log file
-        with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
-            log.write('\nstderr:\n{}\n'.format(ret.stderr))
-
-        return self.__formatter.parse(ret.stdout, str(settings['bs']),
-                                      settings['threads'], settings['iodepth'])
+        return result
 
     def __result_append(self, _, y_value: dict):
         """append new result to internal __data and the '__idfile' file"""

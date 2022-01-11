@@ -81,6 +81,8 @@ class FioRunner:
         self.__server = None
         # set dumping commands
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__skip_running_tools = \
+            self.__config.get('SKIP_RUNNING_TOOLS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the result keys base on the benchmark's rw
         self.__set_results_key()
@@ -126,6 +128,15 @@ class FioRunner:
         if 'REMOTE_JOB_MEM_PATH' not in self.__config:
             raise ValueError('''\'REMOTE_JOB_MEM_PATH\' is missing in the config''')
         return self.__config['REMOTE_JOB_MEM_PATH']
+
+    def __set_jobfile_path_and_name(self):
+        """Set path and name of the fio job file"""
+        r_job_path = self.__config.get('REMOTE_JOB_PATH', '')
+        if r_job_path == '':
+            r_job_path = '/dev/shm/librpma_{}-server.fio'\
+                .format(self.__tool_mode)
+        job_file = "./fio_jobs/librpma_{}-server.fio".format(self.__tool_mode)
+        return (r_job_path, job_file)
 
     def __server_start(self, settings):
         """Start the server on the remote side (using RemoteCmd)
@@ -188,11 +199,7 @@ class FioRunner:
             args.append(
                 '--filename_format={}.\\$jobnum'.format(pmem_path))
         # copy the job file to the server
-        r_job_path = self.__config.get('REMOTE_JOB_PATH', '')
-        if r_job_path == '':
-            r_job_path = '/dev/shm/librpma_{}-server.fio'\
-                .format(self.__tool_mode)
-        job_file = "./fio_jobs/librpma_{}-server.fio".format(self.__tool_mode)
+        r_job_path, job_file = self.__set_jobfile_path_and_name()
         RemoteCmd.copy_to_remote(self.__config, job_file, r_job_path)
         args.append(r_job_path)
         args = env + args
@@ -200,11 +207,14 @@ class FioRunner:
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-        self.__server = RemoteCmd.run_async(self.__config, args)
-        time.sleep(0.1) # wait 0.1 sec for server to start listening
+        if not self.__skip_running_tools:
+            self.__server = RemoteCmd.run_async(self.__config, args)
+            time.sleep(0.1) # wait 0.1 sec for server to start listening
 
     def __server_stop(self, settings):
         """wait until server finishes"""
+        if self.__server is None:
+            return
         self.__server.wait()
         stdout = self.__server.stdout.read().decode().strip()
         stderr = self.__server.stderr.read().decode().strip()
@@ -243,20 +253,23 @@ class FioRunner:
         if self.__dump_cmds:
             with open(settings['logfile_client'], 'a', encoding='utf-8') as log:
                 log.write("[client]$ {}".format(' '.join(args)))
-        try:
-            ret = subprocess.run(args, check=True, env=env,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 encoding='utf-8', timeout=timeout)
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) \
-            as err:
-            print('\nstdout:\n{}\nstderr:\n{}\n'
-                  .format(err.stdout, err.stderr))
-            self.__server_stop(settings)
-            run_post_command(self.__config, self.__benchmark.oneseries)
-            raise # re-raise the current exception
+        if not self.__skip_running_tools:
+            try:
+                ret = subprocess.run(args, check=True, env=env,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     encoding='utf-8', timeout=timeout)
+            except (subprocess.CalledProcessError,
+                    subprocess.TimeoutExpired) as err:
+                print('\nstdout:\n{}\nstderr:\n{}\n'
+                      .format(err.stdout, err.stderr))
+                self.__server_stop(settings)
+                run_post_command(self.__config, self.__benchmark.oneseries)
+                raise # re-raise the current exception
 
-        result = FioFormat.parse(ret.stdout)
+            result = FioFormat.parse(ret.stdout)
+        else:
+            result = FioFormat.null_results(env)
 
         # append cpuload to the results
         if 'cpuload' in settings:
