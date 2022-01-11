@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -22,6 +22,8 @@ from .remote_cmd import RemoteCmd
 
 def get_remote_job_numa_cpulist(config):
     """get cpulist of the remote NUMA node (REMOTE_JOB_NUMA)"""
+    if config.get('SKIP_RUNNING_TOOLS', False):
+        return 0
     cpulist_path = "/sys/devices/system/node/node{}/cpulist" \
         .format(str(config['REMOTE_JOB_NUMA']))
     cpulist_cmd = RemoteCmd.run_sync(config, ['cat', cpulist_path],
@@ -35,6 +37,8 @@ def get_remote_job_numa_cpulist(config):
 
 def get_cores_per_socket(config):
     """get cores per socket"""
+    if config.get('SKIP_RUNNING_TOOLS', False):
+        return 1
     cores_cmd = RemoteCmd.run_sync(config, "lscpu", raise_on_error=True)
     output = cores_cmd.stdout.readlines()
     filtered = [line \
