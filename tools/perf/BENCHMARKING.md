@@ -2,7 +2,7 @@
 
 This document describes how to automate collection, processing and presentation of performance numbers (latency and bandwidth) from the RPMA-dedicated FIO engine.
 
-As a baseline the generally accepted tools like `ib_read_lat`, `ib_read_bw` etc. are used which execution, processing and presentation are also automated.
+As a baseline the generally accepted tools like `fio`, `ib_read_lat` and `ib_read_bw` are used which execution, processing and presentation are also automated.
 
 ## Requirements
 
@@ -14,13 +14,12 @@ You must have several components installed in your system in order to use the be
  - perftest (providing ib tools like `ib_read_lat`, `ib_read_bw` etc)
  - fio >= 3.27
  - numactl
- - sshpass
- - pciutils (for ddio.sh which may be invoked from `rpma_fio_bench.sh`)
+ - pciutils (needed by ddio.sh, required only in case of the Cascade Lake platforms)
 
 *Note*: The newest features are available on the development branch: https://github.com/pmem/fio.git
 
 ```sh
-$ sudo yum install python3 python3-pip numactl sshpass
+$ sudo yum install python3 python3-pip numactl
 $ pip3 install --user pandas
 $ pip3 install --user matplotlib
 
@@ -40,7 +39,7 @@ $ make
 $ sudo make install
 ```
 
-To use the reporting tools (e.g. `csv_compare.py`, `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
+To use the reporting tools (e.g. `report_bench.py`, `report_figures.py`, `report_create.py`), you must additionally install:
  - deepdiff
  - jinja2
  - markdown2
@@ -57,7 +56,7 @@ $ pip3 install --user PIL
 $ pip3 install --user scp
 ```
 
-*Note*: All of the scripts presented in the following sections must be run on the client side.
+*Note*: All of the scripts presented in the following sections must be run on the RPMA initiator side.
 
 
 ## Generating a report
@@ -76,11 +75,13 @@ You can choose from few predefined sets of benchmarks covering different aspects
 $ ./report_bench.py run --config config.json --figures figures/read.json figures/write.json --result_dir results
 ```
 
-If you want to continue an interrupted benchmark or if you want to run more benchmarks for different configuration parameters, you can change them in the 'results/bench.json' file and run:
+If you want to continue an interrupted benchmarking process or if you want to run more benchmarks for different configuration parameters, you can change them in the 'results/bench.json' file and run:
 
 ```sh
 $ ./report_bench.py continue --bench results/bench.json
 ```
+
+For example, in case of Intel Ice Lake platforms, in order to continue a benchmark for a different value of `DIRECT_WRITE_TO_PMEM`, a state of DDIO has to be changed in the BIOS and the benchmark can be continued after the reboot and changing a value of `DIRECT_WRITE_TO_PMEM` in the 'results/bench.json' file.
 
 To see all available configuration options please take a look at the help:
 
@@ -142,63 +143,9 @@ To see all available configuration options please take a look at the help:
 ```sh
 $ ./report_figures.py compare -h
 ```
-# XXX to be removed [BEGIN]
-## Running separate workloads
-Instead of running a comprehensive set of workloads you can run any separate subset of them. There are a few tools that can be used for automatic running RPMA-related workloads:
 
-- `ib_read.sh` - a tool using `ib_read_lat` and `ib_read_bw` to benchmark the baseline performance of RDMA read operation
-- `rpma_fio_bench.sh` - a tool using librpma-dedicated FIO engines for benchmarking remote memory manipulation (reading, writing APM-style, writing GPSPM-style, mixed). These workloads can be run against PMem and DRAM as well.
+## Running simple workloads
 
-### Example of `ib_read.sh` use
-
-Generate the baseline latency numbers using `./ib_read.sh` tool:
-
-```sh
-$ export JOB_NUMA=0
-$ export REMOTE_USER=user
-$ export REMOTE_PASS=pass
-$ export REMOTE_JOB_NUMA=0
-
-$ ./ib_read.sh $SERVER_IP lat
-```
-
-To see all available configuration options please take a look at the help:
-
-```sh
-$ ./ib_read.sh
-```
-
-### Example of `rpma_fio_bench.sh` use
-
-Generate latency numbers from the RPMA-dedicated FIO engine using `./rpma_fio_bench.sh`:
-
-```sh
-$ export JOB_NUMA=0
-$ export REMOTE_USER=user
-$ export REMOTE_PASS=pass
-$ export REMOTE_JOB_NUMA=0
-$ export REMOTE_JOB_MEM_PATH=/dev/dax1.0
-
-$ ./rpma_fio_bench.sh $SERVER_IP apm read lat
-```
-
-To see all available configuration options please take a look at the help:
-
-```sh
-$ ./rpma_fio_bench.sh
-```
-
-## Analyzing the results
-
-All of the benchmarking tools described above generate standardized CSV format output files, which can be further processed using `csv_compare.py` to generate comparative charts.
-
-### Example of comparing the obtained results
-
-To generate a chart comparing the obtained results you can feed them into the script as follows:
-
-```sh
-$ ./csv_compare.py --output_layout lat_avg ib_read_lat-21-01-31-072033.csv rpma_fio_apm_read_lat_th1_dp1_dev_dax1.0-21-01-31-073733.csv --output_with_tables
-```
-
-With the help of additional parameters, you can adjust various aspects of the output.
-# XXX to be removed [END]
+Instead of running a comprehensive set of workloads you can run a simple subset of them.
+In order to do so you have to modify the existing [figures](./figures/).
+An example of a simple figure you can find [here](./figures/example_read.json).
