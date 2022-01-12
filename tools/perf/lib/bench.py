@@ -80,7 +80,7 @@ class Bench:
     """
 
     __REQUIRED_CONFIG_PARAMS = [
-        'platform_generation', 'server_ip', 'JOB_NUMA', 'REMOTE_JOB_NUMA']
+        'PLATFORM_GENERATION', 'SERVER_IP', 'JOB_NUMA', 'REMOTE_JOB_NUMA']
 
     def __init__(self, config: dict, parts: list,
                  figures: list, requirements: dict,

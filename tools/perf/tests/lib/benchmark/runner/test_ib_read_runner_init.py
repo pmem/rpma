@@ -17,7 +17,7 @@ import lib.benchmark.runner.ib_read
 from lib.remote_cmd import RemoteCmd
 from lib.benchmark.runner.ib_read import IbReadRunner
 
-__CONFIG_IB_READ = {'server_ip': 'server_ip'}
+__CONFIG_IB_READ = {'SERVER_IP': 'SERVER_IP'}
 
 @pytest.fixture(scope='function', name='config_ib_read')
 def __config_ib_read():
@@ -78,7 +78,7 @@ def test_ib_read_runner_init_no_config(oneseries_ib_read):
     with pytest.raises(AttributeError):
         IbReadRunner(benchmark, None, 'idfile')
 
-@pytest.mark.parametrize('key', ['server_ip'])
+@pytest.mark.parametrize('key', ['SERVER_IP'])
 def test_ib_read_runner_init_config_incomplete(oneseries_ib_read,
         config_ib_read, key):
     """failed initialization of IbReadRunner object -

@@ -16,8 +16,8 @@ from lib.benchmark import Benchmark
 from lib.Requirement import Requirement
 
 DICT_DUMMY = {
-    'platform_generation': 'platform_generation',
-    'server_ip': 'server_ip',
+    'PLATFORM_GENERATION': 'PLATFORM_GENERATION',
+    'SERVER_IP': 'SERVER_IP',
     'JOB_NUMA': 0,
     'REMOTE_JOB_NUMA': 0
 }

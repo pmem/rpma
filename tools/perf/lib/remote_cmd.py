@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -54,7 +54,7 @@ class RemoteCmd:
         ssh_client = para.SSHClient()
         ssh_client.load_system_host_keys()
         ssh_client.set_missing_host_key_policy(para.RejectPolicy())
-        ssh_client.connect(hostname=config['server_ip'], **kwargs)
+        ssh_client.connect(hostname=config['SERVER_IP'], **kwargs)
         return ssh_client
 
     @classmethod
