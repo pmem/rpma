@@ -11,7 +11,7 @@ An example usage of mandatory parameters can be found in the [`config.json.examp
 - "JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA initiator,
 - "REMOTE_JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA target,
 - "REMOTE_DIRECT_WRITE_TO_PMEM" - a state of 'Direct Write to PMem' (true or false). It is not required in case of Cascade Lake platforms, when "REMOTE_SUDO_NOPASSWD" is set to true and "REMOTE_RNIC_PCIE_ROOT_PORT" is set correctly (for more details see ["Optional parameters"](#optional-parameters) below).
-- "REMOTE_JOB_MEM_PATH" - a path to a PMem on an RPMA target (Device DAX or File System DAX). It is not used and can be set to any value if 'filetype' is set to 'malloc' in a figure used in the benchmark.
+- "REMOTE_PMEM_PATH" - a path to a PMem on an RPMA target (Device DAX or File System DAX). It is not used and can be set to any value if 'filetype' is set to 'malloc' in a figure used in the benchmark.
 
 For example:
 
@@ -24,7 +24,7 @@ For example:
     "JOB_NUMA": 0,
     "REMOTE_JOB_NUMA": 0,
     "REMOTE_DIRECT_WRITE_TO_PMEM": true,
-    "REMOTE_JOB_MEM_PATH": "/dev/dax0.0"
+    "REMOTE_PMEM_PATH": "/dev/dax0.0"
 }
 ```
 
