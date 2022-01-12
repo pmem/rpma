@@ -18,7 +18,7 @@ import lib.benchmark.runner.fio
 from lib.remote_cmd import RemoteCmd
 from lib.benchmark.runner.fio import FioRunner
 
-__CONFIG_FIO = {'server_ip': 'server_ip'}
+__CONFIG_FIO = {'SERVER_IP': 'SERVER_IP'}
 
 @pytest.fixture(scope='function', name='config_fio')
 def __config_fio():
@@ -92,7 +92,7 @@ def test_fio_runner_init_no_config(oneseries_fio):
     with pytest.raises(AttributeError):
         FioRunner(benchmark, None, 'idfile')
 
-@pytest.mark.parametrize('key', ['server_ip'])
+@pytest.mark.parametrize('key', ['SERVER_IP'])
 def test_fio_runner_init_config_incomplete(oneseries_fio, config_fio, key,
                                            monkeypatch):
     """failed initialization of FioRunner object -

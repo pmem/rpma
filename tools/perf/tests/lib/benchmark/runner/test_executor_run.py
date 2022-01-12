@@ -12,7 +12,7 @@ import pytest
 import lib.benchmark
 
 CONFIG = {
-    'server_ip': '101.102.103.104'
+    'SERVER_IP': '101.102.103.104'
 }
 
 def which_mock(path):
