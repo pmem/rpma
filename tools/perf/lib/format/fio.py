@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 #
@@ -16,7 +16,8 @@ import json
 import pandas as pd
 
 class Output(Enum):
-    """supported output formats"""
+    """DEPRECATED - used only with bash framework
+    supported output formats"""
     #: should NOT be used outside `fio_json2csv`
     DUMP = 1
 
@@ -66,6 +67,8 @@ class FioFormat:
         # XXX maybe it is no longer a problem for pylint > Debian 9
         """read a CSV file into `pandas.DataFrame`
 
+        DEPRECATED - used only with bash framework
+
         Includes:
 
         - converting [nsec] to [usec]
@@ -90,6 +93,7 @@ class FioFormat:
 
     @classmethod
     def __job_op_dump(cls, op_result):
+        """DEPRECATED - used only with bash framework """
         lat_ns = op_result['lat_ns']
         lat_pctl_ns = lat_ns.get('percentile', {})
         return {

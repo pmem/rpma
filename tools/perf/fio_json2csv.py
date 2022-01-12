@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
-"""fio-json2csv.py -- generate a CSV from FIO JSON (EXPERIMENTAL)"""
+# DEPRECATED - no need to use in the new Python framework
+
+"""fio-json2csv.py -- generate a CSV from FIO JSON (EXPERIMENTAL)
+   DEPRECATED - no need to use in the new Python framework"""
 
 import argparse
 import csv

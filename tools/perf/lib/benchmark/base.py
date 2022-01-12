@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -172,8 +172,8 @@ class Benchmark:
 
         - `lib.benchmark.runner.dummy.Dummy.run()` when not the actual results
           are expected,
-        - `lib.benchmark.runner.bash.Bash.run()` when the legacy `ib_read.sh`
-          and `rpma_fio_bench.sh` are meant to be used or
+        - DEPRECATED `lib.benchmark.runner.bash.Bash.run()` when the legacy
+          `ib_read.sh` and `rpma_fio_bench.sh` are meant to be used or
         - `lib.benchmark.runner.base.BaseRunner.run()`.
 
         No matter which runner is used, in the result of successful
@@ -188,6 +188,7 @@ class Benchmark:
              of the benchmarking process will be stored.
         """
         self.__validate(config)
+        # Bash runner is DEPRECATED
         if config.get('dummy_results', False):
             runner = Dummy
         elif '.sh' in self.__oneseries['tool']:

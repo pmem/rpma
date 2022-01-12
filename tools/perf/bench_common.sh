@@ -1,13 +1,15 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
 #
 # bench_common.sh -- a single-sided ib_read_lat/bw
 #                    and Fio tools common (EXPERIMENTAL)
+#
+# DEPRECATED
 
 TIMESTAMP=$(date +%y-%m-%d-%H%M%S)
 FILENAME=$(basename -- $0)

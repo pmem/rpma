@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
 # bash.py
 #
 
-"""a bash benchmark runner (EXPERIMENTAL)"""
+# DEPRECATED - The Bash runner is deprecated, please use the BaseRunner instead
+
+"""DEPRECATED - a bash benchmark runner (EXPERIMENTAL)"""
 
 import os
 import subprocess
 
 class Bash:
-    """A bash benchmark runner
+    """A DEPRECATED bash benchmark runner
 
     This runner is always called directly by
     `lib.benchmark.base.Benchmark.run()`.

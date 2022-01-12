@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 #
@@ -31,7 +31,7 @@ class IbReadLatFormat:
         # pylint: disable=no-member
         # XXX maybe it is no longer a problem for pylint > Debian 9
         """read a CSV file into `pandas.DataFrame`
-
+        DEPRECATED - used only with the bash framework
         Includes:
 
         - reindex to standardized selection and order of columns

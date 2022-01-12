@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """conftest.py -- a common for lib.benchmark.* tests"""
@@ -21,7 +21,8 @@ def oneseries_dummy():
 
 @pytest.fixture(scope='function')
 def oneseries_bash():
-    """provide a oneseries bash"""
+    """provide a oneseries bash
+       DEPRECATED - used only with the bash framework"""
     return ONESERIES_BASH.copy()
 
 @pytest.fixture(scope='function')
@@ -36,7 +37,8 @@ def benchmark_dummy(oneseries_dummy):
 
 @pytest.fixture(scope='function')
 def benchmark_bash(oneseries_bash):
-    """create a bash Benchmark instance"""
+    """create a bash Benchmark instance
+       DEPRECATED - used only with the bash framework"""
     return lib.benchmark.Benchmark(oneseries_bash)
 
 @pytest.fixture(scope='function')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 """test_run.py -- lib.benchmark.Benchmark.run() tests"""
@@ -47,7 +47,8 @@ def test_dummy_runner(benchmark_dummy, tmpdir, monkeypatch):
     assert benchmark_dummy.is_done()
 
 def test_bash_runner(benchmark_bash, tmpdir, monkeypatch):
-    """a simple Bash runner call"""
+    """a simple Bash runner call
+       DEPRECATED - used only with the bash framework"""
     run_mock_used = False
     def run_mock(_self, _config, idfile):
         nonlocal run_mock_used, tmpdir

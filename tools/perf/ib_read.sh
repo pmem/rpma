@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -12,6 +12,8 @@
 # sizes (1KiB, 4KiB, 64KiB) and generates a single CSV file with all
 # the resutls.
 #
+# DEPRECATED - please use ./lib/benchmark/runner/ib_read.py instead
+
 
 source $(dirname $0)/bench_common.sh
 

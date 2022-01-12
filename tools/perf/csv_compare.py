@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 #
@@ -10,6 +10,10 @@
 # In order to compare all CSV are plotted on the same chart.
 # XXX include hostname for easier reporting.
 #
+
+# DEPRECATED - no need to use in the new Python framework
+
+"""DEPRECATED - no need to use in the new Python framework"""
 
 import argparse
 import os
