@@ -104,7 +104,7 @@ class IbReadRunner:
                       settings['iodepth'], settings['iterations']))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
         r_aux_params = [*settings['args']]
-        cfg_r_aux_params = self.__config['REMOTE_AUX_PARAMS'].split(' ')
+        cfg_r_aux_params = self.__config.get('REMOTE_AUX_PARAMS', '').split(' ')
         if cfg_r_aux_params != ['']:
             r_aux_params = r_aux_params + cfg_r_aux_params
 
@@ -144,7 +144,7 @@ class IbReadRunner:
         else:
             it_opt = '--iters=' + str(settings['iterations'])
         aux_params = [*settings['args']]
-        cfg_aux_params = self.__config['AUX_PARAMS'].split(' ')
+        cfg_aux_params = self.__config.get('AUX_PARAMS', '').split(' ')
         if cfg_aux_params != ['']:
             aux_params = aux_params + cfg_aux_params
         server_ip = self.__config['server_ip']
