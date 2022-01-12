@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * cq.c -- librpma completion-queue-related implementations
@@ -260,4 +260,34 @@ rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
 	}
 
 	return 0;
+}
+
+/*
+ * rpma_cq_get_wc -- receive one or more completions from the CQ
+ */
+int
+rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc)
+{
+	if (cq == NULL || num_entries < 1 || wc == NULL)
+		return RPMA_E_INVAL;
+
+	int result = ibv_poll_cq(cq->cq, num_entries, wc);
+	if (result == 0) {
+		/*
+		 * There may be an extra CQ event with no completion in the CQ.
+		 */
+		RPMA_LOG_DEBUG("No completion in the CQ");
+		return RPMA_E_NO_COMPLETION;
+	} else if (result < 0) {
+		/* ibv_poll_cq() may return only -1; no errno provided */
+		RPMA_LOG_ERROR("ibv_poll_cq() failed (no details available)");
+		return RPMA_E_PROVIDER;
+	} else if (result > num_entries) {
+		RPMA_LOG_ERROR(
+			"ibv_poll_cq() returned %d where <= %d is expected",
+			result, num_entries);
+		return RPMA_E_UNKNOWN;
+	}
+
+	return result;
 }
