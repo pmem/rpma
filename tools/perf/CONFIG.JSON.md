@@ -6,8 +6,8 @@ Mandatory and optional parameters available to control the `report_bench.py` beh
 
 An example usage of mandatory parameters can be found in the [`config.json.example`](./config.json.example).
 
-- "platform_generation" - generation of the platform, supported values: "Cascade Lake" or "Ice Lake",
-- "server_ip" - an IP address of the remote node (the RDMA target) (for example: "192.168.0.1"),
+- "PLATFORM_GENERATION" - generation of the platform, supported values: "Cascade Lake" or "Ice Lake",
+- "SERVER_IP" - an IP address of the remote node (the RDMA target) (for example: "192.168.0.1"),
 - "JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA initiator,
 - "REMOTE_JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA target,
 - "REMOTE_DIRECT_WRITE_TO_PMEM" - a state of 'Direct Write to PMem' (true or false). It is not required in case of Cascade Lake platforms, when "REMOTE_SUDO_NOPASSWD" is set to true and "REMOTE_RNIC_PCIE_ROOT_PORT" is set correctly (for more details see ["Optional parameters"](#optional-parameters) below).
@@ -17,8 +17,8 @@ For example:
 
 ```json
 {
-    "platform_generation": "Ice Lake",
-    "server_ip": "192.168.0.1",
+    "PLATFORM_GENERATION": "Ice Lake",
+    "SERVER_IP": "192.168.0.1",
     "REMOTE_USER": "user",
     "REMOTE_PASS": "password",
     "JOB_NUMA": 0,

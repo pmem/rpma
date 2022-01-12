@@ -156,7 +156,7 @@ class Benchmark:
         return self.__oneseries['done']
 
     __ONESERIES_REQUIRED = ['filetype', 'id', 'tool', 'mode']
-    __CONFIG_REQUIRED = ['server_ip']
+    __CONFIG_REQUIRED = ['SERVER_IP']
 
     def __validate(self, config):
         for required in self.__ONESERIES_REQUIRED:

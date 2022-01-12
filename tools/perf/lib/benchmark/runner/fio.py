@@ -38,8 +38,8 @@ class FioRunner:
                              .format(self.__fio_path))
 
         # check if the remote fio is present
-        if 'server_ip' not in self.__config:
-            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
+        if 'SERVER_IP' not in self.__config:
+            raise ValueError(MISSING_KEY_MSG.format('SERVER_IP'))
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote fio: {}"
@@ -155,7 +155,7 @@ class FioRunner:
 
         busy_wait_polling = \
             int(self.__benchmark.oneseries.get('busy_wait_polling', True))
-        env = ['serverip={}'.format(self.__config['server_ip']),
+        env = ['serverip={}'.format(self.__config['SERVER_IP']),
                'numjobs={}'.format(settings['threads']),
                'iodepth={}'.format(settings['iodepth']),
                'direct_write_to_pmem={}'.format(self.__direct_write_to_pmem),
@@ -216,7 +216,7 @@ class FioRunner:
         short_runtime = self.__config.get('SHORT_RUNTIME', False)
         duration = self.__DURATION['short' if short_runtime else 'full']
         env = {
-            'serverip': self.__config['server_ip'],
+            'serverip': self.__config['SERVER_IP'],
             'numjobs': str(settings['threads']),
             'iodepth': str(settings['iodepth']),
             'blocksize': str(settings['bs']),

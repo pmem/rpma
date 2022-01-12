@@ -12,7 +12,7 @@ import lib.benchmark
 import lib.common
 
 IP_DUMMY = '101.102.103.104'
-CONFIG_DEFAULT = {'server_ip': IP_DUMMY}
+CONFIG_DEFAULT = {'SERVER_IP': IP_DUMMY}
 CONFIG_DUMMY = {**CONFIG_DEFAULT, 'dummy_results': True}
 
 @pytest.mark.parametrize('key', ['tool', 'mode', 'id', 'filetype'])
@@ -25,9 +25,9 @@ def test_incomplete_benchmark(oneseries_dummy, key, tmpdir):
     assert not benchmark.is_done()
 
 def test_no_server_ip(benchmark_dummy, tmpdir):
-    """a config without 'server_ip'"""
+    """a config without 'SERVER_IP'"""
     config = {**CONFIG_DUMMY}
-    config.pop('server_ip', None)
+    config.pop('SERVER_IP', None)
     with pytest.raises(ValueError):
         benchmark_dummy.run(config, str(tmpdir))
     assert not benchmark_dummy.is_done()

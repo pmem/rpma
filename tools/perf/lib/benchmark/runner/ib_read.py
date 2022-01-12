@@ -36,8 +36,8 @@ class IbReadRunner:
             raise ValueError("cannot find the local ib tool: {}"
                              .format(self.__ib_path))
         # check if the remote ib tool is present
-        if 'server_ip' not in self.__config:
-            raise ValueError(MISSING_KEY_MSG.format('server_ip'))
+        if 'SERVER_IP' not in self.__config:
+            raise ValueError(MISSING_KEY_MSG.format('SERVER_IP'))
         output = RemoteCmd.run_sync(self.__config, ['which', self.__r_ib_path])
         if output.exit_status != 0:
             raise ValueError("cannot find the remote ib tool: {}"
@@ -147,7 +147,7 @@ class IbReadRunner:
         cfg_aux_params = self.__config.get('AUX_PARAMS', '').split(' ')
         if cfg_aux_params != ['']:
             aux_params = aux_params + cfg_aux_params
-        server_ip = self.__config['server_ip']
+        server_ip = self.__config['SERVER_IP']
         args = ['numactl', '-N', numa_n, self.__ib_path, *aux_params,
                 it_opt, server_ip]
         # dump a command to the log file

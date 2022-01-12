@@ -148,7 +148,7 @@ class Requirement:
     def is_met(self, config: dict) -> bool:
         """Is the requirement met?
 
-        **Note**: Depending on the `config['platform_generation']` it may be
+        **Note**: Depending on the `config['PLATFORM_GENERATION']` it may be
         possible to adjust the system configuration on the fly. Additional
         conditions may apply. For details please see
         https://github.com/pmem/rpma/blob/master/tools/perf/CONFIG.JSON.md.
@@ -161,14 +161,14 @@ class Requirement:
             `True` if the requirement is met. `False` otherwise.
 
         Raises:
-            ValueError: When `config['platform_generation']` is unknown.
+            ValueError: When `config['PLATFORM_GENERATION']` is unknown.
         """
-        gen = config['platform_generation']
+        gen = config['PLATFORM_GENERATION']
         if gen in self.__PLATFORMS.keys():
             # call the generation-specific implementation
             return self.__PLATFORMS[gen].is_met(self.__req, config)
         else:
-            raise ValueError("Unsupported 'platform_generation': '{}'. ".format(gen)
+            raise ValueError("Unsupported 'PLATFORM_GENERATION': '{}'. ".format(gen)
                 + "Where supported values are: '"
                 + "', '".join(self.__PLATFORMS.keys()) + "'.")
 
