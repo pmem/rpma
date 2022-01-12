@@ -134,7 +134,7 @@ $ pdftk report.pdf stamp watermark.pdf output report_with_watermark.pdf
 
 ```sh
 $ ./report_figures.py compare --benches results_1/bench.json results_2/bench.json
---names results_1 results_2 --result_dir compare
+--prefixes results_1 results_2 --result_dir compare
 ```
 
 To see all available configuration options please take a look at the help:
