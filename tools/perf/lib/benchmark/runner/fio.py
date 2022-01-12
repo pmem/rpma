@@ -118,6 +118,15 @@ class FioRunner:
         self.__data = self.__results['json']
         self.__validate()
 
+    def __set_pmem_path(self):
+        """Set path of PMem"""
+        if self.__benchmark.oneseries['filetype'] == 'malloc':
+            # pmem_path is not used in this case
+            return None
+        if 'REMOTE_JOB_MEM_PATH' not in self.__config:
+            raise ValueError('''\'REMOTE_JOB_MEM_PATH\' is missing in the config''')
+        return self.__config['REMOTE_JOB_MEM_PATH']
+
     def __server_start(self, settings):
         """Start the server on the remote side (using RemoteCmd)
            and keep an object allowing to control the server.
@@ -161,7 +170,7 @@ class FioRunner:
         # the config may have both provided in the future allowing to pick
         # either one or another here and generate a figure comparing both
         # PMem modes.
-        pmem_path = self.__config['REMOTE_JOB_MEM_PATH']
+        pmem_path = self.__set_pmem_path()
         # pick either a DRAM, DeviceDAX or a FileSystemDAX
         if self.__benchmark.oneseries['filetype'] == 'malloc':
             # create_on_open prevents FIO from creating files
