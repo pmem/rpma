@@ -42,8 +42,11 @@ jobs:
                  "N=Debian_Testing       OS=debian               OS_VER=testing        REBUILD_ALWAYS=YES",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental   REBUILD_ALWAYS=YES",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest         REBUILD_ALWAYS=YES",
-                 "N=CentOS_Stream        OS=centos               OS_VER=stream         REBUILD_ALWAYS=YES",
-                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
+                 # The CentOS_Stream build was moved to Nightly_Experimental,
+                 # because the 'epel-release' repo of CentOS Stream cannot be found
+                 # and this build has been failing for a long time.
+                 #
+                 # The OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
                  # because of the following bug:
                  # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest         REBUILD_ALWAYS=YES"]
