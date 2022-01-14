@@ -144,9 +144,19 @@ function run_pytest() {
 		exit 1
 	fi
 
-	# run pytest
 	cd $WORKDIR/tools/perf/
+
+	if [ "$COVERAGE" == "1" ]; then
+	# run pytest
 	eval $PYTEST
+	else
+	# add local pip installations to the PATH
+	export PATH=$PATH:~/.local/bin/
+	# run pytest with coverage
+	coverage run -m pytest
+	# '-i' to ignore errors on Arch Linux (caused by a bug)
+	coverage report -i
+	fi
 	cd -
 }
 
