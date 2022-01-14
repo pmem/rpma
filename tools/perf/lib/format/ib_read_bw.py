@@ -50,3 +50,24 @@ class IbReadBwFormat:
             'ops': int(found.group(2)),
             'bw_avg': round(float(found.group(4)), 2)
         }
+
+    @classmethod
+    def null_results(cls, blocksize: int, threads: int, iodepth: int) -> dict:
+        """generate a null ib_read_bw output and return a row of data
+
+        Args:
+            blocksize: a value of block size
+            threads: a number of threads
+            iodepth: a value of iodepth
+
+        Returns:
+            A `dict` of results.
+        """
+
+        return {
+            'threads': int(threads),
+            'iodepth': int(iodepth),
+            'bs': int(blocksize),
+            'ops': 0,
+            'bw_avg': 0
+        }

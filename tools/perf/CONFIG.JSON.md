@@ -113,10 +113,10 @@ For debugging purposes, you can attach tracers to each or both ends of the conne
     "REMOTE_TRACER": "gdbserver localhost:2345"
 ```
 
-During in-depth analysis of the benchmarking process itself, you may find useful these two options. Where `DO_NOTHING` allows running all the machinery but prevents the actual benchmark binaries to run. Whereas `DUMP_CMDS` allows dumping all commands running the benchmark binaries. You can use either or both of them.
+During in-depth analysis of the benchmarking process itself, you may find useful these two options. Where `SKIP_RUNNING_TOOLS` allows running all the machinery but prevents the actual benchmarking binaries and the script setting DDIO ([tools/ddio.sh](./tools/ddio.sh)) from being run. Whereas `DUMP_CMDS` allows dumping all commands running the benchmark binaries. You can use either or both of them.
 
 ```json
-    "DO_NOTHING": true,
+    "SKIP_RUNNING_TOOLS": true,
     "DUMP_CMDS": true
 ```
 

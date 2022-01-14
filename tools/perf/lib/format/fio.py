@@ -101,3 +101,56 @@ class FioFormat:
             'read': job_op_format(read),
             'write': job_op_format(write)
         }
+
+    @classmethod
+    def __generate_null_results(cls, env):
+        return {
+            'threads': int(env['numjobs']),
+            'iodepth': int(env['iodepth']),
+            'bs': int(env['blocksize']),
+            'ops': 0,
+            'lat_min': 0,
+            'lat_max': 0,
+            'lat_avg': 0,
+            'lat_stdev': 0,
+            'lat_pctl_99.0': 0,
+            'lat_pctl_99.9': 0,
+            'lat_pctl_99.99': 0,
+            'lat_pctl_99.999': 0,
+            'bw_min': 0,
+            'bw_max': 0,
+            'bw_avg': 0,
+            'iops_min': 0,
+            'iops_max': 0,
+            'iops_avg': 0
+        }
+
+    @classmethod
+    def null_results(cls, env: dict) -> dict:
+        """generate null results of the FIO JSON+ output
+           and return a row of data
+
+        The row of data on the output of this function looks as follow:
+
+        ```python
+        {
+            'read': {
+                # null results
+            },
+            'write': {
+                # null results
+            }
+        }
+        ```
+
+        Args:
+            env: an environment dictionary
+
+        Returns:
+            The row of data.
+        """
+        null_results = cls.__generate_null_results(env)
+        return {
+            'read': null_results,
+            'write': null_results
+        }
