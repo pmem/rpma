@@ -144,9 +144,22 @@ function run_pytest() {
 		exit 1
 	fi
 
-	# run pytest
 	cd $WORKDIR/tools/perf/
-	eval $PYTEST
+
+	# The python coverage corrupts the results of the C coverage,
+	# so we have to run them exclusively:
+	if [ "$COVERAGE" == "1" ]; then
+		# Run only pytest, because the C coverage
+		# is checked in this build.
+		eval $PYTEST
+	else
+		# add local pip installations to the PATH
+		export PATH=$PATH:~/.local/bin/
+		# run pytest and check the coverage of python tests
+		coverage run -m pytest
+		# '-i' to ignore errors on Arch Linux (caused by a bug)
+		coverage report -i
+	fi
 	cd -
 }
 
