@@ -144,9 +144,13 @@ function run_pytest() {
 		exit 1
 	fi
 
-	# run pytest
+	# run pytest with coverage
+	PYTEST_COVERAGE="coverage run -m"
+	PYTEST="${PYTEST_COVERAGE} ${PYTEST}"
+	REPORT="coverage report"
 	cd $WORKDIR/tools/perf/
 	eval $PYTEST
+	eval $REPORT
 	cd -
 }
 
