@@ -144,9 +144,14 @@ function run_pytest() {
 		exit 1
 	fi
 
-	# run pytest
+	# add local pip installations to the PATH
+	export PATH=$PATH:~/.local/bin/
+
+	# run pytest with coverage
 	cd $WORKDIR/tools/perf/
-	eval $PYTEST
+	coverage run -m pytest
+	# '-i' to ignore errors on Arch Linux (caused by a bug)
+	coverage report -i
 	cd -
 }
 
