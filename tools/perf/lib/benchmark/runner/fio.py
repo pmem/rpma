@@ -183,7 +183,8 @@ class FioRunner:
         # PMem modes.
         pmem_path = self.__set_pmem_path()
         # pick either a DRAM, DeviceDAX or a FileSystemDAX
-        if self.__benchmark.oneseries['filetype'] == 'malloc':
+        if pmem_path is None:
+            # use DRAM if pmem_path is not provided
             # create_on_open prevents FIO from creating files
             # where the engines won't make use of them anyways
             # since they are using DRAM instead
