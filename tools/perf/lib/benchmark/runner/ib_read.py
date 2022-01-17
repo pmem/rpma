@@ -190,7 +190,7 @@ class IbReadRunner:
                                             settings['threads'],
                                             settings['iodepth'])
         else:
-            result = self.__formatter.null_results(settings['bs'],
+            result = self.__formatter.random_results(settings['bs'],
                                             settings['threads'],
                                             settings['iodepth'])
 
