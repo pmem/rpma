@@ -270,7 +270,7 @@ class FioRunner:
 
             result = FioFormat.parse(ret.stdout)
         else:
-            result = FioFormat.null_results(env)
+            result = FioFormat.random_results(env)
 
         # append cpuload to the results
         if 'cpuload' in settings:
