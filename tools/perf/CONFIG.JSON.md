@@ -11,7 +11,7 @@ An example usage of mandatory parameters can be found in the [`config.json.examp
 - "JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA initiator,
 - "REMOTE_JOB_NUMA" - a number of the NUMA node on which benchmarking tools will be run on the RPMA target,
 - "REMOTE_DIRECT_WRITE_TO_PMEM" - a state of 'Direct Write to PMem' (true or false). It is not required in case of Cascade Lake platforms, when "REMOTE_SUDO_NOPASSWD" is set to true and "REMOTE_RNIC_PCIE_ROOT_PORT" is set correctly (for more details see ["Optional parameters"](#optional-parameters) below).
-- "REMOTE_PMEM_PATH" - a path to a PMem on an RPMA target (Device DAX or File System DAX). It is not used and can be set to any value if 'filetype' is set to 'malloc' in a figure used in the benchmark.
+- "REMOTE_PMEM_PATH" - a path to a PMem on an RPMA target (Device DAX or File System DAX). In case of Device DAX it should be an absolute path to a DAX device (for example "/dev/dax0.0"). In case of File System DAX it should be an absolute path to a non-existing file on this file system, which fio will use as a template to create separate files for each fio job (for example: "/mnt/pmem/file", where "/mnt/pmem/" is a directory where File System DAX is mounted on and "/mnt/pmem/file" does not exist; fio will create files with names "/mnt/pmem/file.NNN"). "REMOTE_PMEM_PATH" is not used and can be set to any value if 'filetype' is set to 'malloc' in a figure used in the benchmark.
 
 For example:
 
@@ -24,7 +24,7 @@ For example:
     "JOB_NUMA": 0,
     "REMOTE_JOB_NUMA": 0,
     "REMOTE_DIRECT_WRITE_TO_PMEM": true,
-    "REMOTE_PMEM_PATH": "/dev/dax0.0"
+    "REMOTE_PMEM_PATH": "/mnt/pmem/non-existing-file"
 }
 ```
 
