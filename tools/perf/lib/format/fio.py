@@ -11,6 +11,7 @@
 """FIO JSON+ output format tools (EXPERIMENTAL)"""
 
 import json
+import random
 
 class FioFormat:
     """handling FIO output"""
@@ -103,31 +104,31 @@ class FioFormat:
         }
 
     @classmethod
-    def __generate_null_results(cls, env):
+    def __generate_random_results(cls, env):
         return {
             'threads': int(env['numjobs']),
             'iodepth': int(env['iodepth']),
             'bs': int(env['blocksize']),
-            'ops': 0,
-            'lat_min': 0,
-            'lat_max': 0,
-            'lat_avg': 0,
-            'lat_stdev': 0,
-            'lat_pctl_99.0': 0,
-            'lat_pctl_99.9': 0,
-            'lat_pctl_99.99': 0,
-            'lat_pctl_99.999': 0,
-            'bw_min': 0,
-            'bw_max': 0,
-            'bw_avg': 0,
-            'iops_min': 0,
-            'iops_max': 0,
-            'iops_avg': 0
+            'ops': random.randint(0, 10),
+            'lat_min': random.randint(0, 10),
+            'lat_max': random.randint(0, 10),
+            'lat_avg': random.randint(0, 10),
+            'lat_stdev': random.randint(0, 10),
+            'lat_pctl_99.0': random.randint(0, 10),
+            'lat_pctl_99.9': random.randint(0, 10),
+            'lat_pctl_99.99': random.randint(0, 10),
+            'lat_pctl_99.999': random.randint(0, 10),
+            'bw_min': random.randint(0, 10),
+            'bw_max': random.randint(0, 10),
+            'bw_avg': random.randint(0, 10),
+            'iops_min': random.randint(0, 10),
+            'iops_max': random.randint(0, 10),
+            'iops_avg': random.randint(0, 10)
         }
 
     @classmethod
-    def null_results(cls, env: dict) -> dict:
-        """generate null results of the FIO JSON+ output
+    def random_results(cls, env: dict) -> dict:
+        """generate random results of the FIO JSON+ output
            and return a row of data
 
         The row of data on the output of this function looks as follow:
@@ -135,10 +136,10 @@ class FioFormat:
         ```python
         {
             'read': {
-                # null results
+                # random results
             },
             'write': {
-                # null results
+                # random results
             }
         }
         ```
@@ -149,8 +150,8 @@ class FioFormat:
         Returns:
             The row of data.
         """
-        null_results = cls.__generate_null_results(env)
+        random_results = cls.__generate_random_results(env)
         return {
-            'read': null_results,
-            'write': null_results
+            'read': random_results,
+            'write': random_results
         }

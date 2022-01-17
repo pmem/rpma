@@ -10,6 +10,7 @@
 
 """ib_read_bw output format tools (EXPERIMENTAL)"""
 
+import random
 import re
 
 class IbReadBwFormat:
@@ -52,8 +53,8 @@ class IbReadBwFormat:
         }
 
     @classmethod
-    def null_results(cls, blocksize: int, threads: int, iodepth: int) -> dict:
-        """generate a null ib_read_bw output and return a row of data
+    def random_results(cls, blocksize: int, threads: int, iodepth: int) -> dict:
+        """generate a random ib_read_bw output and return a row of data
 
         Args:
             blocksize: a value of block size
@@ -68,6 +69,6 @@ class IbReadBwFormat:
             'threads': int(threads),
             'iodepth': int(iodepth),
             'bs': int(blocksize),
-            'ops': 0,
-            'bw_avg': 0
+            'ops': random.randint(0, 10),
+            'bw_avg': random.randint(0, 10)
         }
