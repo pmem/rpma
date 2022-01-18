@@ -40,6 +40,7 @@ ENV TESTS_DEPS "\
 	python3-pytest"
 
 ENV PYTHON_DEPS "\
+	coverage \
 	deepdiff \
 	markdown2 \
 	matplotlib \
