@@ -2678,7 +2678,94 @@ int rpma_recv(struct rpma_conn *conn,
  * - RPMA_E_INVAL - conn or fd is NULL
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
+ * CODE TO BE REMOVED
+ * (line 26)
+ * struct client_res {
+ * / RPMA resources /
+ * struct rpma_conn *conn;
+ *
+ * / resources - memory regions /
+ * size_t offset;
+ * (line 151)
+ * return ret;
+ *
+ * / get the connection's completion fd and add it to epoll /
+ * ret = rpma_conn_get_completion_fd(clnt->conn, &fd);
+ * if (ret) {
+ * epoll_delete(epoll, &clnt->ev_conn_event);
+ * return ret;
+ * (line 206)
+ * struct client_res *clnt = (struct client_res *)ce->arg;
+ * const struct server_res *svr = clnt->svr;
+ *
+ * / prepare detected completions for processing /
+ * int ret = rpma_conn_completion_wait(clnt->conn);
+ * if (ret) {
+ * / no completion is ready - continue /
+ * if (ret == RPMA_E_NO_COMPLETION)
+ * (line 220)
+ *
+ * / get next completion /
+ * struct rpma_completion cmpl;
+ * ret = rpma_conn_completion_get(clnt->conn, &cmpl);
+ * if (ret) {
+ * / no completion is ready - continue /
+ * if (ret == RPMA_E_NO_COMPLETION)
+ * (line 383)
+ * return;
+ * }
+ *
+ * if (client_add_to_epoll(clnt, svr->epoll))
+ * (void) rpma_conn_disconnect(clnt->conn);
+ * }
+ * CODE AFTER CHANGES
+ * (line 26)
+ * struct client_res {
+ * / RPMA resources /
+ * struct rpma_conn *conn;
+ * struct rpma_cq *cq;
+ *
+ * / resources - memory regions /
+ * size_t offset;
+ * (line 151)
+ * return ret;
+ *
+ * / get the connection's completion fd and add it to epoll /
+ * ret = rpma_cq_get_fd(clnt->cq, &fd);
+ * if (ret) {
+ * epoll_delete(epoll, &clnt->ev_conn_event);
+ * return ret;
+ * (line 206)
+ * struct client_res *clnt = (struct client_res *)ce->arg;
+ * const struct server_res *svr = clnt->svr;
+ *
+ * / wait for the completion to be ready /
+ * int ret = rpma_cq_wait(clnt->cq);
+ * if (ret) {
+ * / no completion is ready - continue /
+ * if (ret == RPMA_E_NO_COMPLETION)
+ * (line 220)
+ *
+ * / get next completion /
+ * struct rpma_completion cmpl;
+ * ret = rpma_cq_get_completion(clnt->cq, &cmpl);
+ * if (ret) {
+ * / no completion is ready - continue /
+ * if (ret == RPMA_E_NO_COMPLETION)
+ * (line 383)
+ * return;
+ * }
+ *
+ * / get the connection's main CQ /
+ * if (rpma_conn_get_cq(clnt->conn, &clnt->cq)) {
+ * / an error occurred - disconnect /
+ * (void) rpma_conn_disconnect(clnt->conn);
+ * return;
+ * }
+ *
+ * if (client_add_to_epoll(clnt, svr->epoll))
+ * (void) rpma_conn_disconnect(clnt->conn);
+ * }
  *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
@@ -2731,7 +2818,38 @@ struct rpma_completion {
  * - RPMA_E_NO_COMPLETION - no completions available
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ * CODE TO BE REMOVED
+ * if (ret)
+ * goto err_mr_remote_delete;
+ *
+ * / wait for the completion to be ready /
+ * ret = rpma_conn_completion_wait(conn);
+ * if (ret)
+ *
+ * goto err_mr_remote_delete;
+ *
+ * ret = rpma_conn_completion_get(conn, &cmpl);
+ * if (ret)
+ * goto err_mr_remote_delete;
+ *
+ * CODE AFTER CHANGING
+ * if (ret)
+ * goto err_mr_remote_delete;
+ *
+ * / get the connection's main CQ /
+ * struct rpma_cq *cq = NULL;
+ * ret = rpma_conn_get_cq(conn, &cq);
+ * if (ret)
+ * goto err_mr_remote_delete;
+ *
+ * / wait for the completion to be ready /
+ * ret = rpma_cq_wait(cq);
+ * if (ret)
+ * goto err_mr_remote_delete;
+ *
+ * ret = rpma_cq_get_completion(cq, &cmpl);
+ * if (ret)
+ * goto err_mr_remote_delete;
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
@@ -2769,7 +2887,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - Other errors - please see rpma_cq_get_completion(3)
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
+ * See rpma_cq_get_completion(3) for details and restrictions.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
