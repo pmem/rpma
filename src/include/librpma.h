@@ -2680,6 +2680,42 @@ int rpma_recv(struct rpma_conn *conn,
  * DEPRECATED
  * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
  *
+ * ret = rpma_conn_get_completion_fd(conn);
+ * if (ret) {
+ *     error handling code
+ * }
+ *
+ * int ret = rpma_conn_completion_wait(conn);
+ * if (ret) {
+ *     error handling code
+ * }
+ *
+ * ret = rpma_conn_completion_get(conn);
+ * if (ret) {
+ *     error handling code
+ * }
+ *
+ * Current code
+ *
+ * ret = rpma_cq_get_fd(cq);
+ * if (ret) {
+ *     error handling code
+ * }
+ *
+ * int ret = rpma_cq_wait(cq);
+ * if (ret) {
+ *     error handling code
+ * }
+ *
+ * ret = rpma_cq_get_completion(cq);
+ * if (ret) {
+ *     error handling code
+ * }
+  *
+ * if (rpma_conn_get_cq(conn,cq)) {
+ *     error handling code
+ * }
+ *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
@@ -2731,7 +2767,26 @@ struct rpma_completion {
  * - RPMA_E_NO_COMPLETION - no completions available
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ * CODE TO BE REMOVED
+ *
+ * ret = rpma_conn_completion_wait(conn);
+ * if (ret)
+ *     goto err_mr_remote_delete;
+ *
+ * ret = rpma_conn_completion_get(conn);
+ *
+ * CURRENT CODE
+ *
+ * struct rpma_cq *cq = NULL;
+ * ret = rpma_conn_get_cq(cq);
+ * if (ret)
+ *     goto err_mr_remote_delete;
+ *
+ * ret = rpma_cq_wait(cq);
+ * if (ret)
+ *     goto err_mr_remote_delete;
+ *
+ * ret = rpma_cq_get_completion(cq);
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
@@ -2769,7 +2824,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - Other errors - please see rpma_cq_get_completion(3)
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
+ * See rpma_cq_get_completion(3) for details and restrictions.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
