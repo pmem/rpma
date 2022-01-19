@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -86,6 +86,7 @@ def draw_png(argx: str, argy: str, results: list, xscale: str,
     # get a subplot
     plot = plt.subplot(1, 1, 1)
     if title is not None:
+        title += '\n'
         plot.title.set_text(title)
         plot.title.set_fontsize(10)
     xticks = []

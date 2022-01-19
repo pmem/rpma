@@ -87,6 +87,7 @@ def comparative_figures(args: argparse.Namespace) -> None:
     compare = Compare(args.prefixes, benches, args.result_dir)
     compare.prepare_series()
     compare.cache()
+    compare.to_html()
 
 COMMANDS = {
     "generate": generate_figures,

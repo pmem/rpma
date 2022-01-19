@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -23,3 +23,4 @@ For more details about the general flow of processing please see `lib`.
 from .base import Figure
 from .flat import flatten
 from .image import draw_png
+from .html import data_table

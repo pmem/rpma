@@ -1,0 +1,43 @@
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://purecss.io/css/pure/pure-min.css">
+    <link rel="stylesheet" href="https://purecss.io/layouts/side-menu/styles.css">
+    <style>
+        .release {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        table.data {
+            margin: auto;
+            margin-bottom: 25px;
+        }
+
+        img {
+            margin: auto;
+            display: block;
+        }
+
+        table.data th, table.data td {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    {{table}}
+
+<script src="https://purecss.io/js/ui.js"></script>
+<script>
+(function (window, document) {
+    // add class="pure-table pure-table-bordered" to all table objects
+    var tabs = document.getElementsByTagName('table');
+    for (var i = 0; i < tabs.length; ++i)
+        tabs[i].className += ' pure-table pure-table-bordered'
+            // add styl="width: 100%"" to all img objects
+    var imgs = document.getElementsByTagName('image');
+}(this, this.document));
+</script>
+</body>
+</html>
