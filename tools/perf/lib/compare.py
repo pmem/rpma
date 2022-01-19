@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -18,9 +18,11 @@ the results between benchmarks. Benchmark results have to be generated using
 from copy import deepcopy
 import json
 import os
+import jinja2
 
 from lib.common import json_from_file
 from lib.figure import draw_png
+from lib.figure import data_table
 
 class Compare:
     """a helper class allowing generating comparisons"""
@@ -76,6 +78,7 @@ class Compare:
                 comparison = Comparison(self, figure)
                 comparison.prepare_series()
                 comparison.to_pngs()
+                comparison.create_html()
                 done[Compare.__figure_id(figure)] = True
 
     def cache(self):
@@ -196,6 +199,15 @@ class Comparison:
         output = self.__figure.file + '_' + self.__figure.key + '.png'
         return os.path.join('.', output)
 
+    def file_name(self) -> str:
+        """get a file name to the output file
+
+        Returns:
+            The generated path.
+        """
+        output = self.__figure.file + '_' + self.__figure.key
+        return os.path.join('.', output)
+
     def to_pngs(self) -> None:
         """generate all PNG files
 
@@ -207,4 +219,24 @@ class Comparison:
         output_path = self.png_path()
         # XXX add setters to yaxis_max for bw and lat
         draw_png(keycontent['x'], keycontent['y'], keycontent['series'],
-                 keycontent['xscale'], output_path, None, None, None)
+                 keycontent['xscale'], output_path, None, None,
+                 keycontent['title'])
+
+    def create_html(self) -> None:
+        """create html file
+
+        Generate a HTML file compiling all the provided results.
+        """
+        data = json_from_file(self.__series_file())['json']
+        keycontent = data.get(self.__figure.key)
+        file_name = self.file_name()
+        table = '<img src="' + self.png_path() + '" alt="' + file_name + '"/>'
+        table += data_table(keycontent['series'])
+        searchpath = '../templates'
+        template_loader = jinja2.FileSystemLoader(searchpath)
+        template_env = jinja2.Environment(loader=template_loader)
+        template = template_env.get_template('layout_cmp.html')
+        html = template.render(table=table)
+        output_file = os.path.join(file_name + '.html')
+        with open(output_file, 'w', encoding='utf-8') as file:
+            file.write(html)
