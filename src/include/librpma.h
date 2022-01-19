@@ -2680,6 +2680,227 @@ int rpma_recv(struct rpma_conn *conn,
  * DEPRECATED
  * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
  *
+ * struct client_res {
+ *     struct rpma_conn *conn;
+ *     size_t offset;
+ *
+ *     struct custom_event ev_conn_event;
+ *     struct custom_event ev_conn_cmpl;
+ *
+ *     struct server_res *svr;
+ *     int client_id;
+ * };
+ *
+ * int
+ * client_add_to_epoll(struct client_res *clnt, int epoll)
+ * {
+ *     int fd;
+ *     int ret = rpma_conn_get_event_fd(clnt->conn, &fd);
+ *     if (ret)
+ *         return ret;
+ *     ret = epoll_add(epoll, fd, clnt, client_handle_connection_event,
+ *             &clnt->ev_conn_event);
+ *     if (ret)
+ *         return ret;
+ *
+ *     ret = rpma_conn_get_completion_fd(clnt->conn, &fd);
+ *     if (ret) {
+ *         epoll_delete(epoll, &clnt->ev_conn_event);
+ *         return ret;
+ *     }
+ *     ret = epoll_add(epoll, fd, clnt, client_handle_completion,
+ *             &clnt->ev_conn_cmpl);
+ *     if (ret)
+ *         epoll_delete(epoll, &clnt->ev_conn_event);
+ *
+ *     return ret;
+ * }
+ *
+ * void
+ * client_handle_completion(struct custom_event *ce)
+ * {
+ *     struct client_res *clnt = (struct client_res *)ce->arg;
+ *     const struct server_res *svr = clnt->svr;
+ *
+ *     int ret = rpma_conn_completion_wait(clnt->conn);
+ *     if (ret) {
+ *         if (ret == RPMA_E_NO_COMPLETION)
+ *             return;
+ *
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     struct rpma_completion cmpl;
+ *     ret = rpma_conn_completion_get(clnt->conn, &cmpl);
+ *     if (ret) {
+ *         if (ret == RPMA_E_NO_COMPLETION)
+ *             return;
+ *
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *             return;
+ *     }
+ *
+ *     if (cmpl.op_status != IBV_WC_SUCCESS) {
+ *         (void) fprintf(stderr,
+ *                 "[%d] rpma_read() failed: %s\n",
+ *                 clnt->client_id,
+ *                 ibv_wc_status_str(cmpl.op_status));
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     if (cmpl.op != RPMA_OP_READ) {
+ *         (void) fprintf(stderr,
+ *                 "[%d] received unexpected cmpl.op value (%d != %d)\n",
+ *                 clnt->client_id, cmpl.op, RPMA_OP_READ);
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     client_handle_name(clnt, svr->dst_ptr);
+ *     (void) rpma_conn_disconnect(clnt->conn);
+ * }
+ *
+ * void
+ * server_handle_incoming_client(struct custom_event *ce)
+ * {
+ *     struct server_res *svr = (struct server_res *)ce->arg;
+ *     struct rpma_conn_req *req = NULL;
+ *     if (rpma_ep_next_conn_req(svr->ep, NULL, &req))
+ *         return;
+ *
+ *     struct client_res *clnt = NULL;
+ *     if ((clnt = client_new(svr)) == NULL) {
+ *         rpma_conn_req_delete(&req);
+ *         return;
+ *     }
+ *
+ *     if (rpma_conn_req_connect(&req, NULL, &clnt->conn)) {
+ *         (void) rpma_conn_req_delete(&req);
+ *         return;
+ *     }
+ *
+ *     if (client_add_to_epoll(clnt, svr->epoll))
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ * }
+ *
+ * CODE AFTER CHANGES
+ *
+ * struct client_res {
+ *     struct rpma_conn *conn;
+ *     struct rpma_cq *cq;
+ *
+ *     size_t offset;
+ *
+ *     struct custom_event ev_conn_event;
+ *     struct custom_event ev_conn_cmpl;
+ *
+ *     struct server_res *svr;
+ *     int client_id;
+ * };
+ *
+ * int
+ * client_add_to_epoll(struct client_res *clnt, int epoll)
+ * {
+ *     int fd;
+ *     int ret = rpma_conn_get_event_fd(clnt->conn, &fd);
+ *     if (ret)
+ *         return ret;
+ *     ret = epoll_add(epoll, fd, clnt, client_handle_connection_event,
+ *             &clnt->ev_conn_event);
+ *     if (ret)
+ *         return ret;
+ *
+ *     ret = rpma_conn_get_completion_fd(clnt->conn, &fd);
+ *     ret = rpma_cq_get_fd(clnt->cq, &fd);
+ *     if (ret) {
+ *         epoll_delete(epoll, &clnt->ev_conn_event);
+ *         return ret;
+ *     }
+ *     ret = epoll_add(epoll, fd, clnt, client_handle_completion,
+ *             &clnt->ev_conn_cmpl);
+ *     if (ret)
+ *         epoll_delete(epoll, &clnt->ev_conn_event);
+ *
+ *     return ret;
+ * }
+ *
+ * void
+ * client_handle_completion(struct custom_event *ce)
+ * {
+ *     struct client_res *clnt = (struct client_res *)ce->arg;
+ *     const struct server_res *svr = clnt->svr;
+ *
+ *     int ret = rpma_cq_wait(clnt->cq);
+ *     if (ret) {
+ *         if (ret == RPMA_E_NO_COMPLETION)
+ *             return;
+ *
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     struct rpma_completion cmpl;
+ *     ret = rpma_cq_get_completion(clnt->cq, &cmpl);
+ *     if (ret) {
+ *         if (ret == RPMA_E_NO_COMPLETION)
+ *             return;
+ *
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     if (cmpl.op_status != IBV_WC_SUCCESS) {
+ *         (void) fprintf(stderr,
+ *                 "[%d] rpma_read() failed: %s\n",
+ *                 clnt->client_id,
+ *                 ibv_wc_status_str(cmpl.op_status));
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     if (cmpl.op != RPMA_OP_READ) {
+ *     (void) fprintf(stderr,
+ *                 "[%d] received unexpected cmpl.op value (%d != %d)\n",
+ *                 clnt->client_id, cmpl.op, RPMA_OP_READ);
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     client_handle_name(clnt, svr->dst_ptr);
+ *     (void) rpma_conn_disconnect(clnt->conn);
+ * }
+ *
+ * void
+ * server_handle_incoming_client(struct custom_event *ce)
+ * {
+ *     struct server_res *svr = (struct server_res *)ce->arg;
+ *
+ *     struct rpma_conn_req *req = NULL;
+ *     if (rpma_ep_next_conn_req(svr->ep, NULL, &req))
+ *         return;
+ *
+ *     struct client_res *clnt = NULL;
+ *     if ((clnt = client_new(svr)) == NULL) {
+ *         rpma_conn_req_delete(&req);
+ *         return;
+ *     }
+ *
+ *     if (rpma_conn_req_connect(&req, NULL, &clnt->conn)) {
+ *         (void) rpma_conn_req_delete(&req);
+ *         return;
+ *     }
+ *
+ *     if (rpma_conn_get_cq(clnt->conn, &clnt->cq)) {
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ *         return;
+ *     }
+ *
+ *     if (client_add_to_epoll(clnt, svr->epoll))
+ *         (void) rpma_conn_disconnect(clnt->conn);
+ * }
+ *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
  * rpma_conn_req_connect(3), librpma(7) and https://pmem.io/rpma/
@@ -2731,7 +2952,25 @@ struct rpma_completion {
  * - RPMA_E_NO_COMPLETION - no completions available
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ * CODE TO BE REMOVED
+ *
+ *     ret = rpma_conn_completion_wait(conn);
+ *     if (ret)
+ *         goto err_mr_remote_delete;
+ *
+ *     ret = rpma_conn_completion_get(conn, &cmpl);
+ *
+ * CURRENT CODE
+ *     struct rpma_cq *cq = NULL;
+ *     ret = rpma_conn_get_cq(conn, &cq);
+ *     if (ret)
+ *         goto err_mr_remote_delete;
+ *
+ *     ret = rpma_cq_wait(cq);
+ *     if (ret)
+ *         goto err_mr_remote_delete;
+ *
+ *     ret = rpma_cq_get_completion(cq, &cmpl);
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
@@ -2769,7 +3008,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - Other errors - please see rpma_cq_get_completion(3)
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
+ * See rpma_cq_get_completion(3) for details and restrictions.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
