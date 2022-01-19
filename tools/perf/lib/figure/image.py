@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -12,8 +12,12 @@
 
 from collections import deque
 from textwrap import wrap
+import os
 from matplotlib.ticker import ScalarFormatter
 import matplotlib.pyplot as plt
+import jinja2
+
+from .html import data_table
 
 __FIGURE_KWARGS = {'figsize': [6.4, 4.8], 'dpi': 200, \
     'tight_layout': {'pad': 1}}
@@ -86,6 +90,7 @@ def draw_png(argx: str, argy: str, results: list, xscale: str,
     # get a subplot
     plot = plt.subplot(1, 1, 1)
     if title is not None:
+        title += '\n'
         plot.title.set_text(title)
         plot.title.set_fontsize(10)
     xticks = []
@@ -130,3 +135,28 @@ def draw_png(argx: str, argy: str, results: list, xscale: str,
 
     plt.savefig(output_path)
     plt.close(fig)
+
+def create_html(results: list, file_name: str, img_path: str) -> None:
+    """create html file
+
+    Generate a HTML file compiling all the provided results.
+
+    Args:
+        results: a list of results (`lib.figure.base.Figure.results`)
+
+        file_name: a path where the output file will be written
+
+        img_path: a path to the PNG file
+    """
+
+    table = '<img src="' + img_path + '" alt="' + file_name + \
+        '"/>'
+    table += data_table(results)
+    searchpath = '../templates'
+    template_loader = jinja2.FileSystemLoader(searchpath)
+    template_env = jinja2.Environment(loader=template_loader)
+    template = template_env.get_template('layout_cmp.html')
+    html = template.render(table=table)
+    output_file = os.path.join(file_name + '.html')
+    with open(output_file, 'w', encoding='utf-8') as file:
+        file.write(html)

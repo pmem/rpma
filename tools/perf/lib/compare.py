@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -20,7 +20,7 @@ import json
 import os
 
 from lib.common import json_from_file
-from lib.figure import draw_png
+from lib.figure import draw_png, create_html
 
 class Compare:
     """a helper class allowing generating comparisons"""
@@ -196,6 +196,15 @@ class Comparison:
         output = self.__figure.file + '_' + self.__figure.key + '.png'
         return os.path.join('.', output)
 
+    def file_name(self) -> str:
+        """get a file name to the output file
+
+        Returns:
+            The generated path.
+        """
+        output = self.__figure.file + '_' + self.__figure.key
+        return os.path.join('.', output)
+
     def to_pngs(self) -> None:
         """generate all PNG files
 
@@ -205,6 +214,9 @@ class Comparison:
         data = json_from_file(self.__series_file())['json']
         keycontent = data.get(self.__figure.key)
         output_path = self.png_path()
+        file_name = self.file_name()
         # XXX add setters to yaxis_max for bw and lat
         draw_png(keycontent['x'], keycontent['y'], keycontent['series'],
-                 keycontent['xscale'], output_path, None, None, None)
+                 keycontent['xscale'], output_path, None, None,
+                 keycontent['title'])
+        create_html(keycontent['series'], file_name, output_path)
