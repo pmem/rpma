@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * server.c -- a server of the flush-to-persistent example
@@ -174,6 +174,17 @@ main(int argc, char *argv[])
 			&mr);
 	if (ret)
 		goto err_ep_shutdown;
+
+#ifdef USE_LIBPMEM
+	char *path = argv[3];
+	if (is_pmem && strstr(path, "/dev/dax") == NULL) {
+		ret = rpma_mr_advise(mr, 0, mr_size,
+			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+			IBV_ADVISE_MR_FLAG_FLUSH);
+		if (ret)
+			goto err_mr_dereg;
+	}
+#endif
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;
