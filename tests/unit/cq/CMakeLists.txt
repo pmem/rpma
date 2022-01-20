@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Fujitsu
+# Copyright 2021-2022, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -27,5 +27,6 @@ endfunction()
 add_test_cq(new_delete)
 add_test_cq(get_completion)
 add_test_cq(get_fd)
+add_test_cq(get_wc)
 add_test_cq(wait)
 add_test_cq(get_ibv_cq)
