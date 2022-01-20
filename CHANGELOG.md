@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Possibility to give an advice about an address range in a memory registration [#1220].
+- Separate receive CQ [#1080].
+- Write operation with immediate data [#856].
+- Send operation with immediate data [#713].
+- Handling the RDMA_CM_EVENT_REJECTED event [#802].
+- APIs:
+  - rpma_conn_cfg_get_rcq_size - gets receive CQ size for the connection,
+  - rpma_conn_cfg_set_rcq_size - sets receive CQ size for the connection,
+  - rpma_conn_get_cq - gets the connection's main CQ,
+  - rpma_conn_get_qp_num - gets the connection's qp_num,
+  - rpma_conn_get_rcq - gets the connection's receive CQ,
+  - rpma_conn_req_get_private_data - gets a pointer to the request's private data,
+  - rpma_cq_get_completion - receives a completion of an operation,
+  - rpma_cq_get_fd - gets the completion queue's file descriptor,
+  - rpma_cq_wait - waits for a completion,
+  - rpma_mr_advise - gives advice about an address range in a memory registration,
+  - rpma_mr_get_ptr - gets the pointer to the local memory region,
+  - rpma_mr_get_size - gets the size of the local memory region,
+  - rpma_send_with_imm - initiates the send operation with immediate data,
+  - rpma_write_with_imm - initiates the write operation with immediate data.
+- enum rpma_conn_event: RPMA_CONN_REJECTED [#802].
+- enum rpma_op: RPMA_OP_RECV_RDMA_WITH_IMM [#856].
+
+### Changed
+- Atomic write operation (rpma_write_atomic()) implemented with fence
+  (now it waits for RDMA Read which simulates RDMA flush) [#603].
+- API for completions handling (see Deprecated).
+- rpma_read, rpma_write, rpma_send and rpma_recv can be called with 0B message.
+- Updated and fixed documentation.
+
+### Deprecated
+- APIs:
+  - rpma_conn_completion_get - replaced with rpma_conn_get_cq and rpma_cq_get_completion,
+  - rpma_conn_completion_wait - replaced with rpma_conn_get_cq and rpma_cq_wait,
+  - rpma_conn_get_completion_fd - replaced with rpma_conn_get_cq and rpma_cq_get_fd.
+
+### Fixed
+- rpma_mr_reg() supports WARP protocol [#1044].
+- rpma_flush_apm_new() fixed, so that rpma_mr_reg() can be called after ibv_fork_init() [#866].
+
 ## [0.9.0] - 2020-10-01
 ### Added
 - This is the first official release of the librpma library.
