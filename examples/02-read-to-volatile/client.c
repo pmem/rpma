@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * client.c -- a client of the read-to-volatile example
@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 	/* resources - general */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 
 	/*
 	 * resources - memory regions:
@@ -134,21 +134,22 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for a completion of the RDMA read */
-	ret = rpma_cq_get_completion(cq, &cmpl);
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
 		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
-	if (cmpl.op != RPMA_OP_READ) {
+	if (wc.opcode != IBV_WC_RDMA_READ) {
 		ret = -1;
-		(void) fprintf(stderr, "unexpected cmpl.op value (%d != %d)\n",
-				cmpl.op, RPMA_OP_READ);
+		(void) fprintf(stderr,
+				"unexpected wc.opcode value (%d != %d)\n",
+				wc.opcode, IBV_WC_RDMA_READ);
 		goto err_mr_remote_delete;
 	}
 
