@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -174,6 +174,18 @@ main(int argc, char *argv[])
 			&mr)))
 		goto err_ep_shutdown;
 
+	if (argc >= 4) {
+		char *path = argv[3];
+		/* rpma_mr_advise() should be called only in case of FsDAX */
+		if (is_pmem && strstr(path, "/dev/dax") == NULL) {
+			ret = rpma_mr_advise(mr, 0, mr_size,
+				IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IBV_ADVISE_MR_FLAG_FLUSH);
+			if (ret)
+				goto err_mr_dereg;
+		}
+	}
+
 	/* register the messaging memory */
 	if ((ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE,
 			RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
@@ -181,6 +193,18 @@ main(int argc, char *argv[])
 			&msg_mr))) {
 		(void) rpma_mr_dereg(&mr);
 		goto err_ep_shutdown;
+	}
+
+	if (argc >= 4) {
+		char *path = argv[3];
+		/* rpma_mr_advise() should be called only in case of FsDAX */
+		if (is_pmem && strstr(path, "/dev/dax") == NULL) {
+			ret = rpma_mr_advise(msg_mr, 0, KILOBYTE,
+				IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IBV_ADVISE_MR_FLAG_FLUSH);
+			if (ret)
+				goto err_mr_dereg;
+		}
 	}
 
 	/* get size of the memory region's descriptor */

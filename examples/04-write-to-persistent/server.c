@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * server.c -- a server of the write-to-persistent example
@@ -53,9 +53,9 @@ main(int argc, char *argv[])
 	size_t mr_size = 0;
 	size_t data_offset = 0;
 	struct rpma_mr_local *mr = NULL;
+	int is_pmem = 0;
 
 #ifdef USE_LIBPMEM
-	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
 
@@ -155,6 +155,18 @@ main(int argc, char *argv[])
 			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC, &mr);
 	if (ret)
 		goto err_ep_shutdown;
+
+	if (argc >= 4) {
+		char *path = argv[3];
+		/* rpma_mr_advise() should be called only in case of FsDAX */
+		if (is_pmem && strstr(path, "/dev/dax") == NULL) {
+			ret = rpma_mr_advise(mr, 0, mr_size,
+				IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IBV_ADVISE_MR_FLAG_FLUSH);
+			if (ret)
+				goto err_mr_dereg;
+		}
+	}
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;

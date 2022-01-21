@@ -175,7 +175,6 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_ep_shutdown;
 
-#ifdef USE_LIBPMEM
 	if (argc >= 4) {
 		char *path = argv[3];
 		/* rpma_mr_advise() should be called only in case of FsDAX */
@@ -185,9 +184,8 @@ main(int argc, char *argv[])
 				IBV_ADVISE_MR_FLAG_FLUSH);
 			if (ret)
 				goto err_mr_dereg;
+		}
 	}
-	}
-#endif
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;
