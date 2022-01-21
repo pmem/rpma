@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -36,9 +36,12 @@ main(int argc, char *argv[])
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	/* read common parameters */
+	int ret;
 	char *addr = argv[1];
 	char *port = argv[2];
-	int ret;
+	char *pmem_path = NULL;
+	if (argc >= 4)
+		pmem_path = argv[3];
 
 	/* resources - memory region */
 	void *mr_ptr = NULL;
@@ -46,25 +49,23 @@ main(int argc, char *argv[])
 	size_t dst_offset = 0;
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
+	int is_pmem = 0;
 
 #ifdef USE_LIBPMEM
-	int is_pmem = 0;
-	if (argc >= 4) {
-		char *path = argv[3];
-
+	if (pmem_path) {
 		/* map the file */
-		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
+		mr_ptr = pmem_map_file(pmem_path, 0 /* len */, 0 /* flags */,
 				0 /* mode */, &mr_size, &is_pmem);
 		if (mr_ptr == NULL) {
 			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", path);
+					"failed\n", pmem_path);
 			return -1;
 		}
 
 		/* pmem is expected */
 		if (!is_pmem) {
 			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-					path);
+					pmem_path);
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
@@ -78,7 +79,7 @@ main(int argc, char *argv[])
 		 */
 		if (mr_size < SIGNATURE_LEN) {
 			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, SIGNATURE_LEN);
+					pmem_path, mr_size, SIGNATURE_LEN);
 			(void) pmem_unmap(mr_ptr, mr_size);
 			return -1;
 		}
@@ -143,6 +144,15 @@ main(int argc, char *argv[])
 				&dst_mr);
 	if (ret)
 		goto err_ep_shutdown;
+
+	/* rpma_mr_advise() should be called only in case of FsDAX */
+	if (is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
+		ret = rpma_mr_advise(dst_mr, 0, mr_size,
+			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+			IBV_ADVISE_MR_FLAG_FLUSH);
+		if (ret)
+			goto err_mr_dereg;
+	}
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
