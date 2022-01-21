@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -46,9 +46,9 @@ main(int argc, char *argv[])
 	size_t dst_offset = 0;
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
+	int is_pmem = 0;
 
 #ifdef USE_LIBPMEM
-	int is_pmem = 0;
 	if (argc >= 4) {
 		char *path = argv[3];
 
@@ -143,6 +143,19 @@ main(int argc, char *argv[])
 				&dst_mr);
 	if (ret)
 		goto err_ep_shutdown;
+
+	if (argc >= 4) {
+		char *path = argv[3];
+		/* rpma_mr_advise() should be called only in case of FsDAX */
+		if (is_pmem && strstr(path, "/dev/dax") == NULL) {
+			ret = rpma_mr_advise(dst_mr, 0, mr_size,
+				IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+				IBV_ADVISE_MR_FLAG_FLUSH);
+			if (ret)
+				goto err_mr_dereg;
+		}
+	}
+
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
