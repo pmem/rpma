@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2019-2021, Intel Corporation */
+/* Copyright 2019-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -2679,6 +2679,37 @@ int rpma_recv(struct rpma_conn *conn,
  *
  * DEPRECATED
  * Please use rpma_conn_get_cq(3) and rpma_cq_get_fd(3) instead.
+ * This is an example snippet of code using the old API:
+ *
+ *	int ret;
+ *	int fd;
+ *
+ *	ret = rpma_conn_get_completion_fd(conn, &fd);
+ *	if (ret) { error_handling_code() }
+ *
+ *	ret = rpma_conn_completion_wait(conn);
+ *	if (ret) { error_handling_code() }
+ *
+ *	struct rpma_completion cmpl;
+ *	ret = rpma_conn_completion_get(conn, &cmpl);
+ *	if (ret) { error_handling_code() }
+ *
+ * The above snippet should be replaced with
+ * the following one using the new API:
+ *
+ *	rpma_cq *cq;
+ *	if (rpma_conn_get_cq(conn, &cq)) { error_handling_code() }
+ *
+ *	ret = rpma_cq_get_fd(cq, &fd);
+ *	if (ret) { error_handling_code() }
+ *
+ *	ret = rpma_cq_wait(cq);
+ *	if (ret) { error_handling_code() }
+ *
+ *	struct rpma_completion cmpl;
+ *
+ *	ret = rpma_cq_get_completion(cq, &cmpl);
+ *	if (ret) { error_handling_code() }
  *
  * SEE ALSO
  * rpma_conn_completion_get(3), rpma_conn_completion_wait(3),
@@ -2731,7 +2762,24 @@ struct rpma_completion {
  * - RPMA_E_NO_COMPLETION - no completions available
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_wait(3) instead.
+ * This is an example snippet of code using the old API:
+ *
+ *	ret = rpma_conn_completion_wait(conn);
+ *	if (ret) { error_handling_code() }
+ *
+ *	ret = rpma_conn_completion_get(conn);
+ *
+ * The above snippet should be replaced with
+ * the following one using the new API:
+ *
+ *	struct rpma_cq *cq = NULL;
+ *	ret = rpma_conn_get_cq(cq);
+ *	if (ret) { error_handling_code() }
+ *
+ *	ret = rpma_cq_wait(cq);
+ *	if (ret) { error_handling_code() }
+ *
+ *	ret = rpma_cq_get_completion(cq);
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_get(3),
@@ -2769,7 +2817,7 @@ int rpma_conn_completion_wait(struct rpma_conn *conn);
  * - Other errors - please see rpma_cq_get_completion(3)
  *
  * DEPRECATED
- * Please use rpma_conn_get_cq(3) and rpma_cq_get_completion(3) instead.
+ * See rpma_cq_get_completion(3) for details and restrictions.
  *
  * SEE ALSO
  * rpma_conn_get_completion_fd(3), rpma_conn_completion_wait(3),
