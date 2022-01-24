@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -8,9 +8,9 @@ cmake_minimum_required(VERSION 3.3)
 project(rpma C)
 
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 9)
+set(VERSION_MINOR 10)
 set(VERSION_PATCH 0)
-# set(VERSION_PRERELEASE rc1)
+set(VERSION_PRERELEASE rc1)
 
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 if (VERSION_PRERELEASE)
