@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * common-conn.h -- a common connection functions declarations for examples
@@ -13,12 +13,17 @@
 
 #ifdef USE_LIBPMEM
 
+#define PMEM_USAGE \
+"where <pmem-path> can be:\n\
+  - a Device DAX (/dev/dax0.0 for example) or\n\
+  - a file on File System DAX (/mnt/pmem/file for example)\n"
 /* signature marking the persistent contents as valid */
 #define SIGNATURE_STR "RPMA_EXAMPLE_SIG"
 #define SIGNATURE_LEN (strlen(SIGNATURE_STR) + 1)
 
 #define NO_PMEM_MSG "No <pmem-path> provided. Using DRAM instead.\n"
 #else
+#define PMEM_USAGE ""
 #define NO_PMEM_MSG \
 	"The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead.\n"
 #endif

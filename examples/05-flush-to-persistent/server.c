@@ -11,11 +11,13 @@
 #include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "common-conn.h"
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>] " \
-	"[direct-pmem-write]\n"
+#define USAGE_STR \
+	"usage: %s <server_address> <port> [<pmem-path>] [direct-pmem-write]\n"\
+	PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
@@ -23,8 +25,6 @@
 #ifdef USE_LIBPMEM
 #define ON_STR "on"
 #endif /* USE_LIBPMEM */
-
-#include "common-conn.h"
 
 int
 main(int argc, char *argv[])

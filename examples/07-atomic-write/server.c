@@ -12,19 +12,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "common-conn.h"
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#define LOG_HDR_SIGNATURE "LOG"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
-#include "common-conn.h"
-
-#ifdef USE_LIBPMEM
-#define LOG_HDR_SIGNATURE "LOG"
-#endif
 #define LOG_SIGNATURE_SIZE 8
 #define LOG_DATA_SIZE 1024
 

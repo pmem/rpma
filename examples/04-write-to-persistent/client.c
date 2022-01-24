@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -11,16 +11,15 @@
 #include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "common-conn.h"
+#include "hello.h"
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
-
-#include "common-conn.h"
-#include "hello.h"
 
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
