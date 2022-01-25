@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2020, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 #
 
 set -e
@@ -44,9 +44,9 @@ cp -R doc/md ../..
 
 cd ..
 
-# Checkout gh-pages and copy docs
-GH_PAGES_NAME="gh-pages-for-${TARGET_BRANCH}"
-git checkout -B $GH_PAGES_NAME upstream/gh-pages
+# Checkout man-pages and copy docs
+GH_PAGES_NAME="man-pages-for-${TARGET_BRANCH}"
+git checkout -B $GH_PAGES_NAME upstream/man-pages
 git clean -dfx
 
 # Clean old content, since some files might have been deleted
@@ -61,14 +61,14 @@ cp -r ../md/* $DOCS_DIR
 # In that case we want to force push anyway (there might be open pull request with
 # changes which were reverted).
 git add -A
-git commit -m "doc: automatic gh-pages docs update" && true
+git commit -m "doc: automatic man-pages docs update" && true
 git push -f ${ORIGIN} $GH_PAGES_NAME
 
 # Makes pull request.
 # When there is already an open PR or there are no changes an error is thrown, which we ignore.
 GITHUB_TOKEN=${DOC_UPDATE_GITHUB_TOKEN} hub pull-request -f \
-	-b ${USER_NAME}:gh-pages \
+	-b ${USER_NAME}:man-pages \
 	-h ${BOT_NAME}:${GH_PAGES_NAME} \
-	-m "doc: automatic gh-pages docs update" && true
+	-m "doc: automatic man-pages docs update" && true
 
 exit 0
