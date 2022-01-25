@@ -50,7 +50,37 @@ DEPRECATED
 ==========
 
 Please use **rpma\_conn\_get\_cq**(3) and **rpma\_cq\_get\_fd**(3)
-instead.
+instead. This is an example snippet of code using the old API:
+
+            int ret;
+            int fd;
+
+            ret = rpma_conn_get_completion_fd(conn, &fd);
+            if (ret) { error_handling_code() }
+
+            ret = rpma_conn_completion_wait(conn);
+            if (ret) { error_handling_code() }
+
+            struct rpma_completion cmpl;
+            ret = rpma_conn_completion_get(conn, &cmpl);
+            if (ret) { error_handling_code() }
+
+The above snippet should be replaced with the following one using the
+new API:
+
+            rpma_cq *cq;
+            if (rpma_conn_get_cq(conn, &cq)) { error_handling_code() }
+
+            ret = rpma_cq_get_fd(cq, &fd);
+            if (ret) { error_handling_code() }
+
+            ret = rpma_cq_wait(cq);
+            if (ret) { error_handling_code() }
+
+            struct rpma_completion cmpl;
+
+            ret = rpma_cq_get_completion(cq, &cmpl);
+            if (ret) { error_handling_code() }
 
 SEE ALSO
 ========

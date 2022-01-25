@@ -50,7 +50,24 @@ ERRORS
 DEPRECATED
 ==========
 
-Please use **rpma\_conn\_get\_cq**(3) and **rpma\_cq\_wait**(3) instead.
+This is an example snippet of code using the old API:
+
+            ret = rpma_conn_completion_wait(conn);
+            if (ret) { error_handling_code() }
+
+            ret = rpma_conn_completion_get(conn);
+
+The above snippet should be replaced with the following one using the
+new API:
+
+            struct rpma_cq *cq = NULL;
+            ret = rpma_conn_get_cq(cq);
+            if (ret) { error_handling_code() }
+
+            ret = rpma_cq_wait(cq);
+            if (ret) { error_handling_code() }
+
+            ret = rpma_cq_get_completion(cq);
 
 SEE ALSO
 ========
