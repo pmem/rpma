@@ -52,8 +52,7 @@ ERRORS
 DEPRECATED
 ==========
 
-Please use **rpma\_conn\_get\_cq**(3) and
-**rpma\_cq\_get\_completion**(3) instead.
+See **rpma\_cq\_get\_completion**(3) for details and restrictions.
 
 SEE ALSO
 ========
