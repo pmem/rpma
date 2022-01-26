@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2021 Fujitsu */
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * client.c -- a client of the write-with-imm example
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *src_mr = NULL;
 	struct rpma_mr_remote *dst_mr = NULL;
 	struct rpma_conn *conn = NULL;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 	int ret;
 
 	/* prepare memory */
@@ -119,22 +119,22 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
-	ret = rpma_cq_get_completion(cq, &cmpl);
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
 			"Received unexpected completion: %s\n",
-			ibv_wc_status_str(cmpl.op_status));
+			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_mr_remote_delete;
 	}
 
-	if (cmpl.op != RPMA_OP_WRITE) {
+	if (wc.opcode != IBV_WC_RDMA_WRITE) {
 		fprintf(stderr,
 			"Received unexpected type of operation (%d != %d)\n",
-			cmpl.op, RPMA_OP_WRITE);
+			wc.opcode, IBV_WC_RDMA_WRITE);
 		ret = -1;
 	}
 
