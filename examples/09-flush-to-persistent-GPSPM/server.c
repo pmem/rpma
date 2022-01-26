@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * server.c -- a server of the flush-to-persistent-GPSPM example
@@ -149,7 +149,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_req *req = NULL;
 	struct rpma_conn *conn = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 
 	/* if the string content is not empty */
 	if (((char *)mr_ptr + data_offset)[0] != '\0') {
@@ -256,29 +256,29 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 	if ((ret = rpma_cq_wait(rcq)))
 		goto err_conn_delete;
-	if ((ret = rpma_cq_get_completion(rcq, &cmpl)))
+	if ((ret = rpma_cq_get_wc(rcq, 1, &wc, NULL)))
 		goto err_conn_delete;
 
 	/* validate the receive completion */
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
 		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc.status));
 		goto err_conn_delete;
 	}
 
-	if (cmpl.op != RPMA_OP_RECV) {
+	if (wc.opcode != IBV_WC_RECV) {
 		ret = -1;
 		(void) fprintf(stderr,
-				"unexpected cmpl.op value "
+				"unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)cmpl.op,
-				(uintptr_t)RPMA_OP_RECV);
+				(uintptr_t)wc.opcode,
+				(uintptr_t)IBV_WC_RECV);
 		goto err_conn_delete;
 	}
 
 	/* unpack a flush request from the received buffer */
-	flush_req = gpspm_flush_request__unpack(NULL, cmpl.byte_len, recv_ptr);
+	flush_req = gpspm_flush_request__unpack(NULL, wc.byte_len, recv_ptr);
 	if (flush_req == NULL) {
 		fprintf(stderr, "Cannot unpack the flush request buffer\n");
 		goto err_conn_delete;
@@ -320,24 +320,24 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 	if ((ret = rpma_cq_wait(cq)))
 		goto err_conn_delete;
-	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
+	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
 		goto err_conn_delete;
 
 	/* validate the send completion */
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
 		(void) fprintf(stderr, "rpma_send() failed: %s\n",
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc.status));
 		goto err_conn_delete;
 	}
 
-	if (cmpl.op != RPMA_OP_SEND) {
+	if (wc.opcode != IBV_WC_SEND) {
 		ret = -1;
 		(void) fprintf(stderr,
-				"unexpected cmpl.op value "
+				"unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)cmpl.op,
-				(uintptr_t)RPMA_OP_SEND);
+				(uintptr_t)wc.opcode,
+				(uintptr_t)IBV_WC_SEND);
 		goto err_conn_delete;
 	}
 
