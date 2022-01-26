@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -23,11 +23,14 @@ def __get_xcommon(results):
              for p in oneseries['points']]
     return sorted(list(set(xlist)))
 
-def data_table(results: list) -> str:
+def data_table(results: list, compare: bool = False) -> str:
     """combine results as HTML table
 
     Args:
         results: a list of results. Please see `lib.figure.base.Figure.results`.
+
+        compare: when we generate a table for comparison, we do not need
+                 the escape characters
     Returns:
         A str containing a HTML table combining all the `results`.
     """
@@ -40,7 +43,10 @@ def data_table(results: list) -> str:
     for oneseries in results:
         # Since the output is processed as markdown,
         # special characters have to be escaped.
-        html += "<tr><td>" + escape(oneseries['label']) + "</td>"
+        if compare:
+            html += "<tr><td>" + oneseries['label'] + "</td>"
+        else:
+            html += "<tr><td>" + escape(oneseries['label']) + "</td>"
         points = __points_to_dict(oneseries['points'])
         points = {k: '{0:.2f}'.format(v) for k, v in points.items()}
         for xarg in xcommon:
