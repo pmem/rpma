@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * server.c -- a server of the messages-ping-pong example
@@ -55,7 +55,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	struct rpma_conn *conn = NULL;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -109,47 +109,48 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_conn_disconnect;
 
-	/* RPMA_OP_SEND completion in the first round is not present */
+	/* IBV_WC_SEND completion in the first round is not present */
 	int send_cmpl = 1;
 	int recv_cmpl = 0;
 
 	while (1) {
 		do {
 			/* prepare completions, get one and validate it */
-			ret = rpma_cq_get_completion(cq, &cmpl);
+			ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
 			if (ret && ret != RPMA_E_NO_COMPLETION)
 				break;
 
 			if (ret == RPMA_E_NO_COMPLETION) {
 				if ((ret = rpma_cq_wait(cq))) {
 					break;
-				} else if ((ret = rpma_cq_get_completion(cq,
-						&cmpl))) {
+				} else if ((ret = rpma_cq_get_wc(cq, 1,
+						&wc, NULL))) {
 					if (ret == RPMA_E_NO_COMPLETION)
 						continue;
 					break;
 				}
 			}
 
-			if (cmpl.op_status != IBV_WC_SUCCESS) {
+			if (wc.status != IBV_WC_SUCCESS) {
 				(void) fprintf(stderr,
 					"rpma_send()/rpma_recv() failed: %s\n",
-					ibv_wc_status_str(cmpl.op_status));
+					ibv_wc_status_str(wc.status));
 				ret = -1;
 				break;
 			}
 
-			if (cmpl.op == RPMA_OP_SEND) {
+			if (wc.opcode == IBV_WC_SEND) {
 				send_cmpl = 1;
-			} else if (cmpl.op == RPMA_OP_RECV) {
-				if (cmpl.op_context != recv ||
-						cmpl.byte_len != MSG_SIZE) {
+			} else if (wc.opcode == IBV_WC_RECV) {
+				if (wc.wr_id != (uintptr_t)recv ||
+						wc.byte_len != MSG_SIZE) {
 					(void) fprintf(stderr,
-						"received completion is not as expected (%p != %p [cmpl.op_context] || %"
-						PRIu32
-						" != %ld [cmpl.byte_len] )\n",
-						cmpl.op_context, (void *)recv,
-						cmpl.byte_len, MSG_SIZE);
+						"received completion is not as expected (0x%"
+						PRIXPTR "!= 0x%" PRIXPTR
+						"[wc.wr_id] || %" PRIu32
+						" != %ld [wc.byte_len] )\n",
+						wc.wr_id, (uintptr_t)recv,
+						wc.byte_len, MSG_SIZE);
 					ret = -1;
 					break;
 				}
