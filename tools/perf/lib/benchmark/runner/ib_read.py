@@ -38,10 +38,12 @@ class IbReadRunner:
         # check if the remote ib tool is present
         if 'SERVER_IP' not in self.__config:
             raise ValueError(MISSING_KEY_MSG.format('SERVER_IP'))
-        output = RemoteCmd.run_sync(self.__config, ['which', self.__r_ib_path])
-        if output.exit_status != 0:
-            raise ValueError("cannot find the remote ib tool: {}"
-                             .format(self.__r_ib_path))
+        if not self.__skip_remote_cmds:
+            output = RemoteCmd.run_sync(self.__config,
+                                        ['which', self.__r_ib_path])
+            if output.exit_status != 0:
+                raise ValueError("cannot find the remote ib tool: {}"
+                                 .format(self.__r_ib_path))
 
     def __init__(self, benchmark, config, idfile):
         self.__benchmark = benchmark
@@ -52,6 +54,8 @@ class IbReadRunner:
         self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
         self.__skip_running_tools = \
             self.__config.get('SKIP_RUNNING_TOOLS', False)
+        self.__skip_remote_cmds = \
+            self.__config.get('SKIP_REMOTE_CMDS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the settings predefined for the chosen mode
         self.__tool = self.__benchmark.oneseries['tool']
@@ -115,7 +119,7 @@ class IbReadRunner:
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-        if not self.__skip_running_tools:
+        if not self.__skip_running_tools and not self.__skip_remote_cmds:
             self.__server = RemoteCmd.run_async(self.__config, args)
             time.sleep(0.1) # wait 0.1 sec for server to start listening
 
