@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * server.c -- a server of the multiple-connections example
@@ -198,7 +198,8 @@ client_handle_name(struct client_res *clnt, void *ptr)
  * client_handle_completion -- callback on completion is ready
  *
  * The only expected completion in this example is a success of
- * the RPMA_OP_READ after which the read client's name is printed to the output.
+ * the IBV_WC_RDMA_READ after which the read client's name is printed
+ * to the output.
  * No matter what, the disconnection process will be initiated.
  */
 void
@@ -220,8 +221,8 @@ client_handle_completion(struct custom_event *ce)
 	}
 
 	/* get next completion */
-	struct rpma_completion cmpl;
-	ret = rpma_cq_get_completion(clnt->cq, &cmpl);
+	struct ibv_wc wc;
+	ret = rpma_cq_get_wc(clnt->cq, 1, &wc, NULL);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
@@ -233,19 +234,19 @@ client_handle_completion(struct custom_event *ce)
 	}
 
 	/* validate received completion */
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr,
 				"[%d] rpma_read() failed: %s\n",
 				clnt->client_id,
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc.status));
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
 
-	if (cmpl.op != RPMA_OP_READ) {
+	if (wc.opcode != IBV_WC_RDMA_READ) {
 		(void) fprintf(stderr,
-				"[%d] received unexpected cmpl.op value (%d != %d)\n",
-				clnt->client_id, cmpl.op, RPMA_OP_READ);
+				"[%d] received unexpected wc.opcode value (%d != %d)\n",
+				clnt->client_id, wc.opcode, IBV_WC_RDMA_READ);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
