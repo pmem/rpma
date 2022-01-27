@@ -102,17 +102,19 @@ We use "REMOTE_ANOTHER_NUMA" here (different from "REMOTE_JOB_NUMA"), because we
 
 ### Debug options
 
+There are listed all debug options below. Keep in mind that if you have any of them set, results of benchmarks will be INCORRECT!
+
 For functional testing, you can run each benchmark only for a brief period of time.
 
 ```json
-    "SHORT_RUNTIME": true
+    "DEBUG_SHORT_RUNTIME": true
 ```
 
 For debugging purposes, you can attach tracers to each or both ends of the connections e.g. `gdbserver`.
 
 ```json
-    "TRACER": "gdbserver localhost:2345",
-    "REMOTE_TRACER": "gdbserver localhost:2345"
+    "DEBUG_TRACER": "gdbserver localhost:2345",
+    "DEBUG_REMOTE_TRACER": "gdbserver localhost:2345"
 ```
 
 During in-depth analysis of the benchmarking process itself, you may find useful these three debug options:
@@ -125,6 +127,8 @@ During in-depth analysis of the benchmarking process itself, you may find useful
     "DEBUG_SKIP_REMOTE_CMDS": true,
     "DEBUG_DUMP_CMDS": true
 ```
+
+### Other options
 
 You can also set the timeout (in seconds) of a single run of the 'fio' tool (the default value is 5 minutes):
 
