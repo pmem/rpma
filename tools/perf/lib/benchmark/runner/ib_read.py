@@ -51,9 +51,9 @@ class IbReadRunner:
         self.__idfile = idfile
         self.__server = None
         # set dumping commands
-        self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__dump_cmds = self.__config.get('DEBUG_DUMP_CMDS', False)
         self.__skip_running_tools = \
-            self.__config.get('SKIP_RUNNING_TOOLS', False)
+            self.__config.get('DEBUG_SKIP_RUNNING_TOOLS', False)
         self.__skip_remote_cmds = \
             self.__config.get('DEBUG_SKIP_REMOTE_CMDS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
