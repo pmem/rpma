@@ -156,9 +156,9 @@ class FioRunner:
                       settings['sync'], cpuload))
         r_numa_n = str(self.__config['REMOTE_JOB_NUMA'])
 
-        if 'REMOTE_TRACER' in self.__config and \
-            self.__config['REMOTE_TRACER'] != '':
-            args = str(self.__config['REMOTE_TRACER']).split(' ')
+        if 'DEBUG_REMOTE_TRACER' in self.__config \
+           and self.__config['DEBUG_REMOTE_TRACER'] != '':
+            args = str(self.__config['DEBUG_REMOTE_TRACER']).split(' ')
         else:
             args = ['numactl', '-N', r_numa_n]
 
@@ -224,7 +224,7 @@ class FioRunner:
 
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
-        short_runtime = self.__config.get('SHORT_RUNTIME', False)
+        short_runtime = self.__config.get('DEBUG_SHORT_RUNTIME', False)
         duration = self.__DURATION['short' if short_runtime else 'full']
         env = {
             'serverip': self.__config['SERVER_IP'],
@@ -237,8 +237,9 @@ class FioRunner:
             'runtime': str(duration['run'])
         }
 
-        if 'TRACER' in self.__config and self.__config['TRACER'] != '':
-            args = str(self.__config['TRACER']).split(' ')
+        if 'DEBUG_TRACER' in self.__config \
+           and self.__config['DEBUG_TRACER'] != '':
+            args = str(self.__config['DEBUG_TRACER']).split(' ')
         else:
             args = ['numactl', '-N', str(self.__config['JOB_NUMA'])]
 
