@@ -10,6 +10,7 @@
 
 """ib_read_lat output format tools (EXPERIMENTAL)"""
 
+import random
 import re
 
 class IbReadLatFormat:
@@ -55,8 +56,9 @@ class IbReadLatFormat:
         }
 
     @classmethod
-    def null_results(cls, blocksize: int, _threads: int, _iodepth: int) -> dict:
-        """generate a null ib_read_lat output and return a row of data
+    def random_results(cls, blocksize: int, _threads: int,
+                       _iodepth: int) -> dict:
+        """generate a random ib_read_lat output and return a row of data
 
         Args:
             blocksize: a value of block size
@@ -69,11 +71,11 @@ class IbReadLatFormat:
 
         return {
             'bs': int(blocksize),
-            'ops': 0,
-            'lat_min': 0,
-            'lat_max': 0,
-            'lat_avg': 0,
-            'lat_stdev': 0,
-            'lat_pctl_99.0': 0,
-            'lat_pctl_99.9': 0
+            'ops': random.randint(0, 10),
+            'lat_min': random.randint(0, 10),
+            'lat_max': random.randint(0, 10),
+            'lat_avg': random.randint(0, 10),
+            'lat_stdev': random.randint(0, 10),
+            'lat_pctl_99.0': random.randint(0, 10),
+            'lat_pctl_99.9': random.randint(0, 10)
         }
