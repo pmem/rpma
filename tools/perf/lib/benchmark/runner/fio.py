@@ -40,10 +40,12 @@ class FioRunner:
         # check if the remote fio is present
         if 'SERVER_IP' not in self.__config:
             raise ValueError(MISSING_KEY_MSG.format('SERVER_IP'))
-        output = RemoteCmd.run_sync(self.__config, ['which', self.__r_fio_path])
-        if output.exit_status != 0:
-            raise ValueError("cannot find the remote fio: {}"
-                             .format(self.__r_fio_path))
+        if not self.__skip_remote_cmds:
+            output = RemoteCmd.run_sync(self.__config,
+                                        ['which', self.__r_fio_path])
+            if output.exit_status != 0:
+                raise ValueError("cannot find the remote fio: {}"
+                                 .format(self.__r_fio_path))
 
     def __set_settings_by_mode(self):
         """set all variable elements of __SETTINGS_BY_MODE"""
@@ -80,9 +82,11 @@ class FioRunner:
         self.__idfile = idfile
         self.__server = None
         # set dumping commands
-        self.__dump_cmds = self.__config.get('DUMP_CMDS', False)
+        self.__dump_cmds = self.__config.get('DEBUG_DUMP_CMDS', False)
         self.__skip_running_tools = \
-            self.__config.get('SKIP_RUNNING_TOOLS', False)
+            self.__config.get('DEBUG_SKIP_RUNNING_TOOLS', False)
+        self.__skip_remote_cmds = \
+            self.__config.get('DEBUG_SKIP_REMOTE_CMDS', False)
         verify_oneseries(self.__benchmark.oneseries, self.__ONESERIES_REQUIRED)
         # pick the result keys base on the benchmark's rw
         self.__set_results_key()
@@ -201,14 +205,14 @@ class FioRunner:
                 '--filename_format={}.\\$jobnum'.format(pmem_path))
         # copy the job file to the server
         r_job_path, job_file = self.__set_jobfile_path_and_name()
-        RemoteCmd.copy_to_remote(self.__config, job_file, r_job_path)
         args.append(r_job_path)
         args = env + args
         # dump a command to the log file
         if self.__dump_cmds:
             with open(settings['logfile_server'], 'a', encoding='utf-8') as log:
                 log.write("[server]$ {}".format(' '.join(args)))
-        if not self.__skip_running_tools:
+        if not (self.__skip_running_tools or self.__skip_remote_cmds):
+            RemoteCmd.copy_to_remote(self.__config, job_file, r_job_path)
             self.__server = RemoteCmd.run_async(self.__config, args)
             time.sleep(0.1) # wait 0.1 sec for server to start listening
 
