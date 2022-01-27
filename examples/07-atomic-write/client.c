@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * client.c -- a client of the atomic-write example
@@ -45,7 +45,12 @@ main(int argc, char *argv[])
 	size_t remote_size = 0;
 	size_t used_offset = 0;
 	struct rpma_mr_local *local_mr = NULL;
-	struct rpma_completion cmpl;
+
+	/* resources - completions */
+	int num_wc_got = 0;
+	/* expected number of completions == number of words in command line */
+	int exp_num_wc = argc - 3;
+	struct ibv_wc wc[exp_num_wc];
 
 	/* prepare memory */
 	mr_ptr = malloc_aligned(KILOBYTE);
@@ -119,12 +124,20 @@ main(int argc, char *argv[])
 	if ((ret = rpma_cq_wait(cq)))
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
+	if ((ret = rpma_cq_get_wc(cq, 1, wc, &num_wc_got)))
 		goto err_mr_remote_delete;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (num_wc_got != 1) {
+		ret = -1;
+		(void) fprintf(stderr,
+				"unexpected number of completions (%d != 1)\n",
+				num_wc_got);
+		goto err_mr_remote_delete;
+	}
+
+	if (wc[0].status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc[0].status));
 		goto err_mr_remote_delete;
 	}
 
@@ -179,22 +192,37 @@ main(int argc, char *argv[])
 		/* wait for the completion to be ready */
 		if ((ret = rpma_cq_wait(cq)))
 			break;
+	}
 
-		if ((ret = rpma_cq_get_completion(cq, &cmpl)))
-			break;
+	/* one of above operations in the loop failed */
+	if (ret)
+		goto err_mr_remote_delete;
 
-		if (cmpl.op_context != FLUSH_ID) {
+	if ((ret = rpma_cq_get_wc(cq, exp_num_wc, wc, &num_wc_got)))
+		goto err_mr_remote_delete;
+
+	if (num_wc_got != exp_num_wc) {
+		ret = -1;
+		(void) fprintf(stderr,
+				"unexpected number of completions (%d != %d)\n",
+				num_wc_got, exp_num_wc);
+		goto err_mr_remote_delete;
+	}
+
+	for (int i = 0; i < exp_num_wc; ++i) {
+		if (wc[i].wr_id != (uintptr_t)FLUSH_ID) {
+			ret = -1;
 			(void) fprintf(stderr,
-				"unexpected cmpl.op_context value "
-				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)cmpl.op_context,
-				(uintptr_t)FLUSH_ID);
+					"unexpected wc.wr_id value "
+					"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+					wc[i].wr_id, (uintptr_t)FLUSH_ID);
 			break;
 		}
 
-		if (cmpl.op_status != IBV_WC_SUCCESS) {
+		if (wc[i].status != IBV_WC_SUCCESS) {
+			ret = -1;
 			(void) fprintf(stderr, "rpma_flush() failed: %s\n",
-					ibv_wc_status_str(cmpl.op_status));
+					ibv_wc_status_str(wc[i].status));
 			break;
 		}
 	}
