@@ -143,7 +143,7 @@ class IbReadRunner:
     def __client_run(self, settings):
         """run the client (locally) and wait till the end of execution"""
         numa_n = str(self.__config['JOB_NUMA'])
-        if self.__config.get('SHORT_RUNTIME', False):
+        if self.__config.get('DEBUG_SHORT_RUNTIME', False):
             it_opt = '--iters=10'
         else:
             it_opt = '--iters=' + str(settings['iterations'])
