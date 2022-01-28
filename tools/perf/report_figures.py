@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -55,8 +55,8 @@ PARSER_C = SUBPARSERS.add_parser('compare', help='generate comparative figures')
 PARSER_C.add_argument('--benches', type=json_from_file, required=True,
                       nargs='+',
                       help='bench.json files of completed benchmarks')
-PARSER_C.add_argument('--names', type=str, required=True, nargs='+',
-                      help='names for the respective benchmarks')
+PARSER_C.add_argument('--prefixes', type=str, required=True, nargs='+',
+                      help='''prefixes to be added to the series names of the respective benchmarks''')
 PARSER_C.add_argument('--result_dir', type=dir_path, required=True,
                       help='an output directory')
 
@@ -84,9 +84,10 @@ def generate_figures(args: argparse.Namespace) -> None:
 def comparative_figures(args: argparse.Namespace) -> None:
     """Restore `lib.bench.Bench` objects. Create an intermedia `lib.compare.Compare` object and generate JPEG and JSON files comparing all given `lib.bench.Bench` objects."""
     benches = [Bench.carry_on(bench) for bench in args.benches]
-    compare = Compare(args.names, benches, args.result_dir)
+    compare = Compare(args.prefixes, benches, args.result_dir)
     compare.prepare_series()
     compare.cache()
+    compare.to_html()
 
 COMMANDS = {
     "generate": generate_figures,

@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 #
 
 #
@@ -39,10 +39,10 @@ ENV TESTS_DEPS "\
 	python3-pytest"
 
 ENV PYTHON_DEPS "\
+	coverage \
 	deepdiff \
 	markdown2 \
 	matplotlib \
-	pandas \
 	paramiko \
 	scp"
 

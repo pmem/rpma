@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -15,7 +15,7 @@ import os
 from copy import deepcopy
 
 from ..common import uniq, ENCODE
-from .runner import BaseRunner, Bash, Dummy
+from .runner import Executor, Dummy
 
 def get_result_path(result_dir: str, identifier: int) -> str:
     """a path to the file with all the collected results of the particular
@@ -42,14 +42,17 @@ class Benchmark:
     an element of a `lib.figure.base.Figure.series` list.
     """
 
-    def __init__(self, oneseries, figure=None, series_index=-1):
+    def __init__(self, oneseries, req=None, figure=None, series_index=-1):
         self.__figure = figure
         self.__series_index = series_index
         # remove unnecessary fields
         oneseries.pop('label', None)
         oneseries.pop('rw_dir', None)
         oneseries['done'] = oneseries.get('done', False)
-        self.__req = oneseries.pop('requirements', {})
+        if req:
+            self.__req = deepcopy(req)
+        else:
+            self.__req = oneseries.pop('requirements', {})
         self.__oneseries = oneseries
 
     @classmethod
@@ -73,7 +76,7 @@ class Benchmark:
             A list of `Benchmark` objects where each element describes
             different benchmark.
         """
-        output = [cls(oneseries, figure, index)
+        output = [cls(oneseries, None, figure, index)
                   for figure in figures
                   for index, oneseries in enumerate(figure.series)]
         return uniq(output)
@@ -153,7 +156,7 @@ class Benchmark:
         return self.__oneseries['done']
 
     __ONESERIES_REQUIRED = ['filetype', 'id', 'tool', 'mode']
-    __CONFIG_REQUIRED = ['server_ip']
+    __CONFIG_REQUIRED = ['SERVER_IP']
 
     def __validate(self, config):
         for required in self.__ONESERIES_REQUIRED:
@@ -172,9 +175,7 @@ class Benchmark:
 
         - `lib.benchmark.runner.dummy.Dummy.run()` when not the actual results
           are expected,
-        - `lib.benchmark.runner.bash.Bash.run()` when the legacy `ib_read.sh`
-          and `rpma_fio_bench.sh` are meant to be used or
-        - `lib.benchmark.runner.base.BaseRunner.run()`.
+        - `lib.benchmark.runner.executor.Executor.run()`.
 
         No matter which runner is used, in the result of successful
         execution the `Benchmark` is marked as done (`Benchmark.is_done()`)
@@ -190,10 +191,8 @@ class Benchmark:
         self.__validate(config)
         if config.get('dummy_results', False):
             runner = Dummy
-        elif '.sh' in self.__oneseries['tool']:
-            runner = Bash
         else:
-            runner = BaseRunner
+            runner = Executor
 
         idfile = get_result_path(result_dir, self.identifier)
         runner.run(self, config, idfile)

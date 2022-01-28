@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -15,6 +15,5 @@ choose to collect the results using one of available runners. Please see
 `lib.benchmark.base.Benchmark.run()` for details.
 """
 
-from .base import BaseRunner
-from .bash import Bash
+from .executor import Executor
 from .dummy import Dummy

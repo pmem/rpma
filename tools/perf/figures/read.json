@@ -17,11 +17,13 @@
         },
         "series": [
             {
-                "tool": "ib_read.sh",
-                "label": "ib_read_lat"
+                "tool": "ib_read",
+                "tool_mode": "lat",
+                "label": "ib_read_lat",
+                "rw": "read"
             },
             {
-                "tool": "rpma_fio_bench.sh",
+                "tool": "fio",
                 "tool_mode": "apm",
                 "rw": ["randread", "read"],
                 "label": "rpma_read() {rw_order}",
@@ -40,7 +42,7 @@
         },
         "series_common": {
             "mode": "lat",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randread", "read"],
             "fstrings": ["label"]
@@ -81,11 +83,13 @@
         },
         "series": [
             {
-                "tool": "ib_read.sh",
-                "label": "ib_read_bw"
+                "tool": "ib_read",
+                "tool_mode": "bw",
+                "label": "ib_read_bw",
+                "rw": "read"
             },
             {
-                "tool": "rpma_fio_bench.sh",
+                "tool": "fio",
                 "tool_mode": "apm",
                 "rw": ["randread", "read"],
                 "label": "rpma_read() {rw_order}",
@@ -112,11 +116,13 @@
         },
         "series": [
             {
-                "tool": "ib_read.sh",
-                "label": "ib_read_bw"
+                "tool": "ib_read",
+                "tool_mode": "bw",
+                "label": "ib_read_bw",
+                "rw": "read"
             },
             {
-                "tool": "rpma_fio_bench.sh",
+                "tool": "fio",
                 "tool_mode": "apm",
                 "rw": ["randread", "read"],
                 "label": "rpma_read() {rw_order}",
@@ -136,7 +142,7 @@
         },
         "series_common": {
             "mode": "bw-bs",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randread", "read"],
             "fstrings": ["label"]
@@ -170,7 +176,7 @@
         },
         "series_common": {
             "mode": "bw-th",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "tool_mode": "apm",
             "rw": ["randread", "read"],
             "fstrings": ["label"]

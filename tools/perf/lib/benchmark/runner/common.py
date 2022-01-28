@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -15,12 +15,15 @@ import re
 
 from ...remote_cmd import RemoteCmd
 
-#: an error message when an unexpected mode is detected
-UNKNOWN_MODE_MSG = "An unexpected 'mode' value: {}"
+#: an error message when an unexpected value of a key is detected
+UNKNOWN_VALUE_MSG = "An unexpected '{}' value: {}"
 
 #: an error message when x-axis cannot be identified
 NO_X_AXIS_MSG = \
     "SETTINGS_BY_MODE[{}] is missing a key defined as a list (x-axis)"
+
+#: an error message when a key is missing in the figure
+MISSING_KEY_MSG = "the following key is missing in the figure: {}"
 
 #: a common block sizes list
 BS_VALUES = [256, 1024, 4096, 8192, 16384, 32768, 65536, 131072, 262144]
@@ -52,7 +55,7 @@ def print_start_message(mode, oneseries, config):
     if 'tool_mode' in oneseries:
         tool = tool + '({})'.format(oneseries['tool_mode'])
     print('STARTING benchmark TOOL={} for MODE={} (IP={}) ...'
-          .format(tool, mode, config['server_ip']))
+          .format(tool, mode, config['SERVER_IP']))
 
 def prepare_cmd(config, oneseries, cmd_exec, x_value=None):
     """prepare cmd"""
@@ -103,3 +106,20 @@ def run_post_command(config, oneseries, pre_command=None):
             print('--- post-command\'s output: ---')
             raise
     __wait_for_pre_command(pre_command)
+
+def verify_oneseries(actual, required):
+    """verify if oneseries contains all required keys
+       and if they have required/allowed values
+    """
+    for key, values in required.items():
+        if key not in actual:
+            raise ValueError(MISSING_KEY_MSG.format(key))
+        if values is None:
+            continue
+        if not isinstance(values, list):
+            raise ValueError('value of the {} key has to be a list'
+                             .format(key))
+        actual_value = actual[key]
+        if actual_value not in values:
+            raise ValueError('.{} == {} not in {}'
+                             .format(key, actual_value, values))

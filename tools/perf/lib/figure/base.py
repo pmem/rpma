@@ -230,8 +230,15 @@ class Figure:
             # - a list of dicts or
             # - a list of lists of two dicts
             if isinstance(rows[0], list):
-                # rows[0] has to be a dict
-                rows = rows[0]
+                # rows[0] has to be a dict, but in case of fio results
+                # it is a list of two dicts, so we have to take only
+                # the proper one
+                if series['rw_dir'] == 'read':
+                    rw_dir = 0
+                else:
+                    rw_dir = 1
+                for i, _ in enumerate(rows):
+                    rows[i] = rows[i][rw_dir]
             # it is assumed each row has the same names of columns
             keys = rows[0].keys()
             # skip the series if it does not have required keys

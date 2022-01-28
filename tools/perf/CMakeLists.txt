@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 add_cstyle_pep8(tools_perf
@@ -21,4 +21,6 @@ add_cstyle_pep8(tools_perf
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/format/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/*.py
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark/runner/*.py
-	${CMAKE_CURRENT_SOURCE_DIR}/lib/report/*.py)
+	${CMAKE_CURRENT_SOURCE_DIR}/lib/report/*.py
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/lib/benchmark/*.py
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/lib/benchmark/runner/*.py)

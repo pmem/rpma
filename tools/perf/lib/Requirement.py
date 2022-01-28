@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -32,10 +32,18 @@ class Requirement:
     """A single requirement"""
 
     def __init__(self, req: dict):
+        # When we create a new requirement,
+        # we need to create a list of benchmarks for it.
+        # When we restore the list of requirements, we need to extract
+        # the information about the benchmark from the requirements.
+        if 'benchmarks' in req.keys():
+            benchmarks = req.pop('benchmarks')
+            self.__benchmarks = {id: Benchmark(b, req)
+                for id, b in benchmarks.items()}
+        else:
+            self.__benchmarks = {}
         req['done'] = req.get('done', False)
         self.__req = req
-        self.__benchmarks = {id: Benchmark(b)
-            for id, b in req.get('benchmarks', {}).items()}
 
     @property
     def identifier(_):
@@ -140,7 +148,7 @@ class Requirement:
     def is_met(self, config: dict) -> bool:
         """Is the requirement met?
 
-        **Note**: Depending on the `config['platform_generation']` it may be
+        **Note**: Depending on the `config['PLATFORM_GENERATION']` it may be
         possible to adjust the system configuration on the fly. Additional
         conditions may apply. For details please see
         https://github.com/pmem/rpma/blob/master/tools/perf/CONFIG.JSON.md.
@@ -153,14 +161,14 @@ class Requirement:
             `True` if the requirement is met. `False` otherwise.
 
         Raises:
-            ValueError: When `config['platform_generation']` is unknown.
+            ValueError: When `config['PLATFORM_GENERATION']` is unknown.
         """
-        gen = config['platform_generation']
+        gen = config['PLATFORM_GENERATION']
         if gen in self.__PLATFORMS.keys():
             # call the generation-specific implementation
             return self.__PLATFORMS[gen].is_met(self.__req, config)
         else:
-            raise ValueError("Unsupported 'platform_generation': '{}'. ".format(gen)
+            raise ValueError("Unsupported 'PLATFORM_GENERATION': '{}'. ".format(gen)
                 + "Where supported values are: '"
                 + "', '".join(self.__PLATFORMS.keys()) + "'.")
 
@@ -213,6 +221,8 @@ class Requirement:
         @classmethod
         def __set_DDIO(cls, req, config):
             """set DDIO to the required value"""
+            if config.get('DEBUG_SKIP_RUNNING_TOOLS', False):
+                return
             ddio = 'ddio.sh'
             local_dir = '..'
             remote_dir = '/dev/shm'
@@ -252,14 +262,13 @@ class Requirement:
                 # If there are available: passwordless sudo access and
                 # the PCIe Root Port of the RNIC on the remote side
                 # the configuration can be adjusted automatically.
-                # XXX remove when Bash scripts will be removed
-                config['FORCE_REMOTE_DIRECT_WRITE_TO_PMEM'] = \
-                    req['direct_write_to_pmem']
                 cls.__set_DDIO(req, config)
                 return True
             else:
                 # Otherwise, the remote Direct Write to PMem configuration
                 # has to match the requirement.
+                if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                    raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
                 if req['direct_write_to_pmem'] == \
                     config['REMOTE_DIRECT_WRITE_TO_PMEM']:
                     return True
@@ -275,6 +284,8 @@ class Requirement:
 
         @classmethod
         def is_met(cls, req, config):
+            if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
+                raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
             # For the ICX generation, there is no way of toggling Direct Write
             # to PMem from the OS level. The configuration has to be adjusted
             # manually on the BIOS level.

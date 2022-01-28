@@ -12,7 +12,7 @@
         "series_common": {
             "mode": "lat-cpu",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "00_99",
             "fstrings": ["label"]
@@ -56,7 +56,7 @@
         "series_common": {
             "mode": "lat-cpu",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "75_99",
             "fstrings": ["label"]
@@ -99,7 +99,7 @@
         "series_common": {
             "mode": "bw-cpu",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "00_99",
             "fstrings": ["label"]
@@ -142,7 +142,7 @@
         "series_common": {
             "mode": "bw-cpu",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "75_99",
             "fstrings": ["label"]
@@ -185,7 +185,7 @@
         "series_common": {
             "mode": "bw-cpu-mt",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "00_99",
             "fstrings": ["label"]
@@ -228,7 +228,7 @@
         "series_common": {
             "mode": "bw-cpu-mt",
             "filetype": "pmem",
-            "tool": "rpma_fio_bench.sh",
+            "tool": "fio",
             "rw": ["randwrite", "write"],
             "cpu_load_range": "75_99",
             "fstrings": ["label"]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -22,6 +22,8 @@ from .remote_cmd import RemoteCmd
 
 def get_remote_job_numa_cpulist(config):
     """get cpulist of the remote NUMA node (REMOTE_JOB_NUMA)"""
+    if config.get('DEBUG_SKIP_RUNNING_TOOLS', False):
+        return 0
     cpulist_path = "/sys/devices/system/node/node{}/cpulist" \
         .format(str(config['REMOTE_JOB_NUMA']))
     cpulist_cmd = RemoteCmd.run_sync(config, ['cat', cpulist_path],
@@ -35,6 +37,8 @@ def get_remote_job_numa_cpulist(config):
 
 def get_cores_per_socket(config):
     """get cores per socket"""
+    if config.get('DEBUG_SKIP_RUNNING_TOOLS', False):
+        return 1
     cores_cmd = RemoteCmd.run_sync(config, "lscpu", raise_on_error=True)
     output = cores_cmd.stdout.readlines()
     filtered = [line \
@@ -78,6 +82,9 @@ class Bench:
     the end-user has to pay attention to the standard output in order
     to learn how to adjust the configuration to complete all planned series.
     """
+
+    __REQUIRED_CONFIG_PARAMS = [
+        'PLATFORM_GENERATION', 'SERVER_IP', 'JOB_NUMA', 'REMOTE_JOB_NUMA']
 
     def __init__(self, config: dict, parts: list,
                  figures: list, requirements: dict,
@@ -126,6 +133,13 @@ class Bench:
         """a directory where the intermediate and final products of the benchmarking process will be stored"""
         return self.__result_dir
 
+    def __check_required_parameters(self, config: dict) -> None:
+        """check if all required parameters are set in the config"""
+        for param in self.__REQUIRED_CONFIG_PARAMS:
+            if param not in config:
+                raise ValueError('\'{}\' is missing in the config'
+                                 .format(param))
+
     @classmethod
     def new(cls, config: dict, parts: list, result_dir: str) -> 'Bench':
         """combine config and list of figures into a new `Bench` object
@@ -159,6 +173,8 @@ class Bench:
                  for part in parts]
 
         config = config['json']
+        cls.__check_required_parameters(cls, config)
+
         config['REMOTE_JOB_NUMA_CPULIST'] = get_remote_job_numa_cpulist(config)
         config['CORES_PER_SOCKET'] = get_cores_per_socket(config)
 
