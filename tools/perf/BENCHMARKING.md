@@ -147,3 +147,21 @@ $ ./report_figures.py compare -h
 Instead of running a comprehensive set of workloads you can run a simple subset of them.
 In order to do so you have to modify the existing [figures](./figures/).
 An example of a simple figure you can find [here](./figures/example_read.json).
+
+## Prerequisites for benchmarking
+
+Run ssh manually from the client to the server at least once before report_bench.py is run:
+``` sh
+$ ssh ${REMOTE_USER}@${SERVER_IP}
+```
+
+Before starting any work, make sure that you have the correct date in the operating system:
+``` sh
+$ sudo date -s "01/28/2022 10:03:00"
+```
+
+If you have set up FsDAX or DevDAX make sure they have RW access:
+``` sh
+$ sudo chmod 777 /mnt/pmem0 
+$ sudo chmod 666 /dev/dax0.0
+```
