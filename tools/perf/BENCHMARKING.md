@@ -201,3 +201,17 @@ $ ./csv_compare.py --output_layout lat_avg ib_read_lat-21-01-31-072033.csv rpma_
 ```
 
 With the help of additional parameters, you can adjust various aspects of the output.
+
+## Troubleshooting
+Run ssh manually from client to server at least once before report_bench.py is run
+``` sh
+$ ./ssh user@192.168.0.1
+
+Before starting any work, check that you have the correct date in the operating system
+``` sh
+$ sudo date +%Y%m%d -s "20220128"
+
+If you have set up fsdax check if the place where it is mounted has adequate access
+```
+$ sudo chmod 777 /mnt/xxxx
+
