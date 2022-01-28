@@ -41,3 +41,7 @@ via an out-of-band or the in-band channel.
 ```bash
 [user@client]$ ./client $server_address $port [<pmem-path>]
 ```
+
+where `<pmem-path>` can be:
+  - a Device DAX (`/dev/dax0.0` for example) or
+  - a file on File System DAX (`/mnt/pmem/file` for example).

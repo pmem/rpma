@@ -38,21 +38,13 @@ jobs:
         CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
                  "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
-                 "N=Ubuntu18.04  OS=ubuntu  OS_VER=18.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=Fedora31     OS=fedora  OS_VER=31",
-                 "N=Fedora30     OS=fedora  OS_VER=30",
-                 "N=Fedora29     OS=fedora  OS_VER=29",
-                 "N=Fedora28     OS=fedora  OS_VER=28",
-                 "N=Fedora27     OS=fedora  OS_VER=27",
-                 "N=Fedora26     OS=fedora  OS_VER=26",
                  "N=CentOS8      OS=centos  OS_VER=8",
                  "N=CentOS7      OS=centos  OS_VER=7  TEST_PYTHON_TOOLS=OFF",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
-                 "N=Debian9      OS=debian  OS_VER=9  TEST_PYTHON_TOOLS=OFF",
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # successors of CentOS:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
@@ -63,10 +55,8 @@ jobs:
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
-                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
-                 # because of the following bug:
-                 # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest"]
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
@@ -91,21 +81,13 @@ jobs:
         CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
                  "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
-                 "N=Ubuntu18.04  OS=ubuntu  OS_VER=18.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=Fedora31     OS=fedora  OS_VER=31",
-                 "N=Fedora30     OS=fedora  OS_VER=30",
-                 "N=Fedora29     OS=fedora  OS_VER=29",
-                 "N=Fedora28     OS=fedora  OS_VER=28",
-                 "N=Fedora27     OS=fedora  OS_VER=27",
-                 "N=Fedora26     OS=fedora  OS_VER=26",
                  "N=CentOS8      OS=centos  OS_VER=8",
                  "N=CentOS7      OS=centos  OS_VER=7  TEST_PYTHON_TOOLS=OFF",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
-                 "N=Debian9      OS=debian  OS_VER=9  TEST_PYTHON_TOOLS=OFF",
                  "N=DebianS      OS=debian  OS_VER=stable",
                  # successors of CentOS:
                  "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
@@ -115,10 +97,8 @@ jobs:
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
                  "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
-                 # the OpenSUSE_Tumbleweed build was temporarily moved to Nightly_Experimental
-                 # because of the following bug:
-                 # https://bugzilla.opensuse.org/show_bug.cgi?id=1190670
-                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest"]
+                 "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -12,16 +12,15 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "common-conn.h"
+#include "hello.h"
 
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
-
-#include "common-conn.h"
-#include "hello.h"
 
 #define FLUSH_ID	(void *)0xF01D /* a random identifier */
 
