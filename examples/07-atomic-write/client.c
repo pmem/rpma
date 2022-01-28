@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * client.c -- a client of the atomic-write example
@@ -45,7 +45,7 @@ main(int argc, char *argv[])
 	size_t remote_size = 0;
 	size_t used_offset = 0;
 	struct rpma_mr_local *local_mr = NULL;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 
 	/* prepare memory */
 	mr_ptr = malloc_aligned(KILOBYTE);
@@ -119,12 +119,12 @@ main(int argc, char *argv[])
 	if ((ret = rpma_cq_wait(cq)))
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_cq_get_completion(cq, &cmpl)))
+	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
 		goto err_mr_remote_delete;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(cmpl.op_status));
+				ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
@@ -180,21 +180,20 @@ main(int argc, char *argv[])
 		if ((ret = rpma_cq_wait(cq)))
 			break;
 
-		if ((ret = rpma_cq_get_completion(cq, &cmpl)))
+		if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
 			break;
 
-		if (cmpl.op_context != FLUSH_ID) {
+		if (wc.wr_id != (uintptr_t)FLUSH_ID) {
 			(void) fprintf(stderr,
-				"unexpected cmpl.op_context value "
+				"unexpected wc.wr_id value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)cmpl.op_context,
-				(uintptr_t)FLUSH_ID);
+				wc.wr_id, (uintptr_t)FLUSH_ID);
 			break;
 		}
 
-		if (cmpl.op_status != IBV_WC_SUCCESS) {
+		if (wc.status != IBV_WC_SUCCESS) {
 			(void) fprintf(stderr, "rpma_flush() failed: %s\n",
-					ibv_wc_status_str(cmpl.op_status));
+					ibv_wc_status_str(wc.status));
 			break;
 		}
 	}
