@@ -4,15 +4,10 @@
     "server_ip": "XXX.XXX.XXX.XXX",
     "JOB_NUMA": 999,
     "AUX_PARAMS": "-d XXX -R",
-    "IB_PATH": "path",
-    "FIO_PATH": "path",
     "REMOTE_USER": "user",
     "REMOTE_PASS": "pass",
     "REMOTE_JOB_NUMA": 999,
     "REMOTE_AUX_PARAMS": "-d XXX -R",
-    "REMOTE_IB_PATH": "path",
     "REMOTE_DIRECT_WRITE_TO_PMEM": false,
-    "REMOTE_FIO_PATH": "path",
-    "REMOTE_JOB_PATH": "path",
     "REMOTE_JOB_MEM_PATH": "path"
 }
