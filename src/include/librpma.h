@@ -2717,6 +2717,7 @@ int rpma_recv(struct rpma_conn *conn,
  */
 int rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd);
 
+/* For details please see rpma_cq_get_completion(3). (deprecated) */
 enum rpma_op {
 	RPMA_OP_READ,
 	RPMA_OP_WRITE,
@@ -2726,7 +2727,7 @@ enum rpma_op {
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
-/* For details please see rpma_cq_get_completion(3). */
+/* For details please see rpma_cq_get_completion(3). (deprecated) */
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
@@ -2900,7 +2901,7 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 int rpma_cq_wait(struct rpma_cq *cq);
 
 /** 3
- * rpma_cq_get_completion - receive a completion of an operation
+ * rpma_cq_get_completion - receive a completion of an operation (deprecated)
  *
  * SYNOPSIS
  *
@@ -2975,6 +2976,26 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
  * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
  * - RPMA_E_NOSUPP - not supported opcode
+ *
+ * DEPRECATED
+ * This is an example snippet of code using the old API:
+ *
+ *	struct rpma_completion cmpl;
+ *
+ *	ret = rpma_cq_get_completion(cq, &cmpl);
+ *
+ *	if (cmpl.op_status != IBV_WC_SUCCESS) { error_handling_code() }
+ *	if (cmpl.op != RPMA_OP_READ) { error_handling_code() }
+ *
+ * The above snippet should be replaced with
+ * the following one using the new API:
+ *
+ *	struct ibv_wc wc;
+ *
+ *	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+ *
+ *	if (wc.status != IBV_WC_SUCCESS) { error_handling_code() }
+ *	if (wc.opcode != IBV_WC_RDMA_READ) { error_handling_code() }
  *
  * SEE ALSO
  * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
