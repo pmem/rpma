@@ -11,7 +11,7 @@ can use a single epoll to wait for incoming connections, connection-related
 events and completions. When a specific client's connection is established
 (for what the server waits asynchronously using epoll) the server performs
 a read from the client's remote memory region to a local memory region prepared
-for the client's slot. It should generate an RPMA_OP_READ completion
+for the client's slot. It should generate an IBV_WC_RDMA_READ completion
 (which is also notified via epoll) after which the server displays the read data
 (the client's name) and disconnects the client.
 - The client picks randomly its name and copies it into a memory region
