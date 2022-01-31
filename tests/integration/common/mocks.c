@@ -97,7 +97,7 @@ ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only)
 
 /*
  * ibv_get_cq_event -- ibv_get_cq_event() mock
- */
+*/
 int
 ibv_get_cq_event(struct ibv_comp_channel *channel, struct ibv_cq **cq,
 		void **cq_context)
