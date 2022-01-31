@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -146,6 +146,12 @@ add_example(NAME 11-write-with-imm BIN server USE_LIBIBVERBS
 	SRCS 11-write-with-imm/server.c common/common-conn.c)
 add_example(NAME 11-write-with-imm BIN client USE_LIBIBVERBS
 	SRCS 11-write-with-imm/client.c common/common-conn.c)
+add_example(NAME 12-receive-completion-queue BIN server USE_LIBIBVERBS
+	SRCS 12-receive-completion-queue/server.c common/common-conn.c
+	12-receive-completion-queue/receive-completion-queue-common.c)
+add_example(NAME 12-receive-completion-queue BIN client USE_LIBIBVERBS
+	SRCS 12-receive-completion-queue/client.c common/common-conn.c
+	12-receive-completion-queue/receive-completion-queue-common.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
