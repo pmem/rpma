@@ -13,13 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tools:
   - Benchmarking framework basing on python scripts.
 
-### Deprecated
-- APIs:
-  - rpma_cq_get_completion - replaced with rpma_cq_get_wc
-  - struct rpma_completion - replaced with struct ibv_wc from libibverbs
-  - enum rpma_op - replaced with enum ibv_wc_opcode from libibverbs
-
 ### Removed
+- APIs:
+  - rpma_conn_completion_get - replaced with rpma_conn_get_cq and rpma_cq_get_wc,
+  - rpma_conn_completion_wait - replaced with rpma_conn_get_cq and rpma_cq_wait,
+  - rpma_conn_get_completion_fd - replaced with rpma_conn_get_cq and rpma_cq_get_fd.
+
 - Tools:
   - Benchmarking framework basing on bash scripts.
 
