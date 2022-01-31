@@ -55,10 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated and fixed documentation.
 
 ### Deprecated
-- APIs:
-  - rpma_conn_completion_get - replaced with rpma_conn_get_cq and rpma_cq_get_completion,
-  - rpma_conn_completion_wait - replaced with rpma_conn_get_cq and rpma_cq_wait,
-  - rpma_conn_get_completion_fd - replaced with rpma_conn_get_cq and rpma_cq_get_fd.
 
 - Tools:
   - This is the last release with the benchmarking framework basing on Bash scripts. In the next release it will be replaced with a Python-based benchmarking framework.
