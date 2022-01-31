@@ -236,7 +236,6 @@ endfunction()
 # the command.
 function(execute name)
     check_target(${name})
-
     execute_common(true ${TRACER}_${TESTCASE} ${name} ${ARGN})
 endfunction()
 

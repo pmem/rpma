@@ -519,44 +519,6 @@ rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr)
 }
 
 /*
- * rpma_conn_get_completion_fd -- get a file descriptor of the completion event
- * channel associated with the connection
- */
-int
-rpma_conn_get_completion_fd(const struct rpma_conn *conn, int *fd)
-{
-	if (conn == NULL || fd == NULL)
-		return RPMA_E_INVAL;
-
-	return rpma_cq_get_fd(conn->cq, fd);
-}
-
-/*
- * rpma_conn_completion_wait -- wait for a completion
- */
-int
-rpma_conn_completion_wait(struct rpma_conn *conn)
-{
-	if (conn == NULL)
-		return RPMA_E_INVAL;
-
-	return rpma_cq_wait(conn->cq);
-}
-
-/*
- * rpma_conn_completion_get -- receive an operation completion
- */
-int
-rpma_conn_completion_get(struct rpma_conn *conn,
-		struct rpma_completion *cmpl)
-{
-	if (conn == NULL || cmpl == NULL)
-		return RPMA_E_INVAL;
-
-	return rpma_cq_get_completion(conn->cq, cmpl);
-}
-
-/*
  * rpma_conn_apply_remote_peer_cfg -- apply remote peer cfg for the connection
  */
 int

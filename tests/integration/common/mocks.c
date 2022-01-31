@@ -95,26 +95,6 @@ ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only)
 	return mock_type(int);
 }
 
-/*
- * ibv_get_cq_event -- ibv_get_cq_event() mock
- */
-int
-ibv_get_cq_event(struct ibv_comp_channel *channel, struct ibv_cq **cq,
-		void **cq_context)
-{
-	check_expected_ptr(channel);
-	assert_non_null(cq);
-	assert_non_null(cq_context);
-
-	errno = mock_type(int);
-	if (!errno) {
-		*cq = MOCK_CQ;
-		*cq_context = NULL;
-		return 0;
-	}
-
-	return -1;
-}
 
 /*
  * ibv_ack_cq_events -- ibv_ack_cq_events() mock
