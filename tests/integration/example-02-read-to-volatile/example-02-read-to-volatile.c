@@ -152,19 +152,6 @@ test_client__success(void **unused)
 	will_return(ibv_post_send_mock, MOCK_READ_SRC_OFFSET);
 	will_return(ibv_post_send_mock, MOCK_OK);
 
-	/* configure mocks for rpma_conn_completion_wait() */
-	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
-	will_return(ibv_get_cq_event, MOCK_OK);
-	expect_value(ibv_ack_cq_events, cq, MOCK_CQ);
-	will_return(ibv_req_notify_cq_mock, MOCK_OK);
-
-	/* configure mock for rpma_conn_completion_get() */
-	struct ibv_wc wc = {0};
-	wc.opcode = IBV_WC_RDMA_READ;
-	expect_value(ibv_poll_cq_mock, cq, &Ibv_cq);
-	will_return(ibv_poll_cq_mock, 1);
-	will_return(ibv_poll_cq_mock, &wc);
-
 	/* configure mocks for rpma_conn_disconnect() */
 	expect_value(rdma_disconnect, id, &Cm_id);
 	will_return(rdma_disconnect, MOCK_OK);
