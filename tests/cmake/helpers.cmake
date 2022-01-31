@@ -239,12 +239,12 @@ function(execute name)
 
     execute_common(true ${TRACER}_${TESTCASE} ${name} ${ARGN})
 endfunction()
-
 # Executes test command ${name} under GDB.
 # First argument of the command is a gdb batch file.
 # Second argument of the command is the test command.
 # Optional function arguments are passed as consecutive arguments to
 # the command.
+
 function(crash_with_gdb gdb_batch_file name)
     check_target(${name})
 
