@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -12,13 +12,22 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "common-conn.h"
 
 #define USAGE_STR "usage: %s <server_address> <port> <word1> [<word2>] [..]\n"
 
-#include "common-conn.h"
+#define FLUSH_ID		(void *)0xF01D /* a random identifier */
+#define KILOBYTE		1024
 
-#define FLUSH_ID	(void *)0xF01D /* a random identifier */
-#define KILOBYTE	1024
+#define LOCAL_USED_OFFSET	offsetof(struct local_mem, used)
+#define LOCAL_DATA_OFFSET	offsetof(struct local_mem, data)
+#define LOCAL_DATA_SIZE		(KILOBYTE - sizeof(uint64_t))
+
+/* structure of data in the local MR */
+struct local_mem {
+	uint64_t used;
+	char data[LOCAL_DATA_SIZE];
+};
 
 int
 main(int argc, char *argv[])
@@ -43,7 +52,7 @@ main(int argc, char *argv[])
 	size_t mr_size = KILOBYTE;
 	struct rpma_mr_remote *remote_mr = NULL;
 	size_t remote_size = 0;
-	size_t used_offset = 0;
+	size_t dest_used_offset = 0;
 	struct rpma_mr_local *local_mr = NULL;
 	struct ibv_wc wc;
 
@@ -51,6 +60,9 @@ main(int argc, char *argv[])
 	mr_ptr = malloc_aligned(KILOBYTE);
 	if (mr_ptr == NULL)
 		return -1;
+
+	/* structure of data in the local MR */
+	struct local_mem *local_mem = (struct local_mem *)mr_ptr;
 
 	/* RPMA resources */
 	struct rpma_peer_cfg *pcfg = NULL;
@@ -95,7 +107,7 @@ main(int argc, char *argv[])
 	 * descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
-	used_offset = dst_data->data_offset;
+	dest_used_offset = dst_data->data_offset;
 	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
 			dst_data->mr_desc_size, &remote_mr);
 	if (ret)
@@ -106,7 +118,8 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* read the used value */
-	if ((ret = rpma_read(conn, local_mr, 0, remote_mr, used_offset,
+	if ((ret = rpma_read(conn, local_mr, LOCAL_USED_OFFSET,
+			remote_mr, dest_used_offset,
 			sizeof(uint64_t), RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
 
@@ -128,10 +141,9 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
-	uint64_t used_value = *(uint64_t *)mr_ptr;
-	printf("used value: %lu\n", used_value);
+	printf("used value: %lu\n", local_mem->used);
 
-	if (remote_size <= used_value) {
+	if (remote_size <= local_mem->used) {
 		fprintf(stderr,
 				"Log size exhausted.\n");
 		goto err_mr_remote_delete;
@@ -149,29 +161,30 @@ main(int argc, char *argv[])
 	else
 		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 
+	char *word = (char *)&local_mem->data;
+
 	for (int i = 3; i < argc; ++i) {
-		char *word = mr_ptr;
-		strcpy(word, argv[i]);
+		strncpy(word, argv[i], LOCAL_DATA_SIZE - 1);
 		size_t word_size = strlen(word) + 1;
 
-		if ((ret = rpma_write(conn, remote_mr, used_value, local_mr, 0,
+		if ((ret = rpma_write(conn, remote_mr, local_mem->used,
+				local_mr, LOCAL_DATA_OFFSET,
 				word_size, RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, used_value,
-				sizeof(uint64_t), flush_type,
+		if ((ret = rpma_flush(conn, remote_mr, local_mem->used,
+				word_size, flush_type,
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		used_value += word_size;
-		*(uint64_t *)mr_ptr = used_value;
+		local_mem->used += word_size;
 
-		if ((ret = rpma_write_atomic(conn, remote_mr, used_offset,
-				local_mr, 0, RPMA_F_COMPLETION_ON_ERROR,
-				NULL)))
+		if ((ret = rpma_write_atomic(conn, remote_mr, dest_used_offset,
+				local_mr, LOCAL_USED_OFFSET,
+				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, used_offset,
+		if ((ret = rpma_flush(conn, remote_mr, dest_used_offset,
 				sizeof(uint64_t), flush_type,
 				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
 			break;
