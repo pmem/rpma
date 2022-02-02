@@ -13,6 +13,7 @@ NAME
 ====
 
 **rpma\_cq\_get\_completion** - receive a completion of an operation
+(deprecated)
 
 SYNOPSIS
 ========
@@ -114,6 +115,30 @@ ERRORS
     is available
 
 -   RPMA\_E\_NOSUPP - not supported opcode
+
+DEPRECATED
+==========
+
+This is an example snippet of code using the old API:
+
+            struct rpma_completion cmpl;
+
+            ret = rpma_cq_get_completion(cq, &cmpl);
+            if (ret) { error_handling_code() }
+
+            if (cmpl.op_status != IBV_WC_SUCCESS) { error_handling_code() }
+            if (cmpl.op != RPMA_OP_READ) { error_handling_code() }
+
+The above snippet should be replaced with the following one using the
+new API:
+
+            struct ibv_wc wc;
+
+            ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+            if (ret) { error_handling_code() }
+
+            if (wc.status != IBV_WC_SUCCESS) { error_handling_code() }
+            if (wc.opcode != IBV_WC_RDMA_READ) { error_handling_code() }
 
 SEE ALSO
 ========
