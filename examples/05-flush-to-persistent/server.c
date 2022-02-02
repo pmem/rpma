@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 
 #ifdef USE_LIBPMEM
 	/* configure peer's direct write to pmem support */
-	if (argc == 5) {
+	if (argc >= 5) {
 		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg,
 				(strcmp(argv[4], ON_STR) == 0));
 		if (ret) {
