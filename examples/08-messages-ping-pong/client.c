@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 	uint64_t rounds = strtoul_noerror(argv[4]);
 	uint64_t sleep_usec = 0;
 
-	if (argc == 6)
+	if (argc >= 6)
 		sleep_usec = strtoul_noerror(argv[5]);
 
 	int ret;

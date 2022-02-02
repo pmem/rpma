@@ -49,7 +49,7 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	if (argc == 5)
+	if (argc >= 5)
 		word = argv[4];
 
 	/* RPMA resources - general */
