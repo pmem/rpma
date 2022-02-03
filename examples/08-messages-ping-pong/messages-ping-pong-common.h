@@ -16,4 +16,7 @@
 
 #define I_M_DONE	(uint64_t)UINT64_MAX
 
+int get_wc_and_validate(struct rpma_cq *cq, uint64_t *recv,
+		int *send_cmpl, int *recv_cmpl);
+
 #endif /* EXAMPLES_MSG_PING_PONG_COMMON */

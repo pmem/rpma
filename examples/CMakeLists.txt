@@ -129,9 +129,11 @@ add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
 add_example(NAME 07-atomic-write BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 07-atomic-write/client.c common/common-conn.c)
 add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/server.c common/common-conn.c common/common-epoll.c)
+	SRCS 08-messages-ping-pong/server.c common/common-conn.c
+	08-messages-ping-pong/messages-ping-pong-common.c)
 add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/client.c common/common-conn.c)
+	SRCS 08-messages-ping-pong/client.c common/common-conn.c
+	08-messages-ping-pong/messages-ping-pong-common.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)

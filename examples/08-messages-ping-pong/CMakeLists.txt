@@ -40,5 +40,5 @@ function(add_example name)
 	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
-add_example(server server.c ../common/common-conn.c)
-add_example(client client.c ../common/common-conn.c)
+add_example(server server.c ../common/common-conn.c message-ping-pong-common.c)
+add_example(client client.c ../common/common-conn.c message-ping-pong-common.c)
