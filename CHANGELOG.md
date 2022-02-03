@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Example (#12) for separate receive completion queue (RCQ).
+- Documented the default values of struct rpma_conn_cfg.
 
 - APIs:
   - rpma_cq_get_wc - receive one or more completions
