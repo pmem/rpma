@@ -2651,6 +2651,7 @@ int rpma_recv(struct rpma_conn *conn,
 
 /* completion handling */
 
+/* DEPRECATED - for details please see rpma_cq_get_completion(3). */
 enum rpma_op {
 	RPMA_OP_READ,
 	RPMA_OP_WRITE,
