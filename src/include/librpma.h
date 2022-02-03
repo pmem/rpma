@@ -1209,6 +1209,8 @@ struct rpma_conn_cfg;
  *
  * DESCRIPTION
  * rpma_conn_cfg_new() creates a new connection configuration object.
+ * when no *cfg is provided the default is used instead: https://pmem.io/rpma/manpages/master/rpma_conn_req_new.3
+ * when struct rpma_conn_cfg * is not modified it has the default values: https://pmem.io/rpma/manpages/master/rpma_conn_cfg_new.3  
  *
  * RETURN VALUE
  * The rpma_conn_cfg_new() function returns 0 on success or a negative
