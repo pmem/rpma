@@ -61,7 +61,6 @@ main(int argc, char *argv[])
 	/* RPMA resources - general */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
-	struct ibv_wc wc;
 
 	/* prepare memory */
 	struct rpma_mr_local *recv_mr, *send_mr;
@@ -118,51 +117,8 @@ main(int argc, char *argv[])
 		int send_cmpl = 0;
 		int recv_cmpl = 0;
 
-		do {
-			/* prepare completions, get one and validate it */
-			ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
-			if (ret && ret != RPMA_E_NO_COMPLETION)
-				break;
-
-			if (ret == RPMA_E_NO_COMPLETION) {
-				if ((ret = rpma_cq_wait(cq))) {
-					break;
-				} else if ((ret = rpma_cq_get_wc(cq, 1,
-						&wc, NULL))) {
-					if (ret == RPMA_E_NO_COMPLETION)
-						continue;
-					break;
-				}
-			}
-
-			if (wc.status != IBV_WC_SUCCESS) {
-				(void) fprintf(stderr,
-					"rpma_send()/rpma_recv() failed: %s\n",
-					ibv_wc_status_str(wc.status));
-				ret = -1;
-				break;
-			}
-
-			if (wc.opcode == IBV_WC_SEND) {
-				send_cmpl = 1;
-			} else if (wc.opcode == IBV_WC_RECV) {
-				if (wc.wr_id != (uintptr_t)recv ||
-						wc.byte_len != MSG_SIZE) {
-					(void) fprintf(stderr,
-						"received completion is not as expected (0x%"
-						PRIXPTR " != 0x%" PRIXPTR
-						" [wc.wr_id] || %" PRIu32
-						" != %ld [wc.byte_len])\n",
-						wc.wr_id, (uintptr_t)recv,
-						wc.byte_len, MSG_SIZE);
-					ret = -1;
-					break;
-				}
-
-				recv_cmpl = 1;
-			}
-		} while (!send_cmpl || !recv_cmpl);
-
+		/* get completion and validate it */
+		ret = get_wc_and_validate(cq, recv, &send_cmpl, &recv_cmpl);
 		if (ret)
 			break;
 
