@@ -1272,6 +1272,7 @@ int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
  *
  * DESCRIPTION
  * rpma_conn_cfg_set_timeout() sets the connection establishment timeout.
+ * If timeout is not specified, it defaults to 1000.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_timeout() function returns 0 on success or a negative
@@ -1331,6 +1332,7 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
  *
  * DESCRIPTION
  * rpma_conn_cfg_set_cq_size() sets the CQ size for the connection.
+ * If cq_size not specified, it defaults to 10.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_cq_size() function returns 0 on success or a negative
@@ -1392,6 +1394,7 @@ int rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg,
  * DESCRIPTION
  * rpma_conn_cfg_set_rcq_size() sets the receive CQ size for the connection.
  * Please see the rpma_conn_get_rcq() for details about the receive CQ.
+ * If rcq_size not specified, it defaults to 0.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_rcq_size() function returns 0 on success or
@@ -1453,6 +1456,7 @@ int rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg,
  *
  * DESCRIPTION
  * rpma_conn_cfg_set_sq_size() sets the SQ size for the connection.
+ * If sq_size not specified, it defaults to 10.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_sq_size() function returns 0 on success or a negative
@@ -1513,6 +1517,7 @@ int rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg,
  *
  * DESCRIPTION
  * rpma_conn_cfg_set_rq_size() sets the RQ size for the connection.
+ * If rq_size not specified, it defaults to 10.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_rq_size() function returns 0 on success or a negative
