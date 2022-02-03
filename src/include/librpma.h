@@ -2722,6 +2722,7 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  * DESCRIPTION
  * rpma_cq_wait() waits for an incoming completion. If it succeeds
  * the completion can be collected using rpma_cq_get_completion(3).
+ * It has to be called always before rpma_cq_get_wc(3).
  *
  * RETURN VALUE
  * The rpma_cq_wait() function returns 0 on success or a negative
@@ -2871,6 +2872,8 @@ int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
  * num_entries equals 1. All operations generate completions on error.
  * The operations posted with the RPMA_F_COMPLETION_ALWAYS flag also
  * generate completions on success.
+ *
+ * rpma_cq_wait(3) has to be called always before rpma_cq_get_wc(3).
  *
  * Note that if the provided cq is the main CQ and the receive CQ is present
  * on the same connection this function won't return RPMA_OP_RECV and
