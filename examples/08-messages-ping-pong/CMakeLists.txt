@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -40,5 +40,5 @@ function(add_example name)
 	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
-add_example(server server.c ../common/common-conn.c)
-add_example(client client.c ../common/common-conn.c)
+add_example(server server.c ../common/common-conn.c message-ping-pong-common.c)
+add_example(client client.c ../common/common-conn.c message-ping-pong-common.c)
