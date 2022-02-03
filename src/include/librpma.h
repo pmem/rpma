@@ -222,8 +222,8 @@ extern "C" {
  * - rpma_conn_get_rcq() gets the connection's receive CQ,
  * - rpma_cq_wait() waits for an incoming completion from the specified CQ
  * (main or receive CQ) - if it succeeds the completion can be collected using
- * rpma_cq_get_completion(),
- * - rpma_cq_get_completion() receives the next available completion
+ * rpma_cq_get_wc(),
+ * - rpma_cq_get_wc() receives the next available completion
  * of an already posted operation.
  *
  * PEER
@@ -1811,7 +1811,7 @@ struct rpma_cq;
  *
  * SEE ALSO
  * rpma_conn_req_connect(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
- * rpma_cq_get_completion(3), rpma_cq_get_fd(3), rpma_recv(3), librpma(7)
+ * rpma_cq_get_wc(3), rpma_cq_get_fd(3), rpma_recv(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr);
@@ -1847,7 +1847,7 @@ int rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr);
  *
  * SEE ALSO
  * rpma_conn_cfg_set_rcq_size(3), rpma_conn_req_connect(3), rpma_conn_get_cq(3),
- * rpma_cq_wait(3), rpma_cq_get_completion(3), rpma_cq_get_fd(3), rpma_recv(3),
+ * rpma_cq_wait(3), rpma_cq_get_wc(3), rpma_cq_get_fd(3), rpma_recv(3),
  * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr);
@@ -2624,7 +2624,7 @@ int rpma_send_with_imm(struct rpma_conn *conn,
  * A buffer for an incoming message have to be prepared beforehand.
  *
  * The order of buffers in the set does not affect the order of completions of
- * receive operations get via rpma_cq_get_completion(3).
+ * receive operations get via rpma_cq_get_wc(3).
  *
  * NOTE
  * In the RDMA standard, receive requests form an ordered queue.
@@ -2684,7 +2684,7 @@ struct rpma_completion {
  * DESCRIPTION
  * rpma_cq_get_fd() gets the file descriptor of the completion queue (CQ
  * in short). When a next completion in the CQ is ready to be consumed by
- * rpma_cq_get_completion(3), the notification is delivered via the file
+ * rpma_cq_get_wc(3), the notification is delivered via the file
  * descriptor. The default mode of the file descriptor is blocking but it
  * can be changed to non-blocking mode using fcntl(2). The CQ is either
  * the connection's main CQ or the receive CQ, please see rpma_conn_get_cq(3)
@@ -2706,7 +2706,7 @@ struct rpma_completion {
  *
  * SEE ALSO
  * fcntl(2), rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3),
- * rpma_cq_get_completion(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_cq_get_wc(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 
@@ -2722,7 +2722,7 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  *
  * DESCRIPTION
  * rpma_cq_wait() waits for an incoming completion. If it succeeds
- * the completion can be collected using rpma_cq_get_completion(3).
+ * the completion can be collected using rpma_cq_get_wc(3).
  *
  * RETURN VALUE
  * The rpma_cq_wait() function returns 0 on success or a negative
@@ -2736,7 +2736,7 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  * - RPMA_E_NO_COMPLETION - no completions available
  *
  * SEE ALSO
- * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_get_completion(3),
+ * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_get_wc(3),
  * rpma_cq_get_fd(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_cq_wait(struct rpma_cq *cq);
