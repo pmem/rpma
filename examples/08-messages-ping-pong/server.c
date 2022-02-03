@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -12,7 +12,6 @@
 #include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/epoll.h>
 #include <unistd.h>
 
 #define USAGE_STR "usage: %s <server_address> <port>\n"
@@ -55,7 +54,6 @@ main(int argc, char *argv[])
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	struct rpma_conn *conn = NULL;
-	struct ibv_wc wc;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -115,49 +113,10 @@ main(int argc, char *argv[])
 
 	while (1) {
 		do {
-			/* prepare completions, get one and validate it */
-			ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
-			if (ret && ret != RPMA_E_NO_COMPLETION)
-				break;
-
-			if (ret == RPMA_E_NO_COMPLETION) {
-				if ((ret = rpma_cq_wait(cq))) {
-					break;
-				} else if ((ret = rpma_cq_get_wc(cq, 1,
-						&wc, NULL))) {
-					if (ret == RPMA_E_NO_COMPLETION)
-						continue;
-					break;
-				}
-			}
-
-			if (wc.status != IBV_WC_SUCCESS) {
-				(void) fprintf(stderr,
-					"rpma_send()/rpma_recv() failed: %s\n",
-					ibv_wc_status_str(wc.status));
-				ret = -1;
-				break;
-			}
-
-			if (wc.opcode == IBV_WC_SEND) {
-				send_cmpl = 1;
-			} else if (wc.opcode == IBV_WC_RECV) {
-				if (wc.wr_id != (uintptr_t)recv ||
-						wc.byte_len != MSG_SIZE) {
-					(void) fprintf(stderr,
-						"received completion is not as expected (0x%"
-						PRIXPTR " != 0x%" PRIXPTR
-						" [wc.wr_id] || %" PRIu32
-						" != %ld [wc.byte_len])\n",
-						wc.wr_id, (uintptr_t)recv,
-						wc.byte_len, MSG_SIZE);
-					ret = -1;
-					break;
-				}
-
-				recv_cmpl = 1;
-			}
-		} while (!send_cmpl || !recv_cmpl);
+			/* get one completion and validate it */
+			ret = get_wc_and_validate(cq, recv, &send_cmpl,
+				&recv_cmpl);
+		} while (!ret && (!send_cmpl || !recv_cmpl));
 
 		if (ret)
 			break;
