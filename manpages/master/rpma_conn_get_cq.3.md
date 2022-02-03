@@ -52,6 +52,6 @@ SEE ALSO
 ========
 
 **rpma\_conn\_req\_connect**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_wait**(3), **rpma\_cq\_get\_completion**(3),
+**rpma\_cq\_wait**(3), **rpma\_cq\_get\_wc**(3),
 **rpma\_cq\_get\_fd**(3), **rpma\_recv**(3), **librpma**(7) and
 https://pmem.io/rpma/

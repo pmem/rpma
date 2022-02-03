@@ -26,7 +26,7 @@ DESCRIPTION
 ===========
 
 **rpma\_cq\_wait**() waits for an incoming completion. If it succeeds
-the completion can be collected using **rpma\_cq\_get\_completion**(3).
+the completion can be collected using **rpma\_cq\_get\_wc**(3).
 
 RETURN VALUE
 ============
@@ -50,5 +50,5 @@ SEE ALSO
 ========
 
 **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_get\_completion**(3), **rpma\_cq\_get\_fd**(3),
-**librpma**(7) and https://pmem.io/rpma/
+**rpma\_cq\_get\_wc**(3), **rpma\_cq\_get\_fd**(3), **librpma**(7) and
+https://pmem.io/rpma/

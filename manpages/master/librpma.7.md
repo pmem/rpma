@@ -266,10 +266,10 @@ completions:
 
 -   **rpma\_cq\_wait**() waits for an incoming completion from the
     specified CQ (main or receive CQ) - if it succeeds the completion
-    can be collected using **rpma\_cq\_get\_completion**(),
+    can be collected using **rpma\_cq\_get\_wc**(),
 
--   **rpma\_cq\_get\_completion**() receives the next available
-    completion of an already posted operation.
+-   **rpma\_cq\_get\_wc**() receives the next available completion of an
+    already posted operation.
 
 PEER
 ====
