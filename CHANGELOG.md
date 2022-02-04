@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.10.0] - 2021-01-24
 ### Added
 - Unblocked performance of File System DAX by adding the possibility to use ibv_advice_mr() for registered memory ([#1220][1220]).
-- Separate receive completion queue (CQ) ([#1080][1080]).
+- Separate receive completion queue (RCQ) ([#1080][1080]).
 - Support for iWARP protocol ([#1044][1044]).
 - Write operation with immediate data (enum rpma_op RPMA_OP_RECV_RDMA_WITH_IMM added) ([#856][856]).
 - Send operation with immediate data ([#713][713]).
