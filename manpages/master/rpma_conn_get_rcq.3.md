@@ -53,6 +53,6 @@ SEE ALSO
 ========
 
 **rpma\_conn\_cfg\_set\_rcq\_size(3), rpma\_conn\_req\_connect(3),
-rpma\_conn\_get\_cq(3),** **rpma\_cq\_wait(3),
-rpma\_cq\_get\_completion(3), rpma\_cq\_get\_fd(3), rpma\_recv(3),**
-**librpma(7) and https://pmem.io/rpma/**
+rpma\_conn\_get\_cq(3),** **rpma\_cq\_wait(3), rpma\_cq\_get\_wc(3),
+rpma\_cq\_get\_fd(3), rpma\_recv(3),** **librpma(7) and
+https://pmem.io/rpma/**

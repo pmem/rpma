@@ -27,10 +27,10 @@ DESCRIPTION
 
 **rpma\_cq\_get\_fd**() gets the file descriptor of the completion queue
 (CQ in short). When a next completion in the CQ is ready to be consumed
-by **rpma\_cq\_get\_completion**(3), the notification is delivered via
-the file descriptor. The default mode of the file descriptor is blocking
-but it can be changed to non-blocking mode using **fcntl**(2). The CQ is
-either the connection\'s main CQ or the receive CQ, please see
+by **rpma\_cq\_get\_wc**(3), the notification is delivered via the file
+descriptor. The default mode of the file descriptor is blocking but it
+can be changed to non-blocking mode using **fcntl**(2). The CQ is either
+the connection\'s main CQ or the receive CQ, please see
 **rpma\_conn\_get\_cq**(3) and **rpma\_conn\_get\_rcq**(3) for details.
 
 Note after spotting the notification using the provided file descriptor
@@ -56,5 +56,5 @@ SEE ALSO
 ========
 
 **fcntl**(2), **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_wait**(3), **rpma\_cq\_get\_completion**(3), **librpma**(7)
-and https://pmem.io/rpma/
+**rpma\_cq\_wait**(3), **rpma\_cq\_get\_wc**(3), **librpma**(7) and
+https://pmem.io/rpma/
