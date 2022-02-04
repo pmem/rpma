@@ -2721,8 +2721,9 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  *	int rpma_cq_wait(struct rpma_cq *cq);
  *
  * DESCRIPTION
- * rpma_cq_wait() waits for an incoming completion. If it succeeds
- * the completion can be collected using rpma_cq_get_wc(3).
+ * rpma_cq_wait() waits for an incoming completion. If it succeeds,
+ * then all available completions should be collected using rpma_cq_get_wc(3)
+ * before the next rpma_cq_wait() call.
  *
  * RETURN VALUE
  * The rpma_cq_wait() function returns 0 on success or a negative
