@@ -21,6 +21,8 @@
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
 
+#define READ_ID	(void *)0x01
+
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
 {
@@ -35,6 +37,26 @@ translate(struct hello_t *hello)
 	printf("translating...\n");
 	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
 	write_hello_str(hello, lang);
+}
+
+static int
+validate_wc(char *name, enum ibv_wc_status status, enum ibv_wc_opcode opcode,
+		enum ibv_wc_opcode exp_opcode)
+{
+	if (status != IBV_WC_SUCCESS) {
+		(void) fprintf(stderr, "%s failed: %s\n", name,
+				ibv_wc_status_str(status));
+		return -1;
+	}
+
+	if (opcode != exp_opcode) {
+		(void) fprintf(stderr,
+				"unexpected wc.opcode value (%d != %d)\n",
+				opcode, exp_opcode);
+		return -1;
+	}
+
+	return 0;
 }
 
 #ifdef TEST_USE_CMOCKA
@@ -72,7 +94,9 @@ main(int argc, char *argv[])
 	size_t dst_size = 0;
 	size_t dst_offset = 0;
 	struct rpma_mr_local *src_mr = NULL;
-	struct ibv_wc wc;
+	int num_wc = 2, num_wc_got = 0;
+	struct ibv_wc wc[num_wc];
+	int i, total_num_wc_got = 0;
 
 	/* read-after-write memory region */
 	void *raw = NULL;
@@ -228,12 +252,6 @@ main(int argc, char *argv[])
 	dst_offset = dst_data->data_offset;
 	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
 			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
-			RPMA_F_COMPLETION_ON_ERROR, NULL);
-	if (ret)
-		goto err_mr_remote_delete;
-
-	/* the read serves here as flushing primitive */
-	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, 8,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
@@ -249,24 +267,36 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
-	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+	/* the read serves here as flushing primitive */
+	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, 8,
+			RPMA_F_COMPLETION_ALWAYS, READ_ID);
 	if (ret)
 		goto err_mr_remote_delete;
 
-	if (wc.status != IBV_WC_SUCCESS) {
-		ret = -1;
-		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+	/* wait for the completion to be ready */
+	ret = rpma_cq_wait(cq);
+	if (ret)
 		goto err_mr_remote_delete;
-	}
 
-	if (wc.opcode != IBV_WC_RDMA_READ) {
-		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value (%d != %d)\n",
-				wc.opcode, IBV_WC_RDMA_READ);
-		goto err_mr_remote_delete;
-	}
+	do {
+		ret = rpma_cq_get_wc(cq, num_wc, wc, &num_wc_got);
+		if (ret)
+			goto err_mr_remote_delete;
+
+		for (i = 0; i < num_wc_got; i++) {
+			char *name = wc[i].wr_id ? "rpma_read()" :
+					"rpma_write()";
+			enum ibv_wc_opcode exp_opcode = wc[i].wr_id ?
+					IBV_WC_RDMA_READ : IBV_WC_RDMA_WRITE;
+
+			ret = validate_wc(name, wc[i].status, wc[i].opcode,
+					exp_opcode);
+			if (ret)
+				goto err_mr_remote_delete;
+		}
+
+		total_num_wc_got += num_wc_got;
+	} while (total_num_wc_got < num_wc);
 
 	/*
 	 * Translate the message so the next time the greeting will be

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2022, Fujitsu */
 
 /*
  * mocks.c -- common mocks for integration tests
@@ -166,17 +167,17 @@ int
 ibv_poll_cq_mock(struct ibv_cq *cq, int num_entries, struct ibv_wc *wc)
 {
 	check_expected_ptr(cq);
-	assert_int_equal(num_entries, 1);
+	check_expected(num_entries);
 	assert_non_null(wc);
 
 	int result = mock_type(int);
-	if (result != 1)
+	if (result < 1 || result > num_entries)
 		return result;
 
 	struct ibv_wc *wc_ret = mock_type(struct ibv_wc *);
-	memcpy(wc, wc_ret, sizeof(struct ibv_wc));
+	memcpy(wc, wc_ret, sizeof(struct ibv_wc) * (size_t)result);
 
-	return 1;
+	return result;
 }
 
 /*

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2022, Fujitsu */
 
 /*
  * example-02-read-to-volatile.c -- 'read to volatile' integration tests
@@ -162,6 +163,7 @@ test_client__success(void **unused)
 	struct ibv_wc wc = {0};
 	wc.opcode = IBV_WC_RDMA_READ;
 	expect_value(ibv_poll_cq_mock, cq, &Ibv_cq);
+	expect_value(ibv_poll_cq_mock, num_entries, 1);
 	will_return(ibv_poll_cq_mock, 1);
 	will_return(ibv_poll_cq_mock, &wc);
 

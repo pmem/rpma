@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2022, Fujitsu */
 
 /*
  * example-04-write-to-persistent.c -- 'write to persistent' integration tests
@@ -22,6 +23,7 @@
 #define MOCK_WRITE_SRC_OFFSET HELLO_STR_OFFSET
 #define MOCK_READ_SRC_OFFSET 0
 #define MOCK_DATA_OFFSET 0
+#define MOCK_READ_ID 0x01
 
 static char wr_msg[HELLO_STR_SIZE];
 
@@ -161,7 +163,7 @@ test_client__success(void **unused)
 	/* configure mocks for rpma_write() */
 	expect_value(ibv_post_send_mock, qp, &Ibv_qp);
 	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_WRITE);
-	expect_value(ibv_post_send_mock, wr->send_flags, 0);
+	expect_value(ibv_post_send_mock, wr->send_flags, IBV_SEND_SIGNALED);
 	expect_value(ibv_post_send_mock, wr->wr_id, 0 /* op_context */);
 	expect_value(ibv_post_send_mock, wr->num_sge, 1);
 	expect_value(ibv_post_send_mock, wr->sg_list->length, HELLO_STR_SIZE);
@@ -171,11 +173,18 @@ test_client__success(void **unused)
 	will_return(ibv_post_send_mock, MOCK_WRITE_SRC_OFFSET);
 	will_return(ibv_post_send_mock, MOCK_OK);
 
+	/* configure mocks for rpma_cq_wait() */
+	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
+	will_return(ibv_get_cq_event, MOCK_OK);
+	expect_value(ibv_ack_cq_events, cq, MOCK_CQ);
+	will_return(ibv_req_notify_cq_mock, MOCK_OK);
+
 	/* configure mocks for rpma_read() */
 	expect_value(ibv_post_send_mock, qp, &Ibv_qp);
 	expect_value(ibv_post_send_mock, wr->opcode, IBV_WR_RDMA_READ);
 	expect_value(ibv_post_send_mock, wr->send_flags, IBV_SEND_SIGNALED);
-	expect_value(ibv_post_send_mock, wr->wr_id, 0 /* op_context */);
+	/* MOCK_READ_ID is the expected op_context */
+	expect_value(ibv_post_send_mock, wr->wr_id, MOCK_READ_ID);
 	expect_value(ibv_post_send_mock, wr->num_sge, 1);
 	expect_value(ibv_post_send_mock, wr->sg_list->length, MOCK_RAW_SIZE);
 	expect_value(ibv_post_send_mock, wr->wr.rdma.remote_addr,
@@ -191,11 +200,15 @@ test_client__success(void **unused)
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
 	/* configure mock for rpma_cq_get_wc() */
-	struct ibv_wc wc = {0};
-	wc.opcode = IBV_WC_RDMA_READ;
+	struct ibv_wc wc[2];
+	memset(wc, 0, sizeof(wc));
+	wc[0].opcode = IBV_WC_RDMA_WRITE;
+	wc[1].wr_id = MOCK_READ_ID;
+	wc[1].opcode = IBV_WC_RDMA_READ;
 	expect_value(ibv_poll_cq_mock, cq, &Ibv_cq);
-	will_return(ibv_poll_cq_mock, 1);
-	will_return(ibv_poll_cq_mock, &wc);
+	expect_value(ibv_poll_cq_mock, num_entries, 2);
+	will_return(ibv_poll_cq_mock, 2);
+	will_return(ibv_poll_cq_mock, wc);
 
 	/* deregister the memory region: RDMA write & RAW buffer */
 	expect_value(ibv_dereg_mr, mr, MOCK_MR);
