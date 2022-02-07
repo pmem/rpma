@@ -25,8 +25,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_cq\_wait**() waits for an incoming completion. If it succeeds
-the completion can be collected using **rpma\_cq\_get\_wc**(3).
+**rpma\_cq\_wait**() waits for an incoming completion. If it succeeds,
+then all available completions should be collected using
+**rpma\_cq\_get\_wc**(3) before the next **rpma\_cq\_wait**() call.
 
 RETURN VALUE
 ============
