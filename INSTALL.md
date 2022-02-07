@@ -139,7 +139,7 @@ $ ctest
 
 Supported Linux distributions include:
 
-- CentOS >= 7
+- CentOS 7
 - Debian >= 10
 - Fedora >= 32
 - Ubuntu >= 20.04
