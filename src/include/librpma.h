@@ -2680,7 +2680,18 @@ enum rpma_op {
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
-/* DEPRECATED - for details please see rpma_cq_get_completion(3). */
+/*
+ * DEPRECATED - it is replaced with struct ibv_wc from libibverbs:
+ *
+ *	rpma_completion.op_context == (void *)ibv_wc.wr_id
+ *	rpma_completion.op is replaced with a relevant value of ibv_wc.opcode
+ *	rpma_completion.byte_len   == ibv_wc.byte_len
+ *	rpma_completion.op_status  == ibv_wc.status
+ *	rpma_completion.flags      == (unsigned)ibv_wc.wc_flags
+ *	rpma_completion.imm        == ntohl(ibv_wc.imm_data)
+ *
+ * For more details please see rpma_cq_get_completion(3).
+ */
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
@@ -2849,6 +2860,12 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *	if (cmpl.op_status != IBV_WC_SUCCESS) { error_handling_code() }
  *	if (cmpl.op != RPMA_OP_READ) { error_handling_code() }
  *
+ *	void *op_context = cmpl.op_context;
+ *	uint32_t byte_len = cmpl.byte_len;
+ *	enum ibv_wc_status op_status = cmpl.op_status;
+ *	unsigned flags = cmpl.flags;
+ *	uint32_t imm = cmpl.imm;
+ *
  * The above snippet should be replaced with
  * the following one using the new API:
  *
@@ -2859,6 +2876,12 @@ int rpma_cq_wait(struct rpma_cq *cq);
  *
  *	if (wc.status != IBV_WC_SUCCESS) { error_handling_code() }
  *	if (wc.opcode != IBV_WC_RDMA_READ) { error_handling_code() }
+ *
+ *	void *op_context = (void *)wc.wr_id;
+ *	uint32_t byte_len = wc.byte_len;
+ *	enum ibv_wc_status op_status = wc.status;
+ *	unsigned flags = (unsigned)wc.wc_flags;
+ *	uint32_t imm = ntohl(wc.imm_data);
  *
  * SEE ALSO
  * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
