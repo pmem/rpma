@@ -25,8 +25,30 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_cfg\_new**() creates a new connection configuration
-object.
+**rpma\_conn\_cfg\_new**() creates a new connection configuration object
+and fills it with the default values:
+
+-   
+
+```{=html}
+<!-- -->
+```
+-   
+
+```{=html}
+<!-- -->
+```
+-   
+
+```{=html}
+<!-- -->
+```
+-   
+
+```{=html}
+<!-- -->
+```
+-   "
 
 RETURN VALUE
 ============
