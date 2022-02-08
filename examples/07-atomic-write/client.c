@@ -22,6 +22,7 @@
 #define LOCAL_USED_OFFSET	offsetof(struct mr_ptr_s, used)
 #define LOCAL_DATA_OFFSET	offsetof(struct mr_ptr_s, data)
 #define LOCAL_DATA_SIZE		(KILOBYTE - sizeof(uint64_t))
+#define MAX_WORD_LENGTH		(LOCAL_DATA_SIZE - 1)
 
 /* structure of data in the local MR */
 struct mr_ptr_s {
@@ -161,7 +162,9 @@ main(int argc, char *argv[])
 	char *word = (char *)&mr_ptr->data;
 
 	for (int i = 3; i < argc; ++i) {
-		strncpy(word, argv[i], LOCAL_DATA_SIZE - 1);
+		strncpy(word, argv[i], MAX_WORD_LENGTH);
+		/* make sure the word is always null-terminated */
+		word[MAX_WORD_LENGTH] = 0;
 		size_t word_size = strlen(word) + 1;
 
 		if ((ret = rpma_write(conn, remote_mr, mr_ptr->used,
