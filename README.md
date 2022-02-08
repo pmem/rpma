@@ -12,7 +12,7 @@ for information on how the content of this site is licensed.
 
 Send questions or comments to
 Tomasz Gromadzki (tomasz.gromadzki@intel.com),
-Jan Michalski (jan.m.michalski@intel.com),
+Lukasz Dorau (lukasz.dorau@intel.com),
 Piotr Balcer (piotr.balcer@intel.com),
 Chet Douglas (chet.r.douglas@intel.com) or post to our
 [Google group](https://groups.google.com/group/pmem).
