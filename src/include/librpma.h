@@ -2680,7 +2680,18 @@ enum rpma_op {
 	RPMA_OP_RECV_RDMA_WITH_IMM,
 };
 
-/* DEPRECATED - for details please see rpma_cq_get_completion(3). */
+/*
+ * DEPRECATED - it is replaced with struct ibv_wc from libibverbs:
+ *
+ *	rpma_completion.op_context == (void *)ibv_wc.wr_id
+ *	rpma_completion.op is replaced with a relevant value of ibv_wc.opcode
+ *	rpma_completion.byte_len   == ibv_wc.byte_len
+ *	rpma_completion.op_status  == ibv_wc.status
+ *	rpma_completion.flags      == (unsigned)ibv_wc.wc_flags
+ *	rpma_completion.imm        == ntohl(ibv_wc.imm_data)
+ *
+ * For more details please see rpma_cq_get_completion(3).
+ */
 struct rpma_completion {
 	void *op_context;
 	enum rpma_op op;
