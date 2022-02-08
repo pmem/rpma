@@ -1210,11 +1210,12 @@ struct rpma_conn_cfg;
  * DESCRIPTION
  * rpma_conn_cfg_new() creates a new connection configuration object
  * and fills it with the default values:
- * - .timeout_ms = 1000
- * - .cq_size = 10
- * - .rcq_size = 0
- * - .sq_size = 10
- * - .rq_size = 10
+ *
+ *	.timeout_ms = 1000
+ *	.cq_size = 10
+ *	.rcq_size = 0
+ *	.sq_size = 10
+ *	.rq_size = 10
  *
  * RETURN VALUE
  * The rpma_conn_cfg_new() function returns 0 on success or a negative
