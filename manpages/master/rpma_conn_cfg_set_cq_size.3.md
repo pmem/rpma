@@ -27,7 +27,8 @@ DESCRIPTION
 ===========
 
 **rpma\_conn\_cfg\_set\_cq\_size**() sets the CQ size for the
-connection.
+connection. If this function is not called, the cq\_size has the default
+value (10) set by **rpma\_conn\_cfg\_new**(3).
 
 RETURN VALUE
 ============

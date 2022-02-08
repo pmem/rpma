@@ -27,7 +27,8 @@ DESCRIPTION
 ===========
 
 **rpma\_conn\_cfg\_set\_timeout**() sets the connection establishment
-timeout.
+timeout. If this function is not called, the timeout has the default
+value (1000) set by **rpma\_conn\_cfg\_new**(3).
 
 RETURN VALUE
 ============

@@ -25,8 +25,14 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_conn\_cfg\_new**() creates a new connection configuration
-object.
+**rpma\_conn\_cfg\_new**() creates a new connection configuration object
+and fills it with the default values:
+
+            .timeout_ms = 1000
+            .cq_size = 10
+            .rcq_size = 0
+            .sq_size = 10
+            .rq_size = 10
 
 RETURN VALUE
 ============
