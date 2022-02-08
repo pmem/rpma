@@ -29,7 +29,8 @@ DESCRIPTION
 
 **rpma\_conn\_cfg\_set\_rcq\_size**() sets the receive CQ size for the
 connection. Please see the **rpma\_conn\_get\_rcq**() for details about
-the receive CQ.
+the receive CQ. If this function is not called, the rcq\_size has the
+default value (0) set by **rpma\_conn\_cfg\_new**(3).
 
 RETURN VALUE
 ============

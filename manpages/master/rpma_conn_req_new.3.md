@@ -39,7 +39,10 @@ RETURN VALUE
 
 The **rpma\_conn\_req\_new**() function returns 0 on success or a
 negative error code on failure. **rpma\_conn\_req\_new**() does not set
-\*req\_ptr value on failure.
+\*req\_ptr value on failure. If cfg is NULL, then the default values are
+used
+
+-   see **rpma\_conn\_cfg\_new**(3) for more details.
 
 ERRORS
 ======
