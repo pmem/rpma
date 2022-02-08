@@ -14,6 +14,8 @@ include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
+
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
