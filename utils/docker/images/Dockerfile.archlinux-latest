@@ -52,6 +52,10 @@ ENV PYTHON_DEPS "\
 	paramiko \
 	scp"
 
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl"
+
 # RPMA deps
 ENV RPMA_DEPS "\
 	cmake \
@@ -70,6 +74,7 @@ RUN pacman -S --noconfirm \
 	$TOOLS_DEPS \
 	$TESTS_DEPS \
 	$RDMA_DEPS \
+	$PMDK_DEPS \
 	$RPMA_DEPS \
 && rm -rf /var/cache/pacman/pkg/*
 
