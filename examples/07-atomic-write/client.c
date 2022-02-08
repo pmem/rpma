@@ -160,6 +160,9 @@ main(int argc, char *argv[])
 
 	char *word = (char *)&mr_ptr->data;
 
+	/* make sure the word is always null-terminated */
+	word[LOCAL_DATA_SIZE - 1] = 0;
+
 	for (int i = 3; i < argc; ++i) {
 		strncpy(word, argv[i], LOCAL_DATA_SIZE - 1);
 		size_t word_size = strlen(word) + 1;
