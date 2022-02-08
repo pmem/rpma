@@ -129,6 +129,12 @@ This is an example snippet of code using the old API:
             if (cmpl.op_status != IBV_WC_SUCCESS) { error_handling_code() }
             if (cmpl.op != RPMA_OP_READ) { error_handling_code() }
 
+            void *op_context = cmpl.op_context;
+            uint32_t byte_len = cmpl.byte_len;
+            enum ibv_wc_status op_status = cmpl.op_status;
+            unsigned flags = cmpl.flags;
+            uint32_t imm = cmpl.imm;
+
 The above snippet should be replaced with the following one using the
 new API:
 
@@ -139,6 +145,12 @@ new API:
 
             if (wc.status != IBV_WC_SUCCESS) { error_handling_code() }
             if (wc.opcode != IBV_WC_RDMA_READ) { error_handling_code() }
+
+            void *op_context = (void *)wc.wr_id;
+            uint32_t byte_len = wc.byte_len;
+            enum ibv_wc_status op_status = wc.status;
+            unsigned flags = (unsigned)wc.wc_flags;
+            uint32_t imm = ntohl(wc.imm_data);
 
 SEE ALSO
 ========
