@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - struct rpma_completion - replaced with struct ibv_wc from libibverbs
   - enum rpma_op - replaced with enum ibv_wc_opcode from libibverbs
 
+### Fixed
+- Examples 07 and 08.
+
 ### Removed
 - APIs:
   - rpma_conn_completion_get - replaced with rpma_conn_get_cq and rpma_cq_get_wc,
