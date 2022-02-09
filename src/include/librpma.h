@@ -361,7 +361,8 @@ extern "C" {
  * the underlying physical pages of the address space and track the validity
  * of the mappings). On-Demand Paging is available if both the hardware
  * and the kernel support it. The detailed description of ODP can be found here:
- * https://community.mellanox.com/s/article/understanding-on-demand-paging--odp-x
+ *
+ *	https://community.mellanox.com/s/article/understanding-on-demand-paging--odp-x
  *
  * State of ODP support can be checked using
  * the rpma_utils_ibv_context_is_odp_capable() function
