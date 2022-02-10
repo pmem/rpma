@@ -87,4 +87,30 @@ cp -r ${WORKDIR}/md/*.md ${DOCS_DIR}
 # add, commit and push changes to the rpma repo
 commit_and_push_changes ${ORIGIN_RPMA} ${BRANCH_PR} ${TARGET_BRANCH} "doc: automatic update of man pages"
 
+#
+# update man pages in the "pmem.github.io" repo
+#
+ORIGIN_PMEM_IO="https://${DOC_UPDATE_GITHUB_TOKEN}@github.com/${BOT_NAME}/pmem.github.io"
+UPSTREAM_PMEM_IO="https://github.com/${USER_NAME}/pmem.github.io"
+TARGET_BRANCH="main"
+
+# set up the pmem.github.io repo
+set_up_repo ${ORIGIN_PMEM_IO} ${UPSTREAM_PMEM_IO} pmem.github.io ${TARGET_BRANCH}
+
+# checkout the 'main' branch and copy man pages
+cd ${WORKDIR}/pmem.github.io
+BRANCH_PR="rpma-automatic-update-of-man-pages"
+git checkout -B $BRANCH_PR upstream/${TARGET_BRANCH}
+git clean -dfx
+
+# clean old content, since some files might have been deleted
+DOCS_DIR=${WORKDIR}/pmem.github.io/content/rpma/manpages/${VERSION}/
+rm -r ${DOCS_DIR}
+mkdir ${DOCS_DIR}
+# copy new man pages
+cp -r ${WORKDIR}/md/*.md ${DOCS_DIR}
+
+# add, commit and push changes to the pmem.github.io repo
+commit_and_push_changes ${ORIGIN_PMEM_IO} ${BRANCH_PR} ${TARGET_BRANCH} "rpma: automatic update of man pages"
+
 exit 0
