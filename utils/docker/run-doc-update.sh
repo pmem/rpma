@@ -6,8 +6,6 @@
 
 set -e
 
-source `dirname $0`/valid-branches.sh
-
 BOT_NAME="pmem-bot"
 USER_NAME="pmem"
 REPO_NAME="rpma"
@@ -16,12 +14,7 @@ ORIGIN="https://${DOC_UPDATE_GITHUB_TOKEN}@github.com/${BOT_NAME}/${REPO_NAME}"
 UPSTREAM="https://github.com/pmem/${REPO_NAME}"
 # master or stable-* branch
 TARGET_BRANCH=${CI_BRANCH}
-VERSION=${TARGET_BRANCHES[$TARGET_BRANCH]}
-
-if [ -z $VERSION ]; then
-	echo "Target location for branch $TARGET_BRANCH is not defined."
-	exit 1
-fi
+VERSION="master"
 
 # Clone repo
 git clone ${ORIGIN}
