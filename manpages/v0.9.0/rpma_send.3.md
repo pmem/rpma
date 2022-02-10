@@ -1,10 +1,14 @@
 ---
-layout: manual
-Content-Style: 'text/css'
-title: LIBRPMA
-collection: librpma
-date: librpma API version 0.9.0
-...
+draft: false
+layout: "library"
+slider_enable: true
+description: ""
+disclaimer: "The contents of this web site and the associated <a href=\"https://github.com/pmem\">GitHub repositories</a> are BSD-licensed open source."
+aliases: ["rpma_send.3.html"]
+title: "librpma | PMDK"
+header: "librpma API version 0.9.0"
+---
+{{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020, Intel Corporation)
