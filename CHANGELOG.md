@@ -7,10 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.10.0] - 2021-01-24
+## [0.11.0] - 2022-02-08
+### Added
+- Example (#12) for separate receive completion queue (RCQ).
+- Documented the default values of struct rpma_conn_cfg.
+
+- APIs:
+  - rpma_cq_get_wc - receive one or more completions
+
+- Tools:
+  - Benchmarking framework basing on python scripts.
+
+### Deprecated
+- APIs:
+  - rpma_cq_get_completion - replaced with rpma_cq_get_wc
+  - struct rpma_completion - replaced with struct ibv_wc from libibverbs
+  - enum rpma_op - replaced with enum ibv_wc_opcode from libibverbs
+
+### Fixed
+- Examples 07 and 08.
+
+### Removed
+- APIs:
+  - rpma_conn_completion_get - replaced with rpma_conn_get_cq and rpma_cq_get_wc,
+  - rpma_conn_completion_wait - replaced with rpma_conn_get_cq and rpma_cq_wait,
+  - rpma_conn_get_completion_fd - replaced with rpma_conn_get_cq and rpma_cq_get_fd.
+
+- Tools:
+  - Benchmarking framework basing on bash scripts.
+
+## [0.10.0] - 2022-01-24
 ### Added
 - Unblocked performance of File System DAX by adding the possibility to use ibv_advice_mr() for registered memory ([#1220][1220]).
-- Separate receive completion queue (CQ) ([#1080][1080]).
+- Separate receive completion queue (RCQ) ([#1080][1080]).
 - Support for iWARP protocol ([#1044][1044]).
 - Write operation with immediate data (enum rpma_op RPMA_OP_RECV_RDMA_WITH_IMM added) ([#856][856]).
 - Send operation with immediate data ([#713][713]).

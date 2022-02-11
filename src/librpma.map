@@ -6,7 +6,7 @@
 #
 # src/librpma.map -- linker version script for librpma
 #
-LIBRPMA_0.10 {
+LIBRPMA_0.11 {
 	global:
 		rpma_conn_apply_remote_peer_cfg;
 		rpma_conn_cfg_delete;
@@ -21,11 +21,8 @@ LIBRPMA_0.10 {
 		rpma_conn_cfg_set_rq_size;
 		rpma_conn_cfg_set_sq_size;
 		rpma_conn_cfg_set_timeout;
-		rpma_conn_completion_get;
-		rpma_conn_completion_wait;
 		rpma_conn_delete;
 		rpma_conn_disconnect;
-		rpma_conn_get_completion_fd;
 		rpma_conn_get_cq;
 		rpma_conn_get_event_fd;
 		rpma_conn_get_private_data;

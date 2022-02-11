@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2020-2021 Fujitsu */
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * client.c -- a client of the send-with-imm example
@@ -49,14 +49,14 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	if (argc == 5)
+	if (argc >= 5)
 		word = argv[4];
 
 	/* RPMA resources - general */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
 	struct rpma_mr_local *send_mr = NULL;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 	uint64_t len = 0;
 	char *send = NULL;
 	int ret;
@@ -121,22 +121,22 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_disconnect;
 
-	ret = rpma_cq_get_completion(cq, &cmpl);
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
 	if (ret)
 		goto err_conn_disconnect;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
 			"Received unexpected completion: %s\n",
-			ibv_wc_status_str(cmpl.op_status));
+			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
-	if (cmpl.op != RPMA_OP_SEND) {
+	if (wc.opcode != IBV_WC_SEND) {
 		fprintf(stderr,
 			"Received unexpected type of operation (%d != %d)\n",
-			cmpl.op, RPMA_OP_SEND);
+			wc.opcode, IBV_WC_SEND);
 		ret = -1;
 	}
 

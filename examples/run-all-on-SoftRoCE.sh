@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 
 #
 # run-all-on-SoftRoCE.sh - run all examples on SoftRoCE (optionally under valgrind)
@@ -105,6 +105,13 @@ function run_example() {
 	11-write-with-imm)
 		echo "Starting the client ..."
 		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
+		RV=$?
+		;;
+	12-receive-completion-queue)
+		START_VALUE=7
+		ROUNDS=3
+		echo "Starting the client ..."
+		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		RV=$?
 		;;
 	*)

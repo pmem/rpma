@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
- * client.c -- a client of the messages-ping-pong example
+ * client.c -- a client of the receive completion queue example
  *
  * Please see README.md for a detailed description of this example.
  */
@@ -17,10 +16,10 @@
 #include <unistd.h>
 
 #include "common-conn.h"
-#include "messages-ping-pong-common.h"
+#include "receive-completion-queue-common.h"
 
-#define USAGE_STR "usage: %s <server_address> <port> <seed> <rounds> " \
-		"[<sleep>]\n"
+#define USAGE_STR \
+		"usage: %s <server_address> <port> <start_value> <rounds> [<sleep>]\n"
 
 static uint64_t
 strtoul_noerror(const char *in)
@@ -49,7 +48,7 @@ main(int argc, char *argv[])
 	/* read common parameters */
 	char *addr = argv[1];
 	char *port = argv[2];
-	uint64_t cntr = strtoul_noerror(argv[3]);
+	uint64_t counter = strtoul_noerror(argv[3]);
 	uint64_t rounds = strtoul_noerror(argv[4]);
 	uint64_t sleep_usec = 0;
 
@@ -89,13 +88,26 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 	}
 
-	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, NULL, NULL, &conn)))
+	/* create a new connection configuration and set RCQ size */
+	struct rpma_conn_cfg *cfg = NULL;
+	if ((ret = rpma_conn_cfg_new(&cfg)))
 		goto err_mr_dereg;
+
+	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
+		goto err_cfg_delete;
+
+	/* establish a new connection to a server listening at addr:port */
+	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
+		goto err_cfg_delete;
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
 	if ((ret = rpma_conn_get_cq(conn, &cq)))
+		goto err_conn_disconnect;
+
+	/* get the connection's RCQ */
+	struct rpma_cq *rcq = NULL;
+	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
 		goto err_conn_disconnect;
 
 	while (--rounds) {
@@ -104,28 +116,24 @@ main(int argc, char *argv[])
 			break;
 
 		/* send a message to the server */
-		(void) printf("Value sent: %" PRIu64 "\n", cntr);
-		*send = cntr;
+		(void) printf("CLIENT: Value sent: %" PRIu64 "\n", counter);
+		*send = counter;
 		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE,
-				/*
-				 * XXX when using RPMA_F_COMPLETION_ON_ERROR
-				 * after few rounds rpma_send() returns ENOMEM.
-				 */
 				RPMA_F_COMPLETION_ALWAYS, NULL)))
 			break;
 
-		int send_cmpl = 0;
-		int recv_cmpl = 0;
+		/* get one send completion and validate it */
+		if ((ret = get_wc_and_validate(cq, IBV_WC_SEND, "rpma_send()")))
+			break;
 
-		/* get completions and process them */
-		ret = wait_and_process_completions(cq, recv, &send_cmpl,
-				&recv_cmpl);
-		if (ret)
+		/* get one receive completion and validate it */
+		if ((ret = get_wc_and_validate(rcq, IBV_WC_RECV,
+				"rpma_recv()")))
 			break;
 
 		/* copy the new value of the counter and print it out */
-		cntr = *recv;
-		printf("Value received: %" PRIu64 "\n", cntr);
+		counter = *recv;
+		printf("CLIENT: Value received: %" PRIu64 "\n", counter);
 
 		/* sleep if required */
 		if (sleep_usec > 0)
@@ -139,6 +147,9 @@ main(int argc, char *argv[])
 
 err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
+
+err_cfg_delete:
+	ret |= rpma_conn_cfg_delete(&cfg);
 
 err_mr_dereg:
 	/* deregister the memory regions */

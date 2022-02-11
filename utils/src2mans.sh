@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 
 #
 # src2mans -- extract man pages from source files
@@ -87,7 +87,7 @@ do
 			# fix the name issue '**a **-' -> '**a** -'
 			sed -i '5s/ \*\*-/\*\* -/' $f.tmp2
 			# start with a custom header
-			cat $MANS_HEADER > md/$f.md
+			cat $MANS_HEADER | sed "s/MANUAL_NAME_TO_REPLACE/$f/g" > md/$f.md
 			cat $f.tmp2 >> md/$f.md
 			rm $f.tmp1 $f.tmp2
 		done

@@ -62,7 +62,7 @@ main(int argc, char *argv[])
 
 #ifdef USE_LIBPMEM
 	char *pmem_path = NULL;
-	if (argc == 4) {
+	if (argc >= 4) {
 		pmem_path = argv[3];
 
 		/* map the file */

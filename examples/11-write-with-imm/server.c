@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright (c) 2021 Fujitsu */
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * server.c -- a server of the write-with-imm example
@@ -12,6 +12,7 @@
 #include <librpma.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <arpa/inet.h>
 
 #include "common-conn.h"
 
@@ -53,7 +54,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_req *req = NULL;
 	struct rpma_conn *conn = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
-	struct rpma_completion cmpl;
+	struct ibv_wc wc;
 	int ret;
 
 	/*
@@ -141,27 +142,27 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_disconnect;
 
-	ret = rpma_cq_get_completion(cq, &cmpl);
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
 	if (ret)
 		goto err_conn_disconnect;
 
-	if (cmpl.op_status != IBV_WC_SUCCESS) {
+	if (wc.status != IBV_WC_SUCCESS) {
 		fprintf(stderr,
 			"Received unexpected completion: %s\n",
-			ibv_wc_status_str(cmpl.op_status));
+			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
-	if (cmpl.op != RPMA_OP_RECV_RDMA_WITH_IMM) {
+	if (wc.opcode != IBV_WC_RECV_RDMA_WITH_IMM) {
 		fprintf(stderr,
 			"Received unexpected type of operation (%d != %d)\n",
-			cmpl.op, RPMA_OP_RECV_RDMA_WITH_IMM);
+			wc.opcode, IBV_WC_RECV_RDMA_WITH_IMM);
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
-	if (!(cmpl.flags & IBV_WC_WITH_IMM)) {
+	if (!(wc.wc_flags & IBV_WC_WITH_IMM)) {
 		fprintf(stderr,
 			"Received an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
 		ret = -1;
@@ -169,15 +170,16 @@ main(int argc, char *argv[])
 	}
 
 	uint32_t *exp_imm = dst;
-	if (cmpl.imm != *exp_imm) {
+	uint32_t imm = ntohl(wc.imm_data);
+	if (imm != *exp_imm) {
 		fprintf(stderr,
 			"Received unexpected immediate data (%u != %u)\n",
-			cmpl.imm, *exp_imm);
+			imm, *exp_imm);
 		ret = -1;
 	} else {
 		printf(
 			"The value '%u' was written together with immediate data '%u'\n",
-			*exp_imm, cmpl.imm);
+			*exp_imm, imm);
 	}
 
 err_conn_disconnect:

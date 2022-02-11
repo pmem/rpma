@@ -137,14 +137,9 @@ $ ctest
 
 ## OS support
 
-Known supported OSes:
+Supported Linux distributions include:
 
-- CentOS >= 7
-- Debian >= 9
-- Fedora >= 27
-- Ubuntu >= 18.04
-
-Known unsupported OSes:
-
-- Debian 8:     too old version of CMake (v3.0.2)
-- Ubuntu 14.04: too old version of CMake (v2.8.12.2)
+- CentOS 7
+- Debian >= 10
+- Fedora >= 32
+- Ubuntu >= 20.04

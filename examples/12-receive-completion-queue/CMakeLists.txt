@@ -1,10 +1,10 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2022, Intel Corporation
+# Copyright 2022, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
-project(messages-ping-pong C)
+project(receive-completion-queue C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../cmake
@@ -13,8 +13,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
 find_package(PkgConfig QUIET)
 
@@ -42,5 +40,5 @@ function(add_example name)
 	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
 endfunction()
 
-add_example(server server.c ../common/common-conn.c messages-ping-pong-common.c)
-add_example(client client.c ../common/common-conn.c messages-ping-pong-common.c)
+add_example(server server.c ../common/common-conn.c receive-completion-queue-common.c)
+add_example(client client.c ../common/common-conn.c receive-completion-queue-common.c)
