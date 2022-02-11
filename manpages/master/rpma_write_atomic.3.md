@@ -38,13 +38,17 @@ DESCRIPTION
 (transferring data from the local memory to the remote memory). The
 atomic write operation allows transferring 8 bytes of data
 (RPMA\_ATOMIC\_WRITE\_ALIGNMENT) and storing them atomically in the
-remote memory. The attribute flags set the completion notification
-indicator:
+remote memory.
+
+The attribute flags set the completion notification indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
 
 -   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
-    result of the operation
+    result of the operation.
+
+op\_context is returned in the wr\_id field of the completion (struct
+ibv\_wc).
 
 RETURN VALUE
 ============

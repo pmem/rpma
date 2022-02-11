@@ -243,15 +243,16 @@ respective operation has been completed.
 
 The following operations are available in librpma:
 
--   RPMA\_OP\_READ - RMA read operation
+-   IBV\_WC\_RDMA\_READ - RMA read operation
 
--   RPMA\_OP\_WRITE - RMA write operation
+-   IBV\_WC\_RDMA\_WRITE - RMA write operation
 
--   RPMA\_OP\_FLUSH - RMA flush operation
+-   IBV\_WC\_SEND - messaging send operation
 
--   RPMA\_OP\_SEND - messaging send operation
+-   IBV\_WC\_RECV - messaging receive operation
 
--   RPMA\_OP\_RECV - messaging receive operation
+-   IBV\_WC\_RECV\_RDMA\_WITH\_IMM - messaging receive operation for RMA
+    write operation with immediate data
 
 All operations generate completion on error. The operations posted with
 the **RPMA\_F\_COMPLETION\_ALWAYS** flag also generate a completion on

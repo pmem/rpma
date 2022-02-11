@@ -36,13 +36,17 @@ DESCRIPTION
 
 **rpma\_write**() initiates transferring data from the local memory to
 the remote memory. To write a 0 bytes message, set src and dst to NULL
-and src\_offset, dst\_offset and len to 0. The attribute flags set the
-completion notification indicator:
+and src\_offset, dst\_offset and len to 0.
+
+The attribute flags set the completion notification indicator:
 
 -   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
 
 -   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
-    result of the operation
+    result of the operation.
+
+op\_context is returned in the wr\_id field of the completion (struct
+ibv\_wc).
 
 RETURN VALUE
 ============
