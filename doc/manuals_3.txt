@@ -24,7 +24,6 @@ rpma_conn_req_delete.3
 rpma_conn_req_get_private_data.3
 rpma_conn_req_new.3
 rpma_conn_req_recv.3
-rpma_cq_get_completion.3
 rpma_cq_get_fd.3
 rpma_cq_get_wc.3
 rpma_cq_wait.3

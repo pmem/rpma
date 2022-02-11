@@ -1,5 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2022, Intel Corporation
 # Copyright 2021-2022, Fujitsu
 #
 
@@ -25,7 +26,6 @@ function (add_test_cq name)
 endfunction()
 
 add_test_cq(new_delete)
-add_test_cq(get_completion)
 add_test_cq(get_fd)
 add_test_cq(get_wc)
 add_test_cq(wait)

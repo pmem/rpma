@@ -203,11 +203,12 @@ extern "C" {
  * that the respective operation has been completed.
  *
  * The following operations are available in librpma:
- * - RPMA_OP_READ - RMA read operation
- * - RPMA_OP_WRITE - RMA write operation
- * - RPMA_OP_FLUSH - RMA flush operation
- * - RPMA_OP_SEND - messaging send operation
- * - RPMA_OP_RECV - messaging receive operation
+ * - IBV_WC_RDMA_READ - RMA read operation
+ * - IBV_WC_RDMA_WRITE - RMA write operation
+ * - IBV_WC_SEND - messaging send operation
+ * - IBV_WC_RECV - messaging receive operation
+ * - IBV_WC_RECV_RDMA_WITH_IMM - messaging receive operation for
+ *   RMA write operation with immediate data
  *
  * All operations generate completion on error. The operations posted
  * with the \f[B]RPMA_F_COMPLETION_ALWAYS\f[R] flag also generate a completion
@@ -2671,37 +2672,6 @@ int rpma_recv(struct rpma_conn *conn,
 
 /* completion handling */
 
-/* DEPRECATED - for details please see rpma_cq_get_completion(3). */
-enum rpma_op {
-	RPMA_OP_READ,
-	RPMA_OP_WRITE,
-	RPMA_OP_FLUSH,
-	RPMA_OP_SEND,
-	RPMA_OP_RECV,
-	RPMA_OP_RECV_RDMA_WITH_IMM,
-};
-
-/*
- * DEPRECATED - it is replaced with struct ibv_wc from libibverbs:
- *
- *	rpma_completion.op_context == (void *)ibv_wc.wr_id
- *	rpma_completion.op is replaced with a relevant value of ibv_wc.opcode
- *	rpma_completion.byte_len   == ibv_wc.byte_len
- *	rpma_completion.op_status  == ibv_wc.status
- *	rpma_completion.flags      == (unsigned)ibv_wc.wc_flags
- *	rpma_completion.imm        == ntohl(ibv_wc.imm_data)
- *
- * For more details please see rpma_cq_get_completion(3).
- */
-struct rpma_completion {
-	void *op_context;
-	enum rpma_op op;
-	uint32_t byte_len;
-	enum ibv_wc_status op_status;
-	unsigned flags;
-	uint32_t imm;
-};
-
 /** 3
  * rpma_cq_get_fd - get the completion queue's file descriptor
  *
@@ -2774,126 +2744,6 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 int rpma_cq_wait(struct rpma_cq *cq);
 
 /** 3
- * rpma_cq_get_completion - receive a completion of an operation (deprecated)
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	struct rpma_cq;
- *	enum rpma_op {
- *		RPMA_OP_READ,
- *		RPMA_OP_WRITE,
- *		RPMA_OP_FLUSH,
- *		RPMA_OP_SEND,
- *		RPMA_OP_RECV,
- *		RPMA_OP_RECV_RDMA_WITH_IMM,
- *	};
- *	struct rpma_completion {
- *		void *op_context;
- *		enum rpma_op op;
- *		uint32_t byte_len;
- *		enum ibv_wc_status op_status;
- *		unsigned flags;
- *		uint32_t imm;
- *	};
- *
- *	int rpma_cq_get_completion(struct rpma_cq *cq,
- *			struct rpma_completion *cmpl);
- *
- * DESCRIPTION
- * rpma_cq_get_completion() receives the next available completion of
- * an already posted operation. All operations generate completion on error.
- * The operations posted with the RPMA_F_COMPLETION_ALWAYS flag also
- * generate a completion on success.
- *
- * The rpma_completion structure provides the following fields:
- * - op_context - context of the operation provided by the user to
- *   either rpma_conn_req_recv(3), rpma_flush(3), rpma_read(3), rpma_recv(3),
- *   rpma_send(3), rpma_send_with_imm(3), rpma_write(3), rpma_write_atomic(3),
- *   rpma_write_with_imm(3)
- * - op - type of the operation, for available values please see
- *   the description below
- * - byte_len - number of bytes transferred
- * - op_status - status of the operation
- * - flags - flags of the operation, for available values please
- *   see ibv_poll_cq(3)
- * - imm - immediate data (in host byte order)
- *
- * The available op values are:
- * - RPMA_OP_READ - RMA read operation
- * - RPMA_OP_WRITE - RMA write operation
- * - RPMA_OP_FLUSH - RMA flush operation
- * - RPMA_OP_SEND - messaging send operation
- * - RPMA_OP_RECV - messaging receive operation
- * - RPMA_OP_RECV_RDMA_WITH_IMM - messaging receive operation for
- *   RMA write operation with immediate data
- *
- * Note that if the provided cq is the main CQ and the receive CQ is present
- * on the same connection this function won't return RPMA_OP_RECV and
- * RPMA_OP_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
- * instead to collect these completions. Please see the rpma_conn_get_rcq(3)
- * for details about the receive CQ.
- *
- * RETURN VALUE
- * The rpma_cq_get_completion() function returns 0 on success or a negative
- * error code on failure. On success, it writes the first available completion
- * to cmpl. If op_status of the written cmpl is not equal to IBV_WC_SUCCESS
- * then only op_context of the returned cmpl is valid.
- *
- * ERRORS
- * rpma_cq_get_completion() can fail with the following errors:
- *
- * - RPMA_E_INVAL - cq or cmpl is NULL
- * - RPMA_E_NO_COMPLETION - no completions available
- * - RPMA_E_PROVIDER - ibv_poll_cq(3) failed with a provider error
- * - RPMA_E_UNKNOWN - ibv_poll_cq(3) failed but no provider error is available
- * - RPMA_E_NOSUPP - not supported opcode
- *
- * DEPRECATED
- * This is an example snippet of code using the old API:
- *
- *	struct rpma_completion cmpl;
- *
- *	ret = rpma_cq_get_completion(cq, &cmpl);
- *	if (ret) { error_handling_code() }
- *
- *	if (cmpl.op_status != IBV_WC_SUCCESS) { error_handling_code() }
- *	if (cmpl.op != RPMA_OP_READ) { error_handling_code() }
- *
- *	void *op_context = cmpl.op_context;
- *	uint32_t byte_len = cmpl.byte_len;
- *	enum ibv_wc_status op_status = cmpl.op_status;
- *	unsigned flags = cmpl.flags;
- *	uint32_t imm = cmpl.imm;
- *
- * The above snippet should be replaced with
- * the following one using the new API:
- *
- *	struct ibv_wc wc;
- *
- *	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
- *	if (ret) { error_handling_code() }
- *
- *	if (wc.status != IBV_WC_SUCCESS) { error_handling_code() }
- *	if (wc.opcode != IBV_WC_RDMA_READ) { error_handling_code() }
- *
- *	void *op_context = (void *)wc.wr_id;
- *	uint32_t byte_len = wc.byte_len;
- *	enum ibv_wc_status op_status = wc.status;
- *	unsigned flags = (unsigned)wc.wc_flags;
- *	uint32_t imm = ntohl(wc.imm_data);
- *
- * SEE ALSO
- * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
- * rpma_cq_wait(3), rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3),
- * rpma_recv(3), rpma_send(3), rpma_send_with_imm(3), rpma_write(3),
- * rpma_write_atomic(3), rpma_write_with_imm(3), librpma(7) and
- * https://pmem.io/rpma/
- */
-int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
-
-/** 3
  * rpma_cq_get_wc - receive one or more completions
  *
  * SYNOPSIS
@@ -2918,8 +2768,8 @@ int rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl);
  * generate completions on success.
  *
  * Note that if the provided cq is the main CQ and the receive CQ is present
- * on the same connection this function won't return RPMA_OP_RECV and
- * RPMA_OP_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
+ * on the same connection this function won't return IBV_WC_RECV and
+ * IBV_WC_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
  * instead to collect these completions. Please see the rpma_conn_get_rcq(3)
  * for details about the receive CQ.
  *
