@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -176,87 +177,6 @@ rpma_cq_wait(struct rpma_cq *cq)
 	if (errno) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_req_notify_cq()");
 		return RPMA_E_PROVIDER;
-	}
-
-	return 0;
-}
-
-/*
- * rpma_cq_get_completion -- receive an operation completion from the CQ
- */
-int
-rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
-{
-	if (cq == NULL || cmpl == NULL)
-		return RPMA_E_INVAL;
-
-	struct ibv_wc wc = {0};
-	int result = ibv_poll_cq(cq->cq, 1 /* num_entries */, &wc);
-	if (result == 0) {
-		/*
-		 * There may be an extra CQ event with no completion in the CQ.
-		 */
-		RPMA_LOG_DEBUG("No completion in the CQ");
-		return RPMA_E_NO_COMPLETION;
-	} else if (result < 0) {
-		/* ibv_poll_cq() may return only -1; no errno provided */
-		RPMA_LOG_ERROR("ibv_poll_cq() failed (no details available)");
-		return RPMA_E_PROVIDER;
-	} else if (result > 1) {
-		RPMA_LOG_ERROR(
-			"ibv_poll_cq() returned %d where 0 or 1 is expected",
-			result);
-		return RPMA_E_UNKNOWN;
-	}
-
-	cmpl->op_context = (void *)wc.wr_id;
-	cmpl->op_status = wc.status;
-
-	/*
-	 * When wc.status != IBV_WC_SUCCESS only the following attributes
-	 * are valid: wr_id, status, qp_num, and vendor_err.
-	 */
-	if (unlikely(cmpl->op_status != IBV_WC_SUCCESS)) {
-		RPMA_LOG_WARNING("failed rpma_completion(op_context=0x%" PRIx64
-				", op_status=%s)",
-				cmpl->op_context,
-				ibv_wc_status_str(cmpl->op_status));
-		return 0;
-	}
-
-	switch (wc.opcode) {
-	case IBV_WC_RDMA_READ:
-		cmpl->op = RPMA_OP_READ;
-		break;
-	case IBV_WC_RDMA_WRITE:
-		cmpl->op = RPMA_OP_WRITE;
-		break;
-	case IBV_WC_SEND:
-		cmpl->op = RPMA_OP_SEND;
-		break;
-	case IBV_WC_RECV:
-		cmpl->op = RPMA_OP_RECV;
-		break;
-	case IBV_WC_RECV_RDMA_WITH_IMM:
-		cmpl->op = RPMA_OP_RECV_RDMA_WITH_IMM;
-		break;
-	default:
-		RPMA_LOG_ERROR("unsupported wc.opcode == %d", wc.opcode);
-		return RPMA_E_NOSUPP;
-	}
-
-	cmpl->byte_len = wc.byte_len;
-	/* 'wc_flags' is of 'int' type in older versions of libibverbs */
-	cmpl->flags = (unsigned)wc.wc_flags;
-
-	/*
-	 * The value of imm_data can be placed only in the receive Completion
-	 * Queue Element.
-	 */
-	if ((cmpl->op == RPMA_OP_RECV) ||
-			(cmpl->op == RPMA_OP_RECV_RDMA_WITH_IMM)) {
-		if (cmpl->flags & IBV_WC_WITH_IMM)
-			cmpl->imm = ntohl(wc.imm_data);
 	}
 
 	return 0;
