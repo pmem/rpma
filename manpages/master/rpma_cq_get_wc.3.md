@@ -43,10 +43,10 @@ generate completions on error. The operations posted with the
 RPMA\_F\_COMPLETION\_ALWAYS flag also generate completions on success.
 
 Note that if the provided cq is the main CQ and the receive CQ is
-present on the same connection this function won\'t return
-RPMA\_OP\_RECV and RPMA\_OP\_RECV\_RDMA\_WITH\_IMM at any time. The
-receive CQ has to be used instead to collect these completions. Please
-see the **rpma\_conn\_get\_rcq**(3) for details about the receive CQ.
+present on the same connection this function won\'t return IBV\_WC\_RECV
+and IBV\_WC\_RECV\_RDMA\_WITH\_IMM at any time. The receive CQ has to be
+used instead to collect these completions. Please see the
+**rpma\_conn\_get\_rcq**(3) for details about the receive CQ.
 
 RETURN VALUE
 ============

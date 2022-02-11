@@ -35,7 +35,8 @@ DESCRIPTION
 **rpma\_conn\_req\_recv**() initiates the receive operation. It prepares
 a buffer for a message sent from other side of the connection. Please
 see **rpma\_send**(3). This is a variant of **rpma\_recv**(3) which may
-be used before the connection is established.
+be used before the connection is established. op\_context is returned in
+the wr\_id field of the completion (struct ibv\_wc).
 
 RETURN VALUE
 ============

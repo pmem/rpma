@@ -45,6 +45,9 @@ A buffer for an incoming message have to be prepared beforehand.
 The order of buffers in the set does not affect the order of completions
 of receive operations get via **rpma\_cq\_get\_wc**(3).
 
+op\_context is returned in the wr\_id field of the completion (struct
+ibv\_wc).
+
 NOTE
 ====
 
