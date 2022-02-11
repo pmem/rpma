@@ -34,7 +34,6 @@ LIBRPMA_0.11 {
 		rpma_conn_req_get_private_data;
 		rpma_conn_req_new;
 		rpma_conn_req_recv;
-		rpma_cq_get_completion;
 		rpma_cq_get_fd;
 		rpma_cq_get_wc;
 		rpma_cq_wait;
