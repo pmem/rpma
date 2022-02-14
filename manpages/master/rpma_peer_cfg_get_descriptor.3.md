@@ -6,7 +6,7 @@ description: ""
 disclaimer: "The contents of this web site and the associated <a href=\"https://github.com/pmem\">GitHub repositories</a> are BSD-licensed open source."
 aliases: ["rpma_peer_cfg_get_descriptor.3.html"]
 title: "librpma | PMDK"
-header: "librpma API version 0.11.0"
+header: "librpma API version 0.12.0"
 ---
 {{< manpages >}}
 
