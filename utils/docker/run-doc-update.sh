@@ -27,7 +27,19 @@ function set_up_repo() {
 	git config --local user.email "${BOT_NAME}@intel.com"
 
 	git remote update
-	git checkout -B ${BRANCH} upstream/${BRANCH}
+
+	# Check if "${BRANCH}" is a valid branch
+	# or if it is just a tag.
+	if git log -1 upstream/${BRANCH}; then
+		# upstream/${BRANCH} is a valid branch
+		git checkout -B ${BRANCH} upstream/${BRANCH}
+	elif git log -1 ${BRANCH}; then
+		# ${BRANCH} is a tag
+		git checkout -B tag-${BRANCH} ${BRANCH}
+	else
+		echo "Error: ${BRANCH} is not a branch, nor a tag - cannot check it out."
+		exit 1
+	fi
 }
 
 function commit_and_push_changes() {
