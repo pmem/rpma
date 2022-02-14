@@ -61,7 +61,7 @@ For Cascade Lake platforms you can allow to set up DDIO automatically during the
     "REMOTE_RNIC_PCIE_ROOT_PORT": "0000:17:00.0"
 ```
 
-[direct-write]: https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html
+[direct-write]: https://pmem.io/rpma/documentation/basic-direct-write-to-pmem/
 
 ## Pre and post commands
 
