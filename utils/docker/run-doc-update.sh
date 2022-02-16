@@ -27,6 +27,15 @@ function set_up_repo() {
 	git config --local user.email "${BOT_NAME}@intel.com"
 
 	git remote update
+
+	# check if "upstream/${BRANCH}" is a valid branch
+	if ! git log -1 upstream/${BRANCH}; then
+		# BRANCH (set from ${CI_BRANCH}) is a tag,
+		# but tags do not introduce changes in the code,
+		# so there is no need to look for changes in the man pages.
+		exit 0
+	fi
+
 	git checkout -B ${BRANCH} upstream/${BRANCH}
 }
 
