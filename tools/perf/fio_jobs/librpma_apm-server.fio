@@ -15,7 +15,7 @@ thread
 
 [server]
 # set to 1 (true) ONLY when Direct Write to PMem from the remote host is possible
-# (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem.html)
+# (https://pmem.io/rpma/documentation/basic-direct-write-to-pmem/)
 direct_write_to_pmem=${direct_write_to_pmem}
 numjobs=${numjobs}
 size=100MiB
