@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.12.0-rc1] - 2022-02-14
+## [0.12.0-rc2] - 2022-02-18
+### Fixed
+- links to https://pmem.io in the benchmarking framework
+
 ### Removed
 - APIs:
   - rpma_cq_get_completion - replaced with rpma_cq_get_wc
