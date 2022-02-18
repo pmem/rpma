@@ -12,7 +12,8 @@
         "server_common": [
             "direct_write_to_pmem=1",
             "size=100MiB",
-            "filename=/dev/dax/path"
+            "filename=/dev/daxX.Y # for Device Dax",
+            "filename_format=/mnt/pmem/file # for File System DAX"
         ],
         "client_global": [
             "[global]",
