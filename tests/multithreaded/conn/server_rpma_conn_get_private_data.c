@@ -89,7 +89,7 @@ common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr)
 int
 server_main(char *addr, unsigned port)
 {
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	struct rpma_peer *peer = NULL;
 	struct rpma_ep *ep = NULL;
 	struct rpma_conn *conn = NULL;
@@ -101,13 +101,13 @@ server_main(char *addr, unsigned port)
 
 	/* lookup an ibv_context via the address */
 	if ((ret = rpma_utils_get_ibv_context(addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev))) {
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx))) {
 		SERVER_RPMA_ERR("rpma_utils_get_ibv_context", ret);
 		return ret;
 	}
 
 	/* create a new peer object */
-	if ((ret = rpma_peer_new(dev, &peer))) {
+	if ((ret = rpma_peer_new(ibv_ctx, &peer))) {
 		SERVER_RPMA_ERR("rpma_peer_new", ret);
 		return ret;
 	}

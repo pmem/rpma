@@ -17,7 +17,7 @@
 
 struct prestate {
 	char *addr;
-	struct ibv_context *dev;
+	struct ibv_context *ibv_ctx;
 	int is_odp_supported_exp;
 };
 
@@ -33,14 +33,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 
 	/* obtain an IBV context for a remote IP address */
 	ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->ibv_ctx);
 	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
 	/* check if the device supports On-Demand Paging */
-	ret = rpma_utils_ibv_context_is_odp_capable(pr->dev,
+	ret = rpma_utils_ibv_context_is_odp_capable(pr->ibv_ctx,
 				&pr->is_odp_supported_exp);
 	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_utils_ibv_context_is_odp_capable", ret);
@@ -57,7 +57,7 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	int is_odp_supported;
 
 	/* check if the device supports On-Demand Paging */
-	int ret = rpma_utils_ibv_context_is_odp_capable(pr->dev,
+	int ret = rpma_utils_ibv_context_is_odp_capable(pr->ibv_ctx,
 				&is_odp_supported);
 	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_ibv_context_is_odp_capable", ret);

@@ -33,7 +33,7 @@ main(int argc, char *argv[])
 	char *port = argv[2];
 
 	/* resources */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	struct rpma_peer *peer = NULL;
 	struct rpma_ep *ep = NULL;
 	struct rpma_conn_req *req = NULL;
@@ -43,12 +43,12 @@ main(int argc, char *argv[])
 
 	/* obtain an IBV context for a local IP address */
 	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
-			&dev);
+			&ibv_ctx);
 	if (ret)
 		return ret;
 
 	/* create a new peer object */
-	ret = rpma_peer_new(dev, &peer);
+	ret = rpma_peer_new(ibv_ctx, &peer);
 	if (ret)
 		return ret;
 

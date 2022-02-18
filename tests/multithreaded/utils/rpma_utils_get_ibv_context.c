@@ -22,12 +22,12 @@ thread(unsigned id, void *prestate, void *state,
 		struct mtt_result *result)
 {
 	struct prestate *ps = (struct prestate *)prestate;
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret;
 
 	/* obtain an IBV context for a local IP address */
 	ret = rpma_utils_get_ibv_context(ps->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
-			&dev);
+			&ibv_ctx);
 	if (ret)
 		MTT_RPMA_ERR(result, "rpma_utils_get_ibv_context", ret);
 }

@@ -28,10 +28,10 @@ struct ibv_mr Ibv_mr;
  * ibv_query_device -- ibv_query_device() mock
  */
 int
-ibv_query_device(struct ibv_context *context,
+ibv_query_device(struct ibv_context *ibv_ctx,
 		struct ibv_device_attr *device_attr)
 {
-	assert_ptr_equal(context, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 	assert_non_null(device_attr);
 
 	int ret = mock_type(int);
@@ -48,12 +48,12 @@ ibv_query_device(struct ibv_context *context,
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
 int
-ibv_query_device_ex_mock(struct ibv_context *context,
+ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
 		size_t attr_size)
 {
-	assert_ptr_equal(context, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 	assert_null(input);
 	assert_non_null(attr);
 	/* attr_size is provided by ibverbs - no validation needed */
@@ -72,10 +72,10 @@ ibv_query_device_ex_mock(struct ibv_context *context,
  * ibv_create_cq -- ibv_create_cq() mock
  */
 struct ibv_cq *
-ibv_create_cq(struct ibv_context *context, int cqe, void *cq_context,
+ibv_create_cq(struct ibv_context *ibv_ctx, int cqe, void *cq_context,
 		struct ibv_comp_channel *channel, int comp_vector)
 {
-	assert_ptr_equal(context, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 	check_expected(cqe);
 	assert_ptr_equal(channel, MOCK_COMP_CHANNEL);
 	assert_int_equal(comp_vector, 0);
@@ -106,9 +106,9 @@ ibv_destroy_cq(struct ibv_cq *cq)
  * ibv_create_comp_channel -- ibv_create_comp_channel() mock
  */
 struct ibv_comp_channel *
-ibv_create_comp_channel(struct ibv_context *context)
+ibv_create_comp_channel(struct ibv_context *ibv_ctx)
 {
-	assert_ptr_equal(context, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 
 	struct ibv_comp_channel *channel = mock_type(struct ibv_comp_channel *);
 	if (!channel) {

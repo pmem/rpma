@@ -455,7 +455,7 @@ enum rpma_util_ibv_context_type {
  *
  *	int rpma_utils_get_ibv_context(const char *addr,
  *		enum rpma_util_ibv_context_type type,
- *		struct ibv_context **dev_ptr);
+ *		struct ibv_context **ibv_ctx_ptr);
  *
  * DESCRIPTION
  * rpma_utils_get_ibv_context() obtains an RDMA device context
@@ -470,13 +470,13 @@ enum rpma_util_ibv_context_type {
  *
  * RETURN VALUE
  * The rpma_utils_get_ibv_context() function returns 0 on success or a negative
- * error code on failure. rpma_utils_get_ibv_context() does not set *dev_ptr
- * value on failure.
+ * error code on failure.
+ * rpma_utils_get_ibv_context() does not set *ibv_ctx_ptr value on failure.
  *
  * ERRORS
  * rpma_utils_get_ibv_context() can fail with the following errors:
  *
- * - RPMA_E_INVAL - addr or dev_ptr is NULL or type is unknown
+ * - RPMA_E_INVAL - addr or ibv_ctx_ptr is NULL or type is unknown
  * - RPMA_E_NOMEM - out of memory
  * - RPMA_E_PROVIDER - rdma_getaddrinfo(), rdma_create_id(), rdma_bind_addr()
  * or rdma_resolve_addr() failed, the exact cause of the error
@@ -488,7 +488,7 @@ enum rpma_util_ibv_context_type {
  */
 int rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type,
-		struct ibv_context **dev_ptr);
+		struct ibv_context **ibv_ctx_ptr);
 
 /** 3
  * rpma_utils_ibv_context_is_odp_capable - is On-Demand Paging supported
@@ -498,7 +498,7 @@ int rpma_utils_get_ibv_context(const char *addr,
  *	#include <librpma.h>
  *
  *	struct ibv_context;
- *	int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+ *	int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
  *		int *is_odp_capable);
  *
  * DESCRIPTION
@@ -513,14 +513,14 @@ int rpma_utils_get_ibv_context(const char *addr,
  * ERRORS
  * rpma_utils_ibv_context_is_odp_capable() can fail with the following errors:
  *
- * - RPMA_E_INVAL - dev or is_odp_capable is NULL
+ * - RPMA_E_INVAL - ibv_ctx or is_odp_capable is NULL
  * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, the exact cause
  * of the error can be read from the log
  *
  * SEE ALSO
  * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
  */
-int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 		int *is_odp_capable);
 
 /* peer configuration */

@@ -46,14 +46,14 @@ int
 common_peer_via_address(const char *addr, enum rpma_util_ibv_context_type type,
 		struct rpma_peer **peer_ptr)
 {
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 
-	int ret = rpma_utils_get_ibv_context(addr, type, &dev);
+	int ret = rpma_utils_get_ibv_context(addr, type, &ibv_ctx);
 	if (ret)
 		return ret;
 
 	/* create a new peer object */
-	return rpma_peer_new(dev, peer_ptr);
+	return rpma_peer_new(ibv_ctx, peer_ptr);
 }
 
 /*
