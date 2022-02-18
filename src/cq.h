@@ -27,7 +27,7 @@ struct ibv_cq *rpma_cq_get_ibv_cq(const struct rpma_cq *cq);
  * ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_cq_new(struct ibv_context *dev, int cqe, struct rpma_cq **cq_ptr);
+int rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr);
 
 /*
  * ERRORS

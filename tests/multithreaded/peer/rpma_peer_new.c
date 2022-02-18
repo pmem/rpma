@@ -12,7 +12,7 @@
 
 struct prestate {
 	char *addr;
-	struct ibv_context *dev;
+	struct ibv_context *ibv_ctx;
 };
 
 struct state {
@@ -27,7 +27,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->ibv_ctx);
 	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 }
@@ -59,7 +59,7 @@ thread(unsigned id, void *prestate, void *state,
 	struct state *st = (struct state *)state;
 
 	/* create a new peer object */
-	int ret = rpma_peer_new(pr->dev, &st->peer);
+	int ret = rpma_peer_new(pr->ibv_ctx, &st->peer);
 	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_peer_new", ret);
 		return;

@@ -43,22 +43,22 @@ rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
  * encapsulate them in a rpma_cq object
  *
  * ASSUMPTIONS
- * - dev != NULL && cq_ptr != NULL
+ * - ibv_ctx != NULL && cq_ptr != NULL
  */
 int
-rpma_cq_new(struct ibv_context *dev, int cqe, struct rpma_cq **cq_ptr)
+rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr)
 {
 	int ret = 0;
 
 	/* create a completion channel */
-	struct ibv_comp_channel *channel = ibv_create_comp_channel(dev);
+	struct ibv_comp_channel *channel = ibv_create_comp_channel(ibv_ctx);
 	if (channel == NULL) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_create_comp_channel()");
 		return RPMA_E_PROVIDER;
 	}
 
 	/* create a CQ */
-	struct ibv_cq *cq = ibv_create_cq(dev, cqe,
+	struct ibv_cq *cq = ibv_create_cq(ibv_ctx, cqe,
 				NULL /* cq_context */,
 				channel /* channel */,
 				0 /* comp_vector */);

@@ -17,10 +17,10 @@
  * rpma_utils_ibv_context_is_odp_capable() mock
  */
 int
-rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 		int *is_odp_capable)
 {
-	assert_ptr_equal(dev, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 	assert_non_null(is_odp_capable);
 
 	*is_odp_capable = mock_type(int);
