@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.12.0-rc2] - 2022-02-18
+## [0.12.0] - 2022-02-21
 ### Fixed
 - links to https://pmem.io in the benchmarking framework
 - templates with fio configuration in the benchmarking framework
