@@ -29,16 +29,16 @@ static void
 prestate_init(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	struct ibv_context *dev;
+	struct ibv_context *ibv_ctx;
 	int ret;
 
 	if ((ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev))) {
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(dev, &pr->peer)))
+	if ((ret = rpma_peer_new(ibv_ctx, &pr->peer)))
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 }
 

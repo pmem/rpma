@@ -12,10 +12,10 @@
 #include "test-common.h"
 
 /*
- * ibvc_odp__dev_NULL -- dev NULL is invalid
+ * ibvc_odp__ibv_ctx_NULL -- ibv_ctx NULL is invalid
  */
 static void
-ibvc_odp__dev_NULL(void **unused)
+ibvc_odp__ibv_ctx_NULL(void **unused)
 {
 	/* run test */
 	int is_odp_capable;
@@ -39,10 +39,10 @@ ibvc_odp__cap_NULL(void **unused)
 }
 
 /*
- * ibvc_odp__dev_cap_NULL -- dev and is_odp_capable NULL are invalid
+ * ibvc_odp__ibv_ctx_cap_NULL -- ibv_ctx and is_odp_capable NULL are invalid
  */
 static void
-ibvc_odp__dev_cap_NULL(void **unused)
+ibvc_odp__ibv_ctx_cap_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_utils_ibv_context_is_odp_capable(NULL, NULL);
@@ -163,9 +163,9 @@ main(int argc, char *argv[])
 
 	const struct CMUnitTest tests[] = {
 		/* rpma_utils_ibv_context_is_odp_capable() unit tests */
-		cmocka_unit_test(ibvc_odp__dev_NULL),
+		cmocka_unit_test(ibvc_odp__ibv_ctx_NULL),
 		cmocka_unit_test(ibvc_odp__cap_NULL),
-		cmocka_unit_test(ibvc_odp__dev_cap_NULL),
+		cmocka_unit_test(ibvc_odp__ibv_ctx_cap_NULL),
 		cmocka_unit_test(ibvc_odp__query_fail),
 		cmocka_unit_test(ibvc_odp__general_caps_no),
 		cmocka_unit_test(ibvc_odp__rc_caps_not_all),

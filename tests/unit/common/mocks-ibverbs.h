@@ -59,7 +59,7 @@ struct ibv_post_recv_mock_args {
 };
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
-int ibv_query_device_ex_mock(struct ibv_context *context,
+int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
 		size_t attr_size);

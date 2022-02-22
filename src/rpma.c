@@ -19,9 +19,9 @@
 int
 rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type,
-		struct ibv_context **dev_ptr)
+		struct ibv_context **ibv_ctx_ptr)
 {
-	if (addr == NULL || dev_ptr == NULL)
+	if (addr == NULL || ibv_ctx_ptr == NULL)
 		return RPMA_E_INVAL;
 
 	enum rpma_info_side side;
@@ -61,7 +61,7 @@ rpma_utils_get_ibv_context(const char *addr,
 	}
 
 	/* obtain the device */
-	*dev_ptr = temp_id->verbs;
+	*ibv_ctx_ptr = temp_id->verbs;
 
 err_destroy_id:
 	(void) rdma_destroy_id(temp_id);
@@ -76,10 +76,10 @@ err_info_delete:
  * capabilities and check if it supports On-Demand Paging
  */
 int
-rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 		int *is_odp_capable)
 {
-	if (dev == NULL || is_odp_capable == NULL)
+	if (ibv_ctx == NULL || is_odp_capable == NULL)
 		return RPMA_E_INVAL;
 
 	*is_odp_capable = 0;
@@ -87,7 +87,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 	/* query an RDMA device's attributes */
 	struct ibv_device_attr_ex attr = {{{0}}};
-	errno = ibv_query_device_ex(dev, NULL /* input */, &attr);
+	errno = ibv_query_device_ex(ibv_ctx, NULL /* input */, &attr);
 	if (errno) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"ibv_query_device_ex(attr={0})");

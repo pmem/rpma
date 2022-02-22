@@ -36,20 +36,20 @@ static void
 get_ibvc__addr_NULL(void **unused)
 {
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(NULL, RPMA_UTIL_IBV_CONTEXT_REMOTE,
-			&dev);
+			&ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
- * get_ibvc__dev_NULL - test NULL dev parameter
+ * get_ibvc__ibv_ctx_NULL - test NULL ibv_ctx parameter
  */
 static void
-get_ibvc__dev_NULL(void **unused)
+get_ibvc__ibv_ctx_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
@@ -66,20 +66,20 @@ static void
 get_ibvc__type_unknown(void **unused)
 {
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			TYPE_UNKNOWN, &dev);
+			TYPE_UNKNOWN, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
 /*
- * get_ibvc__addr_NULL_dev_NULL_type_unknown - test NULL addr and dev parameter
- * and type == TYPE_UNKNOWN
+ * get_ibvc__addr_NULL_ibv_ctx_NULL_type_unknown - test NULL addr and
+ * ibv_ctx parameter and type == TYPE_UNKNOWN
  */
 static void
-get_ibvc__addr_NULL_dev_NULL_type_unknown(void **unused)
+get_ibvc__addr_NULL_ibv_ctx_NULL_type_unknown(void **unused)
 {
 	/* run test */
 	int ret = rpma_utils_get_ibv_context(NULL, TYPE_UNKNOWN, NULL);
@@ -106,13 +106,13 @@ get_ibvc__info_new_failed_E_PROVIDER(void **unused)
 	will_return_maybe(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
@@ -131,13 +131,13 @@ get_ibvc__info_new_failed_E_NOMEM(void **unused)
 	will_return_maybe(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
@@ -159,13 +159,13 @@ get_ibvc__create_id_failed(void **unused)
 	will_return(rdma_create_id, MOCK_ERRNO);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
@@ -191,13 +191,13 @@ get_ibvc__bind_addr_failed_E_PROVIDER(void **unused)
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
@@ -223,13 +223,13 @@ get_ibvc__resolve_addr_failed_E_PROVIDER(void **unused)
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(dev);
+	assert_null(ibv_ctx);
 }
 
 /*
@@ -254,13 +254,13 @@ get_ibvc__success_destroy_id_failed_passive(void **unused)
 	will_return(rdma_destroy_id, MOCK_ERRNO);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
-	assert_ptr_equal(dev, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 }
 
 /*
@@ -285,13 +285,13 @@ get_ibvc__success_destroy_id_failed_active(void **unused)
 	will_return(rdma_destroy_id, MOCK_ERRNO);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
-	assert_ptr_equal(dev, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 }
 
 /*
@@ -314,13 +314,13 @@ get_ibvc__success_passive(void **unused)
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &dev);
+			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
-	assert_ptr_equal(dev, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 }
 
 /*
@@ -343,13 +343,13 @@ get_ibvc__success_active(void **unused)
 	will_return(rdma_destroy_id, 0);
 
 	/* run test */
-	struct ibv_context *dev = NULL;
+	struct ibv_context *ibv_ctx = NULL;
 	int ret = rpma_utils_get_ibv_context(MOCK_IP_ADDRESS,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &dev);
+			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
-	assert_ptr_equal(dev, MOCK_VERBS);
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 }
 
 int
@@ -360,9 +360,9 @@ main(int argc, char *argv[])
 		cmocka_unit_test(sanity__type_unknown),
 
 		cmocka_unit_test(get_ibvc__addr_NULL),
-		cmocka_unit_test(get_ibvc__dev_NULL),
+		cmocka_unit_test(get_ibvc__ibv_ctx_NULL),
 		cmocka_unit_test(get_ibvc__type_unknown),
-		cmocka_unit_test(get_ibvc__addr_NULL_dev_NULL_type_unknown),
+		cmocka_unit_test(get_ibvc__addr_NULL_ibv_ctx_NULL_type_unknown),
 		cmocka_unit_test(get_ibvc__info_new_failed_E_PROVIDER),
 		cmocka_unit_test(get_ibvc__info_new_failed_E_NOMEM),
 		cmocka_unit_test(get_ibvc__create_id_failed),

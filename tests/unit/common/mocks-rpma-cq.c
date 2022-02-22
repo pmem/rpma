@@ -44,9 +44,9 @@ rpma_cq_wait(struct rpma_cq *cq)
  * rpma_cq_new -- rpma_cq_new() mock
  */
 int
-rpma_cq_new(struct ibv_context *dev, int cqe, struct rpma_cq **cq_ptr)
+rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr)
 {
-	assert_non_null(dev);
+	assert_non_null(ibv_ctx);
 	check_expected(cqe);
 	assert_non_null(cq_ptr);
 
