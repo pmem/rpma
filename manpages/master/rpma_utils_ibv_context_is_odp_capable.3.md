@@ -25,7 +25,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct ibv_context;
-          int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *dev,
+          int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
                   int *is_odp_capable);
 
 DESCRIPTION
@@ -48,7 +48,7 @@ ERRORS
 **rpma\_utils\_ibv\_context\_is\_odp\_capable**() can fail with the
 following errors:
 
--   RPMA\_E\_INVAL - dev or is\_odp\_capable is NULL
+-   RPMA\_E\_INVAL - ibv\_ctx or is\_odp\_capable is NULL
 
 -   RPMA\_E\_PROVIDER - **ibv\_query\_device\_ex**() failed, the exact
     cause of the error can be read from the log

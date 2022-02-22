@@ -32,7 +32,7 @@ SYNOPSIS
 
           int rpma_utils_get_ibv_context(const char *addr,
                   enum rpma_util_ibv_context_type type,
-                  struct ibv_context **dev_ptr);
+                  struct ibv_context **ibv_ctx_ptr);
 
 DESCRIPTION
 ===========
@@ -54,15 +54,15 @@ RETURN VALUE
 
 The **rpma\_utils\_get\_ibv\_context**() function returns 0 on success
 or a negative error code on failure.
-**rpma\_utils\_get\_ibv\_context**() does not set \*dev\_ptr value on
-failure.
+**rpma\_utils\_get\_ibv\_context**() does not set \*ibv\_ctx\_ptr value
+on failure.
 
 ERRORS
 ======
 
 **rpma\_utils\_get\_ibv\_context**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - addr or dev\_ptr is NULL or type is unknown
+-   RPMA\_E\_INVAL - addr or ibv\_ctx\_ptr is NULL or type is unknown
 
 -   RPMA\_E\_NOMEM - out of memory
 
