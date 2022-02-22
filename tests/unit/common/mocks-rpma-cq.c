@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -37,22 +38,6 @@ rpma_cq_wait(struct rpma_cq *cq)
 	assert_ptr_equal(cq, MOCK_RPMA_CQ);
 
 	return mock_type(int);
-}
-
-/*
- * rpma_cq_get_completion -- rpma_cq_get_completion() mock
- */
-int
-rpma_cq_get_completion(struct rpma_cq *cq, struct rpma_completion *cmpl)
-{
-	assert_ptr_equal(cq, MOCK_RPMA_CQ);
-	assert_non_null(cmpl);
-
-	int result = mock_type(int);
-	if (result == MOCK_OK)
-		memcpy(cmpl, MOCK_COMPLETION, sizeof(struct rpma_completion));
-
-	return result;
 }
 
 /*

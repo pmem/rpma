@@ -53,7 +53,7 @@ jobs:
                  "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
+                 # Arch Linux build was temporarily moved to Nightly Experimental
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
@@ -94,7 +94,7 @@ jobs:
                  # (the Fedora_Rawhide and Ubuntu_Rolling builds were moved to Nightly_Experimental)
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 "N=Arch_Linux_Latest    OS=archlinux            OS_VER=latest",
+                 # Arch Linux build was temporarily moved to Nightly Experimental
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:

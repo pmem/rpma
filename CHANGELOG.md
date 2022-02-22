@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2022-02-21
+### Fixed
+- links to https://pmem.io in the benchmarking framework
+- templates with fio configuration in the benchmarking framework
+
+### Removed
+- APIs:
+  - rpma_cq_get_completion - replaced with rpma_cq_get_wc
+  - struct rpma_completion - replaced with struct ibv_wc from libibverbs
+  - enum rpma_op - replaced with enum ibv_wc_opcode from libibverbs
+
 ## [0.11.0] - 2022-02-08
 ### Added
 - Example (#12) for separate receive completion queue (RCQ).

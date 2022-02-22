@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.3)
 project(rpma C)
 
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 11)
+set(VERSION_MINOR 12)
 set(VERSION_PATCH 0)
 # set(VERSION_PRERELEASE rc1)
 

@@ -36,7 +36,8 @@
                 "direct_write_to_pmem={{0, 1}} # 1 for Device DAX",
                 "numjobs=1",
                 "size=100MiB",
-                "filename={{malloc, /dev/dax/path}}"
+                "filename={malloc, /dev/daxX.Y} # for DRAM or Device DAX",
+                "filename_format=/mnt/pmem/file # for File System DAX"
             ],
             "APM Client - FIO engine configuration": [
                 "[global]",
@@ -57,7 +58,8 @@
                 "numjobs=1",
                 "iodepth=1",
                 "size=100MiB",
-                "filename=/dev/dax/path",
+                "filename=/dev/daxX.Y # for Device Dax",
+                "filename_format=/mnt/pmem/file # for File System DAX",
                 "busy_wait_polling={{0, 1}} # 1 for GPSPM-RT",
                 "",
                 "time_based",
@@ -84,7 +86,8 @@
                 "direct_write_to_pmem=1",
                 "numjobs=$numjobs",
                 "size=100MiB",
-                "filename={{malloc, /dev/dax/path}}"
+                "filename={{malloc, /dev/daxX.Y}} # for DRAM or Device DAX",
+                "filename_format=/mnt/pmem/file # for File System DAX"
             ],
             "APM Client - FIO engine configuration": [
                 "[global]",
@@ -107,7 +110,8 @@
                 "numjobs=$numjobs",
                 "iodepth=2",
                 "size=100MiB",
-                "filename=/dev/dax/path",
+                "filename=/dev/daxX.Y # for Device Dax",
+                "filename_format=/mnt/pmem/file # for File System DAX",
                 "busy_wait_polling={{0, 1}} # 1 for GPSPM-RT",
                 "",
                 "time_based",
