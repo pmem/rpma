@@ -199,7 +199,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
 
 	/* source */
 	sge.addr = (uint64_t)((uintptr_t)src);
-	sge.length = 8; /* 8-byte atomic write with IBV_SEND_INLINE flag */
+	sge.length = 8; /* 8-bytes atomic write with IBV_SEND_INLINE flag */
 	wr.sg_list = &sge;
 	wr.num_sge = 1;
 
