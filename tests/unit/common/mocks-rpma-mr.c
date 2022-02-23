@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -68,6 +68,18 @@ rpma_mr_write(struct ibv_qp *qp,
 	check_expected(fence);
 
 	return mock_type(int);
+}
+
+/*
+ * rpma_mr_atomic_write -- rpma_mr_atomic_write() mock
+ */
+int
+rpma_mr_atomic_write(struct ibv_qp *qp,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const char src[8], int flags, const void *op_context)
+{
+	/* XXX */
+	return 0;
 }
 
 /*

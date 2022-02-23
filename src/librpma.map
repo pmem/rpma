@@ -8,6 +8,7 @@
 #
 LIBRPMA_0.12 {
 	global:
+		rpma_atomic_write;
 		rpma_conn_apply_remote_peer_cfg;
 		rpma_conn_cfg_delete;
 		rpma_conn_cfg_get_cq_size;
