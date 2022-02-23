@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright (c) 2021 Fujitsu */
 
 /*
@@ -183,6 +183,18 @@ rpma_mr_write(struct ibv_qp *qp,
 		return RPMA_E_PROVIDER;
 	}
 
+	return 0;
+}
+
+/*
+ * rpma_mr_write_atomic_8b -- post the atomic 8 bytes RDMA write from src to dst
+ */
+int
+rpma_mr_write_atomic_8b(struct ibv_qp *qp,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const char src[8], int flags, const void *op_context)
+{
+	/* XXX */
 	return 0;
 }
 

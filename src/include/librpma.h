@@ -2487,6 +2487,42 @@ int rpma_write_atomic(struct rpma_conn *conn,
 		const struct rpma_mr_local *src,  size_t src_offset,
 		int flags, const void *op_context);
 
+/** 3
+ * rpma_write_atomic_8b -- initiate the atomic 8 bytes write operation
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	struct rpma_mr_remote;
+ *	int rpma_write_atomic_8b(struct rpma_conn *conn,
+ *			struct rpma_mr_remote *dst, size_t dst_offset,
+ *			const char src[8], int flags, const void *op_context);
+ *
+ * DESCRIPTION
+ * rpma_write_atomic_8b() initiates ... XXX
+ *
+ * RETURN VALUE
+ * The rpma_write_atomic_8b() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_write_atomic_8b() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn, dst or src is NULL
+ * - RPMA_E_INVAL - dst_offset is not aligned to 8 bytes
+ * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_connect(3), rpma_mr_reg(3),
+ * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_write_atomic_8b(struct rpma_conn *conn,
+	struct rpma_mr_remote *dst, size_t dst_offset,
+	const char src[8], int flags, const void *op_context);
+
 /*
  * possible types of rpma_flush() operation
  */
