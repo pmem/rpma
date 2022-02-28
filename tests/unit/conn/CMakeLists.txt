@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -33,6 +33,7 @@ function(add_test_conn name)
 endfunction()
 
 add_test_conn(apply_remote_peer_cfg)
+add_test_conn(atomic_write)
 add_test_conn(disconnect)
 add_test_conn(flush)
 add_test_conn(get_cq_rcq)

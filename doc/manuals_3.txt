@@ -1,3 +1,4 @@
+rpma_atomic_write.3
 rpma_conn_apply_remote_peer_cfg.3
 rpma_conn_cfg_delete.3
 rpma_conn_cfg_get_cq_size.3
