@@ -2501,7 +2501,17 @@ int rpma_write_atomic(struct rpma_conn *conn,
  *			const char src[8], int flags, const void *op_context);
  *
  * DESCRIPTION
- * rpma_atomic_write() initiates ... XXX
+ * rpma_atomic_write() initiates the atomic 8 bytes write operation
+ * (transferring data from the local memory to the remote memory).
+ * The atomic write operation allows transferring only 8 bytes of data
+ * and storing them atomically in the remote memory.
+ *
+ * The attribute flags set the completion notification indicator:
+ * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
+ * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
+ * the operation.
+ *
+ * op_context is returned in the wr_id field of the completion (struct ibv_wc).
  *
  * RETURN VALUE
  * The rpma_atomic_write() function returns 0 on success or a negative
@@ -2512,7 +2522,7 @@ int rpma_write_atomic(struct rpma_conn *conn,
  *
  * - RPMA_E_INVAL - conn, dst or src is NULL
  * - RPMA_E_INVAL - dst_offset is not aligned to 8 bytes
- * - RPMA_E_INVAL - flags are not set
+ * - RPMA_E_INVAL - flags are not set (flags == 0)
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
  * SEE ALSO

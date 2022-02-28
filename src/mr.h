@@ -37,7 +37,7 @@ int rpma_mr_read(struct ibv_qp *qp,
  *    dst_offset == 0 && src_offset == 0 && len == 0)
  *
  * ERRORS
- * rpma_mr_write() can fail with the following error:
+ * rpma_mr_write() can fail with the following errors:
  *
  * - RPMA_E_NOSUPP   - unsupported 'operation' argument
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
@@ -50,11 +50,12 @@ int rpma_mr_write(struct ibv_qp *qp,
 
 /*
  * ASSUMPTIONS
- * - XXX
+ * - qp != NULL && dst != NULL && src != NULL && flags != 0
  *
  * ERRORS
- * rpma_mr_atomic_write() can fail with the following errors:
- * - XXX
+ * rpma_mr_atomic_write() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
 int rpma_mr_atomic_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
