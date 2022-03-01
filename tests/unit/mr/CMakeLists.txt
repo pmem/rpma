@@ -27,6 +27,7 @@ function(add_test_mr name)
 endfunction()
 
 add_test_mr(advise)
+add_test_mr(atomic_write)
 add_test_mr(descriptor)
 add_test_mr(get_flush_type)
 add_test_mr(local)
