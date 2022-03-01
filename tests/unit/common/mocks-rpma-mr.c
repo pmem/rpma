@@ -78,8 +78,19 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
 	const char src[8], int flags, const void *op_context)
 {
-	/* XXX */
-	return 0;
+	assert_non_null(qp);
+	assert_int_not_equal(flags, 0);
+	assert_non_null(src);
+	assert_non_null(dst);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(dst_offset);
+	check_expected_ptr(src);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
 }
 
 /*
@@ -87,7 +98,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
  */
 int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
-		struct rpma_mr_local **mr_ptr)
+	struct rpma_mr_local **mr_ptr)
 {
 	check_expected_ptr(peer);
 	check_expected(size);
