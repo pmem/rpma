@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - the part_write.json template in the benchmarking framework
+- documentation of rpma_utils_conn_event_2str()
 
 ## [0.12.0] - 2022-02-21
 ### Fixed
