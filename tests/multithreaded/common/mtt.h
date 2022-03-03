@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * mtt.h -- a multithreaded tests' API
@@ -49,14 +49,14 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on server's error print the error message to stderr */
 #define SERVER_ERR_MSG(msg) \
 	do { \
-		fprintf(stderr, "[SERVER] %s:%d %s() -> %s", \
+		fprintf(stderr, "[SERVER] %s:%d %s() -> %s\n", \
 			mtt_base_file_name(__FILE__), __LINE__, __func__, \
 			msg); \
 	} while (0)
 
 #define SERVER_RPMA_ERR(func, err) \
 	do { \
-		fprintf(stderr, "[SERVER] %s:%d %s() -> %s() failed: %s", \
+		fprintf(stderr, "[SERVER] %s:%d %s() -> %s() failed: %s\n", \
 			mtt_base_file_name(__FILE__), __LINE__, __func__, \
 			func, rpma_err_2str(err)); \
 	} while (0)
@@ -66,7 +66,7 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 	do { \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
-			"%s:%d %s() -> %s", \
+			"%s:%d %s() -> %s\n", \
 			mtt_base_file_name(__FILE__), __LINE__, __func__, \
 			msg); \
 	} while (0)
@@ -76,7 +76,7 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 	do { \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
-			"%s:%d %s() -> %s() failed: %s", \
+			"%s:%d %s() -> %s() failed: %s\n", \
 			mtt_base_file_name(__FILE__), __LINE__, __func__, \
 			func, strerror(err)); \
 	} while (0)
@@ -86,7 +86,7 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 	do { \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
-			"%s:%d %s() -> %s() failed: %s", \
+			"%s:%d %s() -> %s() failed: %s\n", \
 			mtt_base_file_name(__FILE__), __LINE__, __func__, \
 			func, rpma_err_2str(err)); \
 	} while (0)
