@@ -1615,9 +1615,9 @@ int rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd);
 enum rpma_conn_event {
 	RPMA_CONN_UNDEFINED = -1,	/* Undefined connection event */
 	RPMA_CONN_ESTABLISHED,		/* Connection established */
-	RPMA_CONN_CLOSED,			/* Connection closed */
-	RPMA_CONN_LOST,				/* Connection lost */
-	RPMA_CONN_REJECTED			/* Connection rejected */
+	RPMA_CONN_CLOSED,		/* Connection closed */
+	RPMA_CONN_LOST,			/* Connection lost */
+	RPMA_CONN_REJECTED		/* Connection rejected */
 };
 
 /** 3
