@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - APIs:
   - rpma_atomic_write - initiates the atomic 8 bytes write operation
+  - RPMA_CONN_UNREACHABLE enum rpma_conn_event to handle RDMA_CM_EVENT_UNREACHABLE
 
 ### Changed
 - ibv_qp_cap.max_inline_data set to 8 bytes to allow implementation of atomic write over ibv_post_send with IBV_SEND_INLINE
