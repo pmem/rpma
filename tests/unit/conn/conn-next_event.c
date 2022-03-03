@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -100,8 +100,8 @@ next_event__get_cm_event_ENODATA(void **cstate_ptr)
 }
 
 /*
- * next_event__event_UNREACHABLE -
- * RDMA_CM_EVENT_UNREACHABLE is unexpected
+ * next_event__event_UNREACHABLE - in case of RDMA_CM_EVENT_UNREACHABLE
+ * rdma_get_cm_event returns RPMA_CONN_UNREACHABLE
  */
 static void
 next_event__event_UNREACHABLE(void **cstate_ptr)
@@ -121,8 +121,8 @@ next_event__event_UNREACHABLE(void **cstate_ptr)
 	int ret = rpma_conn_next_event(cstate->conn, &c_event);
 
 	/* verify the results */
-	assert_int_equal(ret, RPMA_E_UNKNOWN);
-	assert_int_equal(c_event, RPMA_CONN_UNDEFINED);
+	assert_int_equal(ret, MOCK_OK);
+	assert_int_equal(c_event, RPMA_CONN_UNREACHABLE);
 }
 
 /*
