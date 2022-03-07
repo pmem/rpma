@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - ibv_qp_cap.max_inline_data set to 8 bytes to allow implementation of atomic write over ibv_post_send with IBV_SEND_INLINE
+- example 07 uses rpma_atomic_write() instead of rpma_write_atomic()
 
 ### Fixed
 - the part_write.json template in the benchmarking framework
