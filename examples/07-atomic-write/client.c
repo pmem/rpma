@@ -18,17 +18,7 @@
 
 #define FLUSH_ID		(void *)0xF01D /* a random identifier */
 #define KILOBYTE		1024
-
-#define LOCAL_USED_OFFSET	offsetof(struct mr_ptr_s, used)
-#define LOCAL_DATA_OFFSET	offsetof(struct mr_ptr_s, data)
-#define LOCAL_DATA_SIZE		(KILOBYTE - sizeof(uint64_t))
-#define MAX_WORD_LENGTH		(LOCAL_DATA_SIZE - 1)
-
-/* structure of data in the local MR */
-struct mr_ptr_s {
-	uint64_t used;
-	char data[LOCAL_DATA_SIZE];
-};
+#define ATOMIC_SIZE		8
 
 int
 main(int argc, char *argv[])
@@ -49,16 +39,17 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	struct mr_ptr_s *mr_ptr = NULL;
+	void *mr_ptr = NULL;
 	size_t mr_size = KILOBYTE;
 	struct rpma_mr_remote *remote_mr = NULL;
 	size_t remote_size = 0;
 	size_t dst_used_offset = 0;
 	struct rpma_mr_local *local_mr = NULL;
+	char used[ATOMIC_SIZE];
 	struct ibv_wc wc;
 
 	/* prepare memory */
-	mr_ptr = (struct mr_ptr_s *)malloc_aligned(KILOBYTE);
+	mr_ptr = malloc_aligned(KILOBYTE);
 	if (mr_ptr == NULL)
 		return -1;
 
@@ -116,7 +107,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* read the used value */
-	if ((ret = rpma_read(conn, local_mr, LOCAL_USED_OFFSET,
+	if ((ret = rpma_read(conn, local_mr, 0,
 			remote_mr, dst_used_offset,
 			sizeof(uint64_t), RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
@@ -139,9 +130,10 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
-	printf("used value: %lu\n", mr_ptr->used);
+	strcpy(used, (char *)mr_ptr);
+	printf("used value: %d\n", *used);
 
-	if (remote_size <= mr_ptr->used) {
+	if (remote_size <= (size_t)*used) {
 		fprintf(stderr,
 				"Log size exhausted.\n");
 		goto err_mr_remote_delete;
@@ -159,29 +151,26 @@ main(int argc, char *argv[])
 	else
 		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 
-	char *word = (char *)&mr_ptr->data;
-
 	for (int i = 3; i < argc; ++i) {
-		strncpy(word, argv[i], MAX_WORD_LENGTH);
-		/* make sure the word is always null-terminated */
-		word[MAX_WORD_LENGTH] = 0;
+		char *word = mr_ptr;
+		strcpy(word, argv[i]);
 		size_t word_size = strlen(word) + 1;
 
-		if ((ret = rpma_write(conn, remote_mr, mr_ptr->used,
-				local_mr, LOCAL_DATA_OFFSET,
-				word_size, RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		if ((ret = rpma_write(conn, remote_mr, (size_t)*used,
+				local_mr, 0, word_size,
+				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, mr_ptr->used,
+		if ((ret = rpma_flush(conn, remote_mr, (size_t)*used,
 				word_size, flush_type,
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		mr_ptr->used += word_size;
+		uint64_t new_used_value = (uint64_t)word_size + (uint64_t)*used;
+		memcpy(used, &new_used_value, ATOMIC_SIZE);
 
-		if ((ret = rpma_write_atomic(conn, remote_mr, dst_used_offset,
-				local_mr, LOCAL_USED_OFFSET,
-				RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		if ((ret = rpma_atomic_write(conn, remote_mr, dst_used_offset,
+				used, RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
 		if ((ret = rpma_flush(conn, remote_mr, dst_used_offset,

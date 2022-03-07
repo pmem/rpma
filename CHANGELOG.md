@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - APIs:
   - rpma_atomic_write - initiates the atomic 8 bytes write operation
 
+### Changed
+- example 07 uses rpma_atomic_write() instead of rpma_write_atomic()
+
 ### Fixed
 - the part_write.json template in the benchmarking framework
 - documentation of rpma_utils_conn_event_2str()
