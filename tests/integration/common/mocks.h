@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks.h -- common mocks for integration tests
@@ -27,7 +27,7 @@
 #define MOCK_TIMEOUT		1000 /* RPMA_DEFAULT_TIMEOUT */
 #define MOCK_DEFAULT_Q_SIZE	10 /* RPMA_DEFAULT_Q_SIZE */
 #define MOCK_MAX_SGE		1 /* RPMA_MAX_SGE */
-#define MOCK_MAX_INLINE_DATA	0 /* RPMA_MAX_INLINE_DATA */
+#define MOCK_MAX_INLINE_DATA	8 /* RPMA_MAX_INLINE_DATA */
 #define MOCK_SIZE		1024
 #define MOCK_OK			0
 

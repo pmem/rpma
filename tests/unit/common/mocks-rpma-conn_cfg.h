@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -42,6 +42,6 @@ struct conn_cfg_get_cq_size_mock_args {
 
 /* current hardcoded values */
 #define RPMA_MAX_SGE		1
-#define RPMA_MAX_INLINE_DATA	0
+#define RPMA_MAX_INLINE_DATA	8
 
 #endif /* MOCKS_RPMA_CONN_CFG_H */
