@@ -2440,7 +2440,7 @@ int rpma_write_with_imm(struct rpma_conn *conn,
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
 /** 3
- * rpma_write_atomic - initiate the atomic write operation
+ * rpma_write_atomic - initiate the atomic write operation (deprecated)
  *
  * SYNOPSIS
  *
@@ -2478,6 +2478,29 @@ int rpma_write_with_imm(struct rpma_conn *conn,
  * - RPMA_E_INVAL - dst_offset is not aligned to 8 bytes
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
+ *
+ * DEPRECATED
+ * This API call should be replaced with rpma_atomic_write().
+ * This is an example snippet of code using the old API:
+ *
+ *	struct rpma_conn *conn;
+ *	struct rpma_mr_remote *dst;
+ *	struct rpma_mr_local *src;
+ *
+ *	ret = rpma_write_atomic(conn, dst, dst_offset, src, src_offset,
+ *		RPMA_F_COMPLETION_ON_ERROR, NULL)
+ *	if (ret) { error_handling_code() }
+ *
+ * The above snippet should be replaced with
+ * the following one using the new API:
+ *
+ *	struct rpma_conn *conn;
+ *	struct rpma_mr_remote *dst;
+ *	char src[8];
+ *
+ *	ret = rpma_atomic_write(conn, dst, dst_offset, src,
+ *		RPMA_F_COMPLETION_ON_ERROR, NULL)
+ *	if (ret) { error_handling_code() }
  *
  * SEE ALSO
  * rpma_conn_req_connect(3), rpma_mr_reg(3),
