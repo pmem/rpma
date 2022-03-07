@@ -2440,7 +2440,7 @@ int rpma_write_with_imm(struct rpma_conn *conn,
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
 /** 3
- * rpma_write_atomic - initiate the atomic write operation
+ * rpma_write_atomic - initiate the atomic write operation (deprecated)
  *
  * SYNOPSIS
  *
@@ -2479,6 +2479,9 @@ int rpma_write_with_imm(struct rpma_conn *conn,
  * - RPMA_E_INVAL - flags are not set
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  *
+ * DEPRECATED
+ * This API call should be replaced with rpma_atomic_write()
+ * 
  * SEE ALSO
  * rpma_conn_req_connect(3), rpma_mr_reg(3),
  * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/

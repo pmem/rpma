@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Deprecated
+- API:
+	- rpma_write_atomic - replaced with rpma_atomic_write
 ### Fixed
 - the part_write.json template in the benchmarking framework
 - documentation of rpma_utils_conn_event_2str()
