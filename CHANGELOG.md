@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- APIs:
+  - rpma_atomic_write - initiates the atomic 8 bytes write operation
+
+### Changed
+- ibv_qp_cap.max_inline_data set to 8 bytes to allow implementation of atomic write over ibv_post_send with IBV_SEND_INLINE
+
 ### Fixed
 - the part_write.json template in the benchmarking framework
 - documentation of rpma_utils_conn_event_2str()
