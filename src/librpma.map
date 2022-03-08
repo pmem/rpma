@@ -6,7 +6,7 @@
 #
 # src/librpma.map -- linker version script for librpma
 #
-LIBRPMA_0.12 {
+LIBRPMA_0.13 {
 	global:
 		rpma_atomic_write;
 		rpma_conn_apply_remote_peer_cfg;

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.13.0-rc1] - 2022-03-08
 ### Added
 - APIs:
   - rpma_atomic_write - initiates the atomic 8 bytes write operation
