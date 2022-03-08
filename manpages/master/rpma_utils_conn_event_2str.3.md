@@ -26,11 +26,12 @@ SYNOPSIS
 
           const char *rpma_utils_conn_event_2str(enum rpma_conn_event conn_event);
 
-          enum rpma_conn_event{
+          enum rpma_conn_event {
                   RPMA_CONN_UNDEFINED = -1,
                   RPMA_CONN_ESTABLISHED,
                   RPMA_CONN_CLOSED,
-                  RPMA_CONN_LOST
+                  RPMA_CONN_LOST,
+                  RPMA_CONN_REJECTED
           };
 
 DESCRIPTION

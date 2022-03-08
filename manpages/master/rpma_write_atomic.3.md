@@ -17,6 +17,7 @@ NAME
 ====
 
 **rpma\_write\_atomic** - initiate the atomic write operation
+(deprecated)
 
 SYNOPSIS
 ========
@@ -68,6 +69,31 @@ ERRORS
 -   RPMA\_E\_INVAL - flags are not set
 
 -   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
+
+DEPRECATED
+==========
+
+This API call should be replaced with **rpma\_atomic\_write**(). This is
+an example snippet of code using the old API:
+
+            struct rpma_conn *conn;
+            struct rpma_mr_remote *dst;
+            struct rpma_mr_local *src;
+
+            ret = rpma_write_atomic(conn, dst, dst_offset, src, src_offset,
+                    RPMA_F_COMPLETION_ON_ERROR, NULL)
+            if (ret) { error_handling_code() }
+
+The above snippet should be replaced with the following one using the
+new API:
+
+            struct rpma_conn *conn;
+            struct rpma_mr_remote *dst;
+            char src[8];
+
+            ret = rpma_atomic_write(conn, dst, dst_offset, src,
+                    RPMA_F_COMPLETION_ON_ERROR, NULL)
+            if (ret) { error_handling_code() }
 
 SEE ALSO
 ========
