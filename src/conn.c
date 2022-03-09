@@ -182,6 +182,9 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		case RDMA_CM_EVENT_REJECTED:
 			*event = RPMA_CONN_REJECTED;
 			break;
+		case RDMA_CM_EVENT_UNREACHABLE:
+			*event = RPMA_CONN_UNREACHABLE;
+			break;
 		default:
 			RPMA_LOG_WARNING("%s: %s",
 					rpma_utils_conn_event_2str(*event),
