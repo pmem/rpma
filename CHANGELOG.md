@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.13.0-rc1] - 2022-03-08
+## [0.13.0] - 2022-03-09
 ### Added
 - APIs:
   - rpma_atomic_write - initiates the atomic 8 bytes write operation
