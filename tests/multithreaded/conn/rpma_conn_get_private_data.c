@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_get_private_data.c -- rpma_conn_get_private_data multithreaded test
@@ -9,6 +9,8 @@
 #include <librpma.h>
 
 #include "mtt.h"
+
+#define MAX_CONN_RETRY 10
 
 /* the client's part */
 
@@ -50,32 +52,52 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	MTT_PORT_INIT;
 	MTT_PORT_SET(pr->port, 0);
 
-	/* create a connection request */
-	ret = rpma_conn_req_new(pr->peer, pr->addr, MTT_PORT_STR, NULL, &req);
-	if (ret) {
-		MTT_RPMA_ERR(tr, "rpma_conn_req_new", ret);
-		goto err_peer_delete;
-	}
+	int retry = 0;
+	do {
+		/* create a connection request */
+		ret = rpma_conn_req_new(pr->peer, pr->addr, MTT_PORT_STR,
+					NULL, &req);
+		if (ret) {
+			MTT_RPMA_ERR(tr, "rpma_conn_req_new", ret);
+			goto err_peer_delete;
+		}
 
-	/* connect the connection request and obtain the connection object */
-	ret = rpma_conn_req_connect(&req, NULL, &pr->conn);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
-		MTT_RPMA_ERR(tr, "rpma_conn_req_connect", ret);
-		goto err_peer_delete;
-	}
+		/*
+		 * Connect the connection request and obtain
+		 * the connection object.
+		 */
+		ret = rpma_conn_req_connect(&req, NULL, &pr->conn);
+		if (ret) {
+			(void) rpma_conn_req_delete(&req);
+			MTT_RPMA_ERR(tr, "rpma_conn_req_connect", ret);
+			goto err_peer_delete;
+		}
 
-	/* wait for the connection to establish */
-	ret = rpma_conn_next_event(pr->conn, &conn_event);
-	if (ret) {
-		MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
-		goto err_conn_delete;
-	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
-		MTT_ERR_MSG(tr,
-			"rpma_conn_next_event returned an unexpected event",
-			-1);
-		goto err_conn_delete;
-	}
+		/* wait for the connection to establish */
+		ret = rpma_conn_next_event(pr->conn, &conn_event);
+		if (ret) {
+			MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
+			goto err_conn_delete;
+		}
+
+		if (conn_event == RPMA_CONN_ESTABLISHED)
+			break;
+
+		retry++;
+
+		if (conn_event != RPMA_CONN_REJECTED ||
+		    retry == MAX_CONN_RETRY) {
+			MTT_ERR_MSG(tr,
+				"rpma_conn_next_event returned an unexpected event",
+				-1);
+			goto err_conn_delete;
+		}
+
+		/* received the RPMA_CONN_REJECTED event, retrying ... */
+		(void) rpma_conn_disconnect(pr->conn);
+		(void) rpma_conn_delete(&pr->conn);
+
+	} while (retry < MAX_CONN_RETRY);
 
 	/* get the connection private data */
 	ret = rpma_conn_get_private_data(pr->conn, &pr->pdata_exp);
