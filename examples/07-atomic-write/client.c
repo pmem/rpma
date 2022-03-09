@@ -139,6 +139,7 @@ main(int argc, char *argv[])
 	if (remote_size <= used.uint64) {
 		fprintf(stderr,
 				"Log size exhausted.\n");
+		ret = -1;
 		goto err_mr_remote_delete;
 	}
 
