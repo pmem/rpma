@@ -130,6 +130,7 @@ main(int argc, char *argv[])
 	if (wc.status != IBV_WC_SUCCESS) {
 		(void) fprintf(stderr, "rpma_read() failed: %s\n",
 				ibv_wc_status_str(wc.status));
+		ret = -1;
 		goto err_mr_remote_delete;
 	}
 
@@ -137,8 +138,8 @@ main(int argc, char *argv[])
 	printf("used value: %lu\n", used.uint64);
 
 	if (remote_size <= used.uint64) {
-		fprintf(stderr,
-				"Log size exhausted.\n");
+		fprintf(stderr, "Log size exhausted.\n");
+		ret = -1;
 		goto err_mr_remote_delete;
 	}
 
@@ -194,12 +195,14 @@ main(int argc, char *argv[])
 				"unexpected wc.wr_id value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
 				wc.wr_id, (uintptr_t)FLUSH_ID);
+			ret = -1;
 			break;
 		}
 
 		if (wc.status != IBV_WC_SUCCESS) {
 			(void) fprintf(stderr, "rpma_flush() failed: %s\n",
 					ibv_wc_status_str(wc.status));
+			ret = -1;
 			break;
 		}
 	}
