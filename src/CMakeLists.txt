@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
-# Copyright 2021, Fujitsu
+# Copyright 2021-2022, Fujitsu
 #
 
 add_cstyle(src
@@ -28,7 +28,8 @@ set(SOURCES
 	peer_cfg.c
 	private_data.c
 	rpma_err.c
-	rpma.c)
+	rpma.c
+	srq_cfg.c)
 
 add_library(rpma SHARED ${SOURCES})
 
