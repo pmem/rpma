@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -31,8 +31,6 @@
 #define MOCK_LEN		(size_t)0xC415
 #define MOCK_FLAGS		(int)0xC416
 #define MOCK_OP_CONTEXT		(void *)0xC417
-#define MOCK_NOFENCE		false
-#define MOCK_FENCE		true
 #define MOCK_COMPLETION_FD	0x00FE
 #define MOCK_QP_NUM		1289
 
