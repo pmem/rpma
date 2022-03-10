@@ -50,9 +50,9 @@ extern "C" {
  *   to the local memory,
  * - rpma_write() - initiates transferring data from the local memory
  *   to the remote memory),
- * - rpma_write_atomic() - works like rpma_write(), but it allows transferring
+ * - rpma_atomic_write() - works like rpma_write(), but it allows transferring
  *   8 bytes of data (RPMA_ATOMIC_WRITE_ALIGNMENT) and storing them atomically
- *   in the remote memory (see rpma_write_atomic(3) for details
+ *   in the remote memory (see rpma_atomic_write(3) for details
  *   and restrictions), and:
  * - rpma_flush() - initiates finalizing a transfer of data to the remote
  *   memory. Possible types of rpma_flush() operation:
@@ -877,7 +877,7 @@ struct rpma_mr_remote;
  * SEE ALSO
  * rpma_conn_req_recv(3), rpma_mr_dereg(3), rpma_mr_get_descriptor(3),
  * rpma_mr_get_descriptor_size(3), rpma_peer_new(3), rpma_read(3), rpma_recv(3),
- * rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7) and
+ * rpma_send(3), rpma_write(3), rpma_atomic_write(3), librpma(7) and
  * https://pmem.io/rpma/
  */
 int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size,
@@ -978,7 +978,7 @@ int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  * SEE ALSO
  * rpma_mr_remote_delete(3), rpma_mr_remote_get_flush_type(3),
  * rpma_mr_remote_get_size(3), rpma_flush(3), rpma_read(3), rpma_write(3),
- * rpma_write_atomic(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_atomic_write(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_mr_remote_from_descriptor(const void *desc,
 		size_t desc_size, struct rpma_mr_remote **mr_ptr);
@@ -2062,7 +2062,7 @@ int rpma_conn_req_delete(struct rpma_conn_req **req_ptr);
  * rpma_conn_disconnect(3), rpma_conn_get_cq(3), rpma_conn_get_event_fd(3),
  * rpma_conn_get_private_data(3), rpma_conn_get_rcq(3), rpma_conn_next_event(3),
  * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_flush(3), rpma_read(3),
- * rpma_recv(3), rpma_send(3), rpma_write(3), rpma_write_atomic(3), librpma(7)
+ * rpma_recv(3), rpma_send(3), rpma_write(3), rpma_atomic_write(3), librpma(7)
  * and https://pmem.io/rpma/
  */
 int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
@@ -2444,78 +2444,6 @@ int rpma_write_with_imm(struct rpma_conn *conn,
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
 
 /** 3
- * rpma_write_atomic - initiate the atomic write operation (deprecated)
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	struct rpma_conn;
- *	struct rpma_mr_local;
- *	struct rpma_mr_remote;
- *	int rpma_write_atomic(struct rpma_conn *conn,
- *			struct rpma_mr_remote *dst, size_t dst_offset,
- *			const struct rpma_mr_local *src,  size_t src_offset,
- *			int flags, const void *op_context);
- *
- * DESCRIPTION
- * rpma_write_atomic() initiates the atomic write operation (transferring
- * data from the local memory to the remote memory). The atomic write operation
- * allows transferring 8 bytes of data (RPMA_ATOMIC_WRITE_ALIGNMENT) and storing
- * them atomically in the remote memory.
- *
- * The attribute flags set the completion notification indicator:
- * - RPMA_F_COMPLETION_ON_ERROR - generate the completion on error
- * - RPMA_F_COMPLETION_ALWAYS - generate the completion regardless of result of
- * the operation.
- *
- * op_context is returned in the wr_id field of the completion (struct ibv_wc).
- *
- * RETURN VALUE
- * The rpma_write_atomic() function returns 0 on success or a negative
- * error code on failure.
- *
- * ERRORS
- * rpma_write_atomic() can fail with the following errors:
- *
- * - RPMA_E_INVAL - conn, dst or src is NULL
- * - RPMA_E_INVAL - dst_offset is not aligned to 8 bytes
- * - RPMA_E_INVAL - flags are not set
- * - RPMA_E_PROVIDER - ibv_post_send(3) failed
- *
- * DEPRECATED
- * This API call should be replaced with rpma_atomic_write().
- * This is an example snippet of code using the old API:
- *
- *	struct rpma_conn *conn;
- *	struct rpma_mr_remote *dst;
- *	struct rpma_mr_local *src;
- *
- *	ret = rpma_write_atomic(conn, dst, dst_offset, src, src_offset,
- *		RPMA_F_COMPLETION_ON_ERROR, NULL)
- *	if (ret) { error_handling_code() }
- *
- * The above snippet should be replaced with
- * the following one using the new API:
- *
- *	struct rpma_conn *conn;
- *	struct rpma_mr_remote *dst;
- *	char src[8];
- *
- *	ret = rpma_atomic_write(conn, dst, dst_offset, src,
- *		RPMA_F_COMPLETION_ON_ERROR, NULL)
- *	if (ret) { error_handling_code() }
- *
- * SEE ALSO
- * rpma_conn_req_connect(3), rpma_mr_reg(3),
- * rpma_mr_remote_from_descriptor(3), librpma(7) and https://pmem.io/rpma/
- */
-int rpma_write_atomic(struct rpma_conn *conn,
-		struct rpma_mr_remote *dst, size_t dst_offset,
-		const struct rpma_mr_local *src,  size_t src_offset,
-		int flags, const void *op_context);
-
-/** 3
  * rpma_atomic_write -- initiate the atomic 8 bytes write operation
  *
  * SYNOPSIS
@@ -2890,7 +2818,7 @@ int rpma_cq_wait(struct rpma_cq *cq);
  * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_conn_req_recv(3),
  * rpma_cq_wait(3), rpma_cq_get_fd(3), rpma_flush(3), rpma_read(3),
  * rpma_recv(3), rpma_send(3), rpma_send_with_imm(3), rpma_write(3),
- * rpma_write_atomic(3), rpma_write_with_imm(3), librpma(7) and
+ * rpma_atomic_write(3), rpma_write_with_imm(3), librpma(7) and
  * https://pmem.io/rpma/
  */
 int rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
