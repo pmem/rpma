@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -16,6 +16,8 @@ function(add_test_log name)
 		${name}.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log_default.c
 		${LIBRPMA_SOURCE_DIR}/log.c)
+
+	target_compile_definitions(${test} PRIVATE RPMA_UNIT_TESTS)
 
 	if ("${ARGV1}" STREQUAL "DEBUG")
 		target_compile_definitions(${test} PRIVATE DEBUG)
