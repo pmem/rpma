@@ -46,7 +46,7 @@ int rpma_mr_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, enum ibv_wr_opcode operation,
-	uint32_t imm, const void *op_context, bool fence);
+	uint32_t imm, const void *op_context);
 
 /*
  * ASSUMPTIONS
