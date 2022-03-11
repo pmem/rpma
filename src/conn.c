@@ -334,7 +334,7 @@ rpma_write(struct rpma_conn *conn,
 			src, src_offset,
 			len, flags,
 			IBV_WR_RDMA_WRITE, 0,
-			op_context, false);
+			op_context);
 }
 
 /*
@@ -357,7 +357,7 @@ rpma_write_with_imm(struct rpma_conn *conn,
 			src, src_offset,
 			len, flags,
 			IBV_WR_RDMA_WRITE_WITH_IMM, imm,
-			op_context, false);
+			op_context);
 }
 
 /*

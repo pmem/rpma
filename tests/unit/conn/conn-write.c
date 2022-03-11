@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * conn-write.c -- the rpma_write() unit tests
@@ -166,7 +166,6 @@ write__success(void **cstate_ptr)
 	expect_value(rpma_mr_write, operation, IBV_WR_RDMA_WRITE);
 	expect_value(rpma_mr_write, imm, 0);
 	expect_value(rpma_mr_write, op_context, MOCK_OP_CONTEXT);
-	expect_value(rpma_mr_write, fence, MOCK_NOFENCE);
 	will_return(rpma_mr_write, MOCK_OK);
 
 	/* run test */
