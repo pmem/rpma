@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * macros.c -- RPMA_LOG_* macros unit tests
@@ -43,8 +43,9 @@ int
 setup_threshold(void **level_ptr)
 {
 	enum rpma_log_level level = **(enum rpma_log_level **)level_ptr;
-	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, level);
-
+	while (RPMA_E_AGAIN == rpma_log_set_threshold(
+				RPMA_LOG_THRESHOLD, level))
+		;
 	return 0;
 }
 
@@ -75,7 +76,9 @@ log__all(void **level_ptr)
 		 * The secondary threshold should not affect the macros
 		 * behaviour.
 		 */
-		rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, secondary);
+		while (RPMA_E_AGAIN == rpma_log_set_threshold(
+					RPMA_LOG_THRESHOLD_AUX, secondary))
+			;
 
 		if (RPMA_LOG_LEVEL_NOTICE <= primary) {
 			MOCK_CONFIGURE_LOG_FUNC(RPMA_LOG_LEVEL_NOTICE);
@@ -103,7 +106,9 @@ int
 main(int argc, char *argv[])
 {
 	/* set a custom logging function */
-	rpma_log_set_function(mock_log_function);
+	while (RPMA_E_AGAIN == rpma_log_set_function(
+				mock_log_function))
+		;
 
 	/* prestates */
 	enum rpma_log_level Level_disabled = RPMA_LOG_DISABLED;

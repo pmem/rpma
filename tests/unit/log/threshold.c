@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * threshold.c -- rpma_log_[get/set]_threshold unit tests
@@ -95,8 +95,12 @@ threshold_lifecycle(void **unused)
 	for (int i = RPMA_LOG_THRESHOLD; i <= RPMA_LOG_THRESHOLD_AUX; i++) {
 		for (int j = RPMA_LOG_DISABLED; j <= RPMA_LOG_LEVEL_DEBUG;
 				j++) {
-			int ret = rpma_log_set_threshold(
+			int ret;
+			do {
+				ret = rpma_log_set_threshold(
 					(enum rpma_log_threshold)i, j);
+			} while (ret == RPMA_E_AGAIN);
+
 			assert_int_equal(ret, 0);
 
 			ret = rpma_log_get_threshold(
