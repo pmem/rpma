@@ -1617,7 +1617,8 @@ enum rpma_conn_event {
 	RPMA_CONN_ESTABLISHED,		/* Connection established */
 	RPMA_CONN_CLOSED,		/* Connection closed */
 	RPMA_CONN_LOST,			/* Connection lost */
-	RPMA_CONN_REJECTED		/* Connection rejected */
+	RPMA_CONN_REJECTED,		/* Connection rejected */
+	RPMA_CONN_UNREACHABLE		/* Connection unreachable */
 };
 
 /** 3
@@ -1634,6 +1635,7 @@ enum rpma_conn_event {
  *		RPMA_CONN_CLOSED,
  *		RPMA_CONN_LOST,
  *		RPMA_CONN_REJECTED,
+ *		RPMA_CONN_UNREACHABLE
  *	};
  *
  *	int rpma_conn_next_event(struct rpma_conn *conn,
@@ -1647,6 +1649,7 @@ enum rpma_conn_event {
  * - RPMA_CONN_CLOSED - connection closed
  * - RPMA_CONN_LOST - connection lost
  * - RPMA_CONN_REJECTED - connection rejected
+ * - RPMA_CONN_UNREACHABLE - connection unreachable
  *
  * RETURN VALUE
  * The rpma_conn_next_event() function returns 0 on success or a negative
@@ -1680,7 +1683,8 @@ int rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event);
  *		RPMA_CONN_ESTABLISHED,
  *		RPMA_CONN_CLOSED,
  *		RPMA_CONN_LOST,
- *		RPMA_CONN_REJECTED
+ *		RPMA_CONN_REJECTED,
+ *		RPMA_CONN_UNREACHABLE
  *	};
  *
  * DESCRIPTION
