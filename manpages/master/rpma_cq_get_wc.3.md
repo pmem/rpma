@@ -81,5 +81,5 @@ SEE ALSO
 **rpma\_conn\_req\_recv**(3), **rpma\_cq\_wait**(3),
 **rpma\_cq\_get\_fd**(3), **rpma\_flush**(3), **rpma\_read**(3),
 **rpma\_recv**(3), **rpma\_send**(3), **rpma\_send\_with\_imm**(3),
-**rpma\_write**(3), **rpma\_write\_atomic**(3),
+**rpma\_write**(3), **rpma\_atomic\_write**(3),
 **rpma\_write\_with\_imm**(3), **librpma**(7) and https://pmem.io/rpma/

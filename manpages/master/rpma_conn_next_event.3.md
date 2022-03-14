@@ -30,6 +30,7 @@ SYNOPSIS
                   RPMA_CONN_CLOSED,
                   RPMA_CONN_LOST,
                   RPMA_CONN_REJECTED,
+                  RPMA_CONN_UNREACHABLE
           };
 
           int rpma_conn_next_event(struct rpma_conn *conn,
@@ -50,6 +51,8 @@ connection. Types of events:
 -   RPMA\_CONN\_LOST - connection lost
 
 -   RPMA\_CONN\_REJECTED - connection rejected
+
+-   RPMA\_CONN\_UNREACHABLE - connection unreachable
 
 RETURN VALUE
 ============
