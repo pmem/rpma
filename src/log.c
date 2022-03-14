@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * log.c -- support for logging output to either syslog or stderr or
@@ -47,7 +47,9 @@ rpma_log_init()
 {
 	/* enable the default logging function */
 	rpma_log_default_init();
-	rpma_log_set_function(RPMA_LOG_USE_DEFAULT_FUNCTION);
+	while (RPMA_E_AGAIN == rpma_log_set_function(
+				RPMA_LOG_USE_DEFAULT_FUNCTION))
+		;
 }
 
 /*
@@ -69,6 +71,13 @@ rpma_log_fini()
 
 /* public librpma log API */
 
+#ifdef RPMA_UNIT_TESTS
+int mock__sync_bool_compare_and_swap__function(rpma_log_function **ptr,
+	rpma_log_function *oldval, rpma_log_function *newval);
+#define __sync_bool_compare_and_swap \
+	mock__sync_bool_compare_and_swap__function
+#endif
+
 /*
  * rpma_log_set_function -- set the log function pointer either to
  * a user-provided function pointer or to the default logging function.
@@ -89,6 +98,14 @@ rpma_log_set_function(rpma_log_function *log_function)
 		return RPMA_E_AGAIN;
 
 }
+
+#ifdef RPMA_UNIT_TESTS
+#undef __sync_bool_compare_and_swap
+int mock__sync_bool_compare_and_swap__threshold(enum rpma_log_level *ptr,
+	enum rpma_log_level oldval, enum rpma_log_level newval);
+#define __sync_bool_compare_and_swap \
+	mock__sync_bool_compare_and_swap__threshold
+#endif
 
 /*
  * rpma_log_set_threshold -- set the log level threshold
@@ -113,6 +130,10 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 	else
 		return RPMA_E_AGAIN;
 }
+
+#ifdef RPMA_UNIT_TESTS
+#undef __sync_bool_compare_and_swap
+#endif
 
 /*
  * rpma_log_get_threshold -- get the log level threshold
