@@ -337,7 +337,7 @@ rpma_write(struct rpma_conn *conn,
 			src, src_offset,
 			len, flags,
 			IBV_WR_RDMA_WRITE, 0,
-			op_context, false);
+			op_context);
 }
 
 /*
@@ -360,30 +360,7 @@ rpma_write_with_imm(struct rpma_conn *conn,
 			src, src_offset,
 			len, flags,
 			IBV_WR_RDMA_WRITE_WITH_IMM, imm,
-			op_context, false);
-}
-
-/*
- * rpma_write_atomic -- initiate the atomic write operation
- */
-int
-rpma_write_atomic(struct rpma_conn *conn,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src,  size_t src_offset,
-	int flags, const void *op_context)
-{
-	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
-		return RPMA_E_INVAL;
-
-	if (dst_offset % RPMA_ATOMIC_WRITE_ALIGNMENT != 0)
-		return RPMA_E_INVAL;
-
-	return rpma_mr_write(conn->id->qp,
-			dst, dst_offset,
-			src, src_offset,
-			RPMA_ATOMIC_WRITE_ALIGNMENT, flags,
-			IBV_WR_RDMA_WRITE, 0,
-			op_context, true);
+			op_context);
 }
 
 /*
