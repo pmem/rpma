@@ -31,7 +31,8 @@ SYNOPSIS
                   RPMA_CONN_ESTABLISHED,
                   RPMA_CONN_CLOSED,
                   RPMA_CONN_LOST,
-                  RPMA_CONN_REJECTED
+                  RPMA_CONN_REJECTED,
+                  RPMA_CONN_UNREACHABLE
           };
 
 DESCRIPTION

@@ -48,10 +48,10 @@ accessing a remote memory:
 -   **rpma\_write**() - initiates transferring data from the local
     memory to the remote memory),
 
--   **rpma\_write\_atomic**() - works like **rpma\_write**(), but it
+-   **rpma\_atomic\_write**() - works like **rpma\_write**(), but it
     allows transferring 8 bytes of data (RPMA\_ATOMIC\_WRITE\_ALIGNMENT)
     and storing them atomically in the remote memory (see
-    **rpma\_write\_atomic**(3) for details and restrictions), and:
+    **rpma\_atomic\_write**(3) for details and restrictions), and:
 
 -   **rpma\_flush**() - initiates finalizing a transfer of data to the
     remote memory. Possible types of **rpma\_flush**() operation:
