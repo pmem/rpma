@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * example.c -- an example of a multithreaded test
@@ -68,7 +68,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
 /*
  * seq_init -- a sequential step of initialization
  *
- * Everything that has be initialized before the test but is not thread-safe
+ * Everything that has been initialized before the test but is not thread-safe
  * should go here.
  */
 static void
