@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021-2022, Intel Corporation */
+/* Copyright 2022, Intel Corporation */
 
 /*
- * rpma_conn_get_private_data.c -- rpma_conn_get_private_data multithreaded test
+ * rpma_mr_remote_from_descriptor.c -- rpma_mr_remote_from_descriptor
+ * multithreaded test
  */
 
 #include <stdlib.h>
@@ -13,16 +14,38 @@
 
 /* the client's part */
 
-/*
- * prestate_init -- connect with the server, get the private date
- * and save it in order to verify it later.
- */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 
+	int ret;
+
 	get_private_data(pr, tr);
+
+	/*
+	 * Create a remote memory registration structure from the received
+	 * descriptor.
+	 */
+	struct common_data *dst_data = pr->pdata_exp.ptr;
+
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
+			dst_data->mr_desc_size, &pr->mr_ptr);
+	if (ret) {
+		MTT_RPMA_ERR(tr, "rpma_mr_remote_from_descriptor", ret);
+		goto err_conn_disconnect;
+	};
+
+	ret = rpma_mr_remote_get_size(pr->mr_ptr, &pr->mr_size);
+	if (ret) {
+		MTT_RPMA_ERR(tr, "rpma_mr_remote_get_size", ret);
+		goto err_conn_disconnect;
+	};
+
+	return;
+
+err_conn_disconnect:
+	(void) rpma_conn_disconnect(pr->conn);
 }
 
 /*
@@ -33,33 +56,28 @@ thread(unsigned id, void *prestate, void *state,
 		struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	struct rpma_conn_private_data pdata;
+	struct rpma_mr_remote *mr_ptr;
+	struct common_data *dst_data = pr->pdata_exp.ptr;
 
-	/* get a connection's private data */
-	int ret = rpma_conn_get_private_data(pr->conn, &pdata);
+	int ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
+				dst_data->mr_desc_size, &mr_ptr);
+
 	if (ret) {
-		MTT_RPMA_ERR(result, "rpma_conn_get_private_data", ret);
+		MTT_RPMA_ERR(result, "rpma_mr_remote_from_descriptor", ret);
 		return;
-	} else if (pdata.ptr == NULL) {
+	} else if (mr_ptr == NULL) {
 		MTT_ERR_MSG(result,
-			"The server has not provided the connection's private data",
-			-1);
+			"Getting mr_remote from descriptor failed", -1);
 		return;
 	}
 
-	/* verify the length of the received private data */
-	if (pdata.len != pr->pdata_exp.len) {
-		MTT_ERR_MSG(result, "Wrong length of the private data", -1);
-		return;
-	}
-
-	/* verify the content of the received private data */
-	if (memcmp(pdata.ptr, pr->pdata_exp.ptr, pdata.len) != 0)
-		MTT_ERR_MSG(result, "Wrong content of the private data", -1);
+	if (memcmp(mr_ptr, pr->mr_ptr, pr->mr_size) != 0)
+		MTT_ERR_MSG(result, "Wrong content of the mr_remote", -1);
 }
 
 /*
- * prestate_fini -- disconnect and delete the peer object
+ * prestate_fini -- deregister and free the memory region,
+ * disconnect and delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
@@ -92,6 +110,9 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 struct server_prestate {
 	char *addr;
 	unsigned port;
+
+	/* the expected value of the private data */
+	struct rpma_conn_private_data pdata_exp;
 };
 
 /*
@@ -105,7 +126,7 @@ int server_main(char *addr, unsigned port);
 int
 server_func(void *prestate)
 {
-	struct server_prestate *pst = prestate;
+	struct server_prestate *pst = (struct server_prestate *)prestate;
 	return server_main(pst->addr, pst->port);
 }
 
