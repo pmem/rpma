@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <librpma.h>
+#include <unistd.h>
 
 #include "mtt.h"
 
