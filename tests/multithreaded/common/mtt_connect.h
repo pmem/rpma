@@ -8,6 +8,8 @@
 #ifndef MTT_CONNECT_H
 #define MTT_CONNECT_H
 
+#define DESCRIPTORS_MAX_SIZE 24
+
 int mtt_server_listen(char *addr, unsigned port, struct rpma_peer **peer_ptr,
 		struct rpma_ep **ep_ptr);
 
