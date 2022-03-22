@@ -9,10 +9,18 @@
 #include <librpma.h>
 
 #include "mtt.h"
+<<<<<<< HEAD
 #include "mtt_connect.h"
+||||||| parent of 693f39e0... test: add the rpma_mr_remote_from_descriptor multithreaded test
+
+#define MAX_CONN_RETRY 10
+=======
+#include "utils.h"
+>>>>>>> 693f39e0... test: add the rpma_mr_remote_from_descriptor multithreaded test
 
 /* the client's part */
 
+<<<<<<< HEAD
 struct prestate {
 	char *addr;
 	unsigned port;
@@ -23,6 +31,19 @@ struct prestate {
 	struct rpma_conn_private_data pdata;
 };
 
+||||||| parent of 693f39e0... test: add the rpma_mr_remote_from_descriptor multithreaded test
+struct prestate {
+	char *addr;
+	unsigned port;
+	struct rpma_peer *peer;
+	struct rpma_conn *conn;
+
+	/* the expected value of the private data */
+	struct rpma_conn_private_data pdata_exp;
+};
+
+=======
+>>>>>>> 693f39e0... test: add the rpma_mr_remote_from_descriptor multithreaded test
 /*
  * prestate_init -- connect with the server, get the private data
  * and save it in order to verify it later
