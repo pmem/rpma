@@ -8,6 +8,8 @@
 #ifndef MTT_CONNECT_H
 #define MTT_CONNECT_H
 
+#define DESCRIPTORS_MAX_SIZE 24
+
 int mtt_server_listen(char *addr, unsigned port, struct rpma_peer **peer_ptr,
 		struct rpma_ep **ep_ptr);
 
@@ -30,3 +32,13 @@ void mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr,
 		struct rpma_peer **peer_ptr);
 
 #endif /* MTT_CONNECT_H */
+
+struct common_data {
+	uint16_t data_offset;	/* user data offset */
+	uint8_t mr_desc_size;	/* size of mr_desc in descriptors[] */
+	uint8_t pcfg_desc_size;	/* size of pcfg_desc in descriptors[] */
+	/* buffer containing mr_desc and pcfg_desc */
+	char descriptors[DESCRIPTORS_MAX_SIZE];
+};
+
+void *malloc_aligned(size_t size);
