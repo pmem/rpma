@@ -25,6 +25,7 @@ ENV BASE_DEPS "\
 	git \
 	make \
 	pkgconf-pkg-config \
+	shadow \
 	sudo \
 	which"
 
