@@ -12,6 +12,7 @@
 FROM virtuozzo/vzlinux8:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
+RUN echo "sslverify=false" >> /etc/yum.conf
 RUN dnf update -y
 RUN dnf install -y epel-release
 RUN dnf install -y 'dnf-command(config-manager)'
