@@ -22,32 +22,12 @@ The *Performance - Tuning* aims to collect all tested and proven procedures wit
     * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better) e.g.:
       * Power and Performance - CPU Power and Performance Policy - **Performance**
       * System Acoustic and Performance Configuration - Set Fan Profile - **Performance**
-
-### Ice Lake
-
-* Platform and CPU related [[1.1]][opt-part-1]
-    * Disable lower CPU power states: C-states[[1.2]][power-states] and memory and PCI-e power saving states. Settings vary from vendor to vendor so some of them may not be available for you e.g.:
-      * Advanced Power Management Configuration - Package C State Control - Package C-State - **C0/C1 state**
-    * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better) e.g.:
-      * System Acoustic and Performance Configuration - Set Fan Profile - **Performance**
-
-### Cascade Lake
-
 * PMem-related
     * configure maximum available operating power for your PMem devices **[XXX source and details are missing]**. **Note**: Different sizes of PMem devices have different performance capabilites. If it is important for you, pick the right one for your application e.g.: [[1.3]][pmem-200-brief]
       * Memory Configuration - Average Power Budget - **18 mW**
       * Memory Configuration - NVM Performance Setting - **Latency Optimized**
 
-### Ice Lake
-
-* PMem-related
-    * configure maximum available operating power for your PMem devices **[XXX source and details are missing]**. **Note**: Different sizes of PMem devices have different performance capabilites. If it is important for you, pick the right one for your application e.g.: [[1.3]][pmem-200-brief]
-      * Memory Configuration - PMem Configuration - 200 Series PMem Average Power Limit (in mW) - **15 mW**
-      * Memory Configuration - PMem Configuration - PMem Performance Setting - **BW Optimized**
-
-### Not yet confirmed [[1.1]][opt-part-1]
-
-### Cascade Lake
+#### Not yet confirmed [[1.1]][opt-part-1]
 
 * Ensure that *Intel® Turbo Boost*[[1.4]][turbo] is on.
   * Power and Performance - CPU P State Control - Intel Turbo Boost Technology - **Enabled**
@@ -61,6 +41,18 @@ The *Performance - Tuning* aims to collect all tested and proven procedures wit
 * Disable Hardware Power Management, introduced in the Intel® Xeon® processor E5-2600 v4 product family. It provides more control over power management, but it can cause jitter and so is not recommended for latency-sensitive applications.
 
 ### Ice Lake
+
+* Platform and CPU related [[1.1]][opt-part-1]
+    * Disable lower CPU power states: C-states[[1.2]][power-states] and memory and PCI-e power saving states. Settings vary from vendor to vendor so some of them may not be available for you e.g.:
+      * Advanced Power Management Configuration - Package C State Control - Package C-State - **C0/C1 state**
+    * Check for other settings that might influence performance. This varies greatly by OEM, but should include anything power related, such as fan speed settings (more is better) e.g.:
+      * System Acoustic and Performance Configuration - Set Fan Profile - **Performance**
+* PMem-related
+    * configure maximum available operating power for your PMem devices **[XXX source and details are missing]**. **Note**: Different sizes of PMem devices have different performance capabilites. If it is important for you, pick the right one for your application e.g.: [[1.3]][pmem-200-brief]
+      * Memory Configuration - PMem Configuration - 200 Series PMem Average Power Limit (in mW) - **15 mW**
+      * Memory Configuration - PMem Configuration - PMem Performance Setting - **BW Optimized**
+
+#### Not yet confirmed [[1.1]][opt-part-1]
 
 * Disable hyper-threading to reduce variations in latency (jitter).
   * Processor Configuration - Intel(R) Hyper-Threading Tech - **Disabled**
