@@ -12,6 +12,10 @@
 FROM virtuozzo/vzlinux8:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
+# Temporary workaround for the error:
+# Curl error (60): Peer certificate cannot be authenticated with given CA certificates
+RUN echo "sslverify=false" >> /etc/yum.conf
+
 RUN dnf update -y
 RUN dnf install -y epel-release
 RUN dnf install -y 'dnf-command(config-manager)'
