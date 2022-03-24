@@ -11,7 +11,7 @@
 #include <string.h>
 #include <librpma.h>
 
-#ifdef USE_LIBPMEM
+#if defined USE_LIBPMEM || USE_LIBPMEM2
 
 #define PMEM_USAGE \
 "where <pmem-path> can be:\n\

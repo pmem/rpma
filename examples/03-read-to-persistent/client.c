@@ -11,14 +11,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
+#include "client_pmem_map_file.h"
 #include "hello.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+#if defined USE_LIBPMEM2 || USE_LIBPMEM
+#define USE_PMEM 1
+#else
+#undef USE_PMEM
+#endif /* USE_LIBPMEM2 */
+
+#ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
@@ -55,33 +61,23 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *mr_ptr = NULL;
-	size_t mr_size = 0;
-	size_t data_offset = 0;
+	struct example_mem mem;
+	mem.mr_ptr = NULL;
+	mem.mr_size = 0;
+	mem.data_offset = 0;
 	struct rpma_mr_local *mr = NULL;
 	struct hello_t *hello = NULL;
 
-#ifdef USE_LIBPMEM
-	int is_pmem = 0;
+#ifdef USE_PMEM
+
+	mem.is_pmem = 0;
+
 	if (argc >= 4) {
 		char *path = argv[3];
 
-		/* map the file */
-		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", path);
-			return -1;
-		}
-
-		/* pmem is expected */
-		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-				path);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
+		ret = client_pmem_map_file(path, argc, &mem);
+		if (ret)
+			goto err_free;
 
 		/*
 		 * At the beginning of the persistent memory, a signature is
@@ -90,52 +86,52 @@ main(int argc, char *argv[])
 		 * the signature to convey any meaningful content and be usable
 		 * as a persistent store.
 		 */
-		if (mr_size < SIGNATURE_LEN) {
+		if (mem.mr_size < SIGNATURE_LEN) {
 			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, SIGNATURE_LEN);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
+					path, mem.mr_size, SIGNATURE_LEN);
+			ret = -1;
+			goto err_free;
 		}
-		data_offset = SIGNATURE_LEN;
+		mem.data_offset = SIGNATURE_LEN;
 
 		/*
 		 * The space under the offset is intended for storing the hello
 		 * structure. So the total space is assumed to be at least
 		 * 1 KiB + offset of the string contents.
 		 */
-		if (mr_size - data_offset < sizeof(struct hello_t)) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, sizeof(struct hello_t));
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
+		if (mem.mr_size - mem.data_offset < sizeof(struct hello_t)) {
+			fprintf(stderr, "%s too small (%zu < %zu)\n", path,
+				mem.mr_size, sizeof(struct hello_t));
+			ret = -1;
+			goto err_free;
 		}
 
-		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
+		hello = (struct hello_t *)
+				((uintptr_t)mem.mr_ptr + mem.data_offset);
 
 		/*
 		 * If the signature is not in place the persistent content has
 		 * to be initialized and persisted.
 		 */
-		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+		if (strncmp(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
 			/* write an initial value and persist it */
 			write_hello_str(hello, en);
-			pmem_persist(hello, sizeof(struct hello_t));
+			mem.persist(hello, sizeof(struct hello_t));
 			/* write the signature to mark the content as valid */
-			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(mr_ptr, SIGNATURE_LEN);
+			memcpy(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+			mem.persist(mem.mr_ptr, SIGNATURE_LEN);
 		}
 	}
 #endif
-
 	/* if no pmem support or it is not provided */
-	if (mr_ptr == NULL) {
+	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mr_ptr = malloc_aligned(sizeof(struct hello_t));
-		if (mr_ptr == NULL)
+		mem.mr_ptr = malloc_aligned(sizeof(struct hello_t));
+		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mr_size = sizeof(struct hello_t);
-		hello = mr_ptr;
+		mem.mr_size = sizeof(struct hello_t);
+		hello = (struct hello_t *)mem.mr_ptr;
 
 		/* write an initial value */
 		write_hello_str(hello, en);
@@ -155,7 +151,8 @@ main(int argc, char *argv[])
 		goto err_free;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_READ_SRC, &mr);
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
+			RPMA_MR_USAGE_READ_SRC, &mr);
 	if (ret)
 		goto err_peer_delete;
 
@@ -167,7 +164,7 @@ main(int argc, char *argv[])
 
 	/* calculate data for the server read */
 	struct common_data data = {0};
-	data.data_offset = data_offset + offsetof(struct hello_t, str);
+	data.data_offset = mem.data_offset + offsetof(struct hello_t, str);
 	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
@@ -195,9 +192,9 @@ main(int argc, char *argv[])
 	 * surprising.
 	 */
 	translate(hello);
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_persist(hello, sizeof(struct hello_t));
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		mem.persist(hello, sizeof(struct hello_t));
 	}
 #endif
 
@@ -212,15 +209,14 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
-		mr_ptr = NULL;
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		client_pmem_unmap_file(&mem);
 	}
 #endif
-
-	if (mr_ptr != NULL)
-		free(mr_ptr);
+	if (mem.mr_ptr != NULL) {
+		free(mem.mr_ptr);
+	}
 
 	return ret;
 }
