@@ -16,6 +16,9 @@
 #ifdef USE_LIBPMEM
 #include <libpmem.h>
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#elif USE_LIBPMEM2
+#include <libpmem2.h>
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_LIBPMEM */
@@ -124,6 +127,99 @@ main(int argc, char *argv[])
 			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
 			pmem_persist(mr_ptr, SIGNATURE_LEN);
 		}
+	}
+#elif USE_LIBPMEM2
+	int fd;
+	struct pmem2_config *cfg = NULL;
+	struct pmem2_map *map = NULL;
+	struct pmem2_source *src = NULL;
+	librpma_fio_persist_fn persist;
+	if (argc >= 4) {
+		char *path = argv[3];
+
+		if ((fd = open(path, O_RDWR)) < 0) {
+			(void) fprintf(stderr, "cannot open file\n");
+			return -1;
+		}
+
+		if (pmem2_source_from_fd(&src, fd) != 0) {
+			(void) fprintf("pmem2_source_from_fd() failed\n");
+			goto err_close;
+		}
+
+		if (pmem2_config_new(&cfg) != 0) {
+			(void) fprintf("fio: pmem2_config_new() failed\n");
+			goto err_source_delete;
+		}
+
+		if (pmem2_config_set_required_store_granularity(cfg,
+						PMEM2_GRANULARITY_CACHE_LINE) != 0) {
+			(void) fprintf("fio: pmem2_config_set_required_store_granularity()"
+					"failed: %s\n", pmem2_errormsg());
+			goto err_config_delete;
+		}
+
+		if (pmem2_map_new(&map, cfg, src) != 0) {
+			(void) fprintf("fio: pmem2_map_new(%s) failed: %s\n",
+					path, pmem2_errormsg());
+			goto err_config_delete;
+		}
+
+		mr_size = pmem2_map_get_size(map);
+
+		/*
+		 * At the beginning of the persistent memory, a signature is
+		 * stored which marks its content as valid. So the length
+		 * of the mapped memory has to be at least of the length of
+		 * the signature to convey any meaningful content and be usable
+		 * as a persistent store.
+		 */
+		if (mr_size < SIGNATURE_LEN) {
+			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, SIGNATURE_LEN);
+			goto err_map_delete;
+		}
+		data_offset = SIGNATURE_LEN;
+
+		/*
+		 * The space under the offset is intended for storing the hello
+		 * structure. So the total space is assumed to be at least
+		 * 1 KiB + offset of the string contents.
+		 */
+		if (mr_size - data_offset < sizeof(struct hello_t)) {
+			fprintf(stderr, "%s too small (%zu < %zu)\n",
+					path, mr_size, sizeof(struct hello_t));
+			goto err_map_delete;
+		}
+
+		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
+
+		/* Get libpmem2 persist function from pmem2_map */
+		persist = pmem2_get_persist_fn(map);
+
+		/*
+		 * If the signature is not in place the persistent content has
+		 * to be initialized and persisted.
+		 */
+		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+			/* write an initial value and persist it */
+			write_hello_str(hello, en);
+			persist(hello, sizeof(struct hello_t));
+			/* write the signature to mark the content as valid */
+			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+			persist(mr_ptr, SIGNATURE_LEN);
+		}
+
+err_map_delete:
+		pmem2_map_delete(&map);
+err_config_delete:
+		pmem2_config_delete(&cfg);
+err_source_delete:
+		pmem2_source_delete(&src);
+err_close:
+		close(fd);
+
+		return -1;
 	}
 #endif
 
