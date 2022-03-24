@@ -11,7 +11,9 @@
 #include <string.h>
 #include <librpma.h>
 
-#ifdef USE_LIBPMEM
+#include "../03-read-to-persistent/client_pmem_map_file.h" /* for USE_PMEM */
+
+#if defined USE_PMEM
 
 #define PMEM_USAGE \
 "where <pmem-path> can be:\n\
