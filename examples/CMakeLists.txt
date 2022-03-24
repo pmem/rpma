@@ -110,8 +110,18 @@ add_example(NAME 02-read-to-volatile BIN client USE_LIBIBVERBS
 	SRCS 02-read-to-volatile/client.c common/common-conn.c)
 add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 03-read-to-persistent/server.c common/common-conn.c)
-add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
-	SRCS 03-read-to-persistent/client.c common/common-conn.c)
+if (LIBPMEM2_FOUND)
+	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/client.c common/common-conn.c
+		common/client_pmem2_map_file.c)
+elseif(LIBPMEM_FOUND)
+	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/client.c common/common-conn.c
+		common/client_pmem_map_file.c)
+else()
+	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/client.c common/common-conn.c)
+endif()
 add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 04-write-to-persistent/server.c common/common-conn.c)
 add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
