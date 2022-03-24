@@ -8,11 +8,11 @@
 #ifndef EXAMPLES_COMMON
 #define EXAMPLES_COMMON
 
+#include "common-pmem.h"
 #include <string.h>
 #include <librpma.h>
 
-#ifdef USE_LIBPMEM
-
+#ifdef USE_PMEM
 #define PMEM_USAGE \
 "where <pmem-path> can be:\n\
   - a Device DAX (/dev/dax0.0 for example) or\n\
@@ -26,7 +26,7 @@
 #define PMEM_USAGE ""
 #define NO_PMEM_MSG \
 	"The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead.\n"
-#endif
+#endif /* USE_PMEM */
 
 /*
  * Limited by the maximum length of the private data
