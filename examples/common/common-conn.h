@@ -5,14 +5,14 @@
  * common-conn.h -- a common connection functions declarations for examples
  */
 
-#ifndef EXAMPLES_COMMON
-#define EXAMPLES_COMMON
+#ifndef COMMON_CONN_H
+#define COMMON_CONN_H
 
 #include <string.h>
 #include <librpma.h>
+#include "common-pmem.h"
 
-#ifdef USE_LIBPMEM
-
+#ifdef USE_PMEM
 #define PMEM_USAGE \
 "where <pmem-path> can be:\n\
   - a Device DAX (/dev/dax0.0 for example) or\n\
@@ -26,7 +26,7 @@
 #define PMEM_USAGE ""
 #define NO_PMEM_MSG \
 	"The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead.\n"
-#endif
+#endif /* USE_PMEM */
 
 /*
  * Limited by the maximum length of the private data
@@ -71,4 +71,4 @@ int server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 int common_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 int common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr);
 
-#endif /* EXAMPLES_COMMON */
+#endif /* COMMON_CONN_H */
