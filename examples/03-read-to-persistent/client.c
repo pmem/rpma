@@ -13,12 +13,22 @@
 #include "common-conn.h"
 #include "hello.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+
+#ifdef USE_LIBPMEM2
+#include "client_pmem2_map_file.h"
+#define USE_PMEM 1
+#elif USE_LIBPMEM
+#include "client_pmem_map_file.h"
+#define USE_PMEM 1
+#else
+#undef USE_PMEM
+#endif /* USE_LIBPMEM2 */
+
+#ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 static inline void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
@@ -61,72 +71,59 @@ main(int argc, char *argv[])
 	struct rpma_mr_local *mr = NULL;
 	struct hello_t *hello = NULL;
 
-#ifdef USE_LIBPMEM
-	int is_pmem = 0;
-	if (argc >= 4) {
-		char *path = argv[3];
+#ifdef USE_PMEM
+	struct example_mem mem;
+	mem.mr_ptr = mr_ptr;
+	mem.mr_size = &mr_size;
+	mem.data_offset = &data_offset;
+	char *path = argv[3];
 
-		/* map the file */
-		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", path);
-			return -1;
-		}
+	ret = client_pmem_map_file(path, argc, &mem);
+	if (ret)
+		goto err_free;
 
-		/* pmem is expected */
-		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-				path);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
+	/*
+	 * At the beginning of the persistent memory, a signature is
+	 * stored which marks its content as valid. So the length
+	 * of the mapped memory has to be at least of the length of
+	 * the signature to convey any meaningful content and be usable
+	 * as a persistent store.
+	 */
+	if (*mem.mr_size < SIGNATURE_LEN) {
+		(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
+				path, *mem.mr_size, SIGNATURE_LEN);
+		goto err_free;
+	}
+	*mem.data_offset = SIGNATURE_LEN;
 
-		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
-		 */
-		if (mr_size < SIGNATURE_LEN) {
-			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, SIGNATURE_LEN);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-		data_offset = SIGNATURE_LEN;
+	/*
+	 * The space under the offset is intended for storing the hello
+	 * structure. So the total space is assumed to be at least
+	 * 1 KiB + offset of the string contents.
+	 */
+	if (
+	*mem.mr_size - *mem.data_offset < sizeof(struct hello_t)) {
+		fprintf(stderr, "%s too small (%zu < %zu)\n", path,
+			*mem.mr_size, sizeof(struct hello_t));
+		goto err_free;
+	}
 
-		/*
-		 * The space under the offset is intended for storing the hello
-		 * structure. So the total space is assumed to be at least
-		 * 1 KiB + offset of the string contents.
-		 */
-		if (mr_size - data_offset < sizeof(struct hello_t)) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, sizeof(struct hello_t));
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
+	hello = (struct hello_t *)
+			((uintptr_t)mem.mr_ptr + *mem.data_offset);
 
-		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
-
-		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
-		 */
-		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial value and persist it */
-			write_hello_str(hello, en);
-			pmem_persist(hello, sizeof(struct hello_t));
-			/* write the signature to mark the content as valid */
-			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(mr_ptr, SIGNATURE_LEN);
-		}
+	/*
+	 * If the signature is not in place the persistent content has
+	 * to be initialized and persisted.
+	 */
+	if (strncmp(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+		/* write an initial value and persist it */
+		write_hello_str(hello, en);
+		mem.persist(hello, sizeof(struct hello_t));
+		/* write the signature to mark the content as valid */
+		memcpy(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
+		mem.persist(mem.mr_ptr, SIGNATURE_LEN);
 	}
 #endif
-
 	/* if no pmem support or it is not provided */
 	if (mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
@@ -195,10 +192,8 @@ main(int argc, char *argv[])
 	 * surprising.
 	 */
 	translate(hello);
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_persist(hello, sizeof(struct hello_t));
-	}
+#ifdef USE_PMEM
+	mem.persist(hello, sizeof(struct hello_t));
 #endif
 
 	(void) printf("Translation: %s\n", hello->str);
@@ -212,15 +207,12 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
-		mr_ptr = NULL;
-	}
+#ifdef USE_PMEM
+	client_pmem_unmap_file(&mem);
 #endif
-
-	if (mr_ptr != NULL)
+	if (mr_ptr != NULL) {
 		free(mr_ptr);
+	}
 
 	return ret;
 }
