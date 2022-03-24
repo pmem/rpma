@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -52,7 +52,23 @@ function(add_example name)
 		target_compile_definitions(${name}
 			PRIVATE USE_LIBPMEM)
 	endif()
+
+	if(LIBPMEM2_FOUND)
+		target_include_directories(${name}
+			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
+		target_link_libraries(${name} ${LIBPMEM2_LIBRARIES})
+		target_compile_definitions(${name}
+			PRIVATE USE_LIBPMEM2)
+	endif()
 endfunction()
 
+if (LIBPMEM2_FOUND)
+add_example(server server.c ../common/common-conn.c)
+add_example(client client.c ../common/common-conn.c client_pmem2_map_file.c)
+elseif(LIBPMEM_FOUND)
+add_example(server server.c ../common/common-conn.c)
+add_example(client client.c ../common/common-conn.c client_pmem_map_file.c)
+else()
 add_example(server server.c ../common/common-conn.c)
 add_example(client client.c ../common/common-conn.c)
+endif()
