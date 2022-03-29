@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -13,6 +13,7 @@
 #include "conn_req.h"
 #include "mocks-rpma-conn_cfg.h"
 #include "mocks-rpma-cq.h"
+#include "mocks-stdio.h"
 
 #define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
 #define MOCK_GET_RCQ(cstate) \
