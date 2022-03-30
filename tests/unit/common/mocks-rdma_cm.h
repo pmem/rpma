@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-rdma_cm.h -- a librdmacm mocks header
@@ -16,13 +16,16 @@
 
 #define MOCK_EVCH		(struct rdma_event_channel *)&Evch
 #define MOCK_CM_ID		(struct rdma_cm_id *)&Cm_id
+#define MOCK_PATH_REC		(struct ibv_sa_path_rec *)&Path_rec
 
 #define RDMA_MIGRATE_TO_EVCH 0
 #define RDMA_MIGRATE_FROM_EVCH 1
 #define RDMA_MIGRATE_COUNTER_INIT (RDMA_MIGRATE_TO_EVCH)
 
-extern struct rdma_event_channel Evch; /* mock event channel */
-extern struct rdma_cm_id Cm_id;	/* mock CM ID */
+extern struct rdma_event_channel Evch;	/* mock event channel */
+extern struct rdma_cm_id Cm_id;		/* mock CM ID */
+extern struct ibv_sa_path_rec Path_rec;	/* mock ibv_sa_path_rec */
+
 extern int Rdma_migrate_id_counter;
 
 /* mock control entities */
