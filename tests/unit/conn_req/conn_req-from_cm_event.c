@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -351,6 +351,7 @@ from_cm_event__private_data_store_E_NOMEM(void **cstate_ptr)
 	expect_value(rpma_peer_create_qp, cfg, cstate->get_cqe.cfg);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
+	will_return_maybe(__wrap_snprintf, MOCK_OK);
 	will_return(rpma_private_data_store, NULL); /* RPMA_E_NOMEM */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
@@ -397,6 +398,7 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 	expect_value(rpma_peer_create_qp, cfg, cstate->get_cqe.cfg);
 	will_return(rpma_peer_create_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
+	will_return_maybe(__wrap_snprintf, MOCK_STDIO_ERROR);
 	will_return(rpma_private_data_store, NULL); /* first RPMA_E_NOMEM */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
