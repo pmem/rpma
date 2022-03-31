@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-rpma-log.c -- librpma log.c module mocks
@@ -42,4 +42,19 @@ void
 rpma_log_fini()
 {
 	function_called();
+}
+
+/*
+ * rpma_log_fini -- rpma_log_get_threshold() mock
+ */
+int
+rpma_log_get_threshold(enum rpma_log_threshold threshold,
+				enum rpma_log_level *level)
+{
+	if (level == NULL)
+		return RPMA_E_INVAL;
+
+	*level = RPMA_LOG_LEVEL_NOTICE;
+
+	return 0;
 }

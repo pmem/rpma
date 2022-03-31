@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -39,6 +39,27 @@ struct rpma_conn_req {
 	/* a parent RPMA peer of this request - needed for derivative objects */
 	struct rpma_peer *peer;
 };
+
+/*
+ * rpma_snprintf_gid -- snprintf GID address to the given string
+ *                      (helper function)
+ */
+static inline int
+rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
+{
+	memset(gid, 0, size);
+	int ret = snprintf(gid, size,
+			"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+			raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6],
+			raw[7], raw[8], raw[9], raw[10], raw[11], raw[12],
+			raw[13], raw[14], raw[15]);
+	if (ret < 0) {
+		memset(gid, 0, size);
+		return RPMA_E_UNKNOWN;
+	}
+
+	return 0;
+}
 
 /*
  * rpma_conn_req_from_id -- allocate a new conn_req object from CM ID and equip
@@ -81,6 +102,33 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		ret = RPMA_E_NOMEM;
 		goto err_destroy_qp;
 	}
+
+/*
+ * Maximum length of GID address in the following format:
+ * 0000:0000:0000:0000:0000:ffff:c0a8:6604
+ */
+#define GID_STR_LEN 40
+	/* log GID addresses if log level >= RPMA_LOG_LEVEL_NOTICE */
+	enum rpma_log_level level;
+	ret = rpma_log_get_threshold(RPMA_LOG_THRESHOLD, &level);
+	if (ret == 0 && level >= RPMA_LOG_LEVEL_NOTICE) {
+		struct ibv_sa_path_rec *path_rec = id->route.path_rec;
+		char gid[GID_STR_LEN];
+		if (path_rec && !rpma_snprintf_gid(path_rec->sgid.raw,
+					gid, GID_STR_LEN)) {
+			RPMA_LOG_NOTICE("src GID = %s", gid);
+		} else {
+			RPMA_LOG_NOTICE("src GID is not available");
+		}
+
+		if (path_rec && !rpma_snprintf_gid(path_rec->dgid.raw,
+					gid, GID_STR_LEN)) {
+			RPMA_LOG_NOTICE("dst GID = %s", gid);
+		} else {
+			RPMA_LOG_NOTICE("dst GID is not available");
+		}
+	}
+#undef GID_STR_LEN
 
 	(*req_ptr)->edata = NULL;
 	(*req_ptr)->id = id;

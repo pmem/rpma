@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -22,6 +22,7 @@ function(add_test_conn_req name)
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-peer.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-private_data.c
               ${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
+              ${TEST_UNIT_COMMON_DIR}/mocks-stdio.c
               ${LIBRPMA_SOURCE_DIR}/conn_req.c
               ${LIBRPMA_SOURCE_DIR}/rpma_err.c)
 
@@ -29,7 +30,7 @@ function(add_test_conn_req name)
 
        set_target_properties(${name}
               PROPERTIES
-              LINK_FLAGS "-Wl,--wrap=_test_malloc")
+              LINK_FLAGS "-Wl,--wrap=_test_malloc,--wrap=snprintf,--wrap=vsnprintf")
 
        add_test_generic(NAME ${name} TRACERS none)
 endfunction()

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -15,8 +15,9 @@
 #include "mocks-rdma_cm.h"
 #include "test-common.h"
 
-struct rdma_event_channel Evch; /* mock event channel */
-struct rdma_cm_id Cm_id;	/* mock CM ID */
+struct rdma_event_channel Evch;		/* mock event channel */
+struct rdma_cm_id Cm_id;		/* mock CM ID */
+struct ibv_sa_path_rec Path_rec;	/* mock ibv_sa_path_rec */
 
 /*
  * Rdma_migrate_id_counter -- counter of calls to rdma_migrate_id() which allows
