@@ -9,5 +9,6 @@
     "REMOTE_JOB_NUMA": 999,
     "REMOTE_AUX_PARAMS": "-d XXX -R",
     "REMOTE_DIRECT_WRITE_TO_PMEM": false,
-    "REMOTE_PMEM_PATH": "for example: /dev/dax0.0 or /mnt/pmem0/file"
+    "REMOTE_PMEM_PATH": "for example: /dev/dax0.0 or /mnt/pmem0/file",
+    "xADR": false
 }
