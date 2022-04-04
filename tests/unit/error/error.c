@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * error.c -- unit tests for error-handling rpma-err module
@@ -78,6 +78,16 @@ err_2str__E_NO_NEXT(void **unused)
 }
 
 /*
+ * err_2str__E_AGAIN - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__E_AGAIN(void **unused)
+{
+	assert_string_equal(rpma_err_2str(RPMA_E_AGAIN),
+				"Temporary error, try again");
+}
+
+/*
  * err_2str__E_UNKOWN - sanity test for rpma_err_2str()
  */
 static void
@@ -97,6 +107,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(err_2str__E_INVAL),
 		cmocka_unit_test(err_2str__E_NO_COMPLETION),
 		cmocka_unit_test(err_2str__E_NO_NEXT),
+		cmocka_unit_test(err_2str__E_AGAIN),
 		cmocka_unit_test(err_2str__E_UNKNOWN),
 	};
 
