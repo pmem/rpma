@@ -217,6 +217,15 @@ main(int argc, char *argv[])
 		goto err_cfg_delete;
 
 	/*
+	 * XXXXXX
+	 * rpma_conn_cfg_set_compl_channel(cfg, false) should be removed.
+	 * The common completion channel should be used in this example,
+	 * so the example has to be modified accordingly.
+	 */
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, false)))
+		goto err_cfg_delete;
+
+	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
 	 */

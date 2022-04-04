@@ -191,6 +191,15 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	/*
+	 * XXXXXX
+	 * rpma_conn_cfg_set_compl_channel(cfg, false) should be removed.
+	 * The common completion channel should be used in this example,
+	 * so the example has to be modified accordingly.
+	 */
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, false)))
+		goto err_cfg_delete;
+
 	/* establish a new connection to a server listening at addr:port */
 	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
 		goto err_cfg_delete;

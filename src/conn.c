@@ -25,6 +25,7 @@ struct rpma_conn {
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
 	struct rpma_cq *cq; /* main CQ */
 	struct rpma_cq *rcq; /* receive CQ */
+	struct ibv_comp_channel *channel; /* shared completion channel */
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
 	struct rpma_flush *flush; /* flushing object */
@@ -44,7 +45,7 @@ struct rpma_conn {
 int
 rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
-		struct rpma_conn **conn_ptr)
+		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -78,6 +79,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	conn->evch = evch;
 	conn->cq = cq;
 	conn->rcq = rcq;
+	conn->channel = channel;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
 	conn->flush = flush;
@@ -200,6 +202,65 @@ err_private_data_discard:
 	rpma_private_data_discard(&conn->data);
 
 	return ret;
+}
+
+/*
+ * rpma_conn_wait -- wait for a completion event on the shared completion
+ * channel from CQ or RCQ, ack it and return the CQ that caused the event.
+ */
+int
+rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq)
+{
+	if (conn == NULL || cq == NULL || conn->channel == NULL)
+		return RPMA_E_INVAL;
+
+	/* wait for the completion event */
+	struct ibv_cq *ev_cq;	/* unused */
+	void *ev_ctx;		/* unused */
+	if (ibv_get_cq_event(conn->channel, &ev_cq, &ev_ctx))
+		return RPMA_E_NO_COMPLETION;
+
+	if (ev_cq == rpma_cq_get_ibv_cq(conn->cq)) {
+		*cq = conn->cq;
+	} else if (ev_cq == rpma_cq_get_ibv_cq(conn->rcq)) {
+		*cq = conn->rcq;
+	} else {
+		*cq = NULL;
+		return RPMA_E_UNKNOWN;
+	}
+
+	/*
+	 * ACK the collected CQ event.
+	 *
+	 * XXX for performance reasons, it may be beneficial to ACK more than
+	 * one CQ event at the same time.
+	 */
+	ibv_ack_cq_events(ev_cq, 1 /* # of CQ events */);
+
+	/* request for the next event on the CQ channel */
+	errno = ibv_req_notify_cq(ev_cq, 0 /* all completions */);
+	if (errno) {
+		*cq = NULL;
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_req_notify_cq()");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
+/*
+ * rpma_conn_get_compl_fd -- get a file descriptor of the shared
+ * completion channel from the connection
+ */
+int
+rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd)
+{
+	if (conn == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
+	*fd = conn->channel->fd;
+
+	return 0;
 }
 
 /*
