@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -32,5 +32,14 @@ int rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe);
  * - RPMA_E_INVAL - cfg or rcqe is NULL
  */
 int rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe);
+
+/*
+ * ERRORS
+ * rpma_conn_cfg_get_compl_channel() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or shared is NULL
+ */
+int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
+		bool *shared);
 
 #endif /* LIBRPMA_CONN_CFG_H */

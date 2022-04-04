@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2019-2021, Intel Corporation */
+/* Copyright 2019-2022, Intel Corporation */
 
 /*
  * rpma_err.c -- error-handling related librpma definitions
@@ -31,6 +31,8 @@ rpma_err_2str(int ret)
 		return "No next completion available";
 	case RPMA_E_NO_EVENT:
 		return "No next event available";
+	case RPMA_E_SHARED_CHANNEL:
+		return "Completion channel is shared";
 	case RPMA_E_UNKNOWN:
 	default:
 		return "Unknown error";

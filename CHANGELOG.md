@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- APIs:
+  - rpma_conn_cfg_get_compl_channel
+  - rpma_conn_cfg_set_compl_channel
+  - rpma_conn_get_compl_fd
+  - rpma_conn_wait
+  - error RPMA_E_SHARED_CHANNEL
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
+
+### Changed
+- APIs:
+  - rpma_cq_wait - returns RPMA_E_SHARED_CHANNEL if the completion channel is shared
 
 ## [0.14.0] - 2022-03-15
 ### Added

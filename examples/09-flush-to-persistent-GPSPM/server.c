@@ -216,6 +216,10 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	/* use separate completion channels for CQ and RCQ */
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, false)))
+		goto err_cfg_delete;
+
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
