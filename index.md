@@ -17,6 +17,7 @@ The documentation is available for:
 #### Recommended reading list
 
 * [Basic - Direct write to PMem](./documentation/basic-direct-write-to-pmem.html)
+* [Basic - Direct write to PMem for ICX](./documentation/basic-direct-write-to-pmem-ICX.html)
 * [Basic - HW & SW setup starting point](./documentation/basic-hw_sw_setup_starting_point.html)
 * [Performance - Tuning](./documentation/perf-tuning.html)
 
