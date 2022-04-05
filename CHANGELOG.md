@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
+- error message for RPMA_E_AGAIN: "Temporary error, try again"
 
 ## [0.14.0] - 2022-03-15
 ### Added
