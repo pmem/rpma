@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * mtt.c -- a multithreaded tests' runner
@@ -256,6 +256,9 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
 		MTT_ERR(tr, "posix_memalign", errno);
 		return NULL;
 	}
+
+	/* zero the allocated memory */
+	memset(mem, 0, size);
 
 	return mem;
 }
