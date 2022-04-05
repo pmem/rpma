@@ -245,7 +245,10 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
 {
 	long pagesize = sysconf(_SC_PAGESIZE);
 	if (pagesize < 0) {
-		MTT_ERR(tr, "sysconf", errno);
+		if (tr)
+			MTT_ERR(tr, "sysconf", errno);
+		else
+			CHILD_ERR("[CHILD]", "sysconf", strerror(errno));
 		return NULL;
 	}
 
@@ -253,7 +256,11 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
 	void *mem;
 	int ret = posix_memalign(&mem, (size_t)pagesize, size);
 	if (ret) {
-		MTT_ERR(tr, "posix_memalign", errno);
+		if (tr)
+			MTT_ERR(tr, "posix_memalign", errno);
+		else
+			CHILD_ERR("[CHILD]", "posix_memalign",
+				strerror(errno));
 		return NULL;
 	}
 

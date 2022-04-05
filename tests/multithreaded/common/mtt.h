@@ -46,20 +46,26 @@ const char *mtt_base_file_name(const char *file_name);
 
 void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 
-/* on server's error print the error message to stderr */
-#define SERVER_ERR_MSG(msg) \
+/* on child's error print the error message to stderr */
+#define CHILD_ERR_MSG(child_name, msg) \
 	do { \
-		fprintf(stderr, "[SERVER] %s:%d %s() -> %s\n", \
-			mtt_base_file_name(__FILE__), __LINE__, __func__, \
-			msg); \
+		fprintf(stderr, "%s %s:%d %s() -> %s\n", \
+			child_name, mtt_base_file_name(__FILE__), \
+			__LINE__, __func__, msg); \
 	} while (0)
 
-#define SERVER_RPMA_ERR(func, err) \
+#define CHILD_ERR(child_name, func, msg) \
 	do { \
-		fprintf(stderr, "[SERVER] %s:%d %s() -> %s() failed: %s\n", \
-			mtt_base_file_name(__FILE__), __LINE__, __func__, \
-			func, rpma_err_2str(err)); \
+		fprintf(stderr, "%s %s:%d %s() -> %s() failed: %s\n", \
+			child_name, mtt_base_file_name(__FILE__), \
+			__LINE__, __func__, func, msg); \
 	} while (0)
+
+#define CHILD_RPMA_ERR(child_name, func, err) \
+	CHILD_ERR(child_name, func, rpma_err_2str(err))
+
+#define SERVER_ERR_MSG(msg)		CHILD_ERR_MSG("[SERVER]", msg)
+#define SERVER_RPMA_ERR(func, err)	CHILD_RPMA_ERR("[SERVER]", func, err)
 
 /* on error populate the result and the error message */
 #define MTT_ERR_MSG(result, msg, err) \
