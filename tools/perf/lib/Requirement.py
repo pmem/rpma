@@ -286,6 +286,11 @@ class Requirement:
         def is_met(cls, req, config):
             if 'REMOTE_DIRECT_WRITE_TO_PMEM' not in config:
                 raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM is missing in the config')
+            if config.get('xADR', False) is True:
+                if config['REMOTE_DIRECT_WRITE_TO_PMEM'] is False:
+                    return True
+                else:
+                    raise ValueError('REMOTE_DIRECT_WRITE_TO_PMEM has to be False when xADR is True')
             # For the ICX generation, there is no way of toggling Direct Write
             # to PMem from the OS level. The configuration has to be adjusted
             # manually on the BIOS level.

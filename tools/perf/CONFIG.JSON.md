@@ -40,7 +40,8 @@ An example usage of optional parameters can be also found in the [`config.json.e
 - "IB_PATH" - an absolute path to the directory, where the ib_read_* binaries are located on the local node,
 - "REMOTE_IB_PATH" - an absolute path to the directory, where the ib_read_* binaries are located on the remote node,
 - "FIO_PATH" - an absolute path to the directory, where the fio binary is located on the local node,
-- "REMOTE_FIO_PATH" - an absolute path to the directory, where the fio binary is located on the remote node.
+- "REMOTE_FIO_PATH" - an absolute path to the directory, where the fio binary is located on the remote node,
+- "xADR" - a state of eADR (True or False), used only on Ice Lake platforms (the default value is False).
 
 ```json
 {
