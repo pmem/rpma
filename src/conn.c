@@ -289,6 +289,7 @@ err_destroy_id:
 	(void) rdma_destroy_id(conn->id);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
+	rpma_private_data_discard(&conn->data);
 
 	free(conn);
 	*conn_ptr = NULL;

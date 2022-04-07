@@ -255,6 +255,8 @@ delete__flush_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -291,6 +293,8 @@ delete__flush_delete_E_INVAL(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -327,6 +331,8 @@ delete__rcq_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -366,6 +372,8 @@ delete__rcq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -402,6 +410,8 @@ delete__cq_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -439,6 +449,8 @@ delete__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
@@ -474,6 +486,8 @@ delete__destroy_id_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_ERRNO);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
 
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
