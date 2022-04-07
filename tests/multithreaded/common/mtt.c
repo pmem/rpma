@@ -307,6 +307,27 @@ mtt_start_child_process(mtt_child_process_func child_process_func,
 }
 
 /*
+ * mtt_check_child_process -- check if the child process terminated
+ */
+static int
+mtt_check_child_process(int child_pid)
+{
+	int status;
+	if (child_pid && waitpid(child_pid, &status, WNOHANG) != 0) {
+		if (WIFEXITED(status) && WEXITSTATUS(status)) {
+			MTT_INTERNAL_ERR("child process failed with status %i",
+					WEXITSTATUS(status));
+		} else {
+			MTT_INTERNAL_ERR(
+				"child process has already exited with status 0");
+		}
+		return -1;
+	}
+
+	return 0;
+}
+
+/*
  * mtt_run -- run the provided test using provided number of threads
  */
 int
@@ -338,12 +359,17 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		}
 	}
 
+	if (child_pid && (result = mtt_check_child_process(child_pid)))
+		goto err_kill_child;
+
 	/* initialize the prestate */
 	if (test->prestate_init_func) {
 		test->prestate_init_func(test->prestate, &tr_local);
 		if (tr_local.ret) {
 			MTT_INTERNAL_ERR("%s", tr_local.errmsg);
 			result = tr_local.ret;
+			if (child_pid)
+				(void) mtt_check_child_process(child_pid);
 			goto err_kill_child;
 		}
 	}
@@ -380,6 +406,9 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 		++threads_num_to_fini;
 	}
+
+	if (child_pid && (result = mtt_check_child_process(child_pid)))
+		goto err_fini_threads_args;
 
 	/*
 	 * The global initialization has to be as close as possible to spawning
