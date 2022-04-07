@@ -33,6 +33,8 @@ rpma_err_2str(int ret)
 		return "No next event available";
 	case RPMA_E_AGAIN:
 		return "Temporary error, try again";
+	case RPMA_E_SHARED_CHANNEL:
+		return "Completion channel is shared";
 	case RPMA_E_UNKNOWN:
 	default:
 		return "Unknown error";

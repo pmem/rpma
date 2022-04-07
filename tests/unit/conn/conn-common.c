@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -85,9 +85,10 @@ setup__conn_new(void **cstate_ptr)
 	will_return(rpma_flush_new, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
+	/* XXXXXX fix channel */
 	/* prepare an object */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_RPMA_CQ, cstate->rcq, &cstate->conn);
+			MOCK_RPMA_CQ, cstate->rcq, NULL, &cstate->conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
