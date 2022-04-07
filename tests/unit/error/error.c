@@ -88,6 +88,16 @@ err_2str__E_AGAIN(void **unused)
 }
 
 /*
+ * err_2str__E_SHARED_CHANNEL - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__E_SHARED_CHANNEL(void **unused)
+{
+	assert_string_equal(rpma_err_2str(RPMA_E_SHARED_CHANNEL),
+				"Completion channel is shared");
+}
+
+/*
  * err_2str__E_UNKOWN - sanity test for rpma_err_2str()
  */
 static void
@@ -108,6 +118,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(err_2str__E_NO_COMPLETION),
 		cmocka_unit_test(err_2str__E_NO_NEXT),
 		cmocka_unit_test(err_2str__E_AGAIN),
+		cmocka_unit_test(err_2str__E_SHARED_CHANNEL),
 		cmocka_unit_test(err_2str__E_UNKNOWN),
 	};
 

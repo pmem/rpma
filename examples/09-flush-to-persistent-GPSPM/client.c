@@ -191,6 +191,10 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	/* use separate completion channels for CQ and RCQ */
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, false)))
+		goto err_cfg_delete;
+
 	/* establish a new connection to a server listening at addr:port */
 	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
 		goto err_cfg_delete;

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -28,8 +29,9 @@ setup__cq_new(void **cq_ptr)
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
