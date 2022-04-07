@@ -47,6 +47,14 @@ fi
 MODULE="rdma_rxe"
 STATE_OK="state ACTIVE physical_state LINK_UP"
 
+function print_out_log_file() {
+	echo
+	echo "*** file $1 (START) ***"
+	cat $1
+	echo "*** file $1 (END) ***"
+	echo
+}
+
 function verify_SoftRoCE() {
 	SCRIPT_DIR=$(dirname $0)
 	$SCRIPT_DIR/../tools/config_softroce.sh verify
@@ -132,6 +140,7 @@ function run_example() {
 			N_CFAILED=$(($N_CFAILED + 1))
 			CFAILED="${CFAILED}${EXAMPLE}-client\n"
 			mv ${VLD_CLOG_FILE} ${BIN_DIR}/$EXAMPLE-valgrind-client.log
+			print_out_log_file ${BIN_DIR}/$EXAMPLE-valgrind-client.log
 		fi
 	fi
 
@@ -151,6 +160,7 @@ function run_example() {
 			N_SFAILED=$(($N_SFAILED + 1))
 			SFAILED="${SFAILED}${EXAMPLE}-server\n"
 			mv ${VLD_SLOG_FILE} ${BIN_DIR}/$EXAMPLE-valgrind-server.log
+			print_out_log_file ${BIN_DIR}/$EXAMPLE-valgrind-server.log
 		fi
 	fi
 
