@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -31,12 +31,18 @@
  */
 #define RPMA_DEFAULT_RCQ_SIZE	0
 
+/*
+ * By default the completion channel is shared by CQ and RCQ.
+ */
+#define RPMA_DEFAULT_SHARED_COMPL_CHANNEL false
+
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
 	uint32_t cq_size;	/* main CQ size */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
+	bool shared_comp_channel; /* completion channel shared by CQ and RCQ */
 };
 
 static struct rpma_conn_cfg Conn_cfg_default  = {
@@ -44,7 +50,8 @@ static struct rpma_conn_cfg Conn_cfg_default  = {
 	.cq_size = RPMA_DEFAULT_Q_SIZE,
 	.rcq_size = RPMA_DEFAULT_RCQ_SIZE,
 	.sq_size = RPMA_DEFAULT_Q_SIZE,
-	.rq_size = RPMA_DEFAULT_Q_SIZE
+	.rq_size = RPMA_DEFAULT_Q_SIZE,
+	.shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL
 };
 
 /* internal librpma API */
@@ -275,6 +282,36 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 		return RPMA_E_INVAL;
 
 	*rq_size = cfg->rq_size;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_compl_channel -- set if the completion channel
+ * is shared by CQ and RCQ
+ */
+int
+rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared)
+{
+	if (cfg == NULL)
+		return RPMA_E_INVAL;
+
+	cfg->shared_comp_channel = shared;
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_compl_channel -- get if the completion channel
+ * is shared by CQ and RCQ
+ */
+int
+rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
+{
+	if (cfg == NULL || shared == NULL)
+		return RPMA_E_INVAL;
+
+	*shared = cfg->shared_comp_channel;
 
 	return 0;
 }

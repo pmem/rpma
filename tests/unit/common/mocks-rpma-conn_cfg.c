@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -104,5 +104,20 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 
 	*rq_size = args->q_size;
 
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_compl_channel -- rpma_conn_cfg_get_compl_channel() mock
+ */
+int
+rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
+{
+	/*
+	 * XXXXXX write the full mock for this function.
+	 * "*shared = mock_type(bool);" should be used here,
+	 * instead of "*shared = false;"
+	 */
+	*shared = false;
 	return 0;
 }

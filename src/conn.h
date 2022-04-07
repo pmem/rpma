@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -25,7 +25,7 @@
  */
 int rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
-		struct rpma_conn **conn_ptr);
+		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr);
 
 /*
  * rpma_conn_transfer_private_data -- transfer the private data to

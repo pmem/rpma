@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -13,6 +13,7 @@ build_test_src(NAME ${TARGET} SRCS
 	../common/mocks.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/client.c
 	${CMAKE_SOURCE_DIR}/examples/01-connection/server.c
+	${LIBRPMA_SOURCE_DIR}/comp_channel.c
 	${LIBRPMA_SOURCE_DIR}/conn.c
 	${LIBRPMA_SOURCE_DIR}/conn_cfg.c
 	${LIBRPMA_SOURCE_DIR}/conn_req.c

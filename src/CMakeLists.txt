@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -13,6 +13,7 @@ add_check_whitespace(src
 	${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
 set(SOURCES
+	comp_channel.c
 	conn.c
 	conn_cfg.c
 	conn_req.c
