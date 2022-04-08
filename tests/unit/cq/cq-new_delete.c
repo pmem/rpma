@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -30,8 +31,9 @@ new__create_comp_channel_ERRNO(void **unused)
 	will_return(ibv_create_comp_channel, NULL);
 	will_return(ibv_create_comp_channel, MOCK_ERRNO);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -52,8 +54,9 @@ new__create_cq_ERRNO(void **unused)
 	will_return(ibv_create_cq, MOCK_ERRNO);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -75,8 +78,9 @@ new__create_cq_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(ibv_create_cq, MOCK_ERRNO);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -98,8 +102,9 @@ new__req_notify_cq_ERRNO(void **unused)
 	will_return(ibv_destroy_cq, MOCK_OK);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -123,8 +128,9 @@ new__req_notify_cq_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(ibv_destroy_cq, MOCK_ERRNO2);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -147,8 +153,9 @@ new__malloc_ERRNO(void **unused)
 	will_return(ibv_destroy_cq, MOCK_OK);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -173,8 +180,9 @@ new__malloc_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(ibv_destroy_cq, MOCK_ERRNO2);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
 
+	/* XXXXXX fix channel */
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, NULL, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_NOMEM);

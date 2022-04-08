@@ -23,7 +23,8 @@ new__peer_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(NULL, MOCK_CM_ID, MOCK_RPMA_CQ, NULL, &conn);
+	int ret = rpma_conn_new(NULL, MOCK_CM_ID, MOCK_RPMA_CQ, NULL, NULL,
+				&conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -38,7 +39,8 @@ new__id_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, NULL, MOCK_RPMA_CQ, NULL, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, NULL, MOCK_RPMA_CQ, NULL, NULL,
+				&conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -53,7 +55,7 @@ new__cq_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn *conn = NULL;
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, NULL, NULL, &conn);
+	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, NULL, NULL, NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -68,7 +70,7 @@ new__conn_ptr_NULL(void **unused)
 {
 	/* run test */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL,
-			NULL);
+			NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -82,7 +84,7 @@ static void
 new__peer_id_cq_conn_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_new(NULL, NULL, NULL, NULL, NULL);
+	int ret = rpma_conn_new(NULL, NULL, NULL, NULL, NULL, NULL);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -103,7 +105,7 @@ new__create_evch_ERRNO(void **unused)
 	/* run test */
 	struct rpma_conn *conn = NULL;
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL,
-			&conn);
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -126,7 +128,7 @@ new__migrate_id_ERRNO(void **unused)
 	/* run test */
 	struct rpma_conn *conn = NULL;
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL,
-			&conn);
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -148,7 +150,7 @@ new__flush_E_NOMEM(void **unused)
 	/* run test */
 	struct rpma_conn *conn = NULL;
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL,
-			&conn);
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -172,7 +174,7 @@ new__malloc_ERRNO(void **unused)
 	/* run test */
 	struct rpma_conn *conn = NULL;
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID, MOCK_RPMA_CQ, NULL,
-			&conn);
+			NULL, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
