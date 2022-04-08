@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * common.h -- librpma common internal definitions
@@ -7,6 +7,8 @@
 
 #ifndef LIBRPMA_COMMON_H
 #define LIBRPMA_COMMON_H
+
+#include "debug.h"
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)

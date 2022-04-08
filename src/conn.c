@@ -46,6 +46,9 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		struct rpma_conn **conn_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -107,6 +110,8 @@ void
 rpma_conn_transfer_private_data(struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
+	RPMA_LOG_TRACE;
+
 	conn->data.ptr = pdata->ptr;
 	conn->data.len = pdata->len;
 
@@ -123,6 +128,9 @@ rpma_conn_transfer_private_data(struct rpma_conn *conn,
 int
 rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
 
@@ -137,6 +145,9 @@ rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd)
 int
 rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	int ret;
 
 	if (conn == NULL || event == NULL)
@@ -209,6 +220,9 @@ int
 rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || pdata == NULL)
 		return RPMA_E_INVAL;
 
@@ -224,6 +238,9 @@ rpma_conn_get_private_data(const struct rpma_conn *conn,
 int
 rpma_conn_disconnect(struct rpma_conn *conn)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL)
 		return RPMA_E_INVAL;
 
@@ -243,6 +260,9 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 int
 rpma_conn_delete(struct rpma_conn **conn_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -305,6 +325,9 @@ rpma_read(struct rpma_conn *conn,
 	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
 	    (src != NULL || dst != NULL || dst_offset != 0 || src_offset != 0 ||
@@ -326,6 +349,9 @@ rpma_write(struct rpma_conn *conn,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
 	    (src != NULL || dst != NULL || dst_offset != 0 || src_offset != 0 ||
@@ -349,6 +375,9 @@ rpma_write_with_imm(struct rpma_conn *conn,
 	const struct rpma_mr_local *src,  size_t src_offset,
 	size_t len, int flags, uint32_t imm, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
 	    (src != NULL || dst != NULL || dst_offset != 0 || src_offset != 0 ||
@@ -372,6 +401,9 @@ rpma_atomic_write(struct rpma_conn *conn,
 	const char src[8],
 	int flags, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
 
@@ -391,6 +423,9 @@ rpma_flush(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
 
@@ -432,6 +467,9 @@ rpma_send(struct rpma_conn *conn,
     const struct rpma_mr_local *src, size_t offset, size_t len,
     int flags, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || flags == 0 ||
 	    (src == NULL && (offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
@@ -450,6 +488,9 @@ rpma_send_with_imm(struct rpma_conn *conn,
 	const struct rpma_mr_local *src, size_t offset, size_t len,
 	int flags, uint32_t imm, const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || flags == 0 ||
 	    (src == NULL && (offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
@@ -468,6 +509,9 @@ rpma_recv(struct rpma_conn *conn,
     struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || (dst == NULL && (offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
 
@@ -482,6 +526,9 @@ rpma_recv(struct rpma_conn *conn,
 int
 rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || qp_num == NULL)
 		return RPMA_E_INVAL;
 
@@ -496,6 +543,9 @@ rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num)
 int
 rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || cq_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -510,6 +560,9 @@ rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr)
 int
 rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || rcq_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -525,6 +578,9 @@ int
 rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (conn == NULL || pcfg == NULL)
 		return RPMA_E_INVAL;
 

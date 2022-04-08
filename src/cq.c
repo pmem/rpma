@@ -48,6 +48,9 @@ rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
 int
 rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	int ret = 0;
 
 	/* create a completion channel */
@@ -106,6 +109,9 @@ err_destroy_comp_channel:
 int
 rpma_cq_delete(struct rpma_cq **cq_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	struct rpma_cq *cq = *cq_ptr;
 	int ret = 0;
 
@@ -140,6 +146,9 @@ rpma_cq_delete(struct rpma_cq **cq_ptr)
 int
 rpma_cq_get_fd(const struct rpma_cq *cq, int *fd)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cq == NULL || fd == NULL)
 		return RPMA_E_INVAL;
 
@@ -155,6 +164,9 @@ rpma_cq_get_fd(const struct rpma_cq *cq, int *fd)
 int
 rpma_cq_wait(struct rpma_cq *cq)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cq == NULL)
 		return RPMA_E_INVAL;
 
@@ -189,6 +201,9 @@ int
 rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
 		int *num_entries_got)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cq == NULL || num_entries < 1 || wc == NULL)
 		return RPMA_E_INVAL;
 
