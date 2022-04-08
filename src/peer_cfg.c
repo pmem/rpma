@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * peer_cfg.c -- librpma peer-configuration-related implementations
@@ -8,11 +8,13 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "librpma.h"
 #include "log_internal.h"
 #include "peer_cfg.h"
-#include "stdbool.h"
+#include "debug.h"
+
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -32,6 +34,9 @@ struct rpma_peer_cfg {
 int
 rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -51,6 +56,9 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 int
 rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -67,6 +75,9 @@ int
 rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool supported)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg == NULL)
 		return RPMA_E_INVAL;
 
@@ -82,6 +93,9 @@ int
 rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg == NULL || supported == NULL)
 		return RPMA_E_INVAL;
 
@@ -95,6 +109,9 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 int
 rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg == NULL || desc == NULL)
 		return RPMA_E_INVAL;
 
@@ -111,6 +128,9 @@ int
 rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
 		size_t *desc_size)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (pcfg == NULL || desc_size == NULL)
 		return RPMA_E_INVAL;
 
@@ -127,6 +147,9 @@ int
 rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr)
 {
+	RPMA_LOG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (desc == NULL || pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
 
