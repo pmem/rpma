@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -32,3 +32,4 @@ add_test_conn_cfg(rcq_size)
 add_test_conn_cfg(rq_size)
 add_test_conn_cfg(sq_size)
 add_test_conn_cfg(timeout)
+add_test_conn_cfg(compl_channel)
