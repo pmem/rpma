@@ -32,6 +32,8 @@ struct rpma_conn_req {
 	struct rpma_cq *cq;
 	/* receive CQ */
 	struct rpma_cq *rcq;
+	/* shared completion channel */
+	struct ibv_comp_channel *channel;
 
 	/* private data of the CM ID (incoming only) */
 	struct rpma_conn_private_data data;
@@ -75,19 +77,33 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	int ret = 0;
 
 	int cqe, rcqe;
+	bool shared;
 	/* read the main CQ size from the configuration */
 	(void) rpma_conn_cfg_get_cqe(cfg, &cqe);
 	/* read the receive CQ size from the configuration */
 	(void) rpma_conn_cfg_get_rcqe(cfg, &rcqe);
+	/* get if the completion channel should be shared by CQ and RCQ */
+	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
+
+	struct ibv_comp_channel *channel = NULL;
+	if (shared) {
+		/* create a completion channel */
+		channel = ibv_create_comp_channel(id->verbs);
+		if (channel == NULL) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+					"ibv_create_comp_channel()");
+			return RPMA_E_PROVIDER;
+		}
+	}
 
 	struct rpma_cq *cq = NULL;
-	ret = rpma_cq_new(id->verbs, cqe, &cq);
+	ret = rpma_cq_new(id->verbs, cqe, channel, &cq);
 	if (ret)
-		return ret;
+		goto err_comp_channel_destroy;
 
 	struct rpma_cq *rcq = NULL;
 	if (rcqe) {
-		ret = rpma_cq_new(id->verbs, rcqe, &rcq);
+		ret = rpma_cq_new(id->verbs, rcqe, channel, &rcq);
 		if (ret)
 			goto err_rpma_cq_delete;
 	}
@@ -134,6 +150,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	(*req_ptr)->id = id;
 	(*req_ptr)->cq = cq;
 	(*req_ptr)->rcq = rcq;
+	(*req_ptr)->channel = channel;
 	(*req_ptr)->data.ptr = NULL;
 	(*req_ptr)->data.len = 0;
 	(*req_ptr)->peer = peer;
@@ -148,6 +165,10 @@ err_rpma_rcq_delete:
 
 err_rpma_cq_delete:
 	(void) rpma_cq_delete(&cq);
+
+err_comp_channel_destroy:
+	if (channel)
+		(void) ibv_destroy_comp_channel(channel);
 
 	return ret;
 }
@@ -182,7 +203,8 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	}
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
+				req->channel, &conn);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -198,6 +220,8 @@ err_conn_req_delete:
 	rdma_destroy_qp(req->id);
 	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
+	if (req->channel)
+		(void) ibv_destroy_comp_channel(req->channel);
 
 	return ret;
 }
@@ -218,12 +242,15 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	int ret = 0;
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
+				req->channel, &conn);
 	if (ret) {
 		rdma_destroy_qp(req->id);
 		(void) rpma_cq_delete(&req->rcq);
 		(void) rpma_cq_delete(&req->cq);
 		(void) rdma_destroy_id(req->id);
+		if (req->channel)
+			(void) ibv_destroy_comp_channel(req->channel);
 		return ret;
 	}
 
@@ -466,6 +493,16 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 		ret = rpma_conn_req_reject(req);
 	else
 		ret = rpma_conn_req_destroy(req);
+
+	if (req->channel) {
+		errno = ibv_destroy_comp_channel(req->channel);
+		if (errno) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+				"ibv_destroy_comp_channel()");
+			if (!ret)
+				ret = RPMA_E_PROVIDER;
+		}
+	}
 
 	rpma_private_data_discard(&req->data);
 

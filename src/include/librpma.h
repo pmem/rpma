@@ -322,10 +322,12 @@ extern "C" {
  * NOT thread-safe API calls:
  *
  * - rpma_conn_apply_remote_peer_cfg()
+ * - rpma_conn_cfg_get_compl_channel()
  * - rpma_conn_cfg_get_cq_size()
  * - rpma_conn_cfg_get_rq_size()
  * - rpma_conn_cfg_get_sq_size()
  * - rpma_conn_cfg_get_timeout()
+ * - rpma_conn_cfg_set_compl_channel()
  * - rpma_conn_cfg_set_cq_size()
  * - rpma_conn_cfg_set_rq_size()
  * - rpma_conn_cfg_set_sq_size()
@@ -429,6 +431,8 @@ extern "C" {
 #define RPMA_E_NO_COMPLETION	(-100005) /* No next completion available */
 #define RPMA_E_NO_EVENT		(-100006) /* No next event available */
 #define RPMA_E_AGAIN		(-100007) /* Temporary error */
+#define RPMA_E_SHARED_CHANNEL	(-100008) /* Completion channel is shared */
+#define RPMA_E_NOT_SHARED_CHNL	(-100009) /* Completion channel isn't shared */
 
 /* picking up an RDMA-capable device */
 
@@ -1360,6 +1364,17 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
  */
 int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
+/*
+ * XXXXXX write the full documentation for this function
+ */
+int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
+		bool *shared);
+
+/*
+ * XXXXXX write the full documentation for this function
+ */
+int rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared);
+
 /** 3
  * rpma_conn_cfg_get_cq_size - get CQ size for the connection
  *
@@ -2069,6 +2084,22 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		const struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 
+/*
+ * XXXXXX write the full documentation
+ * rpma_conn_get_compl_fd -- get a file descriptor of the shared
+ * completion channel from the connection
+ */
+int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
+
+/*
+ * XXXXXX write the full documentation
+ * rpma_conn_wait -- wait for a completion event on the shared completion
+ * channel from CQ or RCQ, ack it and return a CQ that caused the event
+ * in the cq argument and a boolean value saying if it is RCQ or not
+ * in the is_rcq argument (if is_rcq is not NULL)
+ */
+int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq);
+
 /** 3
  * rpma_conn_req_recv - initiate the receive operation
  *
@@ -2761,6 +2792,8 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  * - RPMA_E_INVAL - cq is NULL
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
+ * - RPMA_E_SHARED_CHANNEL - cannot proceed, because the completion channel
+ *   is shared
  *
  * SEE ALSO
  * rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_get_wc(3),
