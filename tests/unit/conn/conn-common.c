@@ -85,10 +85,21 @@ setup__conn_new(void **cstate_ptr)
 	will_return(rpma_flush_new, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
-	/* XXXXXX fix channel */
+	int ret;
+
 	/* prepare an object */
-	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_RPMA_CQ, cstate->rcq, NULL, &cstate->conn);
+	if (cstate->rcq != NULL)
+	{
+		ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
+			MOCK_RPMA_CQ, cstate->rcq,
+			MOCK_COMP_CHANNEL, &cstate->conn);
+	}
+	else
+	{
+		ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
+				MOCK_RPMA_CQ, cstate->rcq,
+				NULL, &cstate->conn);
+	}
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
