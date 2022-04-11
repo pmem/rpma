@@ -2140,10 +2140,37 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		const struct rpma_conn_private_data *pdata,
 		struct rpma_conn **conn_ptr);
 
-/*
- * XXXXXX write the full documentation
+/** 3
  * rpma_conn_get_compl_fd -- get a file descriptor of the shared
  * completion channel from the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	int fd;
+ *	int rpma_conn_get_compl_fd(const struct rpma_conn *conn,
+ *			int *fd);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_compl_fd() gets a file descriptor of the shared
+ * completion channel from the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_compl_fd() function returns 0 on success or
+ * a negative error code on failure.
+ * rpma_conn_get_compl_fd() does not set *fd value on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_compl_fd() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or fd is NULL
+ * - RPMA_E_NOT_SHARED_CHNL - completion channel is NULL
+ *
+ * SEE ALSO
+ * librpma(7), rpma_conn_req_connect(3)
+ * and https://pmem.io/rpma/
  */
 int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
 
