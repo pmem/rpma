@@ -44,10 +44,16 @@ rpma_cq_wait(struct rpma_cq *cq)
  * rpma_cq_new -- rpma_cq_new() mock
  */
 int
-rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr)
+rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
+		struct ibv_comp_channel *shared_channel,
+		struct rpma_cq **cq_ptr)
 {
 	assert_non_null(ibv_ctx);
 	check_expected(cqe);
+	/*
+	 * XXXXXX finish the mock for this function.
+	 * check_expected(shared_channel); should be used here.
+	 */
 	assert_non_null(cq_ptr);
 
 	struct rpma_cq *cq = mock_type(struct rpma_cq *);
@@ -92,4 +98,29 @@ rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
 	check_expected_ptr(cq);
 
 	return mock_type(struct ibv_cq *);
+}
+
+/*
+ * rpma_ibv_create_comp_channel -- rpma_ibv_create_comp_channel() mock
+ */
+int
+rpma_ibv_create_comp_channel(struct ibv_context *ibv_ctx,
+		struct ibv_comp_channel **channel_ptr)
+{
+	/*
+	 * XXXXXX write the full mock for this function.
+	 */
+	return 0;
+}
+
+/*
+ * rpma_ibv_destroy_comp_channel -- rpma_ibv_destroy_comp_channel() mock
+ */
+int
+rpma_ibv_destroy_comp_channel(struct ibv_comp_channel *channel)
+{
+	/*
+	 * XXXXXX write the full mock for this function.
+	 */
+	return 0;
 }
