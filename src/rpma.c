@@ -8,6 +8,7 @@
 #include <rdma/rdma_cma.h>
 
 #include "librpma.h"
+#include "debug.h"
 #include "log_internal.h"
 #include "info.h"
 
@@ -21,6 +22,9 @@ rpma_utils_get_ibv_context(const char *addr,
 		enum rpma_util_ibv_context_type type,
 		struct ibv_context **ibv_ctx_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (addr == NULL || ibv_ctx_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -79,6 +83,9 @@ int
 rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 		int *is_odp_capable)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (ibv_ctx == NULL || is_odp_capable == NULL)
 		return RPMA_E_INVAL;
 

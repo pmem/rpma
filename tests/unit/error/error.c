@@ -96,6 +96,16 @@ err_2str__E_UNKNOWN(void **unused)
 	assert_string_equal(rpma_err_2str(RPMA_E_UNKNOWN), "Unknown error");
 }
 
+/*
+ * err_2str__E_FAULT_INJECT - sanity test for rpma_err_2str()
+ */
+static void
+err_2str__E_FAULT_INJECT(void **unused)
+{
+	assert_string_equal(rpma_err_2str(RPMA_E_FAULT_INJECT),
+			"Fault injection");
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -109,6 +119,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(err_2str__E_NO_NEXT),
 		cmocka_unit_test(err_2str__E_AGAIN),
 		cmocka_unit_test(err_2str__E_UNKNOWN),
+		cmocka_unit_test(err_2str__E_FAULT_INJECT),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

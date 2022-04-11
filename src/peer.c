@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "conn_req.h"
+#include "debug.h"
 #include "log_internal.h"
 #include "peer.h"
 
@@ -40,6 +41,9 @@ struct rpma_peer {
 static int
 rpma_peer_usage_to_access(struct rpma_peer *peer, int usage)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	enum ibv_transport_type type =
 			peer->pd->context->device->transport_type;
 	int access = 0;
@@ -91,6 +95,9 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (peer == NULL || id == NULL || cq == NULL)
 		return RPMA_E_INVAL;
 
@@ -162,6 +169,9 @@ int
 rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	int access = rpma_peer_usage_to_access(peer, usage);
 
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
@@ -214,6 +224,9 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 int
 rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	int is_odp_supported = 0;
 	int ret;
 
@@ -268,6 +281,9 @@ err_dealloc_pd:
 int
 rpma_peer_delete(struct rpma_peer **peer_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (peer_ptr == NULL)
 		return RPMA_E_INVAL;
 
