@@ -1222,6 +1222,7 @@ struct rpma_conn_cfg;
  *	.rcq_size = 0
  *	.sq_size = 10
  *	.rq_size = 10
+ *	.shared_comp_channel = false
  *
  * RETURN VALUE
  * The rpma_conn_cfg_new() function returns 0 on success or a negative
@@ -1235,9 +1236,10 @@ struct rpma_conn_cfg;
  * - RPMA_E_NOMEM - out of memory
  *
  * SEE ALSO
- * rpma_conn_cfg_delete(3), rpma_conn_cfg_get_cq_size(3),
- * rpma_conn_cfg_get_rq_size(3), rpma_conn_cfg_get_sq_size(3),
- * rpma_conn_cfg_get_timeout(3), rpma_conn_cfg_set_cq_size(3),
+ * rpma_conn_cfg_delete(3), rpma_conn_cfg_get_compl_channel(3),
+ * rpma_conn_cfg_get_cq_size(3), rpma_conn_cfg_get_rq_size(3),
+ * rpma_conn_cfg_get_sq_size(3), rpma_conn_cfg_get_timeout(3),
+ * rpma_conn_cfg_set_compl_channel(3), rpma_conn_cfg_set_cq_size(3),
  * rpma_conn_cfg_set_rq_size(3), rpma_conn_cfg_set_sq_size(3),
  * rpma_conn_cfg_set_timeout(3), rpma_conn_req_new(3), rpma_ep_next_conn_req(3),
  * librpma(7) and https://pmem.io/rpma/
@@ -1364,14 +1366,68 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
  */
 int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
-/*
- * XXXXXX write the full documentation for this function
+/** 3
+ * rpma_conn_cfg_get_compl_channel - get if the completion event channel
+ * is shared by CQ and RCQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
+ *			bool *shared);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_compl_channel() gets if the completion event channel
+ * is shared by CQ and RCQ.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_compl_channel() function returns 0 on success
+ * or a negative error code on failure.
+ * rpma_conn_cfg_get_compl_channel() does not set *shared value on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_compl_channel() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or shared is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_wait(3), rpma_conn_cfg_set_compl_channel(3),
+ * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
 		bool *shared);
 
-/*
- * XXXXXX write the full documentation for this function
+/** 3
+ * rpma_conn_cfg_set_compl_channel - set if the completion event channel
+ * is shared by CQ and RCQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	int rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg,
+ *			bool shared);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_compl_channel() sets if the completion event channel
+ * is shared by CQ and RCQ or not. The completion event channel is by default
+ * not shared by CQ and RCQ. See rpma_conn_cfg_new(3) for details.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_compl_channel() function returns 0 on success or
+ * a negative error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_compl_channel() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_wait(3), rpma_conn_cfg_get_compl_channel(3),
+ * librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared);
 
