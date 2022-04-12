@@ -260,6 +260,9 @@ rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd)
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
 
+	if (conn->channel == NULL)
+		return RPMA_E_NOT_SHARED_CHNL;
+
 	*fd = conn->channel->fd;
 
 	return 0;
