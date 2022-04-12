@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -13,6 +13,7 @@
 #include "common.h"
 #include "conn_cfg.h"
 #include "conn_req.h"
+#include "debug.h"
 #include "librpma.h"
 #include "log_internal.h"
 
@@ -56,6 +57,8 @@ static struct rpma_conn_cfg Conn_cfg_default  = {
 struct rpma_conn_cfg *
 rpma_conn_cfg_default()
 {
+	RPMA_DEBUG_TRACE;
+
 	return &Conn_cfg_default;
 }
 
@@ -67,6 +70,9 @@ rpma_conn_cfg_default()
 int
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cqe == NULL)
 		return RPMA_E_INVAL;
 
@@ -88,6 +94,9 @@ rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 int
 rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (rcqe == NULL)
 		return RPMA_E_INVAL;
 
@@ -109,6 +118,9 @@ rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 int
 rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -127,6 +139,8 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 int
 rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	if (cfg_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -136,6 +150,7 @@ rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 	free(*cfg_ptr);
 	*cfg_ptr = NULL;
 
+	RPMA_FAULT_INJECTION;
 	return 0;
 }
 
@@ -145,6 +160,9 @@ rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 int
 rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || timeout_ms < 0)
 		return RPMA_E_INVAL;
 
@@ -159,6 +177,9 @@ rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 int
 rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || timeout_ms == NULL)
 		return RPMA_E_INVAL;
 
@@ -173,6 +194,9 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 int
 rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
@@ -187,6 +211,9 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 int
 rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || cq_size == NULL)
 		return RPMA_E_INVAL;
 
@@ -201,6 +228,9 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 int
 rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
@@ -215,6 +245,9 @@ rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size)
 int
 rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || rcq_size == NULL)
 		return RPMA_E_INVAL;
 
@@ -229,6 +262,9 @@ rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 int
 rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
@@ -243,6 +279,9 @@ rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
 int
 rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || sq_size == NULL)
 		return RPMA_E_INVAL;
 
@@ -257,6 +296,9 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 int
 rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
@@ -271,6 +313,9 @@ rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
 int
 rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (cfg == NULL || rq_size == NULL)
 		return RPMA_E_INVAL;
 
