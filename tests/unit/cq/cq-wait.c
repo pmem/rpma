@@ -77,6 +77,7 @@ wait__req_notify_cq_ERRNO(void **cq_ptr)
 	will_return(ibv_get_cq_event, MOCK_OK);
 	will_return(ibv_get_cq_event, MOCK_IBV_CQ);
 	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 
 	/* run test */
@@ -100,6 +101,7 @@ wait__success(void **cq_ptr)
 	will_return(ibv_get_cq_event, MOCK_OK);
 	will_return(ibv_get_cq_event, MOCK_IBV_CQ);
 	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
 	/* run test */
