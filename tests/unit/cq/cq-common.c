@@ -26,6 +26,7 @@ setup__cq_new(void **cq_ptr)
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
