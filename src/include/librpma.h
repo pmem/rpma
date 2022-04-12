@@ -432,6 +432,7 @@ extern "C" {
 #define RPMA_E_NO_EVENT		(-100006) /* No next event available */
 #define RPMA_E_AGAIN		(-100007) /* Temporary error */
 #define RPMA_E_SHARED_CHANNEL	(-100008) /* Completion channel is shared */
+#define RPMA_E_NOT_SHARED_CHNL	(-100009) /* Completion channel isn't shared */
 
 /* picking up an RDMA-capable device */
 

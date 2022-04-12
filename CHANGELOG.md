@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_conn_cfg_set_compl_channel
   - rpma_conn_get_compl_fd
   - rpma_conn_wait
-  - error RPMA_E_SHARED_CHANNEL
+  - errors RPMA_E_SHARED_CHANNEL and RPMA_E_NOT_SHARED_CHNL
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
 
