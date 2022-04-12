@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -183,7 +183,7 @@ ibv_reg_mr(struct ibv_pd *pd, void *addr, size_t length, int access)
 int
 ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only)
 {
-	assert_ptr_equal(cq, MOCK_IBV_CQ);
+	check_expected_ptr(cq);
 	assert_int_equal(solicited_only, 0);
 
 	return mock_type(int);
