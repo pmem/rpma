@@ -214,8 +214,11 @@ err_private_data_discard:
 int
 rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
 {
-	if (conn == NULL || cq == NULL || conn->channel == NULL)
+	if (conn == NULL || cq == NULL || is_rcq == NULL)
 		return RPMA_E_INVAL;
+
+	if (conn->channel == NULL)
+		return RPMA_E_NOT_SHARED_CHNL;
 
 	/* wait for the completion event */
 	struct ibv_cq *ev_cq;	/* CQ that got the event */

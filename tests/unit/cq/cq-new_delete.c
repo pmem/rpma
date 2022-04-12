@@ -98,6 +98,7 @@ new__req_notify_cq_ERRNO(void **unused)
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 	will_return(ibv_destroy_cq, MOCK_OK);
 	will_return(ibv_destroy_comp_channel, MOCK_OK);
@@ -124,6 +125,7 @@ new__req_notify_cq_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 	will_return(ibv_destroy_cq, MOCK_ERRNO2);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2);
@@ -148,6 +150,7 @@ new__malloc_ERRNO(void **unused)
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return(ibv_destroy_cq, MOCK_OK);
@@ -175,6 +178,7 @@ new__malloc_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
 	will_return(ibv_destroy_cq, MOCK_ERRNO2);
