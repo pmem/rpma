@@ -2147,10 +2147,35 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  */
 int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
 
-/*
- * XXXXXX write the full documentation
- * rpma_conn_wait -- wait for a completion event on the shared completion
+/** 3
+ * rpma_conn_wait -- wait for a completion event
+ *
+ * SYNOPSIS
+ *
+ * #include <librpma.h>
+ *
+ * struct rpma_conn;
+ * struct rpma_cq
+ * int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq)
+ *
+ * DESCRIPTION
+ * rpma_conn_wait() waits for a completion event on the shared completion
  * channel from CQ or RCQ, ack it and return the CQ that caused the event.
+ *
+ * RETURN VALUE
+ * The rpma_conn_wait() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_wait() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - conn or cq or conn->channel is NULL
+ * - RPMA_E_NO_COMPLETION - ibv_get_cq_event(3) failed
+ * - RPMA_E_UNKNOWN - ibv_get_cq_event(3) returned unknown CQ
+ * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq);
 

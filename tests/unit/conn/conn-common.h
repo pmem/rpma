@@ -32,12 +32,15 @@ struct conn_test_state {
 	struct rpma_conn *conn;
 	struct rpma_conn_private_data data;
 	struct rpma_cq *rcq;
+	struct ibv_comp_channel *channel;
 };
 
 extern struct conn_test_state Conn_without_rcq;
 extern struct conn_test_state Conn_with_rcq;
+extern struct conn_test_state Conn_with_rcq_channel;
 
 int setup__conn_new(void **cstate_ptr);
 int teardown__conn_delete(void **cstate_ptr);
+int group_setup_common_conn(void **unused);
 
 #endif /* CONN_COMMON_H */
