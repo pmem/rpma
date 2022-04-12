@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -19,6 +19,7 @@ extern struct ibv_device Ibv_device;
 extern struct ibv_pd Ibv_pd;
 extern struct ibv_cq Ibv_cq;
 extern struct ibv_cq Ibv_rcq;
+extern struct ibv_cq Ibv_cq_unknown;
 extern struct ibv_qp Ibv_qp;
 extern struct ibv_mr Ibv_mr;
 
@@ -27,6 +28,7 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_COMP_CHANNEL	(struct ibv_comp_channel *)&Ibv_comp_channel
 #define MOCK_IBV_CQ		(struct ibv_cq *)&Ibv_cq
 #define MOCK_IBV_RCQ		(struct ibv_cq *)&Ibv_rcq
+#define MOCK_IBV_CQ_UNKNOWN	(struct ibv_cq *)&Ibv_cq_unknown
 #define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr

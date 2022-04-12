@@ -16,11 +16,18 @@ const char Private_data[] = "Random data";
 const char Private_data_2[] = "Another random data";
 
 struct conn_test_state Conn_without_rcq = {
-	.rcq = NULL
+	.rcq = NULL,
+	.channel = NULL
 };
 
 struct conn_test_state Conn_with_rcq = {
-	.rcq = MOCK_RPMA_RCQ
+	.rcq = MOCK_RPMA_RCQ,
+	.channel = NULL
+};
+
+struct conn_test_state Conn_with_rcq_channel = {
+	.rcq = MOCK_RPMA_RCQ,
+	.channel = MOCK_COMP_CHANNEL
 };
 
 /*
@@ -76,8 +83,6 @@ setup__conn_new(void **cstate_ptr)
 	cstate->data.ptr = NULL;
 	cstate->data.len = 0;
 
-	Ibv_cq.channel = MOCK_COMP_CHANNEL;
-
 	/* configure mock */
 	will_return(rdma_create_event_channel, MOCK_EVCH);
 	Rdma_migrate_id_counter = RDMA_MIGRATE_COUNTER_INIT;
@@ -85,10 +90,10 @@ setup__conn_new(void **cstate_ptr)
 	will_return(rpma_flush_new, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
-	/* XXXXXX fix channel */
 	/* prepare an object */
 	int ret = rpma_conn_new(MOCK_PEER, MOCK_CM_ID,
-			MOCK_RPMA_CQ, cstate->rcq, NULL, &cstate->conn);
+			MOCK_RPMA_CQ, cstate->rcq, cstate->channel,
+			&cstate->conn);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
@@ -116,6 +121,8 @@ teardown__conn_delete(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr,
 				cstate->data.ptr);
 	expect_value(rpma_private_data_discard, pdata->len,
@@ -129,6 +136,21 @@ teardown__conn_delete(void **cstate_ptr)
 	assert_null(cstate->conn);
 
 	*cstate_ptr = NULL;
+
+	return 0;
+}
+
+/*
+ * group_setup_common_conn -- prepare common resources
+ * for all tests in the group
+ */
+int
+group_setup_common_conn(void **unused)
+{
+	/* set the req_notify_cq callback in mock of IBV CQ */
+	MOCK_VERBS->ops.req_notify_cq = ibv_req_notify_cq_mock;
+	Ibv_cq.context = MOCK_VERBS;
+	Ibv_rcq.context = MOCK_VERBS;
 
 	return 0;
 }
