@@ -28,6 +28,14 @@
 	"The example is unable to use libpmem. If unintended please check the build log. Using DRAM instead.\n"
 #endif
 
+#ifndef IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE
+#define IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE 1
+#endif
+
+#ifndef IBV_ADVISE_MR_FLAG_FLUSH
+#define IBV_ADVISE_MR_FLAG_FLUSH 1
+#endif
+
 /*
  * Limited by the maximum length of the private data
  * for rdma_connect() in case of RDMA_PS_TCP (56 bytes).
