@@ -207,10 +207,12 @@ err_private_data_discard:
 
 /*
  * rpma_conn_wait -- wait for a completion event on the shared completion
- * channel from CQ or RCQ, ack it and return the CQ that caused the event.
+ * channel from CQ or RCQ, ack it and return a CQ that caused the event
+ * in the cq argument and a boolean value saying if it is RCQ or not
+ * in the is_rcq argument (if is_rcq is not NULL)
  */
 int
-rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq)
+rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
 {
 	if (conn == NULL || cq == NULL || conn->channel == NULL)
 		return RPMA_E_INVAL;
@@ -221,15 +223,21 @@ rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq)
 	if (ibv_get_cq_event(conn->channel, &ev_cq, &ev_ctx))
 		return RPMA_E_NO_COMPLETION;
 
+	bool is_rcq_temp;
 	if (ev_cq == rpma_cq_get_ibv_cq(conn->cq)) {
 		*cq = conn->cq;
+		is_rcq_temp = false;
 	} else if (ev_cq == rpma_cq_get_ibv_cq(conn->rcq)) {
 		*cq = conn->rcq;
+		is_rcq_temp = true;
 	} else {
 		*cq = NULL;
 		RPMA_LOG_ERROR("ibv_get_cq_event() returned unknown CQ");
 		return RPMA_E_UNKNOWN;
 	}
+
+	if (is_rcq)
+		*is_rcq = is_rcq_temp;
 
 	/*
 	 * ACK the collected CQ event.
