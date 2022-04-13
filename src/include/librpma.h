@@ -2822,7 +2822,7 @@ int rpma_recv(struct rpma_conn *conn,
 int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 
 /** 3
- * rpma_cq_wait - wait for a completion
+ * rpma_cq_wait - wait for a completion and ack it
  *
  * SYNOPSIS
  *
@@ -2832,8 +2832,9 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  *	int rpma_cq_wait(struct rpma_cq *cq);
  *
  * DESCRIPTION
- * rpma_cq_wait() waits for an incoming completion. If it succeeds,
- * then all available completions should be collected using rpma_cq_get_wc(3)
+ * rpma_cq_wait() waits for an incoming completion event and acks it.
+ * If rpma_cq_wait() succeeds, then all available completions
+ * should be collected using rpma_cq_get_wc(3)
  * before the next rpma_cq_wait() call.
  *
  * RETURN VALUE
@@ -2844,6 +2845,7 @@ int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
  * rpma_cq_wait() can fail with the following errors:
  *
  * - RPMA_E_INVAL - cq is NULL
+ * - RPMA_E_SHARED_CHANNEL - completion channel is shared
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed with a provider error
  * - RPMA_E_NO_COMPLETION - no completions available
  * - RPMA_E_SHARED_CHANNEL - cannot proceed, because the completion channel
