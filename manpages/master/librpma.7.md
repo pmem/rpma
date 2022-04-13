@@ -394,6 +394,8 @@ thread-safe API calls:
 
 -   **rpma\_conn\_apply\_remote\_peer\_cfg**()
 
+-   **rpma\_conn\_cfg\_get\_compl\_channel**()
+
 -   **rpma\_conn\_cfg\_get\_cq\_size**()
 
 -   **rpma\_conn\_cfg\_get\_rq\_size**()
@@ -401,6 +403,8 @@ thread-safe API calls:
 -   **rpma\_conn\_cfg\_get\_sq\_size**()
 
 -   **rpma\_conn\_cfg\_get\_timeout**()
+
+-   **rpma\_conn\_cfg\_set\_compl\_channel**()
 
 -   **rpma\_conn\_cfg\_set\_cq\_size**()
 
