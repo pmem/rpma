@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -27,12 +28,29 @@ wait__cq_NULL(void **unused)
 }
 
 /*
+ * wait__E_SHARED_CHANNEL - completion event channel is shared
+ */
+static void
+wait__E_SHARED_CHANNEL(void **cq_ptr)
+{
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
+
+	/* run test */
+	int ret = rpma_cq_wait(cq);
+
+	/* verify the result */
+	assert_int_equal(ret, RPMA_E_SHARED_CHANNEL);
+}
+
+/*
  * wait__get_cq_event_ERRNO - ibv_get_cq_event() fails with MOCK_ERRNO
  */
 static void
 wait__get_cq_event_ERRNO(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mock */
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
@@ -51,7 +69,8 @@ wait__get_cq_event_ERRNO(void **cq_ptr)
 static void
 wait__req_notify_cq_ERRNO(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
@@ -73,7 +92,8 @@ wait__req_notify_cq_ERRNO(void **cq_ptr)
 static void
 wait__success(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
@@ -92,6 +112,9 @@ wait__success(void **cq_ptr)
 static const struct CMUnitTest tests_wait[] = {
 	/* rpma_cq_wait() unit tests */
 	cmocka_unit_test(wait__cq_NULL),
+	cmocka_unit_test_prestate_setup_teardown(
+		wait__E_SHARED_CHANNEL,
+		setup__cq_new, teardown__cq_delete, &CQ_with_channel),
 	cmocka_unit_test_setup_teardown(
 		wait__get_cq_event_ERRNO,
 		setup__cq_new, teardown__cq_delete),

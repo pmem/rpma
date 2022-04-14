@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -33,7 +34,8 @@ get_fd__cq_NULL(void **unused)
 static void
 get_fd__fd_NULL(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	int ret = rpma_cq_get_fd(cq, NULL);
@@ -48,7 +50,8 @@ get_fd__fd_NULL(void **cq_ptr)
 static void
 get_fd__success(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	int fd = 0;
