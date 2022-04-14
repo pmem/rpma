@@ -220,10 +220,11 @@ delete__cq_NULL(void **unused)
 static void
 delete__destroy_cq_ERRNO(void **unused)
 {
-	struct rpma_cq *cq = NULL;
+	struct cq_test_state *cstate = NULL;
 
 	/* WA for cmocka/issues#47 */
-	assert_int_equal(setup__cq_new((void **)&cq), 0);
+	assert_int_equal(setup__cq_new((void **)&cstate), 0);
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	will_return(ibv_destroy_cq, MOCK_ERRNO);
@@ -243,10 +244,11 @@ delete__destroy_cq_ERRNO(void **unused)
 static void
 delete__destroy_cq_ERRNO_subsequent_ERRNO2(void **unused)
 {
-	struct rpma_cq *cq = NULL;
+	struct cq_test_state *cstate = NULL;
 
 	/* WA for cmocka/issues#47 */
-	assert_int_equal(setup__cq_new((void **)&cq), 0);
+	assert_int_equal(setup__cq_new((void **)&cstate), 0);
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	will_return(ibv_destroy_cq, MOCK_ERRNO);
@@ -266,10 +268,11 @@ delete__destroy_cq_ERRNO_subsequent_ERRNO2(void **unused)
 static void
 delete__destroy_comp_channel_ERRNO(void **unused)
 {
-	struct rpma_cq *cq = NULL;
+	struct cq_test_state *cstate = NULL;
 
 	/* WA for cmocka/issues#47 */
-	assert_int_equal(setup__cq_new((void **)&cq), 0);
+	assert_int_equal(setup__cq_new((void **)&cstate), 0);
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	will_return(ibv_destroy_cq, MOCK_OK);
