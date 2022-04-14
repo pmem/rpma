@@ -87,7 +87,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
 
 	struct ibv_comp_channel *channel = NULL;
-	if (shared && rcqe) {
+	if (shared) {
 		ret = rpma_ibv_create_comp_channel(id->verbs, &channel);
 		if (ret)
 			return ret;
