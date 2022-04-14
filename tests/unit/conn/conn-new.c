@@ -491,6 +491,56 @@ delete__destroy_id_ERRNO(void **cstate_ptr)
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	if (cstate->channel) {
+		state_destroy.channel = MOCK_COMP_CHANNEL;
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, RPMA_E_PROVIDER);
+	}
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(cstate->conn);
+}
+
+/*
+ * delete__ibv_destroy_comp_channel_E_PROVIDER --
+ * rpma_ibv_destroy_comp_channel() fails with RPMA_E_PROVIDER
+ */
+static void
+delete__ibv_destroy_comp_channel_E_PROVIDER(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	int ret = setup__conn_new((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	will_return(rpma_flush_delete, MOCK_OK);
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	expect_value(rpma_cq_delete, *cq_ptr, cstate->rcq);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+	will_return(rpma_ibv_destroy_comp_channel, RPMA_E_PROVIDER);
+
 	/* run test */
 	ret = rpma_conn_delete(&cstate->conn);
 
@@ -526,7 +576,12 @@ static const struct CMUnitTest tests_new[] = {
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(delete__cq_delete_ERRNO),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(
 		delete__cq_delete_ERRNO_subsequent_ERRNO2),
-	CONN_TEST_WITH_AND_WITHOUT_RCQ(delete__destroy_id_ERRNO),
+	CONN_TEST_WITH_AND_WITHOUT_RCQ(
+		delete__destroy_id_ERRNO),
+	{"delete__destroy_id_ERRNO__with_rcq_and_channel",
+		delete__destroy_id_ERRNO, NULL, NULL, &Conn_with_rcq_channel},
+	cmocka_unit_test_prestate(delete__ibv_destroy_comp_channel_E_PROVIDER,
+		&Conn_with_rcq_channel),
 	cmocka_unit_test(NULL)
 };
 
