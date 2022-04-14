@@ -298,11 +298,27 @@ new__cq_new_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
 	will_return(rpma_cq_new, MOCK_ERRNO);
 	will_return(rdma_destroy_id, MOCK_OK);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -341,11 +357,27 @@ new__cq_new_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, NULL);
 	will_return(rpma_cq_new, RPMA_E_PROVIDER);
 	will_return(rpma_cq_new, MOCK_ERRNO); /* first error */
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -383,6 +415,15 @@ new__rcq_new_ERRNO(void **unused)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
@@ -392,6 +433,13 @@ new__rcq_new_ERRNO(void **unused)
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -431,6 +479,15 @@ new__rcq_new_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
@@ -441,6 +498,13 @@ new__rcq_new_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -479,6 +543,15 @@ new__peer_create_qp_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -495,6 +568,13 @@ new__peer_create_qp_ERRNO(void **cstate_ptr)
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -534,6 +614,15 @@ new__peer_create_qp_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -557,6 +646,13 @@ new__peer_create_qp_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second or third error */
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third or fourth error */
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -594,6 +690,15 @@ new__malloc_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -611,6 +716,13 @@ new__malloc_ERRNO(void **cstate_ptr)
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
 	will_return(rpma_cq_delete, MOCK_OK);
 	will_return(rdma_destroy_id, MOCK_OK);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
@@ -650,6 +762,15 @@ new__malloc_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+
+	struct state_rpma_ibv_create_comp_channel state_create;
+	state_create.ibv_ctx = cstate->id.verbs;
+	state_create.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_create_comp_channel, &state_create);
+		will_return(rpma_ibv_create_comp_channel, MOCK_OK);
+	}
+
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -674,6 +795,13 @@ new__malloc_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second or third error */
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third or fourth error */
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.rcq_size && cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
