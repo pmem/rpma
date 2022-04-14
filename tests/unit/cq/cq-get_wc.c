@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2022, Fujitsu */
 
 /*
@@ -75,7 +76,8 @@ get_wc__cq_NULL(void **unused)
 static void
 get_wc__num_entries_non_positive(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	struct ibv_wc wc = {0};
@@ -91,7 +93,8 @@ get_wc__num_entries_non_positive(void **cq_ptr)
 static void
 get_wc__wc_NULL(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	int ret = rpma_cq_get_wc(cq, 1, NULL, NULL);
@@ -107,7 +110,8 @@ get_wc__wc_NULL(void **cq_ptr)
 static void
 get_wc__num_entries_2_num_entries_got_NULL(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	struct ibv_wc wc[2];
@@ -124,7 +128,8 @@ get_wc__num_entries_2_num_entries_got_NULL(void **cq_ptr)
 static void
 get_wc__poll_cq_fail(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mock */
 	expect_value(poll_cq, cq, MOCK_IBV_CQ);
@@ -145,7 +150,8 @@ get_wc__poll_cq_fail(void **cq_ptr)
 static void
 get_wc__poll_cq_no_data(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mock */
 	expect_value(poll_cq, cq, MOCK_IBV_CQ);
@@ -167,7 +173,8 @@ get_wc__poll_cq_no_data(void **cq_ptr)
 static void
 get_wc__poll_cq_more_data(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mock */
 	expect_value(poll_cq, cq, MOCK_IBV_CQ);
@@ -192,7 +199,8 @@ get_wc__poll_cq_more_data(void **cq_ptr)
 static void
 get_wc__success_each_opcode(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	for (int i = 0; i < All_values; i++) {
 		struct ibv_wc orig_wc = {0};
@@ -240,7 +248,8 @@ get_wc__success_each_opcode(void **cq_ptr)
 static void
 get_wc__success_all_opcodes(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 	int n_values[3] = {2, 3, All_values};
 
 	for (int i = 0; i < 3; i++) {
