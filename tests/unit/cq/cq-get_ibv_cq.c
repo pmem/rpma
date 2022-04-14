@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -19,7 +20,8 @@
 static void
 get_ibv_cq__success(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* run test */
 	struct ibv_cq *ibv_cq = rpma_cq_get_ibv_cq(cq);
