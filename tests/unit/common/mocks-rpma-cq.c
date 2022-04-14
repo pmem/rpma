@@ -107,9 +107,13 @@ int
 rpma_ibv_create_comp_channel(struct ibv_context *ibv_ctx,
 		struct ibv_comp_channel **channel_ptr)
 {
-	/*
-	 * XXXXXX write the full mock for this function.
-	 */
+	struct state_rpma_ibv_create_comp_channel *state;
+	state = mock_type(struct state_rpma_ibv_create_comp_channel *);
+
+	assert_ptr_equal(ibv_ctx, state->ibv_ctx);
+	assert_non_null(channel_ptr);
+	*channel_ptr = state->channel;
+
 	return 0;
 }
 
@@ -119,8 +123,10 @@ rpma_ibv_create_comp_channel(struct ibv_context *ibv_ctx,
 int
 rpma_ibv_destroy_comp_channel(struct ibv_comp_channel *channel)
 {
-	/*
-	 * XXXXXX write the full mock for this function.
-	 */
+	struct state_rpma_ibv_destroy_comp_channel *state;
+	state = mock_type(struct state_rpma_ibv_destroy_comp_channel *);
+
+	assert_ptr_equal(channel, state->channel);
+
 	return 0;
 }
