@@ -51,6 +51,9 @@ ERRORS
 
 -   RPMA\_E\_NO\_COMPLETION - no completions available
 
+-   RPMA\_E\_SHARED\_CHANNEL - cannot proceed, because the completion
+    channel is shared
+
 SEE ALSO
 ========
 
