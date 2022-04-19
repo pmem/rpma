@@ -112,10 +112,10 @@ static const struct CMUnitTest tests_get_compl_fd[] = {
 	cmocka_unit_test(get_compl_fd__conn_fd_NULL),
 	cmocka_unit_test_prestate_setup_teardown(
 		get_compl_fd__E_NOT_SHARED_CHNL, setup__conn_new,
-		teardown__conn_delete, &Conn_without_rcq),
+		teardown__conn_delete, &Conn_no_rcq_no_channel),
 	cmocka_unit_test_prestate_setup_teardown(
 		get_compl_fd__success, setup__conn_new,
-		teardown__conn_delete, &Conn_with_rcq_channel),
+		teardown__conn_delete, &Conn_with_rcq_and_channel),
 	cmocka_unit_test(NULL)
 };
 

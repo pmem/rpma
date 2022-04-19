@@ -15,17 +15,17 @@
 const char Private_data[] = "Random data";
 const char Private_data_2[] = "Another random data";
 
-struct conn_test_state Conn_without_rcq = {
+struct conn_test_state Conn_no_rcq_no_channel = {
 	.rcq = NULL,
 	.channel = NULL
 };
 
-struct conn_test_state Conn_with_rcq = {
+struct conn_test_state Conn_with_rcq_no_channel = {
 	.rcq = MOCK_RPMA_RCQ,
 	.channel = NULL
 };
 
-struct conn_test_state Conn_with_rcq_channel = {
+struct conn_test_state Conn_with_rcq_and_channel = {
 	.rcq = MOCK_RPMA_RCQ,
 	.channel = MOCK_COMP_CHANNEL
 };
@@ -76,9 +76,9 @@ rpma_private_data_discard(struct rpma_conn_private_data *pdata)
 int
 setup__conn_new(void **cstate_ptr)
 {
-	/* the default is Conn_without_rcq */
+	/* the default is Conn_no_rcq_no_channel */
 	struct conn_test_state *cstate = *cstate_ptr ? *cstate_ptr :
-			&Conn_without_rcq;
+			&Conn_no_rcq_no_channel;
 	cstate->conn = NULL;
 	cstate->data.ptr = NULL;
 	cstate->data.len = 0;
