@@ -3,7 +3,7 @@
 /* Copyright 2021, Fujitsu */
 
 /*
- * conn_req-common.c -- the conn_req unit tests common definitions
+ * conn_req-common.h -- the conn_req unit tests common definitions
  */
 
 #ifndef CONN_REQ_COMMON
@@ -11,6 +11,7 @@
 
 #include "cmocka_headers.h"
 #include "conn_req.h"
+#include "mocks-ibverbs.h"
 #include "mocks-rpma-conn_cfg.h"
 #include "mocks-rpma-cq.h"
 #include "mocks-stdio.h"
@@ -18,6 +19,8 @@
 #define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
 #define MOCK_GET_RCQ(cstate) \
 	((cstate)->get_cqe.rcq_size ? MOCK_RPMA_RCQ : NULL)
+#define MOCK_GET_CHANNEL(cstate) \
+	((cstate)->get_cqe.shared ? MOCK_COMP_CHANNEL : NULL)
 #define MOCK_GET_CONN_CFG(cstate) \
 	((cstate)->get_cqe.cfg == MOCK_CONN_CFG_DEFAULT ? \
 			NULL : (cstate)->get_cqe.cfg)
