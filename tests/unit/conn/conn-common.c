@@ -121,6 +121,8 @@ teardown__conn_delete(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr,
 				cstate->data.ptr);
 	expect_value(rpma_private_data_discard, pdata->len,

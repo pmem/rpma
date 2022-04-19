@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -62,6 +62,8 @@ delete_via_reject__rcq_delete_ERRNO(void **unused)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -98,6 +100,8 @@ delete_via_reject__rcq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO2); /* fourth error */
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -131,6 +135,8 @@ delete_via_reject__cq_delete_ERRNO(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -165,6 +171,8 @@ delete_via_reject__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO2); /* third error */
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -196,6 +204,8 @@ delete_via_reject__reject_ERRNO(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -228,6 +238,8 @@ delete_via_reject__reject_ERRNO_ack_ERRNO2(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO2); /* second error */
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -259,6 +271,8 @@ delete_via_reject__ack_ERRNO(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -290,6 +304,8 @@ delete_via_destroy__rcq_delete_ERRNO(void **unused)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -323,6 +339,8 @@ delete_via_destroy__rcq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -354,6 +372,8 @@ delete_via_destroy__cq_delete_ERRNO(void **cstate_ptr)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -386,6 +406,8 @@ delete_via_destroy__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -416,6 +438,8 @@ delete_via_destroy__destroy_id_ERRNO(void **cstate_ptr)
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO);
 	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);

@@ -94,6 +94,8 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -140,6 +142,8 @@ teardown__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
@@ -177,6 +181,8 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
@@ -222,6 +228,8 @@ teardown__conn_req_new(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, 0);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
