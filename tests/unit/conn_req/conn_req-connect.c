@@ -317,6 +317,7 @@ connect_via_accept__conn_new_ERRNO(void **cstate_ptr)
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, MOCK_ERRNO);
@@ -365,6 +366,7 @@ connect_via_accept__conn_new_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, MOCK_ERRNO); /* first error */
@@ -419,6 +421,7 @@ connect_via_accept__success_incoming(void **cstate_ptr)
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rpma_conn_transfer_private_data, conn, MOCK_CONN);
 	expect_value(rpma_conn_transfer_private_data, pdata->ptr,
@@ -450,6 +453,7 @@ connect_via_connect__connect_ERRNO(void **cstate_ptr)
 	/* configure mocks */
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
 	will_return(rdma_connect, MOCK_ERRNO);
@@ -481,6 +485,7 @@ connect_via_connect__connect_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	/* configure mocks */
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, MOCK_CONN);
 	expect_value(rdma_connect, id, &cstate->id);
 	will_return(rdma_connect, MOCK_ERRNO); /* first error */
@@ -513,6 +518,7 @@ connect_via_connect__conn_new_ERRNO(void **cstate_ptr)
 	/* configure mocks */
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, MOCK_ERRNO);
@@ -558,6 +564,7 @@ connect_via_connect__conn_new_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	/* configure mocks */
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, NULL);
 	will_return(rpma_conn_new, RPMA_E_PROVIDER);
 	will_return(rpma_conn_new, MOCK_ERRNO); /* first error */
@@ -610,6 +617,7 @@ connect_via_connect__success_outgoing(void **cstate_ptr)
 	will_return(rdma_connect, MOCK_OK);
 	expect_value(rpma_conn_new, id, &cstate->id);
 	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_conn_new, MOCK_CONN);
 
 	/* run test */
