@@ -520,9 +520,11 @@ static const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(delete__conn_NULL),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(delete__flush_delete_ERRNO),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(delete__flush_delete_E_INVAL),
-	cmocka_unit_test_prestate(delete__rcq_delete_ERRNO, &Conn_with_rcq),
+	cmocka_unit_test_prestate(delete__rcq_delete_ERRNO,
+		&Conn_with_rcq_no_channel),
 	cmocka_unit_test_prestate(
-		delete__rcq_delete_ERRNO_subsequent_ERRNO2, &Conn_with_rcq),
+		delete__rcq_delete_ERRNO_subsequent_ERRNO2,
+		&Conn_with_rcq_no_channel),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(delete__cq_delete_ERRNO),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ(
 		delete__cq_delete_ERRNO_subsequent_ERRNO2),
