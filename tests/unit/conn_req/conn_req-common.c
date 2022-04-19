@@ -97,9 +97,12 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	if (cstate->get_cqe.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
+	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
+		expect_value(rpma_cq_new, shared_channel,
+				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
 	expect_value(rpma_peer_create_qp, id, &cstate->id);
@@ -184,9 +187,12 @@ setup__conn_req_new(void **cstate_ptr)
 	if (cstate->get_cqe.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
+	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
 	if (cstate->get_cqe.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
+		expect_value(rpma_cq_new, shared_channel,
+				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
 	expect_value(rpma_peer_create_qp, id, &cstate->id);

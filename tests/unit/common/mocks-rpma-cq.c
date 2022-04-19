@@ -50,10 +50,7 @@ rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
 {
 	assert_non_null(ibv_ctx);
 	check_expected(cqe);
-	/*
-	 * XXXXXX finish the mock for this function.
-	 * check_expected(shared_channel); should be used here.
-	 */
+	check_expected(shared_channel);
 	assert_non_null(cq_ptr);
 
 	struct rpma_cq *cq = mock_type(struct rpma_cq *);
