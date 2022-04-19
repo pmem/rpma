@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -10,6 +10,7 @@
  */
 
 #include "conn_req-common.h"
+#include "mocks-ibverbs.h"
 
 /*
  * get_private_data__success -- happy day scenario
@@ -33,6 +34,13 @@ get_private_data__success(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	struct rpma_conn_private_data data;
@@ -83,6 +91,13 @@ get_private_data__pdata_NULL(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &cstate->event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 	expect_function_call(rpma_private_data_discard);
+
+	struct state_rpma_ibv_destroy_comp_channel state_destroy;
+	state_destroy.channel = MOCK_COMP_CHANNEL;
+	if (cstate->get_cqe.shared) {
+		will_return(rpma_ibv_destroy_comp_channel, &state_destroy);
+		will_return(rpma_ibv_destroy_comp_channel, MOCK_OK);
+	}
 
 	/* run test */
 	int ret = rpma_conn_req_get_private_data(cstate->req, NULL);
