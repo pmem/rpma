@@ -257,6 +257,8 @@ delete__flush_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
@@ -295,6 +297,8 @@ delete__flush_delete_E_INVAL(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return_maybe(rdma_destroy_id, MOCK_OK);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
@@ -412,6 +416,8 @@ delete__cq_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_OK);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
@@ -451,6 +457,8 @@ delete__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
@@ -488,6 +496,8 @@ delete__destroy_id_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
 	will_return(rdma_destroy_id, MOCK_ERRNO);
+	if (cstate->channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
 	expect_value(rpma_private_data_discard, pdata->len, 0);
 
@@ -512,7 +522,7 @@ static const struct CMUnitTest tests_new[] = {
 	cmocka_unit_test(new__malloc_ERRNO),
 
 	/* rpma_conn_new()/_delete() lifecycle */
-	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
+	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ_CHANNEL(
 		conn_test_lifecycle, setup__conn_new, teardown__conn_delete),
 
 	/* rpma_conn_delete() unit tests */
