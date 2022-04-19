@@ -509,6 +509,49 @@ delete__destroy_id_ERRNO(void **cstate_ptr)
 	assert_null(cstate->conn);
 }
 
+/*
+ * delete__ibv_destroy_comp_channel_E_PROVIDER --
+ * rpma_ibv_destroy_comp_channel() fails with RPMA_E_PROVIDER
+ */
+static void
+delete__ibv_destroy_comp_channel_E_PROVIDER(void **cstate_ptr)
+{
+	struct conn_test_state *cstate = *cstate_ptr;
+
+	/* shared completion channel is required in this test */
+	if (!cstate->channel)
+		return;
+
+	/*
+	 * Cmocka does not allow freeing an object in a test if the object was
+	 * created in the setup step whereas even failing rpma_conn_delete()
+	 * will deallocate the rpma_conn object.
+	 */
+	int ret = setup__conn_new((void **)&cstate);
+	assert_int_equal(ret, 0);
+	assert_non_null(cstate->conn);
+
+	/* configure mocks: */
+	will_return(rpma_flush_delete, MOCK_OK);
+	expect_value(rdma_destroy_qp, id, MOCK_CM_ID);
+	expect_value(rpma_cq_delete, *cq_ptr, cstate->rcq);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rdma_destroy_id, id, MOCK_CM_ID);
+	will_return(rdma_destroy_id, MOCK_OK);
+	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
+	expect_value(rpma_private_data_discard, pdata->len, 0);
+	will_return(ibv_destroy_comp_channel, MOCK_ERRNO);
+
+	/* run test */
+	ret = rpma_conn_delete(&cstate->conn);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(cstate->conn);
+}
+
 static const struct CMUnitTest tests_new[] = {
 	/* rpma_conn_new() unit tests */
 	cmocka_unit_test(new__peer_NULL),
@@ -539,6 +582,8 @@ static const struct CMUnitTest tests_new[] = {
 	CONN_TEST_WITH_AND_WITHOUT_RCQ_CHANNEL(
 		delete__cq_delete_ERRNO_subsequent_ERRNO2),
 	CONN_TEST_WITH_AND_WITHOUT_RCQ_CHANNEL(delete__destroy_id_ERRNO),
+	CONN_TEST_WITH_AND_WITHOUT_RCQ_CHANNEL(
+		delete__ibv_destroy_comp_channel_E_PROVIDER),
 	cmocka_unit_test(NULL)
 };
 
