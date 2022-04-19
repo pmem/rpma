@@ -21,9 +21,9 @@
 #define CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(test_func, \
 		setup_func, teardown_func) \
 	{#test_func "__without_rcq", (test_func), (setup_func), \
-		(teardown_func), &Conn_without_rcq}, \
+		(teardown_func), &Conn_no_rcq_no_channel}, \
 	{#test_func "__with_rcq", (test_func), (setup_func), \
-		(teardown_func), &Conn_with_rcq}
+		(teardown_func), &Conn_with_rcq_no_channel}
 #define CONN_TEST_WITH_AND_WITHOUT_RCQ(test_func) \
 	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(test_func, NULL, NULL)
 
@@ -35,9 +35,9 @@ struct conn_test_state {
 	struct ibv_comp_channel *channel;
 };
 
-extern struct conn_test_state Conn_without_rcq;
-extern struct conn_test_state Conn_with_rcq;
-extern struct conn_test_state Conn_with_rcq_channel;
+extern struct conn_test_state Conn_no_rcq_no_channel;
+extern struct conn_test_state Conn_with_rcq_no_channel;
+extern struct conn_test_state Conn_with_rcq_and_channel;
 
 int setup__conn_new(void **cstate_ptr);
 int teardown__conn_delete(void **cstate_ptr);
