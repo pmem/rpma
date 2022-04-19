@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -37,3 +37,25 @@ if(ON_DEMAND_PAGING_SUPPORTED)
 
 	add_test_generic(NAME utils-ibv_context_is_odp_capable TRACERS none)
 endif()
+
+build_test_src(UNIT NAME rpma-create_comp_channel SRCS
+	rpma-create_comp_channel.c
+	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/rpma.c)
+
+	add_test_generic(NAME rpma-create_comp_channel TRACERS none)
+
+build_test_src(UNIT NAME rpma-destroy_comp_channel SRCS
+	rpma-destroy_comp_channel.c
+	${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
+	${TEST_UNIT_COMMON_DIR}/mocks-rpma-info.c
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/rpma.c)
+
+	add_test_generic(NAME rpma-destroy_comp_channel TRACERS none)
