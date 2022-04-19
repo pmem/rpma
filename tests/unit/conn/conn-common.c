@@ -25,7 +25,7 @@ struct conn_test_state Conn_with_rcq_no_channel = {
 	.channel = NULL
 };
 
-struct conn_test_state Conn_with_rcq_and_channel = {
+struct conn_test_state Conn_with_rcq_with_channel = {
 	.rcq = MOCK_RPMA_RCQ,
 	.channel = MOCK_COMP_CHANNEL
 };

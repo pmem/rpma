@@ -207,19 +207,19 @@ static const struct CMUnitTest tests_new[] = {
 		setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test_prestate_setup_teardown(wait__get_cq_event_ERRNO,
 		setup__conn_new, teardown__conn_delete,
-		&Conn_with_rcq_and_channel),
+		&Conn_with_rcq_with_channel),
 	cmocka_unit_test_prestate_setup_teardown(wait__get_cq_event_UNKNOWN,
 		setup__conn_new, teardown__conn_delete,
-		&Conn_with_rcq_and_channel),
+		&Conn_with_rcq_with_channel),
 	cmocka_unit_test_prestate_setup_teardown(wait__req_notify_cq_ERRNO,
 		setup__conn_new, teardown__conn_delete,
-		&Conn_with_rcq_and_channel),
+		&Conn_with_rcq_with_channel),
 	cmocka_unit_test_prestate_setup_teardown(wait__success_is_rcq_NULL,
 		setup__conn_new, teardown__conn_delete,
-		&Conn_with_rcq_and_channel),
+		&Conn_with_rcq_with_channel),
 	cmocka_unit_test_prestate_setup_teardown(wait__success,
 		setup__conn_new, teardown__conn_delete,
-		&Conn_with_rcq_and_channel)
+		&Conn_with_rcq_with_channel)
 };
 
 int
