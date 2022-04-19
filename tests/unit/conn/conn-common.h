@@ -23,6 +23,8 @@
 	{#test_func "__no_rcq_no_channel", (test_func), (setup_func), \
 		(teardown_func), &Conn_no_rcq_no_channel}, \
 	{#test_func "__no_rcq_with_channel", (test_func), (setup_func), \
+		(teardown_func), &Conn_no_rcq_with_channel}, \
+	{#test_func "__with_rcq_no_channel", (test_func), (setup_func), \
 		(teardown_func), &Conn_with_rcq_no_channel}, \
 	{#test_func "__with_rcq_with_channel", (test_func), (setup_func), \
 		(teardown_func), &Conn_with_rcq_with_channel}
@@ -39,6 +41,7 @@ struct conn_test_state {
 };
 
 extern struct conn_test_state Conn_no_rcq_no_channel;
+extern struct conn_test_state Conn_no_rcq_with_channel;
 extern struct conn_test_state Conn_with_rcq_no_channel;
 extern struct conn_test_state Conn_with_rcq_with_channel;
 
