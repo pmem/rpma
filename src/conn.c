@@ -15,7 +15,6 @@
 #include "log_internal.h"
 #include "mr.h"
 #include "private_data.h"
-#include "rpma.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -347,9 +346,13 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	}
 
 	if (conn->channel) {
-		ret = rpma_ibv_destroy_comp_channel(conn->channel);
-		if (ret)
+		errno = ibv_destroy_comp_channel(conn->channel);
+		if (errno) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+				"ibv_destroy_comp_channel()");
+			ret = RPMA_E_PROVIDER;
 			goto err_destroy_event_channel;
+		}
 	}
 
 	rdma_destroy_event_channel(conn->evch);
@@ -369,7 +372,7 @@ err_destroy_id:
 	(void) rdma_destroy_id(conn->id);
 err_destroy_comp_channel:
 	if (conn->channel)
-		(void) rpma_ibv_destroy_comp_channel(conn->channel);
+		(void) ibv_destroy_comp_channel(conn->channel);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
 	rpma_private_data_discard(&conn->data);

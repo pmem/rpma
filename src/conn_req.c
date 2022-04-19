@@ -18,7 +18,6 @@
 #include "mr.h"
 #include "peer.h"
 #include "private_data.h"
-#include "rpma.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -88,9 +87,13 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	struct ibv_comp_channel *channel = NULL;
 	if (shared) {
-		ret = rpma_ibv_create_comp_channel(id->verbs, &channel);
-		if (ret)
-			return ret;
+		/* create a completion channel */
+		channel = ibv_create_comp_channel(id->verbs);
+		if (channel == NULL) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+					"ibv_create_comp_channel()");
+			return RPMA_E_PROVIDER;
+		}
 	}
 
 	struct rpma_cq *cq = NULL;
@@ -165,7 +168,7 @@ err_rpma_cq_delete:
 
 err_comp_channel_destroy:
 	if (channel)
-		(void) rpma_ibv_destroy_comp_channel(channel);
+		(void) ibv_destroy_comp_channel(channel);
 
 	return ret;
 }
@@ -218,7 +221,7 @@ err_conn_req_delete:
 	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
 	if (req->channel)
-		(void) rpma_ibv_destroy_comp_channel(req->channel);
+		(void) ibv_destroy_comp_channel(req->channel);
 
 	return ret;
 }
@@ -247,7 +250,7 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 		(void) rpma_cq_delete(&req->cq);
 		(void) rdma_destroy_id(req->id);
 		if (req->channel)
-			(void) rpma_ibv_destroy_comp_channel(req->channel);
+			(void) ibv_destroy_comp_channel(req->channel);
 		return ret;
 	}
 
@@ -492,9 +495,13 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 		ret = rpma_conn_req_destroy(req);
 
 	if (req->channel) {
-		int ret2 = rpma_ibv_destroy_comp_channel(req->channel);
-		if (ret2 && !ret)
-			ret = ret2;
+		errno = ibv_destroy_comp_channel(req->channel);
+		if (errno) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+				"ibv_destroy_comp_channel()");
+			if (!ret)
+				ret = RPMA_E_PROVIDER;
+		}
 	}
 
 	rpma_private_data_discard(&req->data);

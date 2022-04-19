@@ -99,28 +99,3 @@ rpma_cq_get_ibv_cq(const struct rpma_cq *cq)
 
 	return mock_type(struct ibv_cq *);
 }
-
-/*
- * rpma_ibv_create_comp_channel -- rpma_ibv_create_comp_channel() mock
- */
-int
-rpma_ibv_create_comp_channel(struct ibv_context *ibv_ctx,
-		struct ibv_comp_channel **channel_ptr)
-{
-	/*
-	 * XXXXXX write the full mock for this function.
-	 */
-	return 0;
-}
-
-/*
- * rpma_ibv_destroy_comp_channel -- rpma_ibv_destroy_comp_channel() mock
- */
-int
-rpma_ibv_destroy_comp_channel(struct ibv_comp_channel *channel)
-{
-	/*
-	 * XXXXXX write the full mock for this function.
-	 */
-	return 0;
-}
