@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -112,14 +113,14 @@ static const struct CMUnitTest tests_get_cq_rcq[] = {
 	cmocka_unit_test(get_cq__conn_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_cq__cq_ptr_NULL, setup__conn_new, teardown__conn_delete),
-	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
+	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ_CHANNEL(
 		get_cq__success, setup__conn_new, teardown__conn_delete),
 
 	/* rpma_conn_get_rcq() unit tests */
 	cmocka_unit_test(get_rcq__conn_NULL),
 	cmocka_unit_test_setup_teardown(
 		get_rcq__rcq_ptr_NULL, setup__conn_new, teardown__conn_delete),
-	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
+	CONN_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ_CHANNEL(
 		get_rcq__success, setup__conn_new, teardown__conn_delete),
 	cmocka_unit_test(NULL)
 };
