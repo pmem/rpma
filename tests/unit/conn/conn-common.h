@@ -37,7 +37,7 @@ struct conn_test_state {
 
 extern struct conn_test_state Conn_no_rcq_no_channel;
 extern struct conn_test_state Conn_with_rcq_no_channel;
-extern struct conn_test_state Conn_with_rcq_and_channel;
+extern struct conn_test_state Conn_with_rcq_with_channel;
 
 int setup__conn_new(void **cstate_ptr);
 int teardown__conn_delete(void **cstate_ptr);
