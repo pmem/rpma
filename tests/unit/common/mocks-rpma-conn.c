@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -19,12 +19,13 @@
 int
 rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
-		struct rpma_conn **conn_ptr)
+		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
 {
 	assert_ptr_equal(peer, MOCK_PEER);
 	check_expected_ptr(id);
 	assert_ptr_equal(cq, MOCK_RPMA_CQ);
 	check_expected_ptr(rcq);
+	check_expected_ptr(channel);
 
 	assert_non_null(conn_ptr);
 

@@ -44,10 +44,13 @@ rpma_cq_wait(struct rpma_cq *cq)
  * rpma_cq_new -- rpma_cq_new() mock
  */
 int
-rpma_cq_new(struct ibv_context *ibv_ctx, int cqe, struct rpma_cq **cq_ptr)
+rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
+		struct ibv_comp_channel *shared_channel,
+		struct rpma_cq **cq_ptr)
 {
 	assert_non_null(ibv_ctx);
 	check_expected(cqe);
+	check_expected(shared_channel);
 	assert_non_null(cq_ptr);
 
 	struct rpma_cq *cq = mock_type(struct rpma_cq *);

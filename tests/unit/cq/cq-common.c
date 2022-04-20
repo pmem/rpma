@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -13,28 +14,42 @@
 #include "mocks-rpma-conn_cfg.h"
 #include "cq-common.h"
 
+struct cq_test_state CQ_without_channel = {
+	.shared_channel = NULL
+};
+
+struct cq_test_state CQ_with_channel = {
+	.shared_channel = MOCK_COMP_CHANNEL
+};
+
 /*
  * setup__cq_new -- prepare a valid cq object
  */
 int
 setup__cq_new(void **cq_ptr)
 {
-	struct rpma_cq *cq = NULL;
+	/* the default is CQ_without_channel */
+	struct cq_test_state *cstate = *cq_ptr ? *cq_ptr : &CQ_without_channel;
 
 	/* configure mocks */
-	will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	if (!cstate->shared_channel)
+		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(ibv_create_cq, cqe, MOCK_CQ_SIZE_DEFAULT);
 	will_return(ibv_create_cq, MOCK_IBV_CQ);
+	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */
-	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT, &cq);
+	struct rpma_cq *cq = NULL;
+	int ret = rpma_cq_new(MOCK_VERBS, MOCK_CQ_SIZE_DEFAULT,
+				cstate->shared_channel, &cq);
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
 
-	*cq_ptr = cq;
+	cstate->cq = cq;
+	*cq_ptr = cstate;
 
 	return 0;
 }
@@ -45,11 +60,13 @@ setup__cq_new(void **cq_ptr)
 int
 teardown__cq_delete(void **cq_ptr)
 {
-	struct rpma_cq *cq = *cq_ptr;
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
 	will_return(ibv_destroy_cq, MOCK_OK);
-	will_return(ibv_destroy_comp_channel, MOCK_OK);
+	if (!cstate->shared_channel)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_cq_delete(&cq);

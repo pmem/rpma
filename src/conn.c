@@ -25,6 +25,7 @@ struct rpma_conn {
 	struct rdma_event_channel *evch; /* event channel of the CM ID */
 	struct rpma_cq *cq; /* main CQ */
 	struct rpma_cq *rcq; /* receive CQ */
+	struct ibv_comp_channel *channel; /* shared completion channel */
 
 	struct rpma_conn_private_data data; /* private data of the CM ID */
 	struct rpma_flush *flush; /* flushing object */
@@ -44,7 +45,7 @@ struct rpma_conn {
 int
 rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
-		struct rpma_conn **conn_ptr)
+		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
 {
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -78,6 +79,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 	conn->evch = evch;
 	conn->cq = cq;
 	conn->rcq = rcq;
+	conn->channel = channel;
 	conn->data.ptr = NULL;
 	conn->data.len = 0;
 	conn->flush = flush;
@@ -203,6 +205,77 @@ err_private_data_discard:
 }
 
 /*
+ * rpma_conn_wait -- wait for a completion event on the shared completion
+ * channel from CQ or RCQ, ack it and return a CQ that caused the event
+ * in the cq argument and a boolean value saying if it is RCQ or not
+ * in the is_rcq argument (if is_rcq is not NULL)
+ */
+int
+rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
+{
+	if (conn == NULL || cq == NULL)
+		return RPMA_E_INVAL;
+
+	if (conn->channel == NULL)
+		return RPMA_E_NOT_SHARED_CHNL;
+
+	/* wait for the completion event */
+	struct ibv_cq *ev_cq;	/* CQ that got the event */
+	void *ev_ctx;		/* unused */
+	if (ibv_get_cq_event(conn->channel, &ev_cq, &ev_ctx))
+		return RPMA_E_NO_COMPLETION;
+
+	if (conn->cq && (rpma_cq_get_ibv_cq(conn->cq) == ev_cq)) {
+		*cq = conn->cq;
+		if (is_rcq)
+			*is_rcq = false;
+	} else if (conn->rcq && (rpma_cq_get_ibv_cq(conn->rcq) == ev_cq)) {
+		*cq = conn->rcq;
+		if (is_rcq)
+			*is_rcq = true;
+	} else {
+		RPMA_LOG_ERROR("ibv_get_cq_event() returned unknown CQ");
+		return RPMA_E_UNKNOWN;
+	}
+
+	/*
+	 * ACK the collected CQ event.
+	 *
+	 * XXX for performance reasons, it may be beneficial to ACK more than
+	 * one CQ event at the same time.
+	 */
+	ibv_ack_cq_events(ev_cq, 1 /* # of CQ events */);
+
+	/* request for the next event on the CQ channel */
+	errno = ibv_req_notify_cq(ev_cq, 0 /* all completions */);
+	if (errno) {
+		*cq = NULL;
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_req_notify_cq()");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
+/*
+ * rpma_conn_get_compl_fd -- get a file descriptor of the shared
+ * completion channel from the connection
+ */
+int
+rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd)
+{
+	if (conn == NULL || fd == NULL)
+		return RPMA_E_INVAL;
+
+	if (conn->channel == NULL)
+		return RPMA_E_NOT_SHARED_CHNL;
+
+	*fd = conn->channel->fd;
+
+	return 0;
+}
+
+/*
  * rpma_conn_get_private_data -- hand a pointer to the connection's private data
  */
 int
@@ -269,7 +342,17 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	if (rdma_destroy_id(conn->id)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
 		ret = RPMA_E_PROVIDER;
-		goto err_destroy_event_channel;
+		goto err_destroy_comp_channel;
+	}
+
+	if (conn->channel) {
+		errno = ibv_destroy_comp_channel(conn->channel);
+		if (errno) {
+			RPMA_LOG_ERROR_WITH_ERRNO(errno,
+				"ibv_destroy_comp_channel()");
+			ret = RPMA_E_PROVIDER;
+			goto err_destroy_event_channel;
+		}
 	}
 
 	rdma_destroy_event_channel(conn->evch);
@@ -287,6 +370,9 @@ err_rpma_cq_delete:
 	(void) rpma_cq_delete(&conn->cq);
 err_destroy_id:
 	(void) rdma_destroy_id(conn->id);
+err_destroy_comp_channel:
+	if (conn->channel)
+		(void) ibv_destroy_comp_channel(conn->channel);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
 	rpma_private_data_discard(&conn->data);
