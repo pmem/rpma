@@ -1367,8 +1367,7 @@ int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
 int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
 /** 3
- * rpma_conn_cfg_get_compl_channel - get if the completion event channel
- * is shared by CQ and RCQ
+ * rpma_conn_cfg_get_compl_channel - get if completion channel can be shared
  *
  * SYNOPSIS
  *
@@ -1380,7 +1379,7 @@ int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
  *
  * DESCRIPTION
  * rpma_conn_cfg_get_compl_channel() gets if the completion event channel
- * is shared by CQ and RCQ.
+ * can be shared by CQ and RCQ.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_get_compl_channel() function returns 0 on success
@@ -1400,8 +1399,7 @@ int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
 		bool *shared);
 
 /** 3
- * rpma_conn_cfg_set_compl_channel - set if the completion event channel
- * is shared by CQ and RCQ
+ * rpma_conn_cfg_set_compl_channel - set if completion channel can be shared
  *
  * SYNOPSIS
  *
@@ -1413,8 +1411,8 @@ int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg,
  *
  * DESCRIPTION
  * rpma_conn_cfg_set_compl_channel() sets if the completion event channel
- * is shared by CQ and RCQ or not. The completion event channel is not shared
- * by CQ and RCQ by default. See rpma_conn_cfg_new(3) for details.
+ * can be shared by CQ and RCQ or not. The completion event channel
+ * is not shared by CQ and RCQ by default. See rpma_conn_cfg_new(3) for details.
  *
  * RETURN VALUE
  * The rpma_conn_cfg_set_compl_channel() function returns 0 on success or
@@ -2141,8 +2139,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 		struct rpma_conn **conn_ptr);
 
 /** 3
- * rpma_conn_get_compl_fd -- get a file descriptor of the shared
- * completion channel from the connection
+ * rpma_conn_get_compl_fd - get a fd of the shared completion channel
  *
  * SYNOPSIS
  *
@@ -2150,8 +2147,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  *
  *	struct rpma_conn;
  *	int fd;
- *	int rpma_conn_get_compl_fd(const struct rpma_conn *conn,
- *			int *fd);
+ *	int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  *
  * DESCRIPTION
  * rpma_conn_get_compl_fd() gets a file descriptor of the shared
@@ -2166,7 +2162,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
  * rpma_conn_get_compl_fd() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn or fd is NULL
- * - RPMA_E_NOT_SHARED_CHNL - the completion channel is not shared
+ * - RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
  *
  * SEE ALSO
  * librpma(7), rpma_conn_req_connect(3)
@@ -2175,7 +2171,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
 
 /** 3
- * rpma_conn_wait -- wait for a completion event
+ * rpma_conn_wait - wait for a completion event
  *
  * SYNOPSIS
  *
@@ -2199,7 +2195,7 @@ int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  * rpma_conn_wait() can fail with the following errors:
  *
  * - RPMA_E_INVAL - conn or cq are NULL
- * - RPMA_E_NOT_SHARED_CHNL - completion channel is NULL
+ * - RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
  * - RPMA_E_NO_COMPLETION - ibv_get_cq_event(3) failed
  * - RPMA_E_UNKNOWN - ibv_get_cq_event(3) returned unknown CQ
  * - RPMA_E_PROVIDER - ibv_req_notify_cq(3) failed
