@@ -2171,7 +2171,7 @@ int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
 
 /** 3
- * rpma_conn_wait - wait for a completion event
+ * rpma_conn_wait - wait for a completion event on the shared completion channel from CQ or RCQ
  *
  * SYNOPSIS
  *
@@ -2186,7 +2186,7 @@ int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  * channel from CQ or RCQ, acks it and returns a CQ that caused the event
  * in the cq argument and a boolean value saying if it is RCQ or not
  * in the is_rcq argument (if is_rcq is not NULL). If rpma_conn_wait() succeeds,
- * then all available completions should be collected from both CQ and RCQ
+ * then all available completions should be collected from the returned cq
  * using rpma_cq_get_wc(3).
  *
  * RETURN VALUE
