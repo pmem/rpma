@@ -16,7 +16,7 @@ header: "librpma API version 0.14.0"
 NAME
 ====
 
-**rpma\_cq\_wait** - wait for a completion
+**rpma\_cq\_wait** - wait for a completion and ack it
 
 SYNOPSIS
 ========
@@ -29,9 +29,10 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_cq\_wait**() waits for an incoming completion. If it succeeds,
-then all available completions should be collected using
-**rpma\_cq\_get\_wc**(3) before the next **rpma\_cq\_wait**() call.
+**rpma\_cq\_wait**() waits for an incoming completion event and acks it.
+If **rpma\_cq\_wait**() succeeds, then all available completions should
+be collected using **rpma\_cq\_get\_wc**(3) before the next
+**rpma\_cq\_wait**() call.
 
 RETURN VALUE
 ============
@@ -50,6 +51,9 @@ ERRORS
     provider error
 
 -   RPMA\_E\_NO\_COMPLETION - no completions available
+
+-   RPMA\_E\_SHARED\_CHANNEL - the completion event channel is shared
+    and cannot be handled by any particular CQ
 
 SEE ALSO
 ========
