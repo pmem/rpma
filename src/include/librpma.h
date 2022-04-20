@@ -2175,11 +2175,11 @@ int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  *
  * SYNOPSIS
  *
- * #include <librpma.h>
+ *	#include <librpma.h>
  *
- * struct rpma_conn;
- * struct rpma_cq
- * int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
+ *	struct rpma_conn;
+ *	struct rpma_cq
+ *	int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
  *
  * DESCRIPTION
  * rpma_conn_wait() waits for a completion event on the shared completion
