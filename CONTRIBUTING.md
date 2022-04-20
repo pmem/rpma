@@ -58,9 +58,9 @@ Author: Random J Developer <random@developer.example.org>
 
 Here is the list of the most important rules:
 
-- The limit of line length is 80 characters.
+- The limit of line length is 100 characters.
 - Indent the code with TABs, not spaces. Tab width is 8 characters.
-- Do not break user-visible strings (even when they are longer than 80 characters), but make them the only token in the line.
+- Do not break user-visible strings (even when they are longer than 100 characters), but make them the only token in the line.
 - Put each variable declaration in a separate line.
 - Do not use C++ comments `//` (except for the License).
 - Spaces around operators are mandatory.
