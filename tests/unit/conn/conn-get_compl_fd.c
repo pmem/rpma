@@ -2,7 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * conn-get_compl_fd.c -- the rpma_conn_get_compl_fd unit tests
+ * conn-get_compl_fd.c -- the rpma_conn_get_compl_fd() unit tests
  *
  * APIs covered:
  * - rpma_conn_get_compl_fd()
@@ -59,7 +59,7 @@ get_compl_fd__conn_fd_NULL(void **unused)
 }
 
 /*
- * get_compl_fd__E_NOT_SHARED_CHNL -- rpma_conn_get_compl_fd
+ * get_compl_fd__E_NOT_SHARED_CHNL -- rpma_conn_get_compl_fd()
  * fails with RPMA_E_NOT_SHARED_CHNL
  */
 static void
