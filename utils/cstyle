@@ -310,13 +310,13 @@ line: while (<$filehandle>) {
 
 	# check length of line.
 	# first, a quick check to see if there is any chance of being too long.
-	if (($line =~ tr/\t/\t/) * 7 + length($line) > 80) {
+	if (($line =~ tr/\t/\t/) * 7 + length($line) > 100) {
 		# yes, there is a chance.
 		# replace tabs with spaces and check again.
 		my $eline = $line;
 		1 while $eline =~
 		    s/\t+/' ' x (length($&) * 8 - length($`) % 8)/e;
-		if (length($eline) > 80) {
+		if (length($eline) > 100) {
 			# allow long line if it is user visible string
 			# find if line start from " and ends
 			# with " + 2 optional characters
@@ -327,11 +327,11 @@ line: while (<$filehandle>) {
 				$eline =~ s/"[^"]{0,2}$//;
 
 				if($eline =~ /[^\\]"|[^\\](\\\\)+"/) {
-					err("line > 80 characters");
+					err("line > 100 characters");
 				}
 			# allow long line if it is an URL
 			} elsif (!($eline =~ / https?:\/\//)) {
-				err("line > 80 characters");
+				err("line > 100 characters");
 			}
 		}
 	}
