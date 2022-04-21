@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * peer-common.c -- the common part of the peer unit test
@@ -54,6 +54,9 @@ setup__peer(void **in_out)
 int
 teardown__peer(void **peer_ptr)
 {
+	if (*peer_ptr == NULL)
+		return 0;
+
 	/*
 	 * configure mocks for rpma_peer_delete():
 	 * NOTE: it is not allowed to call ibv_alloc_pd() nor malloc() in
