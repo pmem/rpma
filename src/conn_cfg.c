@@ -71,20 +71,12 @@ rpma_conn_cfg_default()
  * of rpma_conn_cfg_get_cq_size(). Round down the cq_size when it is too big
  * for storing into an int type of value. Convert otherwise.
  */
-int
+void
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
-	if (cqe == NULL)
-		return RPMA_E_INVAL;
-
-	uint32_t cq_size;
-	int ret = rpma_conn_cfg_get_cq_size(cfg, &cq_size);
-	if (ret)
-		return ret;
-
+	uint32_t cq_size = 0;
+	(void) rpma_conn_cfg_get_cq_size(cfg, &cq_size);
 	*cqe = CLIP_TO_INT(cq_size);
-
-	return 0;
 }
 
 /*
@@ -92,20 +84,12 @@ rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
  * of rpma_conn_cfg_get_rcq_size(). Round down the rcq_size when it is too big
  * for storing into an int type of value. Convert otherwise.
  */
-int
+void
 rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 {
-	if (rcqe == NULL)
-		return RPMA_E_INVAL;
-
-	uint32_t rcq_size;
-	int ret = rpma_conn_cfg_get_rcq_size(cfg, &rcq_size);
-	if (ret)
-		return ret;
-
+	uint32_t rcq_size = 0;
+	(void) rpma_conn_cfg_get_rcq_size(cfg, &rcq_size);
 	*rcqe = CLIP_TO_INT(rcq_size);
-
-	return 0;
 }
 
 /* public librpma API */
