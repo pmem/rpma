@@ -175,24 +175,22 @@ err_comp_channel_destroy:
 
 /*
  * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
- * request re-packing the connection request to a connection object. Otherwise,
- * rdma_disconnect()+rdma_destroy_qp()+rpma_cq_delete() to destroy
- * the unsuccessful connection request.
+ * request re-packing the connection request to a connection object.
  *
  * ASSUMPTIONS
- * - req != NULL && conn_param != NULL && conn_ptr != NULL
+ * - req_ptr != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_accept(struct rpma_conn_req *req,
+rpma_conn_req_accept(struct rpma_conn_req **req_ptr,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
 
+	struct rpma_conn_req *req = *req_ptr;
 	if (rdma_accept(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_accept()");
-		ret = RPMA_E_PROVIDER;
 		(void) rdma_ack_cm_event(req->edata);
-		goto err_conn_req_delete;
+		return RPMA_E_PROVIDER;
 	}
 
 	/* ACK the connection request event */
@@ -203,56 +201,37 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	}
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
-				req->channel, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, req->channel, &conn);
 	if (ret)
 		goto err_conn_disconnect;
 
 	rpma_conn_transfer_private_data(conn, &req->data);
 
 	*conn_ptr = conn;
+
 	return 0;
 
 err_conn_disconnect:
 	(void) rdma_disconnect(req->id);
-
-err_conn_req_delete:
-	rdma_destroy_qp(req->id);
-	(void) rpma_cq_delete(&req->rcq);
-	(void) rpma_cq_delete(&req->cq);
-	if (req->channel)
-		(void) ibv_destroy_comp_channel(req->channel);
-
 	return ret;
 }
 
 /*
  * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
- * re-packing the connection request to a connection object. Otherwise,
- * rdma_destroy_qp()+rpma_cq_delete()+rdma_destroy_id() to destroy
- * the unsuccessful connection request.
+ * re-packing the connection request to a connection object.
  *
  * ASSUMPTIONS
- * - req != NULL && conn_param != NULL && conn_ptr != NULL
+ * - req_ptr != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_connect_active(struct rpma_conn_req *req,
+rpma_conn_req_connect_active(struct rpma_conn_req **req_ptr,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
-	int ret = 0;
-
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
-				req->channel, &conn);
-	if (ret) {
-		rdma_destroy_qp(req->id);
-		(void) rpma_cq_delete(&req->rcq);
-		(void) rpma_cq_delete(&req->cq);
-		(void) rdma_destroy_id(req->id);
-		if (req->channel)
-			(void) ibv_destroy_comp_channel(req->channel);
+	struct rpma_conn_req *req = *req_ptr;
+	int ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, req->channel, &conn);
+	if (ret)
 		return ret;
-	}
 
 	if (rdma_connect(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_connect()");
@@ -261,6 +240,7 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	}
 
 	*conn_ptr = conn;
+
 	return 0;
 }
 
@@ -460,14 +440,19 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	int ret = 0;
 
 	if (req->edata)
-		ret = rpma_conn_req_accept(req, &conn_param, conn_ptr);
+		ret = rpma_conn_req_accept(req_ptr, &conn_param, conn_ptr);
 	else
-		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
+		ret = rpma_conn_req_connect_active(req_ptr, &conn_param, conn_ptr);
 
-	free(req);
+	if (ret) {
+		rpma_conn_req_delete(req_ptr);
+		return ret;
+	}
+
+	free(*req_ptr);
 	*req_ptr = NULL;
 
-	return ret;
+	return 0;
 }
 
 /*
@@ -506,7 +491,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	rpma_private_data_discard(&req->data);
 
-	free(req);
+	free(*req_ptr);
 	*req_ptr = NULL;
 
 	return ret;
