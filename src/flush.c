@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * flush.c -- librpma flush-related implementations
@@ -15,6 +15,7 @@
 #include "cmocka_alloc.h"
 #endif
 
+#include "debug.h"
 #include "flush.h"
 #include "log_internal.h"
 #include "mr.h"
@@ -53,6 +54,9 @@ struct flush_apm {
 static int
 rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	int ret;
 
 	/* a memory registration has to be page-aligned */
@@ -105,6 +109,8 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 static int
 rpma_flush_apm_delete(struct rpma_flush *flush)
 {
+	RPMA_DEBUG_TRACE;
+
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
 	struct flush_apm *flush_apm =
@@ -120,6 +126,7 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 	if (ret_unmap)
 		return RPMA_E_INVAL;
 
+	RPMA_FAULT_INJECTION;
 	return 0;
 }
 
@@ -131,6 +138,9 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
 	struct flush_apm *flush_apm =
@@ -148,6 +158,9 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 int
 rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	struct rpma_flush *flush = malloc(sizeof(struct rpma_flush_internal));
 	if (!flush)
 		return RPMA_E_NOMEM;
@@ -169,6 +182,8 @@ rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 int
 rpma_flush_delete(struct rpma_flush **flush_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	struct rpma_flush_internal *flush_internal =
 			*(struct rpma_flush_internal **)flush_ptr;
 
@@ -176,5 +191,6 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	free(*flush_ptr);
 	*flush_ptr = NULL;
 
+	RPMA_FAULT_INJECTION;
 	return ret;
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * ep.c -- librpma endpoint-related implementations
@@ -10,6 +10,7 @@
 
 #include "conn_cfg.h"
 #include "conn_req.h"
+#include "debug.h"
 #include "info.h"
 #include "librpma.h"
 #include "log_internal.h"
@@ -39,6 +40,9 @@ int
 rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_ep **ep_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (peer == NULL || addr == NULL || port == NULL || ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -110,6 +114,8 @@ err_destroy_event_channel:
 int
 rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	if (ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -127,6 +133,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 	free(ep);
 	*ep_ptr = NULL;
 
+	RPMA_FAULT_INJECTION;
 	return 0;
 }
 
@@ -137,6 +144,9 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 int
 rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (ep == NULL || fd == NULL)
 		return RPMA_E_INVAL;
 
@@ -155,6 +165,9 @@ int
 rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION;
+
 	if (ep == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
