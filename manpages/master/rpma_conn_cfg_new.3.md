@@ -37,6 +37,7 @@ and fills it with the default values:
             .rcq_size = 0
             .sq_size = 10
             .rq_size = 10
+            .shared_comp_channel = false
 
 RETURN VALUE
 ============
@@ -57,10 +58,13 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_cfg\_delete**(3), **rpma\_conn\_cfg\_get\_cq\_size**(3),
+**rpma\_conn\_cfg\_delete**(3),
+**rpma\_conn\_cfg\_get\_compl\_channel**(3),
+**rpma\_conn\_cfg\_get\_cq\_size**(3),
 **rpma\_conn\_cfg\_get\_rq\_size**(3),
 **rpma\_conn\_cfg\_get\_sq\_size**(3),
 **rpma\_conn\_cfg\_get\_timeout**(3),
+**rpma\_conn\_cfg\_set\_compl\_channel**(3),
 **rpma\_conn\_cfg\_set\_cq\_size**(3),
 **rpma\_conn\_cfg\_set\_rq\_size**(3),
 **rpma\_conn\_cfg\_set\_sq\_size**(3),
