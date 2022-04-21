@@ -42,7 +42,7 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 /*
  * rpma_conn_cfg_get_cqe -- rpma_conn_cfg_get_cqe() mock
  */
-int
+void
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
 	struct conn_cfg_get_cq_size_mock_args *args =
@@ -50,16 +50,13 @@ rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(cqe);
-
 	*cqe = (int)args->cq_size;
-
-	return 0;
 }
 
 /*
  * rpma_conn_cfg_get_rcqe -- rpma_conn_cfg_get_rcqe() mock
  */
-int
+void
 rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 {
 	struct conn_cfg_get_cq_size_mock_args *args =
@@ -67,10 +64,7 @@ rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(rcqe);
-
 	*rcqe = (int)args->rcq_size;
-
-	return 0;
 }
 
 /*

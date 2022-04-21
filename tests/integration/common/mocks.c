@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks.c -- common mocks for integration tests
@@ -271,7 +271,7 @@ ibv_create_cq(struct ibv_context *ibv_ctx, int cqe, void *cq_context,
 		struct ibv_comp_channel *channel, int comp_vector)
 {
 	int cqe_default;
-	(void) rpma_conn_cfg_get_cqe(rpma_conn_cfg_default(), &cqe_default);
+	rpma_conn_cfg_get_cqe(rpma_conn_cfg_default(), &cqe_default);
 
 	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
 	assert_int_equal(cqe, cqe_default);
