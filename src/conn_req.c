@@ -377,7 +377,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 	if (cfg == NULL)
 		cfg = rpma_conn_cfg_default();
 
-	int timeout_ms;
+	int timeout_ms = 0;
 	(void) rpma_conn_cfg_get_timeout(cfg, &timeout_ms);
 
 	struct rpma_info *info;
