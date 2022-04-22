@@ -54,9 +54,6 @@ teardown__peer(void **cstate_ptr)
 {
 	struct peer_prestate *cstate = *cstate_ptr;
 
-	if (cstate->peer == NULL)
-		return 0;
-
 	/*
 	 * configure mocks for rpma_peer_delete():
 	 * NOTE: it is not allowed to call ibv_alloc_pd() nor malloc() in
