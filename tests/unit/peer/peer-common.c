@@ -15,35 +15,33 @@
 #include "peer-common.h"
 #include "test-common.h"
 
-int OdpCapable = MOCK_ODP_CAPABLE;
-int OdpIncapable = MOCK_ODP_INCAPABLE;
+struct peer_prestate OdpCapable = {MOCK_ODP_CAPABLE, NULL};
+struct peer_prestate OdpIncapable = {MOCK_ODP_INCAPABLE, NULL};
 
 /*
  * setup__peer -- prepare a valid rpma_peer object
  * (encapsulating the MOCK_IBV_PD)
- *
- * Note:
- * - in - int **is_odp_capable
- * - out - struct rpma_peer **
  */
 int
-setup__peer(void **in_out)
+setup__peer(void **cstate_ptr)
 {
+	struct peer_prestate *cstate = *cstate_ptr;
+
 	/*
 	 * configure mocks for rpma_peer_new():
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
-	will_return(rpma_utils_ibv_context_is_odp_capable, **(int **)in_out);
+	will_return(rpma_utils_ibv_context_is_odp_capable, cstate->is_odp_capable);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* setup */
-	int ret = rpma_peer_new(MOCK_VERBS, (struct rpma_peer **)in_out);
+	int ret = rpma_peer_new(MOCK_VERBS, &cstate->peer);
 	assert_int_equal(ret, 0);
-	assert_non_null(*in_out);
+	assert_non_null(cstate->peer);
 
 	return 0;
 }
@@ -52,9 +50,11 @@ setup__peer(void **in_out)
  * teardown__peer -- delete the rpma_peer object
  */
 int
-teardown__peer(void **peer_ptr)
+teardown__peer(void **cstate_ptr)
 {
-	if (*peer_ptr == NULL)
+	struct peer_prestate *cstate = *cstate_ptr;
+
+	if (cstate->peer == NULL)
 		return 0;
 
 	/*
@@ -68,9 +68,9 @@ teardown__peer(void **peer_ptr)
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
 	/* teardown */
-	int ret = rpma_peer_delete((struct rpma_peer **)peer_ptr);
+	int ret = rpma_peer_delete(&cstate->peer);
 	assert_int_equal(ret, MOCK_OK);
-	assert_null(*peer_ptr);
+	assert_null(cstate->peer);
 
 	return 0;
 }

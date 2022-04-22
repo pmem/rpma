@@ -292,9 +292,9 @@ delete__null_peer(void **unused)
  * delete__dealloc_pd_ERRNO -- ibv_dealloc_pd() fails with MOCK_ERRNO
  */
 static void
-delete__dealloc_pd_ERRNO(void **peer_ptr)
+delete__dealloc_pd_ERRNO(void **cstate_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct peer_prestate *cstate = *cstate_ptr;
 
 	/*
 	 * configure mocks for rpma_peer_delete():
@@ -307,13 +307,10 @@ delete__dealloc_pd_ERRNO(void **peer_ptr)
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
 	/* run test */
-	int ret = rpma_peer_delete(&peer);
+	int ret = rpma_peer_delete(&cstate->peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-
-	/* save changed peer */
-	*peer_ptr = peer;
 }
 
 int

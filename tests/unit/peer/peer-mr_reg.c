@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -75,9 +75,9 @@ static struct prestate prestates[] = {
  * mr_reg__reg_mr_ERRNO -- ibv_reg_mr() fails with MOCK_ERRNO
  */
 static void
-mr_reg__reg_mr_ERRNO(void **peer_ptr)
+mr_reg__reg_mr_ERRNO(void **cstate_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct peer_prestate *cstate = *cstate_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -89,7 +89,7 @@ mr_reg__reg_mr_ERRNO(void **peer_ptr)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_mr_reg(cstate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -101,9 +101,9 @@ mr_reg__reg_mr_ERRNO(void **peer_ptr)
  * mr_reg__reg_mr_EOPNOTSUPP_no_odp -- ibv_reg_mr() fails with EOPNOTSUPP
  */
 static void
-mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **peer_ptr)
+mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **cstate_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct peer_prestate *cstate = *cstate_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -115,7 +115,7 @@ mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **peer_ptr)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_mr_reg(cstate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -128,9 +128,9 @@ mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **peer_ptr)
  * EOPNOTSUPP whereas the second one fails with MOCK_ERRNO
  */
 static void
-mr_reg__reg_mr_EOPNOTSUPP_ERRNO(void **peer_ptr)
+mr_reg__reg_mr_EOPNOTSUPP_ERRNO(void **cstate_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct peer_prestate *cstate = *cstate_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -151,7 +151,7 @@ mr_reg__reg_mr_EOPNOTSUPP_ERRNO(void **peer_ptr)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_mr_reg(cstate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -192,9 +192,9 @@ mr_reg__success(void **pprestate)
  * mr_reg__success_odp -- happy day scenario ODP style
  */
 static void
-mr_reg__success_odp(void **peer_ptr)
+mr_reg__success_odp(void **cstate_ptr)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct peer_prestate *cstate = *cstate_ptr;
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
@@ -214,7 +214,7 @@ mr_reg__success_odp(void **peer_ptr)
 
 	/* run test */
 	struct ibv_mr *mr;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_mr_reg(cstate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
