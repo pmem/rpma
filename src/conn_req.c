@@ -79,9 +79,9 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	int cqe, rcqe;
 	bool shared;
 	/* read the main CQ size from the configuration */
-	(void) rpma_conn_cfg_get_cqe(cfg, &cqe);
+	rpma_conn_cfg_get_cqe(cfg, &cqe);
 	/* read the receive CQ size from the configuration */
-	(void) rpma_conn_cfg_get_rcqe(cfg, &rcqe);
+	rpma_conn_cfg_get_rcqe(cfg, &rcqe);
 	/* get if the completion channel should be shared by CQ and RCQ */
 	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
 
