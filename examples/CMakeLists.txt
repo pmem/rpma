@@ -77,7 +77,7 @@ function(add_example)
 			PRIVATE USE_LIBPMEM)
 	endif()
 
-	if(EXAMPLE_USE_LIBPMEM2_IF_FOUND AND LIBPMEM2_FOUND)
+	if(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM2_FOUND)
 		target_include_directories(${target}
 			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
