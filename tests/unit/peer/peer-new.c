@@ -292,9 +292,12 @@ delete__null_peer(void **unused)
  * delete__dealloc_pd_ERRNO -- ibv_dealloc_pd() fails with MOCK_ERRNO
  */
 static void
-delete__dealloc_pd_ERRNO(void **peer_ptr)
+delete__dealloc_pd_ERRNO(void **unused)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	int *inout = &OdpCapable;
+	assert_int_equal(setup__peer((void **)&inout), 0);
+	struct rpma_peer *peer = (struct rpma_peer *)inout;
+	assert_non_null(peer);
 
 	/*
 	 * configure mocks for rpma_peer_delete():
@@ -311,9 +314,7 @@ delete__dealloc_pd_ERRNO(void **peer_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-
-	/* save changed peer */
-	*peer_ptr = peer;
+	assert_null(peer);
 }
 
 int
@@ -334,9 +335,7 @@ main(int argc, char *argv[])
 		/* rpma_peer_delete() unit tests */
 		cmocka_unit_test(delete__invalid_peer_ptr),
 		cmocka_unit_test(delete__null_peer),
-		cmocka_unit_test_prestate_setup_teardown(
-				delete__dealloc_pd_ERRNO,
-				setup__peer, teardown__peer, &OdpCapable),
+		cmocka_unit_test(delete__dealloc_pd_ERRNO)
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
