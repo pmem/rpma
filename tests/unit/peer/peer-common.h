@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * peer-common.h -- the header of the common part of the peer unit test
@@ -38,12 +38,6 @@
 	RPMA_MR_USAGE_SEND |\
 	RPMA_MR_USAGE_RECV)
 
-extern int OdpCapable;
-extern int OdpIncapable;
-
-int setup__peer(void **in_out);
-int teardown__peer(void **peer_ptr);
-
 struct prestate {
 	enum ibv_transport_type transport_type;
 	int usage;
@@ -52,7 +46,10 @@ struct prestate {
 	struct rpma_peer *peer;
 };
 
-int setup__peer_prestates(void **pprestate);
-int teardown__peer_prestates(void **pprestate);
+extern struct prestate prestate_OdpCapable;
+extern struct prestate prestate_OdpIncapable;
+
+int setup__peer(void **pprestate);
+int teardown__peer(void **pprestate);
 
 #endif /* PEER_COMMON_H */

@@ -294,10 +294,9 @@ delete__null_peer(void **unused)
 static void
 delete__dealloc_pd_ERRNO(void **unused)
 {
-	int *inout = &OdpCapable;
-	assert_int_equal(setup__peer((void **)&inout), 0);
-	struct rpma_peer *peer = (struct rpma_peer *)inout;
-	assert_non_null(peer);
+	struct prestate *prestate = &prestate_OdpCapable;
+	assert_int_equal(setup__peer((void **)&prestate), 0);
+	assert_non_null(prestate->peer);
 
 	/*
 	 * configure mocks for rpma_peer_delete():
@@ -310,11 +309,11 @@ delete__dealloc_pd_ERRNO(void **unused)
 	expect_value(ibv_dealloc_pd, pd, MOCK_IBV_PD);
 
 	/* run test */
-	int ret = rpma_peer_delete(&peer);
+	int ret = rpma_peer_delete(&prestate->peer);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_null(peer);
+	assert_null(prestate->peer);
 }
 
 int
