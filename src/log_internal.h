@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * log_internal.h -- internal logging interfaces used by the librpma.
@@ -23,11 +23,22 @@ void rpma_log_init();
 void rpma_log_fini();
 
 #define RPMA_LOG(level, format, ...) \
-	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] && \
-			NULL != Rpma_log_function) { \
-		Rpma_log_function(level, __FILE__, __LINE__, __func__, \
-				format, ##__VA_ARGS__); \
-	}
+	do { \
+		if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] && \
+				NULL != Rpma_log_function) { \
+			Rpma_log_function(level, __FILE__, __LINE__, __func__, \
+					format, ##__VA_ARGS__); \
+		} \
+	} while (0)
+
+#define RPMA_LOG_LEVEL_ALWAYS (RPMA_LOG_LEVEL_DEBUG + 1)
+
+#define RPMA_LOG_ALWAYS(format, ...) \
+	do { \
+		if (NULL != Rpma_log_function) \
+			Rpma_log_function(RPMA_LOG_LEVEL_ALWAYS, __FILE__, __LINE__, __func__, \
+					format "\n", ##__VA_ARGS__); \
+	} while (0)
 
 /*
  * Set of macros that should be used as the primary API for logging.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * log_default.c -- the default logging function with support for logging either
@@ -123,8 +123,11 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	syslog(rpma_log_level_syslog_severity[level], "%s%s%s",
 		rpma_log_level_names[level], file_info, message);
 
-	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX]) {
+	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX] ||
+	    level == RPMA_LOG_LEVEL_ALWAYS) {
 		char times_tamp[45] = "";
+		if (level == RPMA_LOG_LEVEL_ALWAYS)
+			level = RPMA_LOG_LEVEL_DEBUG;
 		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
 			rpma_log_level_names[level], file_info, message);
