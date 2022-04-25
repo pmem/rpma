@@ -172,6 +172,22 @@ add_example(NAME 12-receive-completion-queue BIN server USE_LIBIBVERBS
 add_example(NAME 12-receive-completion-queue BIN client USE_LIBIBVERBS
 	SRCS 12-receive-completion-queue/client.c common/common-conn.c
 	12-receive-completion-queue/receive-completion-queue-common.c)
+add_example(NAME 13-flush-to-persistent-GPSPM-SHCCH BIN server USE_LIBIBVERBS USE_LIBPROTOBUFC
+	SRCS 13-flush-to-persistent-GPSPM-SHCCH/server.c common/common-conn.c
+	13-flush-to-persistent-GPSPM-SHCCH/GPSPM_flush.pb-c.c)
+add_example(NAME 13-flush-to-persistent-GPSPM-SHCCH BIN client USE_LIBIBVERBS USE_LIBPROTOBUFC
+	SRCS 13-flush-to-persistent-GPSPM-SHCCH/client.c common/common-conn.c
+	13-flush-to-persistent-GPSPM-SHCCH/GPSPM_flush.pb-c.c)
+add_example(NAME 14-receive-completion-queue-SHCCH BIN server USE_LIBIBVERBS
+	SRCS 14-receive-completion-queue-SHCCH/server.c common/common-conn.c
+	14-receive-completion-queue-SHCCH/receive-completion-queue-common.c)
+add_example(NAME 14-receive-completion-queue-SHCCH BIN client USE_LIBIBVERBS
+	SRCS 14-receive-completion-queue-SHCCH/client.c common/common-conn.c
+	14-receive-completion-queue-SHCCH/receive-completion-queue-common.c)
+add_example(NAME 15-multiple-connections-SHCCH BIN server USE_LIBIBVERBS
+	SRCS 15-multiple-connections-SHCCH/server.c common/common-conn.c common/common-epoll.c)
+add_example(NAME 15-multiple-connections-SHCCH BIN client
+	SRCS 15-multiple-connections-SHCCH/client.c common/common-conn.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
