@@ -1162,6 +1162,22 @@ int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr,
  */
 int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
 
+#ifndef IBV_ADVISE_MR_ADVICE_PREFETCH
+#define IBV_ADVISE_MR_ADVICE_PREFETCH	0
+#endif
+
+#ifndef IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE
+#define IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE	1
+#endif
+
+#ifndef IBV_ADVISE_MR_ADVICE_PREFETCH_NO_FAULT
+#define IBV_ADVISE_MR_ADVICE_PREFETCH_NO_FAULT	2
+#endif
+
+#ifndef IBV_ADVISE_MR_FLAG_FLUSH
+#define IBV_ADVISE_MR_FLAG_FLUSH	1
+#endif
+
 /** 3
  * rpma_mr_advise - give advice about an address range in a memory registration
  *
