@@ -86,7 +86,7 @@ function run_example() {
 
 	RV=0
 	case $EXAMPLE in
-	06-multiple-connections)
+	06-multiple-connections|15-multiple-connections-SHCCH)
 		for SEED in 8 9 11 12; do
 			echo "Starting the client ..."
 			$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
@@ -116,7 +116,7 @@ function run_example() {
 		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		RV=$?
 		;;
-	12-receive-completion-queue)
+	12-receive-completion-queue|14-receive-completion-queue-SHCCH)
 		START_VALUE=7
 		ROUNDS=3
 		echo "Starting the client ..."

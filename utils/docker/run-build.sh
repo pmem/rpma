@@ -108,7 +108,7 @@ function test_compile_all_examples_standalone() {
 		[ ! -f $DIR/CMakeLists.txt ] && continue
 		if [ "${LIBPROTOBUFC_FOUND}" == "NO" ]; then
 			case $e in
-			09-flush-to-persistent-GPSPM)
+			09-flush-to-persistent-GPSPM|13-flush-to-persistent-GPSPM-SHCCH)
 				echo
 				echo "SKIP: Skipping the '$e' example, because libprotobuf-c is missing"
 				echo
