@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 		ret = rpma_mr_advise(mr, 0, mr_size,
 			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
 			IBV_ADVISE_MR_FLAG_FLUSH);
-		if (ret)
+		if (ret && ret != RPMA_E_NOSUPP)
 			goto err_mr_dereg;
 	}
 #endif /* USE_LIBPMEM */
