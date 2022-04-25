@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * function.c -- rpma_log_default_function() unit tests
@@ -241,8 +241,10 @@ function__stderr_path(void **config_ptr)
 	will_return(__wrap_vsnprintf, MOCK_OK);
 	will_return(__wrap_snprintf, MOCK_OK);
 	will_return(syslog, MOCK_PASSTHROUGH);
-	MOCK_GET_TIMESTAMP_CONFIGURE(config);
-	will_return(__wrap_getpid, MOCK_PID);
+	if (config->secondary != RPMA_LOG_LEVEL_ALWAYS) {
+		MOCK_GET_TIMESTAMP_CONFIGURE(config);
+		will_return(__wrap_getpid, MOCK_PID);
+	}
 
 	/* construct the resulting fprintf message */
 	char msg[MOCK_BUFF_LEN] = "";
@@ -251,8 +253,10 @@ function__stderr_path(void **config_ptr)
 	strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 	strcat(msg, MOCK_FILE_NAME ": " STR(MOCK_LINE_NUMBER) ": "
 		MOCK_FUNCTION_NAME ": " MOCK_MESSAGE);
-	will_return(__wrap_fprintf, MOCK_VALIDATE);
-	expect_string(__wrap_fprintf, fprintf_output, msg);
+	if (config->secondary != RPMA_LOG_LEVEL_ALWAYS) {
+		will_return(__wrap_fprintf, MOCK_VALIDATE);
+		expect_string(__wrap_fprintf, fprintf_output, msg);
+	}
 
 	/* enable getpid()'s mock only for test execution */
 	enabled__wrap_getpid = true;
@@ -280,8 +284,10 @@ function__stderr_no_path(void **config_ptr)
 		/* configure mocks */
 		will_return(__wrap_vsnprintf, MOCK_OK);
 		will_return(syslog, MOCK_PASSTHROUGH);
-		MOCK_GET_TIMESTAMP_CONFIGURE(config);
-		will_return(__wrap_getpid, MOCK_PID);
+		if (config->secondary != RPMA_LOG_LEVEL_ALWAYS) {
+			MOCK_GET_TIMESTAMP_CONFIGURE(config);
+			will_return(__wrap_getpid, MOCK_PID);
+		}
 
 		/* construct the resulting fprintf message */
 		char msg[MOCK_BUFF_LEN] = "";
@@ -289,8 +295,10 @@ function__stderr_no_path(void **config_ptr)
 		strcat(msg, MOCK_PID_AS_STR);
 		strcat(msg, rpma_log_level_names[MOCK_LOG_LEVEL]);
 		strcat(msg, MOCK_MESSAGE);
-		will_return(__wrap_fprintf, MOCK_VALIDATE);
-		expect_string(__wrap_fprintf, fprintf_output, msg);
+		if (config->secondary != RPMA_LOG_LEVEL_ALWAYS) {
+			will_return(__wrap_fprintf, MOCK_VALIDATE);
+			expect_string(__wrap_fprintf, fprintf_output, msg);
+		}
 
 		/* enable getpid()'s mock only for test execution */
 		enabled__wrap_getpid = true;
@@ -333,6 +341,10 @@ static mock_config config_strftime_error = {
 
 static mock_config config_snprintf_no_eol = {
 	0, 0, 0, 1, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
+};
+
+static mock_config config_no_error_always = {
+	0, 0, 0, 0, RPMA_LOG_LEVEL_ALWAYS, MOCK_FILE_NAME
 };
 
 int
@@ -379,6 +391,12 @@ main(int argc, char *argv[])
 		cmocka_unit_test_prestate_setup_teardown(
 			function__stderr_no_path,
 			setup_thresholds, NULL, &config_no_error),
+		cmocka_unit_test_prestate_setup_teardown(
+			function__stderr_path,
+			setup_thresholds, NULL, &config_no_error_always),
+		cmocka_unit_test_prestate_setup_teardown(
+			function__stderr_no_path,
+			setup_thresholds, NULL, &config_no_error_always),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
