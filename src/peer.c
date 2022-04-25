@@ -278,11 +278,11 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	int ret = ibv_dealloc_pd(peer->pd);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_dealloc_pd()");
-		return RPMA_E_PROVIDER;
+		ret = RPMA_E_PROVIDER;
 	}
 
 	free(peer);
 	*peer_ptr = NULL;
 
-	return 0;
+	return ret;
 }

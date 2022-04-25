@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -87,12 +87,12 @@ create_qp__peer_NULL(void **unused)
  * create_qp__id_NULL -- NULL id is invalid
  */
 static void
-create_qp__id_NULL(void **peer_ptr)
+create_qp__id_NULL(void **pprestate)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct prestate *prestate = *pprestate;
 
 	/* run test */
-	int ret = rpma_peer_create_qp(peer, NULL, MOCK_RPMA_CQ, NULL,
+	int ret = rpma_peer_create_qp(prestate->peer, NULL, MOCK_RPMA_CQ, NULL,
 			MOCK_CONN_CFG_DEFAULT);
 
 	/* verify the results */
@@ -103,12 +103,12 @@ create_qp__id_NULL(void **peer_ptr)
  * create_qp__cq_NULL -- NULL cq is invalid
  */
 static void
-create_qp__cq_NULL(void **peer_ptr)
+create_qp__cq_NULL(void **pprestate)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct prestate *prestate = *pprestate;
 
 	/* run test */
-	int ret = rpma_peer_create_qp(peer, MOCK_CM_ID, NULL,
+	int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, NULL,
 			NULL, MOCK_CONN_CFG_DEFAULT);
 
 	/* verify the results */
@@ -119,9 +119,9 @@ create_qp__cq_NULL(void **peer_ptr)
  * create_qp__rdma_create_qp_ERRNO -- rdma_create_qp() fails with MOCK_ERRNO
  */
 static void
-create_qp__rdma_create_qp_ERRNO(void **peer_ptr)
+create_qp__rdma_create_qp_ERRNO(void **pprestate)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct prestate *prestate = *pprestate;
 
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
@@ -129,7 +129,7 @@ create_qp__rdma_create_qp_ERRNO(void **peer_ptr)
 		will_return(rdma_create_qp, MOCK_ERRNO);
 
 		/* run test */
-		int ret = rpma_peer_create_qp(peer, MOCK_CM_ID, MOCK_RPMA_CQ,
+		int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
 				rcqs[i], MOCK_CONN_CFG_CUSTOM);
 
 		/* verify the results */
@@ -141,9 +141,9 @@ create_qp__rdma_create_qp_ERRNO(void **peer_ptr)
  * create_qp__success -- happy day scenario
  */
 static void
-create_qp__success(void **peer_ptr)
+create_qp__success(void **pprestate)
 {
-	struct rpma_peer *peer = *peer_ptr;
+	struct prestate *prestate = *pprestate;
 
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
@@ -151,7 +151,7 @@ create_qp__success(void **peer_ptr)
 		will_return(rdma_create_qp, MOCK_OK);
 
 		/* run test */
-		int ret = rpma_peer_create_qp(peer, MOCK_CM_ID, MOCK_RPMA_CQ,
+		int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
 				rcqs[i], MOCK_CONN_CFG_CUSTOM);
 
 		/* verify the results */
@@ -166,14 +166,14 @@ main(int argc, char *argv[])
 		/* rpma_peer_create_qp() unit tests */
 		cmocka_unit_test(create_qp__peer_NULL),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__id_NULL,
-				setup__peer, teardown__peer, &OdpCapable),
+				setup__peer, teardown__peer, &prestate_OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__cq_NULL,
-				setup__peer, teardown__peer, &OdpCapable),
+				setup__peer, teardown__peer, &prestate_OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(
 				create_qp__rdma_create_qp_ERRNO,
-				setup__peer, teardown__peer, &OdpCapable),
+				setup__peer, teardown__peer, &prestate_OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__success,
-				setup__peer, teardown__peer, &OdpCapable),
+				setup__peer, teardown__peer, &prestate_OdpCapable),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
