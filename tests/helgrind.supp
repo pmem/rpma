@@ -47,6 +47,18 @@
    ...
 }
 
+{
+   Race while reading the name of time zone ("GMT").
+   Helgrind:Race
+   fun:strlen
+   fun:__tzstring
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
 #
 # Assessment: These suppressions do not indicate a lack of MT safety.
 #
