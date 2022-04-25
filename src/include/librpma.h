@@ -1206,7 +1206,9 @@ int rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr);
  *	- the requested range is out of the memory registration bounds
  *	- the memory registration usage does not allow the specific advice
  *	- the flags are invalid
- * - RPMA_E_NOSUPP - the operation is not supported by the system
+ * - RPMA_E_NOSUPP - in one of the following:
+ * 	- ibv_mr_advise(3) is not supported by libibverbs
+ * 	- ibv_mr_advise(3) or the advise is not supported by provider driver
  * - RPMA_E_PROVIDER - ibv_mr_advise(3) failed for other errors
  *
  * SEE ALSO
