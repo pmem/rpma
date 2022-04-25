@@ -34,6 +34,16 @@
    ...
 }
 
+{
+   Conflicting load of size 1
+   drd:ConflictingAccess
+   fun:strlen
+   ...
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
 #
 # Assessment: These suppressions do not indicate a lack of MT safety.
 #
