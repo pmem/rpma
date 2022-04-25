@@ -23,11 +23,13 @@ void rpma_log_init();
 void rpma_log_fini();
 
 #define RPMA_LOG(level, format, ...) \
-	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] && \
-			NULL != Rpma_log_function) { \
-		Rpma_log_function(level, __FILE__, __LINE__, __func__, \
-				format, ##__VA_ARGS__); \
-	}
+	do { \
+		if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] && \
+				NULL != Rpma_log_function) { \
+			Rpma_log_function(level, __FILE__, __LINE__, __func__, \
+					format, ##__VA_ARGS__); \
+		} \
+	} while (0)
 
 #define RPMA_LOG_LEVEL_ALWAYS (RPMA_LOG_DISABLED - 1)
 
