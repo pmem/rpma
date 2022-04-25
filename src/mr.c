@@ -576,6 +576,10 @@ rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
 			(enum ibv_advise_mr_advice)advice, flags, &sg_list, 1);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_advise_mr()");
+		/*
+		 * ibv_advise_mr() or advise is not supported
+		 * by provider driver
+		 */
 		if (ret == EOPNOTSUPP || ret == ENOTSUP)
 			return RPMA_E_NOSUPP;
 		else if (ret == EFAULT || ret == EINVAL)
@@ -586,7 +590,7 @@ rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
 
 	return 0;
 #else
-	RPMA_LOG_ERROR("ibv_advise_mr() is not supported by the system");
+	RPMA_LOG_ERROR("ibv_advise_mr() is not supported by libibverbs");
 
 	return RPMA_E_NOSUPP;
 #endif
