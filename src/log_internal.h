@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "librpma.h"
+#include "log_default.h"
 
 /* pointer to the logging function */
 extern rpma_log_function *Rpma_log_function;
