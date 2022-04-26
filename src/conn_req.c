@@ -200,6 +200,12 @@ rpma_conn_req_accept(struct rpma_conn_req **req_ptr,
 		goto err_conn_disconnect;
 	}
 
+	/*
+	 * rdma_ack_cm_event() has just freed this communication event. Set it to NULL
+	 * so that rpma_conn_req_delete->rpma_conn_req_reject does not ack and free it again.
+	 */
+	req->edata = NULL;
+
 	struct rpma_conn *conn = NULL;
 	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, req->channel, &conn);
 	if (ret)
