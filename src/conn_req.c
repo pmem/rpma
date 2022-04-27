@@ -13,6 +13,7 @@
 #include "conn.h"
 #include "conn_cfg.h"
 #include "conn_req.h"
+#include "debug.h"
 #include "info.h"
 #include "log_internal.h"
 #include "mr.h"
@@ -49,6 +50,9 @@ struct rpma_conn_req {
 static inline int
 rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	memset(gid, 0, size);
 	int ret = snprintf(gid, size,
 			"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
@@ -74,6 +78,9 @@ static int
 rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	int ret = 0;
 
 	int cqe, rcqe;
@@ -186,6 +193,16 @@ static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(
+	{
+		rdma_destroy_qp(req->id);
+		(void) rpma_cq_delete(&req->rcq);
+		(void) rpma_cq_delete(&req->cq);
+		if (req->channel)
+			(void) ibv_destroy_comp_channel(req->channel);
+	});
+
 	int ret = 0;
 
 	if (rdma_accept(req->id, conn_param)) {
@@ -239,6 +256,17 @@ static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(
+	{
+		rdma_destroy_qp(req->id);
+		(void) rpma_cq_delete(&req->rcq);
+		(void) rpma_cq_delete(&req->cq);
+		(void) rdma_destroy_id(req->id);
+		if (req->channel)
+			(void) ibv_destroy_comp_channel(req->channel);
+	});
+
 	int ret = 0;
 
 	struct rpma_conn *conn = NULL;
@@ -273,6 +301,8 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 static int
 rpma_conn_req_reject(struct rpma_conn_req *req)
 {
+	RPMA_DEBUG_TRACE;
+
 	int ret = rpma_cq_delete(&req->rcq);
 
 	int ret2 = rpma_cq_delete(&req->cq);
@@ -295,6 +325,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 		}
 	}
 
+	RPMA_FAULT_INJECTION();
 	return ret;
 }
 
@@ -307,6 +338,8 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 static int
 rpma_conn_req_destroy(struct rpma_conn_req *req)
 {
+	RPMA_DEBUG_TRACE;
+
 	int ret = rpma_cq_delete(&req->rcq);
 
 	int ret2 = rpma_cq_delete(&req->cq);
@@ -320,6 +353,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 		}
 	}
 
+	RPMA_FAULT_INJECTION();
 	return ret;
 }
 
@@ -337,6 +371,9 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *edata, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (peer == NULL || edata == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -371,6 +408,9 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		const char *port, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -436,6 +476,9 @@ int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (req_ptr == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -478,6 +521,8 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 int
 rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	if (req_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -509,6 +554,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 	free(req);
 	*req_ptr = NULL;
 
+	RPMA_FAULT_INJECTION();
 	return ret;
 }
 
@@ -520,6 +566,9 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
     struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;
 
@@ -536,6 +585,9 @@ int
 rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
     struct rpma_conn_private_data *pdata)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (req == NULL || pdata == NULL)
 		return RPMA_E_INVAL;
 
