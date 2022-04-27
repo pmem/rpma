@@ -515,6 +515,61 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 }
 
 /*
+ * from_cm_event__rdma_ack_cm_event_E_PROVIDER -- rdma_ack_cm_event()
+ * fails with RPMA_E_PROVIDER
+ */
+static void
+from_cm_event__rdma_ack_cm_event_E_PROVIDER(void **cstate_ptr)
+{
+	struct conn_req_test_state *cstate = *cstate_ptr;
+	configure_conn_req((void **)&cstate);
+
+	/* configure mocks */
+	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
+	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
+	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
+	expect_value(rpma_cq_new, cqe, cstate->get_cqe.cq_size);
+	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
+	will_return(rpma_cq_new, MOCK_RPMA_CQ);
+	if (cstate->get_cqe.rcq_size) {
+		expect_value(rpma_cq_new, cqe, cstate->get_cqe.rcq_size);
+		expect_value(rpma_cq_new, shared_channel,
+				MOCK_GET_CHANNEL(cstate));
+		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
+	}
+	expect_value(rpma_peer_create_qp, id, &cstate->id);
+	expect_value(rpma_peer_create_qp, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_peer_create_qp, cfg, cstate->get_cqe.cfg);
+	expect_value(rdma_ack_cm_event, event, &cstate->event);
+	will_return(rdma_ack_cm_event, MOCK_ERRNO);
+	will_return(rpma_peer_create_qp, MOCK_OK);
+	will_return(__wrap__test_malloc, MOCK_OK);
+	will_return_maybe(__wrap_snprintf, MOCK_OK);
+	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rdma_destroy_id, id, &cstate->id);
+	will_return(rdma_destroy_id, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+			cstate->get_cqe.cfg, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(req);
+}
+
+/*
  * conn_req_from_cm__lifecycle - happy day scenario
  */
 static void
@@ -551,6 +606,8 @@ static const struct CMUnitTest test_from_cm_event[] = {
 		from_cm_event__private_data_store_E_NOMEM),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
 		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
+		from_cm_event__rdma_ack_cm_event_E_PROVIDER),
 	/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
 		conn_req_from_cm__lifecycle, setup__conn_req_from_cm_event,
