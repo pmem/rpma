@@ -191,6 +191,9 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+		goto err_cfg_delete;
+
 	/* establish a new connection to a server listening at addr:port */
 	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
 		goto err_cfg_delete;
@@ -264,58 +267,12 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* wait for the send completion to be ready */
-	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	if ((ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc)))
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_wait(cq)))
-		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
-		goto err_mr_remote_delete;
-
-	/* validate the send completion */
-	if (wc.status != IBV_WC_SUCCESS) {
-		ret = -1;
-		(void) fprintf(stderr, "rpma_send() failed: %s\n",
-				ibv_wc_status_str(wc.status));
-		goto err_mr_remote_delete;
-	}
-
-	if (wc.opcode != IBV_WC_SEND) {
-		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
-				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_SEND);
-		goto err_mr_remote_delete;
-	}
 
 	/* wait for the receive completion to be ready */
-	struct rpma_cq *rcq = NULL;
-	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
+	if ((ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc)))
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_wait(rcq)))
-		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_get_wc(rcq, 1, &wc, NULL)))
-		goto err_mr_remote_delete;
-
-	/* validate the receive completion */
-	if (wc.status != IBV_WC_SUCCESS) {
-		ret = -1;
-		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
-				ibv_wc_status_str(wc.status));
-		goto err_mr_remote_delete;
-	}
-
-	if (wc.opcode != IBV_WC_RECV) {
-		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
-				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_RECV);
-		goto err_mr_remote_delete;
-	}
 
 	/* unpack a response from the received buffer */
 	flush_resp = gpspm_flush_response__unpack(NULL, wc.byte_len,
