@@ -24,8 +24,8 @@
 #endif
 
 struct rpma_conn_req {
-	/* RDMA_CM_EVENT_CONNECT_REQUEST event (if applicable) */
-	struct rdma_cm_event *edata;
+	/* it is the passive side */
+	int is_passive;
 	/* CM ID of the connection request */
 	struct rdma_cm_id *id;
 	/* main CQ */
@@ -146,7 +146,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	}
 #undef GID_STR_LEN
 
-	(*req_ptr)->edata = NULL;
+	(*req_ptr)->is_passive = 0;
 	(*req_ptr)->id = id;
 	(*req_ptr)->cq = cq;
 	(*req_ptr)->rcq = rcq;
@@ -191,15 +191,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	if (rdma_accept(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_accept()");
 		ret = RPMA_E_PROVIDER;
-		(void) rdma_ack_cm_event(req->edata);
 		goto err_conn_req_delete;
-	}
-
-	/* ACK the connection request event */
-	if (rdma_ack_cm_event(req->edata)) {
-		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
-		ret = RPMA_E_PROVIDER;
-		goto err_conn_disconnect;
 	}
 
 	struct rpma_conn *conn = NULL;
@@ -288,13 +280,6 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 		}
 	}
 
-	if (rdma_ack_cm_event(req->edata)) {
-		if (!ret) {
-			RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
-			ret = RPMA_E_PROVIDER;
-		}
-	}
-
 	return ret;
 }
 
@@ -337,26 +322,45 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *edata, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
-	if (peer == NULL || edata == NULL || req_ptr == NULL)
+	int ret;
+
+	if (edata == NULL)
 		return RPMA_E_INVAL;
 
-	if (edata->event != RDMA_CM_EVENT_CONNECT_REQUEST)
-		return RPMA_E_INVAL;
+	if (peer == NULL || req_ptr == NULL || edata->event != RDMA_CM_EVENT_CONNECT_REQUEST) {
+		ret = RPMA_E_INVAL;
+		goto err_ack_cm_event;
+	}
 
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_id(peer, edata->id, cfg, &req);
+	ret = rpma_conn_req_from_id(peer, edata->id, cfg, &req);
 	if (ret)
-		return ret;
+		goto err_ack_cm_event;
 
 	ret = rpma_private_data_store(edata, &req->data);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
-		return ret;
+	if (ret)
+		goto err_conn_req_delete;
+
+	/* ACK the connection request event */
+	if (rdma_ack_cm_event(edata)) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
+		ret = RPMA_E_PROVIDER;
+		goto err_conn_req_delete;
 	}
-	req->edata = edata;
+
+	req->is_passive = 1;
 	*req_ptr = req;
 
 	return 0;
+
+err_conn_req_delete:
+	(void) rpma_conn_req_delete(&req);
+
+err_ack_cm_event:
+	if (rdma_ack_cm_event(edata))
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
+
+	return ret;
 }
 
 /* public librpma API */
@@ -459,7 +463,7 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 
 	int ret = 0;
 
-	if (req->edata)
+	if (req->is_passive)
 		ret = rpma_conn_req_accept(req, &conn_param, conn_ptr);
 	else
 		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
@@ -489,7 +493,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	int ret = 0;
 
-	if (req->edata)
+	if (req->is_passive)
 		ret = rpma_conn_req_reject(req);
 	else
 		ret = rpma_conn_req_destroy(req);
