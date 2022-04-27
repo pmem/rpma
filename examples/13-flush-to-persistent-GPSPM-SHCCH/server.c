@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
  * server.c -- a server of the flush-to-persistent-GPSPM example
@@ -216,6 +215,9 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+		goto err_cfg_delete;
+
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its
 	 * establishment.
@@ -251,31 +253,9 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* wait for the receive completion to be ready */
-	struct rpma_cq *rcq = NULL;
-	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
+	struct rpma_cq *cq = NULL;
+	if ((ret = wait_and_validate_completion(conn, &wc, cq, IBV_WC_RECV)))
 		goto err_conn_delete;
-	if ((ret = rpma_cq_wait(rcq)))
-		goto err_conn_delete;
-	if ((ret = rpma_cq_get_wc(rcq, 1, &wc, NULL)))
-		goto err_conn_delete;
-
-	/* validate the receive completion */
-	if (wc.status != IBV_WC_SUCCESS) {
-		ret = -1;
-		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
-				ibv_wc_status_str(wc.status));
-		goto err_conn_delete;
-	}
-
-	if (wc.opcode != IBV_WC_RECV) {
-		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
-				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_RECV);
-		goto err_conn_delete;
-	}
 
 	/* unpack a flush request from the received buffer */
 	flush_req = gpspm_flush_request__unpack(NULL, wc.byte_len, recv_ptr);
@@ -315,31 +295,8 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* wait for the send completion to be ready */
-	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	if ((ret = wait_and_validate_completion(conn, &wc, cq, IBV_WC_SEND)))
 		goto err_conn_delete;
-	if ((ret = rpma_cq_wait(cq)))
-		goto err_conn_delete;
-	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
-		goto err_conn_delete;
-
-	/* validate the send completion */
-	if (wc.status != IBV_WC_SUCCESS) {
-		ret = -1;
-		(void) fprintf(stderr, "rpma_send() failed: %s\n",
-				ibv_wc_status_str(wc.status));
-		goto err_conn_delete;
-	}
-
-	if (wc.opcode != IBV_WC_SEND) {
-		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
-				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_SEND);
-		goto err_conn_delete;
-	}
 
 	/*
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
