@@ -53,6 +53,7 @@ main(int argc, char *argv[])
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	struct rpma_conn *conn = NULL;
+	struct ibv_wc wc;
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -82,6 +83,9 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+		goto err_cfg_delete;
+
 	/* receive an incoming connection request */
 	if ((ret = rpma_ep_next_conn_req(ep, cfg, &req)))
 		goto err_cfg_delete;
@@ -109,20 +113,9 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 	}
 
-	/* get the connection's main CQ */
-	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
-		goto err_conn_disconnect;
-
-	/* get the connection's RCQ */
-	struct rpma_cq *rcq = NULL;
-	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
-		goto err_conn_disconnect;
-
 	while (1) {
 		/* get one receive completion and validate it */
-		if ((ret = get_wc_and_validate(rcq, IBV_WC_RECV,
-				"rpma_recv()")))
+		if ((ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc)))
 			break;
 
 		if (*recv == I_M_DONE)
@@ -149,7 +142,7 @@ main(int argc, char *argv[])
 			break;
 
 		/* get one send completion and validate it */
-		if ((ret = get_wc_and_validate(cq, IBV_WC_SEND, "rpma_send()")))
+		if ((ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc)))
 			break;
 	}
 
