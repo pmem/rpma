@@ -145,18 +145,12 @@ mtt_server_shutdown(struct rpma_peer **peer_ptr, struct rpma_ep **ep_ptr)
  * mtt_client_connect -- connect with the server and get the private data
  */
 int
-mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
-	struct rpma_peer **peer_ptr, struct rpma_conn **conn_ptr,
-	struct rpma_conn_private_data *pdata)
+mtt_client_peer_new(struct mtt_result *tr, char *addr, struct rpma_peer **peer_ptr)
 {
 	struct ibv_context *ibv_ctx;
-	struct rpma_conn_req *req = NULL;
-	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
-
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
+	if ((ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return -1;
 	}
@@ -166,17 +160,45 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		return -1;
 	}
 
+	return 0;
+}
+
+/*
+ * mtt_client_peer_delete -- delete the peer
+ */
+void
+mtt_client_peer_delete(struct mtt_result *tr, struct rpma_peer **peer_ptr)
+{
+	int ret;
+
+	if ((ret = rpma_peer_delete(peer_ptr)))
+		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
+}
+
+/*
+ * mtt_client_connect -- connect with the server and get the private data
+ */
+int
+mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
+	struct rpma_peer *peer, struct rpma_conn **conn_ptr,
+	struct rpma_conn_private_data *pdata)
+{
+	struct rpma_conn_req *req = NULL;
+	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
+
+	int ret;
+
 	MTT_PORT_INIT;
 	MTT_PORT_SET(port, 0);
 
 	int retry = 0;
 	do {
 		/* create a connection request */
-		ret = rpma_conn_req_new(*peer_ptr, addr, MTT_PORT_STR,
+		ret = rpma_conn_req_new(peer, addr, MTT_PORT_STR,
 					NULL, &req);
 		if (ret) {
 			MTT_RPMA_ERR(tr, "rpma_conn_req_new", ret);
-			goto err_peer_delete;
+			goto err_conn_req_delete;
 		}
 
 		/*
@@ -187,7 +209,7 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		if (ret) {
 			(void) rpma_conn_req_delete(&req);
 			MTT_RPMA_ERR(tr, "rpma_conn_req_connect", ret);
-			goto err_peer_delete;
+			goto err_conn_req_delete;
 		}
 
 		/* wait for the connection to establish */
@@ -204,9 +226,7 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 
 		if (conn_event != RPMA_CONN_REJECTED ||
 		    retry == MAX_CONN_RETRY) {
-			MTT_ERR_MSG(tr,
-				"rpma_conn_next_event returned an unexpected event",
-				-1);
+			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
 			goto err_conn_delete;
 		}
 
@@ -222,9 +242,7 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		MTT_RPMA_ERR(tr, "rpma_conn_get_private_data", ret);
 		goto err_conn_disconnect;
 	} else if (pdata->ptr == NULL) {
-		MTT_ERR_MSG(tr,
-			"The server has not provided the connection's private data",
-			-1);
+		MTT_ERR_MSG(tr, "The server has not provided the connection's private data", -1);
 		goto err_conn_disconnect;
 	}
 
@@ -236,8 +254,8 @@ err_conn_disconnect:
 err_conn_delete:
 	(void) rpma_conn_delete(conn_ptr);
 
-err_peer_delete:
-	(void) rpma_peer_delete(peer_ptr);
+err_conn_req_delete:
+	(void) rpma_conn_req_delete(&req);
 
 	return -1;
 }
@@ -247,20 +265,17 @@ err_peer_delete:
  *                          in case of an error
  */
 void
-mtt_client_err_disconnect(struct rpma_conn **conn_ptr,
-			struct rpma_peer **peer_ptr)
+mtt_client_err_disconnect(struct rpma_conn **conn_ptr)
 {
 	(void) rpma_conn_disconnect(*conn_ptr);
 	(void) rpma_conn_delete(conn_ptr);
-	(void) rpma_peer_delete(peer_ptr);
 }
 
 /*
  * mtt_client_disconnect -- disconnect and delete the peer object
  */
 void
-mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr,
-			struct rpma_peer **peer_ptr)
+mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr)
 {
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	int ret;
@@ -272,14 +287,9 @@ mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr,
 		if ((ret = rpma_conn_next_event(*conn_ptr, &conn_event)))
 			MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
 		else if (conn_event != RPMA_CONN_CLOSED)
-			MTT_ERR_MSG(tr,
-				"rpma_conn_next_event returned an unexpected event",
-				-1);
+			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
 	}
 
 	if ((ret = rpma_conn_delete(conn_ptr)))
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
-
-	if ((ret = rpma_peer_delete(peer_ptr)))
-		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
