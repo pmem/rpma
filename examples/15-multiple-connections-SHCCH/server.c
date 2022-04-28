@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
- * server.c -- a server of the multiple-connections example
+ * server.c -- a server of the multiple-connections with shared completion channel example
  *
  * Please see README.md for a detailed description of this example.
  */
@@ -54,6 +54,9 @@ struct server_res {
 
 	/* client's resources */
 	struct client_res clients[CLIENT_MAX];
+
+	/* connection configuration */
+	struct rpma_conn_cfg *cfg;
 };
 
 /*
@@ -84,6 +87,13 @@ server_init(struct server_res *svr, struct rpma_peer *peer)
 		close(svr->epoll);
 	}
 
+	svr->cfg = NULL;
+	if ((ret = rpma_conn_cfg_new(&svr->cfg)))
+		return ret;
+
+	if ((ret = rpma_conn_cfg_set_compl_channel(svr->cfg, true)))
+		return ret;
+
 	return ret;
 }
 
@@ -98,6 +108,9 @@ server_fini(struct server_res *svr)
 
 	/* free the memory */
 	free(svr->dst_ptr);
+
+	/* delete connection configuration */
+	ret = rpma_conn_cfg_delete(&svr->cfg);
 
 	/* close the epoll */
 	if (close(svr->epoll)) {
@@ -208,8 +221,10 @@ client_handle_completion(struct custom_event *ce)
 	struct client_res *clnt = (struct client_res *)ce->arg;
 	const struct server_res *svr = clnt->svr;
 
+	struct rpma_cq *cq = NULL;
+
 	/* wait for the completion to be ready */
-	int ret = rpma_cq_wait(clnt->cq);
+	int ret = rpma_conn_wait(clnt->conn, &cq, NULL);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
@@ -363,7 +378,7 @@ server_handle_incoming_client(struct custom_event *ce)
 
 	/* receive an incoming connection request */
 	struct rpma_conn_req *req = NULL;
-	if (rpma_ep_next_conn_req(svr->ep, NULL, &req))
+	if (rpma_ep_next_conn_req(svr->ep, svr->cfg, &req))
 		return;
 
 	/* if no free slot is available */

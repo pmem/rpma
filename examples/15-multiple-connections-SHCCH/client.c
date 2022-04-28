@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * client.c -- a client of the multiple-connections example
@@ -23,6 +23,7 @@ static char *Names[] = {
 	"Chet",
 	"Derek",
 	"Janek",
+	"Kacper",
 	"Lukasz",
 	"Oksana",
 	"Pawel",
