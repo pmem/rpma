@@ -28,3 +28,6 @@ add_multithreaded(NAME conn BIN rpma_conn_get_private_data
 		../common/mtt_connect.c)
 add_multithreaded(NAME conn BIN rpma_conn_req_new
 	SRCS rpma_conn_req_new.c)
+add_multithreaded(NAME conn BIN rpma_write_read
+	SRCS rpma_write_read.c server_rpma_write_read.c
+		../common/mtt_connect.c ../common/mtt_common-epoll.c)
