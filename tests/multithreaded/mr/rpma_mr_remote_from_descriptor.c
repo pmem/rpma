@@ -2,8 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * rpma_mr_remote_from_descriptor.c -- rpma_mr_remote_from_descriptor
- * multithreaded test
+ * rpma_mr_remote_from_descriptor.c -- rpma_mr_remote_from_descriptor multithreaded test
  */
 
 #include <stdlib.h>
@@ -54,10 +53,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	ret = rpma_mr_remote_get_size(pr->mr_ptr, &pr->mr_size);
 	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_remote_get_size", ret);
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 	};
 
 	return;
+
+err_mr_remote_delete:
+	/* delete the remote memory region's structure */
+	(void) rpma_mr_remote_delete(&pr->mr_ptr);
 
 err_conn_disconnect:
 	mtt_client_err_disconnect(&pr->conn, &pr->peer);
