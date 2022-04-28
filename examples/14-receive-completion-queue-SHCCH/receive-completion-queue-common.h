@@ -18,7 +18,4 @@
 
 #define I_M_DONE	(uint64_t)UINT64_MAX
 
-int get_wc_and_validate(struct rpma_cq *cq, enum ibv_wc_opcode opcode,
-    char *func_name);
-
 #endif /* EXAMPLES_RECEIVE_COMPLETION_QUEUE_COMMON */
