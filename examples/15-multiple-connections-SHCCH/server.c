@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
- * server.c -- a server of the multiple-connections example
+ * server.c -- a server of the multiple-connections
+ * with shared completion channel example
  *
  * Please see README.md for a detailed description of this example.
  */
@@ -19,6 +20,7 @@
 
 #include "common-conn.h"
 #include "common-epoll.h"
+#include "conn.h"
 #include "multiple-connections-common.h"
 
 #define CLIENT_MAX 10
@@ -209,7 +211,7 @@ client_handle_completion(struct custom_event *ce)
 	const struct server_res *svr = clnt->svr;
 
 	/* wait for the completion to be ready */
-	int ret = rpma_cq_wait(clnt->cq);
+	int ret = rpma_conn_wait(clnt->conn, &clnt->cq, NULL);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
@@ -361,9 +363,17 @@ server_handle_incoming_client(struct custom_event *ce)
 {
 	struct server_res *svr = (struct server_res *)ce->arg;
 
+	struct rpma_conn_cfg *cfg = NULL;
+	if (rpma_conn_cfg_new(&cfg))
+		return;
+
+	if (rpma_conn_cfg_set_compl_channel(cfg, true))
+		return;
+
+
 	/* receive an incoming connection request */
 	struct rpma_conn_req *req = NULL;
-	if (rpma_ep_next_conn_req(svr->ep, NULL, &req))
+	if (rpma_ep_next_conn_req(svr->ep, cfg, &req))
 		return;
 
 	/* if no free slot is available */
