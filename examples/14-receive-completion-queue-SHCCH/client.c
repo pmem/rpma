@@ -60,6 +60,7 @@ main(int argc, char *argv[])
 	/* RPMA resources - general */
 	struct rpma_peer *peer = NULL;
 	struct rpma_conn *conn = NULL;
+	struct ibv_wc wc;
 
 	/* prepare memory */
 	struct rpma_mr_local *recv_mr, *send_mr;
@@ -96,19 +97,12 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
 		goto err_cfg_delete;
 
+	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+		goto err_cfg_delete;
+
 	/* establish a new connection to a server listening at addr:port */
 	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
 		goto err_cfg_delete;
-
-	/* get the connection's main CQ */
-	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
-		goto err_conn_disconnect;
-
-	/* get the connection's RCQ */
-	struct rpma_cq *rcq = NULL;
-	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
-		goto err_conn_disconnect;
 
 	while (--rounds) {
 		/* prepare a receive for the server's response */
@@ -123,12 +117,11 @@ main(int argc, char *argv[])
 			break;
 
 		/* get one send completion and validate it */
-		if ((ret = get_wc_and_validate(cq, IBV_WC_SEND, "rpma_send()")))
+		if ((ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc)))
 			break;
 
 		/* get one receive completion and validate it */
-		if ((ret = get_wc_and_validate(rcq, IBV_WC_RECV,
-				"rpma_recv()")))
+		if ((ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc)))
 			break;
 
 		/* copy the new value of the counter and print it out */
@@ -142,10 +135,8 @@ main(int argc, char *argv[])
 
 	/* send the I_M_DONE message */
 	*send = I_M_DONE;
-	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR,
-			NULL);
+	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR, NULL);
 
-err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
 
 err_cfg_delete:

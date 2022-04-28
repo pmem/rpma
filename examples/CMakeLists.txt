@@ -175,11 +175,9 @@ add_example(NAME 13-flush-to-persistent-GPSPM-SHCCH BIN client USE_LIBPROTOBUFC
 	SRCS 13-flush-to-persistent-GPSPM-SHCCH/client.c
 	13-flush-to-persistent-GPSPM-SHCCH/GPSPM_flush.pb-c.c)
 add_example(NAME 14-receive-completion-queue-SHCCH BIN server
-	SRCS 14-receive-completion-queue-SHCCH/server.c
-	14-receive-completion-queue-SHCCH/receive-completion-queue-common.c)
+	SRCS 14-receive-completion-queue-SHCCH/server.c)
 add_example(NAME 14-receive-completion-queue-SHCCH BIN client
-	SRCS 14-receive-completion-queue-SHCCH/client.c
-	14-receive-completion-queue-SHCCH/receive-completion-queue-common.c)
+	SRCS 14-receive-completion-queue-SHCCH/client.c)
 add_example(NAME 15-multiple-connections-SHCCH BIN server
 	SRCS 15-multiple-connections-SHCCH/server.c common/common-epoll.c)
 add_example(NAME 15-multiple-connections-SHCCH BIN client
