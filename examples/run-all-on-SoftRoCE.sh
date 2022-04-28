@@ -99,7 +99,7 @@ function run_example() {
 		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1st_word" "2nd_word" "3rd_word"
 		RV=$?
 		;;
-	08-messages-ping-pong)
+	08-messages-ping-pong|16-messages-ping-pong-SHCCH)
 		SEED=7
 		ROUNDS=3
 		echo "Starting the client ..."

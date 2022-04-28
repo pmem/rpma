@@ -163,6 +163,12 @@ add_example(NAME 15-multiple-connections-SHCCH BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 15-multiple-connections-SHCCH/server.c common/common-epoll.c)
 add_example(NAME 15-multiple-connections-SHCCH BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 15-multiple-connections-SHCCH/client.c)
+add_example(NAME 16-messages-ping-pong-SHCCH BIN server
+	SRCS 16-messages-ping-pong-SHCCH/server.c
+	16-messages-ping-pong-SHCCH/messages-ping-pong-common.c)
+add_example(NAME 16-messages-ping-pong-SHCCH BIN client
+	SRCS 16-messages-ping-pong-SHCCH/client.c
+	16-messages-ping-pong-SHCCH/messages-ping-pong-common.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
