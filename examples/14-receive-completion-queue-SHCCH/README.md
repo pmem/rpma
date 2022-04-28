@@ -12,9 +12,7 @@ When the client gets the new value from the server it repeats the process
 for the configured number of rounds. When it is quitting, it send the I_M_DONE
 message and disconnects.
 
-**Note**: In this example, we use two separate completion queues:
- - CQ for completions of sends and
- - RCQ for completions of receives.
+**Note**: In this example we use the shared completion event channel for CQ and RCQ.
 
 ## Usage
 

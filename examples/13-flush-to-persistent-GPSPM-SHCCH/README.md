@@ -16,6 +16,8 @@ the local memory region to a remote memory region and sends to the server a flus
 request and waits for a flush response which indicates the flush operation's
 completion.
 
+**Note**: In this example we use the shared completion event channel for CQ and RCQ.
+
 **Note**: This example does not require RPMA_FLUSH_TYPE_PERSISTENT support
 to provide remote PMem persistency. For the sake of simplicity, the client
 does not need to know server's peer configuration. For an example of peer's
