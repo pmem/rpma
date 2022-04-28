@@ -2,8 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * server.c -- a server of the rpma_mr_remote_from_descriptor
- * MT test
+ * server_rpma_mr_remote_from_descriptor.c -- a server of the rpma_mr_remote_from_descriptor MT test
  */
 
 #include <stdlib.h>
