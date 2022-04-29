@@ -22,6 +22,9 @@ for the server to disconnect.
 transferred via connection's private data. In general, it can be transferred via
 an out-of-band or the in-band channel.
 
+**Note**: In this example, we use the shared completion event channel for CQ for completions of send.
+We use the rpma_conn_wait() function to collect completions.
+
 ## Usage
 
 ```bash
