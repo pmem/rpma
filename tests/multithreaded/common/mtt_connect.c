@@ -179,9 +179,9 @@ mtt_client_peer_delete(struct mtt_result *tr, struct rpma_peer **peer_ptr)
  * mtt_client_connect -- connect with the server and get the private data
  */
 int
-mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
-	struct rpma_peer *peer, struct rpma_conn **conn_ptr,
-	struct rpma_conn_private_data *pdata)
+mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port, struct rpma_peer *peer,
+	struct rpma_conn **conn_ptr, struct rpma_conn_private_data *pdata,
+	struct rpma_mr_local *mr_local_ptr, size_t offset, size_t len, const void *op_context)
 {
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
@@ -199,6 +199,17 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		if (ret) {
 			MTT_RPMA_ERR(tr, "rpma_conn_req_new", ret);
 			goto err_conn_req_delete;
+		}
+
+		if (mr_local_ptr && len) {
+			/*
+			 * Put the initial receive to be prepared for the first send operation.
+			 */
+			ret = rpma_conn_req_recv(req, mr_local_ptr, offset, len, op_context);
+			if (ret) {
+				MTT_RPMA_ERR(tr, "rpma_conn_req_recv", ret);
+				goto err_conn_req_delete;
+			}
 		}
 
 		/*

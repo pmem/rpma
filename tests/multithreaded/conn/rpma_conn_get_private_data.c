@@ -35,7 +35,8 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	if (mtt_client_peer_new(tr, pr->addr, &pr->peer))
 		return;
 
-	if (mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &pr->conn, &pr->pdata))
+	if (mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &pr->conn, &pr->pdata,
+				NULL, 0, 0, NULL))
 		mtt_client_peer_delete(tr, &pr->peer);
 }
 

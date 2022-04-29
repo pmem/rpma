@@ -33,9 +33,9 @@ int mtt_client_peer_new(struct mtt_result *tr, char *addr, struct rpma_peer **pe
 
 void mtt_client_peer_delete(struct mtt_result *tr, struct rpma_peer **peer_ptr);
 
-int mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
-		struct rpma_peer *peer, struct rpma_conn **conn_ptr,
-		struct rpma_conn_private_data *pdata);
+int mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port, struct rpma_peer *peer,
+	struct rpma_conn **conn_ptr, struct rpma_conn_private_data *pdata,
+	struct rpma_mr_local *mr_local_ptr, size_t offset, size_t len, const void *op_context);
 
 void mtt_client_err_disconnect(struct rpma_conn **conn_ptr);
 
