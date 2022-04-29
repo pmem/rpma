@@ -86,6 +86,6 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 		return;
 	}
 
-	if (memcmp(ts->local_ptr, STRING_TO_WRITE, LEN_STRING_TO_WRITE) != 0)
+	if (memcmp(ts->local_ptr, STRING_TO_WRITE_SEND, LEN_STRING_TO_WRITE_SEND) != 0)
 		MTT_ERR_MSG(result, "write string mismatch", -1);
 }
