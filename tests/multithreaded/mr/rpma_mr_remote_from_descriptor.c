@@ -32,10 +32,11 @@ prestate_init(void *prestate, struct mtt_result *tr)
 
 	int ret;
 
-	ret = mtt_client_connect(tr, pr->addr, pr->port, &pr->peer,
-		&pr->conn, &pr->pdata);
-	if (ret)
+	if (mtt_client_peer_new(tr, pr->addr, &pr->peer))
 		return;
+
+	if (mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &pr->conn, &pr->pdata))
+		goto err_peer_delete;
 
 	/*
 	 * Create a remote memory registration structure from the received
@@ -63,7 +64,10 @@ err_mr_remote_delete:
 	(void) rpma_mr_remote_delete(&pr->mr_ptr);
 
 err_conn_disconnect:
-	mtt_client_err_disconnect(&pr->conn, &pr->peer);
+	mtt_client_err_disconnect(&pr->conn);
+
+err_peer_delete:
+	mtt_client_peer_delete(tr, &pr->peer);
 }
 
 /*
