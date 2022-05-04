@@ -10,11 +10,11 @@
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-#define STRING_TO_READ "This string was read using RDMA read"
-#define STRING_TO_WRITE "This string was written using RDMA write"
-#define LEN_STRING_TO_READ (strlen(STRING_TO_READ) + 1)
-#define LEN_STRING_TO_WRITE (strlen(STRING_TO_WRITE) + 1)
-#define MAX_STR_LEN (MAX(LEN_STRING_TO_WRITE, LEN_STRING_TO_READ))
+#define STRING_TO_READ_RECV "This string was read/received using RDMA read/receive"
+#define STRING_TO_WRITE_SEND "This string was written/sent using RDMA write/send"
+#define LEN_STRING_TO_READ_RECV (strlen(STRING_TO_READ_RECV) + 1)
+#define LEN_STRING_TO_WRITE_SEND (strlen(STRING_TO_WRITE_SEND) + 1)
+#define MAX_STR_LEN (MAX(LEN_STRING_TO_READ_RECV, LEN_STRING_TO_WRITE_SEND))
 
 struct thread_state {
 	struct rpma_conn *conn;
