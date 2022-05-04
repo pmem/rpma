@@ -41,7 +41,7 @@ server_init(struct server_res *svr, struct rpma_peer *peer)
 
 	/* fill the source memory with an initial content for read tests */
 	memset(svr->local_ptr, 0, svr->mr_local_size);
-	memcpy(svr->local_ptr, STRING_TO_READ, LEN_STRING_TO_READ);
+	memcpy(svr->local_ptr, STRING_TO_READ_RECV, LEN_STRING_TO_READ_RECV);
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, svr->local_ptr, svr->mr_local_size,
