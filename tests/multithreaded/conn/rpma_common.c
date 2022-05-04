@@ -48,7 +48,7 @@ thread_seq_init(unsigned id, void *prestate, void **state_ptr, struct mtt_result
 
 	/* fill the source memory with an initial content for write tests */
 	memset(ts->local_ptr, 0, ts->mr_local_size);
-	memcpy(ts->local_ptr, STRING_TO_WRITE, LEN_STRING_TO_WRITE);
+	memcpy(ts->local_ptr, STRING_TO_WRITE_SEND, LEN_STRING_TO_WRITE_SEND);
 
 	int ret = mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &ts->conn, &ts->pdata);
 	if (ret)

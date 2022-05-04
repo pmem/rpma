@@ -32,6 +32,6 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 	if (ret)
 		return;
 
-	if (memcmp(ts->local_ptr, STRING_TO_READ, LEN_STRING_TO_READ) != 0)
+	if (memcmp(ts->local_ptr, STRING_TO_READ_RECV, LEN_STRING_TO_READ_RECV) != 0)
 		MTT_ERR_MSG(result, "read string mismatch", -1);
 }
