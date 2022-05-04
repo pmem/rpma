@@ -139,7 +139,8 @@ struct server_prestate {
 /*
  * server_main -- the main function of the server
  */
-int server_main(char *addr, unsigned port);
+int
+server_main(char *addr, unsigned port);
 
 /*
  * server_func -- the server function of this test
