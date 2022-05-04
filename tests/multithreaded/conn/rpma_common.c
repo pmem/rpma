@@ -109,6 +109,42 @@ err_free:
 void thread(unsigned id, void *prestate, void *state, struct mtt_result *result);
 
 /*
+ * wait_and_validate_completion -- wait for the completion to be ready and validate it
+ */
+int
+wait_and_validate_completion(struct rpma_cq *cq, enum ibv_wc_opcode expected_opcode,
+				struct mtt_result *result)
+{
+	struct ibv_wc wc;
+
+	/* wait for the completion to be ready */
+	int ret = rpma_cq_wait(cq);
+	if (ret) {
+		MTT_ERR_MSG(result, "rpma_cq_wait() failed", ret);
+		return ret;
+	}
+
+	/* get a completion of the RDMA read */
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+	if (ret) {
+		MTT_ERR_MSG(result, "rpma_cq_get_wc() failed", ret);
+		return ret;
+	}
+
+	if (wc.status != IBV_WC_SUCCESS) {
+		MTT_ERR_MSG(result, "completion status is different from IBV_WC_SUCCESS", -1);
+		return -1;
+	}
+
+	if (wc.opcode != expected_opcode) {
+		MTT_ERR_MSG(result, "unexpected wc.opcode value", -1);
+		return -1;
+	}
+
+	return 0;
+}
+
+/*
  * thread_seq_fini -- deregister and free the memory region, disconnect and delete the peer object
  */
 static void

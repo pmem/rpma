@@ -30,4 +30,7 @@ struct thread_state {
 	struct rpma_conn_private_data pdata;
 };
 
+int wait_and_validate_completion(struct rpma_cq *cq, enum ibv_wc_opcode expected_opcode,
+				struct mtt_result *result);
+
 #endif /* MTT_RPMA_RW_COMMON */
