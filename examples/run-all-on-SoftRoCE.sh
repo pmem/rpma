@@ -48,6 +48,24 @@ fi
 MODULE="rdma_rxe"
 STATE_OK="state ACTIVE physical_state LINK_UP"
 
+function run_command_of() {
+	WHO=$1
+	shift
+	echo "[${WHO}]$ $*"
+	eval $*
+}
+
+function start_server() {
+	echo "Starting the server ..."
+	run_command_of server $*
+}
+
+function start_client() {
+	echo "Starting the client ..."
+	run_command_of client $*
+	RV=$?
+}
+
 function print_out_log_file() {
 	echo
 	echo "*** file $1 (START) ***"
@@ -80,53 +98,38 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	echo "Starting the server ..."
-	$VLD_SCMD $DIR/server $IP_ADDRESS $PORT &
+	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT &
 	sleep 1
 
 	RV=0
 	case $EXAMPLE in
 	06-multiple-connections)
 		for SEED in 8 9 11 12; do
-			echo "Starting the client ..."
-			$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
-			RV=$?
+			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
 			[ $RV -ne 0 ] && break
 		done
 		;;
 	07-atomic-write)
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1st_word" "2nd_word" "3rd_word"
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1st_word" "2nd_word" "3rd_word"
 		;;
 	08-messages-ping-pong)
 		SEED=7
 		ROUNDS=3
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
 		;;
 	10-send-with-imm)
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234" "1st_word"
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234" "1st_word"
 		;;
 	11-write-with-imm)
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		;;
 	12-receive-completion-queue)
 		START_VALUE=7
 		ROUNDS=3
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
-		echo "Starting the client ..."
-		$VLD_CCMD $DIR/client $IP_ADDRESS $PORT
-		RV=$?
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT
 		;;
 	esac
 
