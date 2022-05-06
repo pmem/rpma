@@ -52,7 +52,7 @@ case "$PACKAGE_MANAGER" in
 esac
 
 function sudo_password() {
-	echo $USERPASS | sudo -Sk $*
+	echo $USERPASS | sudo -S $*
 }
 
 function upload_codecov() {
@@ -215,7 +215,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
 
 make -j$(nproc)
 ctest --output-on-failure
-sudo_password -S make -j$(nproc) install
+sudo_password make -j$(nproc) install
 
 if [ "$COVERAGE" == "1" ]; then
 	upload_codecov tests
@@ -231,7 +231,7 @@ test_compile_all_examples_standalone
 
 # Uninstall libraries
 cd $WORKDIR/build
-sudo_password -S make uninstall
+sudo_password make uninstall
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
@@ -259,7 +259,7 @@ ctest --output-on-failure
 
 if [ "$PACKAGE_MANAGER" = "" ]; then
 	# install the library from sources
-	sudo_password -S make -j$(nproc) install
+	sudo_password make -j$(nproc) install
 else
 	# Do not install the library from sources here,
 	# because it will be installed from the packages below.
@@ -298,7 +298,7 @@ test_compile_all_examples_standalone
 if [ "$PACKAGE_MANAGER" = "" ]; then
 	# uninstall the library, since it was installed from sources
 	cd $WORKDIR/build
-	sudo_password -S make uninstall
+	sudo_password make uninstall
 elif [ $PACKAGE_MANAGER = "deb" ]; then
 	echo "sudo -S dpkg --remove librpma-dev"
 	echo $USERPASS | sudo -S dpkg --remove librpma-dev
