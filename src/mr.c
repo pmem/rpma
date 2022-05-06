@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "librpma.h"
+#include "debug.h"
 #include "log_internal.h"
 #include "mr.h"
 #include "peer.h"
@@ -69,6 +70,9 @@ rpma_mr_read(struct ibv_qp *qp,
 	const struct rpma_mr_remote *src,  size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
 
@@ -126,6 +130,9 @@ rpma_mr_write(struct ibv_qp *qp,
 	size_t len, int flags, enum ibv_wr_opcode operation,
 	uint32_t imm, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
 
@@ -193,6 +200,9 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
 	struct rpma_mr_remote *dst, size_t dst_offset,
 	const char src[8], int flags, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
 
@@ -243,6 +253,9 @@ rpma_mr_send(struct ibv_qp *qp,
 	size_t len, int flags, enum ibv_wr_opcode operation,
 	uint32_t imm, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	struct ibv_send_wr wr;
 	struct ibv_sge sge;
 
@@ -294,6 +307,9 @@ rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	struct ibv_recv_wr wr;
 	struct ibv_sge sge;
 
@@ -332,6 +348,9 @@ int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		struct rpma_mr_local **mr_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	int ret;
 
 	if (peer == NULL || ptr == NULL || size == 0 || mr_ptr == NULL)
@@ -364,6 +383,8 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 int
 rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	if (mr_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -381,6 +402,7 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 	free(mr);
 	*mr_ptr = NULL;
 
+	RPMA_FAULT_INJECTION();
 	return ret;
 }
 
@@ -390,6 +412,9 @@ rpma_mr_dereg(struct rpma_mr_local **mr_ptr)
 int
 rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || desc == NULL)
 		return RPMA_E_INVAL;
 
@@ -420,6 +445,9 @@ int
 rpma_mr_remote_from_descriptor(const void *desc,
 		size_t desc_size, struct rpma_mr_remote **mr_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (desc == NULL || mr_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -475,6 +503,9 @@ rpma_mr_remote_from_descriptor(const void *desc,
 int
 rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr, size_t *desc_size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || desc_size == NULL)
 		return RPMA_E_INVAL;
 
@@ -489,6 +520,9 @@ rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr, size_t *desc_size)
 int
 rpma_mr_get_ptr(const struct rpma_mr_local *mr, void **ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -503,6 +537,9 @@ rpma_mr_get_ptr(const struct rpma_mr_local *mr, void **ptr)
 int
 rpma_mr_get_size(const struct rpma_mr_local *mr, size_t *size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || size == NULL)
 		return RPMA_E_INVAL;
 
@@ -517,6 +554,9 @@ rpma_mr_get_size(const struct rpma_mr_local *mr, size_t *size)
 int
 rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || size == NULL)
 		return RPMA_E_INVAL;
 
@@ -531,6 +571,8 @@ rpma_mr_remote_get_size(const struct rpma_mr_remote *mr, size_t *size)
 int
 rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
 	if (mr_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -540,6 +582,7 @@ rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 	free(*mr_ptr);
 	*mr_ptr = NULL;
 
+	RPMA_FAULT_INJECTION();
 	return 0;
 }
 
@@ -550,6 +593,9 @@ rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 int
 rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 	if (mr == NULL || flush_type == NULL)
 		return RPMA_E_INVAL;
 
@@ -566,6 +612,9 @@ int
 rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
 		int advice, uint32_t flags)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION();
+
 #ifdef IBV_ADVISE_MR_SUPPORTED
 	struct ibv_sge sg_list;
 	sg_list.lkey = mr->ibv_mr->lkey;
