@@ -25,6 +25,7 @@ struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;
 
+static unsigned unack_cqe = 0;
 /*
  * ibv_query_device -- ibv_query_device() mock
  */
@@ -205,6 +206,7 @@ ibv_get_cq_event(struct ibv_comp_channel *channel, struct ibv_cq **cq,
 	if (!errno) {
 		*cq = mock_type(struct ibv_cq *);
 		*cq_context = NULL;
+		unack_cqe++;
 		return 0;
 	}
 
@@ -218,7 +220,8 @@ void
 ibv_ack_cq_events(struct ibv_cq *cq, unsigned nevents)
 {
 	check_expected_ptr(cq);
-	assert_int_equal(nevents, 1);
+	// assert_int_equal(nevents, 1);
+	check_expected(nevents);
 }
 
 /*

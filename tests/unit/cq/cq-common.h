@@ -18,6 +18,7 @@
 struct cq_test_state {
 	struct ibv_comp_channel *shared_channel;
 	struct rpma_cq *cq;
+	unsigned unack_cqe;
 };
 
 extern struct cq_test_state CQ_without_channel;

@@ -76,7 +76,8 @@ wait__req_notify_cq_ERRNO(void **cq_ptr)
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_get_cq_event, MOCK_OK);
 	will_return(ibv_get_cq_event, MOCK_IBV_CQ);
-	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	// expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	++cstate->unack_cqe;
 	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 
@@ -100,7 +101,8 @@ wait__success(void **cq_ptr)
 	expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
 	will_return(ibv_get_cq_event, MOCK_OK);
 	will_return(ibv_get_cq_event, MOCK_IBV_CQ);
-	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	//  expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	++cstate->unack_cqe;
 	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
@@ -109,6 +111,34 @@ wait__success(void **cq_ptr)
 
 	/* verify the result */
 	assert_int_equal(ret, MOCK_OK);
+}
+
+static void
+wait__success_1500(void **cq_ptr)
+{
+	struct cq_test_state *cstate = *cq_ptr;
+	struct rpma_cq *cq = cstate->cq;
+
+	for (int i = 0; i < 1500; i++) {
+		/* configure mocks */
+		expect_value(ibv_get_cq_event, channel, MOCK_COMP_CHANNEL);
+		will_return(ibv_get_cq_event, MOCK_OK);
+		will_return(ibv_get_cq_event, MOCK_IBV_CQ);
+		//  expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+		++cstate->unack_cqe;
+		if (cstate->unack_cqe == 1000) {
+			expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+			expect_value(ibv_ack_cq_events, nevents, 1000);
+			cstate->unack_cqe = 0;
+		}
+		expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
+		will_return(ibv_req_notify_cq_mock, MOCK_OK);
+
+		/* run test */
+		int ret = rpma_cq_wait(cq);
+		assert_int_equal(ret, MOCK_OK);
+	}
+	/* verify the result */
 }
 
 static const struct CMUnitTest tests_wait[] = {
@@ -125,6 +155,9 @@ static const struct CMUnitTest tests_wait[] = {
 		setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test_setup_teardown(
 		wait__success,
+		setup__cq_new, teardown__cq_delete),
+	cmocka_unit_test_setup_teardown(
+		wait__success_1500,
 		setup__cq_new, teardown__cq_delete),
 	cmocka_unit_test(NULL)
 };

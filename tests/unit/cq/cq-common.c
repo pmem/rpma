@@ -49,6 +49,7 @@ setup__cq_new(void **cq_ptr)
 	assert_int_equal(ret, MOCK_OK);
 
 	cstate->cq = cq;
+	cstate->unack_cqe = 0;
 	*cq_ptr = cstate;
 
 	return 0;
@@ -64,6 +65,10 @@ teardown__cq_delete(void **cq_ptr)
 	struct rpma_cq *cq = cstate->cq;
 
 	/* configure mocks */
+	if (cstate->unack_cqe) {
+		expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+		expect_value(ibv_ack_cq_events, nevents, cstate->unack_cqe);
+	}
 	will_return(ibv_destroy_cq, MOCK_OK);
 	if (!cstate->shared_channel)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
