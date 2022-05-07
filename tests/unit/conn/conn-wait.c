@@ -125,6 +125,7 @@ wait__req_notify_cq_ERRNO(void **cstate_ptr)
 	expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_CQ);
 	will_return(rpma_cq_get_ibv_cq, MOCK_IBV_CQ);
 	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_CQ);
+	expect_value(ibv_ack_cq_events, nevents, 1);
 	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_CQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_ERRNO);
 
@@ -156,6 +157,7 @@ wait__success_is_rcq_NULL(void **cstate_ptr)
 	expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_RCQ);
 	will_return(rpma_cq_get_ibv_cq, MOCK_IBV_RCQ);
 	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_RCQ);
+	expect_value(ibv_ack_cq_events, nevents, 1);
 	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_RCQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 
@@ -184,6 +186,7 @@ wait__success(void **cstate_ptr)
 	expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_RCQ);
 	will_return(rpma_cq_get_ibv_cq, MOCK_IBV_RCQ);
 	expect_value(ibv_ack_cq_events, cq, MOCK_IBV_RCQ);
+	expect_value(ibv_ack_cq_events, nevents, 1);
 	expect_value(ibv_req_notify_cq_mock, cq, MOCK_IBV_RCQ);
 	will_return(ibv_req_notify_cq_mock, MOCK_OK);
 

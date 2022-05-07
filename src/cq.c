@@ -19,10 +19,13 @@
 #include "cmocka_alloc.h"
 #endif
 
+#define RPMA_MAX_UNACK_CQE (int)100000
+
 struct rpma_cq {
 	struct ibv_comp_channel *channel; /* completion channel */
 	bool shared_comp_channel; /* completion channel is shared */
 	struct ibv_cq *cq; /* completion queue */
+	unsigned unack_cqe; /* number of unack completion events */
 };
 
 /* internal librpma API */
@@ -94,6 +97,8 @@ rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
 	(*cq_ptr)->channel = channel;
 	(*cq_ptr)->shared_comp_channel = (shared_channel != NULL);
 	(*cq_ptr)->cq = cq;
+	(*cq_ptr)->unack_cqe = 0;
+
 
 	return 0;
 
@@ -123,6 +128,10 @@ rpma_cq_delete(struct rpma_cq **cq_ptr)
 	/* it is possible for cq to be NULL (e.g. rcq) */
 	if (cq == NULL)
 		return ret;
+
+	if (cq->unack_cqe)
+		(void) ibv_ack_cq_events(cq->cq, cq->unack_cqe);
+	cq->unack_cqe = 0;
 
 	errno = ibv_destroy_cq(cq->cq);
 	if (errno) {
@@ -175,11 +184,21 @@ rpma_cq_wait(struct rpma_cq *cq)
 	if (cq->shared_comp_channel)
 		return RPMA_E_SHARED_CHANNEL;
 
+	/*
+	 * ACK the collected CQ event.
+	 */
+	if (cq->unack_cqe >= RPMA_MAX_UNACK_CQE) {
+		ibv_ack_cq_events(cq->cq, cq->unack_cqe);
+		cq->unack_cqe = 0;
+	}
+
 	/* wait for the completion event */
 	struct ibv_cq *ev_cq;	/* unused */
 	void *ev_ctx;		/* unused */
 	if (ibv_get_cq_event(cq->channel, &ev_cq, &ev_ctx))
 		return RPMA_E_NO_COMPLETION;
+
+	++cq->unack_cqe;
 
 	/*
 	 * ACK the collected CQ event.
@@ -187,7 +206,7 @@ rpma_cq_wait(struct rpma_cq *cq)
 	 * XXX for performance reasons, it may be beneficial to ACK more than
 	 * one CQ event at the same time.
 	 */
-	ibv_ack_cq_events(cq->cq, 1 /* # of CQ events */);
+	// ibv_ack_cq_events(cq->cq, 1 /* # of CQ events */);
 
 	/* request for the next event on the CQ channel */
 	errno = ibv_req_notify_cq(cq->cq, 0 /* all completions */);
