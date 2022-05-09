@@ -142,6 +142,7 @@ connect_via_accept__accept_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -185,6 +186,7 @@ connect_via_accept__accept_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third or fourth error */
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -221,6 +223,7 @@ connect_via_accept__ack_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -266,6 +269,7 @@ connect_via_accept__ack_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third or fourth error */
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -309,6 +313,7 @@ connect_via_accept__conn_new_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -360,6 +365,7 @@ connect_via_accept__conn_new_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* third or fourth error */
 	if (cstate->get_cqe.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;

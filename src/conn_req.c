@@ -220,6 +220,7 @@ err_conn_req_delete:
 	rdma_destroy_qp(req->id);
 	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
+	(void) rpma_private_data_discard(&req->data);
 	if (req->channel)
 		(void) ibv_destroy_comp_channel(req->channel);
 
