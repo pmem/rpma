@@ -436,16 +436,12 @@ int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
-	if (req_ptr == NULL || conn_ptr == NULL)
+	if (req_ptr == NULL || *req_ptr == NULL)
 		return RPMA_E_INVAL;
 
-	struct rpma_conn_req *req = *req_ptr;
-	if (req == NULL)
+	if (conn_ptr == NULL || (pdata != NULL && (pdata->ptr == NULL || pdata->len == 0))) {
+		rpma_conn_req_delete(req_ptr);
 		return RPMA_E_INVAL;
-
-	if (pdata != NULL) {
-		if (pdata->ptr == NULL || pdata->len == 0)
-			return RPMA_E_INVAL;
 	}
 
 	struct rdma_conn_param conn_param = {0};
@@ -459,12 +455,13 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 
 	int ret = 0;
 
+	struct rpma_conn_req *req = *req_ptr;
 	if (req->edata)
 		ret = rpma_conn_req_accept(req, &conn_param, conn_ptr);
 	else
 		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
 
-	free(req);
+	free(*req_ptr);
 	*req_ptr = NULL;
 
 	return ret;

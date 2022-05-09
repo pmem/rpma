@@ -40,7 +40,7 @@ connect__conn_ptr_NULL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 }
 
 /*
@@ -75,7 +75,7 @@ connect__pdata_NULL_pdata_ptr_NULL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -95,7 +95,7 @@ connect__pdata_NULL_pdata_len_0(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -115,7 +115,7 @@ connect__pdata_NULL_pdata_ptr_NULL_len_0(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -591,24 +591,12 @@ connect_via_connect__success_outgoing(void **cstate_ptr)
 
 static const struct CMUnitTest test_connect[] = {
 	/* rpma_conn_req_connect() unit tests */
-	cmocka_unit_test(connect__req_ptr_NULL),
-	cmocka_unit_test_setup_teardown(
-		connect__conn_ptr_NULL,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
-	cmocka_unit_test(connect__req_NULL),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_ptr_NULL,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_len_0,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_ptr_NULL_len_0,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__req_ptr_NULL),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__req_NULL),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__conn_ptr_NULL),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__pdata_NULL_pdata_ptr_NULL),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__pdata_NULL_pdata_len_0),
+	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect__pdata_NULL_pdata_ptr_NULL_len_0),
 	/* connect via rdma_accept() */
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect_via_accept__accept_ERRNO),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
