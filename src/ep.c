@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * ep.c -- librpma endpoint-related implementations
@@ -184,6 +184,12 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req_ptr);
 	if (ret)
 		goto err_ack;
+
+	/* ACK the connection request event */
+	if (rdma_ack_cm_event(event)) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
+		return RPMA_E_PROVIDER;
+	}
 
 	return 0;
 

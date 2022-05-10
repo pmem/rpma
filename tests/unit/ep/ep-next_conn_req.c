@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -239,6 +239,8 @@ next_conn_req__success(void **estate_ptr)
 			(estate->cfg == NULL ?
 					MOCK_CONN_CFG_DEFAULT : estate->cfg));
 	will_return(rpma_conn_req_from_cm_event, MOCK_CONN_REQ);
+	expect_value(rdma_ack_cm_event, event, &event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
