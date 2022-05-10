@@ -94,6 +94,9 @@ thread(unsigned id, void *prestate, void *state,
 
 	if (memcmp(mr_ptr, pr->mr_ptr, pr->mr_size) != 0)
 		MTT_ERR_MSG(result, "Wrong content of the mr_remote", -1);
+
+	if ((ret = rpma_mr_remote_delete(&mr_ptr)))
+		MTT_RPMA_ERR(result, "rpma_mr_remote_delete", ret);
 }
 
 /*
@@ -118,6 +121,9 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 				"rpma_conn_next_event returned an unexpected event",
 				-1);
 	}
+
+	if ((ret = rpma_mr_remote_delete(&pr->mr_ptr)))
+		MTT_RPMA_ERR(tr, "rpma_mr_remote_delete", ret);
 
 	if ((ret = rpma_conn_delete(&pr->conn)))
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
