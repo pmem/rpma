@@ -28,22 +28,6 @@ connect__req_ptr_NULL(void **unused)
 }
 
 /*
- * connect__conn_ptr_NULL -- NULL conn_ptr is invalid
- */
-static void
-connect__conn_ptr_NULL(void **cstate_ptr)
-{
-	struct conn_req_test_state *cstate = *cstate_ptr;
-
-	/* run test */
-	int ret = rpma_conn_req_connect(&cstate->req, NULL, NULL);
-
-	/* verify the results */
-	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
-}
-
-/*
  * connect__req_NULL -- NULL *req_ptr is invalid
  */
 static void
@@ -61,12 +45,61 @@ connect__req_NULL(void **unused)
 }
 
 /*
+ * configure_mocks_conn_req_delete -- configure mocks for rpma_conn_req_delete()
+ */
+static void
+configure_mocks_conn_req_delete(struct conn_req_test_state *cstate)
+{
+	/* configure mocks */
+	expect_value(rdma_destroy_qp, id, &cstate->id);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rpma_cq_delete, *cq_ptr, MOCK_RPMA_CQ);
+	will_return(rpma_cq_delete, MOCK_OK);
+	expect_value(rdma_reject, id, &cstate->id);
+	will_return(rdma_reject, MOCK_OK);
+	expect_value(rdma_ack_cm_event, event, &cstate->event);
+	will_return(rdma_ack_cm_event, MOCK_OK);
+	if (cstate->get_cqe.shared)
+		will_return(ibv_destroy_comp_channel, MOCK_OK);
+	expect_function_call(rpma_private_data_discard);
+}
+
+/*
+ * connect__conn_ptr_NULL -- NULL conn_ptr is invalid
+ */
+static void
+connect__conn_ptr_NULL(void **cstate_ptr)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_test_state *cstate = *cstate_ptr;
+	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks for rpma_conn_req_delete() */
+	configure_mocks_conn_req_delete(cstate);
+
+	/* run test */
+	int ret = rpma_conn_req_connect(&cstate->req, NULL, NULL);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_INVAL);
+	assert_null(cstate->req);
+}
+
+/*
  * connect__pdata_NULL_pdata_ptr_NULL -- pdata->ptr == NULL is invalid
  */
 static void
 connect__pdata_NULL_pdata_ptr_NULL(void **cstate_ptr)
 {
+	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
+	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks for rpma_conn_req_delete() */
+	configure_mocks_conn_req_delete(cstate);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -75,7 +108,7 @@ connect__pdata_NULL_pdata_ptr_NULL(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -85,17 +118,23 @@ connect__pdata_NULL_pdata_ptr_NULL(void **cstate_ptr)
 static void
 connect__pdata_NULL_pdata_len_0(void **cstate_ptr)
 {
+	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	char buff = 0;
+	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks for rpma_conn_req_delete() */
+	configure_mocks_conn_req_delete(cstate);
 
 	/* run test */
+	char buff = 0;
 	struct rpma_conn *conn = NULL;
 	struct rpma_conn_private_data pdata = {&buff, 0};
 	int ret = rpma_conn_req_connect(&cstate->req, &pdata, &conn);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -106,7 +145,13 @@ connect__pdata_NULL_pdata_len_0(void **cstate_ptr)
 static void
 connect__pdata_NULL_pdata_ptr_NULL_len_0(void **cstate_ptr)
 {
+	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
+	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks for rpma_conn_req_delete() */
+	configure_mocks_conn_req_delete(cstate);
 
 	/* run test */
 	struct rpma_conn *conn = NULL;
@@ -115,7 +160,7 @@ connect__pdata_NULL_pdata_ptr_NULL_len_0(void **cstate_ptr)
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
-	assert_non_null(cstate->req);
+	assert_null(cstate->req);
 	assert_null(conn);
 }
 
@@ -598,23 +643,11 @@ connect_via_connect__success_outgoing(void **cstate_ptr)
 static const struct CMUnitTest test_connect[] = {
 	/* rpma_conn_req_connect() unit tests */
 	cmocka_unit_test(connect__req_ptr_NULL),
-	cmocka_unit_test_setup_teardown(
-		connect__conn_ptr_NULL,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
 	cmocka_unit_test(connect__req_NULL),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_ptr_NULL,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_len_0,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
-	cmocka_unit_test_setup_teardown(
-		connect__pdata_NULL_pdata_ptr_NULL_len_0,
-		setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
+	cmocka_unit_test(connect__conn_ptr_NULL),
+	cmocka_unit_test(connect__pdata_NULL_pdata_ptr_NULL),
+	cmocka_unit_test(connect__pdata_NULL_pdata_len_0),
+	cmocka_unit_test(connect__pdata_NULL_pdata_ptr_NULL_len_0),
 	/* connect via rdma_accept() */
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(connect_via_accept__accept_ERRNO),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(

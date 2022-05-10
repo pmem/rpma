@@ -431,22 +431,18 @@ err_info_delete:
 /*
  * rpma_conn_req_connect -- prepare connection parameters and request
  * connecting a connection request (either active or passive). When done
- * release the connection request object (regardless of the result).
+ * release (delete) the connection request object (regardless of the result).
  */
 int
 rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
-	if (req_ptr == NULL || conn_ptr == NULL)
+	if (req_ptr == NULL || *req_ptr == NULL)
 		return RPMA_E_INVAL;
 
-	struct rpma_conn_req *req = *req_ptr;
-	if (req == NULL)
+	if (conn_ptr == NULL || (pdata != NULL && (pdata->ptr == NULL || pdata->len == 0))) {
+		rpma_conn_req_delete(req_ptr);
 		return RPMA_E_INVAL;
-
-	if (pdata != NULL) {
-		if (pdata->ptr == NULL || pdata->len == 0)
-			return RPMA_E_INVAL;
 	}
 
 	struct rdma_conn_param conn_param = {0};
@@ -459,13 +455,12 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	conn_param.rnr_retry_count = 7; /* max 3-bit value */
 
 	int ret = 0;
-
-	if (req->edata)
-		ret = rpma_conn_req_accept(req, &conn_param, conn_ptr);
+	if ((*req_ptr)->edata)
+		ret = rpma_conn_req_accept(*req_ptr, &conn_param, conn_ptr);
 	else
-		ret = rpma_conn_req_connect_active(req, &conn_param, conn_ptr);
+		ret = rpma_conn_req_connect_active(*req_ptr, &conn_param, conn_ptr);
 
-	free(req);
+	free(*req_ptr);
 	*req_ptr = NULL;
 
 	return ret;
