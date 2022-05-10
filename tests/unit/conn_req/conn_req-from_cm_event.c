@@ -123,6 +123,33 @@ from_cm_event__ibv_create_comp_channel_ERRNO(void **cstate_ptr)
 }
 
 /*
+ * from_cm_event__ibv_create_comp_channel_ERRNO_rdma_ack_cm_event_ERRNO2 --
+ * ibv_create_comp_channel() fails with MOCK_ERRNO and rdma_ack_cm_event fails with MOCK_ERRNO2
+ */
+static void
+from_cm_event__ibv_create_comp_channel_ERRNO_rdma_ack_cm_event_ERRNO2(void **cstate_ptr)
+{
+	struct conn_req_test_state *cstate = *cstate_ptr;
+	configure_conn_req((void **)&cstate);
+
+	/* configure mocks */
+	will_return(rpma_conn_cfg_get_cqe, &cstate->get_cqe);
+	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_cqe);
+	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_cqe);
+	will_return(ibv_create_comp_channel, NULL);
+	will_return(ibv_create_comp_channel, MOCK_ERRNO);
+
+	/* run test */
+	struct rpma_conn_req *req = NULL;
+	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+			cstate->get_cqe.cfg, &req);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(req);
+}
+
+/*
  * from_cm_event__cq_new_ERRNO -- rpma_cq_new(cqe) fails with MOCK_ERRNO
  */
 static void
@@ -537,6 +564,9 @@ static const struct CMUnitTest test_from_cm_event[] = {
 		from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR),
 	cmocka_unit_test_prestate(
 		from_cm_event__ibv_create_comp_channel_ERRNO,
+		&Conn_req_conn_cfg_custom),
+	cmocka_unit_test_prestate(
+		from_cm_event__ibv_create_comp_channel_ERRNO_rdma_ack_cm_event_ERRNO2,
 		&Conn_req_conn_cfg_custom),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(from_cm_event__cq_new_ERRNO),
 	cmocka_unit_test(from_cm_event__rcq_new_ERRNO),

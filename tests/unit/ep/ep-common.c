@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * ep-common.c -- common part of the endpoint unit tests
@@ -269,6 +269,19 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		return mock_type(int);
 
 	*req_ptr = req;
+	return 0;
+}
+
+/*
+ * rpma_conn_req_delete -- rpma_conn_req_delete() mock
+ */
+int
+rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
+{
+	assert_non_null(req_ptr);
+	check_expected_ptr(*req_ptr);
+	*req_ptr = NULL;
+
 	return 0;
 }
 
