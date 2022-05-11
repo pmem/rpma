@@ -75,7 +75,6 @@ provided out of the box by CMake.
 | COVERAGE | Run coverage test | ON/OFF | OFF |
 | DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
 | TESTS_LONG | Enable long running tests | ON/OFF | OFF |
-| TESTS_USE_FAULT_INJECTION | Run tests with fault injection | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
 | TEST_DIR | Working directory for tests | *dir path* | ./build/test |
@@ -83,6 +82,8 @@ provided out of the box by CMake.
 | TRACE_TESTS | More verbose test outputs | ON/OFF | OFF |
 | USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
 | USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
+| DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
+| DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
 
 ### Configuring CMake options
 
