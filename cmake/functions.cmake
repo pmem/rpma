@@ -187,9 +187,7 @@ function(is_ODP_supported var)
 		#include <infiniband/verbs.h>
 		/* check if 'IBV_ACCESS_ON_DEMAND is defined */
 		int main() {
-			if (!IBV_ACCESS_ON_DEMAND)
-				return -1;
-			return 0;
+			return IBV_ACCESS_ON_DEMAND;
 		}"
 		ON_DEMAND_PAGING_SUPPORTED)
 	set(var ${ON_DEMAND_PAGING_SUPPORTED} PARENT_SCOPE)
@@ -201,9 +199,7 @@ function(is_ibv_advise_mr_supported var)
 		#include <infiniband/verbs.h>
 		/* check if ibv_advise_mr() is defined */
 		int main() {
-			if (!ibv_advise_mr)
-				return -1;
-			return 0;
+			return !ibv_advise_mr;
 		}"
 		IBV_ADVISE_MR_SUPPORTED)
 	set(var ${IBV_ADVISE_MR_SUPPORTED} PARENT_SCOPE)
@@ -232,9 +228,7 @@ function(check_signature_rdma_getaddrinfo var)
 				const char *service;
 				const struct rdma_addrinfo *hints;
 				struct rdma_addrinfo **res;
-				if (rdma_getaddrinfo(node, service, hints, res))
-					return -1;
-				return 0;
+				return rdma_getaddrinfo(node, service, hints, res);
 			}"
 			RDMA_GETADDRINFO_NEW_SIGNATURE)
 		set(var ${RDMA_GETADDRINFO_NEW_SIGNATURE} PARENT_SCOPE)
