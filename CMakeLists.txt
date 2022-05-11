@@ -52,8 +52,10 @@ option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
 option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
 option(TESTS_LONG "enable long running tests" OFF)
-option(TESTS_USE_FAULT_INJECTION "run tests with fault injection" OFF)
 option(TEST_PYTHON_TOOLS "run tests for Python tools" ON)
+
+option(DEBUG_LOG_TRACE "enable logging function traces" OFF)
+option(DEBUG_FAULT_INJECTION "enable fault injection" OFF)
 
 # Do not treat include directories from the interfaces
 # of consumed Imported Targets as SYSTEM by default.
