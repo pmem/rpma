@@ -216,7 +216,7 @@ main(int argc, char *argv[])
 	/* get the remote memory region size */
 	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
 	if (ret) {
-		goto err_mr_dereg;
+		goto err_mr_remote_delete;
 	} else if (dst_size < KILOBYTE) {
 		ret = -1;
 		fprintf(stderr,
