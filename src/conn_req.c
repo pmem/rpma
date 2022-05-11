@@ -297,23 +297,15 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 {
 	RPMA_DEBUG_TRACE;
 
-	int ret = rpma_cq_delete(&req->rcq);
-
-	int ret2 = rpma_cq_delete(&req->cq);
-	if (!ret && ret2)
-		ret = ret2;
-
 	if (rdma_reject(req->id,
 			NULL /* private data */,
 			0 /* private data len */)) {
-		if (!ret) {
-			RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_reject()");
-			ret = RPMA_E_PROVIDER;
-		}
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_reject()");
+		return RPMA_E_PROVIDER;
 	}
 
 	RPMA_FAULT_INJECTION();
-	return ret;
+	return 0;
 }
 
 /*
@@ -327,21 +319,13 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 {
 	RPMA_DEBUG_TRACE;
 
-	int ret = rpma_cq_delete(&req->rcq);
-
-	int ret2 = rpma_cq_delete(&req->cq);
-	if (!ret && ret2)
-		ret = ret2;
-
 	if (rdma_destroy_id(req->id)) {
-		if (!ret) {
-			RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
-			ret = RPMA_E_PROVIDER;
-		}
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
+		return RPMA_E_PROVIDER;
 	}
 
 	RPMA_FAULT_INJECTION();
-	return ret;
+	return 0;
 }
 
 /* internal librpma API */
@@ -516,12 +500,18 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 
 	rdma_destroy_qp(req->id);
 
-	int ret = 0;
+	int ret = rpma_cq_delete(&req->rcq);
+
+	int ret2 = rpma_cq_delete(&req->cq);
+	if (!ret && ret2)
+		ret = ret2;
 
 	if (req->is_passive)
-		ret = rpma_conn_req_reject(req);
+		ret2 = rpma_conn_req_reject(req);
 	else
-		ret = rpma_conn_req_destroy(req);
+		ret2 = rpma_conn_req_destroy(req);
+	if (!ret && ret2)
+		ret = ret2;
 
 	if (req->channel) {
 		errno = ibv_destroy_comp_channel(req->channel);
