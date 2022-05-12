@@ -45,6 +45,12 @@ rpma_utils_get_ibv_context(const char *addr,
 	if (ret)
 		return ret;
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_info_delete;
+	});
+
 	struct rdma_cm_id *temp_id;
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {

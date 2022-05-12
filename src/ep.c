@@ -58,6 +58,12 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		return RPMA_E_PROVIDER;
 	}
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_event_channel;
+	});
+
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
@@ -71,6 +77,12 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 	ret = rpma_info_bind_addr(info, id);
 	if (ret)
 		goto err_info_delete;
+
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_info_delete;
+	});
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_listen()");
@@ -188,6 +200,12 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		return RPMA_E_PROVIDER;
 	}
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_ack;
+	});
+
 	/* we expect only one type of events here */
 	if (event->event != RDMA_CM_EVENT_CONNECT_REQUEST) {
 		RPMA_LOG_ERROR("Unexpected event received: %s",
@@ -200,12 +218,25 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 	if (ret)
 		goto err_ack;
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		(void) rpma_conn_req_delete(req_ptr);
+		goto err_ack;
+	});
+
+
 	/* ACK the connection request event */
 	if (rdma_ack_cm_event(event)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
 		(void) rpma_conn_req_delete(req_ptr);
 		return RPMA_E_PROVIDER;
 	}
+
+	RPMA_FAULT_INJECTION(
+	{
+		(void) rpma_conn_req_delete(req_ptr);
+	});
 
 	return 0;
 
