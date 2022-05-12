@@ -83,14 +83,12 @@ main(int argc, char *argv[])
 	 * Put an initial receive to be prepared for the first message of
 	 * the client's ping-pong.
 	 */
-	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv))) {
-		(void) rpma_conn_req_delete(&req);
-		goto err_mr_dereg;
-	}
+	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv)))
+		goto err_conn_req_delete;
 
 	/* accept the connection request and obtain the connection object */
 	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
-		goto err_mr_dereg;
+		goto err_conn_req_delete;
 
 	/* wait for the connection to be established */
 	if ((ret = rpma_conn_next_event(conn, &conn_event)))
@@ -148,6 +146,9 @@ main(int argc, char *argv[])
 
 err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
+
+err_conn_req_delete:
+	ret |= rpma_conn_req_delete(&req);
 
 err_mr_dereg:
 	/* deregister the memory regions */
