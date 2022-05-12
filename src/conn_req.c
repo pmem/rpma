@@ -193,18 +193,14 @@ static int
 rpma_conn_req_accept(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
+	int ret = 0;
+
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(
 	{
-		rdma_destroy_qp(req->id);
-		(void) rpma_cq_delete(&req->rcq);
-		(void) rpma_cq_delete(&req->cq);
-		(void) rpma_private_data_discard(&req->data);
-		if (req->channel)
-			(void) ibv_destroy_comp_channel(req->channel);
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_conn_req_delete;
 	});
-
-	int ret = 0;
 
 	if (rdma_accept(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_accept()");
