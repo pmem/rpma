@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -14,6 +14,8 @@
 #include "ep-common.h"
 #include "cmocka_headers.h"
 #include "test-common.h"
+
+static struct ep_test_state prestate_conn_cfg_default;
 
 /*
  * listen__peer_NULL - NULL peer is invalid
@@ -335,20 +337,22 @@ ep__lifecycle(void **unused)
  * shutdown__destroy_id_ERRNO -- rdma_destroy_id() fails with MOCK_ERRNO
  */
 static void
-shutdown__destroy_id_ERRNO(void **estate_ptr)
+shutdown__destroy_id_ERRNO(void **unused)
 {
-	struct ep_test_state *estate = *estate_ptr;
+	struct ep_test_state *estate = &prestate_conn_cfg_default;
+	setup__ep_listen((void **)&estate);
 
 	/* configure mocks */
 	expect_value(rdma_destroy_id, id, &estate->cmid);
 	will_return(rdma_destroy_id, MOCK_ERRNO);
+	expect_value(rdma_destroy_event_channel, channel, &estate->evch);
 
 	/* run test */
 	int ret = rpma_ep_shutdown(&estate->ep);
 
 	/* verify the result */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
-	assert_non_null(estate->ep);
+	assert_null(estate->ep);
 	assert_int_equal(memcmp(&estate->cmid, &Cmid_zero,
 		sizeof(estate->cmid)), 0);
 	assert_int_equal(memcmp(&estate->evch, &Evch_zero,
@@ -359,7 +363,6 @@ int
 main(int argc, char *argv[])
 {
 	/* prepare prestates */
-	struct ep_test_state prestate_conn_cfg_default;
 	prestate_init(&prestate_conn_cfg_default, NULL);
 
 	const struct CMUnitTest tests[] = {
@@ -375,8 +378,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(listen__info_bind_addr_E_PROVIDER),
 		cmocka_unit_test(listen__listen_ERRNO),
 		cmocka_unit_test(listen__malloc_ERRNO),
-		cmocka_unit_test(
-			listen__malloc_ERRNO_destroy_id_ERRNO2),
+		cmocka_unit_test(listen__malloc_ERRNO_destroy_id_ERRNO2),
 
 		/* rpma_ep_listen()/_shutdown() lifecycle */
 		cmocka_unit_test_prestate_setup_teardown(ep__lifecycle,
@@ -386,10 +388,7 @@ main(int argc, char *argv[])
 		/* rpma_ep_shutdown() unit tests */
 		cmocka_unit_test(shutdown__ep_ptr_NULL),
 		cmocka_unit_test(shutdown__ep_NULL),
-		cmocka_unit_test_prestate_setup_teardown(
-			shutdown__destroy_id_ERRNO,
-			setup__ep_listen, teardown__ep_shutdown,
-			&prestate_conn_cfg_default),
+		cmocka_unit_test(shutdown__destroy_id_ERRNO),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
