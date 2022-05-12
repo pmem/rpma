@@ -116,6 +116,8 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 {
 	RPMA_DEBUG_TRACE;
 
+	int ret = 0;
+
 	if (ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -125,7 +127,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	if (rdma_destroy_id(ep->id)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
-		return RPMA_E_PROVIDER;
+		ret = RPMA_E_PROVIDER;
 	}
 
 	rdma_destroy_event_channel(ep->evch);
@@ -134,7 +136,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 	*ep_ptr = NULL;
 
 	RPMA_FAULT_INJECTION();
-	return 0;
+	return ret;
 }
 
 /*
