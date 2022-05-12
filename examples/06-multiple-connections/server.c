@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -267,7 +267,11 @@ client_fetch_name(struct client_res *clnt, struct rpma_mr_local *dst)
 	/* get connection's private data */
 	struct rpma_conn_private_data pdata;
 	int ret = rpma_conn_get_private_data(clnt->conn, &pdata);
-	if (ret != 0 || pdata.len < sizeof(struct common_data)) {
+	if (ret) {
+		(void) fprintf(stderr, "rpma_conn_get_private_data() failed\n");
+		return -1;
+	}
+	if (pdata.len < sizeof(struct common_data)) {
 		(void) fprintf(stderr,
 				"[%d] received connection's private data is too small (%d < %zu)\n",
 				clnt->client_id,
