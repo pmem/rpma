@@ -250,31 +250,20 @@ static int
 rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
+	int ret = 0;
+
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(
 	{
-		rdma_destroy_qp(req->id);
-		(void) rpma_cq_delete(&req->rcq);
-		(void) rpma_cq_delete(&req->cq);
-		(void) rdma_destroy_id(req->id);
-		if (req->channel)
-			(void) ibv_destroy_comp_channel(req->channel);
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_conn_new;
 	});
-
-	int ret = 0;
 
 	struct rpma_conn *conn = NULL;
 	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
 				req->channel, &conn);
-	if (ret) {
-		rdma_destroy_qp(req->id);
-		(void) rpma_cq_delete(&req->rcq);
-		(void) rpma_cq_delete(&req->cq);
-		(void) rdma_destroy_id(req->id);
-		if (req->channel)
-			(void) ibv_destroy_comp_channel(req->channel);
-		return ret;
-	}
+	if (ret)
+		goto err_conn_new;
 
 	if (rdma_connect(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_connect()");
@@ -284,6 +273,16 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 
 	*conn_ptr = conn;
 	return 0;
+
+err_conn_new:
+	rdma_destroy_qp(req->id);
+	(void) rpma_cq_delete(&req->rcq);
+	(void) rpma_cq_delete(&req->cq);
+	(void) rdma_destroy_id(req->id);
+	if (req->channel)
+		(void) ibv_destroy_comp_channel(req->channel);
+
+	return ret;
 }
 
 /*
