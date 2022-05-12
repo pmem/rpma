@@ -25,8 +25,9 @@
 		int value = 0; \
 		if (rpma_fault_injection(&value)) { \
 			RPMA_LOG_ALWAYS("[#%i] [FAULT INJECTION]", value); \
+			int ret_fi = RPMA_E_FAULT_INJECT; \
 			{ exit_code; } \
-			return RPMA_E_FAULT_INJECT; \
+			return ret_fi; \
 		} \
 		if (value) \
 			RPMA_LOG_ALWAYS("[#%i]", value); \

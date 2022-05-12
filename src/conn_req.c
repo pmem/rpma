@@ -266,6 +266,10 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 		(void) rpma_conn_delete(&conn);
 		return RPMA_E_PROVIDER;
 	}
+	RPMA_FAULT_INJECTION(
+	{
+		(void) rpma_conn_delete(&conn);
+	});
 
 	*conn_ptr = conn;
 	return 0;
@@ -394,6 +398,11 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		return ret;
 
 	struct rdma_cm_id *id;
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_info_delete;
+	});
 	if (rdma_create_id(NULL, &id, NULL, RDMA_PS_TCP)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
@@ -406,9 +415,13 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		goto err_destroy_id;
 
 	/* resolve route */
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_id;
+	});
 	if (rdma_resolve_route(id, timeout_ms)) {
-		RPMA_LOG_ERROR_WITH_ERRNO(errno,
-			"rdma_resolve_route(timeout_ms=%i)", timeout_ms);
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_resolve_route(timeout_ms=%i)", timeout_ms);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
@@ -422,8 +435,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 
 	(void) rpma_info_delete(&info);
 
-	RPMA_LOG_NOTICE("Requesting a connection to %s:%s", addr,
-				port);
+	RPMA_LOG_NOTICE("Requesting a connection to %s:%s", addr, port);
 
 	return 0;
 

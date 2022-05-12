@@ -106,6 +106,7 @@ rpma_mr_read(struct ibv_qp *qp,
 		IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
+	RPMA_FAULT_INJECTION();
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
@@ -178,6 +179,7 @@ rpma_mr_write(struct ibv_qp *qp,
 		IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
+	RPMA_FAULT_INJECTION();
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
@@ -230,6 +232,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
 		wr.send_flags |= IBV_SEND_SIGNALED;
 
 	struct ibv_send_wr *bad_wr;
+	RPMA_FAULT_INJECTION();
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
@@ -290,6 +293,7 @@ rpma_mr_send(struct ibv_qp *qp,
 		IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
+	RPMA_FAULT_INJECTION();
 	int ret = ibv_post_send(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_send");
@@ -330,6 +334,7 @@ rpma_mr_recv(struct ibv_qp *qp,
 	wr.wr_id = (uint64_t)op_context;
 
 	struct ibv_recv_wr *bad_wr;
+	RPMA_FAULT_INJECTION();
 	int ret = ibv_post_recv(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");

@@ -62,6 +62,11 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		return RPMA_E_PROVIDER;
 	}
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_evch;
+	});
 	if (rdma_migrate_id(id, evch)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_migrate_id()");
 		ret = RPMA_E_PROVIDER;
@@ -180,6 +185,11 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		ret = RPMA_E_PROVIDER;
 		goto err_private_data_discard;
 	}
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_private_data_discard;
+	});
 
 	switch (cm_event) {
 		case RDMA_CM_EVENT_ESTABLISHED:
@@ -262,6 +272,10 @@ rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
 	ibv_ack_cq_events(ev_cq, 1 /* # of CQ events */);
 
 	/* request for the next event on the CQ channel */
+	RPMA_FAULT_INJECTION(
+	{
+		*cq = NULL;
+	});
 	errno = ibv_req_notify_cq(ev_cq, 0 /* all completions */);
 	if (errno) {
 		*cq = NULL;
@@ -370,6 +384,11 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_comp_channel;
+	});
 
 	if (conn->channel) {
 		errno = ibv_destroy_comp_channel(conn->channel);
@@ -379,6 +398,11 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 			ret = RPMA_E_PROVIDER;
 			goto err_destroy_event_channel;
 		}
+		RPMA_FAULT_INJECTION(
+		{
+			ret = RPMA_E_FAULT_INJECT;
+			goto err_destroy_event_channel;
+		});
 	}
 
 	rdma_destroy_event_channel(conn->evch);

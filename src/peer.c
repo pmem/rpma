@@ -198,6 +198,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	 * supported we can retry the memory registration with
 	 * the IBV_ACCESS_ON_DEMAND flag.
 	 */
+	RPMA_FAULT_INJECTION();
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
 			RPMA_IBV_ACCESS(access | IBV_ACCESS_ON_DEMAND));
 	if (*ibv_mr_ptr == NULL) {

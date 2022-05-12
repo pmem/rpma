@@ -70,6 +70,12 @@ rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
 		}
 	}
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_comp_channel;
+	});
+
 	/* create a CQ */
 	struct ibv_cq *cq = ibv_create_cq(ibv_ctx, cqe,
 				NULL /* cq_context */,
@@ -80,6 +86,12 @@ rpma_cq_new(struct ibv_context *ibv_ctx, int cqe,
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
+
+	RPMA_FAULT_INJECTION(
+	{
+		ret = RPMA_E_FAULT_INJECT;
+		goto err_destroy_cq;
+	});
 
 	/* request for the next completion on the completion channel */
 	errno = ibv_req_notify_cq(cq, 0 /* all completions */);
@@ -188,6 +200,11 @@ rpma_cq_wait(struct rpma_cq *cq)
 	if (cq->shared_comp_channel)
 		return RPMA_E_SHARED_CHANNEL;
 
+	RPMA_FAULT_INJECTION(
+	{
+		ret_fi = RPMA_E_NO_COMPLETION;
+	});
+
 	/* wait for the completion event */
 	struct ibv_cq *ev_cq;	/* unused */
 	void *ev_ctx;		/* unused */
@@ -201,6 +218,8 @@ rpma_cq_wait(struct rpma_cq *cq)
 	 * one CQ event at the same time.
 	 */
 	ibv_ack_cq_events(cq->cq, 1 /* # of CQ events */);
+
+	RPMA_FAULT_INJECTION();
 
 	/* request for the next event on the CQ channel */
 	errno = ibv_req_notify_cq(cq->cq, 0 /* all completions */);
@@ -245,6 +264,7 @@ rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
 			result, num_entries);
 		return RPMA_E_UNKNOWN;
 	}
+	RPMA_FAULT_INJECTION();
 
 	if (num_entries_got)
 		*num_entries_got = result;
