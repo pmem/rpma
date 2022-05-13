@@ -55,7 +55,7 @@ static int
 rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	int ret;
 
@@ -126,7 +126,7 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 	if (ret_unmap)
 		return RPMA_E_INVAL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -139,7 +139,7 @@ rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
@@ -159,7 +159,7 @@ int
 rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
 
 	struct rpma_flush *flush = malloc(sizeof(struct rpma_flush_internal));
 	if (!flush)
@@ -191,6 +191,6 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	free(*flush_ptr);
 	*flush_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return ret;
 }

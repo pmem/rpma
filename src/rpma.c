@@ -23,7 +23,7 @@ rpma_utils_get_ibv_context(const char *addr,
 		struct ibv_context **ibv_ctx_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (addr == NULL || ibv_ctx_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -46,6 +46,7 @@ rpma_utils_get_ibv_context(const char *addr,
 		return ret;
 
 	struct rdma_cm_id *temp_id;
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_info_delete);
 	ret = rdma_create_id(NULL, &temp_id, NULL, RDMA_PS_TCP);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
@@ -84,7 +85,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 		int *is_odp_capable)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	if (ibv_ctx == NULL || is_odp_capable == NULL)
 		return RPMA_E_INVAL;

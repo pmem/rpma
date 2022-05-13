@@ -19,8 +19,6 @@ rpma_err_2str(int ret)
 	switch (ret) {
 	case 0:
 		return "Success";
-	case RPMA_E_FAULT_INJECT:
-		return "Fault injection";
 	case RPMA_E_NOSUPP:
 		return "Not supported";
 	case RPMA_E_PROVIDER:
