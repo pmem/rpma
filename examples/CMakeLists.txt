@@ -108,28 +108,80 @@ add_example(NAME 02-read-to-volatile BIN server
 	SRCS 02-read-to-volatile/server.c common/common-conn.c)
 add_example(NAME 02-read-to-volatile BIN client USE_LIBIBVERBS
 	SRCS 02-read-to-volatile/client.c common/common-conn.c)
-add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
-	SRCS 03-read-to-persistent/server.c common/common-conn.c)
 if (LIBPMEM2_FOUND)
+	add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/server.c common/common-conn.c
+		common/common-pmem2_map_file.c)
 	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
 		SRCS 03-read-to-persistent/client.c common/common-conn.c
 		common/common-pmem2_map_file.c)
+	add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/server.c common/common-conn.c
+		common/common-pmem2_map_file.c)
+	add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/client.c common/common-conn.c
+		common/common-pmem2_map_file.c)
+	add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/server.c common/common-conn.c
+		common/common-pmem2_map_file.c)
+	add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/client.c common/common-conn.c
+		common/common-pmem2_map_file.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c
+		common/common-pmem2_map_file.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c
+		common/common-pmem2_map_file.c)
 elseif(LIBPMEM_FOUND)
+	add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/server.c common/common-conn.c
+		common/common-pmem_map_file.c)
 	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
 		SRCS 03-read-to-persistent/client.c common/common-conn.c
 		common/common-pmem_map_file.c)
+	add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/server.c common/common-conn.c
+		common/common-pmem_map_file.c)
+	add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/client.c common/common-conn.c
+		common/common-pmem_map_file.c)
+	add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/server.c common/common-conn.c
+		common/common-pmem_map_file.c)
+	add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/client.c common/common-conn.c
+		common/common-pmem_map_file.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c
+		common/common-pmem_map_file.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c
+		common/common-pmem_map_file.c)
 else()
+	add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 03-read-to-persistent/server.c common/common-conn.c)
 	add_example(NAME 03-read-to-persistent BIN client USE_LIBPMEM_IF_FOUND
 		SRCS 03-read-to-persistent/client.c common/common-conn.c)
+	add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/server.c common/common-conn.c)
+	add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 04-write-to-persistent/client.c common/common-conn.c)
+	add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/server.c common/common-conn.c)
+	add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
+		SRCS 05-flush-to-persistent/client.c common/common-conn.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
+		SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
+		09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
 endif()
-add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 04-write-to-persistent/server.c common/common-conn.c)
-add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
-	SRCS 04-write-to-persistent/client.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
-	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
-	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
 add_example(NAME 06-multiple-connections BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
@@ -144,12 +196,6 @@ add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
 add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
 	SRCS 08-messages-ping-pong/client.c common/common-conn.c
 	08-messages-ping-pong/messages-ping-pong-common.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
-	SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND USE_LIBPROTOBUFC
-	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
 add_example(NAME 10-send-with-imm BIN server USE_LIBIBVERBS
 	SRCS 10-send-with-imm/server.c common/common-conn.c)
 add_example(NAME 10-send-with-imm BIN client USE_LIBIBVERBS
