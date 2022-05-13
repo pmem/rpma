@@ -108,7 +108,7 @@ int
 rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
 
 	if (cfg_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -139,7 +139,7 @@ rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr)
 	free(*cfg_ptr);
 	*cfg_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -150,7 +150,7 @@ int
 rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL || timeout_ms < 0)
 		return RPMA_E_INVAL;
@@ -167,7 +167,7 @@ int
 rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL || timeout_ms == NULL)
 		return RPMA_E_INVAL;
@@ -184,7 +184,7 @@ int
 rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
@@ -213,7 +213,7 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 	 * and therefore it has to return the correct value of size of CQ,
 	 * if it fails because of fault injection.
 	 */
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -224,7 +224,7 @@ int
 rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
@@ -253,7 +253,7 @@ rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 	 * and therefore it has to return the correct value of size of RCQ,
 	 * if it fails because of fault injection.
 	 */
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -264,7 +264,7 @@ int
 rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
@@ -293,7 +293,7 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 	 * and therefore it has to return the correct value of size of SQ,
 	 * if it fails because of fault injection.
 	 */
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -304,7 +304,7 @@ int
 rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
@@ -333,7 +333,7 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 	 * and therefore it has to return the correct value of size of RQ,
 	 * if it fails because of fault injection.
 	 */
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -345,7 +345,7 @@ int
 rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
@@ -363,7 +363,7 @@ int
 rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL || shared == NULL)
 		return RPMA_E_INVAL;

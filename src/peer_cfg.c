@@ -35,7 +35,7 @@ int
 rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
 
 	if (pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -64,7 +64,7 @@ rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr)
 	free(*pcfg_ptr);
 	*pcfg_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
@@ -77,7 +77,7 @@ rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 		bool supported)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (pcfg == NULL)
 		return RPMA_E_INVAL;
@@ -95,7 +95,7 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 		bool *supported)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (pcfg == NULL || supported == NULL)
 		return RPMA_E_INVAL;
@@ -111,7 +111,7 @@ int
 rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (pcfg == NULL || desc == NULL)
 		return RPMA_E_INVAL;
@@ -130,7 +130,7 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
 		size_t *desc_size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (pcfg == NULL || desc_size == NULL)
 		return RPMA_E_INVAL;
@@ -149,7 +149,7 @@ rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (desc == NULL || pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
