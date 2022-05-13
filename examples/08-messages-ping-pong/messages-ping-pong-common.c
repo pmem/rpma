@@ -60,6 +60,8 @@ wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
 			/* lack of completions is not an error here */
 			if (ret && ret != RPMA_E_NO_COMPLETION)
 				return ret;
+			if (ret == RPMA_E_NO_COMPLETION)
+				continue;
 		}
 
 		/* validate received completions */
