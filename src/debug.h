@@ -20,23 +20,33 @@
 
 #ifdef DEBUG_FAULT_INJECTION
 
-#define RPMA_FAULT_INJECTION(exit_code) \
+#define RPMA_FAULT_INJECTION(ret_val, exit_code) \
 	do { \
 		int value = 0; \
 		if (rpma_fault_injection(&value)) { \
 			RPMA_LOG_ALWAYS("[#%i] [FAULT INJECTION]", value); \
-			{ exit_code; } \
-			return RPMA_E_FAULT_INJECT; \
+			{ exit_code; } /* exit code */ \
+			return ret_val; \
 		} \
 		if (value) \
 			RPMA_LOG_ALWAYS("[#%i]", value); \
 	} while (0)
 
+#define RPMA_FAULT_INJECTION_GOTO(ret_val, goto_label) \
+	RPMA_FAULT_INJECTION(ret_val, \
+	{ \
+		ret = ret_val; \
+		goto goto_label; \
+	});
+
 int rpma_fault_injection(int *value);
 
 #else
 
-#define RPMA_FAULT_INJECTION(exit_code) \
+#define RPMA_FAULT_INJECTION(ret_val, exit_code) \
+	do { } while (0)
+
+#define RPMA_FAULT_INJECTION_GOTO(ret_val, goto_label) \
 	do { } while (0)
 
 #endif /* DEBUG_FAULT_INJECTION */

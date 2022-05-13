@@ -51,7 +51,7 @@ static inline int
 rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_UNKNOWN, {});
 
 	memset(gid, 0, size);
 	int ret = snprintf(gid, size,
@@ -79,7 +79,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	int ret = 0;
 
@@ -196,11 +196,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	int ret = 0;
 
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(
-	{
-		ret = RPMA_E_FAULT_INJECT;
-		goto err_conn_req_delete;
-	});
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_conn_req_delete);
 
 	if (rdma_accept(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_accept()");
@@ -249,17 +245,18 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	int ret = 0;
 
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(
-	{
-		ret = RPMA_E_FAULT_INJECT;
-		goto err_conn_new;
-	});
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_conn_new);
 
 	struct rpma_conn *conn = NULL;
 	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
 				req->channel, &conn);
 	if (ret)
 		goto err_conn_new;
+
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER,
+	{
+		(void) rpma_conn_delete(&conn);
+	});
 
 	if (rdma_connect(req->id, conn_param)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_connect()");
@@ -299,7 +296,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 		return RPMA_E_PROVIDER;
 	}
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	return 0;
 }
 
@@ -319,7 +316,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 		return RPMA_E_PROVIDER;
 	}
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	return 0;
 }
 
@@ -338,7 +335,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (peer == NULL || event == NULL || event->event != RDMA_CM_EVENT_CONNECT_REQUEST ||
 	    req_ptr == NULL)
@@ -377,7 +374,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (peer == NULL || addr == NULL || port == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -394,6 +391,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		return ret;
 
 	struct rdma_cm_id *id;
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_info_delete);
 	if (rdma_create_id(NULL, &id, NULL, RDMA_PS_TCP)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
@@ -406,9 +404,9 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 		goto err_destroy_id;
 
 	/* resolve route */
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_destroy_id);
 	if (rdma_resolve_route(id, timeout_ms)) {
-		RPMA_LOG_ERROR_WITH_ERRNO(errno,
-			"rdma_resolve_route(timeout_ms=%i)", timeout_ms);
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_resolve_route(timeout_ms=%i)", timeout_ms);
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_id;
 	}
@@ -422,8 +420,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 
 	(void) rpma_info_delete(&info);
 
-	RPMA_LOG_NOTICE("Requesting a connection to %s:%s", addr,
-				port);
+	RPMA_LOG_NOTICE("Requesting a connection to %s:%s", addr, port);
 
 	return 0;
 
@@ -445,7 +442,7 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (req_ptr == NULL || *req_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -523,7 +520,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 	free(req);
 	*req_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	return ret;
 }
 
@@ -536,7 +533,7 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
     const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;
@@ -555,7 +552,7 @@ rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
     struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (req == NULL || pdata == NULL)
 		return RPMA_E_INVAL;
