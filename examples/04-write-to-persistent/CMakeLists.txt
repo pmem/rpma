@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -38,6 +38,11 @@ link_directories(${LIBRPMA_LIBRARY_DIRS})
 
 function(add_example name)
 	set(srcs ${ARGN})
+	if (LIBPMEM2_FOUND)
+		set(srcs ${srcs} ../common/common-pmem2_map_file.c)
+	elseif (LIBPMEM_FOUND)
+		set(srcs ${srcs} ../common/common-pmem_map_file.c)
+	endif()
 	add_executable(${name} ${srcs})
 	target_include_directories(${name}
 		PRIVATE
