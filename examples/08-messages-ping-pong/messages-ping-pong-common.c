@@ -58,7 +58,9 @@ wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
 		/* get two next completions at most (1 of send + 1 of recv) */
 		if ((ret = rpma_cq_get_wc(cq, MAX_N_WC, wc, &num_got))) {
 			/* lack of completions is not an error here */
-			if (ret && ret != RPMA_E_NO_COMPLETION)
+			if (ret == RPMA_E_NO_COMPLETION)
+				continue;
+			if (ret)
 				return ret;
 		}
 
