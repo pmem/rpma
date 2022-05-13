@@ -49,7 +49,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	if (peer == NULL || id == NULL || cq == NULL || conn_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -62,6 +62,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
 		return RPMA_E_PROVIDER;
 	}
 
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_destroy_evch);
 	if (rdma_migrate_id(id, evch)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_migrate_id()");
 		ret = RPMA_E_PROVIDER;
@@ -132,7 +133,7 @@ int
 rpma_conn_get_event_fd(const struct rpma_conn *conn, int *fd)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
@@ -149,7 +150,11 @@ int
 rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	RPMA_FAULT_INJECTION(RPMA_E_NO_EVENT,
+	{
+		errno = ENODATA;
+	});
 
 	int ret;
 
@@ -180,6 +185,7 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		ret = RPMA_E_PROVIDER;
 		goto err_private_data_discard;
 	}
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_UNKNOWN, err_private_data_discard);
 
 	switch (cm_event) {
 		case RDMA_CM_EVENT_ESTABLISHED:
@@ -226,7 +232,7 @@ int
 rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NO_COMPLETION, {});
 
 	if (conn == NULL || cq == NULL)
 		return RPMA_E_INVAL;
@@ -262,6 +268,10 @@ rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
 	ibv_ack_cq_events(ev_cq, 1 /* # of CQ events */);
 
 	/* request for the next event on the CQ channel */
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER,
+	{
+		*cq = NULL;
+	});
 	errno = ibv_req_notify_cq(ev_cq, 0 /* all completions */);
 	if (errno) {
 		*cq = NULL;
@@ -280,7 +290,7 @@ int
 rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || fd == NULL)
 		return RPMA_E_INVAL;
@@ -301,7 +311,7 @@ rpma_conn_get_private_data(const struct rpma_conn *conn,
 		struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || pdata == NULL)
 		return RPMA_E_INVAL;
@@ -330,7 +340,7 @@ rpma_conn_disconnect(struct rpma_conn *conn)
 
 	RPMA_LOG_NOTICE("Requesting for disconnection");
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	return 0;
 }
 
@@ -370,6 +380,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 		ret = RPMA_E_PROVIDER;
 		goto err_destroy_comp_channel;
 	}
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_destroy_comp_channel);
 
 	if (conn->channel) {
 		errno = ibv_destroy_comp_channel(conn->channel);
@@ -379,6 +390,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 			ret = RPMA_E_PROVIDER;
 			goto err_destroy_event_channel;
 		}
+		RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_destroy_event_channel);
 	}
 
 	rdma_destroy_event_channel(conn->evch);
@@ -387,7 +399,6 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	free(conn);
 	*conn_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
 	return 0;
 
 err_destroy_qp:
@@ -420,7 +431,7 @@ rpma_read(struct rpma_conn *conn,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
@@ -444,7 +455,7 @@ rpma_write(struct rpma_conn *conn,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
@@ -470,7 +481,7 @@ rpma_write_with_imm(struct rpma_conn *conn,
 	size_t len, int flags, uint32_t imm, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || flags == 0 ||
 	    ((src == NULL || dst == NULL) &&
@@ -496,7 +507,7 @@ rpma_atomic_write(struct rpma_conn *conn,
 	int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || dst == NULL || src == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -518,7 +529,7 @@ rpma_flush(struct rpma_conn *conn,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NOSUPP, {});
 
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
@@ -562,7 +573,7 @@ rpma_send(struct rpma_conn *conn,
     int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || flags == 0 ||
 	    (src == NULL && (offset != 0 || len != 0)))
@@ -583,7 +594,7 @@ rpma_send_with_imm(struct rpma_conn *conn,
 	int flags, uint32_t imm, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || flags == 0 ||
 	    (src == NULL && (offset != 0 || len != 0)))
@@ -604,7 +615,7 @@ rpma_recv(struct rpma_conn *conn,
     const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || (dst == NULL && (offset != 0 || len != 0)))
 		return RPMA_E_INVAL;
@@ -621,7 +632,7 @@ int
 rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || qp_num == NULL)
 		return RPMA_E_INVAL;
@@ -638,7 +649,7 @@ int
 rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || cq_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -655,7 +666,7 @@ int
 rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || rcq_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -673,7 +684,7 @@ rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 		const struct rpma_peer_cfg *pcfg)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (conn == NULL || pcfg == NULL)
 		return RPMA_E_INVAL;
