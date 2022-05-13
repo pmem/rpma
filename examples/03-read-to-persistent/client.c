@@ -60,9 +60,6 @@ main(int argc, char *argv[])
 	struct hello_t *hello = NULL;
 
 #ifdef USE_PMEM
-
-	mem.is_pmem = 0;
-
 	if (argc >= 4) {
 		char *path = argv[3];
 
