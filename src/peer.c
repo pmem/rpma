@@ -42,10 +42,8 @@ static int
 rpma_peer_usage_to_access(struct rpma_peer *peer, int usage)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
 
-	enum ibv_transport_type type =
-			peer->pd->context->device->transport_type;
+	enum ibv_transport_type type = peer->pd->context->device->transport_type;
 	int access = 0;
 
 	if (usage & (RPMA_MR_USAGE_READ_SRC |\
@@ -96,7 +94,6 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
 
 	if (peer == NULL || id == NULL || cq == NULL)
 		return RPMA_E_INVAL;
@@ -135,6 +132,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	 * The actual capabilities and properties of the created QP
 	 * are returned through qp_init_attr.
 	 */
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"rdma_create_qp(max_send_wr=%" PRIu32
@@ -170,7 +168,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	int access = rpma_peer_usage_to_access(peer, usage);
 
@@ -198,8 +196,9 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	 * supported we can retry the memory registration with
 	 * the IBV_ACCESS_ON_DEMAND flag.
 	 */
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
-			RPMA_IBV_ACCESS(access | IBV_ACCESS_ON_DEMAND));
+			RPMA_IBV_ACCESS(access) | IBV_ACCESS_ON_DEMAND);
 	if (*ibv_mr_ptr == NULL) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
 			"Memory registration with On-Demand Paging (maybe FSDAX?) support failed: "
@@ -225,7 +224,7 @@ int
 rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	int is_odp_supported = 0;
 	int ret;
@@ -244,6 +243,12 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	 * To make sure the errno value was set by the ibv_alloc_pd(3) function
 	 * it is zeroed out before the function call.
 	 */
+	RPMA_FAULT_INJECTION(RPMA_E_NOMEM,
+	{
+		errno = ENOMEM;
+	});
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	RPMA_FAULT_INJECTION(RPMA_E_UNKNOWN, {});
 	errno = 0;
 	struct ibv_pd *pd = ibv_alloc_pd(ibv_ctx);
 	if (pd == NULL) {
@@ -256,6 +261,8 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 			return RPMA_E_UNKNOWN;
 		}
 	}
+
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_NOMEM, err_dealloc_pd);
 
 	struct rpma_peer *peer = malloc(sizeof(*peer));
 	if (peer == NULL) {
@@ -299,6 +306,6 @@ rpma_peer_delete(struct rpma_peer **peer_ptr)
 	free(peer);
 	*peer_ptr = NULL;
 
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	return ret;
 }

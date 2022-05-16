@@ -31,7 +31,7 @@ rpma_fault_injection(int *value)
 	if (fault_injection) {
 		*value = ++counter;
 		if (counter == fault_injection)
-			return RPMA_E_FAULT_INJECT;
+			return -1;
 	}
 
 	return 0;

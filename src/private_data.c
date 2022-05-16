@@ -24,7 +24,7 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 		struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION();
+	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
 
 	const void *ptr = edata->param.conn.private_data;
 	uint8_t len = edata->param.conn.private_data_len;
