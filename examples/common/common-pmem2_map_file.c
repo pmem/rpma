@@ -13,7 +13,7 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, int argc, struct example_mem *mem)
+client_pmem_map_file(char *path, struct example_mem *mem)
 {
 	int fd = 0;
 	struct pmem2_config *cfg = NULL;
@@ -55,6 +55,7 @@ client_pmem_map_file(char *path, int argc, struct example_mem *mem)
 	mem->map = map;
 	mem->mr_size = pmem2_map_get_size(map);
 	mem->mr_ptr = pmem2_map_get_address(map);
+	mem->is_pmem = 1;
 
 	/*
 	 * Get rid of no longer needed config, source
