@@ -27,10 +27,13 @@ struct example_mem {
 #ifdef USE_LIBPMEM2
 	/* libpmem2 structure used for mapping PMem */
 	struct pmem2_map *map;
+#else
+	/* let's keep the same structure for both pmem and pmem2 */
+	void *unused;
 #endif
 };
 
-int client_pmem_map_file(char *path, int argc, struct example_mem *mem);
+int client_pmem_map_file(char *path, struct example_mem *mem);
 
 void client_pmem_unmap_file(struct example_mem *mem);
 
