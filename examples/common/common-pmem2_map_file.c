@@ -13,7 +13,7 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+client_pmem_map_file(char *path, struct example_mem *mem, size_t min_size)
 {
 	int fd = 0;
 	struct pmem2_config *cfg = NULL;
@@ -49,6 +49,13 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	if (pmem2_map_new(&map, cfg, src) != 0) {
 		(void) fprintf(stderr,
 			"pmem2_map_new(%s) failed: %s\n",
+			path, pmem2_errormsg());
+		goto err_config_delete;
+	}
+
+	if (pmem2_map_get_size(map) < min_size) {
+		(void) fprintf(stderr,
+			"mapped size for (%s) is too small: %s\n",
 			path, pmem2_errormsg());
 		goto err_config_delete;
 	}
