@@ -3,8 +3,6 @@
 
 /*
  * common-pmem2_map_file.c -- a function to map PMem using libpmem2
- *
- * Please see README.md for a detailed description of this example.
  */
 
 #include <fcntl.h>
@@ -13,7 +11,7 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem)
 {
 	int fd = 0;
 	struct pmem2_config *cfg = NULL;
@@ -52,6 +50,13 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 			path, pmem2_errormsg());
 		goto err_config_delete;
 	}
+
+	if (pmem2_map_get_size(map) < min_size) {
+		(void) fprintf(stderr,
+			"mapped size for (%s) is too small: %s\n",
+			path, pmem2_errormsg());
+		goto err_config_delete;
+	}
 	mem->map = map;
 	mem->mr_size = pmem2_map_get_size(map);
 	mem->mr_ptr = pmem2_map_get_address(map);
@@ -81,8 +86,9 @@ err_close:
 }
 
 void
-client_pmem_unmap_file(struct example_mem *mem)
+common_pmem_unmap_file(struct common_mem *mem)
 {
 	(void) pmem2_map_delete(&mem->map);
 	mem->mr_ptr = NULL;
+	mem->is_pmem = 0;
 }

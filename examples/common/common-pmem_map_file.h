@@ -4,8 +4,6 @@
 /*
  * common-pmem_map_file.h -- a header file for both common-pmem_map_file.c
  * and common-pmem2_map_file.c
- *
- * Please see README.md for a detailed description of this example.
  */
 
 #ifndef COMMON_PMEM_MAP_FILE_H
@@ -15,7 +13,7 @@
 
 typedef void (*persist_fn)(const void *ptr, size_t size);
 
-struct example_mem {
+struct common_mem {
 	/* memory buffer */
 	char *mr_ptr;
 	/* size of the mapped persistent memory */
@@ -30,8 +28,8 @@ struct example_mem {
 #endif
 };
 
-int client_pmem_map_file(char *path, struct example_mem *mem);
+int common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem);
 
-void client_pmem_unmap_file(struct example_mem *mem);
+void common_pmem_unmap_file(struct common_mem *mem);
 
 #endif /* COMMON_PMEM_MAP_FILE_H */
