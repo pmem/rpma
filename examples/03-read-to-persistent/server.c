@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
+#include "common-map_file_with_signature_check.h"
 #include "common-pmem_map_file.h"
 
 #ifdef USE_PMEM
@@ -40,57 +41,20 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	struct example_mem mem;
+	struct common_mem mem;
 	memset(&mem, 0, sizeof(mem));
 	struct rpma_mr_local *dst_mr = NULL;
 	struct rpma_mr_remote *src_mr = NULL;
 
 #ifdef USE_PMEM
 	char *pmem_path = NULL;
+
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		if (client_pmem_map_file(pmem_path, &mem))
-			return -1;
-
-		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
-		 */
-		if (mem.mr_size < SIGNATURE_LEN) {
-			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					pmem_path, mem.mr_size, SIGNATURE_LEN);
-			ret = -1;
+		ret = common_pmem_map_file_with_signature_check(pmem_path, 0, &mem);
+		if (ret)
 			goto err_free;
-		}
-		mem.data_offset = SIGNATURE_LEN;
-
-		/*
-		 * All of the space under the offset is intended for
-		 * the string contents. Space is assumed to be at least 1 KiB.
-		 */
-		if (mem.mr_size - mem.data_offset < KILOBYTE) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n",
-				pmem_path, mem.mr_size, KILOBYTE + mem.data_offset);
-			ret = -1;
-			goto err_free;
-		}
-
-		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
-		 */
-		if (strncmp(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial empty string and persist it */
-			((char *)mem.mr_ptr + mem.data_offset)[0] = '\0';
-			mem.persist(mem.mr_ptr, 1);
-			/* write the signature to mark the content as valid */
-			memcpy(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			mem.persist(mem.mr_ptr, SIGNATURE_LEN);
-		}
 	}
 #endif /* USE_PMEM */
 
@@ -233,7 +197,7 @@ err_peer_delete:
 err_free:
 #ifdef USE_PMEM
 	if (mem.is_pmem) {
-		client_pmem_unmap_file(&mem);
+		common_pmem_unmap_file(&mem);
 	}
 #endif
 
