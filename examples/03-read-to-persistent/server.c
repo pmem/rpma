@@ -50,7 +50,7 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		if (client_pmem_map_file(pmem_path, &mem))
+		if (client_pmem_map_file(pmem_path, &mem, SIGNATURE_LEN + KILOBYTE))
 			return -1;
 
 		/*

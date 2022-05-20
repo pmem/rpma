@@ -38,7 +38,7 @@ link_directories(${LIBRPMA_LIBRARY_DIRS})
 
 function(add_example name)
 	set(srcs ${ARGN})
-	set(srcs ${srcs} ../common/common-hello.c)
+	set(srcs ${srcs} ../common/common-hello.c ../common/common-client_map_file_with_signature_check.c)
 	if (LIBPMEM2_FOUND)
 		set(srcs ${srcs} ../common/common-pmem2_map_file.c)
 	elseif (LIBPMEM_FOUND)
