@@ -61,11 +61,14 @@ function(add_example)
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 	if (LIBPMEM2_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c
+			)
 	elseif (LIBPMEM_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c
+			)
 	else()
-		add_executable(${target} ${EXAMPLE_SRCS})
+		add_executable(${target} ${EXAMPLE_SRCS} 
+			)
 	endif()
 	add_dependencies(examples ${target})
 	set_target_properties(${target} PROPERTIES
@@ -115,7 +118,7 @@ add_example(NAME 02-read-to-volatile BIN client USE_LIBIBVERBS
 add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS
 	SRCS 03-read-to-persistent/server.c common/common-conn.c)
 add_example(NAME 03-read-to-persistent BIN client
-	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c)
+	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c common/common-client_pmem_signature_check.c)
 add_example(NAME 04-write-to-persistent BIN server
 	SRCS 04-write-to-persistent/server.c common/common-conn.c)
 add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS
