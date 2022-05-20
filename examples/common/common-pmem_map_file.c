@@ -3,15 +3,13 @@
 
 /*
  * common-pmem_map_file.c -- a function to map PMem using libpmem
- *
- * Please see README.md for a detailed description of this example.
  */
 
 #include <stdio.h>
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+common_pmem_map_file(char *path, size_t min_size, struct example_mem *mem)
 {
 	mem->is_pmem = 0;
 
@@ -21,6 +19,12 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	if (mem->mr_ptr == NULL) {
 		(void) fprintf(stderr,
 			"pmem_map_file() for %s failed\n", path);
+		return -1;
+	}
+
+	if (mem->mr_size < min_size) {
+		(void) fprintf(stderr,
+			"mapped size for %s is too small\n", path);
 		return -1;
 	}
 
@@ -39,10 +43,11 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 }
 
 void
-client_pmem_unmap_file(struct example_mem *mem)
+common_pmem_unmap_file(struct example_mem *mem)
 {
 	if (mem->is_pmem) {
 		(void) pmem_unmap(mem->mr_ptr, mem->mr_size);
 		mem->mr_ptr = NULL;
+		mem->is_pmem = 0;
 	}
 }
