@@ -11,7 +11,7 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+client_pmem_map_file(char *path, struct example_mem *mem, size_t min_size)
 {
 	mem->is_pmem = 0;
 
@@ -21,6 +21,12 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	if (mem->mr_ptr == NULL) {
 		(void) fprintf(stderr,
 			"pmem_map_file() for %s failed\n", path);
+		return -1;
+	}
+
+	if (mem->mr_size < min_size) {
+		(void) fprintf(stderr,
+			"mapped size for %s is too small\n", path);
 		return -1;
 	}
 

@@ -11,8 +11,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
-#include "common-pmem_map_file.h"
 #include "common-hello.h"
+#include "common-map_file_with_signature_check.h"
+#include "common-pmem_map_file.h"
 
 #ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
@@ -48,52 +49,11 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		char *path = argv[3];
 
-		ret = client_pmem_map_file(path, &mem);
+		ret = pmem_signature_check(path, hello, &mem,
+				sizeof(struct hello_t));
 		if (ret)
-			return -1;
-
-		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
-		 */
-		if (mem.mr_size < SIGNATURE_LEN) {
-			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mem.mr_size, SIGNATURE_LEN);
-			ret = -1;
 			goto err_free;
-		}
-		mem.data_offset = SIGNATURE_LEN;
 
-		/*
-		 * The space under the offset is intended for storing the hello
-		 * structure. So the total space is assumed to be at least
-		 * 1 KiB + offset of the string contents.
-		 */
-		if (mem.mr_size - mem.data_offset < sizeof(struct hello_t)) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n", path,
-				mem.mr_size, sizeof(struct hello_t));
-			ret = -1;
-			goto err_free;
-		}
-
-		hello = (struct hello_t *)
-				((uintptr_t)mem.mr_ptr + mem.data_offset);
-
-		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
-		 */
-		if (strncmp(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial value and persist it */
-			write_hello_str(hello, en);
-			mem.persist(hello, sizeof(struct hello_t));
-			/* write the signature to mark the content as valid */
-			memcpy(mem.mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			mem.persist(mem.mr_ptr, SIGNATURE_LEN);
-		}
 	}
 #endif
 	/* if no pmem support or it is not provided */
