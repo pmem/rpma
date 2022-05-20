@@ -9,7 +9,6 @@
  * - rpma_peer_cfg_new()
  */
 
-#include "peer_cfg.h"
 #include "peer_cfg-common.h"
 
 /*
