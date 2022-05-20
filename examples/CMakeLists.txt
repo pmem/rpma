@@ -60,10 +60,18 @@ function(add_example)
 	endif()
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
+
+	if (LIBPMEM_FOUND OR LIBPMEM2_FOUND)
+		set(EXAMPLE_SRCS ${EXAMPLE_SRCS}
+			common/common-map_file_with_signature_check.c
+			common/common-hello.c)
+	endif()
 	if (LIBPMEM2_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS}
+			common/common-pmem2_map_file.c)
 	elseif (LIBPMEM_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS}
+			common/common-pmem_map_file.c)
 	else()
 		add_executable(${target} ${EXAMPLE_SRCS})
 	endif()
@@ -113,7 +121,7 @@ add_example(NAME 02-read-to-volatile BIN server
 add_example(NAME 02-read-to-volatile BIN client USE_LIBIBVERBS
 	SRCS 02-read-to-volatile/client.c common/common-conn.c)
 add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS
-	SRCS 03-read-to-persistent/server.c common/common-conn.c)
+	SRCS 03-read-to-persistent/server.c common/common-conn.c common/common-hello.c)
 add_example(NAME 03-read-to-persistent BIN client
 	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN server
