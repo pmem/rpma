@@ -1,0 +1,20 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* Copyright 2022, Intel Corporation */
+
+/*
+ * common-map_file_with_signature_check.h - a header file for
+ * common-map_file_with_signature_check.c
+ */
+
+#ifndef COMMON_MAP_FILE_WITH_SIGNATURE_CHECK_H
+#define COMMON_MAP_FILE_WITH_SIGNATURE_CHECK_H
+
+#include <stdio.h>
+#include "common-conn.h"
+#include "common-pmem_map_file.h"
+#include "common-hello.h"
+
+int common_pmem_signature_check(char *path, size_t size, struct example_mem *mem);
+
+
+#endif /* COMMON_MAP_FILE_WITH_SIGNATURE_CHECK_H */
