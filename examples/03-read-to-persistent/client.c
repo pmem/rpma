@@ -12,29 +12,13 @@
 #include <stdio.h>
 #include "common-conn.h"
 #include "common-pmem_map_file.h"
-#include "hello.h"
+#include "common-hello.h"
 
 #ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_PMEM */
-
-static inline void
-write_hello_str(struct hello_t *hello, enum lang_t lang)
-{
-	hello->lang = lang;
-	strncpy(hello->str, hello_str[hello->lang], KILOBYTE - 1);
-	hello->str[KILOBYTE - 1] = '\0';
-}
-
-static void
-translate(struct hello_t *hello)
-{
-	printf("translating...\n");
-	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
-	write_hello_str(hello, lang);
-}
 
 int
 main(int argc, char *argv[])
