@@ -30,7 +30,7 @@ struct example_mem {
 #endif
 };
 
-int client_pmem_map_file(char *path, struct example_mem *mem);
+int client_pmem_map_file(char *path, struct example_mem *mem, size_t min_size);
 
 void client_pmem_unmap_file(struct example_mem *mem);
 
