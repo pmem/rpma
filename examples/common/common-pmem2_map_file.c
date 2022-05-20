@@ -3,8 +3,6 @@
 
 /*
  * common-pmem2_map_file.c -- a function to map PMem using libpmem2
- *
- * Please see README.md for a detailed description of this example.
  */
 
 #include <fcntl.h>
@@ -13,13 +11,12 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem)
 {
 	int fd = 0;
 	struct pmem2_config *cfg = NULL;
 	struct pmem2_map *map = NULL;
 	struct pmem2_source *src = NULL;
-	pmem2_persist_fn persist;
 
 	if ((fd = open(path, O_RDWR)) < 0) {
 		(void) fprintf(stderr, "cannot open file\n");
@@ -27,29 +24,30 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	}
 
 	if (pmem2_source_from_fd(&src, fd) != 0) {
-		(void) fprintf(stderr,
-			"pmem2_source_from_fd() failed\n");
+		(void) fprintf(stderr, "pmem2_source_from_fd() failed\n");
 		goto err_close;
 	}
 
 	if (pmem2_config_new(&cfg) != 0) {
-		(void) fprintf(stderr,
-			"pmem2_config_new() failed\n");
+		(void) fprintf(stderr, "pmem2_config_new() failed\n");
 		goto err_source_delete;
 	}
 
-	if (pmem2_config_set_required_store_granularity(cfg,
-			PMEM2_GRANULARITY_CACHE_LINE) != 0) {
-		(void) fprintf(stderr,
-			"pmem2_config_set_required_store_granularity() failed: %s\n",
+	if (pmem2_config_set_required_store_granularity(cfg, PMEM2_GRANULARITY_CACHE_LINE) != 0) {
+		(void) fprintf(stderr, "pmem2_config_set_required_store_granularity() failed: %s\n",
 			pmem2_errormsg());
 		goto err_config_delete;
 	}
 
 	if (pmem2_map_new(&map, cfg, src) != 0) {
-		(void) fprintf(stderr,
-			"pmem2_map_new(%s) failed: %s\n",
+		(void) fprintf(stderr, "pmem2_map_new(%s) failed: %s\n", path, pmem2_errormsg());
+		goto err_config_delete;
+	}
+
+	if (pmem2_map_get_size(map) < min_size) {
+		(void) fprintf(stderr, "mapped size for (%s) is too small: %s\n",
 			path, pmem2_errormsg());
+		(void) pmem2_map_delete(&map);
 		goto err_config_delete;
 	}
 	mem->map = map;
@@ -65,8 +63,7 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	pmem2_source_delete(&src);
 	close(fd);
 	/* Get libpmem2 persist function from pmem2_map */
-	persist = pmem2_get_persist_fn(map);
-	mem->persist = persist;
+	mem->persist = pmem2_get_persist_fn(map);
 
 	return 0;
 
@@ -81,8 +78,11 @@ err_close:
 }
 
 void
-client_pmem_unmap_file(struct example_mem *mem)
+common_pmem_unmap_file(struct common_mem *mem)
 {
-	(void) pmem2_map_delete(&mem->map);
-	mem->mr_ptr = NULL;
+	if (mem->map) {
+		(void) pmem2_map_delete(&mem->map);
+		mem->mr_ptr = NULL;
+		mem->is_pmem = 0;
+	}
 }
