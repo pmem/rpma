@@ -3,8 +3,6 @@
 
 /*
  * common-pmem2_map_file.c -- a function to map PMem using libpmem2
- *
- * Please see README.md for a detailed description of this example.
  */
 
 #include <fcntl.h>
@@ -13,13 +11,12 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, struct example_mem *mem)
+common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem)
 {
 	int fd = 0;
 	struct pmem2_config *cfg = NULL;
 	struct pmem2_map *map = NULL;
 	struct pmem2_source *src = NULL;
-	pmem2_persist_fn persist;
 
 	if ((fd = open(path, O_RDWR)) < 0) {
 		(void) fprintf(stderr, "cannot open file\n");
@@ -52,6 +49,12 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 			path, pmem2_errormsg());
 		goto err_config_delete;
 	}
+
+	if (pmem2_map_get_size(map) < min_size) {
+		(void) fprintf(stderr, "mapped size for (%s) is too small: %s\n",
+			path, pmem2_errormsg());
+		goto err_config_delete;
+	}
 	mem->map = map;
 	mem->mr_size = pmem2_map_get_size(map);
 	mem->mr_ptr = pmem2_map_get_address(map);
@@ -65,8 +68,7 @@ client_pmem_map_file(char *path, struct example_mem *mem)
 	pmem2_source_delete(&src);
 	close(fd);
 	/* Get libpmem2 persist function from pmem2_map */
-	persist = pmem2_get_persist_fn(map);
-	mem->persist = persist;
+	mem->persist = pmem2_get_persist_fn(map);
 
 	return 0;
 
@@ -81,8 +83,9 @@ err_close:
 }
 
 void
-client_pmem_unmap_file(struct example_mem *mem)
+common_pmem_unmap_file(struct common_mem *mem)
 {
 	(void) pmem2_map_delete(&mem->map);
 	mem->mr_ptr = NULL;
+	mem->is_pmem = 0;
 }
