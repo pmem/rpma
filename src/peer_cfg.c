@@ -12,7 +12,6 @@
 
 #include "librpma.h"
 #include "log_internal.h"
-#include "peer_cfg.h"
 #include "debug.h"
 
 
