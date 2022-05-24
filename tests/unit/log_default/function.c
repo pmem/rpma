@@ -98,6 +98,17 @@ setup_thresholds(void **config_ptr)
 }
 
 /*
+ * function__RPMA_LOG_DISABLED -- call rpma_log_default_function() with RPMA_LOG_DISABLED
+ */
+void
+function__RPMA_LOG_DISABLED(void **unused)
+{
+	/* run test */
+	rpma_log_default_function(RPMA_LOG_DISABLED, MOCK_FILE_NAME,
+			MOCK_LINE_NUMBER, MOCK_FUNCTION_NAME, MOCK_MESSAGE);
+}
+
+/*
  * function__vsnprintf_fail -- vsnprintf() fails
  */
 void
@@ -377,6 +388,9 @@ main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
 		/* syslog & stderr common tests */
+		cmocka_unit_test_prestate_setup_teardown(
+			function__RPMA_LOG_DISABLED,
+			setup_thresholds, NULL, &config_no_stderr),
 		cmocka_unit_test_prestate_setup_teardown(
 			function__vsnprintf_fail,
 			setup_thresholds, NULL, &config_no_stderr),
