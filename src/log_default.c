@@ -95,6 +95,9 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	char message[1024] = "";
 	const char file_info_error[] = "[file info error]: ";
 
+	if (RPMA_LOG_DISABLED == level)
+		return;
+
 	va_list arg;
 	va_start(arg, message_format);
 	if (vsnprintf(message, sizeof(message), message_format, arg) < 0) {
@@ -127,9 +130,11 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 			rpma_log_level_names[(level == RPMA_LOG_LEVEL_ALWAYS) ?
 						RPMA_LOG_LEVEL_DEBUG : level],
 			file_info, message);
-		if (level == RPMA_LOG_LEVEL_ALWAYS)
-			return; /* do not log to syslog */
 	}
+
+	/* do not log to syslog in case of RPMA_LOG_LEVEL_ALWAYS */
+	if (RPMA_LOG_LEVEL_ALWAYS == level)
+		return;
 
 	/* assumed: level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD] */
 	syslog(rpma_log_level_syslog_severity[level], "%s%s%s",
