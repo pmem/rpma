@@ -1,6 +1,11 @@
 # THREAD SAFETY
 
-This document describes the analysis of thread safety of the librpma library ... XXX
+This document presents the analysis of thread safety of the librpma library.
+
+The main assumptions this analysis is based on are following:
+- many threads may use the same peer (`struct rpma_peer`) to create separate connections (`struct rpma_conn`) for each of threads, but
+- each of the connections (`struct rpma_conn`) can be used by only one thread at the same time,
+so the most common situation is when each thread creates and uses a separate connection (`struct rpma_conn`).
 
 ## Thread-safe API calls
 
