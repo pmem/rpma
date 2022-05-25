@@ -17,12 +17,20 @@ Creating resources of RPMA library usually involves dynamic memory allocation an
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- rpma_peer_new
+- rpma_peer_delete
+- rpma_peer_cfg_new
+- rpma_peer_cfg_delete
+- rpma_peer_cfg_from_descriptor
+- rpma_peer_cfg_get_descriptor_size
+
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
-- XXX
+- rpma_peer_cfg_set_direct_write_to_pmem
+- rpma_peer_cfg_get_direct_write_to_pmem
+- rpma_peer_cfg_get_descriptor
 
 ## Relationship of libibverbs and librdmacm
 

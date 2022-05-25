@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * peer_cfg.c -- librpma peer-configuration-related implementations
@@ -24,7 +24,7 @@ struct rpma_peer_cfg {
 	bool direct_write_to_pmem;
 };
 
-/* internal librpma API */
+/* public librpma API */
 
 /*
  * rpma_peer_cfg_new -- create a new peer configuration object
