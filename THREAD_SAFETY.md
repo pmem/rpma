@@ -5,12 +5,23 @@ This document describes the analysis of thread safety of the librpma library ...
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- struct rpma_peer;
+- rpma_peer_new()
+- rpma_peer_delete()
+
+- rpma_peer_cfg_new()
+- rpma_peer_cfg_delete()
+- rpma_peer_cfg_from_descriptor()
+
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
-- XXX
+- struct rpma_peer_cfg;
+- rpma_peer_cfg_set_direct_write_to_pmem()
+- rpma_peer_cfg_get_direct_write_to_pmem()
+- rpma_peer_cfg_get_descriptor()
+- rpma_peer_cfg_get_descriptor_size()
 
 ## Relationship of libibverbs and librdmacm
 
