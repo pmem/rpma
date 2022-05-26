@@ -8,6 +8,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
+#include <stdatomic.h>
 #include <rdma/rdma_cma.h>
 
 #include "common.h"
@@ -39,7 +40,7 @@
 
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
-	uint32_t cq_size;	/* main CQ size */
+	_Atomic uint32_t cq_size;	/* main CQ size */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
@@ -116,7 +117,7 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 	*cfg_ptr = malloc(sizeof(struct rpma_conn_cfg));
 	if (*cfg_ptr == NULL)
 		return RPMA_E_NOMEM;
-
+	atomic_init(&(*cfg_ptr)->cq_size, Conn_cfg_default.cq_size);
 	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
 
 	return 0;
@@ -188,8 +189,7 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
-
-	cfg->cq_size = cq_size;
+	atomic_store(&cfg->cq_size, cq_size);
 
 	return 0;
 }
