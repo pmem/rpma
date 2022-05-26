@@ -5,7 +5,9 @@ This document describes the analysis of thread safety of the librpma library ...
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- rpma_cq_get_fd
+- rpma_cq_wait
+- rpma_cq_get_wc
 
 ## NOT thread-safe API calls
 
