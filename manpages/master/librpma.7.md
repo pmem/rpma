@@ -387,72 +387,10 @@ the settings to take effect.
 THREAD SAFETY
 =============
 
-Most of the core librpma API calls are thread-safe but there are also
-very important exceptions mainly related to connection\'s configuration,
-establishment and tear-down. Here you can find a complete list of NOT
-thread-safe API calls:
+The analysis of thread safety of the librpma library is described in
+details in the THREAD\_SAFETY.md file:
 
--   **rpma\_conn\_apply\_remote\_peer\_cfg**()
-
--   **rpma\_conn\_cfg\_get\_compl\_channel**()
-
--   **rpma\_conn\_cfg\_get\_cq\_size**()
-
--   **rpma\_conn\_cfg\_get\_rq\_size**()
-
--   **rpma\_conn\_cfg\_get\_sq\_size**()
-
--   **rpma\_conn\_cfg\_get\_timeout**()
-
--   **rpma\_conn\_cfg\_set\_compl\_channel**()
-
--   **rpma\_conn\_cfg\_set\_cq\_size**()
-
--   **rpma\_conn\_cfg\_set\_rq\_size**()
-
--   **rpma\_conn\_cfg\_set\_sq\_size**()
-
--   **rpma\_conn\_cfg\_set\_timeout**()
-
--   **rpma\_conn\_delete**()
-
--   **rpma\_conn\_disconnect**()
-
--   **rpma\_conn\_get\_private\_data**()
-
--   **rpma\_conn\_next\_event**()
-
--   **rpma\_conn\_req\_connect**()
-
--   **rpma\_conn\_req\_delete**()
-
--   **rpma\_conn\_req\_get\_private\_data**()
-
--   **rpma\_conn\_req\_new**()
-
--   **rpma\_ep\_listen**()
-
--   **rpma\_ep\_next\_conn\_req**()
-
--   **rpma\_ep\_shutdown**()
-
--   **rpma\_peer\_cfg\_get\_descriptor**()
-
--   **rpma\_peer\_cfg\_get\_descriptor\_size**()
-
--   **rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**()
-
--   **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**()
-
--   **rpma\_utils\_get\_ibv\_context**()
-
-Other librpma API calls are thread-safe. However, creating RPMA library
-resources usually involves dynamic memory allocation and destroying
-resources usually involves a dynamic memory release. The same resource
-cannot be destroyed more than once, at any thread, and a resource cannot
-be used after it was destroyed. It is the user\'s responsibility to
-follow those rules and not doing so may result in a segmentation fault
-or undefined behaviour.
+            https://github.com/pmem/rpma/blob/master/THREAD_SAFETY.md
 
 ON-DEMAND PAGING SUPPORT
 ========================
