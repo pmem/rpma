@@ -23,6 +23,8 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_delete
 - rpma_peer_cfg_from_descriptor
 - rpma_peer_cfg_get_descriptor_size
+- rpma_conn_cfg_new
+- rpma_conn_cfg_delete
 
 ## Conditionally thread-safe API calls
 
@@ -31,11 +33,28 @@ The following API calls of the librpma library:
 - rpma_peer_cfg_get_direct_write_to_pmem
 - rpma_peer_cfg_get_descriptor
 
-are thread-safe only if each thread operates on a **separate configuration structure** (`struct rpma_peer_cfg`) used only by this one thread. They are not thread-safe if threads operate on one configuration structure common for more than one thread.
+are thread-safe only if each thread operates on a **separate peer configuration structure** (`struct rpma_peer_cfg`) used only by this one thread. They are not thread-safe if threads operate on one peer configuration structure common for more than one thread.
+
+The following API calls of the librpma library:
+- rpma_conn_cfg_get_compl_channel
+- rpma_conn_cfg_get_cq_size
+- rpma_conn_cfg_get_rcq_size
+- rpma_conn_cfg_get_rq_size
+- rpma_conn_cfg_get_sq_size
+- rpma_conn_cfg_get_timeout
+- rpma_conn_cfg_set_compl_channel
+- rpma_conn_cfg_set_cq_size
+- rpma_conn_cfg_set_rcq_size
+- rpma_conn_cfg_set_rq_size
+- rpma_conn_cfg_set_sq_size
+- rpma_conn_cfg_set_timeout
+
+are thread-safe only if each thread operates on a **separate connection configuration structure** (`struct rpma_conn_cfg`) used only by this one thread. They are not thread-safe if threads operate on one connection configuration structure common for more than one thread.
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
+- XXX
 
 ## Relationship of libibverbs and librdmacm
 
