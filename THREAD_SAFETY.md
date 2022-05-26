@@ -13,12 +13,21 @@ so **the most common scenarios** are following:
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- rpma_conn_delete
+- rpma_conn_disconnect
+- rpma_conn_get_cq
+- rpma_conn_get_compl_fd
+- rpma_conn_get_event_fd
+- rpma_conn_get_private_data
+- rpma_conn_get_qp_num
+- rpma_conn_get_rcq
+- rpma_conn_next_event
+- rpma_conn_wait
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
-- XXX
+- rpma_conn_apply_remote_peer_cfg - calls rpma_peer_cfg_get_direct_write_to_pmem
 
 ## Relationship of libibverbs and librdmacm
 
