@@ -25,6 +25,9 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_get_descriptor_size
 - rpma_conn_cfg_new
 - rpma_conn_cfg_delete
+- rpma_cq_get_fd
+- rpma_cq_wait
+- rpma_cq_get_wc
 
 ## Conditionally thread-safe API calls
 
