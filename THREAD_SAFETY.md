@@ -25,6 +25,8 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_get_descriptor_size
 - rpma_conn_cfg_new
 - rpma_conn_cfg_delete
+- rpma_utils_ibv_context_is_odp_capable
+- rpma_utils_conn_event_2str
 
 ## Conditionally thread-safe API calls
 
@@ -63,7 +65,7 @@ are thread-safe only if each thread operates on a **separate connection request*
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
-- XXX
+- rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
 
