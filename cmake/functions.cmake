@@ -281,3 +281,17 @@ function(check_if_librt_is_required)
 		set(LIBRT_LIBRARIES "rt" PARENT_SCOPE) # librt
 	endif()
 endfunction()
+
+# check if atomic_store() is supported
+function(atomic_store_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <stdatomic.h>
+		/* check if atomic_store() is defined */
+		int main() {
+			int i;
+			atomic_store(&i, 1);
+			return 0;
+		}"
+		ATOMIC_STORE_SUPPORTED)
+	set(var ${ATOMIC_STORE_SUPPORTED} PARENT_SCOPE)
+endfunction()
