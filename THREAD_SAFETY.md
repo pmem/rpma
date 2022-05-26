@@ -43,6 +43,7 @@ The following API calls of the librpma library are thread-safe:
 - rpma_send_with_imm
 - rpma_write
 - rpma_write_with_imm
+- rpma_err_2str
 
 ## Conditionally thread-safe API calls
 
