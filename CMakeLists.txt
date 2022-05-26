@@ -150,6 +150,15 @@ else()
 	add_flag(-DRDMA_GETADDRINFO_OLD_SIGNATURE=1)
 endif()
 
+# check if atomic_store() is supported
+atomic_store_supported(ATOMIC_STORE_SUPPORTED)
+if(ATOMIC_STORE_SUPPORTED)
+	message(STATUS "atomic_store() is supported")
+	add_flag(-DATOMIC_STORE_SUPPORTED=1)
+else()
+	message(WARNING "atomic_store() is NOT supported (too old gcc). Some functions *_set() will not be thread-safe!")
+endif()
+
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
 add_custom_target(check-whitespace)
