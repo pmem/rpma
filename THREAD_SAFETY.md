@@ -5,7 +5,17 @@ This document describes the analysis of thread safety of the librpma library ...
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- rpma_mr_reg
+- rpma_mr_dereg
+- rpma_mr_get_descriptor
+- rpma_mr_remote_from_descriptor
+- rpma_mr_get_descriptor_size
+- rpma_mr_get_ptr
+- rpma_mr_get_size
+- rpma_mr_remote_get_size
+- rpma_mr_remote_delete
+- rpma_mr_remote_get_flush_type
+- rpma_mr_advise
 
 ## NOT thread-safe API calls
 
