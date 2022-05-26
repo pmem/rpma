@@ -64,6 +64,7 @@ The following API calls of the librpma library are thread-safe:
 - rpma_cq_get_wc
 - rpma_utils_ibv_context_is_odp_capable
 - rpma_utils_conn_event_2str
+- rpma_err_2str
 
 ## Conditionally thread-safe API calls
 
