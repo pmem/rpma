@@ -23,6 +23,17 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_delete
 - rpma_peer_cfg_from_descriptor
 - rpma_peer_cfg_get_descriptor_size
+- rpma_mr_reg
+- rpma_mr_dereg
+- rpma_mr_get_descriptor
+- rpma_mr_remote_from_descriptor
+- rpma_mr_get_descriptor_size
+- rpma_mr_get_ptr
+- rpma_mr_get_size
+- rpma_mr_remote_get_size
+- rpma_mr_remote_delete
+- rpma_mr_remote_get_flush_type
+- rpma_mr_advise
 
 ## Conditionally thread-safe API calls
 
@@ -31,7 +42,7 @@ The following API calls of the librpma library:
 - rpma_peer_cfg_get_direct_write_to_pmem
 - rpma_peer_cfg_get_descriptor
 
-are thread-safe only if each thread operates on a **separate configuration structure** (`struct rpma_peer_cfg`) used only by this one thread. They are not thread-safe if threads operate on one configuration structure common for more than one thread.
+are thread-safe only if each thread operates on a **separate peer configuration structure** (`struct rpma_peer_cfg`) used only by this one thread. They are not thread-safe if threads operate on one peer configuration structure common for more than one thread.
 
 ## NOT thread-safe API calls
 
