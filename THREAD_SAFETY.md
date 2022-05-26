@@ -5,12 +5,13 @@ This document describes the analysis of thread safety of the librpma library ...
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
-- XXX
+- rpma_utils_ibv_context_is_odp_capable
+- rpma_utils_conn_event_2str
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
-- XXX
+- rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
 
