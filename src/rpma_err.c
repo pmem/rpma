@@ -11,7 +11,7 @@
 /* public librpma API */
 
 /*
- * rpma_e2str -- return const string representation of an RPMA error
+ * rpma_err_2str -- return const string representation of an RPMA error
  */
 const char *
 rpma_err_2str(int ret)
