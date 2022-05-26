@@ -23,8 +23,17 @@ The following API calls of the librpma library:
 - rpma_conn_cfg_set_rq_size
 - rpma_conn_cfg_set_sq_size
 - rpma_conn_cfg_set_timeout
+- rpma_conn_req_new (calls rpma_conn_cfg_get_*() APIs)
 
 are thread-safe only if each thread operates on a **separate configuration structure** (`struct rpma_conn_cfg`) used only by this one thread. They are not thread-safe if threads operate on one configuration structure common for more than one thread.
+
+The following API calls of the librpma library:
+- rpma_conn_req_connect
+- rpma_conn_req_delete
+- rpma_conn_req_get_private_data
+- rpma_conn_req_recv
+
+are thread-safe only if each thread operates on a **separate connection request** (`struct rpma_conn_req`) used only by this one thread. They are not thread-safe if threads operate on one connection request common for more than one thread.
 
 ## NOT thread-safe API calls
 
