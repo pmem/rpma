@@ -41,6 +41,9 @@ The following API calls of the librpma library are thread-safe:
 - rpma_mr_remote_delete
 - rpma_mr_remote_get_flush_type
 - rpma_mr_advise
+- rpma_log_get_threshold
+- rpma_log_set_function
+- rpma_log_set_threshold
 
 ## Conditionally thread-safe API calls
 
