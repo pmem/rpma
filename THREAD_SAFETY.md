@@ -10,6 +10,10 @@ so **the most common scenarios** are following:
 1) on the active side: each thread creates and uses a separate connection (`struct rpma_conn`),
 2) on the passive side: the main thread establishes the connection but the rest of work (including connection shutdown) is done by a separate thread.
 
+Most of the core librpma API calls are thread-safe but there are also very important exceptions (described below) mainly related to connection's configuration, establishment and tear-down.
+
+Creating resources of RPMA library usually involves dynamic memory allocation and destroying resources usually involves a dynamic memory release. The same resource cannot be destroyed more than once at any thread and a resource cannot be used after it was destroyed. It is the user's responsibility to follow those rules and not doing so may result in a segmentation fault or an undefined behaviour.
+
 ## Thread-safe API calls
 
 The following API calls of the librpma library are thread-safe:
