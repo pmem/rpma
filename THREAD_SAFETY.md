@@ -103,7 +103,7 @@ are thread-safe only if each thread operates on a **separate connection request*
 
 ## NOT thread-safe API calls
 
-The following API calls of the librpma library are NOT thread-safe:
+Only one API call of the librpma library is NOT thread-safe:
 - rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
