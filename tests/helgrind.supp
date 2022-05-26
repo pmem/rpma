@@ -213,3 +213,29 @@
    fun:_execute_ioctl_fallback
    ...
 }
+
+{
+   To be removed later
+   Helgrind:Race
+   ...
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   To be removed later
+   Helgrind:Race
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_ep_listen
+   ...
+}
+
+{
+   To be removed later
+   Helgrind:Race
+   ...
+   fun:rdma_destroy_id
+   fun:rpma_ep_shutdown
+   ...
+ }
