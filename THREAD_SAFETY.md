@@ -59,6 +59,9 @@ The following API calls of the librpma library are thread-safe:
 - rpma_send_with_imm
 - rpma_write
 - rpma_write_with_imm
+- rpma_cq_get_fd
+- rpma_cq_wait
+- rpma_cq_get_wc
 
 ## Conditionally thread-safe API calls
 
