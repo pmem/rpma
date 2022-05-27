@@ -33,8 +33,6 @@ extern "C" {
  *
  * DESCRIPTION
  *
- * TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
- *
  * librpma is a C library to simplify accessing persistent memory (PMem)
  * on remote hosts over Remote Direct Memory Access (RDMA).
  *
