@@ -54,7 +54,8 @@ ENV PYTHON_DEPS "\
 
 # PMDK deps
 ENV PMDK_DEPS "\
-	ndctl"
+	ndctl \
+	wget"
 
 # RPMA deps
 ENV RPMA_DEPS "\
@@ -88,6 +89,10 @@ RUN ./install-cmocka.sh
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
 
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
+
 # Add user
 ENV USER user
 ENV USERPASS p1a2s3s4
@@ -107,7 +112,6 @@ RUN echo 'Defaults env_keep += "FTP_PROXY HTTP_PROXY HTTPS_PROXY NO_PROXY"' >> /
 
 # Install rdma-core and pmdk (requires user 'user')
 COPY install-archlinux-aur.sh install-archlinux-aur.sh
-RUN ./install-archlinux-aur.sh pmdk
 RUN ./install-archlinux-aur.sh rdma-core
 
 # Switch to user
