@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 #
@@ -16,5 +16,9 @@ function sudo_password() {
 
 # this should be run only on CIs
 if [ "$CI_RUN" == "YES" ]; then
+	set -x
+	echo WORKDIR=$WORKDIR
 	sudo_password chown -R $(id -u).$(id -g) $WORKDIR
+	git config --global --add safe.directory "$WORKDIR"
+	sudo_password git config --global --add safe.directory "$WORKDIR"
 fi
