@@ -6,10 +6,50 @@
 #
 
 #
-# Assessment: XXX required
+# Assessment: These suppressions indicate a lack of MT safety.
 #
-# Probably these suppressions do not indicate a lack of MT safety.
-#
+# static void
+# get_timestamp_prefix(char *buf, size_t buf_size)
+# {
+# 	struct tm *info;
+# 	char date[24];
+# 	struct timespec ts;
+# 	long usec;
+# 
+# 	const char error_message[] = "[time error] ";
+# 
+# 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
+# 	    (NULL == (info = localtime(&ts.tv_sec)))) {
+# 		memcpy(buf, error_message, sizeof(error_message));
+# 		return;
+# 	}
+# 
+# The rpma_log_default_function uses static void get_timestamp_prefix(char *buf, size_t buf_size).
+# Definition:
+# static void
+# get_timestamp_prefix(char *buf, size_t buf_size)
+# {
+# 	struct tm *info;
+# 	char date[24];
+# 	struct timespec ts;
+# 	long usec;
+# 
+# 	const char error_message[] = "[time error] ";
+# 
+# 	if (clock_gettime(CLOCK_REALTIME, &ts) ||
+# 	    (NULL == (info = localtime(&ts.tv_sec)))) {
+# 		memcpy(buf, error_message, sizeof(error_message));
+# 		return;
+# 	}
+# 
+# localtime() here is not threadsafe because it stores the result (struct tm *) in a static variable.
+# struct tm *localtime(time_t *timer)
+# {
+#   static struct tm tt;
+#   ... setting tt member variables
+#   return &tt;
+# }
+# If more than one thread call this function then a value of the returned pointer is unpredictable.
 
 {
    Race while reading the name of time zone ("GMT").
@@ -61,9 +101,11 @@
 }
 
 #
-# Assessment: XXX required
+# Assessment: These suppressions indicate a lack of MT safety.
 #
-
+# The rpma_utils_get_ibv_context() function calls rpma_info_bind_addr.
+# If it is called by many threads then every one of them tries to bind different
+# ID to the local address. This function should be called by a single thread.
 {
    Possible data race during write of size 4
    Helgrind:Race
