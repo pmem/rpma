@@ -6,10 +6,11 @@
 #
 
 #
-# Assessment: XXX required
-#
-# Probably these suppressions do not indicate a lack of MT safety.
-#
+# Assessment: These suppressions indicate a lack of MT safety.
+# 
+# The rpma_log_default_function() calls get_timestamp_prefix() which is not threadsafe
+# It calls localtime() which is not threadsafe because it stores the result (struct tm *) in a static variable.
+# If more than one thread call this function then a value of the returned pointer is unpredictable.
 
 {
    Race while reading the name of time zone ("GMT").
@@ -61,9 +62,11 @@
 }
 
 #
-# Assessment: XXX required
+# Assessment: These suppressions indicate a lack of MT safety.
 #
-
+# The rpma_utils_get_ibv_context() function calls rpma_info_bind_addr.
+# If it is called by many threads then every one of them tries to bind different
+# ID to the local address. This function should be called by a single thread.
 {
    Possible data race during write of size 4
    Helgrind:Race

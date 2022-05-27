@@ -6,10 +6,11 @@
 #
 
 #
-# Assessment: XXX required
+# Assessment: these suppressions indicate a lack of MT safety.
 #
-# Probably these suppressions do not indicate a lack of MT safety.
-#
+# The rpma_log_default_function() calls get_timestamp_prefix() which is not threadsafe
+# It calls localtime() which is not threadsafe because it stores the result (struct tm *) in a static variable.
+# If more than one thread call this function then a value of the returned pointer is unpredictable.
 
 {
    Race while reading the name of time zone ("GMT").
@@ -33,6 +34,9 @@
    fun:rpma_log_default_function
    ...
 }
+
+# Having a race may cause having wrong dates in logs although there is no
+# harm for the library functioning.
 
 #
 # Assessment: These suppressions do not indicate a lack of MT safety.
@@ -80,7 +84,7 @@
 }
 
 #
-# Assessment: XXX required
+# Assessment: These suppressions indicate a lack of MT safety.
 #
 
 {
