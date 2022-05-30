@@ -3,9 +3,12 @@
 This document presents the analysis of thread safety of the librpma library.
 
 **The main assumptions** this analysis is based on are following:
-1) many threads may use the same peer (`struct rpma_peer`) to create separate connections (`struct rpma_conn`) for each of threads, but
-2) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
-3) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
+1) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
+2) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
+3) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
+4) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
+
+**If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
 
 so **the most common scenarios** are following:
 1) on the active side: each thread creates and uses a separate connection (`struct rpma_conn`),
@@ -110,10 +113,6 @@ Only one API call of the librpma library is NOT thread-safe:
 - rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
-
-XXX
-
-## Not thread-safe scenarios
 
 XXX
 
