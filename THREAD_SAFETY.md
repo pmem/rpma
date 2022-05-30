@@ -111,7 +111,11 @@ Only one API call of the librpma library is NOT thread-safe:
 
 ## Relationship of libibverbs and librdmacm
 
-XXX
+The verbs API is fully thread safe and verbs can be called from every thread in the process.
+Detailed description is available at:
+
+ - [rdmamojo/libibverbs](https://www.rdmamojo.com/2013/07/26/libibverbs-thread-safe-level/)
+ - [ibv_alloc_td.3](https://man7.org/linux/man-pages/man3/ibv_alloc_td.3.html)
 
 ## Not thread-safe scenarios
 
