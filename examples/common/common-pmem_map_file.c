@@ -11,7 +11,7 @@
 #include "common-pmem_map_file.h"
 
 int
-client_pmem_map_file(char *path, int argc, struct example_mem *mem)
+client_pmem_map_file(char *path, struct example_mem *mem)
 {
 	mem->is_pmem = 0;
 

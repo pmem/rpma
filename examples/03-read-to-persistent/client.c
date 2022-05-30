@@ -56,9 +56,7 @@ main(int argc, char *argv[])
 
 	/* resources - memory region */
 	struct example_mem mem;
-	mem.mr_ptr = NULL;
-	mem.mr_size = 0;
-	mem.data_offset = 0;
+	memset(&mem, 0, sizeof(mem));
 	struct rpma_mr_local *mr = NULL;
 	struct hello_t *hello = NULL;
 
@@ -69,9 +67,9 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		char *path = argv[3];
 
-		ret = client_pmem_map_file(path, argc, &mem);
+		ret = client_pmem_map_file(path, &mem);
 		if (ret)
-			goto err_free;
+			return -1;
 
 		/*
 		 * At the beginning of the persistent memory, a signature is
