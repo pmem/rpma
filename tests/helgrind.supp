@@ -213,3 +213,39 @@
    fun:_execute_ioctl_fallback
    ...
 }
+
+##############################################
+# new suppressions for ubuntu-2204:2022.04.1
+##############################################
+
+{
+   Possible data race during write of size 8
+   Helgrind:Race
+   ...
+   fun:insert_cma_dev.isra.0
+   fun:sync_devices_list
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Possible data race during write of size 8
+   Helgrind:Race
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Possible data race during write of size 8
+   Helgrind:Race
+   ...
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}

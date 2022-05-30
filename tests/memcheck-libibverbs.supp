@@ -48,3 +48,61 @@
    fun:ucma_init
    ...
 }
+
+##############################################
+# new suppressions for ubuntu-2204:2022.04.1
+##############################################
+
+{
+   1 bytes in 1 blocks are possibly lost in loss record 1 of 13
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:ucma_init_device.part.0
+   fun:UnknownInlinedFun
+   fun:ucma_get_device
+   fun:ucma_query_addr
+   fun:UnknownInlinedFun
+   fun:rdma_get_cm_event
+   fun:ucma_complete
+   fun:rdma_resolve_addr2
+   fun:rpma_info_resolve_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   640 bytes in 1 blocks are possibly lost in loss record 5 of 13
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:_verbs_init_and_alloc_context
+   fun:rxe_alloc_context
+   fun:verbs_open_device
+   fun:ucma_init_device.part.0
+   fun:UnknownInlinedFun
+   fun:ucma_get_device
+   fun:ucma_query_addr
+   fun:UnknownInlinedFun
+   fun:rdma_get_cm_event
+   fun:ucma_complete
+   fun:rdma_resolve_addr2
+   fun:rpma_info_resolve_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   88 bytes in 1 blocks are possibly lost in loss record 3 of 13
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:insert_cma_dev.isra.0
+   fun:sync_devices_list
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}

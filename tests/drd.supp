@@ -244,3 +244,60 @@
    fun:_execute_ioctl_fallback
    ...
 }
+
+##############################################
+# new suppressions for ubuntu-2204:2022.04.1
+##############################################
+
+{
+   Mutex not locked in rxe_create_qp
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   fun:rxe_create_qp
+   fun:UnknownInlinedFun
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:insert_cma_dev.isra.0
+   fun:sync_devices_list
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   Conflicting store of size 8 (multithreaded-ep-rpma_ep_listen_0_drd)
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_ep_listen
+   ...
+}
