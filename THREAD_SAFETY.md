@@ -2,7 +2,17 @@
 
 This document presents the analysis of thread safety of the librpma library.
 
-**The main assumptions** this analysis is based on are following:
+## The main assumptions
+
+### Relationship of libibverbs and librdmacm
+
+The verbs API is fully thread safe and verbs can be called from every thread in the process.
+Detailed description is available at:
+
+ - [rdmamojo/libibverbs](https://www.rdmamojo.com/2013/07/26/libibverbs-thread-safe-level/)
+ - [ibv_alloc_td.3](https://man7.org/linux/man-pages/man3/ibv_alloc_td.3.html)
+
+### **The main assumptions** this analysis is based on are following:
 1) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
 2) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
 3) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
@@ -111,10 +121,6 @@ are thread-safe only if each thread operates on a **separate connection request*
 
 Only one API call of the librpma library is NOT thread-safe:
 - rpma_utils_get_ibv_context
-
-## Relationship of libibverbs and librdmacm
-
-XXX
 
 ## Analysis of Valgrind suppressions
 
