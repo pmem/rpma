@@ -7,6 +7,8 @@ This document presents the analysis of thread safety of the librpma library.
 2) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
 3) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
 
+**If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
+
 so **the most common scenarios** are following:
 1) on the active side: each thread creates and uses a separate connection (`struct rpma_conn`),
 2) on the passive side: the main thread establishes the connection but the rest of work (including connection shutdown) is done by a separate thread.
@@ -110,10 +112,6 @@ Only one API call of the librpma library is NOT thread-safe:
 - rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
-
-XXX
-
-## Not thread-safe scenarios
 
 XXX
 
