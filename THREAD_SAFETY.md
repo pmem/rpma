@@ -2,11 +2,15 @@
 
 This document presents the analysis of thread safety of the librpma library.
 
-**The main assumptions** this analysis is based on are following:
-1) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
-2) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
-3) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
-4) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
+## Main assumptions
+
+The main assumptions this analysis is based on are following:
+
+1) the API of libibverbs is fully thread safe and it can be called from every thread in the process (see [Relationship of libibverbs and librdmacm](#relationship-of-libibverbs-and-librdmacm) for details)
+2) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
+3) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
+4) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
+5) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
 
 **If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
 
@@ -114,7 +118,11 @@ Only one API call of the librpma library is NOT thread-safe:
 
 ## Relationship of libibverbs and librdmacm
 
-XXX
+The API of libibverbs is fully thread safe and it can be called from every thread in the process.
+The detailed description is available at:
+
+ - [rdmamojo/libibverbs](https://www.rdmamojo.com/2013/07/26/libibverbs-thread-safe-level/)
+ - [ibv_alloc_td.3](https://man7.org/linux/man-pages/man3/ibv_alloc_td.3.html)
 
 ## Analysis of Valgrind suppressions
 
