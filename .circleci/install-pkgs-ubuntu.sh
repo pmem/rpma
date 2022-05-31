@@ -46,7 +46,7 @@ RPMA_DEPS="\
 	pandoc"
 
 # Update existing packages
-sudo apt-get update
+sudo apt-get update --allow-unauthenticated
 
 # Enable repositories with debug symbols packages (-dbgsym)
 sudo apt-get install --assume-yes --no-install-recommends lsb-release ubuntu-dbgsym-keyring
@@ -54,9 +54,9 @@ echo "deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe mu
 deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
 deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse" | \
 	sudo tee -a /etc/apt/sources.list.d/ddebs.list
-sudo apt-get update
+sudo apt-get update --allow-unauthenticated
 
-sudo apt-get install --assume-yes --no-install-recommends \
+sudo apt-get install --assume-yes --no-install-recommends --allow-unauthenticated \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
 	$TOOLS_DEPS \
