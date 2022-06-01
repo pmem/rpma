@@ -159,17 +159,7 @@
 {
    Conflicting load of size 4
    drd:ConflictingAccess
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
    ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_get_device
-   fun:ucma_query_route
    fun:rdma_bind_addr
    fun:rpma_info_bind_addr
    fun:rpma_utils_get_ibv_context
@@ -242,5 +232,97 @@
    drd:ConflictingAccess
    ...
    fun:_execute_ioctl_fallback
+   ...
+}
+
+### Ubuntu 22.04
+
+{
+   rpma_utils_get_ibv_context
+   drd:ConflictingAccess
+   ...
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   Conflicting store of size 4 (rpma_utils_get_ibv_context)
+   drd:ConflictingAccess
+   ...
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   rpma_utils_get_ibv_context
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   rpma_conn_req_new
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   rpma_conn_req_new
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   fun:rxe_create_qp
+   fun:UnknownInlinedFun
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp
+   fun:rpma_conn_req_from_id
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   rpma_conn_req_new
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_conn_req_destroy
+   fun:rpma_conn_req_delete
+   fun:fini
+   ...
+}
+
+{
+   rpma_ep_listen
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   fun:rpma_ep_listen
+   ...
+}
+
+{
+   rpma_ep_listen - conflicting store by thread 40 at 0x04bbd720 size 8
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_ep_shutdown
+   fun:fini
    ...
 }
