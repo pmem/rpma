@@ -213,3 +213,89 @@
    fun:_execute_ioctl_fallback
    ...
 }
+
+
+### Ubuntu 22.04
+{
+   rpma_utils_get_ibv_context
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   rpma_utils_get_ibv_context
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   rpma_utils_get_ibv_context
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:insert_cma_dev.isra.0
+   fun:sync_devices_list
+   fun:ucma_init
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   fun:thread
+   ...
+}
+
+{
+   rpma_conn_req_new
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   fun:rpma_conn_req_new
+   fun:thread
+   ...
+}
+
+{
+   rpma_conn_req_new
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_conn_req_destroy
+   fun:rpma_conn_req_delete
+   fun:fini
+   ...
+}
+
+{
+   rpma_ep_listen - Possible data race during write of size 8 at 0x4BA16E8 by thread #91
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   fun:rpma_ep_listen
+   fun:thread1
+   ...
+}
+
+{
+   rpma_ep_listen - Possible data race during write of size 8 at 0x4BA1770 by thread #7
+   Helgrind:Race
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_ep_shutdown
+   fun:fini1
+   ...
+}
