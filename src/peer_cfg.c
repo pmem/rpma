@@ -25,7 +25,7 @@ struct rpma_peer_cfg {
 	bool direct_write_to_pmem;
 };
 
-/* internal librpma API */
+/* public librpma API */
 
 /*
  * rpma_peer_cfg_new -- create a new peer configuration object
