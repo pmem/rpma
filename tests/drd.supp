@@ -6,18 +6,13 @@
 #
 
 #
-# Assessment: XXX required
-#
-# Probably these suppressions do not indicate a lack of MT safety.
+# Assessment: These suppressions indicate a lack of MT safety.
 #
 
 {
    Race while reading the name of time zone ("GMT").
    drd:ConflictingAccess
    ...
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:__vsyslog_internal
    fun:syslog
    fun:rpma_log_default_function
    ...
@@ -26,16 +21,22 @@
 {
    Race while reading the name of time zone ("GMT").
    drd:ConflictingAccess
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
+   ...
    fun:get_timestamp_prefix
    fun:rpma_log_default_function
    ...
 }
 
+{
+   Conflicting load/store in rpma_utils_get_ibv_context()
+   drd:ConflictingAccess
+   ...
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
 #
-# Assessment: These suppressions do not indicate a lack of MT safety.
+# Assessment: These suppressions do NOT indicate a lack of MT safety.
 #
 # cma_dev_cnt was a global counter of elements populating the global array of
 # devices detected by librdmacm. It was used as an indicator of already done
@@ -84,113 +85,7 @@
 #
 
 {
-   Conflicting store of size 4
-   drd:ConflictingAccess
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 8
-   drd:ConflictingAccess
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:ucma_insert_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 1
-   drd:ConflictingAccess
-   fun:strlen
-   fun:__vfprintf_internal
-   fun:__vasprintf_internal
-   fun:__asprintf_chk
-   fun:asprintf
-   fun:open_cdev
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_get_device
-   fun:ucma_query_route
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_get_device
-   fun:ucma_query_addr
-   fun:rdma_bind_addr2
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-# Occurs in traces of:
-# - rpma_utils_get_ibv_context
-# - rpma_ep_shutdown
-{
-   Conflicting load of size 8
-   drd:ConflictingAccess
-   fun:idm_clear
-   fun:ucma_remove_id
-   fun:ucma_free_id
-   fun:rdma_destroy_id
-   ...
-}
-
-# Occurs in traces of:
-# - rpma_utils_get_ibv_context
-# - rpma_info_new
-# - rpma_ep_listen
-{
-   Conflicting store of size 8
-   drd:ConflictingAccess
-   fun:idm_set
-   fun:ucma_insert_id
-   fun:rdma_create_id2.part.0
-   ...
-}
-
-{
-   Conflicting store of size 4
+   Conflicting store of size 4 (multithreaded-mr-rpma_mr_reg_0_drd)
    drd:ConflictingAccess
    fun:ibv_dontfork_range
    fun:ibv_reg_mr_iova*
@@ -201,7 +96,7 @@
 }
 
 {
-   Conflicting store of size 4
+   Conflicting store of size 4 (multithreaded-mr-rpma_mr_reg_0_drd)
    drd:ConflictingAccess
    fun:ibv_dofork_range
    fun:ibv_dereg_mr*
@@ -209,13 +104,50 @@
    ...
 }
 
-# Occurs in traces of:
-# - rpma_conn_req_new
-# - rpma_conn_req_from_id
 {
-   Conflicting load/store of size 8
+   Conflicting load of size 8 in bitmap_set_bit (multithreaded-conn-rpma_conn_req_new_0_drd)
    drd:ConflictingAccess
    ...
    fun:_execute_ioctl_fallback
+   fun:ibv_icmd_create_cq
+   fun:ibv_cmd_create_cq
+   fun:rxe_create_cq
+   fun:ibv_create_cq@@IBVERBS_1.1
+   fun:rpma_cq_new
+   fun:rpma_conn_req_from_id
+   fun:rpma_conn_req_new
+   ...
+}
+
+# it comes from rpma_conn_req_delete()
+{
+   Conflicting store of size 8 in bitmap_set_bit (multithreaded-conn-rpma_conn_req_new_0_drd)
+   drd:ConflictingAccess
+   ...
+   fun:_execute_ioctl_fallback
+   fun:ibv_cmd_destroy_cq
+   fun:rxe_destroy_cq
+   fun:ibv_destroy_cq@@IBVERBS_1.1
+   fun:rpma_cq_delete
+   ...
+}
+
+{
+   Conflicting store of size 8 (multithreaded-conn-rpma_conn_req_new_0_drd)
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   Conflicting store of size 8 (multithreaded-ep-rpma_ep_listen_0_drd)
+   drd:ConflictingAccess
+   fun:idm_set
+   fun:ucma_insert_id
+   fun:rdma_create_id2.part.0
+   fun:rpma_ep_listen
    ...
 }
