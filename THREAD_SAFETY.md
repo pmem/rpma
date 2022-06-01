@@ -107,12 +107,12 @@ are thread-safe only if each thread operates on a **separate connection request*
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
+- rpma_conn_req_new
 - rpma_ep_listen
 - rpma_ep_next_conn_req
 - rpma_ep_shutdown
 - rpma_mr_reg
 - rpma_mr_dereg
-- rpma_conn_req_new
 - rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
