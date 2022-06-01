@@ -48,3 +48,30 @@
    fun:ucma_init
    ...
 }
+
+{
+   SoftRoCE specific memory leak
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:rxe_alloc_context
+   ...
+}
+
+{
+   To be analysed later
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:ucma_init_device.part.0
+   ...
+}
+
+{
+   To be analysed later
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:insert_cma_dev.isra.0
+   ...
+}
