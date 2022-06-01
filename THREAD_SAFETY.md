@@ -14,7 +14,7 @@ The main assumptions this analysis is based on are following:
 
 **If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
 
-so **the most common scenarios** are following:
+The most common scenarios are following:
 1) on the active side: each thread creates and uses a separate connection (`struct rpma_conn`),
 2) on the passive side: the main thread establishes the connection but the rest of work (including connection shutdown) is done by a separate thread.
 
