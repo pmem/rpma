@@ -6,10 +6,10 @@ This document presents the analysis of thread safety of the librpma library.
 
 The main assumptions this analysis is based on are following:
 
-1) the API of libibverbs is fully thread safe and it can be called from every thread in the process (see [Relationship of libibverbs and librdmacm](#relationship-of-libibverbs-and-librdmacm) for details)
+1) the API of libibverbs is fully thread-safe and it can be called from every thread in the process (see [Relationship of libibverbs and librdmacm](#relationship-of-libibverbs-and-librdmacm) for details)
 2) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
-3) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
-4) each of the endpoints (`struct rpma_ep`) can be used by only one thread at the same time and
+3) there can be only one endpoint (`struct rpma_ep`) and only one thread can use it (call rpma_ep_next_conn_req() on it),
+4) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
 5) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
 
 **If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
@@ -31,14 +31,9 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_delete
 - rpma_peer_cfg_from_descriptor
 - rpma_peer_cfg_get_descriptor_size
-- rpma_ep_get_fd;
-- rpma_ep_listen;
-- rpma_ep_next_conn_req;
-- rpma_ep_shutdown;
+- rpma_ep_get_fd
 - rpma_conn_cfg_new
 - rpma_conn_cfg_delete
-- rpma_mr_reg
-- rpma_mr_dereg
 - rpma_mr_get_descriptor
 - rpma_mr_remote_from_descriptor
 - rpma_mr_get_descriptor_size
@@ -113,12 +108,17 @@ are thread-safe only if each thread operates on a **separate connection request*
 
 ## NOT thread-safe API calls
 
-Only one API call of the librpma library is NOT thread-safe:
+The following API calls of the librpma library are NOT thread-safe:
+- rpma_ep_listen
+- rpma_ep_next_conn_req
+- rpma_ep_shutdown
+- rpma_mr_reg
+- rpma_mr_dereg
 - rpma_utils_get_ibv_context
 
 ## Relationship of libibverbs and librdmacm
 
-The API of libibverbs is fully thread safe and it can be called from every thread in the process.
+The API of libibverbs is fully thread-safe and it can be called from every thread in the process.
 The detailed description is available at:
 
  - [rdmamojo/libibverbs](https://www.rdmamojo.com/2013/07/26/libibverbs-thread-safe-level/)
