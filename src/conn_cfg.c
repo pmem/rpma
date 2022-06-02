@@ -198,7 +198,6 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 
 	return 0;
 }
-
 /*
  * rpma_conn_cfg_get_cq_size -- get CQ size for the connection
  */

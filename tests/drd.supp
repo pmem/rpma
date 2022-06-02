@@ -244,3 +244,44 @@
    fun:_execute_ioctl_fallback
    ...
 }
+
+{
+   To be removed later
+   drd:MutexErr
+   ...
+   fun:rxe_create_qp
+   ...
+}
+
+{
+   To be removed later
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_id2.part.01
+   ...
+}
+
+{
+   To be removed later
+   drd:ConflictingAccess
+   ...
+   fun:ucma_free_id
+   fun:rdma_destroy_id
+   fun:rpma_ep_shutdown
+   ...
+}
+
+{
+   To be removed later
+   drd:ConflictingAccess
+   ...
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+{
+   To be removed later
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_cq_size
+   ...
+}
