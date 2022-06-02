@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * mocks-rpma-utils.c -- librpma rpma.c module mocks (rpma_utils_*)
+ * mocks-rpma-utils.c -- librpma utils.c module mocks (rpma_utils_*)
  */
 
 #include <rdma/rdma_cma.h>
