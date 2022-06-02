@@ -159,17 +159,7 @@
 {
    Conflicting load of size 4
    drd:ConflictingAccess
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
    ...
-}
-
-{
-   Conflicting load of size 4
-   drd:ConflictingAccess
-   fun:ucma_get_device
-   fun:ucma_query_route
    fun:rdma_bind_addr
    fun:rpma_info_bind_addr
    fun:rpma_utils_get_ibv_context
@@ -246,23 +236,11 @@
 }
 
 ### Ubuntu 22.04
-{
-   rpma_utils_get_ibv_context
-   drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:UnknownInlinedFun
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   fun:thread
-   ...
-}
 
 {
    rpma_utils_get_ibv_context
    drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:UnknownInlinedFun
-   fun:ucma_free_id
+   ...
    fun:rdma_destroy_id
    fun:rpma_utils_get_ibv_context
    fun:thread
@@ -270,12 +248,9 @@
 }
 
 {
-   rpma_utils_get_ibv_context
+   Conflicting store of size 4 (rpma_utils_get_ibv_context)
    drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:insert_cma_dev.isra.0
-   fun:sync_devices_list
-   fun:ucma_init
+   ...
    fun:rdma_getaddrinfo
    fun:rpma_info_new
    fun:rpma_utils_get_ibv_context
@@ -286,25 +261,7 @@
 {
    rpma_utils_get_ibv_context
    drd:ConflictingAccess
-   fun:strlen
-   fun:__vfprintf_internal
-   fun:__vasprintf_internal
-   fun:__asprintf_chk
-   fun:UnknownInlinedFun
-   fun:UnknownInlinedFun
-   fun:rdma_create_event_channel
-   fun:UnknownInlinedFun
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   fun:thread
    ...
-}
-
-{
-   rpma_utils_get_ibv_context
-   drd:ConflictingAccess
-   fun:rdma_create_event_channel
-   fun:UnknownInlinedFun
    fun:rdma_create_id2.part.0
    fun:rpma_utils_get_ibv_context
    fun:thread
