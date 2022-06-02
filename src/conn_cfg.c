@@ -189,7 +189,12 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
+
+#ifdef ATOMIC_STORE_SUPPORTED
 	atomic_store(&cfg->cq_size, cq_size);
+#else
+	cfg->cq_size = cq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
