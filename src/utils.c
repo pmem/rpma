@@ -2,7 +2,7 @@
 /* Copyright 2020-2022, Intel Corporation */
 
 /*
- * rpma.c -- entry points for librpma
+ * utils.c -- generic helper functions for librpma
  */
 
 #include <rdma/rdma_cma.h>

@@ -29,7 +29,7 @@ set(SOURCES
 	peer_cfg.c
 	private_data.c
 	rpma_err.c
-	rpma.c)
+	utils.c)
 
 add_library(rpma SHARED ${SOURCES})
 

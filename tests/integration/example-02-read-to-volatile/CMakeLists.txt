@@ -28,8 +28,8 @@ build_test_src(NAME ${TARGET} SRCS
 	${LIBRPMA_SOURCE_DIR}/peer.c
 	${LIBRPMA_SOURCE_DIR}/peer_cfg.c
 	${LIBRPMA_SOURCE_DIR}/private_data.c
-	${LIBRPMA_SOURCE_DIR}/rpma.c
-	${LIBRPMA_SOURCE_DIR}/rpma_err.c)
+	${LIBRPMA_SOURCE_DIR}/rpma_err.c
+	${LIBRPMA_SOURCE_DIR}/utils.c)
 
 target_include_directories(${TARGET} PRIVATE
 	../common
