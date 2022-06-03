@@ -40,11 +40,7 @@
 
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
-#ifdef ATOMIC_STORE_SUPPORTED
-	_Atomic uint32_t cq_size;	/* main CQ size */
-#else
 	uint32_t cq_size;	/* main CQ size */
-#endif /* ATOMIC_STORE_SUPPORTED */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
@@ -127,7 +123,6 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 	(*cfg_ptr)->sq_size = RPMA_DEFAULT_Q_SIZE;
 	(*cfg_ptr)->rq_size = RPMA_DEFAULT_Q_SIZE;
 	(*cfg_ptr)->shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL;
-	// memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
 
 	return 0;
 }
