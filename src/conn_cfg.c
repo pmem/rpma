@@ -8,6 +8,9 @@
 
 #include <limits.h>
 #include <stdlib.h>
+#ifdef ATOMIC_STORE_SUPPORTED
+#include <stdatomic.h>
+#endif /* ATOMIC_STORE_SUPPORTED */
 #include <rdma/rdma_cma.h>
 
 #include "common.h"
@@ -39,6 +42,9 @@
 
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
+#ifdef ATOMIC_STORE_SUPPORTED
+	_Atomic
+#endif /* ATOMIC_STORE_SUPPORTED */
 	uint32_t cq_size;	/* main CQ size */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
@@ -117,7 +123,17 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 	if (*cfg_ptr == NULL)
 		return RPMA_E_NOMEM;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_init(&(*cfg_ptr)->cq_size,
+		atomic_load_explicit(&Conn_cfg_default.cq_size, __ATOMIC_SEQ_CST));
+	(*cfg_ptr)->timeout_ms = RPMA_DEFAULT_TIMEOUT_MS;
+	(*cfg_ptr)->rcq_size = RPMA_DEFAULT_RCQ_SIZE;
+	(*cfg_ptr)->sq_size = RPMA_DEFAULT_Q_SIZE;
+	(*cfg_ptr)->rq_size = RPMA_DEFAULT_Q_SIZE;
+	(*cfg_ptr)->shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL;
+#else
 	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -189,7 +205,11 @@ rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size)
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->cq_size, cq_size, __ATOMIC_SEQ_CST);
+#else
 	cfg->cq_size = cq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -206,7 +226,11 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 	if (cfg == NULL || cq_size == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*cq_size = atomic_load_explicit(&cfg->cq_size, __ATOMIC_SEQ_CST);
+#else
 	*cq_size = cfg->cq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	/*
 	 * This function is used as void in rpma_conn_cfg_get_cqe()
