@@ -60,9 +60,6 @@ ENV RPMA_DEPS "\
 	rpm-build \
 	rdma-core-devel"
 
-# needed to install findutils-4.9.0-1.6.x86_64[repo-oss]
-RUN zypper remove -y busybox-findutils aaa_base-extras
-
 # Install all required packages
 RUN zypper install -y \
 	$BASE_DEPS \
