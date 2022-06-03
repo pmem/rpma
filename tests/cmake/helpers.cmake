@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 #
 
 set(DIR ${PARENT_DIR}/${TEST_NAME})
@@ -101,14 +101,14 @@ function(execute_common expect_success output_file name)
         set(TRACE valgrind --error-exitcode=99 --tool=pmemcheck)
         set(ENV{LIBRPMA_TRACER_PMEMCHECK} 1)
     elseif(${TRACER} STREQUAL memcheck)
-        set(TRACE valgrind --error-exitcode=99 --tool=memcheck --leak-check=full
+        set(TRACE valgrind --error-exitcode=99 --tool=memcheck --leak-check=full ${VALGRIND_S_OPTION} --gen-suppressions=all
            --suppressions=${TEST_ROOT_DIR}/ld.supp --suppressions=${TEST_ROOT_DIR}/memcheck-stdcpp.supp --suppressions=${TEST_ROOT_DIR}/memcheck-libunwind.supp)
         set(ENV{LIBRPMA_TRACER_MEMCHECK} 1)
     elseif(${TRACER} STREQUAL helgrind)
-        set(TRACE valgrind --error-exitcode=99 --tool=helgrind -s --gen-suppressions=all --suppressions=${TEST_ROOT_DIR}/helgrind.supp)
+        set(TRACE valgrind --error-exitcode=99 --tool=helgrind ${VALGRIND_S_OPTION} --gen-suppressions=all --suppressions=${TEST_ROOT_DIR}/helgrind.supp)
         set(ENV{LIBRPMA_TRACER_HELGRIND} 1)
     elseif(${TRACER} STREQUAL drd)
-        set(TRACE valgrind --error-exitcode=99 --tool=drd -s --gen-suppressions=all --suppressions=${TEST_ROOT_DIR}/drd.supp)
+        set(TRACE valgrind --error-exitcode=99 --tool=drd ${VALGRIND_S_OPTION} --gen-suppressions=all --suppressions=${TEST_ROOT_DIR}/drd.supp)
         set(ENV{LIBRPMA_TRACER_DRD} 1)
     elseif(${TRACER} STREQUAL gdb)
         set(TRACE gdb --batch --command=${GDB_BATCH_FILE} --args)
