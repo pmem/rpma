@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 #
 
 #
@@ -178,6 +178,19 @@ function(find_pmemcheck)
 		set(PMEMCHECK_VERSION ${CMAKE_MATCH_1} CACHE INTERNAL "")
 	else()
 		message(WARNING "Valgrind pmemcheck NOT found. Pmemcheck tests will not be performed.")
+	endif()
+endfunction()
+
+function(valgrind_check_s_option)
+	set(ENV{PATH} ${VALGRIND_PREFIX}/bin:$ENV{PATH})
+	execute_process(COMMAND valgrind -s date
+			RESULT_VARIABLE VALGRIND_S_OPTION_RET_VAL
+			OUTPUT_QUIET
+			ERROR_QUIET)
+	if(VALGRIND_S_OPTION_RET_VAL)
+		set(VALGRIND_S_OPTION "" CACHE INTERNAL "")
+	else()
+		set(VALGRIND_S_OPTION "-s" CACHE INTERNAL "")
 	endif()
 endfunction()
 
