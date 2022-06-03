@@ -48,3 +48,12 @@
    fun:ucma_init
    ...
 }
+
+{
+   SoftRoCE specific memory leak
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:rxe_alloc_context
+   ...
+}
