@@ -118,7 +118,12 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 	if (*cfg_ptr == NULL)
 		return RPMA_E_NOMEM;
 	atomic_init(&(*cfg_ptr)->cq_size, Conn_cfg_default.cq_size);
-	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
+	(*cfg_ptr)->timeout_ms = RPMA_DEFAULT_TIMEOUT_MS;
+	(*cfg_ptr)->rcq_size = RPMA_DEFAULT_RCQ_SIZE;
+	(*cfg_ptr)->sq_size = RPMA_DEFAULT_Q_SIZE;
+	(*cfg_ptr)->rq_size = RPMA_DEFAULT_Q_SIZE;
+	(*cfg_ptr)->shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL;
+	// memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
 
 	return 0;
 }
