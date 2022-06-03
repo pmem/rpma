@@ -279,9 +279,12 @@
    ...
 }
 
+
 {
-   To be removed later
+   <insert_a_suppression_name_here>
    drd:ConflictingAccess
-   fun:rpma_conn_cfg_set_cq_size
+   ...
+   fun:rdma_create_id2.part.0
+   fun:rpma_conn_req_new
    ...
 }

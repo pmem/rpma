@@ -210,7 +210,11 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 	if (cfg == NULL || cq_size == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*cq_size = atomic_load(&cfg->cq_size);
+#else
 	*cq_size = cfg->cq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	/*
 	 * This function is used as void in rpma_conn_cfg_get_cqe()
