@@ -40,7 +40,11 @@
 
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
+#ifdef ATOMIC_STORE_SUPPORTED
 	_Atomic uint32_t cq_size;	/* main CQ size */
+#else
+	uint32_t cq_size;	/* main CQ size */
+#endif /* ATOMIC_STORE_SUPPORTED */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
@@ -117,7 +121,7 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 	*cfg_ptr = malloc(sizeof(struct rpma_conn_cfg));
 	if (*cfg_ptr == NULL)
 		return RPMA_E_NOMEM;
-	atomic_init(&(*cfg_ptr)->cq_size, Conn_cfg_default.cq_size);
+	atomic_init(&(*cfg_ptr)->cq_size, atomic_load(&Conn_cfg_default.cq_size));
 	(*cfg_ptr)->timeout_ms = RPMA_DEFAULT_TIMEOUT_MS;
 	(*cfg_ptr)->rcq_size = RPMA_DEFAULT_RCQ_SIZE;
 	(*cfg_ptr)->sq_size = RPMA_DEFAULT_Q_SIZE;
