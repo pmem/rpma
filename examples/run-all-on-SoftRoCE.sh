@@ -155,9 +155,7 @@ function run_example() {
 		kill $PID
 		sleep 1
 		kill -9 $PID 2>/dev/null
-	fi
-
-	if [ x"$VLD_SCMD" != x"" ]; then
+	elif [ x"$VLD_SCMD" != x"" ]; then
 		serrno=$(grep "ERROR SUMMARY:" ${VLD_SLOG_FILE} | grep -Eoh "[0-9]+ errors" | awk '{print $1}')
 		if [ $serrno -gt 0 ]; then
 			echo "Error: example $EXAMPLE server $VLD_MSG FAILED!"
