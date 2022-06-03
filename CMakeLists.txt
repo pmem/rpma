@@ -243,6 +243,9 @@ if(VALGRIND_FOUND)
 
 	include_directories(${VALGRIND_INCLUDE_DIRS})
 
+	# sets VALGRIND_S_OPTION to "-s" if valgrind supports it or "" otherwise
+	valgrind_check_s_option()
+
 	if(TESTS_USE_VALGRIND_PMEMCHECK)
 		find_pmemcheck()
 	endif()
