@@ -18,7 +18,7 @@
 
 #include "mtt.h"
 
-#define TIMEOUT_SECONDS 15
+#define TIMEOUT_SECONDS 600
 
 static struct {
 	/* mutex and conditional used to start all threads synchronously */
