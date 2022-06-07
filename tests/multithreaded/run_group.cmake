@@ -7,9 +7,7 @@ include(${SRC_DIR}/../../cmake/helpers.cmake)
 
 setup()
 
-# XXX change ulimits to enable 32 threads
-# set(THREADS 32)
-set(THREADS 7)
+set(THREADS 32)
 
 if("$ENV{RPMA_SOFT_ROCE_IP}" STREQUAL "")
 	set(SOFT_ROCE_IP "127.0.0.1")
