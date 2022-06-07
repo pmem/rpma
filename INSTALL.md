@@ -128,13 +128,7 @@ Additionally, you can run the examples in `build/examples/*`.
 
 ## Testing
 
-As mentioned above you can turn on building the unit tests and run them easily:
-
-```shell
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
-$ make test
-$ ctest
-```
+In order to learn how to run all tests, please see [TESTING.md](TESTING.md)
 
 ## OS support
 
