@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 
 # check-headers.sh - check copyright and license in source files
 
@@ -95,7 +95,7 @@ fi
 
 FILES=$($GIT $GIT_COMMAND | ${SOURCE_ROOT}/utils/check_license/file-exceptions.sh | \
 	grep    -E -e '*\.[chs]$' -e '*\.[ch]pp$' -e '*\.sh$' \
-		   -e '*\.py$' -e '*\.link$' -e 'Makefile*' -e 'TEST*' \
+		   -e '*\.py$' -e '*\.link$' -e 'Makefile*' \
 		   -e '/common.inc$' -e '/match$' -e '/check_whitespace$' \
 		   -e 'LICENSE$' -e 'CMakeLists.txt$' -e '*\.cmake$' -e '/Dockerfile.*' | \
 	xargs)
