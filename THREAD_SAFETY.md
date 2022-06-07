@@ -8,15 +8,14 @@ The main assumptions this analysis is based on are following:
 
 1) the API of libibverbs is fully thread-safe and it can be called from every thread in the process (see [Relationship of libibverbs and librdmacm](#relationship-of-libibverbs-and-librdmacm) for details)
 2) many threads may use the same peer (`struct rpma_peer`) to create separate connections,
-3) there can be only one endpoint (`struct rpma_ep`) and only one thread can use it (call rpma_ep_next_conn_req() on it),
-4) the whole process of creating a new connection (`struct rpma_conn`) has to be run by exactly one thread (different threads must not be involved in creating the same connection),
-5) each of the connections (`struct rpma_conn`) can be used by only one thread at the same time.
+3) there can be only one endpoint (`struct rpma_ep`) and only one thread can use it (call `rpma_ep_next_conn_req()` on it),
+4) each of the connections (`struct rpma_conn_req` and `struct rpma_conn`) can be used by only one thread at the same time.
 
 **If the above assumptions are not met, thread safety of the librpma library is not guaranteed.**
 
-so **the most common scenarios** are following:
-1) on the active side: each thread creates and uses a separate connection (`struct rpma_conn`),
-2) on the passive side: the main thread establishes the connection but the rest of work (including connection shutdown) is done by a separate thread.
+The most common scenarios are following:
+1) on the active side: the main thread creates connection requests (`struct rpma_conn_req`) for all threads and pass them to those threads which use them to create separate connections (`struct rpma_conn`),
+2) on the passive side: the main thread establishes the connection but the rest of work (including connection shutdown) is done by separate thread(s) (if more than one connection is established).
 
 Most of the core librpma API calls are thread-safe but there are also very important exceptions (described below) mainly related to connection's configuration, establishment and tear-down.
 
@@ -43,6 +42,8 @@ The following API calls of the librpma library are thread-safe:
 - rpma_mr_remote_delete
 - rpma_mr_remote_get_flush_type
 - rpma_mr_advise
+- rpma_conn_req_get_private_data
+- rpma_conn_req_recv
 - rpma_conn_delete
 - rpma_conn_disconnect
 - rpma_conn_get_cq
@@ -94,21 +95,19 @@ The following API calls of the librpma library:
 - rpma_conn_cfg_set_rq_size
 - rpma_conn_cfg_set_sq_size
 - rpma_conn_cfg_set_timeout
-- rpma_conn_req_new (calls rpma_conn_cfg_get_*() functions)
 
 are thread-safe only if each thread operates on a **separate connection configuration structure** (`struct rpma_conn_cfg`) used only by this one thread. They are not thread-safe if threads operate on one connection configuration structure common for more than one thread.
 
 The following API calls of the librpma library:
 - rpma_conn_req_connect
 - rpma_conn_req_delete
-- rpma_conn_req_get_private_data
-- rpma_conn_req_recv
 
 are thread-safe only if each thread operates on a **separate connection request** (`struct rpma_conn_req`) used only by this one thread. They are not thread-safe if threads operate on one connection request common for more than one thread.
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
+- rpma_conn_req_new
 - rpma_ep_listen
 - rpma_ep_next_conn_req
 - rpma_ep_shutdown
