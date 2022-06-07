@@ -3,9 +3,10 @@
 # Copyright 2020-2022, Intel Corporation
 
 #
-# run-all-on-SoftRoCE.sh - run all examples on SoftRoCE (optionally under valgrind)
+# run-all-examples.sh - run all examples on a configured RDMA-capable network interface
+#                       (optionally under valgrind)
 #
-# Usage: run-all-on-SoftRoCE.sh <binary-examples-directory> [IP_address] [port] [--valgrind]
+# Usage: run-all-examples.sh <binary-examples-directory> [IP_address] [port] [--valgrind]
 #
 
 BIN_DIR=$1
@@ -173,7 +174,7 @@ function run_example() {
 
 if [ "$BIN_DIR" == "" ]; then
 	echo "Error: missing required argument"
-	echo "Usage: run-all-on-SoftRoCE.sh <binary-examples-directory> [IP_address] [port] [--valgrind]"
+	echo "Usage: run-all-examples.sh <binary-examples-directory> [IP_address] [port] [--valgrind]"
 
 	exit 1
 fi
