@@ -4,4 +4,5 @@
 
 # file-exceptions.sh - filter out files not checked for copyright and license
 
+grep -v -E -e 'TESTING.md'
 grep -v -E -e 'src/non-existing-path-to-be-replaced-with-real-one'
