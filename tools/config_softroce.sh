@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 
 #
 # config_softroce.sh - configure SoftRoCE
@@ -41,8 +41,8 @@ function print_IP4_of() {
 	IP=$(get_IP4 $NET_IF)
 	if [ "$IP" != "" ]; then
 		echo "been assigned the following IP address: $IP"
-		# set RPMA_SOFT_ROCE_IP for CircleCI
-		echo "export RPMA_SOFT_ROCE_IP=$IP" >> $BASH_ENV
+		# set RPMA_TESTING_IP for CircleCI
+		echo "export RPMA_TESTING_IP=$IP" >> $BASH_ENV
 	else
 		echo "no IP address assigned"
 	fi
@@ -55,8 +55,8 @@ function print_IP4_all() {
 		IP=$(get_IP4 $NET_IF)
 		if [ "$IP" != "" ]; then
 			echo "- network interface: $NET_IF, IP address: $IP"
-			# set RPMA_SOFT_ROCE_IP for CircleCI
-			echo "export RPMA_SOFT_ROCE_IP=$IP" >> $BASH_ENV
+			# set RPMA_TESTING_IP for CircleCI
+			echo "export RPMA_TESTING_IP=$IP" >> $BASH_ENV
 		else
 			echo "- network interface: $NET_IF, no IP address assigned"
 		fi
