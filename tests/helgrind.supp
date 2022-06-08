@@ -1,6 +1,6 @@
 #
 # The following suppressions are suited for debug build
-# of librpma on Ubuntu 20.04 used in the CircleCI.
+# of librpma on Ubuntu 22.04 used in the CircleCI.
 # They may not work for any other OS, OS version,
 # rdma-core version and for the release build.
 #
