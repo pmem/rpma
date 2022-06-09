@@ -9,7 +9,11 @@
 #                            [--stop-on-failure] [IP_address] [port]
 #
 # Used environment variables:
+# - RPMA_TEST_PMEM_PATH
 # - RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE
+#
+# If the `RPMA_TEST_PMEM_PATH` environment variable is set, the examples will be run on the PMem
+# (a DAX device or a file on a file system DAX) given by this variable.
 #
 # If the `--stop-on-failure` argument is used or the `RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE`
 # environment variable is set to ON, then the integration tests will stop on the first failure.
@@ -25,11 +29,14 @@ USAGE_STRING="\
 Usage:\n\
 $ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] [--stop-on-failure] [IP_address] [port]\n\
 \n\
+If the \"RPMA_TEST_PMEM_PATH\" environment variable is set, the examples will be run on the PMem \
+(a DAX device or a file on a file system DAX) given by this variable.\n\
+\n\
 If the \"--stop-on-failure\" argument is used or the \"RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE\" \
 environment variable is set to ON, then the integration tests will stop on the first failure.\n"
 
 BIN_DIR=$1
-if [ "$BIN_DIR" == "" ]; then
+if [ "$BIN_DIR" == "" -o ! -d $BIN_DIR ]; then
 	echo "Error: missing required argument"
 	echo
 	echo -e $USAGE_STRING
@@ -161,7 +168,7 @@ function verify_SoftRoCE() {
 		PORT="7204"
 	fi
 
-	echo "Running examples for IP address $IP_ADDRESS and port $PORT"
+	echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
 	echo
 }
 
@@ -206,7 +213,7 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT
+	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
 	sleep 1
 
 	RV=0
@@ -239,7 +246,7 @@ function run_example() {
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
-		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
 		;;
 	esac
 
@@ -312,6 +319,12 @@ function run_example() {
 
 ### SCRIPT STARTS HERE ###
 
+if [ "$RPMA_TEST_PMEM_PATH" != "" ]; then
+	echo "Notice: running examples on PMem: $RPMA_TEST_PMEM_PATH (RPMA_TEST_PMEM_PATH)."
+else
+	echo "Notice: PMem path (RPMA_TEST_PMEM_PATH) is not set, examples will be run on DRAM."
+fi
+
 N_FAILED=0
 LIST_FAILED=""
 N_SFAILED=0
@@ -351,8 +364,9 @@ if [ "$MODE" == "valgrind" -o "$MODE" == "fault-injection" ]; then
 	VLD_SCMD_ORIG=$VLD_SCMD
 	VLD_CCMD_ORIG=$VLD_CCMD
 
-	echo "Running examples with Valgrind is tuned for debug build of librpma on Ubuntu 22.04 (see the CircleCI build)."
-	echo "It may fail for any other OS, OS version, rdma-core version and for the release build."
+	echo -n "Notice: running examples with Valgrind is tuned for debug build of librpma "
+	echo -n "on Ubuntu 22.04 (see the CircleCI build). It may fail for any other OS, "
+	echo "OS version, rdma-core version and for the release build."
 	echo
 fi
 
