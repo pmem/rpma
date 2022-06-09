@@ -8,6 +8,12 @@
 # Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
 #                            [--stop-on-failure] [IP_address] [port]
 #
+# Used environment variables:
+# - RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE
+#
+# If the `--stop-on-failure` argument is used or the `RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE`
+# environment variable is set to ON, then the integration tests will stop on the first failure.
+#
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
@@ -15,11 +21,18 @@ GET_FI_MAX=999999
 # timeout value for both the server and the client
 TIMEOUT=3s
 
+USAGE_STRING="\
+Usage:\n\
+$ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] [--stop-on-failure] [IP_address] [port]\n\
+\n\
+If the \"--stop-on-failure\" argument is used or the \"RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE\" \
+environment variable is set to ON, then the integration tests will stop on the first failure.\n"
+
 BIN_DIR=$1
 if [ "$BIN_DIR" == "" ]; then
 	echo "Error: missing required argument"
-	echo -n "Usage: run-all-examples.sh <binary-examples-directory> "
-	echo "[--valgrind|--fault-injection] [--stop-on-failure] [IP_address] [port]"
+	echo
+	echo -e $USAGE_STRING
 	exit 1
 fi
 
@@ -33,7 +46,7 @@ elif [ "$2" == "--valgrind" ]; then
 fi
 
 STOP_ON_FAILURE=0
-if [ "$2" == "--stop-on-failure" ]; then
+if [ "$2" == "--stop-on-failure" -o "$RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE" == "ON" ]; then
 	STOP_ON_FAILURE=1
 	shift
 fi
