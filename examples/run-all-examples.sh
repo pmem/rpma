@@ -8,6 +8,9 @@
 # Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
 #                            [--stop-on-failure] [IP_address] [port]
 #
+# If the RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE environment variable is set to ON,
+# then the integration tests will stop on the first failure.
+#
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
@@ -33,7 +36,7 @@ elif [ "$2" == "--valgrind" ]; then
 fi
 
 STOP_ON_FAILURE=0
-if [ "$2" == "--stop-on-failure" ]; then
+if [ "$2" == "--stop-on-failure" -o "$RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE" == "ON" ]; then
 	STOP_ON_FAILURE=1
 	shift
 fi
