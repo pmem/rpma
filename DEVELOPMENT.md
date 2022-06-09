@@ -9,13 +9,45 @@ This section describes how to prepare the environment for execution of all avail
 - multi-threaded (MT) tests and
 - integration tests.
 
-## Run unit and multi-threaded tests on SoftRoCE
+## Run unit tests
 
-XXX
+You can turn on building the unit tests and run them easily:
 
-## Run unit and multi-threaded tests on RDMA HW
+```shell
+$ cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
+$ make test
+$ ctest
+```
 
-XXX
+## Run multi-threaded tests
+
+To run multithreaded tests we need configured RDMA-capable network interface.
+
+### Run multi-threaded tests on SoftRoCE:
+- configure SoftRoCE with tools/config_softroce.sh script
+- set the environment variable RPMA_TESTING_IP
+```shell
+$ export RPMA_TESTING_IP=127.0.0.0
+```
+- turn on building the multi-threaded tests and run them
+```shell
+$ cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DTESTS_RDMA_CONNECTION=ON ..
+$ make test
+$ ctest
+```
+
+### Run multi-threaded tests on RDMA HW:
+- configure RDMA HW
+- set the environment variable RPMA_TESTING_IP
+```shell
+$ export RPMA_TESTING_IP=127.0.0.0
+```
+- turn on building the multi-threaded tests and run them
+```shell
+$ cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DTESTS_RDMA_CONNECTION=ON ..
+$ make test
+$ ctest
+```
 
 ## Run integration tests on SoftRoCE
 
