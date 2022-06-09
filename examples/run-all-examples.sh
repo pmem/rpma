@@ -254,11 +254,6 @@ function run_example() {
 	# make sure the server's process is finished
 	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 	if [ "$PID" != "" ]; then
-		echo "Notice: server is still running, waiting 1 sec ..."
-		sleep 1
-	fi
-	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
-	if [ "$PID" != "" ]; then
 		echo "Notice: server is still running, killing it ..."
 		kill $PID
 		sleep 1
