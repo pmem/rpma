@@ -116,6 +116,8 @@ sentences.  There can be as many paragraphs as necessary.
 
 Ref: rpma/issues#1
 ```
+## Coverage
+Keep in mind that only PRs with 100% coverage can be merged and reviewed. Please check [DEVELOPMENT.md file](DEVELOPMENT.md) to see how to run all unit tests.
 
 ## Bug reports
 

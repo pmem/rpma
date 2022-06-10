@@ -59,45 +59,7 @@ $ cmake ..
 $ make -j
 ```
 
-### CMake standard options
-
-Here is a list of the most interesting options
-provided out of the box by CMake.
-
-| Name | Description | Values | Default |
-| - | - | - | - |
-| BUILD_DOC | Build the documentation | ON/OFF | ON |
-| BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
-| BUILD_TESTS | Build the tests | ON/OFF | ON |
-| CHECK_CSTYLE | Check code style of C sources | ON/OFF | OFF |
-| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo | Debug |
-| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
-| COVERAGE | Run coverage test | ON/OFF | OFF |
-| DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
-| TESTS_LONG | Enable long running tests | ON/OFF | OFF |
-| TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
-| TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
-| TEST_DIR | Working directory for tests | *dir path* | ./build/test |
-| TEST_PYTHON_TOOLS | Enable testing Python tools | ON/OFF | ON |
-| TRACE_TESTS | More verbose test outputs | ON/OFF | OFF |
-| USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
-| USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
-| DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
-| DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
-
-### Configuring CMake options
-
-CMake options can be changed with `-D` option e.g.:
-
-```shell
-$ cmake -DBUILD_DOC=ON -DTEST_LONG=ON -DTEST_DIR=/rpma/build/test ..
-```
-
-You can browse and edit CMake options using `cmake-gui` or `ccmake` e.g.:
-
-```shell
-$ ccmake .
-```
+To check how to set environment settings please checkout [DEVELOPMENT.md file](DEVELOPMENT.md).
 
 ### Building packages
 
@@ -112,6 +74,12 @@ where $GEN is a type of package generator: RPM or DEB.
 
 CMAKE_INSTALL_PREFIX must be set to a destination were packages will be installed
 
+Before installing it is neccessary to run all unit tests first. In order to do it you can issue this command.
+```
+$ make test
+```
+The `ctest` command can be used instead of `make test`..
+
 ## Installing
 
 After compiling the library, you can install it:
@@ -120,15 +88,10 @@ After compiling the library, you can install it:
 $ sudo make install
 ```
 
-## Running
 
-The librpma library can be found in the `build/src` directory.
-After the compilation, the librpma library binaries can be found in the `build/src` directory.
-Additionally, you can run the examples in `build/examples/*`.
+## Development
 
-## Testing
-
-In order to learn how to run all tests, please see [Testing](DEVELOPMENT.md#Testing) section in [DEVELOPMENT.md](DEVELOPMENT.md) file.
+In order to learn how to run all tests and set environment settings, please see [Testing](DEVELOPMENT.md#Testing) section in [DEVELOPMENT.md](DEVELOPMENT.md) file.
 
 ## OS support
 
