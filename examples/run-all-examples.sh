@@ -8,7 +8,7 @@
 # Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
 #                            [--stop-on-failure] [IP_address] [port]
 #
-# If RPMA_TEST_PMEM_PATH is set, the examples will be run on the given PMem device.
+# If RPMA_EXAMPLES_PMEM_PATH is set, the examples will be run on the given PMem device.
 #
 
 # value used to get the maximum reachable value of fault injection for each example
@@ -195,7 +195,7 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
+	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $RPMA_EXAMPLES_PMEM_PATH
 	sleep 1
 
 	RV=0
@@ -228,7 +228,7 @@ function run_example() {
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
-		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $RPMA_EXAMPLES_PMEM_PATH
 		;;
 	esac
 
@@ -305,10 +305,10 @@ function run_example() {
 
 ### SCRIPT STARTS HERE ###
 
-if [ "$RPMA_TEST_PMEM_PATH" != "" ]; then
-	echo "Notice: running examples on PMem: $RPMA_TEST_PMEM_PATH (RPMA_TEST_PMEM_PATH)."
+if [ "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
+	echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
 else
-	echo "Notice: PMem path (RPMA_TEST_PMEM_PATH) is not set, examples will be run on DRAM."
+	echo "Notice: PMem path (RPMA_EXAMPLES_PMEM_PATH) is not set, examples will be run on DRAM."
 fi
 
 N_FAILED=0
