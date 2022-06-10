@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include "common.h"
 #include "librpma.h"
 
 #ifdef TEST_MOCK_ALLOC
@@ -25,6 +26,39 @@ static struct rpma_srq_cfg Srq_cfg_default  = {
 	.rq_size = RPMA_DEFAULT_SRQ_SIZE,
 	.rcq_size = RPMA_DEFAULT_SRQ_SIZE
 };
+
+/* internal librpma API */
+
+/*
+ * rpma_srq_cfg_default -- return pointer to default share RQ configuration
+ * object
+ */
+struct rpma_srq_cfg *
+rpma_srq_cfg_default()
+{
+	return &Srq_cfg_default;
+}
+
+/*
+ * rpma_srq_cfg_get_rcqe -- ibv_create_cq(..., int cqe, ...) compatible variant
+ * of rpma_srq_cfg_get_rcq_size(). Round down the rcq_size when it is too big
+ * for storing into an int type of value. Convert otherwise.
+ */
+int
+rpma_srq_cfg_get_rcqe(const struct rpma_srq_cfg *cfg, int *rcqe)
+{
+	if (rcqe == NULL)
+		return RPMA_E_INVAL;
+
+	uint32_t rcq_size;
+	int ret = rpma_srq_cfg_get_rcq_size(cfg, &rcq_size);
+	if (ret)
+		return ret;
+
+	*rcqe = CLIP_TO_INT(rcq_size);
+
+	return 0;
+}
 
 /* public librpma API */
 

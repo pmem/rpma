@@ -25,12 +25,6 @@
 /* the maximum message size (in bytes) that can be posted inline */
 #define RPMA_MAX_INLINE_DATA 8
 
-struct rpma_peer {
-	struct ibv_pd *pd; /* a protection domain */
-
-	int is_odp_supported; /* is On-Demand Paging supported */
-};
-
 /* internal librpma API */
 
 /*

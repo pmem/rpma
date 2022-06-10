@@ -14,6 +14,12 @@
 
 #include <rdma/rdma_cma.h>
 
+struct rpma_peer {
+	struct ibv_pd *pd; /* a protection domain */
+
+	int is_odp_supported; /* is On-Demand Paging supported */
+};
+
 /*
  * ERRORS
  * rpma_peer_create_qp() can fail with the following errors:
