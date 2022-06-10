@@ -6,14 +6,18 @@
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
 #
 # Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
-#                            [--stop-on-failure] [IP_address] [port]
+#                            [--stop-on-failure] [<pmem-path>] [IP_address] [port]
+#
+# Important: the given order of command line arguments is mandatory!
 #
 # Used environment variables:
 # - RPMA_EXAMPLES_PMEM_PATH
 # - RPMA_EXAMPLES_STOP_ON_FAILURE
 #
-# If the `RPMA_EXAMPLES_PMEM_PATH` environment variable is set, the examples will be run on the PMem
-# (a DAX device or a file on a file system DAX) given by this variable.
+# If the <pmem-path> argument is used or the `RPMA_EXAMPLES_PMEM_PATH` environment variable
+# is set, the examples will be run on the PMem (a DAX device or a file on a file system DAX)
+# given by this argument or variable. If both of them are set, the command line argument
+# <pmem-path> will be used. <pmem-path> has to start with '/'.
 #
 # If the `--stop-on-failure` argument is used or the `RPMA_EXAMPLES_STOP_ON_FAILURE`
 # environment variable is set to ON, then the integration tests will stop on the first failure.
@@ -27,10 +31,15 @@ TIMEOUT=3s
 
 USAGE_STRING="\
 Usage:\n\
-$ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] [--stop-on-failure] [IP_address] [port]\n\
+$ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] \
+[--stop-on-failure] [<pmem-path>] [IP_address] [port]\n\
 \n\
-If the \"RPMA_EXAMPLES_PMEM_PATH\" environment variable is set, the examples will be run on the PMem \
-(a DAX device or a file on a file system DAX) given by this variable.\n\
+Important: the given order of command line arguments is mandatory!\n\
+\n\
+If the \"<pmem-path>\" argument is used or the \"RPMA_EXAMPLES_PMEM_PATH\" environment variable \
+is set, the examples will be run on the PMem (a DAX device or a file on a file system DAX) \
+given by this argument or variable. If both of them are set, the command line argument \
+\"<pmem-path>\" will be used. \"<pmem-path>\" has to start with '/'.\n\
 \n\
 If the \"--stop-on-failure\" argument is used or the \"RPMA_EXAMPLES_STOP_ON_FAILURE\" \
 environment variable is set to ON, then the integration tests will stop on the first failure.\n"
@@ -55,6 +64,20 @@ fi
 STOP_ON_FAILURE=0
 if [ "$2" == "--stop-on-failure" -o "$RPMA_EXAMPLES_STOP_ON_FAILURE" == "ON" ]; then
 	STOP_ON_FAILURE=1
+	[ "$2" == "--stop-on-failure" ] && shift
+fi
+
+PMEM_PATH=""
+if [[ $2 = /* ]]; then
+	if [ -c "$2" -o -f "$2" ]; then
+		PMEM_PATH=$2
+		echo "Notice: running examples on PMem: $PMEM_PATH"
+		# PMEM_PATH overrides RPMA_EXAMPLES_PMEM_PATH
+		RPMA_EXAMPLES_PMEM_PATH=""
+	else
+		echo "Error: the $2 path is not a file nor a character device"
+		exit 1
+	fi
 	shift
 fi
 
@@ -213,7 +236,7 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $RPMA_EXAMPLES_PMEM_PATH
+	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
 	sleep 1
 
 	RV=0
@@ -246,7 +269,7 @@ function run_example() {
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
-		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $RPMA_EXAMPLES_PMEM_PATH
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH
 		;;
 	esac
 
@@ -323,9 +346,16 @@ function run_example() {
 
 ### SCRIPT STARTS HERE ###
 
-if [ "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
-	echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
-else
+if [ "$PMEM_PATH" == "" -a "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
+	_PATH=$RPMA_EXAMPLES_PMEM_PATH
+	if [[ "$_PATH" = "/*" ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
+		echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
+		PMEM_PATH=$RPMA_EXAMPLES_PMEM_PATH
+	else
+		echo "Notice: $RPMA_EXAMPLES_PMEM_PATH is not an absolute path of a file nor a character device"
+		exit 1
+	fi
+elif [ "$PMEM_PATH" == "" ]; then
 	echo "Notice: PMem path (RPMA_EXAMPLES_PMEM_PATH) is not set, examples will be run on DRAM."
 fi
 
