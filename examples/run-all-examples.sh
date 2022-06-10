@@ -82,6 +82,11 @@ if [[ $2 = /* ]]; then
 fi
 
 IP_ADDRESS=$2
+if [ "$IP_ADDRESS" != "" ] && [[ $IP_ADDRESS != *.*.*.* ]]; then
+	echo "Error: wrong format of IP address: $IP_ADDRESS"
+	exit 1
+fi
+
 PORT=$3
 if [ "$IP_ADDRESS" != "" -a "$PORT" == "" ]; then
 	PORT="7204"
