@@ -48,14 +48,25 @@ RPMA_DEPS="\
 # Update existing packages
 sudo apt-get update --allow-unauthenticated
 
+# update list of sources
+MIRROR="http://ddebs.ubuntu.com"
+echo "
+deb $MIRROR $(lsb_release -cs) main restricted universe multiverse
+deb $MIRROR $(lsb_release -cs)-updates main restricted universe multiverse
+deb $MIRROR $(lsb_release -cs)-proposed main restricted universe multiverse" | \
+	sudo tee -a /etc/apt/sources.list.d/ddebs.list
+
+# import missing GPG keys:
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C8CAB6595FDFF622
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 536F8F1DE80F6A35
+
 # Enable repositories with debug symbols packages (-dbgsym)
 sudo apt-get install --assume-yes --no-install-recommends lsb-release ubuntu-dbgsym-keyring
-echo "deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse
-deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse
-deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted universe multiverse" | \
-	sudo tee -a /etc/apt/sources.list.d/ddebs.list
+
+# Update existing packages once again
 sudo apt-get update --allow-unauthenticated
 
+# Install new packages
 sudo apt-get install --assume-yes --no-install-recommends --allow-unauthenticated \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
