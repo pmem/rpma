@@ -220,7 +220,11 @@ function run_example() {
 
 	S_FI="" # server's fault injection string
 	C_FI="" # client's fault injection string
-	if [ "$S_FI_VAL" != "" -a "$C_FI_VAL" != "" ]; then
+	if [ "$MODE" == "fault-injection" ]; then
+		if [ "$S_FI_VAL" == "" -o "$C_FI_VAL" == "" ]; then
+			echo "Error: both S_FI_VAL and C_FI_VAL have to be set in the fault-injection mode."
+			exit 1
+		fi
 		[ $S_FI_VAL -ge $GET_FI_MAX -o $C_FI_VAL -ge $GET_FI_MAX ] && LOG_OUTPUT="yes"
 		if [ $S_FI_VAL -gt 0 ]; then
 			S_FI="RPMA_FAULT_INJECTION=$S_FI_VAL"
@@ -234,6 +238,9 @@ function run_example() {
 		else
 			C_FI=""
 		fi
+	else
+		S_FI_VAL=0
+		C_FI_VAL=0
 	fi
 
 	SFAILED=0
