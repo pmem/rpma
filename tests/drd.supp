@@ -239,3 +239,80 @@
    fun:rpma_ep_listen
    ...
 }
+
+### RDMA HW
+
+{
+   rpma_conn_req_delete - conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dofork_range
+   ...
+   fun:ibv_destroy_cq*
+   fun:rpma_cq_delete
+   fun:rpma_conn_req_delete
+   ...
+}
+
+{
+   rpma_conn_req_delete - conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dofork_range
+   ...
+   fun:rdma_destroy_qp
+   fun:rpma_conn_req_delete
+   ...
+}
+
+{
+   rpma_conn_req_new - conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:ibv_req_notify_cq
+   fun:rpma_cq_new
+   fun:rpma_conn_req_from_id
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   rpma_conn_req_new - conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dontfork_range
+   ...
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp
+   fun:rpma_conn_req_from_id
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   rpma_conn_req_new - conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dontfork_range
+   ...
+   fun:ibv_create_cq*
+   fun:rpma_cq_new
+   fun:rpma_conn_req_from_id
+   fun:rpma_conn_req_new
+   ...
+}
+
+{
+   wait_and_validate_completion - conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:ibv_req_notify_cq
+   fun:rpma_cq_wait
+   fun:wait_and_validate_completion
+   ...
+}
+
+{
+   rpma_ep_listen - conflicting store of size 8
+   drd:ConflictingAccess
+   ...
+   fun:rpma_ep_listen
+   ...
+}
