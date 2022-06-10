@@ -252,16 +252,20 @@ function run_example() {
 	fi
 
 	# make sure the server's process is finished
-	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
-	if [ "$PID" != "" ]; then
-		echo "Notice: server is still running, waiting 1 sec ..."
-		sleep 1
+	if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+		PID=$(get_PID_of_server $IP_ADDRESS $PORT)
+		if [ "$PID" != "" ]; then
+			echo "Notice: server is still running, waiting 1 sec ..."
+			sleep 1
+		fi
 	fi
 	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 	if [ "$PID" != "" ]; then
 		echo "Notice: server is still running, killing it ..."
-		kill $PID
-		sleep 1
+		if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+			kill $PID
+			sleep 1
+		fi
 		kill -9 $PID 2>/dev/null
 	elif [ "$VLD_SCMD" != "" ]; then
 		serrno=$(grep "ERROR SUMMARY:" ${VLD_SLOG_FILE} | grep -Eoh "[0-9]+ errors" | awk '{print $1}')
