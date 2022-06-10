@@ -8,6 +8,8 @@
 # Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
 #                            [--stop-on-failure] [IP_address] [port]
 #
+# If RPMA_TEST_PMEM_PATH is set, the examples will be run on the given PMem device.
+#
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
@@ -148,7 +150,7 @@ function verify_SoftRoCE() {
 		PORT="7204"
 	fi
 
-	echo "Running examples for IP address $IP_ADDRESS and port $PORT"
+	echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
 	echo
 }
 
@@ -193,7 +195,7 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT
+	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
 	sleep 1
 
 	RV=0
@@ -226,7 +228,7 @@ function run_example() {
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
-		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT
+		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $RPMA_TEST_PMEM_PATH
 		;;
 	esac
 
@@ -303,6 +305,12 @@ function run_example() {
 
 ### SCRIPT STARTS HERE ###
 
+if [ "$RPMA_TEST_PMEM_PATH" != "" ]; then
+	echo "Notice: running examples on PMem: $RPMA_TEST_PMEM_PATH (RPMA_TEST_PMEM_PATH)."
+else
+	echo "Notice: PMem path (RPMA_TEST_PMEM_PATH) is not set, examples will be run on DRAM."
+fi
+
 N_FAILED=0
 LIST_FAILED=""
 N_SFAILED=0
@@ -342,8 +350,9 @@ if [ "$MODE" == "valgrind" -o "$MODE" == "fault-injection" ]; then
 	VLD_SCMD_ORIG=$VLD_SCMD
 	VLD_CCMD_ORIG=$VLD_CCMD
 
-	echo "Running examples with Valgrind is tuned for debug build of librpma on Ubuntu 22.04 (see the CircleCI build)."
-	echo "It may fail for any other OS, OS version, rdma-core version and for the release build."
+	echo -n "Notice: running examples with Valgrind is tuned for debug build of librpma "
+	echo -n "on Ubuntu 22.04 (see the CircleCI build). It may fail for any other OS, "
+	echo "OS version, rdma-core version and for the release build."
 	echo
 fi
 
