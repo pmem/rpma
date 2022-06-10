@@ -17,10 +17,35 @@ XXX
 
 XXX
 
-## Run integration tests on SoftRoCE
+## Run integration tests on SoftRoCE/RDMA HW
 
-XXX
+The integration tests are implemented as examples run together with the fault injection mechanism.
 
-## Run integration tests on RDMA HW
+In order to run the integration tests on SoftRoCE/RDMA HW, the `RPMA_TESTING_IP` environment
+variable has to be set to an IP address of a configured RDMA-capable network interface
+and then they can be started using one of the following commands:
 
-XXX
+```sh
+$ make run_all_examples_with_fault_injection
+```
+
+from the build directory or
+
+```sh
+$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
+```
+
+from the main directory of the librpma repository.
+
+If the `RPMA_TEST_PMEM_PATH` environment variable is set, the examples will be run on the PMem
+(a DAX device or a file on a file system DAX) given by this variable.
+
+By default the integration tests do not stop on a failure. In order to stop on the first failure,
+the `RPMA_INTEGRATION_TESTS_STOP_ON_FAILURE` environment variable has to be set to `ON`
+or the following command has to be run:
+
+```sh
+$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection --stop-on-failure
+```
+
+from the main directory of the librpma repository.
