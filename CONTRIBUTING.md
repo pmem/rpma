@@ -75,7 +75,7 @@ Here is the list of the most important rules:
 - Functions with local scope must be declared as `static`.
 
 Before contributing please remember to run:
-```shell
+```sh
 	$ make cstyle
 	$ make check-whitespace
 ```
@@ -116,6 +116,11 @@ sentences.  There can be as many paragraphs as necessary.
 
 Ref: rpma/issues#1
 ```
+## Coverage
+
+One of the basic principles of delivering a new functionality to a library is to deliver it simultaneously with the unit tests to ensure that the new features behave correctly.
+You have to expect that code that degrades the test coverage will not pass the review process unless it is explicitly marked as a draft.
+Keep in mind that only PRs with 100% coverage can be merged. Please check [DEVELOPMENT.md file](DEVELOPMENT.md) to see how to run all unit tests.
 
 ## Bug reports
 
