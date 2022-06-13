@@ -7,7 +7,14 @@ include(${SRC_DIR}/../../cmake/helpers.cmake)
 
 setup()
 
-set(THREADS 32)
+if(TRACER STREQUAL "memcheck")
+	set(THREADS 2)
+else()
+	set(THREADS 32)
+endif()
+
+message(NOTICE "TRACER=${TRACER}")
+message(NOTICE "THREADS=${THREADS}")
 
 if("$ENV{RPMA_TESTING_IP}" STREQUAL "")
 	set(TESTING_IP "127.0.0.1")
