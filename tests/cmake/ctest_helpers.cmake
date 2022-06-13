@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 #
 
 #
@@ -245,5 +245,5 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
+	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none memcheck drd helgrind)
 endfunction()

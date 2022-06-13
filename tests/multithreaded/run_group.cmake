@@ -7,7 +7,17 @@ include(${SRC_DIR}/../../cmake/helpers.cmake)
 
 setup()
 
-set(THREADS 32)
+if(NOT TRACER STREQUAL "none")
+	message(NOTICE "Valgrind tool: ${TRACER}")
+endif()
+
+if(TRACER STREQUAL "memcheck")
+	set(THREADS 2)
+else()
+	set(THREADS 32)
+endif()
+
+message(NOTICE "Number of threads: ${THREADS}")
 
 if("$ENV{RPMA_TESTING_IP}" STREQUAL "")
 	set(TESTING_IP "127.0.0.1")
