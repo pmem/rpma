@@ -81,11 +81,28 @@ if [[ $2 = /* ]]; then
 	shift
 fi
 
-IP_ADDRESS=$2
-PORT=$3
-if [ "$IP_ADDRESS" != "" -a "$PORT" == "" ]; then
-	PORT="7204"
+if [ "$PMEM_PATH" == "" -a "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
+	_PATH=$RPMA_EXAMPLES_PMEM_PATH
+	if [[ "$_PATH" = "/*" ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
+		echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
+		PMEM_PATH=$RPMA_EXAMPLES_PMEM_PATH
+	else
+		echo "Notice: $RPMA_EXAMPLES_PMEM_PATH is not an absolute path of a file nor a character device"
+		exit 1
+	fi
+elif [ "$PMEM_PATH" == "" ]; then
+	echo "Notice: PMem path (RPMA_EXAMPLES_PMEM_PATH) is not set, examples will be run on DRAM."
 fi
+
+if [ $2 ~= [0-9]*\.[0-9]*\.[0-9]*\.[0-9]* ]; then
+	IP_ADDRESS=$2
+	PORT=$3
+else
+	IP_ADDRES=""
+	PORT=$2
+fi
+
+[ "$PORT" == "" ] && PORT="7204"
 
 function print_out_log_file() {
 	echo
@@ -345,19 +362,6 @@ function run_example() {
 }
 
 ### SCRIPT STARTS HERE ###
-
-if [ "$PMEM_PATH" == "" -a "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
-	_PATH=$RPMA_EXAMPLES_PMEM_PATH
-	if [[ "$_PATH" = "/*" ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
-		echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
-		PMEM_PATH=$RPMA_EXAMPLES_PMEM_PATH
-	else
-		echo "Notice: $RPMA_EXAMPLES_PMEM_PATH is not an absolute path of a file nor a character device"
-		exit 1
-	fi
-elif [ "$PMEM_PATH" == "" ]; then
-	echo "Notice: PMem path (RPMA_EXAMPLES_PMEM_PATH) is not set, examples will be run on DRAM."
-fi
 
 N_FAILED=0
 LIST_FAILED=""
