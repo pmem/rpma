@@ -7,25 +7,22 @@ Here is a list of the most interesting options provided out of the box by CMake:
 | Name | Description | Values | Default |
 | - | - | - | - |
 | BUILD_DOC | Build the documentation | ON/OFF | ON |
-| BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
 | BUILD_TESTS | Build the tests | ON/OFF | ON |
-| CHECK_CSTYLE | Check code style of C sources | ON/OFF | OFF |
-| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo | Debug |
-| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
-| COVERAGE | Run coverage test | ON/OFF | OFF |
-| DEBUG_LOG_TRACE | Enable logging function traces | ON/OFF | OFF |
-| DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
-| DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
-| TESTS_NO_FORTIFY_SOURCE | Enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set | ON/OFF | OFF |
+| BUILD_EXAMPLES | Build the examples | ON/OFF | OFF |
+| BUILD_CHECK_CSTYLE | Check code style of C sources | ON/OFF | OFF |
+| BUILD_DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
+| TESTS_COVERAGE | Run coverage test | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
-| TESTS_USE_VALGRIND | Enable tests with Valgrind | ON/OFF | OFF |
-| TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with Valgrind pmemcheck (if found) | ON/OFF | OFF |
-| TEST_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface | ON/OFF | OFF |
+| TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
+| TESTS_PERF_TOOLS | Enable testing Python tools | ON/OFF | OFF |
+| TESTS_VERBOSE_OUTPUT | More verbose test outputs | ON/OFF | OFF |
+| DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
+| DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
+| DEBUG_USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
+| DEBUG_USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
+| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo | Release |
+| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
 | TEST_DIR | Working directory for tests | *dir path* | ./build/test |
-| TEST_PYTHON_TOOLS | Enable testing Python tools | ON/OFF | OFF |
-| TRACE_TESTS | More verbose test outputs | ON/OFF | OFF |
-| USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
-| USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
 
 You can use the following command to see all available options:
 

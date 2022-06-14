@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-getpid.c -- getpid mock
@@ -11,7 +11,7 @@
 #include "mocks-getpid.h"
 
 /*
- * getpid() shall be mocked only during tests otherwise ctest with COVERAGE=1
+ * getpid() shall be mocked only during tests otherwise ctest with TESTS_COVERAGE=1
  * does not work properly
  */
 bool enabled__wrap_getpid = false;

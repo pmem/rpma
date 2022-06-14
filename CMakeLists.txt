@@ -35,27 +35,25 @@ include(CheckCCompilerFlag)
 include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
-option(BUILD_EXAMPLES "build examples" ON)
-option(BUILD_TESTS "build tests" ON)
 option(BUILD_DOC "build documentation" ON)
+option(BUILD_TESTS "build tests" ON)
+option(BUILD_EXAMPLES "build examples" OFF)
+option(BUILD_CHECK_CSTYLE "check code style of C sources" OFF)
+option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 
-option(COVERAGE "run coverage test" OFF)
-option(DEVELOPER_MODE "enable developer checks" OFF)
-option(CHECK_CSTYLE "check code style of C sources" OFF)
-option(TRACE_TESTS "more verbose test outputs" OFF)
-option(USE_ASAN "enable AddressSanitizer (debugging)" OFF)
-option(USE_UBSAN "enable UndefinedBehaviorSanitizer (debugging)" OFF)
-
-option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface" OFF)
+option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
+option(TESTS_PERF_TOOLS "run tests for the performance analysis tools" OFF)
+option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
-option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
+option(TESTS_USE_VALGRIND "enable tests with valgrind (drd/helgrind/memcheck)" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
-option(TESTS_LONG "enable long running tests" OFF)
-option(TEST_PYTHON_TOOLS "run tests for Python tools" ON)
+option(TESTS_VERBOSE_OUTPUT "verbose test outputs" OFF)
 
 option(DEBUG_LOG_TRACE "enable logging function traces" OFF)
 option(DEBUG_FAULT_INJECTION "enable fault injection" OFF)
+option(DEBUG_USE_ASAN "enable AddressSanitizer (-fsanitize=address)" OFF)
+option(DEBUG_USE_UBSAN "enable UndefinedBehaviorSanitizer (-fsanitize=undefined)" OFF)
 
 # Do not treat include directories from the interfaces
 # of consumed Imported Targets as SYSTEM by default.
@@ -65,7 +63,8 @@ set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE "Debug")
+	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
+	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
@@ -190,25 +189,25 @@ add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
-if(USE_ASAN)
+if(DEBUG_USE_ASAN)
 	add_sanitizer_flag(address)
 endif()
 
-if(USE_UBSAN)
+if(DEBUG_USE_UBSAN)
 	add_sanitizer_flag(undefined)
 endif()
 
-if(COVERAGE)
+if(TESTS_COVERAGE)
        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
 endif()
 
-if(DEVELOPER_MODE)
+if(BUILD_DEVELOPER_MODE)
 	set(TESTS_NO_FORTIFY_SOURCE ON)
 
 	add_flag(-Wall)
 	add_flag(-Werror)
 
-	if(CHECK_CSTYLE)
+	if(BUILD_CHECK_CSTYLE)
 		add_dependencies(checkers cstyle)
 	endif()
 	add_dependencies(checkers check-whitespace)
@@ -286,7 +285,7 @@ if(BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-if(TEST_PYTHON_TOOLS)
+if(TESTS_PERF_TOOLS)
 	find_package(PYLINT REQUIRED pylint)
 	add_subdirectory(tools/perf)
 endif()

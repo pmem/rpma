@@ -21,9 +21,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - APIs:
   - rpma_cq_wait - returns RPMA_E_SHARED_CHANNEL if the completion channel is shared
 
+- Renamed CMake variables:
+  - CHECK_CSTYLE to BUILD_CHECK_CSTYLE
+  - COVERAGE to TESTS_COVERAGE
+  - DEVELOPER_MODE to BUILD_DEVELOPER_MODE
+  - TEST_PYTHON_TOOLS to TESTS_PERF_TOOLS
+  - TRACE_TESTS to TESTS_VERBOSE_OUTPUT
+  - USE_ASAN to DEBUG_USE_ASAN
+  - USE_UBSAN to DEBUG_USE_UBSAN
+
+- Changed default values of CMake variables:
+  - CMAKE_BUILD_TYPE from Debug to Release
+  - BUILD_EXAMPLES - from ON to OFF
+  - TESTS_PERF_TOOLS - from ON to OFF
+
 ### Fixed
 - APIs:
   - rpma_peer_delete - fixed memory leak when ibv_dealloc_pd() fails
+
+### Removed
+- CMake variables:
+  - removed unused TESTS_LONG
 
 ## [0.14.0] - 2022-03-15
 ### Added
