@@ -20,7 +20,7 @@ jobs:
           command: |
             mkdir build
             cd build
-            RPMA_TESTING_IP="will_be_set_later" cmake .. -DTESTS_USE_VALGRIND=ON -DTESTS_RDMA_CONNECTION=ON
+            RPMA_TESTING_IP="will_be_set_later" cmake .. -DTESTS_USE_VALGRIND=ON -DTESTS_RDMA_CONNECTION=ON -DBUILD_EXAMPLES=ON
             make -j$(nproc)
       - run:
           # Configure SoftRoCE and read the RPMA_TESTING_IP environment variable
