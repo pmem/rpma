@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CMake variables:
   - removed unused TESTS_LONG
 
+- old integration tests
+
 ## [0.14.0] - 2022-03-15
 ### Added
 - APIs:
