@@ -124,6 +124,7 @@ function(add_testcase name tracer testcase cmake_script)
 			-DTEST_EXECUTABLE=$<TARGET_FILE:${executable}>
 			-DTRACER=${tracer}
 			-DLONG_TESTS=${LONG_TESTS}
+			-DNPROC=${NPROC}
 			-P ${cmake_script})
 
 	set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
