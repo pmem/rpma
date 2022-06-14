@@ -129,8 +129,16 @@ $ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
 
 from the main directory of the librpma repository.
 
-If the `RPMA_EXAMPLES_PMEM_PATH` environment variable is set, the examples will be run on the PMem
-(a DAX device or a file on a file system DAX) given by this variable.
+If the `<pmem-path>` argument is used:
+
+```sh
+$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection <pmem-path>
+```
+
+or the `RPMA_EXAMPLES_PMEM_PATH` environment variable is set, the examples will be run on the PMem
+given by this argument or variable (a DAX device or a file on a file system DAX).
+If both of them are set, the command line argument `<pmem-path>` will be used.
+`<pmem-path>` has to start with '/'.
 
 By default the integration tests do not stop on a failure. In order to stop on the first failure,
 the `RPMA_EXAMPLES_STOP_ON_FAILURE` environment variable has to be set to `ON`
