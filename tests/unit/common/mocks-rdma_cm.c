@@ -188,8 +188,6 @@ rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
 {
 	check_expected(id);
 	assert_non_null(conn_param);
-	assert_null(conn_param->private_data);
-	assert_int_equal(conn_param->private_data_len, 0);
 	assert_int_equal(conn_param->responder_resources, RDMA_MAX_RESP_RES);
 	assert_int_equal(conn_param->initiator_depth, RDMA_MAX_INIT_DEPTH);
 	assert_int_equal(conn_param->flow_control, 1);
