@@ -545,6 +545,38 @@ connect_via_connect__success_outgoing(void **cstate_ptr)
 	assert_int_equal(conn, MOCK_CONN);
 }
 
+/*
+ * connect_via_connect_with_pdata__success_outgoing -- rpma_conn_req_connect()
+ * success (using an outgoing connection request)
+ */
+static void
+connect_via_connect_with_pdata__success_outgoing(void **cstate_ptr)
+{
+	/* WA for cmocka/issues#47 */
+	struct conn_req_new_test_state *cstate = *cstate_ptr;
+	assert_int_equal(setup__conn_req_new((void **)&cstate), 0);
+	assert_non_null(cstate);
+
+	/* configure mocks */
+	expect_value(rdma_connect, id, &cstate->id);
+	will_return(rdma_connect, MOCK_OK);
+	expect_value(rpma_conn_new, id, &cstate->id);
+	expect_value(rpma_conn_new, rcq, MOCK_GET_RCQ(cstate));
+	expect_value(rpma_conn_new, channel, MOCK_GET_CHANNEL(cstate));
+	will_return(rpma_conn_new, MOCK_CONN);
+
+	/* run test */
+	static char buff[] = DEFAULT_VALUE;
+	struct rpma_conn *conn = NULL;
+	struct rpma_conn_private_data pdata = {&buff, DEFAULT_LEN};
+	int ret = rpma_conn_req_connect(&cstate->req, &pdata, &conn);
+
+	/* verify the results */
+	assert_int_equal(ret, MOCK_OK);
+	assert_null(cstate->req);
+	assert_int_equal(conn, MOCK_CONN);
+}
+
 static const struct CMUnitTest test_connect[] = {
 	/* rpma_conn_req_connect() unit tests */
 	cmocka_unit_test(connect__req_ptr_NULL),
@@ -573,6 +605,8 @@ static const struct CMUnitTest test_connect[] = {
 		connect_via_connect__conn_new_ERRNO_subsequent_ERRNO2),
 	CONN_REQ_NEW_TEST_WITH_AND_WITHOUT_RCQ(
 		connect_via_connect__success_outgoing),
+	CONN_REQ_NEW_TEST_WITH_AND_WITHOUT_RCQ(
+		connect_via_connect_with_pdata__success_outgoing),
 	cmocka_unit_test(NULL)
 };
 
