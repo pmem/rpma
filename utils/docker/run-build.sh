@@ -13,9 +13,9 @@ set -e
 
 PREFIX=/usr
 CC=${CC:-gcc}
-CHECK_CSTYLE=${CHECK_CSTYLE:-ON}
+BUILD_CHECK_CSTYLE=${BUILD_CHECK_CSTYLE:-ON}
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
-TEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS:-ON}
+TESTS_PERF_TOOLS=${TESTS_PERF_TOOLS:-ON}
 EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 
 # turn off sanitizers only if (CI_SANITS == OFF)
@@ -130,7 +130,7 @@ function test_compile_all_examples_standalone() {
 }
 
 function run_pytest() {
-	[ "$TEST_PYTHON_TOOLS" != "ON" ] && return
+	[ "$TESTS_PERF_TOOLS" != "ON" ] && return
 	# find pytest
 	PYTESTS="pytest pytest3 pytest-3"
 	for bin in $PYTESTS; do
@@ -148,7 +148,7 @@ function run_pytest() {
 
 	# The python coverage corrupts the results of the C coverage,
 	# so we have to run them exclusively:
-	if [ "$COVERAGE" == "1" ]; then
+	if [ "$TESTS_COVERAGE" == "1" ]; then
 		# Run only pytest, because the C coverage
 		# is checked in this build.
 		eval $PYTEST
@@ -181,10 +181,10 @@ cd $WORKDIR/build
 CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
-	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
-	-DDEVELOPER_MODE=1 \
+	-DCHECK_CSTYLE=${BUILD_CHECK_CSTYLE} \
+	-DBUILD_DEVELOPER_MODE=1 \
 	-DUSE_ASAN=${CI_SANITS} \
-	-DTEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS} \
+	-DTEST_PYTHON_TOOLS=${TESTS_PERF_TOOLS} \
 	-DUSE_UBSAN=${CI_SANITS}
 
 make -j$(nproc)
@@ -206,16 +206,16 @@ CC=$CC \
 cmake .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
-	-DCOVERAGE=$COVERAGE \
-	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
-	-DTEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS} \
-	-DDEVELOPER_MODE=1
+	-DTESTS_COVERAGE=$TESTS_COVERAGE \
+	-DCHECK_CSTYLE=${BUILD_CHECK_CSTYLE} \
+	-DTEST_PYTHON_TOOLS=${TESTS_PERF_TOOLS} \
+	-DBUILD_DEVELOPER_MODE=1
 
 make -j$(nproc)
 ctest --output-on-failure
 sudo_password make -j$(nproc) install
 
-if [ "$COVERAGE" == "1" ]; then
+if [ "$TESTS_COVERAGE" == "1" ]; then
 	upload_codecov tests
 fi
 
@@ -247,9 +247,9 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
-	-DCHECK_CSTYLE=${CHECK_CSTYLE} \
-	-DTEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS} \
-	-DDEVELOPER_MODE=1
+	-DCHECK_CSTYLE=${BUILD_CHECK_CSTYLE} \
+	-DTEST_PYTHON_TOOLS=${TESTS_PERF_TOOLS} \
+	-DBUILD_DEVELOPER_MODE=1
 
 make -j$(nproc)
 ctest --output-on-failure

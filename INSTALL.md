@@ -34,7 +34,7 @@ to generate the Markdown documentation.
 
 - pylint
 
-**Note**: testing the Python tools can be turned off using the CMake 'TEST_PYTHON_TOOLS' option
+**Note**: testing the Python tools can be turned off using the CMake 'TESTS_PERF_TOOLS' option
 (see [CMake standard options](INSTALL.md#cmake-standard-options) and
 [Configuring CMake options](INSTALL.md#configuring-cmake-options)).
 
