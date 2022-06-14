@@ -391,3 +391,16 @@
    fun:rpma_ep_listen
    ...
 }
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs, version 1.14.39.0
+# librdmacm, version 1.3.39.0
+{
+   rpma_mr_reg - possible data race during write of size 4 (multithreaded-mr-rpma_mr_reg_0_helgrind)
+   Helgrind:Race
+   fun:ibv_dontfork_range
+   fun:ibv_reg_mr_iova2
+   fun:rpma_peer_mr_reg
+   fun:rpma_mr_reg
+   ...
+}
