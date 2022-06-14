@@ -11,7 +11,7 @@ The **Remote Persistent Memory Access (RPMA) Library** is a C library to simplif
 
 ## Installing
 
-If you want to install this library please check out [INSTALL.md file](INSTALL.md).
+If you want to install this library please check out [INSTALL.md](INSTALL.md) file.
 
 ## Contact Us
 
