@@ -45,7 +45,6 @@ if(TESTS_RDMA_CONNECTION)
 endif()
 
 add_subdirectory(unit)
-add_subdirectory(integration)
 if(TESTS_RDMA_CONNECTION)
 	add_subdirectory(multithreaded)
 endif()
