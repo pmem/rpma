@@ -37,7 +37,41 @@
 {
    Race while reading the name of time zone ("GMT").
    drd:ConflictingAccess
+   fun:strcmp
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
    fun:strlen
+   fun:__tzstring
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   fun:strlen
+   fun:__tzstring
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   fun:bcmp
+   fun:__tzstring_len
    fun:__tzstring
    fun:__tzfile_compute
    fun:__tz_convert
@@ -54,7 +88,18 @@
    fun:__tzstring
    fun:__tzfile_compute
    fun:__tz_convert
-   fun:get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   fun:strcmp
+   fun:__tzfile_compute
+   fun:__tz_convert
+   fun:__vsyslog_internal
+   fun:__syslog_chk
    fun:rpma_log_default_function
    ...
 }
