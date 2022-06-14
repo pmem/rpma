@@ -44,6 +44,15 @@ if(TESTS_RDMA_CONNECTION)
 	endif()
 endif()
 
+# set NPROC to number of processing units available
+execute_process(COMMAND nproc
+		OUTPUT_VARIABLE NPROC
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET)
+
+message(STATUS "Number of processing units available: ${NPROC}")
+
 add_subdirectory(unit)
 add_subdirectory(integration)
 if(TESTS_RDMA_CONNECTION)
