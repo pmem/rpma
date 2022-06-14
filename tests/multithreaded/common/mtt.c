@@ -79,15 +79,16 @@ mtt_thread_main(void *arg)
 	if (result) {
 		MTT_ERR(tr, "pthread_cond_timedwait", result);
 		(void) pthread_mutex_unlock(&mtt_sync.mtx);
-		return tr;
+		goto err_thread_fini_func;
 	}
 	if ((result = pthread_mutex_unlock(&mtt_sync.mtx))) {
 		MTT_ERR(tr, "pthread_mutex_unlock", result);
-		return tr;
+		goto err_thread_fini_func;
 	}
 
 	test->thread_func(ta->id, test->prestate, ta->state, tr);
 
+err_thread_fini_func:
 	if (test->thread_fini_func) {
 		/*
 		 * if the thread result is already non-zero provide tr_dummy
