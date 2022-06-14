@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - APIs:
   - rpma_peer_delete - fixed memory leak when ibv_dealloc_pd() fails
 
+### Removed
+- integration tests
+
 ## [0.14.0] - 2022-03-15
 ### Added
 - APIs:
