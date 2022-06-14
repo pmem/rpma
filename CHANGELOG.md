@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- DEVELOPMENT.md file containing the most important information needed during development of the library
+- THREAD_SAFETY.md file containing the analysis of thread safety of the librpma library
 - APIs:
   - rpma_conn_cfg_get_compl_channel - gets if the completion event channel can be shared by CQ and RCQ
   - rpma_conn_cfg_set_compl_channel - sets if the completion event channel can be shared by CQ and RCQ
@@ -14,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_conn_wait - waits for a completion event on the shared completion channel from CQ or RCQ
   - error RPMA_E_SHARED_CHANNEL - the completion event channel is shared and cannot be handled by any particular CQ
   - error RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
+
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
 
