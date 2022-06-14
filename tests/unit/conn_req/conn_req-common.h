@@ -16,6 +16,9 @@
 #include "mocks-rpma-cq.h"
 #include "mocks-stdio.h"
 
+#define DEFAULT_VALUE	"The default one"
+#define DEFAULT_LEN	(strlen(DEFAULT_VALUE) + 1)
+
 #define MOCK_CONN_REQ		(struct rpma_conn_req *)0xC410
 #define MOCK_GET_RCQ(cstate) \
 	((cstate)->get_cqe.rcq_size ? MOCK_RPMA_RCQ : NULL)
