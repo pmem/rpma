@@ -32,7 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed default values of CMake variables:
   - CMAKE_BUILD_TYPE from Debug to Release
-  - BUILD_EXAMPLES - from ON to OFF
   - TESTS_PERF_TOOLS - from ON to OFF
 
 ### Fixed

@@ -37,7 +37,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
 option(BUILD_DOC "build documentation" ON)
 option(BUILD_TESTS "build tests" ON)
-option(BUILD_EXAMPLES "build examples" OFF)
+option(BUILD_EXAMPLES "build examples" ON)
 option(BUILD_CHECK_CSTYLE "check code style of C sources" OFF)
 option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 
