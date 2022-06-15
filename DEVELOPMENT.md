@@ -8,7 +8,7 @@ Here is a list of the most interesting options provided out of the box by CMake:
 | - | - | - | - |
 | BUILD_DOC | Build the documentation | ON/OFF | ON |
 | BUILD_TESTS | Build the tests | ON/OFF | ON |
-| BUILD_EXAMPLES | Build the examples | ON/OFF | OFF |
+| BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
 | BUILD_CHECK_CSTYLE | Check code style of C sources | ON/OFF | OFF |
 | BUILD_DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
 | TESTS_COVERAGE | Run coverage test | ON/OFF | OFF |
