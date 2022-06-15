@@ -112,7 +112,6 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env DEFAULT_TEST_DIR=/dev/shm \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
 	--env TESTS_PERF_TOOLS=${TESTS_PERF_TOOLS:-ON} \
-	--env BUILD_CHECK_CSTYLE=${BUILD_CHECK_CSTYLE:-ON} \
 	--env FAULT_INJECTION=$FAULT_INJECTION \
 	--env CC=${CC:-gcc} \
 	--shm-size=4G \
