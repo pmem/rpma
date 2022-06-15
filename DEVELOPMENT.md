@@ -43,7 +43,7 @@ $ cmake ..
 CMake options can be changed with `-D` option e.g.:
 
 ```sh
-$ cmake -DBUILD_DOC=ON -DTEST_LONG=ON -DTEST_DIR=/rpma/build/test ..
+$ cmake -DBUILD_DOC=ON -DTEST_DIR=/rpma/build/test ..
 ```
 
 You can browse and edit CMake options using `cmake-gui` or `ccmake` e.g.:
