@@ -125,9 +125,9 @@ add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS
 add_example(NAME 03-read-to-persistent BIN client
 	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN server
-	SRCS 04-write-to-persistent/server.c common/common-conn.c)
+	SRCS 04-write-to-persistent/server.c common/common-conn.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS
-	SRCS 04-write-to-persistent/client.c common/common-conn.c)
+	SRCS 04-write-to-persistent/client.c common/common-conn.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN server
 	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
 add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS
