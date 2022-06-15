@@ -54,7 +54,6 @@ execute_process(COMMAND nproc
 message(STATUS "Number of processing units available: ${NPROC}")
 
 add_subdirectory(unit)
-add_subdirectory(integration)
 if(TESTS_RDMA_CONNECTION)
 	add_subdirectory(multithreaded)
 endif()
