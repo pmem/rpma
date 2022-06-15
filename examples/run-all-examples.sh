@@ -14,10 +14,10 @@
 # - RPMA_EXAMPLES_PMEM_PATH
 # - RPMA_EXAMPLES_STOP_ON_FAILURE
 #
-# If the <pmem-path> argument is used or the `RPMA_EXAMPLES_PMEM_PATH` environment variable
-# is set, the examples will be run on the PMem (a DAX device or a file on a file system DAX)
-# given by this argument or variable. If both of them are set, the command line argument
-# <pmem-path> will be used. <pmem-path> has to start with '/'.
+# In order to run the examples on a PMem (a DAX device or a file on a file system DAX),
+# an absolute path (starting with `/`) to this PMem has to be provided
+# either via the `<pmem-path>` argument or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable.
+# If both of them are set, the command line argument `<pmem-path>` will be used.
 #
 # If the `--stop-on-failure` argument is used or the `RPMA_EXAMPLES_STOP_ON_FAILURE`
 # environment variable is set to ON, then the integration tests will stop on the first failure.
@@ -36,12 +36,12 @@ $ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
 \n\
 Important: the given order of command line arguments is mandatory!\n\
 \n\
-If the \"<pmem-path>\" argument is used or the \"RPMA_EXAMPLES_PMEM_PATH\" environment variable \
-is set, the examples will be run on the PMem (a DAX device or a file on a file system DAX) \
-given by this argument or variable. If both of them are set, the command line argument \
-\"<pmem-path>\" will be used. \"<pmem-path>\" has to start with '/'.\n\
+In order to run the examples on a PMem (a DAX device or a file on a file system DAX), \
+an absolute path (starting with `/`) to this PMem has to be provided \
+either via the `<pmem-path>` argument or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable. \
+If both of them are set, the command line argument `<pmem-path>` will be used. \
 \n\
-If the \"--stop-on-failure\" argument is used or the \"RPMA_EXAMPLES_STOP_ON_FAILURE\" \
+If the `--stop-on-failure` argument is used or the `RPMA_EXAMPLES_STOP_ON_FAILURE` \
 environment variable is set to ON, then the integration tests will stop on the first failure.\n"
 
 BIN_DIR=$1
