@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer.h -- librpma peer-related internal definitions
@@ -13,6 +13,12 @@
 #include "cq.h"
 
 #include <rdma/rdma_cma.h>
+
+struct rpma_peer {
+	struct ibv_pd *pd; /* a protection domain */
+
+	int is_odp_supported; /* is On-Demand Paging supported */
+};
 
 /*
  * ERRORS

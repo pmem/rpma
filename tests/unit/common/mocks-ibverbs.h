@@ -22,6 +22,7 @@ extern struct ibv_cq Ibv_rcq;
 extern struct ibv_cq Ibv_cq_unknown;
 extern struct ibv_qp Ibv_qp;
 extern struct ibv_mr Ibv_mr;
+extern struct ibv_srq Ibv_srq;
 
 /* random values or pointers to mocked IBV entities */
 #define MOCK_VERBS		(&Verbs_context.context)
@@ -32,6 +33,7 @@ extern struct ibv_mr Ibv_mr;
 #define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
+#define MOCK_IBV_SRQ		(struct ibv_srq *)&Ibv_srq
 
 struct ibv_alloc_pd_mock_args {
 	int validate_params;
@@ -79,5 +81,10 @@ int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 int ibv_advise_mr_mock(struct ibv_pd *pd, enum ibv_advise_mr_advice advice,
 		uint32_t flags, struct ibv_sge *sg_list, uint32_t num_sge);
 #endif
+
+struct ibv_srq *ibv_create_srq(struct ibv_pd *pd,
+		struct ibv_srq_init_attr *srq_init_attr);
+
+int ibv_destroy_srq(struct ibv_srq *srq);
 
 #endif /* MOCKS_IBVERBS_H */

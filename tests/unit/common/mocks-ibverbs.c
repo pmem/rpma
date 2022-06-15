@@ -24,6 +24,7 @@ struct ibv_cq Ibv_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;
+struct ibv_srq Ibv_srq;
 
 /*
  * ibv_query_device -- ibv_query_device() mock
@@ -373,3 +374,36 @@ ibv_advise_mr_mock(struct ibv_pd *pd,
 	return mock_type(int);
 }
 #endif
+
+/*
+ * ibv_create_srq -- ibv_create_srq() mock
+ */
+struct ibv_srq *
+ibv_create_srq(struct ibv_pd *pd, struct ibv_srq_init_attr *srq_init_attr)
+{
+	assert_ptr_equal(pd, MOCK_IBV_PD);
+	assert_non_null(srq_init_attr);
+	assert_null(srq_init_attr->srq_context);
+	check_expected(srq_init_attr->attr.max_wr);
+	assert_int_equal(srq_init_attr->attr.max_sge, 1);
+	assert_int_equal(srq_init_attr->attr.srq_limit, 0);
+
+	struct ibv_srq *srq = mock_type(struct ibv_srq *);
+	if (!srq) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return srq;
+}
+
+/*
+ * ibv_destroy_srq -- ibv_destroy_srq() mock
+ */
+int
+ibv_destroy_srq(struct ibv_srq *srq)
+{
+	check_expected_ptr(srq);
+
+	return mock_type(int);
+}

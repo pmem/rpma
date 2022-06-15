@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2022, Fujitsu */
 
 /*
  * mocks-rpma-peer.c -- librpma peer.c module mocks

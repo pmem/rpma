@@ -30,6 +30,7 @@ set(SOURCES
 	private_data.c
 	rpma_err.c
 	utils.c
+	srq.c
 	srq_cfg.c)
 
 add_library(rpma SHARED ${SOURCES})

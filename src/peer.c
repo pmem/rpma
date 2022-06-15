@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer.c -- librpma peer-related implementations
@@ -24,12 +24,6 @@
 
 /* the maximum message size (in bytes) that can be posted inline */
 #define RPMA_MAX_INLINE_DATA 8
-
-struct rpma_peer {
-	struct ibv_pd *pd; /* a protection domain */
-
-	int is_odp_supported; /* is On-Demand Paging supported */
-};
 
 /* internal librpma API */
 
