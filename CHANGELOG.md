@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_cq_wait - returns RPMA_E_SHARED_CHANNEL if the completion channel is shared
 
 - Renamed CMake variables:
-  - CHECK_CSTYLE to BUILD_CHECK_CSTYLE
   - COVERAGE to TESTS_COVERAGE
   - DEVELOPER_MODE to BUILD_DEVELOPER_MODE
   - TEST_PYTHON_TOOLS to TESTS_PERF_TOOLS
@@ -41,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - CMake variables:
-  - removed unused TESTS_LONG
+  - CHECK_CSTYLE
+  - TESTS_LONG
 
 ## [0.14.0] - 2022-03-15
 ### Added
