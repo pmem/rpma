@@ -91,4 +91,19 @@ int rpma_mr_recv(struct ibv_qp *qp,
 	struct rpma_mr_local *dst,  size_t offset,
 	size_t len, const void *op_context);
 
+/*
+ * ASSUMPTIONS
+ * - srq != NULL
+ * - dst != NULL || (offset == 0 && len == 0)
+ *
+ * ERRORS
+ * rpma_mr_srq_recv() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - ibv_post_srq_recv(3) failed
+ */
+int
+rpma_mr_srq_recv(struct ibv_srq *ibv_srq,
+	struct rpma_mr_local *dst, size_t offset,
+	size_t len, const void *op_context);
+
 #endif /* LIBRPMA_MR_H */

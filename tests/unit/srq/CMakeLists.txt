@@ -15,6 +15,7 @@ function(add_test_srq name)
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-cq.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
               ${TEST_UNIT_COMMON_DIR}/mocks-rpma-srq_cfg.c
+              ${TEST_UNIT_COMMON_DIR}/mocks-rpma-mr.c
               ${LIBRPMA_SOURCE_DIR}/srq.c)
 
        target_compile_definitions(${name} PRIVATE TEST_MOCK_ALLOC)
@@ -26,4 +27,6 @@ function(add_test_srq name)
        add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_srq(get_rcq)
 add_test_srq(new_delete)
+add_test_srq(recv)

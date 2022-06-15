@@ -33,6 +33,7 @@
 #define MOCK_OP_CONTEXT		(void *)0xC417
 #define MOCK_COMPLETION_FD	0x00FE
 #define MOCK_QP_NUM		1289
+#define MOCK_SRQ		(struct rpma_srq *)0xCD12
 
 #define MOCK_OK			0
 #define MOCK_ERRNO		123456
