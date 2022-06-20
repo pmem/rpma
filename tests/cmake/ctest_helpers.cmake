@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2021, Intel Corporation
+# Copyright 2018-2022, Intel Corporation
 #
 
 #
@@ -18,7 +18,7 @@ set(GLOBAL_TEST_ARGS
 	-DTESTS_USE_FORCED_PMEM=${TESTS_USE_FORCED_PMEM}
 	-DTEST_ROOT_DIR=${TEST_ROOT_DIR})
 
-if(TRACE_TESTS)
+if(TESTS_VERBOSE_OUTPUT)
 	set(GLOBAL_TEST_ARGS ${GLOBAL_TEST_ARGS} --trace-expand)
 endif()
 
@@ -124,6 +124,7 @@ function(add_testcase name tracer testcase cmake_script)
 			-DTEST_EXECUTABLE=$<TARGET_FILE:${executable}>
 			-DTRACER=${tracer}
 			-DLONG_TESTS=${LONG_TESTS}
+			-DNPROC=${NPROC}
 			-P ${cmake_script})
 
 	set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
@@ -166,7 +167,7 @@ function(add_test_common name tracer testcase cmake_script)
 		return()
 	endif()
 
-	if ((USE_ASAN OR USE_UBSAN) AND ${tracer} IN_LIST vg_tracers)
+	if ((DEBUG_USE_ASAN OR DEBUG_USE_UBSAN) AND ${tracer} IN_LIST vg_tracers)
 		skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_SANITIZER_USED")
 		return()
 	endif()
@@ -245,5 +246,5 @@ function(add_multithreaded)
 		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
 	endif()
 
-	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none drd helgrind)
+	add_test_generic(NAME ${target} GROUP_SCRIPT TRACERS none memcheck drd helgrind)
 endfunction()

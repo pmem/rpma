@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM ubuntu:21.04
+FROM ubuntu:22.04
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -19,6 +19,9 @@ ARG SKIP_SCRIPTS_DOWNLOAD
 
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
+
+# Add the directory with the python modules to the environment variable
+ENV PATH /home/user/.local/bin:$PATH
 
 # base deps
 ENV BASE_DEPS "\
@@ -40,7 +43,6 @@ ENV TOOLS_DEPS "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
-	pylint3 \
 	python3-pip \
 	python3-pytest"
 
@@ -50,6 +52,7 @@ ENV PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # RPMA deps
@@ -96,7 +99,7 @@ USER $USER
 
 # Set required environment variables
 ENV OS ubuntu
-ENV OS_VER 21.04
+ENV OS_VER 22.04
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
 

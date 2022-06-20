@@ -35,25 +35,24 @@ include(CheckCCompilerFlag)
 include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
-option(BUILD_EXAMPLES "build examples" ON)
-option(BUILD_TESTS "build tests" ON)
 option(BUILD_DOC "build documentation" ON)
+option(BUILD_TESTS "build tests" ON)
+option(BUILD_EXAMPLES "build examples" ON)
+option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 
-option(COVERAGE "run coverage test" OFF)
-option(DEVELOPER_MODE "enable developer checks" OFF)
-option(CHECK_CSTYLE "check code style of C sources" OFF)
-option(TRACE_TESTS "more verbose test outputs" OFF)
-option(USE_ASAN "enable AddressSanitizer (debugging)" OFF)
-option(USE_UBSAN "enable UndefinedBehaviorSanitizer (debugging)" OFF)
-
-option(TESTS_SOFT_ROCE "enable tests that require a SoftRoCE-configured network interface" ON)
+option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
+option(TESTS_PERF_TOOLS "run tests for the performance analysis tools" OFF)
+option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
-option(TESTS_USE_VALGRIND "enable tests with valgrind (if found)" OFF)
+option(TESTS_USE_VALGRIND "enable tests with valgrind (drd/helgrind/memcheck)" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
-option(TESTS_LONG "enable long running tests" OFF)
-option(TESTS_USE_FAULT_INJECTION "run tests with fault injection" OFF)
-option(TEST_PYTHON_TOOLS "run tests for Python tools" ON)
+option(TESTS_VERBOSE_OUTPUT "verbose test outputs" OFF)
+
+option(DEBUG_LOG_TRACE "enable logging function traces" OFF)
+option(DEBUG_FAULT_INJECTION "enable fault injection" OFF)
+option(DEBUG_USE_ASAN "enable AddressSanitizer (-fsanitize=address)" OFF)
+option(DEBUG_USE_UBSAN "enable UndefinedBehaviorSanitizer (-fsanitize=undefined)" OFF)
 
 # Do not treat include directories from the interfaces
 # of consumed Imported Targets as SYSTEM by default.
@@ -63,7 +62,8 @@ set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE "Debug")
+	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
+	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
@@ -148,6 +148,15 @@ else()
 	add_flag(-DRDMA_GETADDRINFO_OLD_SIGNATURE=1)
 endif()
 
+# check if atomic_store() is supported
+atomic_store_supported(ATOMIC_STORE_SUPPORTED)
+if(ATOMIC_STORE_SUPPORTED)
+	message(STATUS "atomic_store() is supported")
+	add_flag(-DATOMIC_STORE_SUPPORTED=1)
+else()
+	message(WARNING "atomic_store() is NOT supported (too old gcc/clang compiler). Some *_set*() functions  will not be thread-safe!")
+endif()
+
 add_custom_target(checkers ALL)
 add_custom_target(cstyle)
 add_custom_target(check-whitespace)
@@ -174,32 +183,30 @@ add_flag(-Wsign-compare)
 add_flag(-Wunreachable-code-return)
 add_flag(-Wmissing-variable-declarations)
 add_flag(-fno-common)
-add_flag(-std=gnu99)
+add_flag(-std=gnu11)
 add_flag(-ggdb DEBUG)
 add_flag(-DDEBUG DEBUG)
 add_flag("-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" RELEASE)
 
-if(USE_ASAN)
+if(DEBUG_USE_ASAN)
 	add_sanitizer_flag(address)
 endif()
 
-if(USE_UBSAN)
+if(DEBUG_USE_UBSAN)
 	add_sanitizer_flag(undefined)
 endif()
 
-if(COVERAGE)
+if(TESTS_COVERAGE)
        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
 endif()
 
-if(DEVELOPER_MODE)
+if(BUILD_DEVELOPER_MODE)
 	set(TESTS_NO_FORTIFY_SOURCE ON)
 
 	add_flag(-Wall)
 	add_flag(-Werror)
 
-	if(CHECK_CSTYLE)
-		add_dependencies(checkers cstyle)
-	endif()
+	add_dependencies(checkers cstyle)
 	add_dependencies(checkers check-whitespace)
 	add_dependencies(checkers check-license)
 	add_dependencies(checkers check-commits)
@@ -275,7 +282,7 @@ if(BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-if(TEST_PYTHON_TOOLS)
+if(TESTS_PERF_TOOLS)
 	find_package(PYLINT REQUIRED pylint)
 	add_subdirectory(tools/perf)
 endif()
@@ -288,7 +295,10 @@ add_custom_target(config_softroce
 	COMMAND ${CMAKE_SOURCE_DIR}/tools/config_softroce.sh)
 
 add_custom_target(run_all_examples
-	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-on-SoftRoCE.sh ${CMAKE_BINARY_DIR}/examples)
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples)
 
 add_custom_target(run_all_examples_under_valgrind
-	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-on-SoftRoCE.sh ${CMAKE_BINARY_DIR}/examples --valgrind)
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --valgrind)
+
+add_custom_target(run_all_examples_with_fault_injection
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --fault-injection)

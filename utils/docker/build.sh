@@ -55,7 +55,7 @@ if [[ "$command" == "" ]]; then
 	esac
 fi
 
-if [ "$COVERAGE" == "1" ]; then
+if [ "$TESTS_COVERAGE" == "1" ]; then
 	docker_opts="${docker_opts} `bash <(curl -s https://codecov.io/env)`";
 fi
 
@@ -96,7 +96,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env GITHUB_SHA=$GITHUB_SHA \
 	--env WORKDIR=$WORKDIR \
 	--env SCRIPTSDIR=$SCRIPTSDIR \
-	--env COVERAGE=$COVERAGE \
+	--env TESTS_COVERAGE=$TESTS_COVERAGE \
 	--env CI_COMMIT=$CI_COMMIT \
 	--env CI_COMMIT_RANGE=$CI_COMMIT_RANGE \
 	--env CI_REPO_SLUG=$CI_REPO_SLUG \
@@ -111,8 +111,7 @@ docker run --privileged=true --name=$containerName -i $TTY \
 	--env TEST_BUILD=$TEST_BUILD \
 	--env DEFAULT_TEST_DIR=/dev/shm \
 	--env TEST_PACKAGES=${TEST_PACKAGES:-ON} \
-	--env TEST_PYTHON_TOOLS=${TEST_PYTHON_TOOLS:-ON} \
-	--env CHECK_CSTYLE=${CHECK_CSTYLE:-ON} \
+	--env TESTS_PERF_TOOLS=${TESTS_PERF_TOOLS:-ON} \
 	--env FAULT_INJECTION=$FAULT_INJECTION \
 	--env CC=${CC:-gcc} \
 	--shm-size=4G \

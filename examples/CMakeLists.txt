@@ -60,7 +60,16 @@ function(add_example)
 	endif()
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
-	add_executable(${target} ${EXAMPLE_SRCS} common/common-conn.c)
+	set(EXAMPLE_SRCS ${EXAMPLE_SRCS}
+		common/common-conn.c
+		common/common-hello.c)
+	if (EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM2_FOUND)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c)
+	elseif (EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c)
+	else()
+		add_executable(${target} ${EXAMPLE_SRCS})
+	endif()
 	add_dependencies(examples ${target})
 	set_target_properties(${target} PROPERTIES
 		OUTPUT_NAME ${EXAMPLE_BIN}
@@ -70,20 +79,18 @@ function(add_example)
 	target_include_directories(${target} PRIVATE common
 		${LIBRPMA_SOURCE_DIR} ${LIBIBVERBS_INCLUDE_DIRS})
 
-	if(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
-		target_include_directories(${target}
-			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
-		target_compile_definitions(${target}
-			PRIVATE USE_LIBPMEM)
-	endif()
-
 	if(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM2_FOUND)
 		target_include_directories(${target}
 			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
 		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM2)
+	elseif(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
+		target_include_directories(${target}
+			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
+		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
+		target_compile_definitions(${target}
+			PRIVATE USE_LIBPMEM)
 	endif()
 
 	if(EXAMPLE_USE_LIBPROTOBUFC)

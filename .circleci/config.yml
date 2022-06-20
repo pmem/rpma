@@ -6,7 +6,7 @@ workflows:
 jobs:
   build:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2204:2022.04.1
     steps:
       - checkout
       - run:
@@ -20,10 +20,10 @@ jobs:
           command: |
             mkdir build
             cd build
-            RPMA_SOFT_ROCE_IP="will_be_set_later" cmake .. -DTESTS_USE_VALGRIND=ON
+            RPMA_TESTING_IP="will_be_set_later" cmake .. -DTESTS_USE_VALGRIND=ON -DTESTS_RDMA_CONNECTION=ON
             make -j$(nproc)
       - run:
-          # Configure SoftRoCE and read the RPMA_SOFT_ROCE_IP environment variable
+          # Configure SoftRoCE and read the RPMA_TESTING_IP environment variable
           name: Configure SoftRoCE
           command: cd build && make config_softroce && source $BASH_ENV
       - run:

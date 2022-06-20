@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * ep.c -- librpma endpoint-related implementations
@@ -10,6 +10,7 @@
 
 #include "conn_cfg.h"
 #include "conn_req.h"
+#include "debug.h"
 #include "info.h"
 #include "librpma.h"
 #include "log_internal.h"
@@ -39,6 +40,9 @@ int
 rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		struct rpma_ep **ep_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+
 	if (peer == NULL || addr == NULL || port == NULL || ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -54,6 +58,8 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 		return RPMA_E_PROVIDER;
 	}
 
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_destroy_event_channel);
+
 	if (rdma_create_id(evch, &id, NULL, RDMA_PS_TCP)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_create_id()");
 		ret = RPMA_E_PROVIDER;
@@ -67,6 +73,8 @@ rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
 	ret = rpma_info_bind_addr(info, id);
 	if (ret)
 		goto err_info_delete;
+
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_info_delete);
 
 	if (rdma_listen(id, 0 /* backlog */)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_listen()");
@@ -110,6 +118,10 @@ err_destroy_event_channel:
 int
 rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 {
+	RPMA_DEBUG_TRACE;
+
+	int ret = 0;
+
 	if (ep_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -119,7 +131,7 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 
 	if (rdma_destroy_id(ep->id)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_destroy_id()");
-		return RPMA_E_PROVIDER;
+		ret = RPMA_E_PROVIDER;
 	}
 
 	rdma_destroy_event_channel(ep->evch);
@@ -127,7 +139,8 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 	free(ep);
 	*ep_ptr = NULL;
 
-	return 0;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	return ret;
 }
 
 /*
@@ -137,6 +150,9 @@ rpma_ep_shutdown(struct rpma_ep **ep_ptr)
 int
 rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
 	if (ep == NULL || fd == NULL)
 		return RPMA_E_INVAL;
 
@@ -155,6 +171,13 @@ int
 rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	RPMA_FAULT_INJECTION(RPMA_E_NO_EVENT,
+	{
+		errno = ENODATA;
+	});
+
 	if (ep == NULL || req_ptr == NULL)
 		return RPMA_E_INVAL;
 
@@ -174,6 +197,7 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 	}
 
 	/* we expect only one type of events here */
+	RPMA_FAULT_INJECTION_GOTO(RPMA_E_INVAL, err_ack);
 	if (event->event != RDMA_CM_EVENT_CONNECT_REQUEST) {
 		RPMA_LOG_ERROR("Unexpected event received: %s",
 				rdma_event_str(event->event));
@@ -184,6 +208,19 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req_ptr);
 	if (ret)
 		goto err_ack;
+
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER,
+	{
+		(void) rpma_conn_req_delete(req_ptr);
+		goto err_ack;
+	});
+
+	/* ACK the connection request event */
+	if (rdma_ack_cm_event(event)) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_ack_cm_event()");
+		(void) rpma_conn_req_delete(req_ptr);
+		return RPMA_E_PROVIDER;
+	}
 
 	return 0;
 

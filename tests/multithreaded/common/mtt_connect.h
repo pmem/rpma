@@ -29,14 +29,16 @@ void mtt_server_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr);
 
 void mtt_server_shutdown(struct rpma_peer **peer_ptr, struct rpma_ep **ep_ptr);
 
+int mtt_client_peer_new(struct mtt_result *tr, char *addr, struct rpma_peer **peer_ptr);
+
+void mtt_client_peer_delete(struct mtt_result *tr, struct rpma_peer **peer_ptr);
+
 int mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
-		struct rpma_peer **peer_ptr, struct rpma_conn **conn_ptr,
+		struct rpma_peer *peer, struct rpma_conn **conn_ptr,
 		struct rpma_conn_private_data *pdata);
 
-void mtt_client_err_disconnect(struct rpma_conn **conn_ptr,
-		struct rpma_peer **peer_ptr);
+void mtt_client_err_disconnect(struct rpma_conn **conn_ptr);
 
-void mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr,
-		struct rpma_peer **peer_ptr);
+void mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr);
 
 #endif /* MTT_CONNECT_H */

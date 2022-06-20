@@ -23,8 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        CONFIG: ["N=1 OS=ubuntu OS_VER=21.04 TYPE=normal CC=gcc   COVERAGE=1",
-                 "N=2 OS=ubuntu OS_VER=21.04 TYPE=normal CC=clang PUSH_IMAGE=1",
+        CONFIG: ["N=1 OS=ubuntu OS_VER=22.04 TYPE=normal CC=gcc   TESTS_COVERAGE=1",
+                 "N=2 OS=ubuntu OS_VER=22.04 TYPE=normal CC=clang PUSH_IMAGE=1",
                  "N=3 OS=fedora OS_VER=34    TYPE=normal CC=gcc   PUSH_IMAGE=1",
                  "N=4 OS=fedora OS_VER=34    TYPE=normal CC=clang AUTO_DOC_UPDATE=1",
                  # Debian 10 is a representative of OSes that have

@@ -1,6 +1,6 @@
 #
 # The following suppressions are suited for debug build
-# of librpma on Ubuntu 20.04 used in the CircleCI.
+# of librpma on Ubuntu 22.04 used in the CircleCI.
 # They may not work for any other OS, OS version,
 # rdma-core version and for the release build.
 #
@@ -46,5 +46,32 @@
    fun:ibverbs_get_device_list
    fun:ibv_get_device_list*
    fun:ucma_init
+   ...
+}
+
+{
+   SoftRoCE specific memory leak
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:rxe_alloc_context
+   ...
+}
+
+{
+   To be analysed later
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:ucma_init_device.part.0
+   ...
+}
+
+{
+   To be analysed later
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:insert_cma_dev.isra.0
    ...
 }

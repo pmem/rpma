@@ -22,3 +22,7 @@ if [ "$CI_RUN" == "YES" ]; then
 	git config --global --add safe.directory "$WORKDIR"
 	sudo_password git config --global --add safe.directory "$WORKDIR"
 fi
+
+# fix for: https://github.com/actions/checkout/issues/766 (git CVE-2022-24765)
+git config --global --add safe.directory "$WORKDIR"
+sudo_password git config --global --add safe.directory "$WORKDIR"

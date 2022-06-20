@@ -53,7 +53,6 @@ ENV PYTHON_DEPS "\
 ENV RPMA_DEPS "\
 	cmake \
 	file \
-	gawk \
 	groff \
 	graphviz \
 	libunwind-devel \

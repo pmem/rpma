@@ -99,6 +99,10 @@ log__all(void **level_ptr)
 			MOCK_CONFIGURE_LOG_FUNC(RPMA_LOG_LEVEL_FATAL);
 		}
 		RPMA_LOG_FATAL("%s", MOCK_MESSAGE);
+
+		/* RPMA_LOG_ALWAYS() has to always call rpma_log_default_function() */
+		expect_function_call(rpma_log_default_function);
+		RPMA_LOG_ALWAYS("%s", MOCK_MESSAGE);
 	}
 }
 

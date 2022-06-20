@@ -32,8 +32,11 @@ prestate_init(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 
-	(void) mtt_client_connect(tr, pr->addr, pr->port, &pr->peer,
-			&pr->conn, &pr->pdata);
+	if (mtt_client_peer_new(tr, pr->addr, &pr->peer))
+		return;
+
+	if (mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &pr->conn, &pr->pdata))
+		mtt_client_peer_delete(tr, &pr->peer);
 }
 
 /*
@@ -77,7 +80,8 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 
-	mtt_client_disconnect(tr, &pr->conn, &pr->peer);
+	mtt_client_disconnect(tr, &pr->conn);
+	mtt_client_peer_delete(tr, &pr->peer);
 }
 
 /* the server's part */
@@ -90,7 +94,8 @@ struct server_prestate {
 /*
  * server_main -- the main function of the server
  */
-int server_main(char *addr, unsigned port);
+int
+server_main(char *addr, unsigned port);
 
 /*
  * server_func -- the server function of this test

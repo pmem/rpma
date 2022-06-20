@@ -16,7 +16,7 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	const int line_no, const char *function_name,
 	const char *message_format, ...)
 {
-
+	function_called();
 }
 
 /*

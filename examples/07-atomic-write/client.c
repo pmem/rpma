@@ -145,11 +145,12 @@ main(int argc, char *argv[])
 
 	enum rpma_flush_type flush_type;
 	int remote_flush_type;
-	/*
-	 * rpma_mr_remote_get_flush_type() cannot fail here because:
-	 * remote_mr != NULL && remote_flush_type != NULL
-	 */
-	(void) rpma_mr_remote_get_flush_type(remote_mr, &remote_flush_type);
+	ret = rpma_mr_remote_get_flush_type(remote_mr, &remote_flush_type);
+	if (ret) {
+		fprintf(stderr, "rpma_mr_remote_get_flush_type() failed\n");
+		goto err_mr_remote_delete;
+	}
+
 	if (remote_flush_type & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
 		flush_type = RPMA_FLUSH_TYPE_PERSISTENT;
 	else

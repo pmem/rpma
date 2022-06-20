@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -17,6 +17,7 @@ set(SOURCES
 	conn_cfg.c
 	conn_req.c
 	cq.c
+	debug.c
 	ep.c
 	flush.c
 	info.c
@@ -28,15 +29,11 @@ set(SOURCES
 	peer_cfg.c
 	private_data.c
 	rpma_err.c
-	rpma.c)
+	utils.c)
 
 add_library(rpma SHARED ${SOURCES})
 
 target_include_directories(rpma PRIVATE . include)
-
-if(TESTS_USE_FAULT_INJECTION)
-	target_compile_definitions(rpma PUBLIC FAULT_INJECTION=1)
-endif()
 
 target_link_libraries(rpma PRIVATE
 	${LIBIBVERBS_LIBRARIES}
@@ -48,6 +45,14 @@ set_target_properties(rpma PROPERTIES
 	PUBLIC_HEADER "include/librpma.h")
 
 target_compile_definitions(rpma PRIVATE SRCVERSION="${SRCVERSION}")
+
+if(DEBUG_LOG_TRACE)
+	target_compile_definitions(rpma PRIVATE DEBUG_LOG_TRACE=1)
+endif()
+
+if(DEBUG_FAULT_INJECTION)
+	target_compile_definitions(rpma PRIVATE DEBUG_FAULT_INJECTION=1)
+endif()
 
 if(VALGRIND_FOUND)
 	target_include_directories(rpma PRIVATE src/valgrind)

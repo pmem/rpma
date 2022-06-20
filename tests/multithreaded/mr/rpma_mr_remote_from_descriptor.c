@@ -2,8 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * rpma_mr_remote_from_descriptor.c -- rpma_mr_remote_from_descriptor
- * multithreaded test
+ * rpma_mr_remote_from_descriptor.c -- rpma_mr_remote_from_descriptor multithreaded test
  */
 
 #include <stdlib.h>
@@ -33,10 +32,11 @@ prestate_init(void *prestate, struct mtt_result *tr)
 
 	int ret;
 
-	ret = mtt_client_connect(tr, pr->addr, pr->port, &pr->peer,
-		&pr->conn, &pr->pdata);
-	if (ret)
+	if (mtt_client_peer_new(tr, pr->addr, &pr->peer))
 		return;
+
+	if (mtt_client_connect(tr, pr->addr, pr->port, pr->peer, &pr->conn, &pr->pdata))
+		goto err_peer_delete;
 
 	/*
 	 * Create a remote memory registration structure from the received
@@ -54,13 +54,20 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	ret = rpma_mr_remote_get_size(pr->mr_ptr, &pr->mr_size);
 	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_remote_get_size", ret);
-		goto err_conn_disconnect;
+		goto err_mr_remote_delete;
 	};
 
 	return;
 
+err_mr_remote_delete:
+	/* delete the remote memory region's structure */
+	(void) rpma_mr_remote_delete(&pr->mr_ptr);
+
 err_conn_disconnect:
-	mtt_client_err_disconnect(&pr->conn, &pr->peer);
+	mtt_client_err_disconnect(&pr->conn);
+
+err_peer_delete:
+	mtt_client_peer_delete(tr, &pr->peer);
 }
 
 /*
@@ -87,6 +94,9 @@ thread(unsigned id, void *prestate, void *state,
 
 	if (memcmp(mr_ptr, pr->mr_ptr, pr->mr_size) != 0)
 		MTT_ERR_MSG(result, "Wrong content of the mr_remote", -1);
+
+	if ((ret = rpma_mr_remote_delete(&mr_ptr)))
+		MTT_RPMA_ERR(result, "rpma_mr_remote_delete", ret);
 }
 
 /*
@@ -112,6 +122,9 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 				-1);
 	}
 
+	if ((ret = rpma_mr_remote_delete(&pr->mr_ptr)))
+		MTT_RPMA_ERR(tr, "rpma_mr_remote_delete", ret);
+
 	if ((ret = rpma_conn_delete(&pr->conn)))
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
 
@@ -132,7 +145,8 @@ struct server_prestate {
 /*
  * server_main -- the main function of the server
  */
-int server_main(char *addr, unsigned port);
+int
+server_main(char *addr, unsigned port);
 
 /*
  * server_func -- the server function of this test

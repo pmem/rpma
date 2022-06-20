@@ -35,13 +35,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
-                 "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
+        CONFIG: ["N=Ubuntu22.04  OS=ubuntu  OS_VER=22.04",
+                 "N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7  TEST_PYTHON_TOOLS=OFF",
+                 "N=CentOS7      OS=centos  OS_VER=7  TESTS_PERF_TOOLS=OFF",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
                  "N=DebianS      OS=debian  OS_VER=stable",
@@ -77,13 +77,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
-                 "N=Ubuntu21.04  OS=ubuntu  OS_VER=21.04",
+        CONFIG: ["N=Ubuntu22.04  OS=ubuntu  OS_VER=22.04",
+                 "N=Ubuntu21.10  OS=ubuntu  OS_VER=21.10",
                  "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7  TEST_PYTHON_TOOLS=OFF",
+                 "N=CentOS7      OS=centos  OS_VER=7  TESTS_PERF_TOOLS=OFF",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
                  "N=DebianS      OS=debian  OS_VER=stable",
