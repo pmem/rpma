@@ -94,7 +94,7 @@ elif [ "$PMEM_PATH" == "" ]; then
 	echo "Notice: PMem path (RPMA_EXAMPLES_PMEM_PATH) is not set, examples will be run on DRAM."
 fi
 
-if [ $2 ~= [0-9]*\.[0-9]*\.[0-9]*\.[0-9]* ]; then
+if [[ $2 =~ [0-9]*\.[0-9]*\.[0-9]*\.[0-9]* ]]; then
 	IP_ADDRESS=$2
 	PORT=$3
 else
