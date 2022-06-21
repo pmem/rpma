@@ -6,19 +6,25 @@
 #
 
 #
-# Assessment: XXX required
+# Assessment: this suppression indicates a lack of MT safety.
 #
-# Probably these suppressions do not indicate a lack of MT safety.
+# syslog(3) has the "MT-Safe env locale" attributes(7)
+# and therefore it can be considered as not MT-safe by valgrind.
+# This issue can cause that logs of syslog(3) can be corrupted,
+# but it does not affect the MT-safety of the librpma library.
 #
-
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# It can occur in traces of all functions of librpma API.
+#
 {
    Race while reading the name of time zone ("GMT").
    Helgrind:Race
    ...
-   fun:__tzfile_compute
-   fun:__tz_convert
    fun:__vsyslog_internal
-   fun:syslog
+   fun:*syslog*
    fun:rpma_log_default_function
    ...
 }
@@ -91,19 +97,6 @@
    fun:__tzstring
    fun:__tzfile_compute
    fun:__tz_convert
-   fun:rpma_log_default_function
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-{
-   Race while reading the name of time zone ("GMT").
-   Helgrind:Race
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:__vsyslog_internal
-   fun:__syslog_chk
    fun:rpma_log_default_function
    ...
 }
