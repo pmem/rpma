@@ -45,7 +45,7 @@ If the '--stop-on-failure' argument is used or the 'RPMA_EXAMPLES_STOP_ON_FAILUR
 environment variable is set to ON, then the integration tests will stop on the first failure.\n"
 
 BIN_DIR=$1
-if [ "$BIN_DIR" == "" -o ! -d $BIN_DIR ]; then
+if [ "$BIN_DIR" == "" -o ! -d "$BIN_DIR" ]; then
 	echo "Error: missing required argument"
 	echo
 	echo -e $USAGE_STRING
