@@ -6,6 +6,29 @@
 #
 
 #
+# All suppressions should follow the following format:
+#
+# OS: a version of OS
+# OFED: a version of OFED if used
+# libibverbs: a version of libibverbs
+# librdmacm: a version of librdmacm
+# rdma-core: a version of the 'rdma-core' package if installed
+#
+# Occurs in traces of:
+# - rpma_mr_reg
+#
+# {
+#    Possible data race during write of size 4
+#    Helgrind:Race
+#    fun:ibv_dontfork_range
+#    fun:ibv_reg_mr_iova2
+#    fun:rpma_peer_mr_reg
+#    fun:rpma_mr_reg
+#    ...
+# }
+#
+
+#
 # Assessment: XXX required
 #
 # Probably these suppressions do not indicate a lack of MT safety.
