@@ -541,7 +541,12 @@ rpma_flush(struct rpma_conn *conn,
 		return RPMA_E_NOSUPP;
 	}
 
-	int flush_type;
+	/*
+	 * Initialize 'flush_type' to prevent
+	 * the "Conditional jump or move depends on uninitialised value(s)" error
+	 * in case of fault-injection in rpma_mr_remote_get_flush_type().
+	 */
+	int flush_type = 0;
 	/* it cannot fail because: mr != NULL && flush_type != NULL */
 	(void) rpma_mr_remote_get_flush_type(dst, &flush_type);
 
