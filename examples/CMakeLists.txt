@@ -138,6 +138,10 @@ add_example(NAME 06-multiple-connections BIN server
 	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
 	SRCS 06-multiple-connections/client.c)
+add_example(NAME 06s-multiple-connections BIN server
+	SRCS 06s-multiple-connections/server.c common/common-epoll.c)
+add_example(NAME 06s-multiple-connections BIN client
+	SRCS 06s-multiple-connections/client.c)
 add_example(NAME 07-atomic-write BIN server
 	SRCS 07-atomic-write/server.c)
 add_example(NAME 07-atomic-write BIN client
@@ -154,6 +158,12 @@ add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 09s-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
+	SRCS 09s-flush-to-persistent-GPSPM/server.c
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 09s-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
+	SRCS 09s-flush-to-persistent-GPSPM/client.c
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
 add_example(NAME 10-send-with-imm BIN server
 	SRCS 10-send-with-imm/server.c)
 add_example(NAME 10-send-with-imm BIN client
@@ -168,20 +178,10 @@ add_example(NAME 12-receive-completion-queue BIN server
 add_example(NAME 12-receive-completion-queue BIN client
 	SRCS 12-receive-completion-queue/client.c
 	12-receive-completion-queue/receive-completion-queue-common.c)
-add_example(NAME 13-flush-to-persistent-GPSPM-SHCCH BIN server USE_LIBPROTOBUFC
-	SRCS 13-flush-to-persistent-GPSPM-SHCCH/server.c
-	13-flush-to-persistent-GPSPM-SHCCH/GPSPM_flush.pb-c.c)
-add_example(NAME 13-flush-to-persistent-GPSPM-SHCCH BIN client USE_LIBPROTOBUFC
-	SRCS 13-flush-to-persistent-GPSPM-SHCCH/client.c
-	13-flush-to-persistent-GPSPM-SHCCH/GPSPM_flush.pb-c.c)
-add_example(NAME 14-receive-completion-queue-SHCCH BIN server
-	SRCS 14-receive-completion-queue-SHCCH/server.c)
-add_example(NAME 14-receive-completion-queue-SHCCH BIN client
-	SRCS 14-receive-completion-queue-SHCCH/client.c)
-add_example(NAME 15-multiple-connections-SHCCH BIN server
-	SRCS 15-multiple-connections-SHCCH/server.c common/common-epoll.c)
-add_example(NAME 15-multiple-connections-SHCCH BIN client
-	SRCS 15-multiple-connections-SHCCH/client.c)
+add_example(NAME 12s-receive-completion-queue BIN server
+	SRCS 12s-receive-completion-queue/server.c)
+add_example(NAME 12s-receive-completion-queue BIN client
+	SRCS 12s-receive-completion-queue/client.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
