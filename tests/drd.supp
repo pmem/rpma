@@ -6,6 +6,55 @@
 #
 
 #
+# All suppressions should follow the following format:
+#
+# Assessment: (XXX - to mark assessment that is not done yet)
+#
+# This suppression indicates a lack of MT safety.
+#
+# OS: a version of OS
+# OFED: a version of OFED if used
+# libibverbs: a version of libibverbs
+# librdmacm: a version of librdmacm
+# rdma-core: a version of the 'rdma-core' package if installed
+#
+# Occurs in traces of:
+# - function name
+#
+# There are 3 types of suppressions:
+#
+# - general one (on external API level)
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:ibv_dontfork_range
+#    ...
+# }
+#
+# - explicit librpma API call
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:rpma_conn_cfg_set_timeout
+#    ...
+# }
+#
+# - detailed external one (on external API)
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:funA
+#    fun:funB
+#    fun:funC
+#    fun:function_call_used directly form_public_API
+#    ...
+# }
+#
+
+#
 # Assessment: XXX required
 #
 # Probably these suppressions do not indicate a lack of MT safety.
