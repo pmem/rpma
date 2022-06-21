@@ -131,9 +131,9 @@ add_example(NAME 04-write-to-persistent BIN server
 add_example(NAME 04-write-to-persistent BIN client
 	SRCS 04-write-to-persistent/client.c)
 add_example(NAME 05-flush-to-persistent BIN server
-	SRCS 05-flush-to-persistent/server.c)
+	SRCS 05-flush-to-persistent/server.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN client
-	SRCS 05-flush-to-persistent/client.c)
+	SRCS 05-flush-to-persistent/client.c common/common-hello.c)
 add_example(NAME 06-multiple-connections BIN server
 	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
