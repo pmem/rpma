@@ -129,9 +129,9 @@ add_example(NAME 04-write-to-persistent BIN server
 add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS
 	SRCS 04-write-to-persistent/client.c common/common-conn.c)
 add_example(NAME 05-flush-to-persistent BIN server
-	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
+	SRCS 05-flush-to-persistent/server.c common/common-conn.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS
-	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
+	SRCS 05-flush-to-persistent/client.c common/common-conn.c common/common-hello.c)
 add_example(NAME 06-multiple-connections BIN server USE_LIBIBVERBS
 	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
