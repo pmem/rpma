@@ -383,3 +383,20 @@
    fun:rpma_mr_reg
    ...
 }
+
+# Suppression format
+#
+# OS: OS version
+# OFED: OFED version if used
+# libibverbs: libibverbs version
+# librdmacm: librdmacm version
+#
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    fun:ibv_dontfork_range
+#    fun:ibv_reg_mr_iova2
+#    fun:rpma_peer_mr_reg
+#    fun:rpma_mr_reg
+#    ...
+# }
