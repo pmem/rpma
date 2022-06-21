@@ -542,8 +542,12 @@ rpma_flush(struct rpma_conn *conn,
 	}
 
 	int flush_type;
-	/* it cannot fail because: mr != NULL && flush_type != NULL */
-	(void) rpma_mr_remote_get_flush_type(dst, &flush_type);
+	/* it can fail only because of fault-injection */
+	int ret = rpma_mr_remote_get_flush_type(dst, &flush_type);
+	if (ret) {
+		RPMA_LOG_ERROR("rpma_mr_remote_get_flush_type() failed");
+		return ret;
+	}
 
 	if (type == RPMA_FLUSH_TYPE_PERSISTENT &&
 	    0 == (flush_type & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)) {
