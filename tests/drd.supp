@@ -425,3 +425,49 @@
    fun:rpma_mr_reg
    ...
 }
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+{
+   rpma_conn_cfg_set_rq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_rq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_rq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_get_rq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_rq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_rq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_set_sq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_sq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_sq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_get_sq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_sq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_sq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_set_timeout - conflicting store of size 4 (multithreaded-conn_cfg-set_timeout_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_timeout
+   ...
+}
+
+{
+   rpma_conn_cfg_get_timeout - conflicting store of size 4 (multithreaded-conn_cfg-set_timeout_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_timeout
+   ...
+}
+
