@@ -425,3 +425,71 @@
    fun:rpma_mr_reg
    ...
 }
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+{
+   rpma_conn_cfg_set_rq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_rq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_rq_size
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
+{
+   rpma_conn_cfg_get_rq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_rq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_rq_size
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
+{
+   rpma_conn_cfg_set_sq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_sq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_sq_size
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
+{
+   rpma_conn_cfg_get_sq_size - conflicting store of size 4 (multithreaded-conn_cfg-set_sq_size_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_sq_size
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
+{
+   rpma_conn_cfg_set_timeout - conflicting store of size 4 (multithreaded-conn_cfg-set_timeout_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_timeout
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
+{
+   rpma_conn_cfg_get_timeout - conflicting store of size 4 (multithreaded-conn_cfg-set_timeout_0_drd)
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_timeout
+   fun:thread
+   fun:mtt_thread_main
+   obj:/usr/libexec/valgrind/vgpreload_drd-amd64-linux.so
+   fun:start_thread
+   fun:clone
+}
+
