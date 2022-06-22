@@ -446,3 +446,53 @@
    fun:rpma_mr_reg
    ...
 }
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_rq_size
+# - rpma_conn_cfg_set_sq_size
+# - rpma_conn_cfg_set_timeout
+{
+   rpma_conn_cfg_set_rq_size - possible data race during write of size 4 (multithreaded-conn_cfg-set_rq_size_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_rq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_get_rq_size - possible data race during write of size 4 (multithreaded-conn_cfg-set_rq_size_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_rq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_set_sq_size - possible data race during write of size 4 (multithreaded-conn_cfg-set_sq_size_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_sq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_get_sq_size - possible data race during write of size 4 (multithreaded-conn_cfg-set_sq_size_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_sq_size
+   ...
+}
+
+{
+   rpma_conn_cfg_set_timeout - possible data race during write of size 4 (multithreaded-conn_cfg-set_timeout_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_timeout
+   ...
+}
+
+{
+   rpma_conn_cfg_get_timeout - possible data race during write of size 4 (multithreaded-conn_cfg-set_timeout_0_helgrind)
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_timeout
+   ...
+}
