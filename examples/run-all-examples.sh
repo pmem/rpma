@@ -83,7 +83,7 @@ fi
 
 if [ "$PMEM_PATH" == "" -a "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
 	_PATH=$RPMA_EXAMPLES_PMEM_PATH
-	if [[ "$_PATH" = "/*" ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
+	if [[ $_PATH = /* ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
 		echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
 		PMEM_PATH=$RPMA_EXAMPLES_PMEM_PATH
 	else
