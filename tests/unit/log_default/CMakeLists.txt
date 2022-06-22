@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -24,7 +24,7 @@ function(build_log_default name)
 
 		set_target_properties(log_default-${name} PROPERTIES
 			LINK_FLAGS
-			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime,--wrap=strftime,--wrap=getpid")
+			"-Wl,--wrap=vsnprintf,--wrap=snprintf,--wrap=fprintf,--wrap=clock_gettime,--wrap=localtime_r,--wrap=strftime,--wrap=getpid")
 
 	add_test_generic(NAME log_default-${name} TRACERS none)
 endfunction()

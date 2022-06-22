@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-time.c -- time.h mocks
@@ -28,16 +28,19 @@ __wrap_clock_gettime(clockid_t __clock_id, struct timespec *__tp)
 }
 
 /*
- * __wrap_localtime -- localtime() mock
+ * __wrap_localtime_r -- localtime_r() mock
  */
 struct tm *
-__wrap_localtime(const time_t *__timer)
+__wrap_localtime_r(const time_t *restrict __timer, struct tm *restrict __result)
 {
 	assert_non_null(__timer);
+	assert_non_null(__result);
 	time_t *timer = mock_type(time_t *);
 	assert_memory_equal(__timer, timer, sizeof(time_t));
-
-	return mock_type(struct tm *);
+	struct tm *__tm = mock_type(struct tm *);
+	if (__tm)
+		memcpy(__result, __tm, sizeof(*__result));
+	return __tm;
 }
 
 size_t

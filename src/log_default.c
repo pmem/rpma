@@ -46,29 +46,32 @@ static const int rpma_log_level_syslog_severity[] = {
 static void
 rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 {
-	struct tm *info;
+	struct tm info;
 	char date[24];
 	struct timespec ts;
 	long usec;
 
 	const char error_message[] = "[time error] ";
 
-	if (clock_gettime(CLOCK_REALTIME, &ts) ||
-	    (NULL == (info = localtime(&ts.tv_sec)))) {
-		memcpy(buf, error_message, sizeof(error_message));
-		return;
-	}
+	if (clock_gettime(CLOCK_REALTIME, &ts))
+		goto err_message;
+
+	if (NULL == localtime_r(&ts.tv_sec, &info))
+		goto err_message;
 
 	usec = ts.tv_nsec / 1000;
-	if (!strftime(date, sizeof(date), "%b %d %H:%M:%S", info)) {
-		memcpy(buf, error_message, sizeof(error_message));
-		return;
-	}
+	if (!strftime(date, sizeof(date), "%b %d %H:%M:%S", &info))
+		goto err_message;
 
 	/* it cannot fail - please see the note above */
 	(void) snprintf(buf, buf_size, "%s.%06ld ", date, usec);
 	if (strnlen(buf, buf_size) == buf_size)
-		memcpy(buf, error_message, sizeof(error_message));
+		goto err_message;
+
+	return;
+
+err_message:
+	memcpy(buf, error_message, sizeof(error_message));
 }
 
 /*

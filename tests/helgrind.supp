@@ -82,8 +82,8 @@
 # Assessment: this suppression indicates a lack of MT safety.
 #
 # rpma_log_default_function() calls rpma_get_timestamp_prefix()
-# which calls localtime(3).
-# localtime(3) has the "MT-Unsafe race:tmbuf env locale" attributes(7)
+# which calls localtime_r(3).
+# localtime_r(3) has the "MT-Safe env locale" attributes(7)
 # and therefore it is considered as not MT-safe by valgrind.
 # This issue can cause that logs of rpma_log_default_function() can be corrupted,
 # but it does not affect the MT-safety of the librpma library.
