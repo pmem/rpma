@@ -187,10 +187,10 @@
 # the same: a quick check (a comparison) followed by the mutex lock and
 # recheck of the condition so the final assessment should be the same.
 #
-
 {
    Conflicting store/load of size 4
    drd:ConflictingAccess
+   ...
    fun:ucma_init
    ...
 }

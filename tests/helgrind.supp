@@ -155,10 +155,10 @@
 #
 # For details please see drd.supp.
 #
-
 {
    Possible data race during write of size 4
    Helgrind:Race
+   ...
    fun:ucma_init
    ...
 }
@@ -166,18 +166,6 @@
 #
 # Assessment: XXX required
 #
-
-{
-   Possible data race during write of size 4
-   Helgrind:Race
-   fun:ucma_set_af_ib_support
-   fun:ucma_init
-   fun:ucma_init
-   fun:rdma_getaddrinfo
-   fun:rpma_info_new
-   fun:rpma_utils_get_ibv_context
-   ...
-}
 
 {
    Possible data race during read of size 8
