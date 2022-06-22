@@ -34,7 +34,7 @@ static const int rpma_log_level_syslog_severity[] = {
 };
 
 /*
- * get_timestamp_prefix -- provide actual time in a readable string
+ * rpma_get_timestamp_prefix -- provide actual time in a readable string
  *
  * NOTE
  * This function is static now, so we know all possible calls of snprintf()
@@ -44,7 +44,7 @@ static const int rpma_log_level_syslog_severity[] = {
  * - buf != NULL && buf_size >= 16
  */
 static void
-get_timestamp_prefix(char *buf, size_t buf_size)
+rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 {
 	struct tm *info;
 	char date[24];
@@ -125,7 +125,7 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX] ||
 	    level == RPMA_LOG_LEVEL_ALWAYS) {
 		char times_tamp[45] = "";
-		get_timestamp_prefix(times_tamp, sizeof(times_tamp));
+		rpma_get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
 			rpma_log_level_names[(level == RPMA_LOG_LEVEL_ALWAYS) ?
 						RPMA_LOG_LEVEL_DEBUG : level],

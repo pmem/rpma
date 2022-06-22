@@ -84,7 +84,7 @@
    fun:strcmp
    fun:__tzfile_compute
    fun:__tz_convert
-   fun:get_timestamp_prefix
+   fun:rpma_get_timestamp_prefix
    fun:rpma_log_default_function
    ...
 }
@@ -107,7 +107,7 @@
    fun:__tzstring
    fun:__tzfile_compute
    fun:__tz_convert
-   fun:get_timestamp_prefix
+   fun:rpma_get_timestamp_prefix
    fun:rpma_log_default_function
    ...
 }
@@ -132,7 +132,7 @@
    fun:__tzstring
    fun:__tzfile_compute
    fun:__tz_convert
-   fun:get_timestamp_prefix
+   fun:rpma_get_timestamp_prefix
    fun:rpma_log_default_function
    ...
 }
