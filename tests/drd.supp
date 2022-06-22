@@ -388,3 +388,82 @@
    fun:rpma_mr_reg
    ...
 }
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_rq_size
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_rq_size
+   ...
+}
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_rq_size
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_rq_size
+   ...
+}
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_sq_size
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_sq_size
+   ...
+}
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_sq_size
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_sq_size
+   ...
+}
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_timeout
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_timeout
+   ...
+}
+
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_timeout
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_timeout
+   ...
+}
+
