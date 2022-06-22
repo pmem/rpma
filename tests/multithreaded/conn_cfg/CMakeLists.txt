@@ -22,4 +22,4 @@ add_multithreaded(NAME conn_cfg BIN set_rq_size
 add_multithreaded(NAME conn_cfg BIN set_sq_size
 	SRCS rpma_conn_cfg_set_sq_size.c rpma_conn_cfg_common.c)
 add_multithreaded(NAME conn_cfg BIN set_timeout
-	SRCS rpma_conn_cfg_set_timeout.c)
+	SRCS rpma_conn_cfg_set_timeout.c rpma_conn_cfg_common.c)
