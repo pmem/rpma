@@ -151,7 +151,7 @@
 }
 
 #
-# Assessment: These suppressions do not indicate a lack of MT safety.
+# Assessment: this suppression does not indicate a lack of MT safety.
 #
 # cma_dev_cnt was a global counter of elements populating the global array of
 # devices detected by librdmacm. It was used as an indicator of already done
@@ -187,11 +187,20 @@
 # the same: a quick check (a comparison) followed by the mutex lock and
 # recheck of the condition so the final assessment should be the same.
 #
-
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+#
 {
    Conflicting store/load of size 4
    drd:ConflictingAccess
+   ...
    fun:ucma_init
+   ...
+   fun:rdma_getaddrinfo
    ...
 }
 
