@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_cfg_set_cq_size.c -- rpma_conn_cfg_set_cq_size multithreaded test
@@ -36,7 +36,8 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	}
 
 	if (cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP)
-		MTT_ERR_MSG(tr, "Invalid cq_size: %d instead of %d", -1, cq_size, id);
+		MTT_ERR_MSG(tr, "Invalid cq_size: %d instead of %d", -1, cq_size,
+				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
 }
 
 int
