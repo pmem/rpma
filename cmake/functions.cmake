@@ -183,14 +183,17 @@ endfunction()
 
 function(valgrind_check_s_option)
 	set(ENV{PATH} ${VALGRIND_PREFIX}/bin:$ENV{PATH})
+
 	execute_process(COMMAND valgrind -s date
-			RESULT_VARIABLE VALGRIND_S_OPTION_RET_VAL
-			OUTPUT_QUIET
-			ERROR_QUIET)
-	if(VALGRIND_S_OPTION_RET_VAL)
+			ERROR_VARIABLE VALGRIND_S_OPTION_STDERR
+			OUTPUT_QUIET)
+	string(REGEX MATCH "Unknown option: -s" VALGRIND_S_OPTION_MATCH "${VALGRIND_S_OPTION_STDERR}")
+	if(VALGRIND_S_OPTION_MATCH)
 		set(VALGRIND_S_OPTION "" CACHE INTERNAL "")
+		message(STATUS "valgrind -s option is not supported")
 	else()
 		set(VALGRIND_S_OPTION "-s" CACHE INTERNAL "")
+		message(STATUS "valgrind -s option is supported")
 	endif()
 endfunction()
 
