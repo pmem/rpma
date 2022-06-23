@@ -124,8 +124,14 @@ function error_out_if_no_max_fault_injection() {
 	if [ "$FI_MAX" == "" ]; then
 		print_out_log_file $LOG_FILE
 		echo
-		echo "Error checking the maximum value of fault injection - exiting ..."
+		echo "Error: no fault-injection markers found in the log,"\
+		     "please check if librpma is built with the DEBUG_FAULT_INJECTION CMake variable set to ON."
 		echo
+		exit 1
+	fi
+	if ! [[ $FI_MAX =~ ^[0-9]+$ ]]; then
+		print_out_log_file $LOG_FILE
+		echo "Error: the maximum value of fault injection is not a number"
 		exit 1
 	fi
 }
