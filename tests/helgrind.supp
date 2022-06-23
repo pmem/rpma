@@ -127,94 +127,36 @@
 }
 
 #
-# Assessment: XXX required
+# Assessment: this suppression indicates a lack of MT safety.
 #
-
-{
-   Possible data race during read of size 8
-   Helgrind:Race
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:UnknownInlinedFun
-   fun:ucma_insert_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
 # - rpma_ep_listen
-# - rpma_info_new (ucma_set_af_ib_support)
 {
    Possible data race during read of size 8
    Helgrind:Race
-   fun:idm_set
+#  fun:idm_set or fun:UnknownInlinedFun
+   ...
    fun:ucma_insert_id
    fun:rdma_create_id2.part.0
    ...
 }
 
-{
-   Possible data race during read of size 1
-   Helgrind:Race
-   fun:strlen
-   fun:__vfprintf_internal
-   fun:__vasprintf_internal
-   fun:__asprintf_chk
-   fun:asprintf
-   fun:open_cdev
-   fun:rdma_create_event_channel
-   fun:ucma_alloc_id
-   fun:rdma_create_id2.part.0
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:ucma_get_device
-   fun:ucma_query_route
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   Possible data race during read of size 4
-   Helgrind:Race
-   fun:ucma_get_device
-   fun:ucma_query_addr
-   fun:rdma_bind_addr2
-   fun:rdma_bind_addr
-   fun:rpma_info_bind_addr
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
 # - rpma_ep_shutdown
-# - rpma_info_new (ucma_set_af_ib_support)
+# - rpma_conn_req_delete
 {
    Possible data race during read of size 8
    Helgrind:Race
@@ -225,23 +167,82 @@
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+#
+{
+   Possible data race during read of size 8
+   Helgrind:Race
+#  fun:open_cdev or none
+   ...
+   fun:rdma_create_event_channel
+   fun:ucma_alloc_id
+   fun:rdma_create_id2.part.0
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+#
+{
+   Possible data race during read of size 4
+   Helgrind:Race
+#  fun:ucma_get_device or none
+   ...
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_mr_reg
+# - rpma_conn_req_new
+#
 {
    Possible data race during read of size 4
    Helgrind:Race
    fun:ibv_dontfork_range
-   fun:ibv_reg_mr_iova*
-   fun:__ibv_reg_mr
-   fun:rpma_peer_mr_reg
-   fun:rpma_mr_reg
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_mr_dereg
+# - rpma_conn_req_delete
+#
 {
    Possible data race during read of size 4
    Helgrind:Race
    fun:ibv_dofork_range
-   fun:ibv_dereg_mr*
-   fun:rpma_mr_dereg
    ...
 }
 
@@ -256,30 +257,25 @@
    ...
 }
 
-### Ubuntu 22.04
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: Ubuntu 22.04
+# OFED: MLNX_OFED 5.6-2.0.9.0
+# libibverbs: 1.14.40.0
+# librdmacm: 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+# - rpma_conn_req_new
+# - rpma_ep_listen
+#
 {
-   rpma_utils_get_ibv_context
+   Possible data race during write of size 8
    Helgrind:Race
    fun:UnknownInlinedFun
    fun:UnknownInlinedFun
    fun:rdma_create_id2.part.0
-   ...
-}
-
-{
-   To be removed later
-   Helgrind:Race
-   ...
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   To be removed later
-   Helgrind:Race
-   ...
-   fun:rdma_create_id2.part.0
-   fun:rpma_ep_listen
    ...
 }
 
@@ -292,17 +288,6 @@
    ...
  }
 
-{
-   rpma_conn_req_delete - Possible data race during write of size 8 (multithreaded-conn-rpma_conn_req_new_0_helgrind)
-   Helgrind:Race
-   ...
-   fun:ucma_free_id
-   fun:rdma_destroy_id
-   fun:rpma_conn_req_destroy
-   fun:rpma_conn_req_delete
-   ...
-}
-
 #
 # OS - Ubuntu 22.04
 # OFED - MLNX_OFED 5.6-2.0.9.0
@@ -311,56 +296,10 @@
 #
 
 {
-   rpma_conn_req_delete - Possible data race during write of size 4
-   Helgrind:Race
-   fun:ibv_dofork_range
-   ...
-   fun:ibv_destroy_cq*
-   fun:rpma_cq_delete
-   fun:rpma_conn_req_delete
-   ...
-}
-
-{
-   rpma_conn_req_delete - Possible data race during write of size 4
-   Helgrind:Race
-   fun:ibv_dofork_range
-   ...
-   fun:rdma_destroy_qp
-   fun:rpma_conn_req_delete
-   ...
-}
-
-{
    rpma_conn_req_new - Possible data race during write of size 8
    Helgrind:Race
    ...
    fun:ibv_req_notify_cq
-   fun:rpma_cq_new
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_new
-   ...
-}
-
-{
-   rpma_conn_req_new - Possible data race during write of size 4
-   Helgrind:Race
-   fun:ibv_dontfork_range
-   ...
-   fun:rdma_create_qp_ex
-   fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_new
-   ...
-}
-
-{
-   rpma_conn_req_new - Possible data race during write of size 4
-   Helgrind:Race
-   fun:ibv_dontfork_range
-   ...
-   fun:ibv_create_cq*
    fun:rpma_cq_new
    fun:rpma_conn_req_from_id
    fun:rpma_conn_req_new
@@ -382,18 +321,5 @@
    Helgrind:Race
    ...
    fun:rpma_ep_listen
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-# libibverbs, version 1.14.39.0
-# librdmacm, version 1.3.39.0
-{
-   rpma_mr_reg - possible data race during write of size 4 (multithreaded-mr-rpma_mr_reg_0_helgrind)
-   Helgrind:Race
-   fun:ibv_dontfork_range
-   fun:ibv_reg_mr_iova2
-   fun:rpma_peer_mr_reg
-   fun:rpma_mr_reg
    ...
 }
