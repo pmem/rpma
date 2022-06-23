@@ -125,6 +125,7 @@ function(add_testcase name tracer testcase cmake_script)
 			-DTRACER=${tracer}
 			-DLONG_TESTS=${LONG_TESTS}
 			-DNPROC=${NPROC}
+			-DVALGRIND_S_OPTION=${VALGRIND_S_OPTION}
 			-P ${cmake_script})
 
 	set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
