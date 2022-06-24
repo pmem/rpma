@@ -5,6 +5,8 @@
 
 include(../../cmake/ctest_helpers.cmake)
 
+add_multithreaded(NAME mr BIN rpma_mr_dereg
+	SRCS rpma_mr_dereg.c)
 add_multithreaded(NAME mr BIN rpma_mr_get_descriptor
 	SRCS rpma_mr_get_descriptor.c)
 add_multithreaded(NAME mr BIN rpma_mr_get_ptr
