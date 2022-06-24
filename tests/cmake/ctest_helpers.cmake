@@ -53,7 +53,10 @@ function(find_packages)
 	endif()
 
 	if(TESTS_USE_VALGRIND AND NOT VALGRIND_FOUND)
-		message(WARNING "Valgrind not found. Valgrind tests will not be performed.")
+		message(WARNING "Valgrind not found. Valgrind tests will not be run.")
+	endif()
+	if(NOT TESTS_USE_VALGRIND AND VALGRIND_FOUND)
+		message(STATUS "NOTICE: valgrind tests (drd/helgrind/memcheck) will not be run (TESTS_USE_VALGRIND is OFF).")
 	endif()
 endfunction()
 
