@@ -13,7 +13,9 @@ Here is a list of the most interesting options provided out of the box by CMake:
 | TESTS_COVERAGE | Run coverage test | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | ON |
+| TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |
 | TESTS_PERF_TOOLS | Enable testing Python tools | ON/OFF | OFF |
+| TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface | ON/OFF | OFF |
 | TESTS_VERBOSE_OUTPUT | More verbose test outputs | ON/OFF | OFF |
 | DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
 | DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
@@ -112,9 +114,22 @@ $ make test
 
 The integration tests are implemented as examples run together with the fault injection mechanism.
 
-In order to run the integration tests on SoftRoCE/RDMA HW, the `RPMA_TESTING_IP` environment
-variable has to be set to an IP address of a configured RDMA-capable network interface
-and then they can be started using one of the following commands:
+In order to run the integration tests on SoftRoCE or RDMA HW:
+1. set the `RPMA_TESTING_IP` environment variable to an IP address of a configured RDMA-capable network interface:
+
+```sh
+$ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
+```
+
+2. build the librpma library with the `TESTS_RDMA_CONNECTION` and `DEBUG_FAULT_INJECTION` CMake variables set to `ON`:
+
+```sh
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DDEBUG_FAULT_INJECTION=ON ..
+$ make -j$(nproc)
+```
+
+and then the integration tests can be started using one of the following commands:
 
 ```sh
 $ make run_all_examples_with_fault_injection
@@ -127,6 +142,12 @@ $ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
 ```
 
 from the main directory of the librpma repository.
+
+To see all available configuration options please take a look at the help message printed out by the following command:
+
+```sh
+$ ./examples/run-all-examples.sh
+```
 
 In order to run the examples on a PMem (a DAX device or a file on a file system DAX),
 an absolute path (starting with `/`) to this PMem has to be provided
