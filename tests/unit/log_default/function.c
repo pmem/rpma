@@ -17,7 +17,7 @@
  * Where 'writing to stderr' is:
  * 1. in the following order:
  *     1. clock_gettime
- *     2. localtime
+ *     2. localtime_r
  *     3. strftime
  *     4. snprintf
  * 2. fprintf (no matter if the time-related sequence will succeed)
@@ -71,7 +71,7 @@ static const int rpma_log_level_syslog_severity[] = {
 
 typedef struct {
 	int clock_gettime_error;
-	int localtime_error;
+	int localtime_r_error;
 	int strftime_error;
 	int snprintf_no_eol;
 
@@ -212,31 +212,31 @@ static struct tm Tm = MOCK_TIME_OF_DAY;
 #define MOCK_GET_TIMESTAMP_CONFIGURE(x) \
 	if ((x)->clock_gettime_error) { \
 		will_return(__wrap_clock_gettime, NULL); \
-	} else if ((x)->localtime_error) { \
+	} else if ((x)->localtime_r_error) { \
 		will_return(__wrap_clock_gettime, &Timespec); \
-		will_return(__wrap_localtime, &Timespec); \
-		will_return(__wrap_localtime, NULL); \
+		will_return(__wrap_localtime_r, &Timespec); \
+		will_return(__wrap_localtime_r, NULL); \
 	} else if ((x)->strftime_error) { \
 		will_return(__wrap_clock_gettime, &Timespec); \
-		will_return(__wrap_localtime, &Timespec); \
-		will_return(__wrap_localtime, &Tm); \
+		will_return(__wrap_localtime_r, &Timespec); \
+		will_return(__wrap_localtime_r, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_ERROR); \
 	} else if ((x)->snprintf_no_eol) { \
 		will_return(__wrap_clock_gettime, &Timespec); \
-		will_return(__wrap_localtime, &Timespec); \
-		will_return(__wrap_localtime, &Tm); \
+		will_return(__wrap_localtime_r, &Timespec); \
+		will_return(__wrap_localtime_r, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_SUCCESS); \
 		will_return(__wrap_snprintf, MOCK_SNPRINTF_NO_EOL); \
 	} else { \
 		will_return(__wrap_clock_gettime, &Timespec); \
-		will_return(__wrap_localtime, &Timespec); \
-		will_return(__wrap_localtime, &Tm); \
+		will_return(__wrap_localtime_r, &Timespec); \
+		will_return(__wrap_localtime_r, &Tm); \
 		will_return(__wrap_strftime, MOCK_STRFTIME_SUCCESS); \
 		will_return(__wrap_snprintf, MOCK_OK); \
 	}
 
 #define MOCK_TIME_STR_EXPECTED(x) \
-	(((x)->clock_gettime_error || (x)->localtime_error || \
+	(((x)->clock_gettime_error || (x)->localtime_r_error || \
 			(x)->strftime_error || (x)->snprintf_no_eol) ? \
 			MOCK_TIME_ERROR_STR : MOCK_TIME_STR)
 
@@ -371,7 +371,7 @@ static mock_config config_gettime_error = {
 	1, 0, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
-static mock_config config_localtime_error = {
+static mock_config config_localtime_r_error = {
 	0, 1, 0, 0, RPMA_LOG_LEVEL_DEBUG, MOCK_FILE_NAME
 };
 
@@ -413,9 +413,9 @@ main(int argc, char *argv[])
 		{"function__stderr_path_gettime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_gettime_error},
-		{"function__stderr_path_localtime_error",
+		{"function__stderr_path_localtime_r_error",
 			function__stderr_path,
-			setup_thresholds, NULL, &config_localtime_error},
+			setup_thresholds, NULL, &config_localtime_r_error},
 		{"function__stderr_path_strftime_error",
 			function__stderr_path,
 			setup_thresholds, NULL, &config_strftime_error},
