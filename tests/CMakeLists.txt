@@ -42,6 +42,8 @@ if(TESTS_RDMA_CONNECTION)
 		message(STATUS "IP address used as a configured RDMA-capable network interface "
 			"(defined by the RPMA_TESTING_IP environment variable): $ENV{RPMA_TESTING_IP}")
 	endif()
+else()
+	message(STATUS "NOTICE: tests that require a configured RDMA-capable network interface are disabled (TESTS_RDMA_CONNECTION is OFF)")
 endif()
 
 # set NPROC to number of processing units available
