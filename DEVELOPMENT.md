@@ -1,8 +1,32 @@
 # DEVELOPMENT ENVIRONMENT SETTINGS
 
-## CMake standard options
+## Configuring CMake options
 
-Here is a list of the most interesting options provided out of the box by CMake:
+CMake creates many cache files and subdirectories in the directory where it is run, so it is recommended to run all CMake-related commands (like `cmake` and `ccmake`)  in a separate newly created subdirectory usually called `build`:
+
+```sh
+[rpma]$ mkdir build
+[rpma]$ cd build
+[rpma/build]$ cmake ..
+```
+
+All examples listed below use the `build` subdirectory as the CMake build directory.
+
+CMake options can be changed using the `-D` option e.g.:
+
+```sh
+[rpma/build]$ cmake -DBUILD_DOC=ON -DCMAKE_BUILD_TYPE=Debug ..
+```
+
+You can browse and edit the CMake options using `cmake-gui` or `ccmake` e.g.:
+
+```sh
+[rpma/build]$ ccmake ..
+```
+
+## CMake options of the librpma library
+
+Here is a list of the most interesting CMake options of the librpma library:
 
 | Name | Description | Values | Default |
 | - | - | - | - |
@@ -25,32 +49,10 @@ Here is a list of the most interesting options provided out of the box by CMake:
 | CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
 | TEST_DIR | Working directory for tests | *dir path* | ./build/test |
 
-You can use the following command to see all available options:
+The following command can be used to see all available CMake options:
 
 ```sh
-$ cmake -LAH ..
-```
-
-## Configuring CMake options
-
-CMake creates many cache files and subdirectories in the directory where it is run, so it is recommended to run all CMake-related commands (like `cmake` and `ccmake`)  in a separate newly created subdirectory usually called `build`:
-
-```sh
-$ mkdir build
-$ cd build
-$ cmake ..
-```
-
-CMake options can be changed with `-D` option e.g.:
-
-```sh
-$ cmake -DBUILD_DOC=ON -DTEST_DIR=/rpma/build/test ..
-```
-
-You can browse and edit CMake options using `cmake-gui` or `ccmake` e.g.:
-
-```sh
-$ ccmake ..
+[rpma/build]$ cmake -LAH ..
 ```
 
 # Testing
@@ -60,112 +62,135 @@ This section describes how to prepare the environment for execution of all avail
 - multi-threaded (MT) tests and
 - integration tests.
 
-## Run unit tests
+## Run only the unit tests
 
-The unit tests are implemented using the [cmocka](https://cmocka.org/) framework.
+The unit tests are implemented using the [cmocka](https://cmocka.org/) framework. They do not need any RDMA-capable network interface. All unit tests are located in the `./tests/unit/` subfolder of the main directory.
 
-All unit tests are located in the `./tests/unit/` subfolder of the main directory.
-
-To run unit tests you need to issue the following commands in the main directory of the librpma repository:
+In order to run **only** the unit tests:
+1. Build the librpma library with the `TESTS_RDMA_CONNECTION` and the `TESTS_USE_VALGRIND` CMake variables set to `OFF` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
-$ cd build
-$ cmake ..
-$ make -j$(nproc)
-$ make test
+[rpma]$ cd build
+[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=OFF -DTESTS_USE_VALGRIND=OFF ..
+[rpma/build]$ make -j$(nproc)
 ```
-The `ctest` command can be used instead of `make test`.
 
-## Run multi-threaded tests
+2. Run tests from the `build` subdirectory:
 
-To run all multi-threaded tests a configured RDMA-capable network interface is needed.
-
-### Run multi-threaded tests on SoftRoCE:
-- configure SoftRoCE using the `tools/config_softroce.sh` script or `make config_softroce`
-- set the `RPMA_TESTING_IP` environment variable:
 ```sh
-$ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
+[rpma/build]$ make test
 ```
-- turn on building the multi-threaded tests with valgrind support enabled and run them:
+
+or:
+
 ```sh
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DTESTS_USE_VALGRIND=ON ..
-$ make -j$(nproc)
-$ make test
+[rpma/build]$ ctest --output-on-failure
 ```
-The `ctest` command can be used instead of `make test`.
 
-### Run multi-threaded tests on RDMA HW:
-- configure RDMA HW
-- set the `RPMA_TESTING_IP` environment variable:
+to print out also the output of the failed tests.
+
+## Preparing the environment for running multi-threaded or integration tests on SoftRoCE or RDMA HW
+
+In order to run the multi-threaded or the integration tests:
+1. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
+2. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways:
+
 ```sh
-$ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
+[rpma]$ ./tools/config_softroce.sh
 ```
-- turn on building the multi-threaded tests with valgrind support enabled and run them:
+
+or:
+
 ```sh
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DTESTS_USE_VALGRIND=ON ..
-$ make -j$(nproc)
-$ make test
+[rpma/build]$ cmake ..
+[rpma/build]$ make config_softroce
 ```
-`ctest` command can be used instead of `make test`
 
-## Run integration tests on SoftRoCE/RDMA HW
-
-The integration tests are implemented as examples run together with the fault injection mechanism.
-
-In order to run the integration tests on SoftRoCE or RDMA HW:
-1. set the `RPMA_TESTING_IP` environment variable to an IP address of a configured RDMA-capable network interface:
+3. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
 
 ```sh
 $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
 ```
 
-2. build the librpma library with the `TESTS_RDMA_CONNECTION` and `DEBUG_FAULT_INJECTION` CMake variables set to `ON`:
+The IP address of an RDMA-capable network interface (SoftRoCE or RDMA HW) can be checked using the same commands as for configuring SoftRoCE (listed above).
+
+4. In order to run the **multi-threaded tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `TESTS_USE_VALGRIND` CMake variables set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DDEBUG_FAULT_INJECTION=ON ..
-$ make -j$(nproc)
+[rpma]$ cd build
+[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DTESTS_USE_VALGRIND=ON ..
+[rpma/build]$ make -j$(nproc)
 ```
 
-and then the integration tests can be started using one of the following commands:
+5. In order to run the **integration tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `DEBUG_FAULT_INJECTION` CMake variables set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
-$ make run_all_examples_with_fault_injection
+[rpma]$ cd build
+[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DDEBUG_FAULT_INJECTION=ON ..
+[rpma/build]$ make -j$(nproc)
 ```
 
-from the build directory or
+### Run unit and multi-threaded tests
+
+In order to run both: unit and multi-threaded tests, run the following command:
 
 ```sh
-$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
+[rpma/build]$ make test
 ```
 
-from the main directory of the librpma repository.
+or:
+
+```sh
+[rpma/build]$ ctest --output-on-failure
+```
+
+to print out also the output of the failed tests.
+
+### Run only multi-threaded tests
+
+In order to run **only** the multi-threaded tests, run the following command:
+
+```sh
+[rpma/build]$ ctest -R multithreaded --output-on-failure
+```
+
+### Run integration tests
+
+The integration tests are implemented as examples run together with the fault injection mechanism. 
+
+**valgrind must be installed** to run the integration tests.
+
+The integration tests can be started using one of the following commands:
+1. From the build directory:
+
+```sh
+[rpma/build]$ make run_all_examples_with_fault_injection
+```
+
+or:
+
+2. From the main directory of the librpma repository:
+
+```sh
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
+```
+
+In order to run the integration tests on a PMem (a DAX device or a file on a file system DAX), an absolute path (starting with `/`) to this PMem has to be provided either via the `<pmem-path>` argument:
+
+```sh
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection <pmem-path>
+```
+
+or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable. If both of them are set, the command line argument `<pmem-path>` will be used.
+
+By default the integration tests do not stop on a failure. In order to stop on the first failure, the `RPMA_EXAMPLES_STOP_ON_FAILURE` environment variable has to be set to `ON` or the following command has to be run:
+
+```sh
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection --stop-on-failure
+```
 
 To see all available configuration options please take a look at the help message printed out by the following command:
 
 ```sh
-$ ./examples/run-all-examples.sh
+[rpma]$ ./examples/run-all-examples.sh
 ```
-
-In order to run the examples on a PMem (a DAX device or a file on a file system DAX),
-an absolute path (starting with `/`) to this PMem has to be provided
-either via the `<pmem-path>` argument:
-
-```sh
-$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection <pmem-path>
-```
-
-or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable. If both of them are set,
-the command line argument `<pmem-path>` will be used.
-
-By default the integration tests do not stop on a failure. In order to stop on the first failure,
-the `RPMA_EXAMPLES_STOP_ON_FAILURE` environment variable has to be set to `ON`
-or the following command has to be run:
-
-```sh
-$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection --stop-on-failure
-```
-
-from the main directory of the librpma repository.
