@@ -20,7 +20,7 @@ endif()
 message(NOTICE "Number of threads: ${THREADS}")
 
 if("$ENV{RPMA_TESTING_IP}" STREQUAL "")
-	set(TESTING_IP "127.0.0.1")
+	message(FATAL_ERROR "RPMA_TESTING_IP is not set!")
 else()
 	set(TESTING_IP $ENV{RPMA_TESTING_IP})
 endif()
