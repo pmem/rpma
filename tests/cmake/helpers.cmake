@@ -102,7 +102,7 @@ function(execute_common expect_success output_file name)
         set(ENV{LIBRPMA_TRACER_PMEMCHECK} 1)
     elseif(${TRACER} STREQUAL memcheck)
         set(TRACE valgrind --error-exitcode=99 --tool=memcheck --leak-check=full ${VALGRIND_S_OPTION} --gen-suppressions=all
-           --suppressions=${TEST_ROOT_DIR}/memcheck-libibverbs.supp --suppressions=${TEST_ROOT_DIR}/memcheck-libunwind.supp)
+           --suppressions=${TEST_ROOT_DIR}/memcheck-libibverbs-librdmacm.supp --suppressions=${TEST_ROOT_DIR}/memcheck-libunwind.supp)
         set(ENV{LIBRPMA_TRACER_MEMCHECK} 1)
     elseif(${TRACER} STREQUAL helgrind)
         set(TRACE valgrind --error-exitcode=99 --tool=helgrind ${VALGRIND_S_OPTION} --gen-suppressions=all --suppressions=${TEST_ROOT_DIR}/helgrind.supp)
