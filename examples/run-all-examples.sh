@@ -395,7 +395,7 @@ verify_SoftRoCE
 if [ "$MODE" == "valgrind" -o "$MODE" == "fault-injection" ]; then
 	VLD_CMD="valgrind --leak-check=full"
 	VLD_SUPP_PATH=$(dirname $0)/../tests/
-	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs.supp"
+	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs-librdmacm.supp"
 	VLD_SUPP="${VLD_SUPP} --suppressions=${VLD_SUPP_PATH}/memcheck-libnl.supp"
 	VLD_SUPP="${VLD_SUPP} --gen-suppressions=all"
 	# prepare the server command
