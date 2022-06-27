@@ -43,7 +43,7 @@ add_cstyle(examples-all ${rpma_src_files})
 add_check_whitespace(examples-all ${rpma_src_files})
 
 function(add_example)
-	set(options USE_LIBIBVERBS USE_LIBPROTOBUFC)
+	set(options USE_LIBPMEM_IF_FOUND USE_LIBIBVERBS USE_LIBPROTOBUFC)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(EXAMPLE
@@ -89,6 +89,15 @@ function(add_example)
 			PRIVATE USE_LIBPMEM)
 	endif()
 
+	# XXX - remove when all examples have implemented the use of libpmem2
+	if(EXAMPLE_USE_LIBPMEM_IF_FOUND AND LIBPMEM_FOUND)
+               target_include_directories(${target}
+                       PRIVATE ${LIBPMEM_INCLUDE_DIRS})
+               target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
+               target_compile_definitions(${target}
+                       PRIVATE USE_LIBPMEM)
+       endif()
+
 	if(EXAMPLE_USE_LIBIBVERBS)
 		target_include_directories(${target}
 			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
@@ -116,21 +125,21 @@ add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS
 	SRCS 03-read-to-persistent/server.c common/common-conn.c)
 add_example(NAME 03-read-to-persistent BIN client
 	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c)
-add_example(NAME 04-write-to-persistent BIN server
+add_example(NAME 04-write-to-persistent BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 04-write-to-persistent/server.c common/common-conn.c)
-add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS
+add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 04-write-to-persistent/client.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN server
+add_example(NAME 05-flush-to-persistent BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS
+add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
-add_example(NAME 06-multiple-connections BIN server USE_LIBIBVERBS
+add_example(NAME 06-multiple-connections BIN server USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
-add_example(NAME 06-multiple-connections BIN client
+add_example(NAME 06-multiple-connections BIN client USE_LIBPMEM_IF_FOUND
 	SRCS 06-multiple-connections/client.c common/common-conn.c)
-add_example(NAME 07-atomic-write BIN server
+add_example(NAME 07-atomic-write BIN server USE_LIBPMEM_IF_FOUND
 	SRCS 07-atomic-write/server.c common/common-conn.c)
-add_example(NAME 07-atomic-write BIN client USE_LIBIBVERBS
+add_example(NAME 07-atomic-write BIN client USE_LIBIBVERBS USE_LIBPMEM_IF_FOUND
 	SRCS 07-atomic-write/client.c common/common-conn.c)
 add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
 	SRCS 08-messages-ping-pong/server.c common/common-conn.c
@@ -138,10 +147,10 @@ add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
 add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
 	SRCS 08-messages-ping-pong/client.c common/common-conn.c
 	08-messages-ping-pong/messages-ping-pong-common.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPROTOBUFC
+add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPROTOBUFC USE_LIBPMEM_IF_FOUND
 	SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPROTOBUFC
+add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPROTOBUFC USE_LIBPMEM_IF_FOUND
 	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
 add_example(NAME 10-send-with-imm BIN server USE_LIBIBVERBS
