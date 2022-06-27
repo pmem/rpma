@@ -256,9 +256,24 @@ if(VALGRIND_FOUND)
 	if(TESTS_USE_VALGRIND_PMEMCHECK)
 		find_pmemcheck()
 	endif()
-
 	if(VALGRIND_PMEMCHECK_FOUND)
 		add_flag(-DVG_PMEMCHECK_ENABLED=1)
+	endif()
+
+	if(NOT TESTS_USE_VALGRIND)
+		message(STATUS "NOTICE: valgrind tests (drd/helgrind/memcheck) will not be run (TESTS_USE_VALGRIND is OFF).")
+	endif()
+else()
+	if(TESTS_USE_VALGRIND)
+		message(FATAL_ERROR "Valgrind not found, so valgrind tests cannot be run, "
+				"but TESTS_USE_VALGRIND is ON. "
+				"Install valgrind or set TESTS_USE_VALGRIND to OFF.")
+	endif()
+
+	if(DEBUG_FAULT_INJECTION)
+		message(FATAL_ERROR "Valgrind not found, so integration tests cannot be run, "
+				"but DEBUG_FAULT_INJECTION is ON. "
+				"Install valgrind or set DEBUG_FAULT_INJECTION to OFF.")
 	endif()
 endif()
 

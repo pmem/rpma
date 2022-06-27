@@ -51,14 +51,6 @@ function(find_packages)
 	if(NOT LIBUNWIND_FOUND)
 		message(WARNING "libunwind-dev/devel not found. Stack traces from tests will not be reliable")
 	endif()
-
-	if(TESTS_USE_VALGRIND AND NOT VALGRIND_FOUND)
-		message(FATAL_ERROR "Valgrind not found, so valgrind tests cannot be run, but TESTS_USE_VALGRIND is ON. "
-			"Install valgrind or set TESTS_USE_VALGRIND to OFF.")
-	endif()
-	if(VALGRIND_FOUND AND NOT TESTS_USE_VALGRIND)
-		message(STATUS "NOTICE: valgrind tests (drd/helgrind/memcheck) will not be run (TESTS_USE_VALGRIND is OFF).")
-	endif()
 endfunction()
 
 # Function to build test with custom build options (e.g. passing defines)
