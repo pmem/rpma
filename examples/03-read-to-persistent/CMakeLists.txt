@@ -11,7 +11,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../cmake
 	${CMAKE_SOURCE_DIR}/../../cmake)
 
+include(${CMAKE_SOURCE_DIR}/../cmake/common.cmake)
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
+
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
@@ -36,35 +38,5 @@ endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-function(add_example name)
-	set(srcs ${ARGN})
-	set(srcs ${srcs} ../common/common-hello.c)
-	if (LIBPMEM2_FOUND)
-		set(srcs ${srcs} ../common/common-pmem2_map_file.c ../common/common-map_file_with_signature_check.c)
-	elseif (LIBPMEM_FOUND)
-		set(srcs ${srcs} ../common/common-pmem_map_file.c ../common/common-map_file_with_signature_check.c)
-	endif()
-	add_executable(${name} ${srcs})
-	target_include_directories(${name}
-		PRIVATE
-			${LIBRPMA_INCLUDE_DIRS}
-			../common)
-	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
-
-	if(LIBPMEM2_FOUND)
-		target_include_directories(${name}
-			PRIVATE ${LIBPMEM2_INCLUDE_DIRS})
-		target_link_libraries(${name} ${LIBPMEM2_LIBRARIES})
-		target_compile_definitions(${name}
-			PRIVATE USE_LIBPMEM2)
-	elseif(LIBPMEM_FOUND)
-		target_include_directories(${name}
-			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(${name} ${LIBPMEM_LIBRARIES})
-		target_compile_definitions(${name}
-			PRIVATE USE_LIBPMEM)
-	endif()
-endfunction()
-
-add_example(server server.c ../common/common-conn.c)
-add_example(client client.c ../common/common-conn.c)
+add_example_with_pmem(server server.c ../common/common-conn.c)
+add_example_with_pmem(client client.c ../common/common-conn.c)
