@@ -45,7 +45,9 @@ if(TESTS_RDMA_CONNECTION)
 			"(defined by the RPMA_TESTING_IP environment variable): $ENV{RPMA_TESTING_IP}")
 	endif()
 else()
-	message(STATUS "NOTICE: all multithreaded tests are disabled (they require a configured RDMA-capable network interface, but TESTS_RDMA_CONNECTION is OFF)")
+	message(STATUS "NOTICE: all multi-threaded and integration tests will be disabled "
+			"because TESTS_RDMA_CONNECTION is OFF"
+			"(they require a configured RDMA-capable network interface)")
 endif()
 
 # set NPROC to number of processing units available
