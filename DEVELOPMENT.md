@@ -36,7 +36,6 @@ Here is a list of the most interesting CMake options of the librpma library:
 | BUILD_DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
 | TESTS_COVERAGE | Run coverage test | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
-| TESTS_USE_VALGRIND | Enable tests with valgrind | ON/OFF | OFF |
 | TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |
 | TESTS_PERF_TOOLS | Enable testing Python tools | ON/OFF | OFF |
 | TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface | ON/OFF | OFF |
@@ -67,11 +66,11 @@ This section describes how to prepare the environment for execution of all avail
 The unit tests are implemented using the [cmocka](https://cmocka.org/) framework. They do not need any RDMA-capable network interface. All unit tests are located in the `./tests/unit/` subfolder of the main directory.
 
 In order to run **only** the unit tests (this is the default configuration):
-1. Build the librpma library with the `TESTS_RDMA_CONNECTION` and the `TESTS_USE_VALGRIND` CMake variables set to `OFF` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
+1. Build the librpma library with the `TESTS_RDMA_CONNECTION` CMake variable set to `OFF` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
 [rpma]$ cd build
-[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=OFF -DTESTS_USE_VALGRIND=OFF ..
+[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=OFF ..
 [rpma/build]$ make -j$(nproc)
 ```
 
@@ -128,11 +127,11 @@ The IP address of an RDMA-capable network interface (SoftRoCE or RDMA HW) can be
 
 ### Building the librpma library for running multi-threaded or integration tests
 
-1. In order to run the **multi-threaded tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `TESTS_USE_VALGRIND` CMake variables set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
+1. In order to run the **multi-threaded tests** build the librpma library with the `TESTS_RDMA_CONNECTION` CMake variable set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
 [rpma]$ cd build
-[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON -DTESTS_USE_VALGRIND=ON ..
+[rpma/build]$ cmake -DCMAKE_BUILD_TYPE=Debug -DTESTS_RDMA_CONNECTION=ON ..
 [rpma/build]$ make -j$(nproc)
 ```
 
