@@ -127,7 +127,7 @@ The detailed description is available at:
 
 ### Suppressions for libibverbs
 
-The suppressions for libibverbs are described in the [tests/memcheck-libibverbs.supp](tests/memcheck-libibverbs.supp) file.
+The suppressions for libibverbs are described in the [tests/memcheck-libibverbs-librdmacm.supp](tests/memcheck-libibverbs-librdmacm.supp) file.
 
 ### Suppressions for the drd tool
 
