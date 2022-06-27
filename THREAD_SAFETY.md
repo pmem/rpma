@@ -125,9 +125,9 @@ The detailed description is available at:
 
 ## Analysis of Valgrind suppressions
 
-### Suppressions for libibverbs
+### Suppressions for libibverbs and librdmacm
 
-The suppressions for libibverbs are described in the [tests/memcheck-libibverbs.supp](tests/memcheck-libibverbs.supp) file.
+The suppressions for libibverbs and librdmacm are described in the [tests/memcheck-libibverbs-librdmacm.supp](tests/memcheck-libibverbs-librdmacm.supp) file.
 
 ### Suppressions for the drd tool
 
