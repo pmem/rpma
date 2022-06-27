@@ -5,7 +5,7 @@
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
 #
-# Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
+# Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--integration-tests]
 #                            [--stop-on-failure] [<pmem-path>] [IP_address] [port]
 #
 # Important: the given order of command line arguments is mandatory!
@@ -31,7 +31,7 @@ TIMEOUT=3s
 
 USAGE_STRING="\
 Usage:\n\
-$ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] \
+$ run-all-examples.sh <binary-examples-directory> [--valgrind|--integration-tests] \
 [--stop-on-failure] [<pmem-path>] [IP_address] [port]\n\
 \n\
 Important: the given order of command line arguments is mandatory!\n\
@@ -53,8 +53,8 @@ if [ "$BIN_DIR" == "" -o ! -d "$BIN_DIR" ]; then
 fi
 
 MODE="none"
-if [ "$2" == "--fault-injection" ]; then
-	MODE="fault-injection"
+if [ "$2" == "--integration-tests" ]; then
+	MODE="integration-tests"
 	shift
 elif [ "$2" == "--valgrind" ]; then
 	MODE="valgrind"
@@ -139,7 +139,7 @@ function error_out_if_no_max_fault_injection() {
 function run_command_of() {
 	WHO=$1
 	shift
-	if [ "$MODE" != "fault-injection" ]; then
+	if [ "$MODE" != "integration-tests" ]; then
 		echo "[${WHO}]$ $*"
 		eval $*
 	elif [ "$LOG_OUTPUT" == "yes" ]; then
@@ -234,9 +234,9 @@ function run_example() {
 
 	S_FI="" # server's fault injection string
 	C_FI="" # client's fault injection string
-	if [ "$MODE" == "fault-injection" ]; then
+	if [ "$MODE" == "integration-tests" ]; then
 		if [ "$S_FI_VAL" == "" -o "$C_FI_VAL" == "" ]; then
-			echo "Error: both S_FI_VAL and C_FI_VAL have to be set in the fault-injection mode."
+			echo "Error: both S_FI_VAL and C_FI_VAL have to be set in the integration-tests mode."
 			exit 1
 		fi
 		[ $S_FI_VAL -ge $GET_FI_MAX -o $C_FI_VAL -ge $GET_FI_MAX ] && LOG_OUTPUT="yes"
@@ -268,19 +268,19 @@ function run_example() {
 	RV=0
 	case $EXAMPLE in
 	06-multiple-connections)
-		[ "$MODE" == "fault-injection" ] && SEEDS="8" || SEEDS="8 9 11 12"
+		[ "$MODE" == "integration-tests" ] && SEEDS="8" || SEEDS="8 9 11 12"
 		for SEED in $SEEDS; do
 			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
 			[ $RV -ne 0 ] && break
 		done
 		;;
 	07-atomic-write)
-		[ "$MODE" == "fault-injection" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
+		[ "$MODE" == "integration-tests" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $WORDS
 		;;
 	08-messages-ping-pong)
 		SEED=7
-		[ "$MODE" == "fault-injection" ] && ROUNDS=1 || ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
 		;;
 	10-send-with-imm)
@@ -291,7 +291,7 @@ function run_example() {
 		;;
 	12-receive-completion-queue)
 		START_VALUE=7
-		[ "$MODE" == "fault-injection" ] && ROUNDS=1 || ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
@@ -299,7 +299,7 @@ function run_example() {
 		;;
 	esac
 
-	if [ "$MODE" != "fault-injection" -a $RV -ne 0 ]; then
+	if [ "$MODE" != "integration-tests" -a $RV -ne 0 ]; then
 		echo "Error: example $EXAMPLE FAILED!"
 		N_FAILED=$(($N_FAILED + 1))
 		LIST_FAILED="${LIST_FAILED}${EXAMPLE}\n"
@@ -321,7 +321,7 @@ function run_example() {
 	fi
 
 	# make sure the server's process is finished
-	if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+	if [ "$MODE" != "integration-tests" -o $S_FI_VAL -gt 0 ]; then
 		PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 		if [ "$PID" != "" ]; then
 			echo "Notice: server is still running, waiting 1 sec ..."
@@ -331,7 +331,7 @@ function run_example() {
 	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 	if [ "$PID" != "" ]; then
 		echo "Notice: server is still running, killing it ..."
-		if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+		if [ "$MODE" != "integration-tests" -o $S_FI_VAL -gt 0 ]; then
 			kill $PID
 			sleep 1
 		fi
@@ -392,7 +392,7 @@ fi
 
 verify_SoftRoCE
 
-if [ "$MODE" == "valgrind" -o "$MODE" == "fault-injection" ]; then
+if [ "$MODE" == "valgrind" -o "$MODE" == "integration-tests" ]; then
 	VLD_CMD="valgrind --leak-check=full"
 	VLD_SUPP_PATH=$(dirname $0)/../tests/
 	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs.supp"
@@ -419,7 +419,7 @@ fi
 
 EXAMPLES=$(find $BIN_DIR -name server | sort)
 
-if [ "$MODE" != "fault-injection" ]; then
+if [ "$MODE" != "integration-tests" ]; then
 	for srv in $EXAMPLES; do
 		DIR=$(dirname $srv)
 		run_example $DIR
