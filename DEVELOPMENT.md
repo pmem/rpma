@@ -175,13 +175,13 @@ or:
 2. From the main directory of the librpma repository:
 
 ```sh
-[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --integration-tests
 ```
 
 In order to run the integration tests on a PMem (a DAX device or a file on a file system DAX), an absolute path (starting with `/`) to this PMem has to be provided either via the `<pmem-path>` argument:
 
 ```sh
-[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection <pmem-path>
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --integration-tests <pmem-path>
 ```
 
 or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable. If both of them are set, the command line argument `<pmem-path>` will be used.
@@ -189,7 +189,7 @@ or via the `RPMA_EXAMPLES_PMEM_PATH` environment variable. If both of them are s
 By default the integration tests do not stop on a failure. In order to stop on the first failure, the `RPMA_EXAMPLES_STOP_ON_FAILURE` environment variable has to be set to `ON` or the following command has to be run:
 
 ```sh
-[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --fault-injection --stop-on-failure
+[rpma]$ ./examples/run-all-examples.sh ./build/examples/ --integration-tests --stop-on-failure
 ```
 
 To see all available configuration options please take a look at the help message printed out by the following command:
