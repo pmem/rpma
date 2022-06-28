@@ -10,6 +10,8 @@ add_multithreaded(NAME conn BIN rpma_conn_get_private_data
 		../common/mtt_connect.c)
 add_multithreaded(NAME conn BIN rpma_conn_req_new
 	SRCS rpma_conn_req_new.c)
+add_multithreaded(NAME conn BIN rpma_conn_req_delete
+	SRCS rpma_conn_req_delete.c)
 
 add_multithreaded(NAME conn BIN rpma_read
 	SRCS rpma_read.c rpma_common.c server_rpma_common.c server_rpma_empty.c
