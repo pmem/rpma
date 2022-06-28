@@ -61,8 +61,11 @@ set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
 if(NOT CMAKE_BUILD_TYPE)
+	set(buildTypes None Debug Release RelWithDebInfo MinSizeRel)
 	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
-	set(CMAKE_BUILD_TYPE "Release")
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ..." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildTypes})
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
