@@ -8,6 +8,8 @@ include(../../cmake/ctest_helpers.cmake)
 add_multithreaded(NAME conn BIN rpma_conn_get_private_data
 	SRCS rpma_conn_get_private_data.c server_rpma_conn_get_private_data.c
 		../common/mtt_connect.c)
+add_multithreaded(NAME conn BIN rpma_conn_req_delete
+	SRCS rpma_conn_req_delete.c)
 add_multithreaded(NAME conn BIN rpma_conn_req_new
 	SRCS rpma_conn_req_new.c)
 
