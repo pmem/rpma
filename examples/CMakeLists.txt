@@ -89,7 +89,13 @@ function(add_example)
 		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
 		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM2)
-	elseif(LIBPMEM_FOUND)
+	endif()
+	#
+	# XXX revert it to:
+	# elseif(LIBPMEM_FOUND)
+	# when all examples have support for libpmem2.
+	#
+	if(LIBPMEM_FOUND)
 		target_include_directories(${target}
 			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
