@@ -27,11 +27,14 @@ jobs:
           name: Configure SoftRoCE
           command: cd build && make config_softroce && source $BASH_ENV
       - run:
-          name: Run tests
-          command: cd build && ctest --output-on-failure
+          name: Run tests without memcheck
+          command: cd build && ctest -E memcheck --output-on-failure
       - run:
           name: Run all examples
           command: cd build && make run_all_examples
       - run:
           name: Run all examples under valgrind
           command: cd build && make run_all_examples_under_valgrind
+      - run:
+          name: Run tests with memcheck
+          command: cd build && ctest --output-on-failure
