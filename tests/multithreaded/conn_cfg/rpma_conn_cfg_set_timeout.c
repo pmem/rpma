@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_cfg_set_timeout.c -- rpma_conn_cfg_set_timeout multithreaded test
@@ -9,6 +9,9 @@
 #include <librpma.h>
 
 #include "mtt.h"
+#include "rpma_conn_cfg_common.h"
+
+struct rpma_conn_cfg_common_prestate prestate = {NULL};
 
 #define TIMEOUT_MS_EXP 2000
 
@@ -45,15 +48,16 @@ init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 static void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 {
-	struct state *st = (struct state *)state;
+	struct rpma_conn_cfg_common_prestate *pr =
+		(struct rpma_conn_cfg_common_prestate *)prestate;
 	int ret, timeout_ms;
 
-	if ((ret = rpma_conn_cfg_set_timeout(st->cfg_ptr, TIMEOUT_MS_EXP))) {
+	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, TIMEOUT_MS_EXP))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_get_timeout(st->cfg_ptr, &timeout_ms))) {
+	if ((ret = rpma_conn_cfg_get_timeout(pr->cfg_ptr, &timeout_ms))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
@@ -88,14 +92,14 @@ main(int argc, char *argv[])
 		return -1;
 
 	struct mtt_test test = {
-			NULL,
-			NULL,
+			&prestate,
+			rpma_conn_cfg_common_prestate_init,
 			NULL,
 			init,
 			thread,
 			fini,
 			NULL,
-			NULL
+			rpma_conn_cfg_common_prestate_fini
 	};
 
 	return mtt_run(&test, args.threads_num);

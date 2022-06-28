@@ -405,3 +405,99 @@
    fun:rpma_mr_reg
    ...
 }
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_rq_size
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_rq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_rq_size
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_rq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_sq_size
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_sq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_sq_size
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_sq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_timeout
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_set_timeout
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.39.0.1
+# librdmacm: 1.39.0.1
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_timeout
+{
+   Possible data race during write of size 4
+   Helgrind:Race
+   fun:rpma_conn_cfg_get_timeout
+   ...
+}
