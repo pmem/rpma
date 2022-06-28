@@ -60,9 +60,19 @@ set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
 set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
+set(buildTypes None Debug Release RelWithDebInfo MinSizeRel)
+
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
-	set(CMAKE_BUILD_TYPE "Release")
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ..." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildTypes})
+else()
+	message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+	if(NOT CMAKE_BUILD_TYPE IN_LIST buildTypes)
+		message(WARNING "Unusual build type was set, please make sure it's a proper one. "
+			"Only following are supported by default: ${buildTypes}.")
+	endif()
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
