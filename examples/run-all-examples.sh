@@ -399,6 +399,15 @@ fi
 verify_SoftRoCE
 
 if [ "$MODE" == "valgrind" -o "$MODE" == "integration-tests" ]; then
+	if ! which valgrind > /dev/null; then
+		if [ "$MODE" == "valgrind" ]; then
+			echo "Error: valgrind not found - the examples cannot be run under valgrind."
+			exit 1
+		else # "$MODE" == "integration-tests"
+			echo "Error: valgrind not found - the integration tests cannot be run."
+			exit 1
+		fi
+	fi
 	VLD_CMD="valgrind --leak-check=full"
 	VLD_SUPP_PATH=$(dirname $0)/../tests/
 	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs.supp"

@@ -38,7 +38,7 @@ Here is a list of the most interesting CMake options of the librpma library:
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |
 | TESTS_PERF_TOOLS | Enable testing Python tools | ON/OFF | OFF |
-| TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface | ON/OFF | OFF |
+| TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface (valgrind required) | ON/OFF | OFF |
 | TESTS_VERBOSE_OUTPUT | More verbose test outputs | ON/OFF | OFF |
 | DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
 | DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
@@ -103,8 +103,9 @@ to print out also the output of the failed tests.
 ### Preparing the environment
 
 In order to run the multi-threaded or the integration tests:
-1. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
-2. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways:
+1. Valgrind must be installed to run both the multi-threaded and the integration tests.
+2. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
+3. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways:
 
 ```sh
 [rpma]$ ./tools/config_softroce.sh
@@ -117,7 +118,7 @@ or:
 [rpma/build]$ make config_softroce
 ```
 
-3. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
+4. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
 
 ```sh
 $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
@@ -135,7 +136,7 @@ The IP address of an RDMA-capable network interface (SoftRoCE or RDMA HW) can be
 [rpma/build]$ make -j$(nproc)
 ```
 
-2. In order to run the **integration tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `DEBUG_FAULT_INJECTION` CMake variables set to `ON`. Valgrind must be installed to run the integration tests. It is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures:
+2. In order to run the **integration tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `DEBUG_FAULT_INJECTION` CMake variables set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
 
 ```sh
 [rpma]$ cd build
@@ -170,8 +171,6 @@ In order to run **only** the multi-threaded tests, run the following command:
 ### Running integration tests
 
 The integration tests are implemented as examples run together with the fault injection mechanism. 
-
-**Valgrind must be installed** to run the integration tests.
 
 The integration tests can be started using one of the following commands:
 1. From the build directory:
