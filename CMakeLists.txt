@@ -302,4 +302,4 @@ add_custom_target(run_all_examples_under_valgrind
 	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --valgrind)
 
 add_custom_target(run_all_examples_with_fault_injection
-	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --fault-injection)
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --integration-tests)
