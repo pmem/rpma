@@ -2143,15 +2143,13 @@ int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  *
  *	struct rpma_conn;
  *	struct rpma_cq
- *	int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
+ *	int rpma_conn_wait(struct rpma_conn *conn, int flags, struct rpma_cq **cq, bool *is_rcq)
  *
  * DESCRIPTION
- * rpma_conn_wait() waits for a completion event on the shared completion
- * channel from CQ or RCQ, acks it and returns a CQ that caused the event
- * in the cq argument and a boolean value saying if it is RCQ or not
- * in the is_rcq argument (if is_rcq is not NULL). If rpma_conn_wait() succeeds,
- * then all available completions should be collected from the returned cq
- * using rpma_cq_get_wc(3).
+ * rpma_conn_wait() waits for a completion event on the shared completion channel from CQ or RCQ,
+ * acks it and returns a CQ that caused the event in the cq argument and a boolean value saying
+ * if it is RCQ or not in the is_rcq argument (if is_rcq is not NULL). If rpma_conn_wait() succeeds,
+ * then all available completions should be collected from the returned cq using rpma_cq_get_wc(3).
  *
  * RETURN VALUE
  * The rpma_conn_wait() function returns 0 on success or a negative
@@ -2169,7 +2167,7 @@ int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
  * SEE ALSO
  * rpma_conn_req_new(3), librpma(7) and https://pmem.io/rpma/
  */
-int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq);
+int rpma_conn_wait(struct rpma_conn *conn, int flags, struct rpma_cq **cq, bool *is_rcq);
 
 /** 3
  * rpma_conn_req_recv - initiate the receive operation
