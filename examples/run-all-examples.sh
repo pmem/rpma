@@ -200,30 +200,17 @@ function print_FI_if_failed() {
 	fi
 }
 
-function verify_SoftRoCE() {
-	SCRIPT_DIR=$(dirname $0)
-	$SCRIPT_DIR/../tools/config_softroce.sh verify
-	[ $? -ne 0 ] && exit 1
-
+function get_IP_of_RDMA_interface() {
 	STATE_OK="state ACTIVE physical_state LINK_UP"
-
-	if [ "$IP_ADDRESS" == "" ]; then
-		NETDEV=$(rdma link show | grep -e "$STATE_OK" | head -n1 | cut -d' ' -f8)
-		IP_ADDRESS=$(ip address show dev $NETDEV | grep -e inet | grep -v -e inet6 | cut -d' ' -f6 | cut -d/ -f1)
-		if [ "$IP_ADDRESS" == "" ]; then
-			echo "Error: not found any RDMA-capable network interface"
-			exit 1
-		fi
-	fi
-
-	echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
-	echo
+	NETDEV=$(rdma link show | grep -e "$STATE_OK" | head -n1 | cut -d' ' -f8)
+	IP_ADDRESS=$(ip address show dev $NETDEV | grep -e inet | grep -v -e inet6 | cut -d' ' -f6 | cut -d/ -f1)
+	echo $IP_ADDRESS
 }
 
 function get_PID_of_server() {
-	IP_ADDRESS=$1
+	IP_ADDR=$1
 	PORT=$2
-	ARGS="server $IP_ADDRESS $PORT"
+	ARGS="server $IP_ADDR $PORT"
 	PID=$(ps aux | grep -e "$ARGS" | grep -v -e "grep -e $ARGS" | awk '{print $2}')
 	echo $PID
 }
@@ -388,6 +375,19 @@ LIST_CFAILED=""
 S_LOG_FILE="nohup_server.out"
 C_LOG_FILE="nohup_client.out"
 
+if [ "$IP_ADDRESS" == "" -a "$RPMA_TESTING_IP" != "" ]; then
+	echo "Notice: no IP address given. Using RPMA_TESTING_IP=$RPMA_TESTING_IP."
+	IP_ADDRESS=$RPMA_TESTING_IP
+fi
+[ "$IP_ADDRESS" == "" ] && IP_ADDRESS=$(get_IP_of_RDMA_interface)
+if [ "$IP_ADDRESS" == "" ]; then
+	echo "Error: not found any RDMA-capable network interface"
+	exit 1
+fi
+
+echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
+echo
+
 JOBS=$(ps aux | grep -e "server $IP_ADDRESS $PORT" -e "client $IP_ADDRESS $PORT" | grep -v "grep -e")
 if [ "$JOBS" != "" ]; then
 	echo "Wait for the following processes to finish or kill them:"
@@ -395,8 +395,6 @@ if [ "$JOBS" != "" ]; then
 	echo "Error: cannot run examples, because some of them are still running"
 	exit 1
 fi
-
-verify_SoftRoCE
 
 if [ "$MODE" == "valgrind" -o "$MODE" == "integration-tests" ]; then
 	if ! which valgrind > /dev/null; then
