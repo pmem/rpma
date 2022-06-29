@@ -120,7 +120,7 @@ function(add_testcase name tracer testcase cmake_script)
 			-DTEST_EXECUTABLE=$<TARGET_FILE:${executable}>
 			-DTRACER=${tracer}
 			-DLONG_TESTS=${LONG_TESTS}
-			-DNPROC=${NPROC}
+			-DMAX_THREADS=${MAX_THREADS}
 			-DVALGRIND_S_OPTION=${VALGRIND_S_OPTION}
 			-P ${cmake_script})
 

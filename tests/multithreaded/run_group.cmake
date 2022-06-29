@@ -14,7 +14,7 @@ endif()
 if(TRACER STREQUAL "memcheck")
 	set(THREADS 2)
 else()
-	set(THREADS ${NPROC})
+	set(THREADS ${MAX_THREADS})
 endif()
 
 message(NOTICE "Number of threads: ${THREADS}")

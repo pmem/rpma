@@ -59,6 +59,15 @@ execute_process(COMMAND nproc
 
 message(STATUS "Number of processing units available: ${NPROC}")
 
+math(EXPR NPROCdiv2 "${NPROC} / 2")
+# We assume 16 threads is maximum for drd and helgrind
+if(NPROCdiv2 LESS 16)
+	set(MAX_THREADS ${NPROCdiv2})
+else()
+	set(MAX_THREADS 16)
+endif()
+message(STATUS "Maximum number of threads for drd and helgrind: ${MAX_THREADS}")
+
 add_subdirectory(unit)
 if(TESTS_RDMA_CONNECTION AND VALGRIND_FOUND)
 	add_subdirectory(multithreaded)
