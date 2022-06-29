@@ -105,7 +105,7 @@ to print out also the output of the failed tests.
 In order to run the multi-threaded or the integration tests:
 1. Valgrind must be installed to run both the multi-threaded and the integration tests.
 2. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
-3. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways:
+3. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways (it also prints out the IP of the configured interface):
 
 ```sh
 [rpma]$ ./tools/config_softroce.sh
@@ -123,8 +123,6 @@ or:
 ```sh
 $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
 ```
-
-The IP address of an RDMA-capable network interface (SoftRoCE or RDMA HW) can be checked using the same commands as for configuring SoftRoCE (listed above).
 
 ### Building the librpma library for running multi-threaded or integration tests
 
