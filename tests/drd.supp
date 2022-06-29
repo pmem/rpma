@@ -449,9 +449,82 @@
 # - rpma_conn_req_new
 #
 {
-   rpma_conn_req_new
+   Conflicting Access
    drd:ConflictingAccess
    obj:*librdmacm.so*
    fun:rpma_conn_req_new
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_ep_listen
+#
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rpma_ep_listen
+   ...
+}
+
+#
+# Assessment: these 5 suppressions indicate a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# They all occur in traces of:
+# - rpma_utils_get_ibv_context
+#
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   ...
+   obj:*librdmacm.so*
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_event_channel
+   obj:*librdmacm.so*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
    ...
 }
