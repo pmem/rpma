@@ -22,7 +22,7 @@ wait__conn_NULL(void **unused)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(NULL, &cq, &is_rcq);
+	int ret = rpma_conn_wait(NULL, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -37,7 +37,7 @@ wait__cq_NULL(void **unused)
 {
 	/* run test */
 	bool is_rcq;
-	int ret = rpma_conn_wait(MOCK_CONN, NULL, &is_rcq);
+	int ret = rpma_conn_wait(MOCK_CONN, 0, NULL, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_INVAL);
@@ -54,7 +54,7 @@ wait__channel_not_shared(void **cstate_ptr)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(cstate->conn, &cq, &is_rcq);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOT_SHARED_CHNL);
@@ -76,7 +76,7 @@ wait__get_cq_event_ERRNO(void **cstate_ptr)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(cstate->conn, &cq, &is_rcq);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NO_COMPLETION);
@@ -103,7 +103,7 @@ wait__get_cq_event_UNKNOWN(void **cstate_ptr)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(cstate->conn, &cq, &is_rcq);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_UNKNOWN);
@@ -131,7 +131,7 @@ wait__req_notify_cq_ERRNO(void **cstate_ptr)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(cstate->conn, &cq, &is_rcq);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -161,7 +161,7 @@ wait__success_is_rcq_NULL(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_cq *cq = NULL;
-	int ret = rpma_conn_wait(cstate->conn, &cq, NULL);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, NULL);
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);
 	assert_ptr_equal(cq, MOCK_RPMA_RCQ);
@@ -190,7 +190,7 @@ wait__success(void **cstate_ptr)
 	/* run test */
 	struct rpma_cq *cq = NULL;
 	bool is_rcq;
-	int ret = rpma_conn_wait(cstate->conn, &cq, &is_rcq);
+	int ret = rpma_conn_wait(cstate->conn, 0, &cq, &is_rcq);
 
 	/* verify the results */
 	assert_int_equal(ret, MOCK_OK);

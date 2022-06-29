@@ -223,13 +223,14 @@ err_private_data_discard:
 }
 
 /*
- * rpma_conn_wait -- wait for a completion event on the shared completion
- * channel from CQ or RCQ, ack it and return a CQ that caused the event
- * in the cq argument and a boolean value saying if it is RCQ or not
- * in the is_rcq argument (if is_rcq is not NULL)
+ * rpma_conn_wait -- wait for a completion event on the shared completion channel from CQ or RCQ,
+ * ack it and return a CQ that caused the event in the cq argument and a boolean value saying
+ * if it is RCQ or not in the is_rcq argument (if is_rcq is not NULL),
+ * the flags argument is added to ensure backward compatibility in the future when
+ * https://github.com/pmem/rpma/issues/1743 is implemented
  */
 int
-rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
+rpma_conn_wait(struct rpma_conn *conn, int flags, struct rpma_cq **cq, bool *is_rcq)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_NO_COMPLETION, {});
