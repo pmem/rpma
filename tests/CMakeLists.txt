@@ -30,7 +30,6 @@ if(TESTS_RDMA_CONNECTION)
 	if("$ENV{RPMA_TESTING_IP}" STREQUAL "")
 		message(WARNING "\nWARNING: The RPMA_TESTING_IP environment variable is not set! "
 			"It should contain an IP address of a configured RDMA-capable network interface.\n"
-			"127.0.0.1 will be used instead, the tests requiring a configured RDMA-capable network interface can fail!\n"
 			"There are possible two alternative actions:\n"
 			"a) Run 'make config_softroce' to configure SoftRoCE"
 			"   and to get the IP of a SoftRoCE-configured network interface"
@@ -38,10 +37,17 @@ if(TESTS_RDMA_CONNECTION)
 			"or:\n"
 			"b) Set the TESTS_RDMA_CONNECTION cmake variable to OFF in order to disable tests"
 			"   that require a configured RDMA-capable network interface.")
+	elseif("$ENV{RPMA_TESTING_IP}" STREQUAL "127.0.0.1")
+		message(FATAL_ERROR "RPMA_TESTING_IP cannot be set to '127.0.0.1' "
+			"(use an IP address of a configured RDMA-capable network interface instead)")
 	else()
 		message(STATUS "IP address used as a configured RDMA-capable network interface "
 			"(defined by the RPMA_TESTING_IP environment variable): $ENV{RPMA_TESTING_IP}")
 	endif()
+else()
+	message(STATUS "NOTICE: all multi-threaded and integration tests will be disabled "
+			"because TESTS_RDMA_CONNECTION is OFF"
+			"(they require a configured RDMA-capable network interface)")
 endif()
 
 # set NPROC to number of processing units available
@@ -53,7 +59,16 @@ execute_process(COMMAND nproc
 
 message(STATUS "Number of processing units available: ${NPROC}")
 
+math(EXPR NPROCdiv2 "${NPROC} / 2")
+# We assume 16 threads is maximum for drd and helgrind
+if(NPROCdiv2 LESS 16)
+	set(MAX_THREADS ${NPROCdiv2})
+else()
+	set(MAX_THREADS 16)
+endif()
+message(STATUS "Maximum number of threads for drd and helgrind: ${MAX_THREADS}")
+
 add_subdirectory(unit)
-if(TESTS_RDMA_CONNECTION)
+if(TESTS_RDMA_CONNECTION AND VALGRIND_FOUND)
 	add_subdirectory(multithreaded)
 endif()

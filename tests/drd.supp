@@ -6,110 +6,114 @@
 #
 
 #
-# Assessment: XXX required
+# All suppressions should follow the following format:
 #
-# Probably these suppressions do not indicate a lack of MT safety.
+# Assessment: (XXX - to mark assessment that is not done yet)
+#
+# This suppression indicates a lack of MT safety.
+#
+# OS: a version of OS
+# OFED: a version of OFED if used
+# libibverbs: a version of libibverbs
+# librdmacm: a version of librdmacm
+# rdma-core: a version of the 'rdma-core' package if installed
+#
+# Occurs in traces of:
+# - a function name of public API of librpma
+#
+# There are 3 types of suppressions:
+#
+# 1) general one (on an external API)
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:ibv_dontfork_range
+#    ...
+# }
+#
+# 2) explicit librpma API call
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:rpma_conn_cfg_set_timeout
+#    ...
+# }
+#
+# 3) detailed external one (on an external API)
+# {
+#    Conflicting store of size 4
+#    drd:ConflictingAccess
+#    ...
+#    fun:funA
+#    fun:funB
+#    fun:funC
+#    fun:function_call_used directly form_public_API
+#    ...
+# }
 #
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# syslog(3) has the "MT-Safe env locale" attributes(7)
+# and therefore it can be considered as not MT-safe by valgrind.
+# This issue can cause that logs of syslog(3) can be corrupted,
+# but it does not affect the MT-safety of the librpma library.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# It can occur in traces of all functions of librpma API.
+#
 {
-   Race while reading the name of time zone ("GMT").
+   syslog(): race while reading the name of time zone
    drd:ConflictingAccess
    ...
-   fun:__tzfile_compute
-   fun:__tz_convert
    fun:__vsyslog_internal
-   fun:syslog
-   fun:rpma_log_default_function
-   ...
-}
-
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:rpma_log_default_function
-   ...
-}
-
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:strlen
-   fun:__tzstring
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:strlen
-   fun:__tzstring
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:rpma_log_default_function
-   ...
-}
-
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:bcmp
-   fun:__tzstring_len
-   fun:__tzstring
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:bcmp
-   fun:__tzstring_len
-   fun:__tzstring
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:rpma_log_default_function
-   ...
-}
-
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   fun:strcmp
-   fun:__tzfile_compute
-   fun:__tz_convert
-   fun:__vsyslog_internal
-   fun:__syslog_chk
+   fun:*syslog*
    fun:rpma_log_default_function
    ...
 }
 
 #
-# Assessment: These suppressions do not indicate a lack of MT safety.
+# Assessment: these 2 suppressions indicate a lack of MT safety.
+#
+# rpma_log_default_function() calls rpma_get_timestamp_prefix()
+# which calls localtime_r(3).
+# localtime_r(3) has the "MT-Safe env locale" attributes(7)
+# and therefore it is considered as not MT-safe by valgrind.
+# This issue can cause that logs of rpma_log_default_function() can be corrupted,
+# but it does not affect the MT-safety of the librpma library.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# They can occur in traces of all functions of librpma API.
+#
+{
+   Race while reading the name of time zone ("GMT").
+   drd:ConflictingAccess
+   ...
+   fun:__tz_convert
+   fun:rpma_get_timestamp_prefix
+   fun:rpma_log_default_function
+   ...
+}
+{
+   Race while reading the name of time zone ("GMT") - non-existing code path (unknown Valgrind issue on CircleCI)
+   drd:ConflictingAccess
+   ...
+   fun:__tz_convert
+   fun:rpma_log_default_function
+   ...
+}
+
+#
+# Assessment: this suppression does not indicate a lack of MT safety.
 #
 # cma_dev_cnt was a global counter of elements populating the global array of
 # devices detected by librdmacm. It was used as an indicator of already done
@@ -145,44 +149,34 @@
 # the same: a quick check (a comparison) followed by the mutex lock and
 # recheck of the condition so the final assessment should be the same.
 #
-
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_utils_get_ibv_context
+#
 {
    Conflicting store/load of size 4
    drd:ConflictingAccess
+   ...
    fun:ucma_init
    ...
+   fun:rdma_getaddrinfo
+   ...
 }
 
 #
-# Assessment: XXX required
+# Assessment: this suppression indicates a lack of MT safety.
 #
-
-{
-   To be analysed later
-   drd:ConflictingAccess
-   ...
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
-# - rpma_ep_shutdown
-{
-   Conflicting load of size 8
-   drd:ConflictingAccess
-   fun:idm_clear
-   fun:ucma_remove_id
-   fun:ucma_free_id
-   fun:rdma_destroy_id
-   ...
-}
-
-# Occurs in traces of:
-# - rpma_utils_get_ibv_context
-# - rpma_info_new
 # - rpma_ep_listen
+#
 {
    Conflicting store of size 8
    drd:ConflictingAccess
@@ -192,194 +186,345 @@
    ...
 }
 
-{
-   Conflicting store of size 4
-   drd:ConflictingAccess
-   fun:ibv_dontfork_range
-   fun:ibv_reg_mr_iova*
-   fun:__ibv_reg_mr
-   fun:rpma_peer_mr_reg
-   fun:rpma_mr_reg
-   ...
-}
-
-{
-   Conflicting store of size 4
-   drd:ConflictingAccess
-   fun:ibv_dofork_range
-   fun:ibv_dereg_mr*
-   fun:rpma_mr_dereg
-   ...
-}
-
+#
+# Assessment: these 2 suppressions indicate a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
 # Occurs in traces of:
-# - rpma_conn_req_new
-# - rpma_conn_req_from_id
+# - rpma_utils_get_ibv_context
+# - rpma_ep_shutdown
+#
 {
-   Conflicting load/store of size 8
+   Conflicting load of size 8
    drd:ConflictingAccess
-   ...
-   fun:_execute_ioctl_fallback
-   ...
-}
-
-### Ubuntu 22.04
-
-{
-   rpma_utils_get_ibv_context
-   drd:ConflictingAccess
-   ...
-   fun:rpma_utils_get_ibv_context
-   ...
-}
-
-{
-   rpma_conn_req_new
-   drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:UnknownInlinedFun
-   fun:rdma_create_id2.part.0
-   fun:rpma_conn_req_new
-   ...
-}
-
-{
-   To be removed later
-   drd:MutexErr
-   ...
-   fun:rxe_create_qp
-   ...
-}
-
-{
-   rpma_ep_listen
-   drd:ConflictingAccess
-   fun:UnknownInlinedFun
-   fun:UnknownInlinedFun
-   fun:rdma_create_id2.part.0
-   fun:rpma_ep_listen
-   ...
-}
-
-{
-   rpma_ep_listen - to be analysed later
-   drd:ConflictingAccess
-   ...
+   fun:idm_clear
+   fun:ucma_remove_id
    fun:ucma_free_id
    fun:rdma_destroy_id
-   fun:rpma_ep_shutdown
    ...
 }
-
 {
-   To be analysed later
+   Conflicting load of size 8
    drd:ConflictingAccess
-   ...
-   fun:rdma_create_id2.part.0
-   fun:rpma_conn_req_new
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:ucma_free_id
+   fun:rdma_destroy_id
    ...
 }
 
-{
-   To be analysed later
-   drd:ConflictingAccess
-   ...
-   fun:rdma_create_id2.part.0
-   fun:rpma_ep_listen
-   ...
-}
-
+#
+# Assessment: this suppression indicates a lack of MT safety.
 #
 # OS - Ubuntu 22.04
 # OFED - MLNX_OFED 5.6-2.0.9.0
 # libibverbs - 1.14.40.0
 # librdmacm - 1.3.40.0
 #
-
+# Occurs in traces of:
+# - rpma_conn_req_delete
+#
 {
-   rpma_conn_req_delete - conflicting store of size 4
+   rpma_conn_req_delete
    drd:ConflictingAccess
-   fun:ibv_dofork_range
-   ...
-   fun:ibv_destroy_cq*
-   fun:rpma_cq_delete
-   fun:rpma_conn_req_delete
+   obj:*librdmacm.so*
+   fun:rdma_destroy_id
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_mr_reg
+# - rpma_conn_req_new
+#
 {
-   rpma_conn_req_delete - conflicting store of size 4
-   drd:ConflictingAccess
-   fun:ibv_dofork_range
-   ...
-   fun:rdma_destroy_qp
-   fun:rpma_conn_req_delete
-   ...
-}
-
-{
-   rpma_conn_req_new - conflicting store of size 8
-   drd:ConflictingAccess
-   ...
-   fun:ibv_req_notify_cq
-   fun:rpma_cq_new
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_new
-   ...
-}
-
-{
-   rpma_conn_req_new - conflicting store of size 4
+   Conflicting store of size 4
    drd:ConflictingAccess
    fun:ibv_dontfork_range
    ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_mr_dereg
+# - rpma_conn_req_delete
+#
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:ibv_dofork_range
+   ...
+}
+
+#
+# Assessment: this suppression does NOT indicate a lack of MT safety.
+#             It is a SoftRoCE specific mutex error (Mutex not locked).
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_ep_next_conn_req
+#
+{
+   SoftRoCE specific mutex error (Mutex not locked)
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   fun:rxe_create_qp
+   fun:UnknownInlinedFun
    fun:rdma_create_qp_ex
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_new
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_rq_size
+#
 {
-   rpma_conn_req_new - conflicting store of size 4
+   Conflicting store of size 4
    drd:ConflictingAccess
-   fun:ibv_dontfork_range
-   ...
-   fun:ibv_create_cq*
-   fun:rpma_cq_new
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_new
+   fun:rpma_conn_cfg_set_rq_size
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_rq_size
+#
 {
-   wait_and_validate_completion - conflicting store of size 8
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_rq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_sq_size
+#
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_sq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_sq_size
+#
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_sq_size
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_set_timeout
+#
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_set_timeout
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of:
+# - rpma_conn_cfg_get_timeout
+#
+{
+   Conflicting store of size 4
+   drd:ConflictingAccess
+   fun:rpma_conn_cfg_get_timeout
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS: Ubuntu 22.04
+# OFED: MLNX_OFED 5.6-2.0.9.0
+# libibverbs: 1.14.40.0
+# librdmacm: 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_ep_listen
+#
+{
+   Conflicting store of size 8
+   drd:ConflictingAccess
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:rdma_create_id2.part.0
+   ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_cq_wait
+#
+{
+   Conflicting store of size 8
    drd:ConflictingAccess
    ...
    fun:ibv_req_notify_cq
-   fun:rpma_cq_wait
-   fun:wait_and_validate_completion
    ...
 }
 
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_conn_req_new
+#
 {
-   rpma_ep_listen - conflicting store of size 8
+   Conflicting Access
    drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rpma_conn_req_new
    ...
+}
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_ep_listen
+#
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
    fun:rpma_ep_listen
    ...
 }
 
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-# libibverbs, version 1.14.39.0
-# librdmacm, version 1.3.39.0
+#
+# Assessment: these 5 suppressions indicate a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# They all occur in traces of:
+# - rpma_utils_get_ibv_context
+#
 {
-   rpma_mr_reg - conflicting store of size 4 (multithreaded-mr-rpma_mr_reg_0_drd)
+   Conflicting Access
    drd:ConflictingAccess
-   fun:ibv_dontfork_range
-   fun:ibv_reg_mr_iova2
-   fun:rpma_peer_mr_reg
-   fun:rpma_mr_reg
+   ...
+   obj:*librdmacm.so*
+   fun:rdma_getaddrinfo
+   fun:rpma_info_new
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   ...
+   fun:rdma_create_event_channel
+   obj:*librdmacm.so*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rdma_create_id
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   obj:*librdmacm.so*
+   fun:rpma_utils_get_ibv_context
+   ...
+}
+{
+   Conflicting Access
+   drd:ConflictingAccess
+   fun:rdma_bind_addr
+   fun:rpma_info_bind_addr
+   fun:rpma_utils_get_ibv_context
    ...
 }

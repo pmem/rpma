@@ -5,7 +5,7 @@
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
 #
-# Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection]
+# Usage: run-all-examples.sh <binary-examples-directory> [--valgrind|--integration-tests]
 #                            [--stop-on-failure] [<pmem-path>] [IP_address] [port]
 #
 # Important: the given order of command line arguments is mandatory!
@@ -22,6 +22,9 @@
 # If the '--stop-on-failure' argument is used or the 'RPMA_EXAMPLES_STOP_ON_FAILURE'
 # environment variable is set to ON, then the integration tests will stop on the first failure.
 #
+# The '--integration-tests' option starts integration tests documented
+# in the https://github.com/pmem/rpma/blob/master/DEVELOPMENT.md#running-integration-tests file.
+#
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
@@ -31,7 +34,7 @@ TIMEOUT=3s
 
 USAGE_STRING="\
 Usage:\n\
-$ run-all-examples.sh <binary-examples-directory> [--valgrind|--fault-injection] \
+$ run-all-examples.sh <binary-examples-directory> [--valgrind|--integration-tests] \
 [--stop-on-failure] [<pmem-path>] [IP_address] [port]\n\
 \n\
 Important: the given order of command line arguments is mandatory!\n\
@@ -42,10 +45,13 @@ either via the '<pmem-path>' argument or via the 'RPMA_EXAMPLES_PMEM_PATH' envir
 If both of them are set, the command line argument '<pmem-path>' will be used. \
 \n\
 If the '--stop-on-failure' argument is used or the 'RPMA_EXAMPLES_STOP_ON_FAILURE' \
-environment variable is set to ON, then the integration tests will stop on the first failure.\n"
+environment variable is set to ON, then the integration tests will stop on the first failure.\n
+\n\
+The '--integration-tests' option starts integration tests documented \
+in the https://github.com/pmem/rpma/blob/master/DEVELOPMENT.md#running-integration-tests file.\n"
 
 BIN_DIR=$1
-if [ "$BIN_DIR" == "" -o ! -d $BIN_DIR ]; then
+if [ "$BIN_DIR" == "" -o ! -d "$BIN_DIR" ]; then
 	echo "Error: missing required argument"
 	echo
 	echo -e $USAGE_STRING
@@ -53,8 +59,8 @@ if [ "$BIN_DIR" == "" -o ! -d $BIN_DIR ]; then
 fi
 
 MODE="none"
-if [ "$2" == "--fault-injection" ]; then
-	MODE="fault-injection"
+if [ "$2" == "--integration-tests" ]; then
+	MODE="integration-tests"
 	shift
 elif [ "$2" == "--valgrind" ]; then
 	MODE="valgrind"
@@ -83,7 +89,7 @@ fi
 
 if [ "$PMEM_PATH" == "" -a "$RPMA_EXAMPLES_PMEM_PATH" != "" ]; then
 	_PATH=$RPMA_EXAMPLES_PMEM_PATH
-	if [[ "$_PATH" = "/*" ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
+	if [[ $_PATH = /* ]] && [ -c "$_PATH" -o -f "$_PATH" ]; then
 		echo "Notice: running examples on PMem: $RPMA_EXAMPLES_PMEM_PATH (RPMA_EXAMPLES_PMEM_PATH)."
 		PMEM_PATH=$RPMA_EXAMPLES_PMEM_PATH
 	else
@@ -124,8 +130,14 @@ function error_out_if_no_max_fault_injection() {
 	if [ "$FI_MAX" == "" ]; then
 		print_out_log_file $LOG_FILE
 		echo
-		echo "Error checking the maximum value of fault injection - exiting ..."
+		echo "Error: no fault-injection markers found in the log,"\
+		     "please check if librpma is built with the DEBUG_FAULT_INJECTION CMake variable set to ON."
 		echo
+		exit 1
+	fi
+	if ! [[ $FI_MAX =~ ^[0-9]+$ ]]; then
+		print_out_log_file $LOG_FILE
+		echo "Error: the maximum value of fault injection is not a number"
 		exit 1
 	fi
 }
@@ -133,7 +145,7 @@ function error_out_if_no_max_fault_injection() {
 function run_command_of() {
 	WHO=$1
 	shift
-	if [ "$MODE" != "fault-injection" ]; then
+	if [ "$MODE" != "integration-tests" ]; then
 		echo "[${WHO}]$ $*"
 		eval $*
 	elif [ "$LOG_OUTPUT" == "yes" ]; then
@@ -188,30 +200,17 @@ function print_FI_if_failed() {
 	fi
 }
 
-function verify_SoftRoCE() {
-	SCRIPT_DIR=$(dirname $0)
-	$SCRIPT_DIR/../tools/config_softroce.sh verify
-	[ $? -ne 0 ] && exit 1
-
+function get_IP_of_RDMA_interface() {
 	STATE_OK="state ACTIVE physical_state LINK_UP"
-
-	if [ "$IP_ADDRESS" == "" ]; then
-		NETDEV=$(rdma link show | grep -e "$STATE_OK" | head -n1 | cut -d' ' -f8)
-		IP_ADDRESS=$(ip address show dev $NETDEV | grep -e inet | grep -v -e inet6 | cut -d' ' -f6 | cut -d/ -f1)
-		if [ "$IP_ADDRESS" == "" ]; then
-			echo "Error: not found any RDMA-capable network interface"
-			exit 1
-		fi
-	fi
-
-	echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
-	echo
+	NETDEV=$(rdma link show | grep -e "$STATE_OK" | head -n1 | cut -d' ' -f8)
+	IP_ADDRESS=$(ip address show dev $NETDEV | grep -e inet | grep -v -e inet6 | cut -d' ' -f6 | cut -d/ -f1)
+	echo $IP_ADDRESS
 }
 
 function get_PID_of_server() {
-	IP_ADDRESS=$1
+	IP_ADDR=$1
 	PORT=$2
-	ARGS="server $IP_ADDRESS $PORT"
+	ARGS="server $IP_ADDR $PORT"
 	PID=$(ps aux | grep -e "$ARGS" | grep -v -e "grep -e $ARGS" | awk '{print $2}')
 	echo $PID
 }
@@ -228,9 +227,9 @@ function run_example() {
 
 	S_FI="" # server's fault injection string
 	C_FI="" # client's fault injection string
-	if [ "$MODE" == "fault-injection" ]; then
+	if [ "$MODE" == "integration-tests" ]; then
 		if [ "$S_FI_VAL" == "" -o "$C_FI_VAL" == "" ]; then
-			echo "Error: both S_FI_VAL and C_FI_VAL have to be set in the fault-injection mode."
+			echo "Error: both S_FI_VAL and C_FI_VAL have to be set in the integration-tests mode."
 			exit 1
 		fi
 		[ $S_FI_VAL -ge $GET_FI_MAX -o $C_FI_VAL -ge $GET_FI_MAX ] && LOG_OUTPUT="yes"
@@ -261,20 +260,20 @@ function run_example() {
 
 	RV=0
 	case $EXAMPLE in
-	06-multiple-connections|15-multiple-connections-SHCCH)
-		[ "$MODE" == "fault-injection" ] && SEEDS="8" || SEEDS="8 9 11 12"
+	06-multiple-connections|06s-multiple-connections)
+		[ "$MODE" == "integration-tests" ] && SEEDS="8" || SEEDS="8 9 11 12"
 		for SEED in $SEEDS; do
 			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
 			[ $RV -ne 0 ] && break
 		done
 		;;
 	07-atomic-write)
-		[ "$MODE" == "fault-injection" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
+		[ "$MODE" == "integration-tests" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $WORDS
 		;;
 	08-messages-ping-pong)
 		SEED=7
-		[ "$MODE" == "fault-injection" ] && ROUNDS=1 || ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
 		;;
 	10-send-with-imm)
@@ -283,9 +282,9 @@ function run_example() {
 	11-write-with-imm)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		;;
-	12-receive-completion-queue|14-receive-completion-queue-SHCCH)
+	12-receive-completion-queue|12s-receive-completion-queue)
 		START_VALUE=7
-		[ "$MODE" == "fault-injection" ] && ROUNDS=1 || ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
 		;;
 	*)
@@ -293,7 +292,7 @@ function run_example() {
 		;;
 	esac
 
-	if [ "$MODE" != "fault-injection" -a $RV -ne 0 ]; then
+	if [ "$MODE" != "integration-tests" -a $RV -ne 0 ]; then
 		echo "Error: example $EXAMPLE FAILED!"
 		N_FAILED=$(($N_FAILED + 1))
 		LIST_FAILED="${LIST_FAILED}${EXAMPLE}\n"
@@ -315,7 +314,7 @@ function run_example() {
 	fi
 
 	# make sure the server's process is finished
-	if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+	if [ "$MODE" != "integration-tests" -o $S_FI_VAL -gt 0 ]; then
 		PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 		if [ "$PID" != "" ]; then
 			echo "Notice: server is still running, waiting 1 sec ..."
@@ -325,7 +324,7 @@ function run_example() {
 	PID=$(get_PID_of_server $IP_ADDRESS $PORT)
 	if [ "$PID" != "" ]; then
 		echo "Notice: server is still running, killing it ..."
-		if [ "$MODE" != "fault-injection" -o $S_FI_VAL -gt 0 ]; then
+		if [ "$MODE" != "integration-tests" -o $S_FI_VAL -gt 0 ]; then
 			kill $PID
 			sleep 1
 		fi
@@ -376,6 +375,19 @@ LIST_CFAILED=""
 S_LOG_FILE="nohup_server.out"
 C_LOG_FILE="nohup_client.out"
 
+if [ "$IP_ADDRESS" == "" -a "$RPMA_TESTING_IP" != "" ]; then
+	echo "Notice: no IP address given. Using RPMA_TESTING_IP=$RPMA_TESTING_IP."
+	IP_ADDRESS=$RPMA_TESTING_IP
+fi
+[ "$IP_ADDRESS" == "" ] && IP_ADDRESS=$(get_IP_of_RDMA_interface)
+if [ "$IP_ADDRESS" == "" ]; then
+	echo "Error: not found any RDMA-capable network interface"
+	exit 1
+fi
+
+echo "Notice: running examples for IP address $IP_ADDRESS and port $PORT"
+echo
+
 JOBS=$(ps aux | grep -e "server $IP_ADDRESS $PORT" -e "client $IP_ADDRESS $PORT" | grep -v "grep -e")
 if [ "$JOBS" != "" ]; then
 	echo "Wait for the following processes to finish or kill them:"
@@ -384,12 +396,19 @@ if [ "$JOBS" != "" ]; then
 	exit 1
 fi
 
-verify_SoftRoCE
-
-if [ "$MODE" == "valgrind" -o "$MODE" == "fault-injection" ]; then
+if [ "$MODE" == "valgrind" -o "$MODE" == "integration-tests" ]; then
+	if ! which valgrind > /dev/null; then
+		if [ "$MODE" == "valgrind" ]; then
+			echo "Error: valgrind not found - the examples cannot be run under valgrind."
+			exit 1
+		else # "$MODE" == "integration-tests"
+			echo "Error: valgrind not found - the integration tests cannot be run."
+			exit 1
+		fi
+	fi
 	VLD_CMD="valgrind --leak-check=full"
 	VLD_SUPP_PATH=$(dirname $0)/../tests/
-	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs.supp"
+	VLD_SUPP="--suppressions=${VLD_SUPP_PATH}/memcheck-libibverbs-librdmacm.supp"
 	VLD_SUPP="${VLD_SUPP} --suppressions=${VLD_SUPP_PATH}/memcheck-libnl.supp"
 	VLD_SUPP="${VLD_SUPP} --gen-suppressions=all"
 	# prepare the server command
@@ -413,7 +432,7 @@ fi
 
 EXAMPLES=$(find $BIN_DIR -name server | sort)
 
-if [ "$MODE" != "fault-injection" ]; then
+if [ "$MODE" != "integration-tests" ]; then
 	for srv in $EXAMPLES; do
 		DIR=$(dirname $srv)
 		run_example $DIR

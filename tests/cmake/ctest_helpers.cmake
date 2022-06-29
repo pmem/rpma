@@ -51,10 +51,6 @@ function(find_packages)
 	if(NOT LIBUNWIND_FOUND)
 		message(WARNING "libunwind-dev/devel not found. Stack traces from tests will not be reliable")
 	endif()
-
-	if(TESTS_USE_VALGRIND AND NOT VALGRIND_FOUND)
-		message(WARNING "Valgrind not found. Valgrind tests will not be performed.")
-	endif()
 endfunction()
 
 # Function to build test with custom build options (e.g. passing defines)
@@ -124,7 +120,8 @@ function(add_testcase name tracer testcase cmake_script)
 			-DTEST_EXECUTABLE=$<TARGET_FILE:${executable}>
 			-DTRACER=${tracer}
 			-DLONG_TESTS=${LONG_TESTS}
-			-DNPROC=${NPROC}
+			-DMAX_THREADS=${MAX_THREADS}
+			-DVALGRIND_S_OPTION=${VALGRIND_S_OPTION}
 			-P ${cmake_script})
 
 	set_tests_properties(${name}_${testcase}_${tracer} PROPERTIES
@@ -151,24 +148,19 @@ function(add_test_common name tracer testcase cmake_script)
 	    set(tracer none)
 	endif()
 
-	if (((NOT VALGRIND_FOUND) OR (NOT TESTS_USE_VALGRIND)) AND ${tracer} IN_LIST vg_tracers)
-		# Only print "SKIPPED_*" message when option is enabled
-		if (TESTS_USE_VALGRIND)
+	if (${tracer} IN_LIST vg_tracers)
+		if (NOT VALGRIND_FOUND)
 			skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_OF_MISSING_VALGRIND")
+			return()
 		endif()
-		return()
+		if (DEBUG_USE_ASAN OR DEBUG_USE_UBSAN)
+			skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_SANITIZER_USED")
+			return()
+		endif()
 	endif()
 
-	if (((NOT VALGRIND_PMEMCHECK_FOUND) OR (NOT TESTS_USE_VALGRIND)) AND ${tracer} STREQUAL "pmemcheck")
-		# Only print "SKIPPED_*" message when option is enabled
-		if (TESTS_USE_VALGRIND)
-			skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_OF_MISSING_PMEMCHECK")
-		endif()
-		return()
-	endif()
-
-	if ((DEBUG_USE_ASAN OR DEBUG_USE_UBSAN) AND ${tracer} IN_LIST vg_tracers)
-		skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_SANITIZER_USED")
+	if (${tracer} STREQUAL "pmemcheck" AND NOT VALGRIND_PMEMCHECK_FOUND)
+		skip_test(${name}_${testcase}_${tracer} "SKIPPED_BECAUSE_OF_MISSING_PMEMCHECK")
 		return()
 	endif()
 

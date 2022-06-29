@@ -98,16 +98,16 @@ The following API calls of the librpma library:
 
 are thread-safe only if each thread operates on a **separate connection configuration structure** (`struct rpma_conn_cfg`) used only by this one thread. They are not thread-safe if threads operate on one connection configuration structure common for more than one thread.
 
-The following API calls of the librpma library:
+The following API call of the librpma library:
 - rpma_conn_req_connect
-- rpma_conn_req_delete
 
-are thread-safe only if each thread operates on a **separate connection request** (`struct rpma_conn_req`) used only by this one thread. They are not thread-safe if threads operate on one connection request common for more than one thread.
+is thread-safe only if each thread operates on a **separate connection request** (`struct rpma_conn_req`) used only by this one thread. They are not thread-safe if threads operate on one connection request common for more than one thread.
 
 ## NOT thread-safe API calls
 
 The following API calls of the librpma library are NOT thread-safe:
 - rpma_conn_req_new
+- rpma_conn_req_delete
 - rpma_ep_listen
 - rpma_ep_next_conn_req
 - rpma_ep_shutdown
@@ -125,9 +125,9 @@ The detailed description is available at:
 
 ## Analysis of Valgrind suppressions
 
-### Suppressions for libibverbs
+### Suppressions for libibverbs and librdmacm
 
-The suppressions for libibverbs are described in the [tests/memcheck-libibverbs.supp](tests/memcheck-libibverbs.supp) file.
+The suppressions for libibverbs and librdmacm are described in the [tests/memcheck-libibverbs-librdmacm.supp](tests/memcheck-libibverbs-librdmacm.supp) file.
 
 ### Suppressions for the drd tool
 

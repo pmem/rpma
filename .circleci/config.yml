@@ -16,22 +16,25 @@ jobs:
           name: Install cmocka
           command: utils/docker/images/install-cmocka.sh
       - run:
+          # Configure SoftRoCE and read the RPMA_TESTING_IP environment variable
+          name: Configure SoftRoCE
+          command: ./tools/config_softroce.sh && source $BASH_ENV
+      - run:
           name: Build rpma
           command: |
             mkdir build
             cd build
-            RPMA_TESTING_IP="will_be_set_later" cmake .. -DTESTS_USE_VALGRIND=ON -DTESTS_RDMA_CONNECTION=ON
+            cmake .. -DTESTS_RDMA_CONNECTION=ON
             make -j$(nproc)
       - run:
-          # Configure SoftRoCE and read the RPMA_TESTING_IP environment variable
-          name: Configure SoftRoCE
-          command: cd build && make config_softroce && source $BASH_ENV
-      - run:
-          name: Run tests
-          command: cd build && ctest --output-on-failure
+          name: Run tests without memcheck
+          command: cd build && ctest -E memcheck --output-on-failure
       - run:
           name: Run all examples
           command: cd build && make run_all_examples
       - run:
           name: Run all examples under valgrind
           command: cd build && make run_all_examples_under_valgrind
+      - run:
+          name: Run tests with memcheck
+          command: cd build && ctest --output-on-failure

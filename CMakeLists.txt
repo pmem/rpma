@@ -43,9 +43,8 @@ option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
 option(TESTS_PERF_TOOLS "run tests for the performance analysis tools" OFF)
-option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface" OFF)
+option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface (valgrind required)" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
-option(TESTS_USE_VALGRIND "enable tests with valgrind (drd/helgrind/memcheck)" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
 option(TESTS_VERBOSE_OUTPUT "verbose test outputs" OFF)
 
@@ -244,21 +243,29 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/librpma-config.cmake ${CMAKE_CURRENT_B
 pkg_check_modules(VALGRIND valgrind)
 
 if(VALGRIND_FOUND)
-	add_flag(-DVG_MEMCHECK_ENABLED=1)
-	add_flag(-DVG_DRD_ENABLED=1)
-	add_flag(-DVG_HELGRIND_ENABLED=1)
-
 	include_directories(${VALGRIND_INCLUDE_DIRS})
 
 	# sets VALGRIND_S_OPTION to "-s" if valgrind supports it or "" otherwise
 	valgrind_check_s_option()
 
+	add_flag(-DVG_MEMCHECK_ENABLED=1)
+	add_flag(-DVG_DRD_ENABLED=1)
+	add_flag(-DVG_HELGRIND_ENABLED=1)
+
 	if(TESTS_USE_VALGRIND_PMEMCHECK)
 		find_pmemcheck()
 	endif()
-
 	if(VALGRIND_PMEMCHECK_FOUND)
 		add_flag(-DVG_PMEMCHECK_ENABLED=1)
+	endif()
+else()
+	if(TESTS_RDMA_CONNECTION)
+		message(FATAL_ERROR "Valgrind not found! - tests requiring a configured RDMA-capable network interface"
+				"(all multi-threaded and integration tests) require also valgrind to be installed."
+				"Install valgrind or set TESTS_RDMA_CONNECTION to OFF.")
+	else()
+		message(STATUS "NOTICE: valgrind not found! - the tests requiring valgrind "
+				"(all multi-threaded and integration tests) will not be run!")
 	endif()
 endif()
 
@@ -301,4 +308,4 @@ add_custom_target(run_all_examples_under_valgrind
 	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --valgrind)
 
 add_custom_target(run_all_examples_with_fault_injection
-	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --fault-injection)
+	COMMAND ${CMAKE_SOURCE_DIR}/examples/run-all-examples.sh ${CMAKE_BINARY_DIR}/examples --integration-tests)
