@@ -28,10 +28,10 @@ __wrap_clock_gettime(clockid_t __clock_id, struct timespec *__tp)
 }
 
 /*
- * __wrap_localtime_r -- localtime_r() mock
+ * __wrap_gmtime_r -- gmtime_r() mock
  */
 struct tm *
-__wrap_localtime_r(const time_t *restrict __timer, struct tm *restrict __result)
+__wrap_gmtime_r(const time_t *restrict __timer, struct tm *restrict __result)
 {
 	assert_non_null(__timer);
 	assert_non_null(__result);

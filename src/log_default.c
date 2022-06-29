@@ -56,7 +56,7 @@ rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 	if (clock_gettime(CLOCK_REALTIME, &ts))
 		goto err_message;
 
-	if (NULL == localtime_r(&ts.tv_sec, &info))
+	if (NULL == gmtime_r(&ts.tv_sec, &info))
 		goto err_message;
 
 	usec = ts.tv_nsec / 1000;
@@ -64,7 +64,7 @@ rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 		goto err_message;
 
 	/* it cannot fail - please see the note above */
-	(void) snprintf(buf, buf_size, "%s.%06ld ", date, usec);
+	(void) snprintf(buf, buf_size, "%s.%06ld(UTC) ", date, usec);
 	if (strnlen(buf, buf_size) == buf_size)
 		goto err_message;
 
@@ -127,7 +127,7 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 
 	if (level <= Rpma_log_threshold[RPMA_LOG_THRESHOLD_AUX] ||
 	    level == RPMA_LOG_LEVEL_ALWAYS) {
-		char times_tamp[45] = "";
+		char times_tamp[50] = "";
 		rpma_get_timestamp_prefix(times_tamp, sizeof(times_tamp));
 		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
 			rpma_log_level_names[(level == RPMA_LOG_LEVEL_ALWAYS) ?
