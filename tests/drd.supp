@@ -69,7 +69,7 @@
 # It can occur in traces of all functions of librpma API.
 #
 {
-   Race while reading the name of time zone ("GMT").
+   syslog(): race while reading the name of time zone
    drd:ConflictingAccess
    ...
    fun:__vsyslog_internal
