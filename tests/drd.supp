@@ -79,40 +79,6 @@
 }
 
 #
-# Assessment: these 2 suppressions indicate a lack of MT safety.
-#
-# rpma_log_default_function() calls rpma_get_timestamp_prefix()
-# which calls localtime_r(3).
-# localtime_r(3) has the "MT-Safe env locale" attributes(7)
-# and therefore it is considered as not MT-safe by valgrind.
-# This issue can cause that logs of rpma_log_default_function() can be corrupted,
-# but it does not affect the MT-safety of the librpma library.
-#
-# OS: ubuntu-2204:2022.04.1 of CircleCI
-# libibverbs: 1.14.39.0
-# librdmacm: 1.3.39.0
-#
-# They can occur in traces of all functions of librpma API.
-#
-{
-   Race while reading the name of time zone ("GMT").
-   drd:ConflictingAccess
-   ...
-   fun:__tz_convert
-   fun:rpma_get_timestamp_prefix
-   fun:rpma_log_default_function
-   ...
-}
-{
-   Race while reading the name of time zone ("GMT") - non-existing code path (unknown Valgrind issue on CircleCI)
-   drd:ConflictingAccess
-   ...
-   fun:__tz_convert
-   fun:rpma_log_default_function
-   ...
-}
-
-#
 # Assessment: this suppression does not indicate a lack of MT safety.
 #
 # cma_dev_cnt was a global counter of elements populating the global array of

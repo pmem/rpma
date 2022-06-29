@@ -56,7 +56,7 @@ rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 	if (clock_gettime(CLOCK_REALTIME, &ts))
 		goto err_message;
 
-	if (NULL == localtime_r(&ts.tv_sec, &info))
+	if (NULL == gmtime_r(&ts.tv_sec, &info))
 		goto err_message;
 
 	usec = ts.tv_nsec / 1000;
@@ -64,7 +64,7 @@ rpma_get_timestamp_prefix(char *buf, size_t buf_size)
 		goto err_message;
 
 	/* it cannot fail - please see the note above */
-	(void) snprintf(buf, buf_size, "%s.%06ld ", date, usec);
+	(void) snprintf(buf, buf_size, "%s.%06ld\(UTC ", date, usec);
 	if (strnlen(buf, buf_size) == buf_size)
 		goto err_message;
 
