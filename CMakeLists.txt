@@ -60,9 +60,19 @@ set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
 set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
+set(buildTypes None Debug Release RelWithDebInfo MinSizeRel)
+
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
-	set(CMAKE_BUILD_TYPE "Release")
+	set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ..." FORCE)
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildTypes})
+else()
+	message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+	if(NOT CMAKE_BUILD_TYPE IN_LIST buildTypes)
+		message(WARNING "Unusual build type was set, please make sure it's a proper one. "
+			"Only following are supported by default: ${buildTypes}.")
+	endif()
 endif()
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
@@ -105,16 +115,27 @@ endif()
 pkg_check_modules(LIBPMEM libpmem>=${LIBPMEM_REQUIRED_VERSION})
 if(NOT LIBPMEM_FOUND)
 	find_package(LIBPMEM ${LIBPMEM_REQUIRED_VERSION})
-	if(NOT LIBPMEM_FOUND)
-		message(WARNING "Since libpmem is missing, the libpmem-based examples will be unable to use PMem. They will be using DRAM instead.")
-	endif()
 endif()
 
 pkg_check_modules(LIBPMEM2 libpmem2>=${LIBPMEM2_REQUIRED_VERSION})
 if(NOT LIBPMEM2_FOUND)
 	find_package(LIBPMEM2 ${LIBPMEM2_REQUIRED_VERSION})
-	if(NOT LIBPMEM2_FOUND)
-		message(WARNING "Since libpmem2 is missing, the libpmem2-based examples will be unable to use PMem. They will be using DRAM instead.")
+endif()
+
+if(NOT LIBPMEM2_FOUND)
+	if(NOT LIBPMEM_FOUND)
+		message(WARNING "Since libpmem2 and libpmem are missing, the examples will be unable to use PMem. They will be using DRAM instead.")
+	else()
+		message(STATUS "libpmem will be used for examples that use PMem.")
+	endif()
+else()
+	# XXX adjust message when all examples are adapted to libpmem2
+	# message(STATUS "libpmem2 will be used for examples that use PMem.")
+	if(NOT LIBPMEM_FOUND)
+		message(WARNING "Since libpmem is missing, the examples that are adapted only to libpmem will be unable to use PMem. They will be using DRAM instead.")
+		message(STATUS "libpmem2 will be used for examples that use PMem and are adapted to libpmem2.")
+	else()
+		message(STATUS "libpmem2 will be used for examples that use PMem and are adapted to libpmem2, otherwise libpmem will be used.")
 	endif()
 endif()
 

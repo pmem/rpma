@@ -207,7 +207,7 @@ wait_and_validate_completion(struct rpma_conn *conn, enum ibv_wc_opcode expected
 	struct rpma_cq *cq = NULL;
 	int ret;
 
-	if ((ret = rpma_conn_wait(conn, &cq, NULL)))
+	if ((ret = rpma_conn_wait(conn, 0, &cq, NULL)))
 		return ret;
 	if ((ret = rpma_cq_get_wc(cq, 1, wc, NULL)))
 		return ret;

@@ -237,7 +237,7 @@ client_handle_completion(struct custom_event *ce)
 	struct rpma_cq *cq = NULL;
 
 	/* wait for the completion to be ready */
-	int ret = rpma_conn_wait(clnt->conn, &cq, NULL);
+	int ret = rpma_conn_wait(clnt->conn, 0, &cq, NULL);
 	if (ret) {
 		/* no completion is ready - continue */
 		if (ret == RPMA_E_NO_COMPLETION)
