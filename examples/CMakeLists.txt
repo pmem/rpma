@@ -151,10 +151,10 @@ add_example(NAME 08-messages-ping-pong BIN client
 	08-messages-ping-pong/messages-ping-pong-common.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/server.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09s-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09s-flush-to-persistent-GPSPM/server.c
 	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
