@@ -38,5 +38,5 @@ endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-add_example_with_pmem(server server.c ../common/common-conn.c)
-add_example_with_pmem(client client.c ../common/common-conn.c)
+add_example_with_pmem(NAME server SRCS server.c)
+add_example_with_pmem(NAME client SRCS client.c)
