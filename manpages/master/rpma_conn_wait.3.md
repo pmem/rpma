@@ -26,7 +26,7 @@ SYNOPSIS
 
           struct rpma_conn;
           struct rpma_cq
-          int rpma_conn_wait(struct rpma_conn *conn, struct rpma_cq **cq, bool *is_rcq)
+          int rpma_conn_wait(struct rpma_conn *conn, int flags, struct rpma_cq **cq, bool *is_rcq)
 
 DESCRIPTION
 ===========
