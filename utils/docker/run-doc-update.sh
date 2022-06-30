@@ -120,6 +120,21 @@ mkdir ${DOCS_DIR}
 # copy new man pages
 cp -r ${WORKDIR}/md/*.md ${DOCS_DIR}
 
+#
+# XXX temporarily do not error out if the following fails
+# This is workaround for the following issue:
+#
+# To https://github.com/***/pmem.github.io
+#  ! [remote rejected]   rpma-automatic-update-of-man-pages -> rpma-automatic-update-of-man-pages
+#    (refusing to allow a Personal Access Token to create or update workflow
+#     `.github/workflows/gh-pages.yml` without `workflow` scope)
+# error: failed to push some refs to 'https://github.com/***/pmem.github.io'
+# Error: Process completed with exit code 1.
+#
+# See: https://github.com/pmem/rpma/runs/7128459223
+#
+set +e
+
 # add, commit and push changes to the pmem.github.io repo
 commit_and_push_changes ${ORIGIN_PMEM_IO} ${BRANCH_PR} ${TARGET_BRANCH} "rpma: automatic update of man pages"
 
