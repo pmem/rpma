@@ -43,7 +43,7 @@ add_cstyle(examples-all ${rpma_src_files})
 add_check_whitespace(examples-all ${rpma_src_files})
 
 function(add_example)
-	set(options USE_LIBIBVERBS USE_LIBPROTOBUFC)
+	set(options USE_LIBPROTOBUFC)
 	set(oneValueArgs NAME BIN)
 	set(multiValueArgs SRCS)
 	cmake_parse_arguments(EXAMPLE
@@ -61,6 +61,7 @@ function(add_example)
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 
+	set(EXAMPLE_SRCS ${EXAMPLE_SRCS} common/common-conn.c)
 	if (LIBPMEM_FOUND OR LIBPMEM2_FOUND)
 		set(EXAMPLE_SRCS ${EXAMPLE_SRCS}
 			common/common-map_file_with_signature_check.c
@@ -79,9 +80,10 @@ function(add_example)
 	set_target_properties(${target} PROPERTIES
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
-	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} ${LIBRT_LIBRARIES})
+	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} ${LIBRT_LIBRARIES}
+		${LIBIBVERBS_LIBRARIES})
 	target_include_directories(${target} PRIVATE common
-		${LIBRPMA_SOURCE_DIR})
+		${LIBRPMA_SOURCE_DIR} ${LIBIBVERBS_INCLUDE_DIRS})
 
 	if(LIBPMEM2_FOUND)
 		target_include_directories(${target}
@@ -103,12 +105,6 @@ function(add_example)
 			PRIVATE USE_LIBPMEM)
 	endif()
 
-	if(EXAMPLE_USE_LIBIBVERBS)
-		target_include_directories(${target}
-			PRIVATE ${LIBIBVERBS_INCLUDE_DIRS})
-		target_link_libraries(${target} ${LIBIBVERBS_LIBRARIES})
-	endif()
-	
 	if(EXAMPLE_USE_LIBPROTOBUFC)
 		target_include_directories(${target}
 			PRIVATE ${LIBPROTOBUFC_INCLUDE_DIRS})
@@ -123,55 +119,69 @@ add_example(NAME 01-connection BIN server
 add_example(NAME 01-connection BIN client
 	SRCS 01-connection/client.c)
 add_example(NAME 02-read-to-volatile BIN server
-	SRCS 02-read-to-volatile/server.c common/common-conn.c)
-add_example(NAME 02-read-to-volatile BIN client USE_LIBIBVERBS
-	SRCS 02-read-to-volatile/client.c common/common-conn.c)
-add_example(NAME 03-read-to-persistent BIN server USE_LIBIBVERBS
-	SRCS 03-read-to-persistent/server.c common/common-conn.c common/common-hello.c)
+	SRCS 02-read-to-volatile/server.c)
+add_example(NAME 02-read-to-volatile BIN client
+	SRCS 02-read-to-volatile/client.c)
+add_example(NAME 03-read-to-persistent BIN server
+	SRCS 03-read-to-persistent/server.c)
 add_example(NAME 03-read-to-persistent BIN client
-	SRCS 03-read-to-persistent/client.c common/common-conn.c common/common-hello.c)
+	SRCS 03-read-to-persistent/client.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN server
-	SRCS 04-write-to-persistent/server.c common/common-conn.c)
-add_example(NAME 04-write-to-persistent BIN client USE_LIBIBVERBS
-	SRCS 04-write-to-persistent/client.c common/common-conn.c)
+	SRCS 04-write-to-persistent/server.c)
+add_example(NAME 04-write-to-persistent BIN client
+	SRCS 04-write-to-persistent/client.c)
 add_example(NAME 05-flush-to-persistent BIN server
-	SRCS 05-flush-to-persistent/server.c common/common-conn.c)
-add_example(NAME 05-flush-to-persistent BIN client USE_LIBIBVERBS
-	SRCS 05-flush-to-persistent/client.c common/common-conn.c)
-add_example(NAME 06-multiple-connections BIN server USE_LIBIBVERBS
-	SRCS 06-multiple-connections/server.c common/common-conn.c common/common-epoll.c)
+	SRCS 05-flush-to-persistent/server.c)
+add_example(NAME 05-flush-to-persistent BIN client
+	SRCS 05-flush-to-persistent/client.c)
+add_example(NAME 06-multiple-connections BIN server
+	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
-	SRCS 06-multiple-connections/client.c common/common-conn.c)
+	SRCS 06-multiple-connections/client.c)
+add_example(NAME 06s-multiple-connections BIN server
+	SRCS 06s-multiple-connections/server.c common/common-epoll.c)
+add_example(NAME 06s-multiple-connections BIN client
+	SRCS 06s-multiple-connections/client.c)
 add_example(NAME 07-atomic-write BIN server
-	SRCS 07-atomic-write/server.c common/common-conn.c)
-add_example(NAME 07-atomic-write BIN client USE_LIBIBVERBS
-	SRCS 07-atomic-write/client.c common/common-conn.c)
-add_example(NAME 08-messages-ping-pong BIN server USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/server.c common/common-conn.c
+	SRCS 07-atomic-write/server.c)
+add_example(NAME 07-atomic-write BIN client
+	SRCS 07-atomic-write/client.c)
+add_example(NAME 08-messages-ping-pong BIN server
+	SRCS 08-messages-ping-pong/server.c
 	08-messages-ping-pong/messages-ping-pong-common.c)
-add_example(NAME 08-messages-ping-pong BIN client USE_LIBIBVERBS
-	SRCS 08-messages-ping-pong/client.c common/common-conn.c
+add_example(NAME 08-messages-ping-pong BIN client
+	SRCS 08-messages-ping-pong/client.c
 	08-messages-ping-pong/messages-ping-pong-common.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBIBVERBS USE_LIBPROTOBUFC
-	SRCS 09-flush-to-persistent-GPSPM/server.c common/common-conn.c
+add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
+	SRCS 09-flush-to-persistent-GPSPM/server.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBIBVERBS USE_LIBPROTOBUFC
-	SRCS 09-flush-to-persistent-GPSPM/client.c common/common-conn.c
+add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
+	SRCS 09-flush-to-persistent-GPSPM/client.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 10-send-with-imm BIN server USE_LIBIBVERBS
-	SRCS 10-send-with-imm/server.c common/common-conn.c)
-add_example(NAME 10-send-with-imm BIN client USE_LIBIBVERBS
-	SRCS 10-send-with-imm/client.c common/common-conn.c)
-add_example(NAME 11-write-with-imm BIN server USE_LIBIBVERBS
-	SRCS 11-write-with-imm/server.c common/common-conn.c)
-add_example(NAME 11-write-with-imm BIN client USE_LIBIBVERBS
-	SRCS 11-write-with-imm/client.c common/common-conn.c)
-add_example(NAME 12-receive-completion-queue BIN server USE_LIBIBVERBS
-	SRCS 12-receive-completion-queue/server.c common/common-conn.c
+add_example(NAME 09s-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
+	SRCS 09s-flush-to-persistent-GPSPM/server.c
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 09s-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
+	SRCS 09s-flush-to-persistent-GPSPM/client.c
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+add_example(NAME 10-send-with-imm BIN server
+	SRCS 10-send-with-imm/server.c)
+add_example(NAME 10-send-with-imm BIN client
+	SRCS 10-send-with-imm/client.c)
+add_example(NAME 11-write-with-imm BIN server
+	SRCS 11-write-with-imm/server.c)
+add_example(NAME 11-write-with-imm BIN client
+	SRCS 11-write-with-imm/client.c)
+add_example(NAME 12-receive-completion-queue BIN server
+	SRCS 12-receive-completion-queue/server.c
 	12-receive-completion-queue/receive-completion-queue-common.c)
-add_example(NAME 12-receive-completion-queue BIN client USE_LIBIBVERBS
-	SRCS 12-receive-completion-queue/client.c common/common-conn.c
+add_example(NAME 12-receive-completion-queue BIN client
+	SRCS 12-receive-completion-queue/client.c
 	12-receive-completion-queue/receive-completion-queue-common.c)
+add_example(NAME 12s-receive-completion-queue BIN server
+	SRCS 12s-receive-completion-queue/server.c)
+add_example(NAME 12s-receive-completion-queue BIN client
+	SRCS 12s-receive-completion-queue/client.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c

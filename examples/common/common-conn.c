@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * common-conn.c -- a common connection functions used by examples
  */
 
+#include <inttypes.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -193,4 +194,37 @@ common_disconnect_and_wait_for_conn_close(struct rpma_conn **conn_ptr)
 	ret |= rpma_conn_delete(conn_ptr);
 
 	return ret;
+}
+
+/*
+ * wait_and_validate_completion -- wait for the completion to be ready
+ * and validate it
+ */
+int
+wait_and_validate_completion(struct rpma_conn *conn, enum ibv_wc_opcode expected_opcode,
+		struct ibv_wc *wc)
+{
+	struct rpma_cq *cq = NULL;
+	int ret;
+
+	if ((ret = rpma_conn_wait(conn, 0, &cq, NULL)))
+		return ret;
+	if ((ret = rpma_cq_get_wc(cq, 1, wc, NULL)))
+		return ret;
+
+	char *func_name = (expected_opcode == IBV_WC_SEND)? "send" : "recv";
+	if (wc->status != IBV_WC_SUCCESS) {
+		(void) fprintf(stderr, "rpma_%s() failed: %s\n", func_name,
+				ibv_wc_status_str(wc->status));
+		return -1;
+	}
+
+	if (wc->opcode != expected_opcode) {
+		(void) fprintf(stderr, "unexpected wc.opcode value "
+				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
+				(uintptr_t)wc->opcode, (uintptr_t)expected_opcode);
+		return -1;
+	}
+
+	return 0;
 }
