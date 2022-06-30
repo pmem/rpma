@@ -31,6 +31,7 @@ The following API calls of the librpma library are thread-safe:
 - rpma_peer_cfg_from_descriptor
 - rpma_peer_cfg_get_descriptor_size
 - rpma_ep_get_fd
+- rpma_ep_shutdown
 - rpma_conn_cfg_new
 - rpma_conn_cfg_delete
 - rpma_mr_get_descriptor
@@ -110,7 +111,6 @@ The following API calls of the librpma library are NOT thread-safe:
 - rpma_conn_req_delete
 - rpma_ep_listen
 - rpma_ep_next_conn_req
-- rpma_ep_shutdown
 - rpma_mr_reg
 - rpma_mr_dereg
 - rpma_utils_get_ibv_context

@@ -144,6 +144,7 @@
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
 # - rpma_ep_listen
+#
 {
    Possible data race during read of size 8
    Helgrind:Race
@@ -163,8 +164,8 @@
 #
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
-# - rpma_ep_shutdown
 # - rpma_conn_req_delete
+#
 {
    Possible data race during read of size 8
    Helgrind:Race

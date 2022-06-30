@@ -195,7 +195,6 @@
 #
 # Occurs in traces of:
 # - rpma_utils_get_ibv_context
-# - rpma_ep_shutdown
 #
 {
    Conflicting load of size 8
