@@ -64,15 +64,12 @@ function(add_example)
 	set(EXAMPLE_SRCS ${EXAMPLE_SRCS} common/common-conn.c)
 	if (LIBPMEM_FOUND OR LIBPMEM2_FOUND)
 		set(EXAMPLE_SRCS ${EXAMPLE_SRCS}
-			common/common-map_file_with_signature_check.c
-			common/common-hello.c)
+			common/common-map_file_with_signature_check.c common/common-hello.c)
 	endif()
 	if (LIBPMEM2_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS}
-			common/common-pmem2_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c)
 	elseif (LIBPMEM_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS}
-			common/common-pmem_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c)
 	else()
 		add_executable(${target} ${EXAMPLE_SRCS})
 	endif()
@@ -127,9 +124,9 @@ add_example(NAME 03-read-to-persistent BIN server
 add_example(NAME 03-read-to-persistent BIN client
 	SRCS 03-read-to-persistent/client.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN server
-	SRCS 04-write-to-persistent/server.c)
+	SRCS 04-write-to-persistent/server.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN client
-	SRCS 04-write-to-persistent/client.c)
+	SRCS 04-write-to-persistent/client.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN server
 	SRCS 05-flush-to-persistent/server.c)
 add_example(NAME 05-flush-to-persistent BIN client
