@@ -220,6 +220,21 @@ function(is_ibv_advise_mr_supported var)
 	set(var ${IBV_ADVISE_MR_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
+# check if libibverbs has ibv_advise_mr() support
+function(are_ibv_advise_flags_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if all required IBV_ADVISE_MR* flags are supported */
+		int main() {
+			return IBV_ADVISE_MR_ADVICE_PREFETCH | \
+				IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE | \
+				IBV_ADVISE_MR_FLAG_FLUSH | \
+				IBV_ADVISE_MR_ADVICE_PREFETCH_NO_FAULT;
+		}"
+		IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	set(var ${IBV_ADVISE_MR_FLAGS_SUPPORTED} PARENT_SCOPE)
+endfunction()
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
 	get_filename_component(REAL_CMAKE_C_COMPILER ${CMAKE_C_COMPILER} REALPATH)

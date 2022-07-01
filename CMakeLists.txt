@@ -159,6 +159,17 @@ else()
 	message(WARNING "ibv_advise_mr() is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	message(STATUS "All required IBV_ADVISE_MR* flags are supported")
+else()
+	message(FATAL_ERROR "Required IBV_ADVISE_MR* flags are NOT supported "
+				"(IBV_ADVISE_MR_ADVICE_PREFETCH, IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE, "
+				"IBV_ADVISE_MR_FLAG_FLUSH and IBV_ADVISE_MR_ADVICE_PREFETCH_NO_FAULT). "
+				"Use a newer version of libibverbs.")
+endif()
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 check_signature_rdma_getaddrinfo(RDMA_GETADDRINFO_NEW_SIGNATURE)
 if(RDMA_GETADDRINFO_NEW_SIGNATURE)
