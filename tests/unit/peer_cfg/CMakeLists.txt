@@ -1,14 +1,15 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_peer_cfg name)
-	set(name peer_cfg-${name})
+	set(src_name peer_cfg-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		peer_cfg-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c

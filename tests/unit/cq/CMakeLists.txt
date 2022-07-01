@@ -7,9 +7,10 @@
 include(../../cmake/ctest_helpers.cmake)
 
 function (add_test_cq name)
-       set(name cq-${name})
+       set(src_name cq-${name})
+       set(name ut-${src_name})
        build_test_src(UNIT NAME ${name} SRCS
-              ${name}.c
+              ${src_name}.c
               cq-common.c
               ${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
               ${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
