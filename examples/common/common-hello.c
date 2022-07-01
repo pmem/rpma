@@ -9,15 +9,12 @@
 #include <string.h>
 #include "common-hello.h"
 
-#ifndef RPMA_INTEGRATION_TEST
 static const char *hello_str[] = {
 	[en] = "Hello world!",
 	[es] = "¡Hola Mundo!"
 };
 
 #define LANG_NUM	(sizeof(hello_str) / sizeof(hello_str[0]))
-
-#endif /* RPMA_INTEGRATION_TEST */
 
 void
 write_hello_str(struct hello_t *hello, enum lang_t lang)
