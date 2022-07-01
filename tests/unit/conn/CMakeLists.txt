@@ -7,9 +7,10 @@
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_conn name)
-	set(name conn-${name})
+	set(src_name conn-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		conn-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
