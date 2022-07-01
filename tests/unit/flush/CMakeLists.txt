@@ -1,14 +1,15 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 #
 
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_flush name)
-	set(name flush-${name})
+	set(src_name flush-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		flush-common.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/flush.c

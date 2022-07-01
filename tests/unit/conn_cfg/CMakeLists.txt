@@ -7,9 +7,10 @@
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_conn_cfg name)
-       set(name conn_cfg-${name})
+       set(src_name conn_cfg-${name})
+	set(name ut-${src_name})
        build_test_src(UNIT NAME ${name} SRCS
-              ${name}.c
+              ${src_name}.c
               conn_cfg-common.c
               ${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
               ${LIBRPMA_SOURCE_DIR}/conn_cfg.c)
