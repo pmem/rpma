@@ -54,10 +54,10 @@ From there you have to prepare the compilation using CMake.
 The final build step is just the `make` command:
 
 ```sh
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make -j
+[rpma]$ mkdir build
+[rpma]$ cd build
+[rpma/build]$ cmake ..
+[rpma/build]$ make -j
 ```
 
 When the librpma library has been successfully built, the binaries of the library can be found in the `build/src` directory.
@@ -70,8 +70,8 @@ To check how to set environment settings please checkout [DEVELOPMENT.md file](D
 In order to build 'rpm' or 'deb' packages you should issue the following commands:
 
 ```sh
-cmake .. -DCPACK_GENERATOR="$GEN" -DCMAKE_INSTALL_PREFIX=/usr
-make package
+[rpma/build]$ cmake .. -DCPACK_GENERATOR="$GEN" -DCMAKE_INSTALL_PREFIX=/usr
+[rpma/build]$ make package
 ```
 
 where $GEN is a type of package generator: RPM or DEB.
@@ -79,8 +79,8 @@ where $GEN is a type of package generator: RPM or DEB.
 CMAKE_INSTALL_PREFIX must be set to a destination were packages will be installed
 
 It is recommended to run all unit test before the installation. In order to do it you can issue the following command.
-```
-$ make test
+```sh
+[rpma/build]$ make test
 ```
 The `ctest` command can be used instead of `make test`.
 
@@ -89,7 +89,7 @@ The `ctest` command can be used instead of `make test`.
 After compiling the library, you can install it:
 
 ```sh
-$ sudo make install
+[rpma/build]$ sudo make install
 ```
 
 ## Testing
