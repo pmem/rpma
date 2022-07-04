@@ -126,11 +126,16 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 #ifdef ATOMIC_STORE_SUPPORTED
 	atomic_init(&(*cfg_ptr)->cq_size,
 		atomic_load_explicit(&Conn_cfg_default.cq_size, __ATOMIC_SEQ_CST));
-	(*cfg_ptr)->timeout_ms = RPMA_DEFAULT_TIMEOUT_MS;
-	(*cfg_ptr)->rcq_size = RPMA_DEFAULT_RCQ_SIZE;
-	(*cfg_ptr)->sq_size = RPMA_DEFAULT_Q_SIZE;
-	(*cfg_ptr)->rq_size = RPMA_DEFAULT_Q_SIZE;
-	(*cfg_ptr)->shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL;
+	atomic_init(&(*cfg_ptr)->rq_size,
+		atomic_load_explicit(&Conn_cfg_default.rq_size, __ATOMIC_SEQ_CST));
+	atomic_init(&(*cfg_ptr)->sq_size,
+		atomic_load_explicit(&Conn_cfg_default.sq_size, __ATOMIC_SEQ_CST));
+	atomic_init(&(*cfg_ptr)->timeout_ms,
+		atomic_load_explicit(&Conn_cfg_default.timeout_ms, __ATOMIC_SEQ_CST));
+	atomic_init(&(*cfg_ptr)->rcq_size,
+		atomic_load_explicit(&Conn_cfg_default.rcq_size, __ATOMIC_SEQ_CST));
+	atomic_init(&(*cfg_ptr)->shared_comp_channel,
+		atomic_load_explicit(&Conn_cfg_default.shared_comp_channel, __ATOMIC_SEQ_CST));
 #else
 	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
 #endif /* ATOMIC_STORE_SUPPORTED */
@@ -171,7 +176,11 @@ rpma_conn_cfg_set_timeout(struct rpma_conn_cfg *cfg, int timeout_ms)
 	if (cfg == NULL || timeout_ms < 0)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->timeout_ms, timeout_ms, __ATOMIC_SEQ_CST);
+#else
 	cfg->timeout_ms = timeout_ms;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -188,7 +197,11 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 	if (cfg == NULL || timeout_ms == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*timeout_ms = atomic_load_explicit(&cfg->timeout_ms, __ATOMIC_SEQ_CST);
+#else
 	*timeout_ms = cfg->timeout_ms;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -253,7 +266,11 @@ rpma_conn_cfg_set_rcq_size(struct rpma_conn_cfg *cfg, uint32_t rcq_size)
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->rcq_size, rcq_size, __ATOMIC_SEQ_CST);
+#else
 	cfg->rcq_size = rcq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -270,7 +287,11 @@ rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 	if (cfg == NULL || rcq_size == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*rcq_size = atomic_load_explicit(&cfg->rcq_size, __ATOMIC_SEQ_CST);
+#else
 	*rcq_size = cfg->rcq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	/*
 	 * This function is used as void in rpma_conn_cfg_get_rcqe()
@@ -293,7 +314,11 @@ rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size)
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->sq_size, sq_size, __ATOMIC_SEQ_CST);
+#else
 	cfg->sq_size = sq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -310,7 +335,11 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 	if (cfg == NULL || sq_size == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*sq_size = atomic_load_explicit(&cfg->sq_size, __ATOMIC_SEQ_CST);
+#else
 	*sq_size = cfg->sq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	/*
 	 * This function is used as void in rpma_peer_create_qp()
@@ -333,7 +362,11 @@ rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size)
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->rq_size, rq_size, __ATOMIC_SEQ_CST);
+#else
 	cfg->rq_size = rq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -350,7 +383,11 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 	if (cfg == NULL || rq_size == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*rq_size = atomic_load_explicit(&cfg->rq_size, __ATOMIC_SEQ_CST);
+#else
 	*rq_size = cfg->rq_size;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	/*
 	 * This function is used as void in rpma_peer_create_qp()
@@ -374,7 +411,11 @@ rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared)
 	if (cfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->shared_comp_channel, shared, __ATOMIC_SEQ_CST);
+#else
 	cfg->shared_comp_channel = shared;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
@@ -392,7 +433,11 @@ rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 	if (cfg == NULL || shared == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*shared = atomic_load_explicit(&cfg->shared_comp_channel, __ATOMIC_SEQ_CST);
+#else
 	*shared = cfg->shared_comp_channel;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
