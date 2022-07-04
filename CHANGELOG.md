@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
 - rpma_peer_cfg_set_direct_write_to_pmem multithreaded test
 - peer_cfg: get/set_direct_write_to_pmem and get_descriptor are now thread-safe
+- conn_cfg: all get and set functions for cq, rq, sq, rcq, timeout and compl_channel are now thread-safe
 
 ### Changed
 - APIs:
@@ -49,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TESTS_USE_VALGRIND
 
 - old integration tests
+- suppresions for get and set functions for cq, rq, sq and timeout has been removed
 
 ## [0.14.0] - 2022-03-15
 ### Added
