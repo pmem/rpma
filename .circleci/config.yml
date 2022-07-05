@@ -6,7 +6,7 @@ workflows:
 jobs:
   build:
     machine:
-      image: ubuntu-2204:2022.04.1
+      image: ubuntu-2204:2022.04.2
     steps:
       - checkout
       - run:
@@ -37,4 +37,4 @@ jobs:
           command: cd build && make run_all_examples_under_valgrind
       - run:
           name: Run tests with memcheck
-          command: cd build && ctest --output-on-failure
+          command: cd build && ctest -R "multithreaded.*(none|memcheck)$" --output-on-failure

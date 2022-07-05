@@ -528,3 +528,14 @@
    fun:rpma_utils_get_ibv_context
    ...
 }
+
+{
+   General suppression related to any SoftRoCE issue
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   obj:/usr/lib/x86_64-linux-gnu/libibverbs/librxe-rdmav34.so
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp
+   ...
+}

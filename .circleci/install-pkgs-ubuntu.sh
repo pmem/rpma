@@ -36,17 +36,15 @@ RPMA_DEPS="\
 	gawk \
 	groff \
 	graphviz \
-	ibverbs-providers-dbgsym \
 	libibverbs-dev \
-	libibverbs1-dbgsym \
 	librdmacm-dev \
-	librdmacm1-dbgsym \
 	libunwind-dev \
 	linux-modules-extra-$(uname -r) \
 	pandoc"
 
 # Update existing packages
 sudo apt-get update --allow-unauthenticated
+
 
 # update list of sources
 MIRROR="http://ddebs.ubuntu.com"
