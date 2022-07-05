@@ -19,11 +19,26 @@
 #include "cmocka_alloc.h"
 #endif
 
+#ifdef ATOMIC_STORE_SUPPORTED
+#include <stdatomic.h>
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 #define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
 
+#define RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM false
+
 struct rpma_peer_cfg {
+#ifdef ATOMIC_STORE_SUPPORTED
+	_Atomic
+#endif /* ATOMIC_STORE_SUPPORTED */
 	bool direct_write_to_pmem;
 };
+
+#ifdef ATOMIC_STORE_SUPPORTED
+static struct rpma_peer_cfg Peer_cfg_default = {
+	.direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM
+};
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 /* public librpma API */
 
@@ -44,7 +59,13 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 		return RPMA_E_NOMEM;
 
 	/* set default values */
-	cfg->direct_write_to_pmem = false;
+
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_init(&cfg->direct_write_to_pmem,
+		atomic_load_explicit(&Peer_cfg_default.direct_write_to_pmem, __ATOMIC_SEQ_CST));
+#else
+	cfg->direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
+#endif /* ATOMIC_STORE_SUPPORTED */
 	*pcfg_ptr = cfg;
 	return 0;
 }
@@ -81,7 +102,12 @@ rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 	if (pcfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&pcfg->direct_write_to_pmem, supported, __ATOMIC_SEQ_CST);
+#else
 	pcfg->direct_write_to_pmem = supported;
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 	return 0;
 }
 
@@ -99,7 +125,12 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 	if (pcfg == NULL || supported == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*supported = atomic_load_explicit(&pcfg->direct_write_to_pmem, __ATOMIC_SEQ_CST);
+#else
 	*supported = pcfg->direct_write_to_pmem;
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 	return 0;
 }
 
@@ -115,7 +146,9 @@ rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc)
 	if (pcfg == NULL || desc == NULL)
 		return RPMA_E_INVAL;
 
-	*((uint8_t *)desc) = (uint8_t)pcfg->direct_write_to_pmem;
+	bool direct_write_to_pmem;
+	rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
+	*((uint8_t *)desc) = (uint8_t)direct_write_to_pmem;
 
 	return 0;
 }
@@ -164,7 +197,7 @@ rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 	if (cfg == NULL)
 		return RPMA_E_NOMEM;
 
-	cfg->direct_write_to_pmem = *(uint8_t *)desc;
+	rpma_peer_cfg_set_direct_write_to_pmem(cfg, *(uint8_t *)desc);
 	*pcfg_ptr = cfg;
 
 	RPMA_LOG_INFO("new rpma_peer_cfg(direct_write_to_pmem=%s)",
