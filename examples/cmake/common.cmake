@@ -33,4 +33,10 @@ function(add_example_with_pmem name)
 		target_compile_definitions(${name}
 			PRIVATE USE_LIBPMEM)
 	endif()
+
+	if(LIBPROTOBUFC_FOUND)
+		target_include_directories(${name}
+			PRIVATE ${LIBPROTOBUFC_INCLUDE_DIRS})
+		target_link_libraries(${name} ${LIBPROTOBUFC_LIBRARIES})
+	endif()
 endfunction()
