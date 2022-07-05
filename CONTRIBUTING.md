@@ -76,8 +76,8 @@ Here is the list of the most important rules:
 
 Before contributing please remember to run:
 ```sh
-	$ make cstyle
-	$ make check-whitespace
+[rpma/build]$ make cstyle
+[rpma/build]$ make check-whitespace
 ```
 
 This will check all C files in the tree for style issues.
@@ -97,7 +97,7 @@ All commit lines (entered when you run `git commit`) must follow the common conv
 
 If you want to check the commit before creating PR, run:
 ```shell
-	$ make check-commits
+[rpma/build]$ make check-commits
 ```
 
 For example, here is a properly-formatted commit message:
