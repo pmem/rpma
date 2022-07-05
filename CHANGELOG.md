@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
+- conn_cfg: all get and set functions for cq, rq, sq and timeout are now thread-safe
+- suppresions for get and set functions for cq, rq, sq and timeout has been removed
 
 ### Changed
 - APIs:
