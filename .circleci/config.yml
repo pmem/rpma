@@ -37,4 +37,4 @@ jobs:
           command: cd build && make run_all_examples_under_valgrind
       - run:
           name: Run tests with memcheck
-          command: cd build && ctest --output-on-failure
+          command: cd build && ctest -R "multithreaded.*(none|memcheck)$" --output-on-failure
