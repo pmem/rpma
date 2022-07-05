@@ -36,11 +36,8 @@ RPMA_DEPS="\
 	gawk \
 	groff \
 	graphviz \
-	ibverbs-providers-dbgsym \
 	libibverbs-dev \
-	libibverbs1-dbgsym \
 	librdmacm-dev \
-	librdmacm1-dbgsym \
 	libunwind-dev \
 	linux-modules-extra-$(uname -r) \
 	pandoc"
@@ -59,9 +56,6 @@ deb $MIRROR $(lsb_release -cs)-proposed main restricted universe multiverse" | \
 # import missing GPG keys:
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C8CAB6595FDFF622
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 536F8F1DE80F6A35
-
-# Enable repositories with debug symbols packages (-dbgsym)
-sudo apt-get install --assume-yes --no-install-recommends lsb-release ubuntu-dbgsym-keyring
 
 # Update existing packages once again
 sudo apt-get update --allow-unauthenticated
