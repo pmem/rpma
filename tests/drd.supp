@@ -528,3 +528,40 @@
    fun:rpma_utils_get_ibv_context
    ...
 }
+
+#
+# Assessment: this suppression indicates a lack of MT safety when SoftRoCE is used.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_conn_req_new
+# - rpma_ep_next_conn_req
+#
+{
+   General suppression related to internal SoftRoCE Mutex issue
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   obj:/usr/lib/x86_64-linux-gnu/libibverbs/librxe-rdmav34.so
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp1
+   ...
+   fun:rpma_conn_req_new
+   ...
+}
+{
+   General suppression related to internal SoftRoCE Mutex issue
+   drd:MutexErr
+   fun:pthread_spin_init@*
+   obj:/usr/lib/x86_64-linux-gnu/libibverbs/librxe-rdmav34.so
+   fun:rdma_create_qp_ex
+   fun:rdma_create_qp
+   fun:rpma_peer_create_qp1
+   ...
+   fun:rpma_ep_next_conn_req
+   ...
+}
