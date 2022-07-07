@@ -18,6 +18,7 @@ struct prestate {
 	char *addr;
 	unsigned port;
 	struct rpma_peer *peer;
+	struct rpma_peer_cfg *pcfg;
 };
 
 static void
@@ -85,7 +86,22 @@ thread_seq_init(unsigned id, void *prestate, void **state_ptr, struct mtt_result
 	if (ret)
 		goto err_mr_remote_delete;
 
+	/* create peer configuration */
+	ret = rpma_peer_cfg_new(&ts->pcfg);
+	if (ret)
+		goto err_mr_remote_delete;
+
+	/* set direct write to pmem */
+	ret = rpma_peer_cfg_set_direct_write_to_pmem(ts->pcfg, DIRECT_WRITE_TO_PMEM);
+	if (ret)
+		goto err_peer_cfg_delete;
+
+
 	return;
+
+err_peer_cfg_delete:
+	/* delete the peer configuration structure */
+	(void) rpma_peer_cfg_delete(&ts->pcfg);
 
 err_mr_remote_delete:
 	/* delete the remote memory region's structure */
@@ -174,6 +190,10 @@ thread_seq_fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result
 	/* deregister the memory region */
 	if ((ret = rpma_mr_dereg(&ts->mr_local_ptr)))
 		MTT_RPMA_ERR(tr, "rpma_mr_dereg", ret);
+
+	/* delete the peer configuration structure */
+	if ((ret = rpma_peer_cfg_delete(&ts->pcfg)))
+		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
 
 	free(ts->local_ptr);
 	free(ts);

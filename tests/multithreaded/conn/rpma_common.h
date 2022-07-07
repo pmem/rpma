@@ -8,6 +8,8 @@
 #ifndef MTT_RPMA_RW_COMMON
 #define MTT_RPMA_RW_COMMON
 
+#define DIRECT_WRITE_TO_PMEM	true
+
 #define MAX(a, b) ( \
 	{ \
 		__typeof__ (a) _a = (a); \
@@ -29,6 +31,7 @@
 struct thread_state {
 	struct rpma_conn *conn;
 	struct rpma_cq *cq;
+	struct rpma_peer_cfg *pcfg;
 
 	void *local_ptr;
 	struct rpma_mr_local *mr_local_ptr;

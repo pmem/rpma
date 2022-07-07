@@ -19,7 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
-- rpma_peer_cfg_set_direct_write_to_pmem multithreaded test
+- Multithreaded tests:
+  - rpma_peer_cfg_set_direct_write_to_pmem
+  - rpma_conn_apply_remote_peer_cfg
 
 ### Changed
 - APIs:
