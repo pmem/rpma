@@ -8,6 +8,8 @@
 #ifndef MTT_RPMA_RW_COMMON
 #define MTT_RPMA_RW_COMMON
 
+#define DIRECT_WRITE_TO_PMEM	true
+
 #define MAX(a, b) ( \
 	{ \
 		__typeof__ (a) _a = (a); \
@@ -38,6 +40,13 @@ struct thread_state {
 
 	/* the expected value of the private data */
 	struct rpma_conn_private_data pdata;
+};
+
+struct prestate {
+	char *addr;
+	unsigned port;
+	struct rpma_peer *peer;
+	struct rpma_peer_cfg *pcfg;
 };
 
 /*
