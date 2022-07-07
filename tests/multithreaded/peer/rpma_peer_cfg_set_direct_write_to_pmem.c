@@ -11,71 +11,47 @@
 
 #include "mtt.h"
 
-struct prestate {
-	char *addr;
-};
+#define DIRECT_WRITE_TO_PMEM	true
 
-struct state {
+struct rpma_peer_cfg_prestate {
 	struct rpma_peer_cfg *pcfg;
 };
 
-#define DIRECT_WRITE_TO_PMEM	true
+struct rpma_peer_cfg_prestate prestate = {NULL};
 
 /*
- * thread_seq_init -- allocate state and create rpma_peer_cfg
+ * prestate_init -- create rpma_peer_cfg
  */
-void
-thread_seq_init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
+static void
+prestate_init(void *prestate, struct mtt_result *tr)
 {
 	int ret;
 
-	struct state *st = (struct state *)calloc(1, sizeof(struct state));
-	if (!st) {
-		MTT_ERR(tr, "calloc", errno);
-		return;
-	}
+	struct rpma_peer_cfg_prestate *pr = (struct rpma_peer_cfg_prestate *)prestate;
 
-	if ((ret = rpma_peer_cfg_new(&st->pcfg))) {
+	if ((ret = rpma_peer_cfg_new(&pr->pcfg))) {
 		MTT_RPMA_ERR(tr, "rpma_peer_cfg_new", ret);
 		return;
 	}
-
-	*state_ptr = st;
 }
 
 /*
- * thread_seq_fini -- delete rpma_peer_cfg and free the state
- */
-void
-thread_seq_fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
-{
-	int ret;
-	struct state *st = (struct state *)*state_ptr;
-
-	/* delete the peer_cfg object */
-	if ((st->pcfg != NULL) && (ret = rpma_peer_cfg_delete(&st->pcfg)))
-		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
-
-	free(st);
-}
-
-/*
- * thread -- create rpma_peer_cfg
+ * thread -- set peer configuration direct_write_to_pmem value and check if its is as expected
  */
 static void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	int ret;
-	struct state *st = (struct state *)state;
+	struct rpma_peer_cfg_prestate *pr = (struct rpma_peer_cfg_prestate *)prestate;
 
 	/* create a new peer cfg object */
-	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(st->pcfg, DIRECT_WRITE_TO_PMEM))) {
+	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(pr->pcfg, DIRECT_WRITE_TO_PMEM))) {
 		MTT_RPMA_ERR(result, "rpma_peer_cfg_set_direct_write_to_pmem", ret);
 		return;
 	}
 
 	bool direct_write_to_pmem = false;
-	if ((ret = rpma_peer_cfg_get_direct_write_to_pmem(st->pcfg, &direct_write_to_pmem))) {
+	if ((ret = rpma_peer_cfg_get_direct_write_to_pmem(pr->pcfg, &direct_write_to_pmem))) {
 		MTT_RPMA_ERR(result, "rpma_peer_cfg_get_direct_write_to_pmem", ret);
 		return;
 	}
@@ -83,6 +59,20 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 	if (direct_write_to_pmem != DIRECT_WRITE_TO_PMEM)
 		MTT_ERR_MSG(result, "Invalid cq_size: %d instead of %d", -1, direct_write_to_pmem,
 				DIRECT_WRITE_TO_PMEM);
+}
+
+/*
+ * prestate_fini -- delete rpma_peer_cfg
+ */
+static void
+prestate_fini(void *prestate, struct mtt_result *tr)
+{
+	int ret;
+	struct rpma_peer_cfg_prestate *pr = (struct rpma_peer_cfg_prestate *)prestate;
+
+	/* delete the peer_cfg object */
+	if ((pr->pcfg != NULL) && (ret = rpma_peer_cfg_delete(&pr->pcfg)))
+		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
 }
 
 int
@@ -93,17 +83,15 @@ main(int argc, char *argv[])
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
 
-	struct prestate prestate = {args.addr};
-
 	struct mtt_test test = {
 			&prestate,
+			prestate_init,
 			NULL,
-			thread_seq_init,
 			NULL,
 			thread,
 			NULL,
-			thread_seq_fini,
-			NULL
+			NULL,
+			prestate_fini
 	};
 
 	return mtt_run(&test, args.threads_num);
