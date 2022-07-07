@@ -529,3 +529,21 @@
    fun:rpma_utils_get_ibv_context
    ...
 }
+
+#
+# Assessment: this suppression indicates a lack of MT safety.
+#
+# OS - Ubuntu 22.04
+# OFED - MLNX_OFED 5.6-2.0.9.0
+# libibverbs - 1.14.40.0
+# librdmacm - 1.3.40.0
+#
+# Occurs in traces of:
+# - rpma_peer_cfg_set_direct_write_to_pmem
+#
+{
+   Possible data race during write of size 1
+   Helgrind:Race
+   fun:rpma_peer_cfg_set_direct_write_to_pmem
+   ...
+}
