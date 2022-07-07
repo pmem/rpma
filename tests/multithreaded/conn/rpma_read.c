@@ -7,7 +7,7 @@
 
 #include <librpma.h>
 #include "mtt.h"
-#include "rpma_common.h"
+#include "rpma_conn_common.h"
 
 /*
  * thread -- main function of rpma_read multithreaded test (read and verify the data)

@@ -2,7 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * rpma_common.c -- common implementations of multi-connection MT tests
+ * rpma_conn_common.c -- common implementations of multi-connection MT tests
  */
 
 #include <stdlib.h>
@@ -10,15 +10,9 @@
 
 #include "mtt.h"
 #include "mtt_connect.h"
-#include "rpma_common.h"
+#include "rpma_conn_common.h"
 
 /* the client's part */
-
-struct prestate {
-	char *addr;
-	unsigned port;
-	struct rpma_peer *peer;
-};
 
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -26,6 +20,12 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 
 	(void) mtt_client_peer_new(tr, pr->addr, &pr->peer);
+
+	/* create peer configuration */
+	(void) rpma_peer_cfg_new(&pr->pcfg);
+
+	/* set direct write to pmem */
+	(void) rpma_peer_cfg_set_direct_write_to_pmem(pr->pcfg, DIRECT_WRITE_TO_PMEM);
 }
 
 static void
@@ -187,6 +187,10 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
+
+	/* delete the peer configuration structure */
+	if ((ret = rpma_peer_cfg_delete(&pr->pcfg)))
+		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
 
 	if ((ret = rpma_peer_delete(&pr->peer)))
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
