@@ -6,7 +6,7 @@
  *                        of multi-connection MT tests
  */
 
-#include "server_rpma_common.h"
+#include "server_rpma_conn_common.h"
 
 /*
  * client_completion_event_handle -- empty implementation of callback on completion is ready

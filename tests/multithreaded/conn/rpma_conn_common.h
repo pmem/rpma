@@ -2,11 +2,13 @@
 /* Copyright 2021-2022, Intel Corporation */
 
 /*
- * rpma_common.h -- common definition of multi-connection MT tests
+ * rpma_conn_common.h -- common definition of multi-connection MT tests
  */
 
 #ifndef MTT_RPMA_RW_COMMON
 #define MTT_RPMA_RW_COMMON
+
+#define DIRECT_WRITE_TO_PMEM	true
 
 #define MAX(a, b) ( \
 	{ \
@@ -38,6 +40,13 @@ struct thread_state {
 
 	/* the expected value of the private data */
 	struct rpma_conn_private_data pdata;
+};
+
+struct prestate {
+	char *addr;
+	unsigned port;
+	struct rpma_peer *peer;
+	struct rpma_peer_cfg *pcfg;
 };
 
 /*
