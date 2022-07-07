@@ -34,12 +34,25 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
+# Examples_Deps for exampl 9 we need install 'libprotobuf-c-dev'
 ENV EXAMPLES_DEPS "\
 	libpmem-dev \
 	libpmem2-dev \
 	libprotobuf-c-dev"
 
-ENV TOOLS_DEPS "\
+# RPMA deps
+ENV RPMA_DEPS "\
+	cmake \
+	curl \
+	gawk \
+	groff \
+	graphviz \
+	libibverbs-dev \
+	librdmacm-dev \
+	libunwind-dev \
+	pandoc"
+
+ENV BASE_PYTHON "\
 	python3-jinja2"
 
 ENV TESTS_DEPS "\
@@ -55,25 +68,13 @@ ENV PYTHON_DEPS "\
 	pylint \
 	scp"
 
-# RPMA deps
-ENV RPMA_DEPS "\
-	cmake \
-	curl \
-	gawk \
-	groff \
-	graphviz \
-	libibverbs-dev \
-	librdmacm-dev \
-	libunwind-dev \
-	pandoc"
-
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
-	$TOOLS_DEPS \
-	$TESTS_DEPS \
 	$RPMA_DEPS \
+	$BASE_PYTHON \
+	$TESTS_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip
