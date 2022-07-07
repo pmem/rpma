@@ -221,7 +221,7 @@ function(add_multithreaded)
 		"${multiValueArgs}"
 		${ARGN})
 
-	set(target multithreaded-${MULTITHREADED_NAME}-${MULTITHREADED_BIN})
+	set(target mtt-${MULTITHREADED_NAME}-${MULTITHREADED_BIN})
 
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 	add_executable(${target} ${TEST_MT_COMMON_DIR}/mtt.c
