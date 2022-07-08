@@ -2,6 +2,11 @@
 
 This document presents the analysis of thread safety of the librpma library.
 
+**Note**: the following suppressions are suited for debug build of librpma on Ubuntu 22.04.
+Information about the versions of the libraries can be found in the files:
+- [drd.supp](tests/drd.supp) and
+- [helgrind.supp](tests/helgrind.supp)
+
 ## Main assumptions
 
 The main assumptions this analysis is based on are following:
