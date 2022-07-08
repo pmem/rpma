@@ -74,6 +74,8 @@ The following API calls of the librpma library are thread-safe:
 
 ## Conditionally thread-safe API calls
 
+**Note**: Thread safety of the following functions' depends on the support of atomic on the specific OS. If it is supported then they are all thread-safe (except rpma_conn_req_connect).
+
 The following API calls of the librpma library:
 - rpma_peer_cfg_set_direct_write_to_pmem
 - rpma_peer_cfg_get_direct_write_to_pmem
