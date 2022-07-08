@@ -15,6 +15,9 @@
 /* the expected timeout */
 #define RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP 2000
 
+/* the expected completion channel state */
+#define RPMA_CONN_CFG_COMMON_SHARED true
+
 struct rpma_conn_cfg_common_prestate {
 	struct rpma_conn_cfg *cfg_ptr;
 };
