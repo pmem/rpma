@@ -2,6 +2,10 @@
 
 This document presents the analysis of thread safety of the librpma library.
 
+**Note**: the analysis is based on static code analysis and a set of multithreaded tests executed under Ubuntu 22.04.
+In order to confirm thread safety analysis on another OS configuration, all multithreaded tests should be rerun.
+See the suppression files below [drd.supp](tests/drd.supp) and [helgrind.supp](tests/helgrind.supp) to see already detected and masked multithreaded issues.
+
 ## Main assumptions
 
 The main assumptions this analysis is based on are following:
