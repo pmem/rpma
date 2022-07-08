@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_cfg_common.h -- common definition for rpma_conn_cfg_*
@@ -16,7 +16,7 @@
 #define RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP 2000
 
 /* the expected completion channel state */
-#define RPMA_CONN_CFG_COMMON_SHARED true
+#define RPMA_CONN_CFG_COMMON_IS_SHARED true
 
 struct rpma_conn_cfg_common_prestate {
 	struct rpma_conn_cfg *cfg_ptr;
@@ -29,12 +29,4 @@ void rpma_conn_cfg_common_prestate_fini(void *prestate, struct mtt_result *tr);
 struct rpma_conn_cfg_common_state {
 	struct rpma_conn_cfg *cfg_ptr;
 };
-
-void rpma_conn_cfg_common_init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr);
-
-void rpma_conn_cfg_common_fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr);
-
-
 #endif /* MTT_RPMA_CONN_CFG_COMMON */
