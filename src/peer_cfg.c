@@ -25,7 +25,7 @@
 
 #define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
 
-#define RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM false
+static bool RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM = false;
 
 struct rpma_peer_cfg {
 #ifdef ATOMIC_STORE_SUPPORTED
@@ -55,9 +55,8 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 	/* set default values */
 
 #ifdef ATOMIC_STORE_SUPPORTED
-	bool direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
 	atomic_init(&cfg->direct_write_to_pmem,
-		atomic_load_explicit(&direct_write_to_pmem, __ATOMIC_SEQ_CST));
+		atomic_load_explicit(&RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM, __ATOMIC_SEQ_CST));
 #else
 	cfg->direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
 #endif /* ATOMIC_STORE_SUPPORTED */
