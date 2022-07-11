@@ -13,6 +13,8 @@ In order to build librpma, you need to have installed several components:
 - librdmacm-dev(el)
 - libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see [our docker script](./utils/docker/images/install-cmocka.sh) to install the verified revision)
 
+**Note**: To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images/) (see the BASE_DEPS and ENV RPMA_DEPS sections)
+
 ### In order to build the documentation you also need:
 
 - diff

@@ -103,9 +103,10 @@ to print out also the output of the failed tests.
 ### Preparing the environment
 
 In order to run the multi-threaded or the integration tests:
-1. Valgrind must be installed to run both the multi-threaded and the integration tests.
-2. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
-3. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways (it also prints out the IP of the configured interface):
+1. Make sure you have all the needed packages installed. To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images/) (see the EXAMPLES_DEPS section)
+2. Valgrind must be installed to run both the multi-threaded and the integration tests.
+3. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
+4. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways (it also prints out the IP of the configured interface):
 
 ```sh
 [rpma]$ ./tools/config_softroce.sh
@@ -118,7 +119,7 @@ or:
 [rpma/build]$ make config_softroce
 ```
 
-4. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
+5. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
 
 ```sh
 $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
