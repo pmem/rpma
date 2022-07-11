@@ -14,7 +14,7 @@ You must have several components installed in your system in order to use the be
  - fio >= 3.27
  - numactl
  - pciutils (needed by ddio.sh, required only in case of the Cascade Lake platforms)
-
+*Note*: To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images) (see the TOOLS_PYTHON_DEPS and ENV TOOLS_DEPS sections)
 *Note*: The newest features are available on the development branch: https://github.com/pmem/fio.git
 
 ```sh
