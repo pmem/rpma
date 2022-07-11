@@ -3,7 +3,7 @@
 ## Requirements
 
 ### Common requirements
-
+*Note*: If you want exact packages go to `rpma/utils/docker/images/`
 In order to build librpma, you need to have installed several components:
 
 - C compiler
