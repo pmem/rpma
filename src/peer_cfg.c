@@ -19,9 +19,18 @@
 #include "cmocka_alloc.h"
 #endif
 
+#ifdef ATOMIC_STORE_SUPPORTED
+#include <stdatomic.h>
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 #define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
 
+static bool RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM = false;
+
 struct rpma_peer_cfg {
+#ifdef ATOMIC_STORE_SUPPORTED
+	_Atomic
+#endif /* ATOMIC_STORE_SUPPORTED */
 	bool direct_write_to_pmem;
 };
 
@@ -44,7 +53,13 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 		return RPMA_E_NOMEM;
 
 	/* set default values */
-	cfg->direct_write_to_pmem = false;
+
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_init(&cfg->direct_write_to_pmem,
+		atomic_load_explicit(&RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM, __ATOMIC_SEQ_CST));
+#else
+	cfg->direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
+#endif /* ATOMIC_STORE_SUPPORTED */
 	*pcfg_ptr = cfg;
 	return 0;
 }
@@ -68,12 +83,10 @@ rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr)
 }
 
 /*
- * rpma_peer_cfg_set_direct_write_to_pmem -- declare if direct write
- * to PMEM is supported
+ * rpma_peer_cfg_set_direct_write_to_pmem -- declare if direct write to PMEM is supported
  */
 int
-rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
-		bool supported)
+rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg, bool supported)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -81,17 +94,20 @@ rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
 	if (pcfg == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&pcfg->direct_write_to_pmem, supported, __ATOMIC_SEQ_CST);
+#else
 	pcfg->direct_write_to_pmem = supported;
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 	return 0;
 }
 
 /*
- * rpma_peer_cfg_get_direct_write_to_pmem -- check if direct write
- * to PMEM is supported
+ * rpma_peer_cfg_get_direct_write_to_pmem -- check if direct write to PMEM is supported
  */
 int
-rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
-		bool *supported)
+rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg, bool *supported)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -99,7 +115,12 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg,
 	if (pcfg == NULL || supported == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_STORE_SUPPORTED
+	*supported = atomic_load_explicit(&pcfg->direct_write_to_pmem, __ATOMIC_SEQ_CST);
+#else
 	*supported = pcfg->direct_write_to_pmem;
+#endif /* ATOMIC_STORE_SUPPORTED */
+
 	return 0;
 }
 
@@ -115,18 +136,18 @@ rpma_peer_cfg_get_descriptor(const struct rpma_peer_cfg *pcfg, void *desc)
 	if (pcfg == NULL || desc == NULL)
 		return RPMA_E_INVAL;
 
-	*((uint8_t *)desc) = (uint8_t)pcfg->direct_write_to_pmem;
+	bool direct_write_to_pmem;
+	rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
+	*((uint8_t *)desc) = (uint8_t)direct_write_to_pmem;
 
 	return 0;
 }
 
 /*
- * rpma_peer_cfg_get_descriptor_size -- get size of the peer configuration
- * descriptor
+ * rpma_peer_cfg_get_descriptor_size -- get size of the peer configuration descriptor
  */
 int
-rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
-		size_t *desc_size)
+rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg, size_t *desc_size)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -140,12 +161,10 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg,
 }
 
 /*
- * rpma_peer_cfg_from_descriptor -- create a peer configuration
- * from a descriptor
+ * rpma_peer_cfg_from_descriptor -- create a peer configuration from a descriptor
  */
 int
-rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
-		struct rpma_peer_cfg **pcfg_ptr)
+rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size, struct rpma_peer_cfg **pcfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});

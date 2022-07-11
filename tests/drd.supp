@@ -550,28 +550,3 @@
    fun:rpma_peer_create_qp
    ...
 }
-
-#
-# Assessment: these 2 suppressions indicate a lack of MT safety.
-#
-# OS - Ubuntu 22.04
-# OFED - MLNX_OFED 5.6-2.0.9.0
-# libibverbs - 1.14.40.0
-# librdmacm - 1.3.40.0
-#
-# Occurs in traces of:
-# - rpma_peer_cfg_set_direct_write_to_pmem
-# - rpma_peer_cfg_get_direct_write_to_pmem
-#
-{
-   Conflicting store of size 1
-   drd:ConflictingAccess
-   fun:rpma_peer_cfg_set_direct_write_to_pmem
-   ...
-}
-{
-   Conflicting store of size 1
-   drd:ConflictingAccess
-   fun:rpma_peer_cfg_get_direct_write_to_pmem
-   ...
-}
