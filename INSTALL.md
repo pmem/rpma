@@ -3,6 +3,7 @@
 ## Requirements
 
 ### Common requirements
+**Note**: To make sure you have all the components you need, you can support yourself with [Dockerfiles](./utils/docker/images/)
 
 In order to build librpma, you need to have installed several components:
 
