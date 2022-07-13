@@ -80,7 +80,7 @@ The following API calls of the librpma library are thread-safe:
 
 ## Conditionally thread-safe API calls
 
-**Note**: Thread safety of the following functions' depends on the support of atomic on the specific OS. If it is supported then they are all thread-safe (except rpma_conn_req_connect).
+**Note**: Thread safety of the following functions depends on the support of atomic operations (`atomic_store` and `atomic_load`) on the specific OS. If it is supported then they are all thread-safe (except rpma_conn_req_connect).
 
 The following API calls of the librpma library:
 - rpma_peer_cfg_set_direct_write_to_pmem
@@ -122,6 +122,28 @@ The following API calls of the librpma library are NOT thread-safe:
 - rpma_mr_reg
 - rpma_mr_dereg
 - rpma_utils_get_ibv_context
+
+### rpma_log_default_function()
+
+The `rpma_log_default_function()` function is used throughout the API:
+- at the stage of detecting errors and warnings *LOG_LEVEL_WARNING/ERROR*
+- when establishing connections *LOG_LEVEL_NOTICE*
+
+In the first case, when we set *LOG_LEVEL_WARNING/ERROR* the function will be called only in error situations. So there is no risk to a normal operation.
+
+In the second case, we call the function in functions that are marked as not thread-safe.
+
+The `rpma_log_default_function()` function is NOT thread-safe because it uses the [localtime_r(3)](https://www.gnu.org/software/libc/manual/html_node/Broken_002ddown-Time.html#index-localtime_005fr) and the [syslog(3)](https://www.gnu.org/software/libc/manual/html_node/syslog_003b-vsyslog.html#index-syslog) functions which are labeled as **MT-Safe env locale**.
+
+According to [Safety Remarks](https://www.gnu.org/software/libc/manual/html_node/Other-Safety-Remarks.html) documentation:
+- `env`:
+	Functions marked with env as an MT-Safety issue access the environment with getenv or similar, without any guards to ensure safety in the presence of concurrent modifications.
+
+	We do not mark these functions as MT- or AS-Unsafe, however, because functions that modify the environment are all marked with const:env and regarded as unsafe. Being unsafe, the latter are not to be called when multiple threads are running or asynchronous signals are enabled, and so the environment can be considered effectively constant in these contexts, which makes the former safe.
+- `locale`:
+	Functions annotated with locale as an MT-Safety issue read from the locale object without any form of synchronization. Functions annotated with locale called concurrently with locale changes may behave in ways that do not correspond to any of the locales active during their execution, but an unpredictable mix thereof.
+
+	We do not mark these functions as MT- or AS-Unsafe, however, because functions that modify the locale object are marked with const:locale and regarded as unsafe. Being unsafe, the latter are not to be called when multiple threads are running or asynchronous signals are enabled, and so the locale can be considered effectively constant in these contexts, which makes the former safe.
 
 ## Relationship of libibverbs and librdmacm
 
