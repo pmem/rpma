@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_cfg_common.c -- common part for rpma_conn_cfg_* multithreaded tests
@@ -27,27 +27,35 @@ rpma_conn_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_cq_size(pr->cfg_ptr,
-				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	if ((ret = rpma_conn_cfg_set_compl_channel(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_IS_SHARED))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_compl_channel", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_cq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_cq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_sq_size(pr->cfg_ptr,
-				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	if ((ret = rpma_conn_cfg_set_sq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_sq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_rq_size(pr->cfg_ptr,
-				RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	if ((ret = rpma_conn_cfg_set_rcq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_rcq_size", ret);
+		return;
+	}
+
+	if ((ret = rpma_conn_cfg_set_rq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_rq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr,
-				RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP)))
+	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP))) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
+		return;
+	}
 }
 
 /*
@@ -63,46 +71,4 @@ rpma_conn_cfg_common_prestate_fini(void *prestate, struct mtt_result *tr)
 
 	if ((ret = rpma_conn_cfg_delete(&pr->cfg_ptr)))
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
-}
-
-/*
- * rpma_conn_cfg_common_init -- allocate state and create a new connection
- * configuration object
- */
-void rpma_conn_cfg_common_init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct rpma_conn_cfg_common_state *st =
-		(struct rpma_conn_cfg_common_state *)calloc(1, sizeof(*st));
-	int ret;
-
-	if (!st) {
-		MTT_ERR(tr, "calloc", errno);
-		return;
-	}
-
-	if ((ret = rpma_conn_cfg_new(&st->cfg_ptr))) {
-		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
-		return;
-	}
-
-	*state_ptr = st;
-}
-
-/*
- * rpma_conn_cfg_common_fini -- free the connection configuration object
- * and free the state
- */
-void rpma_conn_cfg_common_fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
-{
-	struct rpma_conn_cfg_common_state *st =
-		(struct rpma_conn_cfg_common_state *)*state_ptr;
-	int ret;
-
-	if ((ret = rpma_conn_cfg_delete(&st->cfg_ptr)))
-		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
-
-	free(st);
-	*state_ptr = NULL;
 }
