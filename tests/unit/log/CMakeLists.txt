@@ -7,9 +7,9 @@ include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_log name)
 	if ("${ARGV1}" STREQUAL "DEBUG")
-		set(test log-${name}-DEBUG)
+		set(test ut-log-${name}-DEBUG)
 	else()
-		set(test log-${name})
+		set(test ut-log-${name})
 	endif()
 
 	build_test_src(UNIT NAME ${test} SRCS

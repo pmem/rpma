@@ -6,9 +6,10 @@
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_mr name)
-	set(name mr-${name})
+	set(src_name mr-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		mr-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
