@@ -2,7 +2,7 @@
 /* Copyright 2020-2022, Intel Corporation */
 
 /*
- * server_rpma_common.h -- definitions of common server of multi-connection MT tests
+ * server_rpma_conn_common.h -- definitions of common server of multi-connection MT tests
  */
 
 #include <inttypes.h>
@@ -15,7 +15,7 @@
 #include "mtt.h"
 #include "mtt_connect.h"
 #include "mtt_common-epoll.h"
-#include "rpma_common.h"
+#include "rpma_conn_common.h"
 
 #define CLIENT_MAX 32
 

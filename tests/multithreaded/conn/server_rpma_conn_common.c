@@ -3,7 +3,7 @@
 /* Copyright 2021-2022, Fujitsu */
 
 /*
- * server_rpma_common.c -- implementation of common server of multi-connection MT tests
+ * server_rpma_conn_common.c -- implementation of common server of multi-connection MT tests
  */
 
 #include <inttypes.h>
@@ -16,8 +16,8 @@
 #include "mtt.h"
 #include "mtt_connect.h"
 #include "mtt_common-epoll.h"
-#include "rpma_common.h"
-#include "server_rpma_common.h"
+#include "rpma_conn_common.h"
+#include "server_rpma_conn_common.h"
 
 /*
  * server_init -- initialize server's resources
