@@ -41,5 +41,5 @@ endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-add_example_with_pmem(server server.c GPSPM_flush.pb-c.c ../common/common-conn.c USE_LIBPROTOBUFC)
-add_example_with_pmem(client client.c GPSPM_flush.pb-c.c ../common/common-conn.c USE_LIBPROTOBUFC)
+add_example_with_pmem(NAME server USE_LIBPROTOBUFC SRCS server.c GPSPM_flush.pb-c.c ../common/common-conn.c)
+add_example_with_pmem(NAME client USE_LIBPROTOBUFC SRCS client.c GPSPM_flush.pb-c.c ../common/common-conn.c)
