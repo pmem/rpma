@@ -85,7 +85,7 @@ function compile_example_standalone() {
 	mkdir $EXAMPLE_TEST_DIR
 	cd $EXAMPLE_TEST_DIR
 
-	cmake $1
+	cmake -DSKIP_IF_IBV_ADVISE_MR_FLAGS_NOT_SUPPORTED=ON $1
 
 	# exit on error
 	if [[ $? != 0 ]]; then

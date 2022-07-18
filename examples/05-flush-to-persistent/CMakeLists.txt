@@ -14,6 +14,19 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 include(${CMAKE_SOURCE_DIR}/../cmake/common.cmake)
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
 
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	message(STATUS "All required IBV_ADVISE_MR* flags are supported")
+else()
+	if(SKIP_IF_IBV_ADVISE_MR_FLAGS_NOT_SUPPORTED)
+		message(WARNING "Required IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE and IBV_ADVISE_MR_FLAG_FLUSH flags are NOT supported. Skipping ...")
+		return()
+	else()
+		message(FATAL_ERROR "Required IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE and IBV_ADVISE_MR_FLAG_FLUSH flags are NOT supported.")
+	endif()
+endif()
+
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
