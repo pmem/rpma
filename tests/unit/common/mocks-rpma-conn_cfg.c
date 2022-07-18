@@ -79,7 +79,7 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(sq_size);
 
-	*sq_size = args->q_size;
+	*sq_size = args->sq_size;
 
 	return 0;
 }
@@ -96,7 +96,7 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(rq_size);
 
-	*rq_size = args->q_size;
+	*rq_size = args->rq_size;
 
 	return 0;
 }
