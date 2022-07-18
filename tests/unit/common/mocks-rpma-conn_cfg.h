@@ -31,7 +31,8 @@
 struct conn_cfg_get_mock_args {
 	struct rpma_conn_cfg *cfg;
 	int timeout_ms;
-	uint32_t q_size;
+	uint32_t sq_size;
+	uint32_t rq_size;
 	uint32_t cq_size;
 	uint32_t rcq_size;
 	bool shared;

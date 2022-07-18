@@ -19,14 +19,10 @@
 #include "peer.h"
 #include "peer-common.h"
 
-static struct conn_cfg_get_mock_args Get_sq_size = {
+static struct conn_cfg_get_mock_args Get_size = {
 	.cfg = MOCK_CONN_CFG_CUSTOM,
-	.q_size = MOCK_SQ_SIZE_CUSTOM
-};
-
-static struct conn_cfg_get_mock_args Get_rq_size = {
-	.cfg = MOCK_CONN_CFG_CUSTOM,
-	.q_size = MOCK_RQ_SIZE_CUSTOM
+	.sq_size = MOCK_SQ_SIZE_CUSTOM,
+	.rq_size = MOCK_RQ_SIZE_CUSTOM
 };
 
 static struct rpma_cq *rcqs[] = {
@@ -42,8 +38,8 @@ static int num_rcqs = sizeof(rcqs) / sizeof(rcqs[0]);
 static void
 configure_create_qp(struct rpma_cq *rcq)
 {
-	will_return(rpma_conn_cfg_get_sq_size, &Get_sq_size);
-	will_return(rpma_conn_cfg_get_rq_size, &Get_rq_size);
+	will_return(rpma_conn_cfg_get_sq_size, &Get_size);
+	will_return(rpma_conn_cfg_get_rq_size, &Get_size);
 	expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_CQ);
 	will_return(rpma_cq_get_ibv_cq, MOCK_IBV_CQ);
 	if (rcq) {
