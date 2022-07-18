@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * hello.h -- a hello message structure declarations
@@ -20,14 +20,11 @@ struct hello_t {
 #define HELLO_STR_OFFSET offsetof(struct hello_t, str)
 #define HELLO_T_SIZE (sizeof(struct hello_t))
 
-#ifndef RPMA_INTEGRATION_TEST
 static const char *hello_str[] = {
 	[en] = "Hello world!",
 	[es] = "¡Hola Mundo!"
 };
 
 #define LANG_NUM	(sizeof(hello_str) / sizeof(hello_str[0]))
-
-#endif /* RPMA_INTEGRATION_TEST */
 
 #endif /* EXAMPLES_HELLO_H */
