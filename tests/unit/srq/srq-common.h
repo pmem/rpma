@@ -15,6 +15,7 @@
 #include "test-common.h"
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-srq_cfg.h"
+#include "mocks-rpma-srq.h"
 #include "mocks-rpma-cq.h"
 #include "peer.h"
 
