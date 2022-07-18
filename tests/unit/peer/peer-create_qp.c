@@ -19,12 +19,12 @@
 #include "peer.h"
 #include "peer-common.h"
 
-static struct conn_cfg_get_q_size_mock_args Get_sq_size = {
+static struct conn_cfg_get_mock_args Get_sq_size = {
 	.cfg = MOCK_CONN_CFG_CUSTOM,
 	.q_size = MOCK_SQ_SIZE_CUSTOM
 };
 
-static struct conn_cfg_get_q_size_mock_args Get_rq_size = {
+static struct conn_cfg_get_mock_args Get_rq_size = {
 	.cfg = MOCK_CONN_CFG_CUSTOM,
 	.q_size = MOCK_RQ_SIZE_CUSTOM
 };

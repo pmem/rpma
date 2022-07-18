@@ -28,8 +28,8 @@ rpma_conn_cfg_default()
 int
 rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
-	struct conn_cfg_get_timeout_mock_args *args =
-			mock_type(struct conn_cfg_get_timeout_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(timeout_ms);
@@ -45,8 +45,8 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 void
 rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 {
-	struct conn_cfg_get_cq_size_mock_args *args =
-			mock_type(struct conn_cfg_get_cq_size_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(cqe);
@@ -59,8 +59,8 @@ rpma_conn_cfg_get_cqe(const struct rpma_conn_cfg *cfg, int *cqe)
 void
 rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 {
-	struct conn_cfg_get_cq_size_mock_args *args =
-			mock_type(struct conn_cfg_get_cq_size_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(rcqe);
@@ -73,8 +73,8 @@ rpma_conn_cfg_get_rcqe(const struct rpma_conn_cfg *cfg, int *rcqe)
 int
 rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 {
-	struct conn_cfg_get_q_size_mock_args *args =
-			mock_type(struct conn_cfg_get_q_size_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(sq_size);
@@ -90,8 +90,8 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 int
 rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 {
-	struct conn_cfg_get_q_size_mock_args *args =
-			mock_type(struct conn_cfg_get_q_size_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(rq_size);
@@ -107,8 +107,8 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 int
 rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 {
-	struct conn_cfg_get_cq_size_mock_args *args =
-			mock_type(struct conn_cfg_get_cq_size_mock_args *);
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
 
 	assert_ptr_equal(cfg, args->cfg);
 	assert_non_null(shared);
