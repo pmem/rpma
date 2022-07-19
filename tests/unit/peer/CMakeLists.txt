@@ -33,4 +33,5 @@ endfunction()
 
 add_test_peer(new)
 add_test_peer(create_qp)
+add_test_peer(get_ibv_pd)
 add_test_peer(mr_reg)
