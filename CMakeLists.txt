@@ -31,7 +31,6 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 include(FindPerl)
 include(FindThreads)
 include(CMakePackageConfigHelpers)
-include(CheckCCompilerFlag)
 include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
@@ -157,6 +156,15 @@ if(IBV_ADVISE_MR_SUPPORTED)
 	add_flag(-DIBV_ADVISE_MR_SUPPORTED=1)
 else()
 	message(WARNING "ibv_advise_mr() is NOT supported and will be disabled (too old version of libibverbs)!")
+endif()
+
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	message(STATUS "All required IBV_ADVISE_MR* flags are supported")
+else()
+	message(WARNING "Required IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE and IBV_ADVISE_MR_FLAG_FLUSH flags are NOT supported. "
+			"rpma_mr_advise() will not be called in the examples.")
 endif()
 
 # check if librdmacm has correct signature of rdma_getaddrinfo()
