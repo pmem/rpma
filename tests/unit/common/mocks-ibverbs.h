@@ -62,6 +62,12 @@ struct ibv_post_recv_mock_args {
 	int ret;
 };
 
+struct ibv_post_srq_recv_mock_args {
+	struct ibv_srq *srq;
+	uint64_t wr_id;
+	int ret;
+};
+
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
@@ -74,6 +80,9 @@ int ibv_post_send_mock(struct ibv_qp *qp, struct ibv_send_wr *wr,
 
 int ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
 			struct ibv_recv_wr **bad_wr);
+
+int ibv_post_srq_recv_mock(struct ibv_srq *srq, struct ibv_recv_wr *wr,
+		struct ibv_recv_wr **bad_wr);
 
 int ibv_req_notify_cq_mock(struct ibv_cq *cq, int solicited_only);
 
