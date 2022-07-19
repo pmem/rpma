@@ -1612,6 +1612,72 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *rq_size);
 
+struct rpma_srq;
+
+/** 3
+ * rpma_conn_cfg_set_srq - set a shared RQ object for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	struct rpma_srq;
+ *	int rpma_conn_cfg_set_srq(struct rpma_conn_cfg *cfg,
+ *			struct rpma_srq *srq);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_srq() sets a shared RQ object for the connection.
+ * If this function is not called, the srq has the default value (NULL) set
+ * by rpma_conn_cfg_new(3).
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_srq() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_srq(struct rpma_conn_cfg *cfg, struct rpma_srq *srq);
+
+/** 3
+ * rpma_conn_cfg_get_srq - get the shared RQ objec from the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	struct rpma_srq;
+ *	int rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg,
+ *			struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_srq() gets the shared RQ objec from the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_srq() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_srq() does not set *srq_ptr value
+ * on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or srq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg,
+		struct rpma_srq **srq_ptr);
+
 /* connection */
 
 struct rpma_conn;
@@ -2571,8 +2637,6 @@ int rpma_srq_cfg_get_rcq_size(const struct rpma_srq_cfg *cfg,
 		uint32_t *rcq_size);
 
 /* shared RQ */
-
-struct rpma_srq;
 
 /** 3
  * rpma_srq_new - create a new shared RQ object

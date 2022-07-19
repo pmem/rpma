@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_req-from_cm_event.c -- the rpma_conn_req_from_cm_event() unit tests
@@ -109,6 +109,7 @@ from_cm_event__ibv_create_comp_channel_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	will_return(ibv_create_comp_channel, NULL);
 	will_return(ibv_create_comp_channel, MOCK_ERRNO);
 
@@ -136,6 +137,7 @@ from_cm_event__ibv_create_comp_channel_ERRNO_rdma_ack_cm_event_ERRNO2(void **cst
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	will_return(ibv_create_comp_channel, NULL);
 	will_return(ibv_create_comp_channel, MOCK_ERRNO);
 
@@ -162,6 +164,7 @@ from_cm_event__cq_new_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
@@ -196,6 +199,7 @@ from_cm_event__rcq_new_ERRNO(void **unused)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
@@ -235,12 +239,13 @@ from_cm_event__peer_create_qp_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 			MOCK_GET_CHANNEL(cstate));
@@ -283,12 +288,13 @@ from_cm_event__create_qp_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -300,7 +306,7 @@ from_cm_event__create_qp_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_peer_create_qp, RPMA_E_PROVIDER);
 	will_return(rpma_peer_create_qp, MOCK_ERRNO); /* first error */
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 		will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	} else {
@@ -336,12 +342,13 @@ from_cm_event__malloc_ERRNO(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -385,12 +392,13 @@ from_cm_event__malloc_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -403,7 +411,7 @@ from_cm_event__malloc_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(__wrap__test_malloc, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 		will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	} else {
@@ -440,12 +448,13 @@ from_cm_event__private_data_store_E_NOMEM(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -495,12 +504,13 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -515,7 +525,7 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_private_data_store, NULL); /* first RPMA_E_NOMEM */
 	expect_value(rdma_destroy_qp, id, &cstate->id);
 	expect_value(rpma_cq_delete, *cq_ptr, MOCK_GET_RCQ(cstate));
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		will_return(rpma_cq_delete, RPMA_E_PROVIDER);
 		will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	} else {
@@ -572,17 +582,29 @@ static const struct CMUnitTest test_from_cm_event[] = {
 	cmocka_unit_test(from_cm_event__rcq_new_ERRNO),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
 		from_cm_event__peer_create_qp_ERRNO),
+	CONN_REQ_TEST_WITH_SRQ(from_cm_event__peer_create_qp_ERRNO),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
 		from_cm_event__create_qp_ERRNO_subsequent_ERRNO2),
+	CONN_REQ_TEST_WITH_SRQ(
+		from_cm_event__create_qp_ERRNO_subsequent_ERRNO2),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(from_cm_event__malloc_ERRNO),
+	CONN_REQ_TEST_WITH_SRQ(from_cm_event__malloc_ERRNO),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
+		from_cm_event__malloc_ERRNO_subsequent_ERRNO2),
+	CONN_REQ_TEST_WITH_SRQ(
 		from_cm_event__malloc_ERRNO_subsequent_ERRNO2),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
 		from_cm_event__private_data_store_E_NOMEM),
+	CONN_REQ_TEST_WITH_SRQ(from_cm_event__private_data_store_E_NOMEM),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_RCQ(
+		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
+	CONN_REQ_TEST_WITH_SRQ(
 		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
 	/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
+		conn_req_from_cm__lifecycle, setup__conn_req_from_cm_event,
+		teardown__conn_req_from_cm_event),
+	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_SRQ(
 		conn_req_from_cm__lifecycle, setup__conn_req_from_cm_event,
 		teardown__conn_req_from_cm_event),
 };

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_req-common.c -- the conn_req unit tests common functions
@@ -10,6 +10,7 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rdma_cm.h"
 #include "mocks-rpma-conn_cfg.h"
+#include "mocks-rpma-srq.h"
 
 const char Private_data[] = "Random data";
 
@@ -18,7 +19,8 @@ struct conn_req_new_test_state Conn_req_new_conn_cfg_default = {
 	.get_args.timeout_ms = RPMA_DEFAULT_TIMEOUT_MS,
 	.get_args.cq_size = MOCK_CQ_SIZE_DEFAULT,
 	.get_args.rcq_size = MOCK_RCQ_SIZE_DEFAULT,
-	.get_args.shared = MOCK_SHARED_DEFAULT
+	.get_args.shared = MOCK_SHARED_DEFAULT,
+	.get_args.srq = NULL
 };
 
 struct conn_req_new_test_state Conn_req_new_conn_cfg_custom = {
@@ -26,21 +28,41 @@ struct conn_req_new_test_state Conn_req_new_conn_cfg_custom = {
 	.get_args.timeout_ms = MOCK_TIMEOUT_MS_CUSTOM,
 	.get_args.cq_size = MOCK_CQ_SIZE_CUSTOM,
 	.get_args.rcq_size = MOCK_RCQ_SIZE_CUSTOM,
-	.get_args.shared = MOCK_SHARED_CUSTOM
+	.get_args.shared = MOCK_SHARED_CUSTOM,
+	.get_args.srq = NULL
+};
+
+struct conn_req_new_test_state Conn_req_new_conn_cfg_custom_with_srq = {
+	.get_args.cfg = MOCK_CONN_CFG_CUSTOM,
+	.get_args.timeout_ms = MOCK_TIMEOUT_MS_CUSTOM,
+	.get_args.cq_size = MOCK_CQ_SIZE_CUSTOM,
+	.get_args.rcq_size = MOCK_RCQ_SIZE_CUSTOM,
+	.get_args.shared = MOCK_SHARED_CUSTOM,
+	.get_args.srq = MOCK_RPMA_SRQ
 };
 
 struct conn_req_test_state Conn_req_conn_cfg_default = {
 	.get_args.cfg = MOCK_CONN_CFG_DEFAULT,
 	.get_args.cq_size = MOCK_CQ_SIZE_DEFAULT,
 	.get_args.rcq_size = MOCK_RCQ_SIZE_DEFAULT,
-	.get_args.shared = MOCK_SHARED_DEFAULT
+	.get_args.shared = MOCK_SHARED_DEFAULT,
+	.get_args.srq = NULL
 };
 
 struct conn_req_test_state Conn_req_conn_cfg_custom = {
 	.get_args.cfg = MOCK_CONN_CFG_CUSTOM,
 	.get_args.cq_size = MOCK_CQ_SIZE_CUSTOM,
 	.get_args.rcq_size = MOCK_RCQ_SIZE_CUSTOM,
-	.get_args.shared = MOCK_SHARED_CUSTOM
+	.get_args.shared = MOCK_SHARED_CUSTOM,
+	.get_args.srq = NULL
+};
+
+struct conn_req_test_state Conn_req_conn_cfg_custom_with_srq = {
+	.get_args.cfg = MOCK_CONN_CFG_CUSTOM,
+	.get_args.cq_size = MOCK_CQ_SIZE_CUSTOM,
+	.get_args.rcq_size = MOCK_RCQ_SIZE_CUSTOM,
+	.get_args.shared = MOCK_SHARED_CUSTOM,
+	.get_args.srq = MOCK_RPMA_SRQ
 };
 
 /*
@@ -92,12 +114,13 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));
@@ -180,12 +203,13 @@ setup__conn_req_new(void **cstate_ptr)
 	will_return(rpma_conn_cfg_get_cqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_rcqe, &cstate->get_args);
 	will_return(rpma_conn_cfg_get_compl_channel, &cstate->get_args);
+	will_return(rpma_conn_cfg_get_srq, &cstate->get_args);
 	if (cstate->get_args.shared)
 		will_return(ibv_create_comp_channel, MOCK_COMP_CHANNEL);
 	expect_value(rpma_cq_new, cqe, cstate->get_args.cq_size);
 	expect_value(rpma_cq_new, shared_channel, MOCK_GET_CHANNEL(cstate));
 	will_return(rpma_cq_new, MOCK_RPMA_CQ);
-	if (cstate->get_args.rcq_size) {
+	if (!cstate->get_args.srq && cstate->get_args.rcq_size) {
 		expect_value(rpma_cq_new, cqe, cstate->get_args.rcq_size);
 		expect_value(rpma_cq_new, shared_channel,
 				MOCK_GET_CHANNEL(cstate));

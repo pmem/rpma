@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_req.c -- librpma connection-request-related implementations
@@ -85,12 +85,15 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 
 	int cqe, rcqe;
 	bool shared = false;
+	struct rpma_srq *srq = NULL;
 	/* read the main CQ size from the configuration */
 	rpma_conn_cfg_get_cqe(cfg, &cqe);
 	/* read the receive CQ size from the configuration */
 	rpma_conn_cfg_get_rcqe(cfg, &rcqe);
 	/* get if the completion channel should be shared by CQ and RCQ */
 	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
+	/* get the shared RQ object from the connection */
+	(void) rpma_conn_cfg_get_srq(cfg, &srq);
 
 	struct ibv_comp_channel *channel = NULL;
 	if (shared) {
@@ -109,7 +112,7 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		goto err_comp_channel_destroy;
 
 	struct rpma_cq *rcq = NULL;
-	if (rcqe) {
+	if (!srq && rcqe) {
 		ret = rpma_cq_new(id->verbs, rcqe, channel, &rcq);
 		if (ret)
 			goto err_rpma_cq_delete;
