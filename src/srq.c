@@ -13,6 +13,7 @@
 #include "librpma.h"
 #include "log_internal.h"
 #include "peer.h"
+#include "mr.h"
 #include "srq_cfg.h"
 
 #ifdef TEST_MOCK_ALLOC
@@ -129,4 +130,38 @@ rpma_srq_delete(struct rpma_srq **srq_ptr)
 	*srq_ptr = NULL;
 
 	return ret;
+}
+
+/*
+ * rpma_srq_recv -- initiate the receive operation in shared RQ
+ */
+int
+rpma_srq_recv(struct rpma_srq *srq, struct rpma_mr_local *dst,
+		size_t offset, size_t len, const void *op_context)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
+	if (srq == NULL || (dst == NULL && (offset != 0 || len != 0)))
+		return RPMA_E_INVAL;
+
+	return rpma_mr_srq_recv(srq->ibv_srq, dst, offset, len, op_context);
+}
+
+/*
+ * rpma_srq_get_rcq -- get the receive CQ from the shared RQ object
+ */
+
+int
+rpma_srq_get_rcq(const struct rpma_srq *srq, struct rpma_cq **rcq_ptr)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
+	if (srq == NULL || rcq_ptr == NULL)
+		return RPMA_E_INVAL;
+
+	*rcq_ptr = srq->rcq;
+
+	return 0;
 }
