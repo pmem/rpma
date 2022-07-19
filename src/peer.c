@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer.c -- librpma peer-related implementations
@@ -212,6 +212,18 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_reg_mr()");
 	return RPMA_E_PROVIDER;
 #endif
+}
+
+/*
+ * rpma_peer_get_ibv_pd -- get the PD member from the rpma_peer object
+ *
+ * ASSUMPTIONS
+ * - peer != NULL
+ */
+struct ibv_pd *
+rpma_peer_get_ibv_pd(const struct rpma_peer *peer)
+{
+	return peer->pd;
 }
 
 /* public librpma API */

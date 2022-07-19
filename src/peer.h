@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer.h -- librpma peer-related internal definitions
@@ -37,5 +37,11 @@ int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  */
 int rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage);
+
+/*
+ * ERRORS
+ * rpma_peer_get_ibv_pd() cannot fail.
+ */
+struct ibv_pd *rpma_peer_get_ibv_pd(const struct rpma_peer *peer);
 
 #endif /* LIBRPMA_PEER_H */
