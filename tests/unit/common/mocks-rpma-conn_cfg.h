@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mocks-rpma-conn_cfg.h -- a rpma-conn_cfg mocks header
@@ -36,6 +36,8 @@ struct conn_cfg_get_mock_args {
 	uint32_t cq_size;
 	uint32_t rcq_size;
 	bool shared;
+	struct rpma_srq *srq;
+	struct rpma_cq *srq_rcq;
 };
 
 /* current hardcoded values */

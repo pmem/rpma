@@ -21,6 +21,7 @@ struct ibv_context Ibv_context = {&Ibv_device};
 struct ibv_pd Ibv_pd = {&Ibv_context, 0};
 struct ibv_cq Ibv_cq;
 struct ibv_cq Ibv_rcq;
+struct ibv_cq Ibv_srq_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;
