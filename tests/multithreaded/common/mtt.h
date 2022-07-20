@@ -93,6 +93,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on librpma error populate the result and the error string */
 #define MTT_RPMA_ERR(result, func, err) \
 	do { \
+		if (result == NULL) \
+			break; \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
 			"%s:%d %s() -> %s() failed: %s\n", \
