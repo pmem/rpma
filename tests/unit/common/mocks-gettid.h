@@ -2,7 +2,7 @@
 /* Copyright 2020, Intel Corporation */
 
 /*
- * mocks-getpid.h -- the getpid mock's header
+ * mocks-gettid.h -- the gettid mock's header
  */
 
 #ifndef MOCKS_GETPID_H
@@ -10,6 +10,6 @@
 
 #include <stdbool.h>
 
-extern bool enabled__wrap_getpid;
+extern bool enabled__wrap_gettid;
 
 #endif /* MOCKS_GETPID_H */
