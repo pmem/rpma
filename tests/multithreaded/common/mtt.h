@@ -70,6 +70,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on error populate the result and the error message */
 #define MTT_ERR_MSG(result, msg, err, ...) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		char msg_buf[MTT_ERRMSG_MAX / 2]; \
 		snprintf(msg_buf, MTT_ERRMSG_MAX / 2 - 1, \
 			msg, ##__VA_ARGS__); \
@@ -83,6 +85,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on error populate the result and the error string */
 #define MTT_ERR(result, func, err) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
 			"%s:%d %s() -> %s() failed: %s\n", \
@@ -93,6 +97,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on librpma error populate the result and the error string */
 #define MTT_RPMA_ERR(result, func, err) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
 			"%s:%d %s() -> %s() failed: %s\n", \
