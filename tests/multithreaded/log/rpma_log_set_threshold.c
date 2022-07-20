@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/* Copyright 2022, Intel Corporation */
+
+/*
+ * rpma_log_set_threshold.c -- rpma_log_set_threshold multithreaded test
+ */
+
+#include <librpma.h>
+#include "mtt.h"
+
+struct prestate {
+	enum rpma_log_level level;
+};
+
+/*
+ * thread -- set log function and check if its value is as expected
+ */
+void
+thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
+{
+	struct prestate *pr = (struct prestate *)prestate;
+	int ret;
+
+	if ((ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO))) {
+		MTT_RPMA_ERR(tr, "rpma_log_set_threshold", ret);
+		return;
+	}
+
+	rpma_log_get_threshold(RPMA_LOG_THRESHOLD, &pr->level);
+
+	if (pr->level != RPMA_LOG_LEVEL_INFO) {
+		MTT_ERR(tr, "pr->level != RPMA_LOG_LEVEL_INFO", EINVAL);
+	}
+}
+
+int
+main(int argc, char *argv[])
+{
+	struct mtt_args args = {0};
+
+	if (mtt_parse_args(argc, argv, &args))
+		return -1;
+
+	struct prestate prestate;
+
+	struct mtt_test test = {
+			&prestate,
+			NULL,
+			NULL,
+			NULL,
+			thread,
+			NULL,
+			NULL,
+			NULL
+	};
+
+	return mtt_run(&test, args.threads_num);
+}
