@@ -2570,6 +2570,78 @@ int rpma_srq_cfg_set_rcq_size(struct rpma_srq_cfg *cfg, uint32_t rcq_size);
 int rpma_srq_cfg_get_rcq_size(const struct rpma_srq_cfg *cfg,
 		uint32_t *rcq_size);
 
+/* shared RQ */
+
+struct rpma_srq;
+
+/** 3
+ * rpma_srq_new - create a new shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_peer;
+ *	struct rpma_srq_cfg;
+ *	struct rpma_srq;
+ *	int rpma_srq_new(struct rpma_peer *peer,
+ *			const struct rpma_srq_cfg *cfg,
+ *			struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_new() creates a new shared RQ object.
+ *
+ * RETURN VALUE
+ * The rpma_srq_new() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_new() does not set *srq_ptr value
+ * on failure. If cfg is NULL, then the default values are used
+ * - see rpma_srq_cfg_new(3) for more details.
+ *
+ * ERRORS
+ * rpma_srq_new() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - peer, or srq_ptr is NULL
+ * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_PROVIDER - ibv_create_srq(3), ibv_create_comp_channel(3),
+ *   ibv_create_cq(3) or ibv_req_notify_cq(3) failed
+ *
+ * SEE ALSO
+ * rpma_srq_delete(3), rpma_srq_get_rcq(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_srq_new(struct rpma_peer *peer, struct rpma_srq_cfg *cfg,
+		struct rpma_srq **srq_ptr);
+
+/** 3
+ * rpma_srq_delete - delete the shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	int rpma_conn_req_delete(struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_delete() deletes the the shared RQ object.
+ *
+ * RETURN VALUE
+ * The rpma_srq_delete() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_delete() sets *srq_ptr value to NULL
+ * on success and on failure.
+ *
+ * ERRORS
+ * rpma_srq_delete() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - srq_ptr is NULL
+ * - RPMA_E_PROVIDER - ibv_destroy_cq(3), ibv_destroy_comp_channel(3),
+ *   or ibv_destroy_srq(3) failed
+ *
+ * SEE ALSO
+ * rpma_srq_new(3), rpma_srq_get_rcq(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_srq_delete(struct rpma_srq **srq_ptr);
+
 /* remote memory access functions */
 
 /* generate operation completion on error */
