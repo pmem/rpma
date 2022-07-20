@@ -2,7 +2,7 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * client_rpma_ep_next_conn_req.c -- a client of the rpma_ep_next_conn_req MT test
+ * mtt_client_process.c -- process spawning threads with clients for server-side MT tests
  */
 
 #include <librpma.h>
