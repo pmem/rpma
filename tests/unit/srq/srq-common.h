@@ -17,6 +17,7 @@
 #include "mocks-rpma-srq_cfg.h"
 #include "mocks-rpma-srq.h"
 #include "mocks-rpma-cq.h"
+#include "srq.h"
 
 #define MOCK_GET_SRQ_CFG(cstate) \
 	((cstate)->get_args.cfg == MOCK_SRQ_CFG_DEFAULT ? \

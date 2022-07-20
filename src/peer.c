@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "log_internal.h"
 #include "peer.h"
+#include "srq.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -101,8 +102,13 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	/* read SQ and RQ sizes from the configuration */
 	uint32_t sq_size = 0;
 	uint32_t rq_size = 0;
+	struct rpma_srq *srq = NULL;
 	(void) rpma_conn_cfg_get_sq_size(cfg, &sq_size);
 	(void) rpma_conn_cfg_get_rq_size(cfg, &rq_size);
+	/* get the shared RQ object from the connection */
+	(void) rpma_conn_cfg_get_srq(cfg, &srq);
+
+	struct ibv_srq *ibv_srq = srq ? rpma_srq_get_ibv_srq(srq) : NULL;
 
 	struct ibv_cq *ibv_cq = rpma_cq_get_ibv_cq(cq);
 
@@ -110,7 +116,7 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 	qp_init_attr.qp_context = NULL;
 	qp_init_attr.send_cq = ibv_cq;
 	qp_init_attr.recv_cq = rcq ? rpma_cq_get_ibv_cq(rcq) : ibv_cq;
-	qp_init_attr.srq = NULL;
+	qp_init_attr.srq = ibv_srq;
 	qp_init_attr.cap.max_send_wr = sq_size;
 	qp_init_attr.cap.max_recv_wr = rq_size;
 	qp_init_attr.cap.max_send_sge = RPMA_MAX_SGE;
