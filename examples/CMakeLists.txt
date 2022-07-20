@@ -157,10 +157,10 @@ add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09s-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09s-flush-to-persistent-GPSPM/server.c
-	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09s-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09s-flush-to-persistent-GPSPM/client.c
-	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 10-send-with-imm BIN server
 	SRCS 10-send-with-imm/server.c)
 add_example(NAME 10-send-with-imm BIN client
