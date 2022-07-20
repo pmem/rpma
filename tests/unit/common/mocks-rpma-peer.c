@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2022, Fujitsu */
 
 /*
  * mocks-rpma-peer.c -- librpma peer.c module mocks
@@ -68,4 +68,15 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	(*ibv_mr_ptr)->rkey = MOCK_RKEY;
 
 	return 0;
+}
+
+/*
+ * rpma_peer_get_ibv_pd -- rpma_peer_get_ibv_pd() mock
+ */
+struct ibv_pd *
+rpma_peer_get_ibv_pd(const struct rpma_peer *peer)
+{
+	check_expected_ptr(peer);
+
+	return mock_type(struct ibv_pd *);
 }
