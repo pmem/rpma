@@ -12,12 +12,19 @@
 #include <string.h>
 #include "librpma.h"
 #include "log_default.h"
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+#include <stdatomic.h>
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 /* pointer to the logging function */
 extern rpma_log_function *Rpma_log_function;
 
 /* threshold levels */
-extern enum rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
+extern
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
+enum rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
 
 void rpma_log_init();
 
