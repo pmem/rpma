@@ -8,6 +8,9 @@
 #include "cmocka_headers.h"
 #include "log_internal.h"
 
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 enum rpma_log_level Rpma_log_threshold[] = {
 		/* all logs have to be triggered */
 		RPMA_LOG_LEVEL_DEBUG,	/* RPMA_LOG_THRESHOLD */
