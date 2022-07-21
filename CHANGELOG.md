@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - conn_cfg: all get and set functions for cq, rq, sq, rcq, timeout and compl_channel are now thread-safe
 - multi-threaded tests:
   - rpma_conn_apply_remote_peer_cfg
+  - rpma_conn_req_connect
   - rpma_ep_next_conn_req
   - rpma_peer_cfg_set_direct_write_to_pmem
 
