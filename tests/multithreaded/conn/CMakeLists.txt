@@ -13,6 +13,9 @@ add_multithreaded(NAME conn BIN rpma_conn_req_delete
 add_multithreaded(NAME conn BIN rpma_conn_req_new
 	SRCS rpma_conn_req_new.c)
 
+add_multithreaded(NAME conn BIN rpma_conn_req_connect
+	SRCS rpma_conn_req_connect.c ../common/mtt_client_process.c ../common/mtt_connect.c)
+
 add_multithreaded(NAME conn BIN rpma_read
 	SRCS rpma_read.c rpma_conn_common.c server_rpma_conn_common.c server_rpma_empty.c
 		../common/mtt_connect.c ../common/mtt_common-epoll.c)
