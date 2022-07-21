@@ -12,6 +12,7 @@
 #define MTT
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #define KILOBYTE 1024
 
@@ -229,6 +230,13 @@ struct mtt_test {
 	 * A pointer to test-provided data passed to the child process function.
 	 */
 	void *child_prestate;
+
+	/*
+	 * Postpone starting the child process after starting and unblocking the threads.
+	 * It is useful when the child process runs the client(s) and the main threads
+	 * run the servers.
+	 */
+	bool start_child_after_threads;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);

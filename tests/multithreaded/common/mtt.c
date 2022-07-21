@@ -351,11 +351,11 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
-	if (test->child_process_func) {
+	if (!test->start_child_after_threads && test->child_process_func) {
 		child_pid = mtt_start_child_process(test->child_process_func,
 					test->child_prestate);
 		if (child_pid == -1) {
-			MTT_INTERNAL_ERR("starting child process failed");
+			MTT_INTERNAL_ERR("starting the child process failed");
 			return -1;
 		}
 	}
@@ -435,6 +435,13 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	if ((ret = mtt_threads_sync_unblock(threads_num_to_join)))
 			result = ret;
 
+	if (test->start_child_after_threads && test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1)
+			MTT_INTERNAL_ERR("starting the child process failed");
+	}
+
 	/* wait for threads to join */
 	for (i = 0; i < threads_num_to_join; i++) {
 		ret = pthread_join(threads[i], (void **)&tr);
@@ -486,6 +493,10 @@ err_cleanup_prestate:
 
 err_kill_child:
 	if (child_pid) {
+		if (child_pid == -1) {
+			/* starting the child process failed */
+			return -1;
+		}
 		/* check if the child process is still running */
 		if (kill(child_pid, 0) == 0) {
 			/* kill the child process */
