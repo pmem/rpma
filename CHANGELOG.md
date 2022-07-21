@@ -25,7 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_conn_apply_remote_peer_cfg
   - rpma_conn_req_connect
   - rpma_ep_next_conn_req
+<<<<<<< HEAD
   - rpma_log_set_function
+||||||| parent of 3f08a675 (rpma: make log_set_threshold thread-safe.)
+=======
+  - rpma_log_set_threshold
+>>>>>>> 3f08a675 (rpma: make log_set_threshold thread-safe.)
   - rpma_peer_cfg_set_direct_write_to_pmem
 
 ### Changed
