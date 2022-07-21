@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mocks-rpma-conn_cfg.c -- librpma conn_cfg.c module mocks
@@ -114,5 +114,22 @@ rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 	assert_non_null(shared);
 
 	*shared = args->shared;
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_srq -- rpma_conn_cfg_get_srq() mock
+ */
+int
+rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg, struct rpma_srq **srq_ptr)
+{
+	struct conn_cfg_get_mock_args *args =
+			mock_type(struct conn_cfg_get_mock_args *);
+
+	assert_ptr_equal(cfg, args->cfg);
+	assert_non_null(srq_ptr);
+
+	*srq_ptr = args->srq;
+
 	return 0;
 }
