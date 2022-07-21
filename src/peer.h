@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer.h -- librpma peer-related internal definitions
@@ -13,6 +13,19 @@
 #include "cq.h"
 
 #include <rdma/rdma_cma.h>
+
+/*
+ * ASSUMPTIONS
+ * - peer != NULL && cfg != NULL && ibv_srq_ptr != NULL && rcq_ptr != NULL
+ *
+ * ERRORS
+ * rpma_peer_create_srq() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - creating a new shared RQ or a shared receive CQ failed
+ * - RPMA_E_NOMEM - out of memory
+ */
+int rpma_peer_create_srq(struct rpma_peer *peer, struct rpma_srq_cfg *cfg,
+		struct ibv_srq **ibv_srq_ptr, struct rpma_cq **rcq_ptr);
 
 /*
  * ERRORS
