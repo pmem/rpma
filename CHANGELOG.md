@@ -21,9 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
 - peer_cfg: get/set_direct_write_to_pmem and get_descriptor are now thread-safe
 - conn_cfg: all get and set functions for cq, rq, sq, rcq, timeout and compl_channel are now thread-safe
-- Multithreaded tests:
-  - rpma_peer_cfg_set_direct_write_to_pmem
+- multi-threaded tests:
   - rpma_conn_apply_remote_peer_cfg
+  - rpma_ep_next_conn_req
+  - rpma_peer_cfg_set_direct_write_to_pmem
 
 ### Changed
 - APIs:
