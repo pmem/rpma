@@ -12,6 +12,7 @@
 #define MTT
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #define KILOBYTE 1024
 
@@ -174,6 +175,17 @@ typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
  */
 typedef int (*mtt_child_process_func)(void *prestate);
 
+/*
+ * mtt_start_child - define a time when the child process is started
+ */
+enum mtt_start_child {
+	MTT_START_CHILD_BEFORE_PRESTATE_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_SEQ_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_FUNC,
+	MTT_START_CHILD_BEFORE_JOINING_THREADS
+};
+
 struct mtt_test {
 	/*
 	 * a pointer to test-provided data passed on all initialization steps
@@ -229,6 +241,11 @@ struct mtt_test {
 	 * A pointer to test-provided data passed to the child process function.
 	 */
 	void *child_prestate;
+
+	/*
+	 * Set a time when the child process should be started.
+	 */
+	enum mtt_start_child child_start;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);
