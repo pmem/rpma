@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -12,6 +12,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../../cmake)
 
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
+
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 

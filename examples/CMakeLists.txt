@@ -107,6 +107,10 @@ function(add_example)
 			PRIVATE ${LIBPROTOBUFC_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPROTOBUFC_LIBRARIES})
 	endif()
+
+	if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+		target_compile_definitions(${target} PRIVATE IBV_ADVISE_MR_FLAGS_SUPPORTED=1)
+	endif()
 endfunction()
 
 add_example(NAME template BIN template

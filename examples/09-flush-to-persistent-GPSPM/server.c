@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY), &mr)))
 		goto err_ep_shutdown;
 
-#ifdef USE_PMEM
+#if defined USE_LIBPMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
 	/* rpma_mr_advise() should be called only in case of FsDAX */
 	if (mem.is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
 		ret = rpma_mr_advise(mr, 0, mem.mr_size, IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,

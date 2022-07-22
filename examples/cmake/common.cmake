@@ -59,4 +59,8 @@ function(add_example_with_pmem)
 			PRIVATE ${LIBPROTOBUFC_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPROTOBUFC_LIBRARIES})
 	endif()
+
+	if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+		target_compile_definitions(${target} PRIVATE IBV_ADVISE_MR_FLAGS_SUPPORTED=1)
+	endif()
 endfunction()
