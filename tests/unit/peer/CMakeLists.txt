@@ -31,6 +31,6 @@ function(add_test_peer name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_peer(new)
 add_test_peer(create_qp)
 add_test_peer(mr_reg)
+add_test_peer(new)
