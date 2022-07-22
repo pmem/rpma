@@ -33,6 +33,6 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	}
 
 	if (shared != RPMA_CONN_CFG_COMMON_IS_SHARED)
-		MTT_ERR_MSG(tr, "Invaild completion channel's value: %d instead of %d", -1,
+		MTT_ERR_MSG(tr, "Invalid completion channel's value: %d instead of %d", -1,
 			shared, RPMA_CONN_CFG_COMMON_IS_SHARED);
 }
