@@ -42,9 +42,6 @@
 
 struct rpma_conn_cfg {
 	int timeout_ms;	/* connection establishment timeout */
-#ifdef ATOMIC_STORE_SUPPORTED
-	_Atomic
-#endif /* ATOMIC_STORE_SUPPORTED */
 	uint32_t cq_size;	/* main CQ size */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
