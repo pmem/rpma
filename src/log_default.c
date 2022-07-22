@@ -6,11 +6,15 @@
  * to syslog or to stderr
  */
 
+#define _GNU_SOURCE
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+
 #include <stdarg.h>
 #include <syslog.h>
 #include <time.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "log_default.h"
 #include "log_internal.h"
@@ -129,7 +133,7 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	    level == RPMA_LOG_LEVEL_ALWAYS) {
 		char times_tamp[45] = "";
 		rpma_get_timestamp_prefix(times_tamp, sizeof(times_tamp));
-		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
+		(void) fprintf(stderr, "%s[%ld] %s%s%s", times_tamp, syscall(SYS_gettid),
 			rpma_log_level_names[(level == RPMA_LOG_LEVEL_ALWAYS) ?
 						RPMA_LOG_LEVEL_DEBUG : level],
 			file_info, message);
