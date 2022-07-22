@@ -222,11 +222,17 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		if (conn_event == RPMA_CONN_ESTABLISHED)
 			break;
 
+		if (conn_event != RPMA_CONN_REJECTED) {
+			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event: %s",
+					-1, rpma_utils_conn_event_2str(conn_event));
+			goto err_conn_delete;
+		}
+
 		retry++;
 
-		if (conn_event != RPMA_CONN_REJECTED ||
-		    retry == MAX_CONN_RETRY) {
-			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
+		if (retry == MAX_CONN_RETRY) {
+			MTT_ERR_MSG(tr, "reached the maximum number of retries (%i), exiting ...",
+					-1, MAX_CONN_RETRY);
 			goto err_conn_delete;
 		}
 
