@@ -17,7 +17,7 @@ function sudo_password() {
 # this should be run only on CIs
 if [ "$CI_RUN" == "YES" ]; then
 	echo WORKDIR=$WORKDIR
-	sudo_password chown -R $(id -u).$(id -g) $WORKDIR
+	sudo_password chown -R $(id -u):$(id -g) $WORKDIR
 fi
 
 # fix for: https://github.com/actions/checkout/issues/766 (git CVE-2022-24765)
