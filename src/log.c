@@ -121,8 +121,9 @@ rpma_log_set_threshold(enum rpma_log_threshold threshold,
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
-
-	enum rpma_log_level level_old = Rpma_log_threshold[threshold];
+	enum rpma_log_level level_old;
+	while (RPMA_E_AGAIN == rpma_log_get_threshold(threshold, &level_old))
+		;
 
 	if (__sync_bool_compare_and_swap(&Rpma_log_threshold[threshold],
 			level_old, level))
