@@ -41,15 +41,21 @@
 #define RPMA_DEFAULT_SHARED_COMPL_CHANNEL false
 
 struct rpma_conn_cfg {
-	int timeout_ms;	/* connection establishment timeout */
 #ifdef ATOMIC_STORE_SUPPORTED
-	_Atomic
-#endif /* ATOMIC_STORE_SUPPORTED */
+	_Atomic int timeout_ms;		/* connection establishment timeout */
+	_Atomic uint32_t cq_size;	/* main CQ size */
+	_Atomic uint32_t rcq_size;	/* receive CQ size */
+	_Atomic uint32_t sq_size;	/* SQ size */
+	_Atomic uint32_t rq_size;	/* RQ size */
+	_Atomic bool shared_comp_channel; /* completion channel shared by CQ and RCQ */
+#else
+	int timeout_ms;		/* connection establishment timeout */
 	uint32_t cq_size;	/* main CQ size */
 	uint32_t rcq_size;	/* receive CQ size */
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
 	bool shared_comp_channel; /* completion channel shared by CQ and RCQ */
+#endif /* ATOMIC_STORE_SUPPORTED */
 };
 
 static struct rpma_conn_cfg Conn_cfg_default  = {
