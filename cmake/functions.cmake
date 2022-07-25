@@ -7,6 +7,8 @@
 # functions.cmake - helper functions for CMakeLists.txt
 #
 
+include(CheckCCompilerFlag)
+
 # prepends prefix to list of strings
 function(prepend var prefix)
 	set(listVar "")
@@ -218,6 +220,24 @@ function(is_ibv_advise_mr_supported var)
 		}"
 		IBV_ADVISE_MR_SUPPORTED)
 	set(var ${IBV_ADVISE_MR_SUPPORTED} PARENT_SCOPE)
+endfunction()
+
+# check if libibverbs has ibv_advise_mr() support
+function(are_ibv_advise_flags_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if all required IBV_ADVISE_MR* flags are supported */
+		int main() {
+			return IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE | IBV_ADVISE_MR_FLAG_FLUSH;
+		}"
+		IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+		message(STATUS "All required IBV_ADVISE_MR* flags are supported")
+	else()
+		message(WARNING "Required IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE or IBV_ADVISE_MR_FLAG_FLUSH flags are NOT supported. "
+				"rpma_mr_advise() will not be called in the examples.")
+	endif()
+	set(var ${IBV_ADVISE_MR_FLAGS_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
 # check if librdmacm has correct signature of rdma_getaddrinfo()

@@ -58,6 +58,10 @@ if(VALGRIND_FOUND)
 	target_include_directories(rpma PRIVATE src/valgrind)
 endif()
 
+if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	target_compile_definitions(rpma PRIVATE IBV_ADVISE_MR_FLAGS_SUPPORTED=1)
+endif()
+
 install(TARGETS rpma
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

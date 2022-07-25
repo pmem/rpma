@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 			&mr)))
 		goto err_ep_shutdown;
 
-#ifdef USE_LIBPMEM
+#if defined USE_LIBPMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
 	/* rpma_mr_advise() should be called only in case of FsDAX */
 	if (is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
 		ret = rpma_mr_advise(mr, 0, mr_size,
