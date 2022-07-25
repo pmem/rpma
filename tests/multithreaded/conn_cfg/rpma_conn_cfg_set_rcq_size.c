@@ -30,6 +30,6 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	}
 
 	if (rcq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP)
-		MTT_ERR_MSG(tr, "Invaild rcq_size: %d instead of %d", -1, rcq_size,
+		MTT_ERR_MSG(tr, "Invalid rcq_size: %d instead of %d", -1, rcq_size,
 			RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
 }
