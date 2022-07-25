@@ -28,8 +28,8 @@
 
 /*
  * Rpma_log_function -- pointer to the logging function.
- * By default it is rpma_log_default_function() but could be a user logging
- * function provided via rpma_log_set().
+ * By default it is rpma_log_default_function() but could be
+ * a user-defined logging function provided via rpma_log_set_function().
  */
 rpma_log_function *Rpma_log_function;
 
