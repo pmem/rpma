@@ -30,6 +30,6 @@ function(add_test_info name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_info(new)
 add_test_info(bind_addr)
+add_test_info(new)
 add_test_info(resolve_addr)

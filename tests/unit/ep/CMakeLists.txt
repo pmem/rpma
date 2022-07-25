@@ -26,6 +26,6 @@ function(add_test_ep name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_ep(get_fd)
 add_test_ep(listen)
 add_test_ep(next_conn_req)
-add_test_ep(get_fd)
