@@ -64,19 +64,8 @@ RUN dnf install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
-	$TOOLS_DEPS 
-
-# Temporarily downgrade python3-wrapt from v1.14.0 to v1.13.3-2
-# to fix the following error:
-#    pkg_resources.ContextualVersionConflict: \
-#      (wrapt 1.14.0 (/usr/lib64/python3.10/site-packages), \
-#       Requirement.parse('wrapt<1.14,>=1.11'), {'astroid'})
-RUN dnf install -y wget
-RUN wget https://kojipkgs.fedoraproject.org//packages/python-wrapt/1.13.3/2.fc36/x86_64/python3-wrapt-1.13.3-2.fc36.x86_64.rpm
-RUN dnf install -y ./python3-wrapt-1.13.3-2.fc36.x86_64.rpm
-RUN rm ./python3-wrapt-1.13.3-2.fc36.x86_64.rpm
-
-RUN dnf clean all
+	$TOOLS_DEPS \
+&& dnf clean all
 
 RUN pip3 install --upgrade pip
 
