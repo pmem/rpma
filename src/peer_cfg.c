@@ -115,7 +115,8 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg, bool *s
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*supported = atomic_load_explicit(&pcfg->direct_write_to_pmem, __ATOMIC_SEQ_CST);
+	*supported = atomic_load_explicit((_Atomic bool *)&pcfg->direct_write_to_pmem,
+			__ATOMIC_SEQ_CST);
 #else
 	*supported = pcfg->direct_write_to_pmem;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */

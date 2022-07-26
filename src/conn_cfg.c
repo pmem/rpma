@@ -204,7 +204,7 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*timeout_ms = atomic_load_explicit(&cfg->timeout_ms, __ATOMIC_SEQ_CST);
+	*timeout_ms = atomic_load_explicit((_Atomic int *)&cfg->timeout_ms, __ATOMIC_SEQ_CST);
 #else
 	*timeout_ms = cfg->timeout_ms;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -246,7 +246,7 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*cq_size = atomic_load_explicit(&cfg->cq_size, __ATOMIC_SEQ_CST);
+	*cq_size = atomic_load_explicit((_Atomic uint32_t *)&cfg->cq_size, __ATOMIC_SEQ_CST);
 #else
 	*cq_size = cfg->cq_size;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -294,7 +294,7 @@ rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*rcq_size = atomic_load_explicit(&cfg->rcq_size, __ATOMIC_SEQ_CST);
+	*rcq_size = atomic_load_explicit((_Atomic uint32_t *)&cfg->rcq_size, __ATOMIC_SEQ_CST);
 #else
 	*rcq_size = cfg->rcq_size;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -342,7 +342,7 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*sq_size = atomic_load_explicit(&cfg->sq_size, __ATOMIC_SEQ_CST);
+	*sq_size = atomic_load_explicit((_Atomic uint32_t *)&cfg->sq_size, __ATOMIC_SEQ_CST);
 #else
 	*sq_size = cfg->sq_size;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -390,7 +390,7 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*rq_size = atomic_load_explicit(&cfg->rq_size, __ATOMIC_SEQ_CST);
+	*rq_size = atomic_load_explicit((_Atomic uint32_t *)&cfg->rq_size, __ATOMIC_SEQ_CST);
 #else
 	*rq_size = cfg->rq_size;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -440,7 +440,7 @@ rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 		return RPMA_E_INVAL;
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	*shared = atomic_load_explicit(&cfg->shared_comp_channel, __ATOMIC_SEQ_CST);
+	*shared = atomic_load_explicit((_Atomic bool *)&cfg->shared_comp_channel, __ATOMIC_SEQ_CST);
 #else
 	*shared = cfg->shared_comp_channel;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
