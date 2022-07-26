@@ -11,6 +11,7 @@
 #include <stdatomic.h>
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
+#include "common.h"
 #include "debug.h"
 #include "librpma.h"
 
@@ -34,6 +35,35 @@ static struct rpma_srq_cfg Srq_cfg_default  = {
 	.rq_size = RPMA_DEFAULT_SRQ_SIZE,
 	.rcq_size = RPMA_DEFAULT_SRQ_SIZE
 };
+
+/* internal librpma API */
+
+/*
+ * rpma_srq_cfg_default -- return pointer to default share RQ configuration
+ * object
+ */
+struct rpma_srq_cfg *
+rpma_srq_cfg_default()
+{
+	RPMA_DEBUG_TRACE;
+
+	return &Srq_cfg_default;
+}
+
+/*
+ * rpma_srq_cfg_get_rcqe -- ibv_create_cq(..., int cqe, ...) compatible variant
+ * of rpma_srq_cfg_get_rcq_size(). Round down the rcq_size when it is too big
+ * for storing into an int type of value. Convert otherwise.
+ */
+void
+rpma_srq_cfg_get_rcqe(const struct rpma_srq_cfg *cfg, int *rcqe)
+{
+	RPMA_DEBUG_TRACE;
+
+	uint32_t rcq_size = 0;
+	(void) rpma_srq_cfg_get_rcq_size(cfg, &rcq_size);
+	*rcqe = CLIP_TO_INT(rcq_size);
+}
 
 /* public librpma API */
 
