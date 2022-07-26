@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_ep_next_conn_req
   - rpma_log_set_function
   - rpma_log_set_threshold
+  - rpma_log_set_get_threshold
   - rpma_peer_cfg_set_direct_write_to_pmem
 
 ### Changed
