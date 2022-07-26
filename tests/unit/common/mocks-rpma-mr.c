@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright 2022, Fujitsu */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -170,6 +171,25 @@ rpma_mr_recv(struct ibv_qp *qp,
 	assert_true(dst != NULL || (offset == 0 && len == 0));
 
 	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(offset);
+	check_expected(len);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
+
+/*
+ * rpma_mr_srq_recv -- mock of rpma_mr_srq_recv
+ */
+int
+rpma_mr_srq_recv(struct ibv_srq *srq, struct rpma_mr_local *dst, size_t offset,
+	size_t len, const void *op_context)
+{
+	assert_non_null(srq);
+	assert_true(dst != NULL || (offset == 0 && len == 0));
+
+	check_expected_ptr(srq);
 	check_expected_ptr(dst);
 	check_expected(offset);
 	check_expected(len);
