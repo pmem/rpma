@@ -19,18 +19,18 @@
 #include "cmocka_alloc.h"
 #endif
 
-#ifdef ATOMIC_STORE_SUPPORTED
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
 #include <stdatomic.h>
-#endif /* ATOMIC_STORE_SUPPORTED */
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 #define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
 
 static bool RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM = false;
 
 struct rpma_peer_cfg {
-#ifdef ATOMIC_STORE_SUPPORTED
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
 	_Atomic
-#endif /* ATOMIC_STORE_SUPPORTED */
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 	bool direct_write_to_pmem;
 };
 
@@ -54,12 +54,11 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 
 	/* set default values */
 
-#ifdef ATOMIC_STORE_SUPPORTED
-	atomic_init(&cfg->direct_write_to_pmem,
-		atomic_load_explicit(&RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM, __ATOMIC_SEQ_CST));
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+	atomic_init(&cfg->direct_write_to_pmem, RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM);
 #else
 	cfg->direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
-#endif /* ATOMIC_STORE_SUPPORTED */
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 	*pcfg_ptr = cfg;
 	return 0;
 }
@@ -94,11 +93,11 @@ rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg, bool supporte
 	if (pcfg == NULL)
 		return RPMA_E_INVAL;
 
-#ifdef ATOMIC_STORE_SUPPORTED
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
 	atomic_store_explicit(&pcfg->direct_write_to_pmem, supported, __ATOMIC_SEQ_CST);
 #else
 	pcfg->direct_write_to_pmem = supported;
-#endif /* ATOMIC_STORE_SUPPORTED */
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	return 0;
 }
@@ -115,11 +114,11 @@ rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg, bool *s
 	if (pcfg == NULL || supported == NULL)
 		return RPMA_E_INVAL;
 
-#ifdef ATOMIC_STORE_SUPPORTED
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
 	*supported = atomic_load_explicit(&pcfg->direct_write_to_pmem, __ATOMIC_SEQ_CST);
 #else
 	*supported = pcfg->direct_write_to_pmem;
-#endif /* ATOMIC_STORE_SUPPORTED */
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	return 0;
 }

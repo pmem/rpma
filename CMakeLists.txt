@@ -170,13 +170,13 @@ else()
 	add_flag(-DRDMA_GETADDRINFO_OLD_SIGNATURE=1)
 endif()
 
-# check if atomic_store() is supported
-atomic_store_supported(ATOMIC_STORE_SUPPORTED)
-if(ATOMIC_STORE_SUPPORTED)
-	message(STATUS "atomic_store() is supported")
-	add_flag(-DATOMIC_STORE_SUPPORTED=1)
+# check if atomic operations are supported
+atomic_operations_supported(ATOMIC_OPERATIONS_SUPPORTED)
+if(ATOMIC_OPERATIONS_SUPPORTED)
+	message(STATUS "atomic operations are supported")
+	add_flag(-DATOMIC_OPERATIONS_SUPPORTED=1)
 else()
-	message(WARNING "atomic_store() is NOT supported (too old gcc/clang compiler). Some *_set*() functions  will not be thread-safe!")
+	message(WARNING "atomic operations are NOT supported (too old gcc/clang compiler). Some *_set*() functions will NOT be thread-safe!")
 endif()
 
 add_custom_target(checkers ALL)

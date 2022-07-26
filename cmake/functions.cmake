@@ -304,16 +304,18 @@ function(check_if_librt_is_required)
 	endif()
 endfunction()
 
-# check if atomic_store() is supported
-function(atomic_store_supported var)
+# check if atomic operations are supported
+function(atomic_operations_supported var)
 	CHECK_C_SOURCE_COMPILES("
 		#include <stdatomic.h>
-		/* check if atomic_store() is defined */
+		/* check if atomic operations are supported */
 		int main() {
-			int i;
-			atomic_store(&i, 1);
+			_Atomic int i, j;
+			atomic_init(&i, 0);
+			j = atomic_load_explicit(&i, __ATOMIC_SEQ_CST);
+			atomic_store_explicit(&i, 1, __ATOMIC_SEQ_CST);
 			return 0;
 		}"
-		ATOMIC_STORE_SUPPORTED)
-	set(var ${ATOMIC_STORE_SUPPORTED} PARENT_SCOPE)
+		ATOMIC_OPERATIONS_SUPPORTED)
+	set(var ${ATOMIC_OPERATIONS_SUPPORTED} PARENT_SCOPE)
 endfunction()
