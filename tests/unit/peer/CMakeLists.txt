@@ -18,6 +18,7 @@ function(add_test_peer name)
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-cq.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-utils.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-srq.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-srq_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
