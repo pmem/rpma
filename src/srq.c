@@ -18,6 +18,7 @@
 #include "peer.h"
 #include "mr.h"
 #include "srq_cfg.h"
+#include "srq.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -27,6 +28,20 @@ struct rpma_srq {
 	struct ibv_srq *ibv_srq;
 	struct rpma_cq *rcq;
 };
+
+/* internal librpma API */
+
+/*
+ * rpma_srq_get_ibv_srq -- get the shared CQ member from the rpma_srq object
+ *
+ * ASSUMPTIONS
+ * - srq != NULL
+ */
+struct ibv_srq *
+rpma_srq_get_ibv_srq(const struct rpma_srq *srq)
+{
+	return srq->ibv_srq;
+}
 
 /* public librpma API */
 

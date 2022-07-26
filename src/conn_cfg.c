@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_cfg.c -- librpma connection-configuration-related implementations
@@ -48,6 +48,7 @@ struct rpma_conn_cfg {
 	_Atomic uint32_t sq_size;	/* SQ size */
 	_Atomic uint32_t rq_size;	/* RQ size */
 	_Atomic bool shared_comp_channel; /* completion channel shared by CQ and RCQ */
+	_Atomic struct rpma_srq *srq;	/* shared RQ object */
 #else
 	int timeout_ms;		/* connection establishment timeout */
 	uint32_t cq_size;	/* main CQ size */
@@ -55,6 +56,7 @@ struct rpma_conn_cfg {
 	uint32_t sq_size;	/* SQ size */
 	uint32_t rq_size;	/* RQ size */
 	bool shared_comp_channel; /* completion channel shared by CQ and RCQ */
+	struct rpma_srq *srq;	/* shared RQ object */
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 };
 
@@ -64,7 +66,8 @@ static struct rpma_conn_cfg Conn_cfg_default  = {
 	.rcq_size = RPMA_DEFAULT_RCQ_SIZE,
 	.sq_size = RPMA_DEFAULT_Q_SIZE,
 	.rq_size = RPMA_DEFAULT_Q_SIZE,
-	.shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL
+	.shared_comp_channel = RPMA_DEFAULT_SHARED_COMPL_CHANNEL,
+	.srq = NULL
 };
 
 /* internal librpma API */
@@ -142,6 +145,8 @@ rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr)
 		atomic_load_explicit(&Conn_cfg_default.rcq_size, __ATOMIC_SEQ_CST));
 	atomic_init(&(*cfg_ptr)->shared_comp_channel,
 		atomic_load_explicit(&Conn_cfg_default.shared_comp_channel, __ATOMIC_SEQ_CST));
+	atomic_init(&(*cfg_ptr)->srq,
+		atomic_load_explicit(&Conn_cfg_default.srq, __ATOMIC_SEQ_CST));
 #else
 	memcpy(*cfg_ptr, &Conn_cfg_default, sizeof(struct rpma_conn_cfg));
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
@@ -444,6 +449,48 @@ rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
 #else
 	*shared = cfg->shared_comp_channel;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_set_srq -- set a shared RQ object for the connection
+ */
+int
+rpma_conn_cfg_set_srq(struct rpma_conn_cfg *cfg, struct rpma_srq *srq)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
+	if (cfg == NULL || srq == NULL)
+		return RPMA_E_INVAL;
+
+#ifdef ATOMIC_STORE_SUPPORTED
+	atomic_store_explicit(&cfg->srq, srq, __ATOMIC_SEQ_CST);
+#else
+	cfg->srq = srq;
+#endif /* ATOMIC_STORE_SUPPORTED */
+
+	return 0;
+}
+
+/*
+ * rpma_conn_cfg_get_srq -- get the shared RQ object from the connection
+ */
+int
+rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg, struct rpma_srq **srq_ptr)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
+	if (cfg == NULL || srq_ptr == NULL)
+		return RPMA_E_INVAL;
+
+#ifdef ATOMIC_STORE_SUPPORTED
+	*srq_ptr = atomic_load_explicit(&cfg->srq, __ATOMIC_SEQ_CST);
+#else
+	*srq_ptr = cfg->srq;
+#endif /* ATOMIC_STORE_SUPPORTED */
 
 	return 0;
 }
