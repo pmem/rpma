@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021 Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -343,6 +343,45 @@ rpma_mr_recv(struct ibv_qp *qp,
 	int ret = ibv_post_recv(qp, &wr, &bad_wr);
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_recv");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
+/*
+ * rpma_mr_srq_recv -- post an RDMA recv from dst to the shared RQ
+ */
+int
+rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst,  size_t offset,
+	size_t len, const void *op_context)
+{
+	RPMA_DEBUG_TRACE;
+
+	struct ibv_recv_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	if (dst == NULL) {
+		wr.sg_list = NULL;
+		wr.num_sge = 0;
+	} else {
+		sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + offset);
+		sge.length = (uint32_t)len;
+		sge.lkey = dst->ibv_mr->lkey;
+
+		wr.sg_list = &sge;
+		wr.num_sge = 1;
+	}
+
+	wr.next = NULL;
+	wr.wr_id = (uint64_t)op_context;
+
+	struct ibv_recv_wr *bad_wr;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	int ret = ibv_post_srq_recv(ibv_srq, &wr, &bad_wr);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_srq_recv");
 		return RPMA_E_PROVIDER;
 	}
 
