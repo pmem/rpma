@@ -216,3 +216,26 @@
    fun:rpma_utils_get_ibv_context
    ...
 }
+
+#
+# Assessment: this suppression indicates a memory leak
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of MTT framework.
+#
+{
+   Memory leak in pthread_create
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_*
+   fun:mtt_run
+   fun:main
+}
