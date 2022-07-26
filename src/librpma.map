@@ -81,6 +81,8 @@ LIBRPMA_0.14 {
 		rpma_srq_cfg_new;
 		rpma_srq_cfg_set_rcq_size;
 		rpma_srq_cfg_set_rq_size;
+		rpma_srq_delete;
+		rpma_srq_new;
 		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
 		rpma_utils_ibv_context_is_odp_capable;

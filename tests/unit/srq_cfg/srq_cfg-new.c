@@ -9,6 +9,7 @@
  */
 
 #include "srq_cfg-common.h"
+#include "srq_cfg.h"
 
 /*
  * new__cfg_ptr_NULL -- NULL cfg_ptr is invalid
@@ -52,17 +53,23 @@ new__success(void **cstate_ptr)
 {
 	struct srq_cfg_test_state *cstate = *cstate_ptr;
 
-	uint32_t rq_size, rcq_size;
+	/* get the default configuration for comparison */
+	struct rpma_srq_cfg *cfg_default = rpma_srq_cfg_default();
+
+	uint32_t a_size, b_size;
 	int ret;
 
 	/* collect values and compare to defaults */
-	ret = rpma_srq_cfg_get_rq_size(cstate->cfg, &rq_size);
+	ret = rpma_srq_cfg_get_rq_size(cstate->cfg, &a_size);
 	assert_int_equal(ret, MOCK_OK);
-	assert_int_equal(rq_size, 100);
+	ret = rpma_srq_cfg_get_rq_size(cfg_default, &b_size);
+	assert_int_equal(a_size, b_size);
 
-	ret = rpma_srq_cfg_get_rcq_size(cstate->cfg, &rcq_size);
+	ret = rpma_srq_cfg_get_rcq_size(cstate->cfg, &a_size);
 	assert_int_equal(ret, MOCK_OK);
-	assert_int_equal(rcq_size, 100);
+	ret = rpma_srq_cfg_get_rcq_size(cfg_default, &b_size);
+	assert_int_equal(ret, MOCK_OK);
+	assert_int_equal(a_size, b_size);
 }
 
 static const struct CMUnitTest test_new[] = {
