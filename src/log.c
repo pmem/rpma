@@ -9,6 +9,9 @@
 #include <stdarg.h>
 #include <syslog.h>
 #include <time.h>
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+#include <stdatomic.h>
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 #include <string.h>
 
 #include "librpma.h"
@@ -34,6 +37,9 @@
 rpma_log_function *Rpma_log_function;
 
 /* threshold levels */
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 enum rpma_log_level Rpma_log_threshold[] = {
 		RPMA_LOG_THRESHOLD_DEFAULT,
 		RPMA_LOG_THRESHOLD_AUX_DEFAULT
@@ -99,7 +105,7 @@ rpma_log_set_function(rpma_log_function *log_function)
 
 }
 
-#ifdef RPMA_UNIT_TESTS
+#if defined(RPMA_UNIT_TESTS) && !defined(ATOMIC_OPERATIONS_SUPPORTED)
 #undef __sync_bool_compare_and_swap
 int mock__sync_bool_compare_and_swap__threshold(enum rpma_log_level *ptr,
 	enum rpma_log_level oldval, enum rpma_log_level newval);
@@ -114,22 +120,25 @@ int
 rpma_log_set_threshold(enum rpma_log_threshold threshold,
 			enum rpma_log_level level)
 {
-	if (threshold != RPMA_LOG_THRESHOLD &&
-			threshold != RPMA_LOG_THRESHOLD_AUX)
+	if (threshold != RPMA_LOG_THRESHOLD && threshold != RPMA_LOG_THRESHOLD_AUX)
 		return RPMA_E_INVAL;
 
 	if (level < RPMA_LOG_DISABLED || level > RPMA_LOG_LEVEL_DEBUG)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+	atomic_store_explicit(&Rpma_log_threshold[threshold], level, __ATOMIC_SEQ_CST);
+	return 0;
+#else
 	enum rpma_log_level level_old;
 	while (RPMA_E_AGAIN == rpma_log_get_threshold(threshold, &level_old))
 		;
 
-	if (__sync_bool_compare_and_swap(&Rpma_log_threshold[threshold],
-			level_old, level))
+	if (__sync_bool_compare_and_swap(&Rpma_log_threshold[threshold], level_old, level))
 		return 0;
 	else
 		return RPMA_E_AGAIN;
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 }
 
 #ifdef RPMA_UNIT_TESTS
@@ -143,14 +152,17 @@ int
 rpma_log_get_threshold(enum rpma_log_threshold threshold,
 			enum rpma_log_level *level)
 {
-	if (threshold != RPMA_LOG_THRESHOLD &&
-			threshold != RPMA_LOG_THRESHOLD_AUX)
+	if (threshold != RPMA_LOG_THRESHOLD && threshold != RPMA_LOG_THRESHOLD_AUX)
 		return RPMA_E_INVAL;
 
 	if (level == NULL)
 		return RPMA_E_INVAL;
 
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+	*level = atomic_load_explicit(&Rpma_log_threshold[threshold], __ATOMIC_SEQ_CST);
+#else
 	*level = Rpma_log_threshold[threshold];
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	return 0;
 }
