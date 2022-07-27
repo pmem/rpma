@@ -13,6 +13,8 @@ add_multithreaded(NAME conn_cfg BIN get_rq_size
 	SRCS rpma_conn_cfg_get_rq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_get.c)
 add_multithreaded(NAME conn_cfg BIN get_sq_size
 	SRCS rpma_conn_cfg_get_sq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_get.c)
+add_multithreaded(NAME conn_cfg BIN get_srq
+	SRCS rpma_conn_cfg_get_srq.c rpma_conn_cfg_common.c rpma_conn_cfg_common_get.c)
 add_multithreaded(NAME conn_cfg BIN get_rcq_size
 	SRCS rpma_conn_cfg_get_rcq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_get.c)
 add_multithreaded(NAME conn_cfg BIN get_timeout
@@ -27,6 +29,8 @@ add_multithreaded(NAME conn_cfg BIN set_rq_size
 	SRCS rpma_conn_cfg_set_rq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_set.c)
 add_multithreaded(NAME conn_cfg BIN set_sq_size
 	SRCS rpma_conn_cfg_set_sq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_set.c)
+add_multithreaded(NAME conn_cfg BIN set_srq
+	SRCS rpma_conn_cfg_set_srq.c rpma_conn_cfg_common.c rpma_conn_cfg_common_set.c)
 add_multithreaded(NAME conn_cfg BIN set_rcq_size
 	SRCS rpma_conn_cfg_set_rcq_size.c rpma_conn_cfg_common.c rpma_conn_cfg_common_set.c)
 add_multithreaded(NAME conn_cfg BIN set_timeout
