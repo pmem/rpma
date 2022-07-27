@@ -96,12 +96,14 @@ The following API calls of the librpma library:
 - rpma_conn_cfg_get_rcq_size
 - rpma_conn_cfg_get_rq_size
 - rpma_conn_cfg_get_sq_size
+- rpma_conn_cfg_get_srq
 - rpma_conn_cfg_get_timeout
 - rpma_conn_cfg_set_compl_channel
 - rpma_conn_cfg_set_cq_size
 - rpma_conn_cfg_set_rcq_size
 - rpma_conn_cfg_set_rq_size
 - rpma_conn_cfg_set_sq_size
+- rpma_conn_cfg_set_srq
 - rpma_conn_cfg_set_timeout
 
 are thread-safe only if each thread operates on a **separate connection configuration structure** (`struct rpma_conn_cfg`) used only by this one thread. They are not thread-safe if threads operate on one connection configuration structure common for more than one thread.
