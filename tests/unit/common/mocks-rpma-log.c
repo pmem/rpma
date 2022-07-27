@@ -27,7 +27,10 @@ mock_function(enum rpma_log_level level, const char *file_name,
 {
 }
 
-rpma_log_function *Rpma_log_function = mock_function;
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
+uintptr_t Rpma_log_function = (uintptr_t)mock_function;
 
 /*
  * rpma_log_init -- rpma_log_init() mock
