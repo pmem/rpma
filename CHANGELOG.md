@@ -45,6 +45,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_log_set_get_threshold
   - rpma_log_set_threshold
   - rpma_peer_cfg_set_direct_write_to_pmem
+  - rpma_srq_cfg_new
+  - rpma_srq_cfg_get_rcq_size
+  - rpma_srq_cfg_get_rq_size
+  - rpma_srq_cfg_set_rcq_size
+  - rpma_srq_cfg_set_rq_size
 
 ### Changed
 - APIs:
