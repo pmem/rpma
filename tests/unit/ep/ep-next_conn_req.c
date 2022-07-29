@@ -157,7 +157,7 @@ next_conn_req__event_REJECTED_ack_ERRNO(void **estate_ptr)
 
 /*
  * next_conn_req__from_cm_event_E_NOMEM -
- * rpma_conn_req_from_cm_event() returns RPMA_E_NOMEM
+ * rpma_conn_req_new_from_cm_event() returns RPMA_E_NOMEM
  */
 static void
 next_conn_req__from_cm_event_E_NOMEM(void **estate_ptr)
@@ -169,11 +169,11 @@ next_conn_req__from_cm_event_E_NOMEM(void **estate_ptr)
 	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	will_return(rdma_get_cm_event, &event);
 
-	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
-	expect_value(rpma_conn_req_from_cm_event, event, &event);
-	expect_value(rpma_conn_req_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
-	will_return(rpma_conn_req_from_cm_event, NULL);
-	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
+	expect_value(rpma_conn_req_new_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_new_from_cm_event, event, &event);
+	expect_value(rpma_conn_req_new_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
+	will_return(rpma_conn_req_new_from_cm_event, NULL);
+	will_return(rpma_conn_req_new_from_cm_event, RPMA_E_NOMEM);
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
@@ -189,7 +189,7 @@ next_conn_req__from_cm_event_E_NOMEM(void **estate_ptr)
 
 /*
  * next_conn_req__from_cm_event_E_NOMEM_ack_ERRNO -
- * rpma_conn_req_from_cm_event() returns RPMA_E_NOMEM
+ * rpma_conn_req_new_from_cm_event() returns RPMA_E_NOMEM
  * and rdma_ack_cm_event() fails with MOCK_ERRNO
  */
 static void
@@ -202,11 +202,11 @@ next_conn_req__from_cm_event_E_NOMEM_ack_ERRNO(void **estate_ptr)
 	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	will_return(rdma_get_cm_event, &event);
 
-	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
-	expect_value(rpma_conn_req_from_cm_event, event, &event);
-	expect_value(rpma_conn_req_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
-	will_return(rpma_conn_req_from_cm_event, NULL);
-	will_return(rpma_conn_req_from_cm_event, RPMA_E_NOMEM);
+	expect_value(rpma_conn_req_new_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_new_from_cm_event, event, &event);
+	expect_value(rpma_conn_req_new_from_cm_event, cfg, MOCK_CONN_CFG_DEFAULT);
+	will_return(rpma_conn_req_new_from_cm_event, NULL);
+	will_return(rpma_conn_req_new_from_cm_event, RPMA_E_NOMEM);
 
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO);
@@ -233,11 +233,11 @@ next_conn_req__rdma_ack_cm_event_ERRNO(void **estate_ptr)
 	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	will_return(rdma_get_cm_event, &event);
 
-	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
-	expect_value(rpma_conn_req_from_cm_event, event, &event);
-	expect_value(rpma_conn_req_from_cm_event, cfg,
+	expect_value(rpma_conn_req_new_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_new_from_cm_event, event, &event);
+	expect_value(rpma_conn_req_new_from_cm_event, cfg,
 			(estate->cfg == NULL ? MOCK_CONN_CFG_DEFAULT : estate->cfg));
-	will_return(rpma_conn_req_from_cm_event, MOCK_CONN_REQ);
+	will_return(rpma_conn_req_new_from_cm_event, MOCK_CONN_REQ);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 	expect_value(rpma_conn_req_delete, *req_ptr, MOCK_CONN_REQ);
@@ -264,11 +264,11 @@ next_conn_req__success(void **estate_ptr)
 	event.event = RDMA_CM_EVENT_CONNECT_REQUEST;
 	will_return(rdma_get_cm_event, &event);
 
-	expect_value(rpma_conn_req_from_cm_event, peer, MOCK_PEER);
-	expect_value(rpma_conn_req_from_cm_event, event, &event);
-	expect_value(rpma_conn_req_from_cm_event, cfg,
+	expect_value(rpma_conn_req_new_from_cm_event, peer, MOCK_PEER);
+	expect_value(rpma_conn_req_new_from_cm_event, event, &event);
+	expect_value(rpma_conn_req_new_from_cm_event, cfg,
 			(estate->cfg == NULL ? MOCK_CONN_CFG_DEFAULT : estate->cfg));
-	will_return(rpma_conn_req_from_cm_event, MOCK_CONN_REQ);
+	will_return(rpma_conn_req_new_from_cm_event, MOCK_CONN_REQ);
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_OK);
 

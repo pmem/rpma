@@ -252,10 +252,10 @@ rdma_get_cm_event(struct rdma_event_channel *channel,
 }
 
 /*
- * rpma_conn_req_from_cm_event -- rpma_conn_req_from_cm_event() mock
+ * rpma_conn_req_new_from_cm_event -- rpma_conn_req_new_from_cm_event() mock
  */
 int
-rpma_conn_req_from_cm_event(struct rpma_peer *peer,
+rpma_conn_req_new_from_cm_event(struct rpma_peer *peer,
 		struct rdma_cm_event *event, const struct rpma_conn_cfg *cfg,
 		struct rpma_conn_req **req_ptr)
 {
