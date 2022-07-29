@@ -19,7 +19,7 @@ get_private_data__success(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -69,7 +69,7 @@ get_private_data__pdata_NULL(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */

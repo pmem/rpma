@@ -3,10 +3,10 @@
 /* Copyright 2021-2022, Fujitsu */
 
 /*
- * conn_req-from_cm_event.c -- the rpma_conn_req_from_cm_event() unit tests
+ * conn_req-new_from_cm_event.c -- the rpma_conn_req_new_from_cm_event() unit tests
  *
  * API covered:
- * - rpma_conn_req_from_cm_event()
+ * - rpma_conn_req_new_from_cm_event()
  */
 
 #include "conn_req-common.h"
@@ -23,7 +23,7 @@ from_cm_event__peer_NULL(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(NULL, &event,
+	int ret = rpma_conn_req_new_from_cm_event(NULL, &event,
 			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
@@ -39,7 +39,7 @@ from_cm_event__edata_NULL(void **unused)
 {
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, NULL,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, NULL,
 			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
@@ -55,7 +55,7 @@ from_cm_event__req_ptr_NULL(void **unused)
 {
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECTION_REQUEST_INIT;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &event,
 			MOCK_CONN_CFG_DEFAULT, NULL);
 
 	/* verify the results */
@@ -70,7 +70,7 @@ static void
 from_cm_event__peer_NULL_edata_NULL_req_ptr_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(NULL, NULL,
+	int ret = rpma_conn_req_new_from_cm_event(NULL, NULL,
 			MOCK_CONN_CFG_DEFAULT, NULL);
 
 	/* verify the results */
@@ -87,7 +87,7 @@ from_cm_event__RDMA_CM_EVENT_CONNECT_ERROR(void **unused)
 	/* run test */
 	struct rdma_cm_event event = CM_EVENT_CONNECT_ERROR_INIT;
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &event,
 			MOCK_CONN_CFG_DEFAULT, &req);
 
 	/* verify the results */
@@ -145,7 +145,7 @@ from_cm_event__ibv_create_comp_channel_ERRNO(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -173,7 +173,7 @@ from_cm_event__ibv_create_comp_channel_ERRNO_rdma_ack_cm_event_ERRNO2(void **cst
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -211,7 +211,7 @@ from_cm_event__cq_new_ERRNO(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -251,7 +251,7 @@ from_cm_event__rcq_new_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -303,7 +303,7 @@ from_cm_event__peer_create_qp_ERRNO(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -363,7 +363,7 @@ from_cm_event__create_qp_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -415,7 +415,7 @@ from_cm_event__malloc_ERRNO(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -476,7 +476,7 @@ from_cm_event__malloc_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -534,7 +534,7 @@ from_cm_event__private_data_store_E_NOMEM(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -601,7 +601,7 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -610,19 +610,19 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 }
 
 /*
- * conn_req_from_cm__lifecycle - happy day scenario
+ * conn_req_new_from_cm__lifecycle - happy day scenario
  */
 static void
-conn_req_from_cm__lifecycle(void **unused)
+conn_req_new_from_cm__lifecycle(void **unused)
 {
 	/*
-	 * The thing is done by setup__conn_req_from_cm_event() and
-	 * teardown__conn_req_from_cm_event().
+	 * The thing is done by setup__conn_req_new_from_cm_event() and
+	 * teardown__conn_req_new_from_cm_event().
 	 */
 }
 
 static const struct CMUnitTest test_from_cm_event[] = {
-	/* rpma_conn_req_from_cm_event() unit tests */
+	/* rpma_conn_req_new_from_cm_event() unit tests */
 	cmocka_unit_test(from_cm_event__peer_NULL),
 	cmocka_unit_test(from_cm_event__edata_NULL),
 	cmocka_unit_test(from_cm_event__req_ptr_NULL),
@@ -664,11 +664,11 @@ static const struct CMUnitTest test_from_cm_event[] = {
 		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
 	/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
-		conn_req_from_cm__lifecycle, setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
+		conn_req_new_from_cm__lifecycle, setup__conn_req_new_from_cm_event,
+		teardown__conn_req_new_from_cm_event),
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_SRQ_RCQ(
-		conn_req_from_cm__lifecycle, setup__conn_req_from_cm_event,
-		teardown__conn_req_from_cm_event),
+		conn_req_new_from_cm__lifecycle, setup__conn_req_new_from_cm_event,
+		teardown__conn_req_new_from_cm_event),
 };
 
 int

@@ -126,11 +126,11 @@ configure_conn_req(void **cstate_ptr)
 }
 
 /*
- * setup__conn_req_from_cm_event -- prepare a valid rpma_conn_req object from CM
+ * setup__conn_req_new_from_cm_event -- prepare a valid rpma_conn_req object from CM
  * event
  */
 int
-setup__conn_req_from_cm_event(void **cstate_ptr)
+setup__conn_req_new_from_cm_event(void **cstate_ptr)
 {
 	struct conn_req_test_state *cstate = *cstate_ptr;
 	configure_conn_req((void **)&cstate);
@@ -164,7 +164,7 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &cstate->req);
 
 	/* verify the results */
@@ -177,11 +177,11 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 }
 
 /*
- * teardown__conn_req_from_cm_event -- delete the rpma_conn_req object created
+ * teardown__conn_req_new_from_cm_event -- delete the rpma_conn_req object created
  * from a CM event
  */
 int
-teardown__conn_req_from_cm_event(void **cstate_ptr)
+teardown__conn_req_new_from_cm_event(void **cstate_ptr)
 {
 	struct conn_req_test_state *cstate = *cstate_ptr;
 
