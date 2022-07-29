@@ -68,14 +68,14 @@ rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
 }
 
 /*
- * rpma_conn_req_from_id -- allocate a new conn_req object from CM ID and equip
+ * rpma_conn_req_new_from_id -- allocate a new conn_req object from CM ID and equip
  * the latter with QP and CQ
  *
  * ASSUMPTIONS
  * - peer != NULL && id != NULL && cfg != NULL && req_ptr != NULL
  */
 static int
-rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_req_new_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
@@ -337,7 +337,7 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 
 /*
  * rpma_conn_req_from_cm_event -- feeds an ID from cm event into
- * rpma_conn_req_from_id and add the event to conn_req
+ * rpma_conn_req_new_from_id and add the event to conn_req
  *
  * ASSUMPTIONS
  * cfg != NULL
@@ -355,7 +355,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		return RPMA_E_INVAL;
 
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_id(peer, event->id, cfg, &req);
+	int ret = rpma_conn_req_new_from_id(peer, event->id, cfg, &req);
 	if (ret)
 		return ret;
 
@@ -379,7 +379,7 @@ err_conn_req_delete:
 /*
  * rpma_conn_req_new -- create a new outgoing connection request object. It uses
  * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds
- * the prepared ID into rpma_conn_req_from_id.
+ * the prepared ID into rpma_conn_req_new_from_id.
  */
 int
 rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
@@ -425,7 +425,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 	}
 
 	struct rpma_conn_req *req;
-	ret = rpma_conn_req_from_id(peer, id, cfg, &req);
+	ret = rpma_conn_req_new_from_id(peer, id, cfg, &req);
 	if (ret)
 		goto err_destroy_id;
 
