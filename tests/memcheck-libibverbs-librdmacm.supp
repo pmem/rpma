@@ -260,5 +260,5 @@
    fun:ibv_create_srq
    fun:rpma_peer_create_srq
    fun:rpma_srq_new
-   fun:main
+   ...
 }
