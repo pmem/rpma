@@ -112,7 +112,7 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &cstate->req);
 
 	/* verify the results */
