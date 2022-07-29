@@ -47,7 +47,7 @@ delete_via_reject__rcq_delete_ERRNO(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = &Conn_req_conn_cfg_custom;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -82,7 +82,7 @@ delete_via_reject__rcq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = &Conn_req_conn_cfg_custom;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -116,7 +116,7 @@ delete_via_reject__cq_delete_ERRNO(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -150,7 +150,7 @@ delete_via_reject__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -182,7 +182,7 @@ delete_via_reject__reject_ERRNO(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -214,7 +214,7 @@ delete_via_reject__reject_ERRNO_ack_ERRNO2(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -246,7 +246,7 @@ delete_via_reject__ibv_destroy_comp_channel_ERRNO(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
@@ -277,7 +277,7 @@ delete_via_reject__ack_ERRNO_ibv_ERRNO2(void **cstate_ptr)
 {
 	/* WA for cmocka/issues#47 */
 	struct conn_req_test_state *cstate = *cstate_ptr;
-	assert_int_equal(setup__conn_req_from_cm_event((void **)&cstate), 0);
+	assert_int_equal(setup__conn_req_new_from_cm_event((void **)&cstate), 0);
 	assert_non_null(cstate);
 
 	/* configure mocks */
