@@ -23,7 +23,7 @@
 static int rpma_flush_apm_new(struct rpma_peer *peer,
 		struct rpma_flush *flush);
 static int rpma_flush_apm_delete(struct rpma_flush *flush);
-static int rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
+static int rpma_flush_apm_execute(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context);
 
@@ -96,7 +96,7 @@ rpma_flush_apm_new(struct rpma_peer *peer, struct rpma_flush *flush)
 
 	struct rpma_flush_internal *flush_internal =
 			(struct rpma_flush_internal *)flush;
-	flush_internal->flush_func = rpma_flush_apm_do;
+	flush_internal->flush_func = rpma_flush_apm_execute;
 	flush_internal->delete_func = rpma_flush_apm_delete;
 	flush_internal->context = flush_apm;
 
@@ -131,10 +131,10 @@ rpma_flush_apm_delete(struct rpma_flush *flush)
 }
 
 /*
- * rpma_flush_apm_do -- perform the APM-style flush
+ * rpma_flush_apm_execute -- perform the APM-style flush
  */
 static int
-rpma_flush_apm_do(struct ibv_qp *qp, struct rpma_flush *flush,
+rpma_flush_apm_execute(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {

@@ -28,5 +28,5 @@ function(add_test_flush name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_flush(apm_do)
+add_test_flush(apm_execute)
 add_test_flush(new)
