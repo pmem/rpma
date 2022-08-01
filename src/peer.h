@@ -16,12 +16,12 @@
 
 /*
  * ERRORS
- * rpma_peer_create_qp() can fail with the following errors:
+ * rpma_peer_setup_qp() can fail with the following errors:
  *
  * - RPMA_E_INVAL - peer, id or cq is NULL
  * - RPMA_E_PROVIDER - allocating a QP failed
  */
-int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+int rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg);
 
