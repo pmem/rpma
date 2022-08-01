@@ -43,9 +43,8 @@ ENV RPMA_DEPS "\
 	libunwind-dev \
 	pandoc"
 
-# examples deps ('libprotobuf-c-dev' is required only for example 9)
+# examples deps ('libprotobuf-c-dev' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
-	libpmem-dev \
 	libprotobuf-c-dev"
 
 # performance tools deps
@@ -62,7 +61,13 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl \
+	wget"
 
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
@@ -71,6 +76,7 @@ RUN apt-get install -y --no-install-recommends \
 	$TOOLS_DEPS \
 	$TESTS_DEPS \
 	$RPMA_DEPS \
+	$PMDK_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip
@@ -82,6 +88,10 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
 
 # Download scripts required in run-*.sh
 COPY download-scripts.sh download-scripts.sh

@@ -40,10 +40,12 @@ ENV RPMA_DEPS "\
 	libunwind-dev \
 	pandoc"
 
-# examples deps
+# examples deps ('libprotobuf-c-dev' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
-	libpmem2-dev"
-
+	libpmem-dev \
+	libpmem2-dev \
+	libprotobuf-c-dev"
+	
 # performance tools deps
 ENV TOOLS_DEPS "\
 	python3-jinja2 \
@@ -58,6 +60,7 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # Install all required packages

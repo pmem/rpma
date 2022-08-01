@@ -37,7 +37,7 @@ ENV RPMA_DEPS "\
 	pandoc \
 	rdma-core-devel"
 
-# examples deps ('protobuf-c-devel' is required only for example 9)
+# examples deps ('protobuf-c-devel' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
 	libpmem-devel \
 	libpmem2-devel \
@@ -57,6 +57,7 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # doc update deps
