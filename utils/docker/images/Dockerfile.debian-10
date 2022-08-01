@@ -43,9 +43,10 @@ ENV RPMA_DEPS "\
 	libunwind-dev \
 	pandoc"
 
-# examples deps
+# examples deps ('libprotobuf-c-dev' is required only for example 9)
 ENV EXAMPLES_DEPS "\
-	libpmem-dev"
+	libpmem-dev \
+	libprotobuf-c-dev"
 
 # performance tools deps
 ENV TOOLS_DEPS "\
@@ -54,6 +55,11 @@ ENV TOOLS_DEPS "\
 	python3-pip \
 	python3-pytest"
 
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl \
+	wget"
+
 # performance tools python deps
 ENV TOOLS_PYTHON_DEPS "\
 	coverage \
@@ -61,6 +67,7 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # Install all required packages
@@ -72,6 +79,10 @@ RUN apt-get install -y --no-install-recommends \
 && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip
+
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
