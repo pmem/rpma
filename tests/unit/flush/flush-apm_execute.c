@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
- * flush-apm_do.c -- unit tests of the flush module
+ * flush-apm_execute.c -- unit tests of the flush module
  *
  * API covered:
- * - rpma_flush_apm_do
+ * - rpma_flush_apm_execute
  */
 
 #include "cmocka_headers.h"
@@ -16,10 +16,10 @@
 #include "flush-common.h"
 
 /*
- * apm_do__success -- rpma_flush_apm_do() success
+ * apm_execute__success -- rpma_flush_apm_execute() success
  */
 static void
-apm_do__success(void **fstate_ptr)
+apm_execute__success(void **fstate_ptr)
 {
 	/* configure mocks */
 	expect_value(rpma_mr_read, qp, MOCK_QP);
@@ -48,8 +48,8 @@ main(int argc, char *argv[])
 	enable_unistd_mocks();
 
 	const struct CMUnitTest tests[] = {
-		/* rpma_flush_apm_do() unit tests */
-		cmocka_unit_test_setup_teardown(apm_do__success,
+		/* rpma_flush_apm_execute() unit tests */
+		cmocka_unit_test_setup_teardown(apm_execute__success,
 			setup__flush_new, teardown__flush_delete),
 	};
 
