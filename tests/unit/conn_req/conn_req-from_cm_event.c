@@ -465,7 +465,7 @@ from_cm_event__private_data_store_E_NOMEM(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -527,7 +527,7 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second or third error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third or fourth error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 

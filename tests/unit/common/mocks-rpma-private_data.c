@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-rpma-private_data.c -- librpma private_data.c module mocks
@@ -38,10 +38,10 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_discard -- rpma_private_data_discard() mock
+ * rpma_private_data_delete -- rpma_private_data_delete() mock
  */
 void
-rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+rpma_private_data_delete(struct rpma_conn_private_data *pdata)
 {
 	assert_non_null(pdata);
 	function_called();
