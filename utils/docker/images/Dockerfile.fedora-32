@@ -40,6 +40,7 @@ ENV RPMA_DEPS "\
 # examples deps ('protobuf-c-devel' is required only for example 9)
 ENV EXAMPLES_DEPS "\
 	libpmem-devel \
+	libpmem2-devel \
 	protobuf-c-devel"
 
 # performance tools deps
@@ -56,6 +57,7 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # doc update deps
