@@ -235,7 +235,7 @@ err_conn_req_delete:
 	rdma_destroy_qp(req->id);
 	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
-	(void) rpma_private_data_discard(&req->data);
+	(void) rpma_private_data_delete(&req->data);
 	if (req->channel)
 		(void) ibv_destroy_comp_channel(req->channel);
 
@@ -532,7 +532,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 		}
 	}
 
-	rpma_private_data_discard(&req->data);
+	rpma_private_data_delete(&req->data);
 
 	free(req);
 	*req_ptr = NULL;

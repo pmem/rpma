@@ -59,7 +59,7 @@ delete_via_reject__rcq_delete_ERRNO(void **unused)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -95,7 +95,7 @@ delete_via_reject__rcq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_ERRNO2); /* third error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -128,7 +128,7 @@ delete_via_reject__cq_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -162,7 +162,7 @@ delete_via_reject__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO); /* first error */
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_ERRNO2); /* second error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -193,7 +193,7 @@ delete_via_reject__reject_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_ERRNO);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -225,7 +225,7 @@ delete_via_reject__reject_ERRNO_ack_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_ERRNO); /* first error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -257,7 +257,7 @@ delete_via_reject__ibv_destroy_comp_channel_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO);
 
 	/* run test */
@@ -288,7 +288,7 @@ delete_via_reject__ack_ERRNO_ibv_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_reject, id, &cstate->id);
 	will_return(rdma_reject, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2); /* second error */
 
 	/* run test */
@@ -320,7 +320,7 @@ delete_via_destroy__rcq_delete_ERRNO(void **unused)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -355,7 +355,7 @@ delete_via_destroy__rcq_delete_ERRNO_subsequent_ERRNO2(void **unused)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -388,7 +388,7 @@ delete_via_destroy__cq_delete_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -422,7 +422,7 @@ delete_via_destroy__cq_delete_ERRNO_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO); /* first error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* second error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -454,7 +454,7 @@ delete_via_destroy__destroy_id_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
@@ -485,7 +485,7 @@ delete_via_destroy__ibv_destroy_comp_channel_ERRNO(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO);
 
 	/* run test */
@@ -516,7 +516,7 @@ delete_via_destroy__rdma_ERRNO_ibv_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_OK);
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO); /* first error */
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 	will_return(ibv_destroy_comp_channel, MOCK_ERRNO2); /* second error */
 
 	/* run test */
