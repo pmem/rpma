@@ -34,12 +34,12 @@ struct rpma_peer {
 /* internal librpma API */
 
 /*
- * rpma_peer_usage_to_access -- convert usage to access
+ * rpma_peer_usage2access -- convert usage to access
  *
  * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
  */
 static int
-rpma_peer_usage_to_access(struct rpma_peer *peer, int usage)
+rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -170,7 +170,7 @@ rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
-	int access = rpma_peer_usage_to_access(peer, usage);
+	int access = rpma_peer_usage2access(peer, usage);
 
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
 					RPMA_IBV_ACCESS(access));
