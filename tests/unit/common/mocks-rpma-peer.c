@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
+<<<<<<< HEAD
 /* Copyright 2020-2021, Intel Corporation */
 /* Copyright 2022, Fujitsu */
+||||||| parent of b625d266 (rpma: change the name of the rpma_peer_mr_reg())
+/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2021, Fujitsu */
+=======
+/* Copyright 2020-2022, Intel Corporation */
+/* Copyright 2021, Fujitsu */
+>>>>>>> b625d266 (rpma: change the name of the rpma_peer_mr_reg())
 
 /*
  * mocks-rpma-peer.c -- librpma peer.c module mocks
@@ -63,20 +71,20 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 }
 
 /*
- * rpma_peer_mr_reg -- a mock of rpma_peer_mr_reg()
+ * rpma_peer_setup_mr_reg -- a mock of rpma_peer_setup_mr_reg()
  */
 int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
+rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage)
 {
 	/*
-	 * rpma_peer_mr_reg() and malloc() may be called in any order.
+	 * rpma_peer_setup_mr_reg() and malloc() may be called in any order.
 	 * If the first one fails, then the second one won't be called,
 	 * so we cannot add cmocka's expects here.
 	 * Otherwise, unconsumed expects would cause a test failure.
 	 */
-	struct rpma_peer_mr_reg_args *args =
-				mock_type(struct rpma_peer_mr_reg_args *);
+	struct rpma_peer_setup_mr_reg_args *args =
+				mock_type(struct rpma_peer_setup_mr_reg_args *);
 	assert_ptr_equal(peer, MOCK_PEER);
 	assert_ptr_equal(addr, MOCK_PTR);
 	assert_int_equal(length, MOCK_SIZE);

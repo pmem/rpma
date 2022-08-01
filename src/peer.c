@@ -221,10 +221,10 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 #endif
 
 /*
- * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
+ * rpma_peer_setup_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
+rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage)
 {
 	RPMA_DEBUG_TRACE;

@@ -595,16 +595,8 @@ from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2(void **cstate_ptr)
 	will_return(rpma_cq_delete, MOCK_ERRNO2); /* second or third error */
 	expect_value(rdma_destroy_id, id, &cstate->id);
 	will_return(rdma_destroy_id, MOCK_ERRNO2); /* third or fourth error */
-<<<<<<< HEAD
-	expect_function_call(rpma_private_data_discard);
-	if (!cstate->get_args.srq_rcq && cstate->get_args.shared)
-||||||| parent of 2f3fe78f (rpma: change the name of the rpma_private_data_discard())
-	expect_function_call(rpma_private_data_discard);
-	if (cstate->get_args.shared)
-=======
 	expect_function_call(rpma_private_data_delete);
-	if (cstate->get_args.shared)
->>>>>>> 2f3fe78f (rpma: change the name of the rpma_private_data_discard())
+	if (!cstate->get_args.srq_rcq && cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
 
 	/* run test */
