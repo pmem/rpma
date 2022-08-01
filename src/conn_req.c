@@ -243,7 +243,7 @@ err_conn_req_delete:
 }
 
 /*
- * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
+ * rpma_conn_new_connect -- call rdma_connect(). If succeeds request
  * re-packing the connection request to a connection object. Otherwise,
  * rdma_destroy_qp()+rpma_cq_delete()+rdma_destroy_id() to destroy
  * the unsuccessful connection request.
@@ -252,7 +252,7 @@ err_conn_req_delete:
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_connect_active(struct rpma_conn_req *req,
+rpma_conn_new_connect(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
@@ -482,7 +482,7 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 	if ((*req_ptr)->is_passive)
 		ret = rpma_conn_new_accept(*req_ptr, &conn_param, conn_ptr);
 	else
-		ret = rpma_conn_req_connect_active(*req_ptr, &conn_param, conn_ptr);
+		ret = rpma_conn_new_connect(*req_ptr, &conn_param, conn_ptr);
 
 	free(*req_ptr);
 	*req_ptr = NULL;
