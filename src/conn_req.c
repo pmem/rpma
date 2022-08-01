@@ -194,7 +194,7 @@ err_comp_channel_destroy:
 }
 
 /*
- * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
+ * rpma_conn_new_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
  * request re-packing the connection request to a connection object. Otherwise,
  * rdma_disconnect()+rdma_destroy_qp()+rpma_cq_delete() to destroy
  * the unsuccessful connection request.
@@ -203,7 +203,7 @@ err_comp_channel_destroy:
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_accept(struct rpma_conn_req *req,
+rpma_conn_new_accept(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
@@ -480,7 +480,7 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 
 	int ret = 0;
 	if ((*req_ptr)->is_passive)
-		ret = rpma_conn_req_accept(*req_ptr, &conn_param, conn_ptr);
+		ret = rpma_conn_new_accept(*req_ptr, &conn_param, conn_ptr);
 	else
 		ret = rpma_conn_req_connect_active(*req_ptr, &conn_param, conn_ptr);
 
