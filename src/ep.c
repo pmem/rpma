@@ -205,7 +205,7 @@ rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
 		goto err_ack;
 	}
 
-	ret = rpma_conn_req_from_cm_event(ep->peer, event, cfg, req_ptr);
+	ret = rpma_conn_req_new_from_cm_event(ep->peer, event, cfg, req_ptr);
 	if (ret)
 		goto err_ack;
 

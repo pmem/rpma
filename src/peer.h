@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
@@ -29,12 +29,12 @@ int rpma_peer_create_srq(struct rpma_peer *peer, struct rpma_srq_cfg *cfg,
 
 /*
  * ERRORS
- * rpma_peer_create_qp() can fail with the following errors:
+ * rpma_peer_setup_qp() can fail with the following errors:
  *
  * - RPMA_E_INVAL - peer, id or cq is NULL
  * - RPMA_E_PROVIDER - allocating a QP failed
  */
-int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+int rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg);
 
@@ -44,11 +44,11 @@ int rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  *   && peer->pd != NULL
  *
  * ERRORS
- * rpma_peer_mr_reg() can fail with the following error:
+ * rpma_peer_setup_mr_reg() can fail with the following error:
  *
  * - RPMA_E_PROVIDER - registering the memory region failed
  */
-int rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
+int rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage);
 
 #endif /* LIBRPMA_PEER_H */
