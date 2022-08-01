@@ -348,7 +348,7 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_peer_create_qp()
+	 * This function is used as void in rpma_peer_setup_qp()
 	 * and therefore it has to return the correct value of size of SQ,
 	 * if it fails because of fault injection.
 	 */
@@ -396,7 +396,7 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_peer_create_qp()
+	 * This function is used as void in rpma_peer_setup_qp()
 	 * and therefore it has to return the correct value of size of RQ,
 	 * if it fails because of fault injection.
 	 */
