@@ -445,6 +445,6 @@
    obj:*librxe-rdmav34.so*
    ...
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
+   fun:rpma_peer_setup_qp
    ...
 }

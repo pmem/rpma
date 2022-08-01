@@ -36,12 +36,12 @@ struct rpma_peer {
 /* internal librpma API */
 
 /*
- * rpma_peer_usage_to_access -- convert usage to access
+ * rpma_peer_usage2access -- convert usage to access
  *
  * Note: APM type of flush requires the same access as RPMA_MR_USAGE_READ_SRC
  */
 static int
-rpma_peer_usage_to_access(struct rpma_peer *peer, int usage)
+rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -138,13 +138,13 @@ err_srq_delete:
 }
 
 /*
- * rpma_peer_create_qp -- allocate a QP associated with the CM ID
+ * rpma_peer_setup_qp -- allocate a QP associated with the CM ID
  *
  * ASSUMPTIONS
  * - cfg != NULL
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg)
 {
@@ -221,16 +221,16 @@ rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 #endif
 
 /*
- * rpma_peer_mr_reg -- register a memory region using ibv_reg_mr()
+ * rpma_peer_setup_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
-rpma_peer_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
+rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
 		void *addr, size_t length, int usage)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
-	int access = rpma_peer_usage_to_access(peer, usage);
+	int access = rpma_peer_usage2access(peer, usage);
 
 	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
 					RPMA_IBV_ACCESS(access));

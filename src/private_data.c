@@ -47,10 +47,10 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_discard -- free the private data
+ * rpma_private_data_delete -- free the private data
  */
 void
-rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+rpma_private_data_delete(struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
 
