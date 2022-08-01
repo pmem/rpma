@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mocks-rpma-flush.c -- librpma flush.c module mocks
@@ -16,10 +16,10 @@
 struct rpma_flush Rpma_flush;
 
 /*
- * rpma_flush_mock_do -- rpma_flush_apm_do() mock
+ * rpma_flush_mock_execute -- rpma_flush_apm_execute() mock
  */
 int
-rpma_flush_mock_do(struct ibv_qp *qp, struct rpma_flush *flush,
+rpma_flush_mock_execute(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context)
 {
@@ -47,7 +47,7 @@ rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
 {
 	assert_int_equal(peer, MOCK_PEER);
 	assert_non_null(flush_ptr);
-	Rpma_flush.func = rpma_flush_mock_do;
+	Rpma_flush.func = rpma_flush_mock_execute;
 
 	int ret = mock_type(int);
 	if (ret == MOCK_OK)

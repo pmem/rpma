@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * conn-flush.c -- the rpma_flush() unit tests
@@ -221,13 +221,13 @@ flush__success_FLUSH_TYPE_VISIBILITY(void **cstate_ptr)
 	struct conn_test_state *cstate = *cstate_ptr;
 
 	/* configure mocks */
-	expect_value(rpma_flush_mock_do, qp, MOCK_QP);
-	expect_value(rpma_flush_mock_do, flush, MOCK_FLUSH);
-	expect_value(rpma_flush_mock_do, dst, MOCK_RPMA_MR_REMOTE);
-	expect_value(rpma_flush_mock_do, dst_offset, MOCK_REMOTE_OFFSET);
-	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
-	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
-	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+	expect_value(rpma_flush_mock_execute, qp, MOCK_QP);
+	expect_value(rpma_flush_mock_execute, flush, MOCK_FLUSH);
+	expect_value(rpma_flush_mock_execute, dst, MOCK_RPMA_MR_REMOTE);
+	expect_value(rpma_flush_mock_execute, dst_offset, MOCK_REMOTE_OFFSET);
+	expect_value(rpma_flush_mock_execute, len, MOCK_LEN);
+	expect_value(rpma_flush_mock_execute, flags, MOCK_FLAGS);
+	expect_value(rpma_flush_mock_execute, op_context, MOCK_OP_CONTEXT);
 
 	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
 	will_return(rpma_mr_remote_get_flush_type,
@@ -258,13 +258,13 @@ flush__success_FLUSH_TYPE_PERSISTENT(void **cstate_ptr)
 	assert_int_equal(ret, MOCK_OK);
 
 	/* configure mocks for rpma_flush() */
-	expect_value(rpma_flush_mock_do, qp, MOCK_QP);
-	expect_value(rpma_flush_mock_do, flush, MOCK_FLUSH);
-	expect_value(rpma_flush_mock_do, dst, MOCK_RPMA_MR_REMOTE);
-	expect_value(rpma_flush_mock_do, dst_offset, MOCK_REMOTE_OFFSET);
-	expect_value(rpma_flush_mock_do, len, MOCK_LEN);
-	expect_value(rpma_flush_mock_do, flags, MOCK_FLAGS);
-	expect_value(rpma_flush_mock_do, op_context, MOCK_OP_CONTEXT);
+	expect_value(rpma_flush_mock_execute, qp, MOCK_QP);
+	expect_value(rpma_flush_mock_execute, flush, MOCK_FLUSH);
+	expect_value(rpma_flush_mock_execute, dst, MOCK_RPMA_MR_REMOTE);
+	expect_value(rpma_flush_mock_execute, dst_offset, MOCK_REMOTE_OFFSET);
+	expect_value(rpma_flush_mock_execute, len, MOCK_LEN);
+	expect_value(rpma_flush_mock_execute, flags, MOCK_FLAGS);
+	expect_value(rpma_flush_mock_execute, op_context, MOCK_OP_CONTEXT);
 
 	expect_value(rpma_mr_remote_get_flush_type, mr, MOCK_RPMA_MR_REMOTE);
 	will_return(rpma_mr_remote_get_flush_type,
