@@ -55,13 +55,20 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl \
+	wget"
 
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
 	$TOOLS_DEPS \
+	$PMDK_DEPS \
 && dnf clean all
 
 RUN pip3 install --upgrade pip
@@ -73,6 +80,10 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
 
 # Add user
 ENV USER user

@@ -39,10 +39,12 @@ ENV RPMA_DEPS "\
 	pandoc \
 	rpm-build \
 	rdma-core-devel"
-
-# examples deps
+	
+# examples deps ('protobuf-c-devel' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
-	libpmem2-devel"
+	libpmem-devel \
+	libpmem2-devel \
+	libprotobuf-c-devel"
 
 # performance tools deps
 ENV TOOLS_DEPS "\
@@ -59,6 +61,7 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # Install all required packages

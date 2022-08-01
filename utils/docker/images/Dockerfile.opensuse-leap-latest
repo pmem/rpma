@@ -40,6 +40,12 @@ ENV RPMA_DEPS "\
 	rpm-build \
 	rdma-core-devel"
 
+# examples deps ('protobuf-c-devel' is required only for examples 9 and 9s)
+ENV EXAMPLES_DEPS "\
+	libpmem-devel \
+	libpmem2-devel \
+	libprotobuf-c-devel"
+
 # performance tools deps
 ENV TOOLS_DEPS "\
 	python3-Jinja2 \
@@ -56,12 +62,14 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # Install all required packages
 RUN zypper install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
+	$EXAMPLES_DEPS \
 	$TOOLS_DEPS
 
 RUN pip3 install --upgrade pip

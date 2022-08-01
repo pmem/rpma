@@ -43,7 +43,7 @@ ENV RPMA_DEPS "\
 	libunwind-dev \
 	pandoc"
 
-# examples deps ('libprotobuf-c-dev' is required only for example 9)
+# examples deps ('protobuf-c-devel' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
 	libpmem-dev \
 	libpmem2-dev \
