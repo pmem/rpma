@@ -39,6 +39,12 @@ ENV RPMA_DEPS "\
 	pandoc \
 	rdma-core-devel"
 
+# examples deps ('protobuf-c-devel' is required only for example 9)
+ENV EXAMPLES_DEPS "\
+	libpmem \
+	libpmem2 \
+	protobuf-c-devel"
+
 # performance tools deps
 ENV TOOLS_DEPS "\
 	python36-jinja2 \
@@ -52,13 +58,15 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
 
 # Install all required packages
 RUN yum install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
-	$TESTS_DEPS \
+	$EXAMPLES_DEPS \
+	$TOOLS_DEPS \
 && yum clean all
 
 RUN pip3 install --upgrade pip
