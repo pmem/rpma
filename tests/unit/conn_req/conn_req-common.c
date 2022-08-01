@@ -155,10 +155,10 @@ setup__conn_req_new_from_cm_event(void **cstate_ptr)
 				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
-	expect_value(rpma_peer_create_qp, id, &cstate->id);
-	expect_value(rpma_peer_create_qp, cfg, cstate->get_args.cfg);
-	expect_value(rpma_peer_create_qp, rcq, MOCK_GET_RCQ(cstate));
-	will_return(rpma_peer_create_qp, MOCK_OK);
+	expect_value(rpma_peer_setup_qp, id, &cstate->id);
+	expect_value(rpma_peer_setup_qp, cfg, cstate->get_args.cfg);
+	expect_value(rpma_peer_setup_qp, rcq, MOCK_GET_RCQ(cstate));
+	will_return(rpma_peer_setup_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(__wrap_snprintf, MOCK_OK);
 	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
@@ -248,10 +248,10 @@ setup__conn_req_new(void **cstate_ptr)
 				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
-	expect_value(rpma_peer_create_qp, id, &cstate->id);
-	expect_value(rpma_peer_create_qp, cfg, cstate->get_args.cfg);
-	expect_value(rpma_peer_create_qp, rcq, MOCK_GET_RCQ(cstate));
-	will_return(rpma_peer_create_qp, MOCK_OK);
+	expect_value(rpma_peer_setup_qp, id, &cstate->id);
+	expect_value(rpma_peer_setup_qp, cfg, cstate->get_args.cfg);
+	expect_value(rpma_peer_setup_qp, rcq, MOCK_GET_RCQ(cstate));
+	will_return(rpma_peer_setup_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(__wrap_snprintf, MOCK_STDIO_ERROR);
 

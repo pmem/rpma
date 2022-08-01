@@ -49,10 +49,10 @@ rpma_peer_create_srq(struct rpma_peer *peer, struct rpma_srq_cfg *cfg,
 }
 
 /*
- * rpma_peer_create_qp -- rpma_peer_create_qp() mock
+ * rpma_peer_setup_qp -- rpma_peer_setup_qp() mock
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg)
 {

@@ -85,6 +85,7 @@ rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 }
 
 /*
+<<<<<<< HEAD
  * rpma_peer_create_srq -- create a new shared RQ and a new shared receive CQ
  * if the size of the receive CQ in cfg is greater than 0
  *
@@ -139,12 +140,17 @@ err_srq_delete:
 
 /*
  * rpma_peer_create_qp -- allocate a QP associated with the CM ID
+||||||| parent of 39644ab8 (rpma: change the name of the rpma_peer_create_qp)
+ * rpma_peer_create_qp -- allocate a QP associated with the CM ID
+=======
+ * rpma_peer_setup_qp -- allocate a QP associated with the CM ID
+>>>>>>> 39644ab8 (rpma: change the name of the rpma_peer_create_qp)
  *
  * ASSUMPTIONS
  * - cfg != NULL
  */
 int
-rpma_peer_create_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
 		struct rpma_cq *cq, struct rpma_cq *rcq,
 		const struct rpma_conn_cfg *cfg)
 {

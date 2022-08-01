@@ -128,8 +128,16 @@ rpma_conn_req_new_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 			goto err_rpma_cq_delete;
 	}
 
+<<<<<<< HEAD
 	/* create a QP */
 	ret = rpma_peer_create_qp(peer, id, cq, srq_rcq ? srq_rcq : rcq, cfg);
+||||||| parent of 39644ab8 (rpma: change the name of the rpma_peer_create_qp)
+	/* create a QP */
+	ret = rpma_peer_create_qp(peer, id, cq, rcq, cfg);
+=======
+	/* setup a QP */
+	ret = rpma_peer_setup_qp(peer, id, cq, rcq, cfg);
+>>>>>>> 39644ab8 (rpma: change the name of the rpma_peer_create_qp)
 	if (ret)
 		goto err_rpma_rcq_delete;
 
