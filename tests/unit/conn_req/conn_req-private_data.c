@@ -32,7 +32,7 @@ get_private_data__success(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 
 	/* run test */
 	struct rpma_conn_private_data data;
@@ -82,7 +82,7 @@ get_private_data__pdata_NULL(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	if (cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 
 	/* run test */
 	int ret = rpma_conn_req_get_private_data(cstate->req, NULL);

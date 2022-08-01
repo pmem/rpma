@@ -143,8 +143,8 @@ next_event__event_UNREACHABLE_ack_ERRNO(void **cstate_ptr)
 	expect_value(rdma_ack_cm_event, event, &event);
 	will_return(rdma_ack_cm_event, MOCK_ERRNO);
 
-	expect_value(rpma_private_data_discard, pdata->ptr, NULL);
-	expect_value(rpma_private_data_discard, pdata->len, 0);
+	expect_value(rpma_private_data_delete, pdata->ptr, NULL);
+	expect_value(rpma_private_data_delete, pdata->len, 0);
 
 	/* run test */
 	enum rpma_conn_event c_event = RPMA_CONN_UNDEFINED;
