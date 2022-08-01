@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021, Fujitsu */
 
 /*
@@ -68,7 +68,7 @@ teardown__private_data(void **pdata_ptr)
 {
 	struct rpma_conn_private_data *pdata = *pdata_ptr;
 
-	rpma_private_data_discard(pdata);
+	rpma_private_data_delete(pdata);
 	assert_null(pdata->ptr);
 	assert_int_equal(pdata->len, 0);
 

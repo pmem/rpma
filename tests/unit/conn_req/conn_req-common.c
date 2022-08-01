@@ -126,11 +126,11 @@ configure_conn_req(void **cstate_ptr)
 }
 
 /*
- * setup__conn_req_from_cm_event -- prepare a valid rpma_conn_req object from CM
+ * setup__conn_req_new_from_cm_event -- prepare a valid rpma_conn_req object from CM
  * event
  */
 int
-setup__conn_req_from_cm_event(void **cstate_ptr)
+setup__conn_req_new_from_cm_event(void **cstate_ptr)
 {
 	struct conn_req_test_state *cstate = *cstate_ptr;
 	configure_conn_req((void **)&cstate);
@@ -155,16 +155,16 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
-	expect_value(rpma_peer_create_qp, id, &cstate->id);
-	expect_value(rpma_peer_create_qp, cfg, cstate->get_args.cfg);
-	expect_value(rpma_peer_create_qp, rcq, MOCK_GET_RCQ(cstate));
-	will_return(rpma_peer_create_qp, MOCK_OK);
+	expect_value(rpma_peer_setup_qp, id, &cstate->id);
+	expect_value(rpma_peer_setup_qp, cfg, cstate->get_args.cfg);
+	expect_value(rpma_peer_setup_qp, rcq, MOCK_GET_RCQ(cstate));
+	will_return(rpma_peer_setup_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(__wrap_snprintf, MOCK_OK);
 	will_return(rpma_private_data_store, MOCK_PRIVATE_DATA);
 
 	/* run test */
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &cstate->req);
 
 	/* verify the results */
@@ -177,11 +177,11 @@ setup__conn_req_from_cm_event(void **cstate_ptr)
 }
 
 /*
- * teardown__conn_req_from_cm_event -- delete the rpma_conn_req object created
+ * teardown__conn_req_new_from_cm_event -- delete the rpma_conn_req object created
  * from a CM event
  */
 int
-teardown__conn_req_from_cm_event(void **cstate_ptr)
+teardown__conn_req_new_from_cm_event(void **cstate_ptr)
 {
 	struct conn_req_test_state *cstate = *cstate_ptr;
 
@@ -195,7 +195,7 @@ teardown__conn_req_from_cm_event(void **cstate_ptr)
 	will_return(rdma_reject, MOCK_OK);
 	if (!cstate->get_args.srq_rcq && cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);
@@ -248,10 +248,10 @@ setup__conn_req_new(void **cstate_ptr)
 				MOCK_GET_CHANNEL(cstate));
 		will_return(rpma_cq_new, MOCK_RPMA_RCQ);
 	}
-	expect_value(rpma_peer_create_qp, id, &cstate->id);
-	expect_value(rpma_peer_create_qp, cfg, cstate->get_args.cfg);
-	expect_value(rpma_peer_create_qp, rcq, MOCK_GET_RCQ(cstate));
-	will_return(rpma_peer_create_qp, MOCK_OK);
+	expect_value(rpma_peer_setup_qp, id, &cstate->id);
+	expect_value(rpma_peer_setup_qp, cfg, cstate->get_args.cfg);
+	expect_value(rpma_peer_setup_qp, rcq, MOCK_GET_RCQ(cstate));
+	will_return(rpma_peer_setup_qp, MOCK_OK);
 	will_return(__wrap__test_malloc, MOCK_OK);
 	will_return_maybe(__wrap_snprintf, MOCK_STDIO_ERROR);
 
@@ -289,7 +289,7 @@ teardown__conn_req_new(void **cstate_ptr)
 	will_return(rdma_destroy_id, 0);
 	if (!cstate->get_args.srq_rcq && cstate->get_args.shared)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_function_call(rpma_private_data_discard);
+	expect_function_call(rpma_private_data_delete);
 
 	/* run test */
 	int ret = rpma_conn_req_delete(&cstate->req);

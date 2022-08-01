@@ -217,7 +217,7 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 	return 0;
 
 err_private_data_discard:
-	rpma_private_data_discard(&conn->data);
+	rpma_private_data_delete(&conn->data);
 
 	return ret;
 }
@@ -395,7 +395,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	}
 
 	rdma_destroy_event_channel(conn->evch);
-	rpma_private_data_discard(&conn->data);
+	rpma_private_data_delete(&conn->data);
 
 	free(conn);
 	*conn_ptr = NULL;
@@ -414,7 +414,7 @@ err_destroy_comp_channel:
 		(void) ibv_destroy_comp_channel(conn->channel);
 err_destroy_event_channel:
 	rdma_destroy_event_channel(conn->evch);
-	rpma_private_data_discard(&conn->data);
+	rpma_private_data_delete(&conn->data);
 
 	free(conn);
 	*conn_ptr = NULL;

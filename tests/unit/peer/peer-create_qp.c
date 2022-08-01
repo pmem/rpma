@@ -6,7 +6,7 @@
  * peer-create_qp.c -- a peer unit test
  *
  * API covered:
- * - rpma_peer_create_qp()
+ * - rpma_peer_setup_qp()
  */
 
 #include <infiniband/verbs.h>
@@ -83,7 +83,7 @@ static void
 create_qp__peer_NULL(void **unused)
 {
 	/* run test */
-	int ret = rpma_peer_create_qp(NULL, MOCK_CM_ID, MOCK_RPMA_CQ,
+	int ret = rpma_peer_setup_qp(NULL, MOCK_CM_ID, MOCK_RPMA_CQ,
 			NULL, MOCK_CONN_CFG_DEFAULT);
 
 	/* verify the results */
@@ -99,7 +99,7 @@ create_qp__id_NULL(void **pprestate)
 	struct prestate *prestate = *pprestate;
 
 	/* run test */
-	int ret = rpma_peer_create_qp(prestate->peer, NULL, MOCK_RPMA_CQ, NULL,
+	int ret = rpma_peer_setup_qp(prestate->peer, NULL, MOCK_RPMA_CQ, NULL,
 			MOCK_CONN_CFG_DEFAULT);
 
 	/* verify the results */
@@ -115,7 +115,7 @@ create_qp__cq_NULL(void **pprestate)
 	struct prestate *prestate = *pprestate;
 
 	/* run test */
-	int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, NULL,
+	int ret = rpma_peer_setup_qp(prestate->peer, MOCK_CM_ID, NULL,
 			NULL, MOCK_CONN_CFG_DEFAULT);
 
 	/* verify the results */
@@ -137,7 +137,7 @@ create_qp__rdma_create_qp_ERRNO(void **pprestate)
 		will_return(rdma_create_qp, MOCK_ERRNO);
 
 		/* run test */
-		int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
+		int ret = rpma_peer_setup_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
 				rcqs[i], MOCK_CONN_CFG_CUSTOM);
 
 		/* verify the results */
@@ -160,7 +160,7 @@ create_qp__success(void **pprestate)
 		will_return(rdma_create_qp, MOCK_OK);
 
 		/* run test */
-		int ret = rpma_peer_create_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
+		int ret = rpma_peer_setup_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
 				rcqs[i], MOCK_CONN_CFG_CUSTOM);
 
 		/* verify the results */
@@ -172,7 +172,7 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		/* rpma_peer_create_qp() unit tests */
+		/* rpma_peer_setup_qp() unit tests */
 		cmocka_unit_test(create_qp__peer_NULL),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__id_NULL,
 				setup__peer, teardown__peer, &prestate_OdpCapable),
