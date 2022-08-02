@@ -11,7 +11,23 @@ The **Remote Persistent Memory Access (RPMA) Library** is a C library to simplif
 
 ## Installing
 
-If you want to install this library please check out [INSTALL.md](INSTALL.md) file.
+If you want to install this library, check out the [INSTALL.md](INSTALL.md) file.
+
+## Examples
+
+Examples of usage of this library are located in the [./examples/](./examples/) directory and described in the [./examples/README.md](./examples/README.md) file.
+
+## Development
+
+If you want to develop this library, read the [DEVELOPMENT.md](DEVELOPMENT.md) file.
+
+## Contributing
+
+If you want to contribute to the development of this library, you should get familiar with all the following files: [INSTALL.md](INSTALL.md), [DEVELOPMENT.md](DEVELOPMENT.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Thread safety
+
+The analysis of thread safety of the librpma library is located in the [THREAD_SAFETY.md](THREAD_SAFETY.md) file.
 
 ## Contact Us
 
