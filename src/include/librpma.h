@@ -2642,6 +2642,89 @@ int rpma_srq_new(struct rpma_peer *peer, struct rpma_srq_cfg *cfg, struct rpma_s
  */
 int rpma_srq_delete(struct rpma_srq **srq_ptr);
 
+/** 3
+ * rpma_srq_recv - initiate the receive operation in shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	struct rpma_mr_local;
+ *	int rpma_srq_recv(struct rpma_srq *srq, struct rpma_mr_local *dst, size_t offset,
+ *			size_t len, const void *op_context);
+ *
+ * DESCRIPTION
+ * If multiple local connections use a shared RQ, rpma_srq_recv() initiates
+ * the receive operation which prepares a buffer for a message sent from
+ * other side of these connections. Please see rpma_send(3).
+ *
+ * All buffers prepared via rpma_srq_recv(3) form an unordered set. When
+ * a message arrives it is placed in one of the buffers awaiting and
+ * a completion for the receive operation is generated.
+ *
+ * A buffer for an incoming message has to be prepared beforehand.
+ *
+ * The order of buffers in the set does not affect the order of completions of
+ * the receive operations got via rpma_cq_get_wc(3).
+ *
+ * op_context is returned in the wr_id field of the completion (struct ibv_wc).
+ *
+ * NOTE
+ * In the RDMA standard, receive requests form an ordered queue.
+ * The librpma library does NOT inherit this guarantee.
+ *
+ * RETURN VALUE
+ * The rpma_srq_recv() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_srq_recv() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - srq == NULL
+ * - RPMA_E_INVAL - dst == NULL && (offset != 0 || len != 0)
+ * - RPMA_E_PROVIDER - ibv_post_srq_recv(3) failed
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3), rpma_srq_new(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_srq_recv(struct rpma_srq *srq, struct rpma_mr_local *dst,
+	size_t offset, size_t len, const void *op_context);
+
+/** 3
+ * rpma_srq_get_rcq -- get the receive CQ from the shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	struct rpma_cq;
+ *	int rpma_srq_get_rcq(const struct rpma_srq *srq, struct rpma_cq **rcq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_get_rcq() gets the receive CQ from the shared RQ object.
+ * The receive CQ created by rpma_srq_new(3) allows handling all
+ * rpma_srq_recv(3) completions within the shared RQ. rpma_srq_cfg_set_rcq_size(3)
+ * can change the receive CQ size.
+ *
+ * RETURN VALUE
+ * The rpma_srq_get_rcq() function returns 0 on success or a negative error
+ * code on failure. rpma_srq_get_rcq() does not set *rcq_ptr value on failure.
+ *
+ * ERRORS
+ * rpma_srq_get_rcq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - srq or rcq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_cq_wait(3), rpma_cq_get_wc(3), rpma_cq_get_fd(3),
+ * rpma_srq_cfg_set_rcq_size(3), rpma_srq_new(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_srq_get_rcq(const struct rpma_srq *srq, struct rpma_cq **rcq_ptr);
+
 /* remote memory access functions */
 
 /* generate operation completion on error */
