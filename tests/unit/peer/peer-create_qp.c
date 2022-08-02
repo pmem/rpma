@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * peer-create_qp.c -- a peer unit test
@@ -16,18 +16,22 @@
 #include "mocks-ibverbs.h"
 #include "mocks-rpma-conn_cfg.h"
 #include "mocks-rpma-cq.h"
+#include "mocks-rpma-srq.h"
 #include "peer.h"
 #include "peer-common.h"
+
+#define MOCK_GET_IBV_RCQ(rcq) rcq == MOCK_RPMA_RCQ ? MOCK_IBV_RCQ : MOCK_IBV_SRQ_RCQ
 
 static struct conn_cfg_get_mock_args Get_args = {
 	.cfg = MOCK_CONN_CFG_CUSTOM,
 	.sq_size = MOCK_SQ_SIZE_CUSTOM,
-	.rq_size = MOCK_RQ_SIZE_CUSTOM
+	.rq_size = MOCK_RQ_SIZE_CUSTOM,
 };
 
 static struct rpma_cq *rcqs[] = {
 	NULL,
-	MOCK_RPMA_RCQ
+	MOCK_RPMA_RCQ,
+	MOCK_RPMA_SRQ_RCQ,
 };
 
 static int num_rcqs = sizeof(rcqs) / sizeof(rcqs[0]);
@@ -40,11 +44,16 @@ configure_create_qp(struct rpma_cq *rcq)
 {
 	will_return(rpma_conn_cfg_get_sq_size, &Get_args);
 	will_return(rpma_conn_cfg_get_rq_size, &Get_args);
+	will_return(rpma_conn_cfg_get_srq, &Get_args);
+	if (Get_args.srq) {
+		expect_value(rpma_srq_get_ibv_srq, srq, MOCK_RPMA_SRQ);
+		will_return(rpma_srq_get_ibv_srq, MOCK_IBV_SRQ);
+	}
 	expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_CQ);
 	will_return(rpma_cq_get_ibv_cq, MOCK_IBV_CQ);
 	if (rcq) {
-		expect_value(rpma_cq_get_ibv_cq, cq, MOCK_RPMA_RCQ);
-		will_return(rpma_cq_get_ibv_cq, MOCK_IBV_RCQ);
+		expect_value(rpma_cq_get_ibv_cq, cq, rcq);
+		will_return(rpma_cq_get_ibv_cq, MOCK_GET_IBV_RCQ(rcq));
 	}
 	expect_value(rdma_create_qp, id, MOCK_CM_ID);
 	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
@@ -52,7 +61,9 @@ configure_create_qp(struct rpma_cq *rcq)
 	expect_value(rdma_create_qp, qp_init_attr->send_cq,
 		MOCK_IBV_CQ);
 	expect_value(rdma_create_qp, qp_init_attr->recv_cq,
-		rcq ? MOCK_IBV_RCQ : MOCK_IBV_CQ);
+		rcq ? MOCK_GET_IBV_RCQ(rcq) : MOCK_IBV_CQ);
+	expect_value(rdma_create_qp, qp_init_attr->srq, Get_args.srq ?
+		MOCK_IBV_SRQ : NULL);
 	expect_value(rdma_create_qp, qp_init_attr->cap.max_send_wr,
 		MOCK_SQ_SIZE_CUSTOM);
 	expect_value(rdma_create_qp, qp_init_attr->cap.max_recv_wr,
@@ -121,6 +132,7 @@ create_qp__rdma_create_qp_ERRNO(void **pprestate)
 
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
+		Get_args.srq = (i == 2) ? MOCK_RPMA_SRQ : NULL;
 		configure_create_qp(rcqs[i]);
 		will_return(rdma_create_qp, MOCK_ERRNO);
 
@@ -143,6 +155,7 @@ create_qp__success(void **pprestate)
 
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
+		Get_args.srq = (i == 2) ? MOCK_RPMA_SRQ : NULL;
 		configure_create_qp(rcqs[i]);
 		will_return(rdma_create_qp, MOCK_OK);
 
