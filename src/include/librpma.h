@@ -2399,7 +2399,7 @@ int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
  *	struct rpma_mr_remote;
  *	int rpma_read(struct rpma_conn *conn,
  *			struct rpma_mr_local *dst, size_t dst_offset,
- *			const struct rpma_mr_remote *src,  size_t src_offset,
+ *			const struct rpma_mr_remote *src, size_t src_offset,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
@@ -2435,7 +2435,7 @@ int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
  */
 int rpma_read(struct rpma_conn *conn,
 		struct rpma_mr_local *dst, size_t dst_offset,
-		const struct rpma_mr_remote *src,  size_t src_offset,
+		const struct rpma_mr_remote *src, size_t src_offset,
 		size_t len, int flags, const void *op_context);
 
 /** 3
@@ -2450,7 +2450,7 @@ int rpma_read(struct rpma_conn *conn,
  *	struct rpma_mr_remote;
  *	int rpma_write(struct rpma_conn *conn,
  *			struct rpma_mr_remote *dst, size_t dst_offset,
- *			const struct rpma_mr_local *src,  size_t src_offset,
+ *			const struct rpma_mr_local *src, size_t src_offset,
  *			size_t len, int flags, const void *op_context);
  *
  * DESCRIPTION
@@ -2486,7 +2486,7 @@ int rpma_read(struct rpma_conn *conn,
  */
 int rpma_write(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
-		const struct rpma_mr_local *src,  size_t src_offset,
+		const struct rpma_mr_local *src, size_t src_offset,
 		size_t len, int flags, const void *op_context);
 
 /** 3
@@ -2501,7 +2501,7 @@ int rpma_write(struct rpma_conn *conn,
  *	struct rpma_mr_remote;
  *	int rpma_write_with_imm(struct rpma_conn *conn,
  *			struct rpma_mr_remote *dst, size_t dst_offset,
- *			const struct rpma_mr_local *src,  size_t src_offset,
+ *			const struct rpma_mr_local *src, size_t src_offset,
  *			size_t len, int flags, uint32_t imm,
  *			const void *op_context);
  *
@@ -2538,7 +2538,7 @@ int rpma_write(struct rpma_conn *conn,
  */
 int rpma_write_with_imm(struct rpma_conn *conn,
 		struct rpma_mr_remote *dst, size_t dst_offset,
-		const struct rpma_mr_local *src,  size_t src_offset,
+		const struct rpma_mr_local *src, size_t src_offset,
 		size_t len, int flags, uint32_t imm, const void *op_context);
 
 #define RPMA_ATOMIC_WRITE_ALIGNMENT 8
