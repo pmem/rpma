@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright 2022, Fujitsu
 
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
@@ -286,6 +287,20 @@ function run_example() {
 		START_VALUE=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
+		;;
+	13-messages-ping-pong-with-srq)
+		ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && SEEDS="1" || SEEDS="1 5 10"
+		for SEED in $SEEDS; do
+			echo "Starting the client ..."
+			run_command_of client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS &
+			CLIENT_PIDS="$CLIENT_PIDS $!"
+		done
+		for CLIENT_PID in $CLIENT_PIDS; do
+			wait $CLIENT_PID
+			TMP_RV=$?
+			[ $RV -eq 0 ] && RV=$TMP_RV
+		done
 		;;
 	*)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH
