@@ -29,6 +29,7 @@ function(add_test_srq name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
+add_test_srq(get_ibv_srq)
 add_test_srq(get_rcq)
 add_test_srq(new_delete)
 add_test_srq(recv)

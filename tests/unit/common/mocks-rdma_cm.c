@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mocks-rdma_cm.c -- librdmacm mocks
@@ -43,7 +43,7 @@ rdma_create_qp(struct rdma_cm_id *id, struct ibv_pd *pd,
 	check_expected(qp_init_attr->qp_context);
 	check_expected(qp_init_attr->send_cq);
 	check_expected(qp_init_attr->recv_cq);
-	assert_null(qp_init_attr->srq);
+	check_expected(qp_init_attr->srq);
 	check_expected(qp_init_attr->cap.max_send_wr);
 	check_expected(qp_init_attr->cap.max_recv_wr);
 	check_expected(qp_init_attr->cap.max_send_sge);
