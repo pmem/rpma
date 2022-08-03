@@ -158,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tools:
   - [ddio.sh script][ddio] to toggle and query the DDIO (Intel&reg; Data Direct I/O Technology) state per PCIe root port on Intel&reg; Cascade Lake platforms ([#597][597]).
-  - [Benchmarking framework][bench] for the librpma.
+  - [Benchmarking framework][bench] for librpma.
 
 ### Changed
 - Atomic write operation (rpma_write_atomic()) implemented with fence
