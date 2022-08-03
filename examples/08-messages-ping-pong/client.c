@@ -19,8 +19,7 @@
 #include "common-conn.h"
 #include "messages-ping-pong-common.h"
 
-#define USAGE_STR "usage: %s <server_address> <port> <seed> <rounds> " \
-		"[<sleep>]\n"
+#define USAGE_STR "usage: %s <server_address> <port> <seed> <rounds> [<sleep>]\n"
 
 static uint64_t
 strtoul_noerror(const char *in)

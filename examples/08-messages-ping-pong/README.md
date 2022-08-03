@@ -19,5 +19,5 @@ message and disconnects.
 ```
 
 ```bash
-[user@client]$ ./client $server_address $port $seed $rounds # [<sleep>]
+[user@client]$ ./client $server_address $port $seed $rounds [$sleep]
 ```
