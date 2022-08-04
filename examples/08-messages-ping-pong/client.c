@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #include "common-conn.h"
-#include "messages-ping-pong-common.h"
+#include "common-messages-ping-pong.h"
 
 #define USAGE_STR "usage: %s <server_address> <port> <seed> <rounds> [<sleep>]\n"
 
