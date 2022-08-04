@@ -2,11 +2,11 @@
 /* Copyright 2020-2022, Intel Corporation */
 
 /*
- * messages-ping-pong-common.h -- a common declarations for the 08 example
+ * common-messages-ping-pong.h -- a common declarations for messages ping-pong
  */
 
-#ifndef EXAMPLES_MSG_PING_PONG_COMMON
-#define EXAMPLES_MSG_PING_PONG_COMMON
+#ifndef COMMON_MSG_PING_PONG
+#define COMMON_MSG_PING_PONG
 
 #define MSG_SIZE sizeof(uint64_t)
 
@@ -19,4 +19,4 @@
 int wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
 		int *send_cmpl, int *recv_cmpl);
 
-#endif /* EXAMPLES_MSG_PING_PONG_COMMON */
+#endif /* COMMON_MSG_PING_PONG */
