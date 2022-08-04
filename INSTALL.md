@@ -29,25 +29,25 @@ and optionally:
 to generate the Markdown documentation.
 
 **Note**: building the documentation can be turned off using the CMake 'BUILD_DOC' option
-(see [CMake standard options](INSTALL.md#cmake-standard-options) and
-[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
+(see [CMake options of the librpma library](DEVELOPMENT.md#cmake-options-of-the-librpma-library) and
+[Configuring CMake options](DEVELOPMENT.md#configuring-cmake-options)).
 
-### In order to test the Python tools you also need:
-
-- pylint
-
-**Note**: testing the Python tools can be turned off using the CMake 'TESTS_PERF_TOOLS' option
-(see [CMake standard options](INSTALL.md#cmake-standard-options) and
-[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
 
 ### For some examples you also need:
 
 - libpmem-dev(el) >= 1.6
+- libpmem2-dev(el) >= 1.11
 - libprotobuf-c-dev(el) >= 1.0
 
 **Note**: the above revisions are proven to work correctly.
 
 **Note**: see [the list of the supported OSes](INSTALL.md#os-support).
+
+**Note**: please be aware that the libpmem2-dev(el) package is not available on some distributions. Use [our script](./utils/docker/images/install-pmdk.sh) to install it manually from sources. You can check all needed additional packages in one of our dockerfiles, for example [here](./utils/docker/images/Dockerfile.archlinux-latest), in the variable called PMDK_DEBS.
+
+**Note**: libprotobuf-c-dev(el) is needed to run examples: 9 and 9s
+
+**Note**: Examples that use PMem (3, 4, 5, 7, 9) require only one of the following libraries to run: libpmem or libpmem2. In case of installing both libpmem2 will be used.
 
 ## Building
 
