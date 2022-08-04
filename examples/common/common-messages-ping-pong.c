@@ -2,13 +2,13 @@
 /* Copyright 2022, Intel Corporation */
 
 /*
- * messages-ping-pong-common.c -- a common definitions for the 08 example
+ * common-messages-ping-pong.c -- a common definitions for messages ping-pong
  */
 
 #include <librpma.h>
 #include <inttypes.h>
 
-#include "messages-ping-pong-common.h"
+#include "common-messages-ping-pong.h"
 
 /* the maximum number of completions expected (1 of send + 1 of receive) */
 #define MAX_N_WC	2
