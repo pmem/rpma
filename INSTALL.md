@@ -13,7 +13,7 @@ In order to build librpma, you need to have installed several components:
 - librdmacm-dev(el)
 - libcmocka-dev(el) == 1.1.5-26-g672c5ce (please see [our docker script](./utils/docker/images/install-cmocka.sh) to install the verified revision)
 
-**Note**: To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images/) (see the BASE_DEPS and ENV RPMA_DEPS sections)
+**Note**: To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images/) (see the BASE_DEPS and RPMA_DEPS sections)
 
 ### In order to build the documentation you also need:
 
@@ -28,26 +28,24 @@ and optionally:
 
 to generate the Markdown documentation.
 
-**Note**: building the documentation can be turned off using the CMake 'BUILD_DOC' option
-(see [CMake standard options](INSTALL.md#cmake-standard-options) and
-[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
-
-### In order to test the Python tools you also need:
-
-- pylint
-
-**Note**: testing the Python tools can be turned off using the CMake 'TESTS_PERF_TOOLS' option
-(see [CMake standard options](INSTALL.md#cmake-standard-options) and
-[Configuring CMake options](INSTALL.md#configuring-cmake-options)).
+**Note**: building the documentation can be turned off using the CMake `BUILD_DOC` option
+(see [Configuring CMake options](DEVELOPMENT.md#configuring-cmake-options) and
+[CMake options of the librpma library](DEVELOPMENT.md#cmake-options-of-the-librpma-library)).
 
 ### For some examples you also need:
 
-- libpmem-dev(el) >= 1.6
-- libprotobuf-c-dev(el) >= 1.0
+- libpmem-dev(el) >= 1.6 or libpmem2-dev(el) >= 1.11 for examples: 3, 4, 5, 7, 9, 9s
+- libprotobuf-c-dev(el) >= 1.0 for examples: 9, 9s
 
-**Note**: the above revisions are proven to work correctly.
+**Note**: the above versions of libraries are proven to work correctly.
 
 **Note**: see [the list of the supported OSes](INSTALL.md#os-support).
+
+**Note**: please be aware that the libpmem2-dev(el) package is not available on some distributions. Use [our script](./utils/docker/images/install-pmdk.sh) to install it manually from sources. You can check all needed additional packages in one of our [Dockerfiles](./utils/docker/images/), for example [here](./utils/docker/images/Dockerfile.archlinux-latest), in the variable called PMDK_DEPS.
+
+**Note**: libprotobuf-c-dev(el) is needed to run examples: 9 and 9s
+
+**Note**: Examples that use PMem (3, 4, 5, 7, 9, 9s) require only one of the following libraries to be run: libpmem or libpmem2. In case of having installed both of them libpmem2 will be used.
 
 ## Building
 

@@ -56,6 +56,13 @@ $ pip3 install --user scp
 
 *Note*: All of the scripts presented in the following sections must be run on the RPMA initiator side.
 
+In order to test the performance analysis tools you also need:
+
+- pylint
+
+*Note*: testing the performance analysis tools can be turned off using the CMake 'TESTS_PERF_TOOLS' option
+(see [Configuring CMake options](../../DEVELOPMENT.md#configuring-cmake-options) and
+[CMake options of the librpma library](../../DEVELOPMENT.md#cmake-options-of-the-librpma-library)).
 
 ## Generating a report
 
