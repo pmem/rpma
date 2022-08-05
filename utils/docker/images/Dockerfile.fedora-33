@@ -37,7 +37,7 @@ ENV RPMA_DEPS "\
 	pandoc \
 	rdma-core-devel"
 
-# examples deps ('protobuf-c-devel' is required only for example 9)
+# examples deps ('protobuf-c-devel' is required only for examples 9 and 9s)
 ENV EXAMPLES_DEPS "\
 	libpmem-devel \
 	protobuf-c-devel"
@@ -56,7 +56,13 @@ ENV TOOLS_PYTHON_DEPS "\
 	markdown2 \
 	matplotlib \
 	paramiko \
+	pylint \
 	scp"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl \
+	wget"
 
 # doc update deps
 ENV DOC_UPDATE_DEPS "\
@@ -68,6 +74,7 @@ RUN dnf install -y \
 	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
 	$TOOLS_DEPS \
+	$PMDK_DEPS \
 	$DOC_UPDATE_DEPS \
 && dnf clean all
 
@@ -80,6 +87,10 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
 
 # Add user
 ENV USER user
