@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2018-2022, Intel Corporation
-# Copyright 2021, Fujitsu
+# Copyright 2021-2022, Fujitsu
 #
 
 add_flag(-Wall)
@@ -175,6 +175,10 @@ add_example(NAME 12s-receive-completion-queue BIN server
 	SRCS 12s-receive-completion-queue/server.c)
 add_example(NAME 12s-receive-completion-queue BIN client
 	SRCS 12s-receive-completion-queue/client.c)
+add_example(NAME 13-messages-ping-pong-with-srq BIN server
+	SRCS 13-messages-ping-pong-with-srq/server.c common/common-epoll.c)
+add_example(NAME 13-messages-ping-pong-with-srq BIN client
+	SRCS 13-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
