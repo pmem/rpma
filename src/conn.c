@@ -428,7 +428,7 @@ err_destroy_event_channel:
 int
 rpma_read(struct rpma_conn *conn,
 	struct rpma_mr_local *dst, size_t dst_offset,
-	const struct rpma_mr_remote *src,  size_t src_offset,
+	const struct rpma_mr_remote *src, size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -452,7 +452,7 @@ rpma_read(struct rpma_conn *conn,
 int
 rpma_write(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src,  size_t src_offset,
+	const struct rpma_mr_local *src, size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -478,7 +478,7 @@ rpma_write(struct rpma_conn *conn,
 int
 rpma_write_with_imm(struct rpma_conn *conn,
 	struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src,  size_t src_offset,
+	const struct rpma_mr_local *src, size_t src_offset,
 	size_t len, int flags, uint32_t imm, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;

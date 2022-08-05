@@ -67,7 +67,7 @@ struct rpma_mr_remote {
 int
 rpma_mr_read(struct ibv_qp *qp,
 	struct rpma_mr_local *dst, size_t dst_offset,
-	const struct rpma_mr_remote *src,  size_t src_offset,
+	const struct rpma_mr_remote *src, size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -254,7 +254,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
  */
 int
 rpma_mr_send(struct ibv_qp *qp,
-	const struct rpma_mr_local *src,  size_t offset,
+	const struct rpma_mr_local *src, size_t offset,
 	size_t len, int flags, enum ibv_wr_opcode operation,
 	uint32_t imm, const void *op_context)
 {
@@ -314,7 +314,7 @@ rpma_mr_send(struct ibv_qp *qp,
  */
 int
 rpma_mr_recv(struct ibv_qp *qp,
-	struct rpma_mr_local *dst,  size_t offset,
+	struct rpma_mr_local *dst, size_t offset,
 	size_t len, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
