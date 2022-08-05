@@ -96,8 +96,8 @@
    ...
    fun:rdma_create_qp_ex
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
+   fun:rpma_peer_setup_qp
+   fun:rpma_conn_req_new_from_id
    fun:rpma_conn_req_new
    ...
 }
@@ -189,8 +189,8 @@
    ...
    fun:rdma_create_qp_ex
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
+   fun:rpma_peer_setup_qp
+   fun:rpma_conn_req_new_from_id
    fun:rpma_conn_req_new_from_cm_event
    fun:rpma_ep_next_conn_req
    ...

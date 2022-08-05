@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - examples:
   - 13-messages-ping-pong-with-srq - a multi-connection example for shared RQ with ping-pong messages
 
-- logging of the source and the destination GID addresses in rpma_conn_req_from_id()
+- logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
 - peer_cfg: get/set_direct_write_to_pmem and get_descriptor are now thread-safe
 - conn_cfg: all get and set functions for cq, rq, sq, rcq, timeout and compl_channel are now thread-safe

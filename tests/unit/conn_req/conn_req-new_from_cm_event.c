@@ -117,7 +117,7 @@ from_cm_event__shared_true_srq_rcq_not_NULL(void **unused)
 
 	/* run test */
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_cm_event(MOCK_PEER, &cstate->event,
+	int ret = rpma_conn_req_new_from_cm_event(MOCK_PEER, &cstate->event,
 			cstate->get_args.cfg, &req);
 
 	/* verify the results */
@@ -662,7 +662,7 @@ static const struct CMUnitTest test_from_cm_event[] = {
 		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
 	CONN_REQ_TEST_WITH_AND_WITHOUT_SRQ_RCQ(
 		from_cm_event__private_data_store_E_NOMEM_subsequent_ERRNO2),
-	/* rpma_conn_req_from_cm_event()/_delete() lifecycle */
+	/* rpma_conn_req_new_from_cm_event()/_delete() lifecycle */
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_RCQ(
 		conn_req_new_from_cm__lifecycle, setup__conn_req_new_from_cm_event,
 		teardown__conn_req_new_from_cm_event),
