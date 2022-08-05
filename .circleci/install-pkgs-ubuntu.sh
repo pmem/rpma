@@ -42,6 +42,8 @@ RPMA_DEPS="\
 	linux-modules-extra-$(uname -r) \
 	pandoc"
 
+export DEBIAN_FRONTEND=noninteractive
+
 # Update existing packages
 sudo apt-get update --allow-unauthenticated
 
