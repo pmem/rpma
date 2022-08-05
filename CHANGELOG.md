@@ -11,11 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - THREAD_SAFETY.md file containing the analysis of thread safety of the librpma library
 - APIs:
   - rpma_conn_cfg_get_compl_channel - gets if the completion event channel can be shared by CQ and RCQ
+  - rpma_conn_cfg_get_srq - gets the shared RQ object from the connection
   - rpma_conn_cfg_set_compl_channel - sets if the completion event channel can be shared by CQ and RCQ
+  - rpma_conn_cfg_set_srq - sets a shared RQ object for the connection
   - rpma_conn_get_compl_fd - gets a file descriptor of the shared completion channel from the connection
   - rpma_conn_wait - waits for a completion event on the shared completion channel from CQ or RCQ
+  - rpma_srq_cfg_delete - deletes the shared RQ configuration object
+  - rpma_srq_cfg_get_rcq_size - gets the receive CQ size of the shared RQ
+  - rpma_srq_cfg_get_rq_size - gets the RQ size of the shared RQ
+  - rpma_srq_cfg_new - creates a new shared RQ configuration object
+  - rpma_srq_cfg_set_rcq_size - sets the receive CQ size of the shared RQ
+  - rpma_srq_cfg_set_rq_size - sets the RQ size of the shared RQ
+  - rpma_srq_delete - deletes the shared RQ object
+  - rpma_srq_get_rcq - gets the receive CQ from the shared RQ object
+  - rpma_srq_new - creates a new shared RQ object
+  - rpma_srq_recv - initiates the receive operation in shared RQ
   - error RPMA_E_SHARED_CHANNEL - the completion event channel is shared and cannot be handled by any particular CQ
   - error RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
+
+- examples:
+  - 13-messages-ping-pong-with-srq - a multi-connection example for shared RQ with ping-pong messages
 
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
