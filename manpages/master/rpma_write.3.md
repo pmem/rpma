@@ -28,7 +28,7 @@ SYNOPSIS
           struct rpma_mr_remote;
           int rpma_write(struct rpma_conn *conn,
                           struct rpma_mr_remote *dst, size_t dst_offset,
-                          const struct rpma_mr_local *src,  size_t src_offset,
+                          const struct rpma_mr_local *src, size_t src_offset,
                           size_t len, int flags, const void *op_context);
 
 DESCRIPTION
