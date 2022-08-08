@@ -10,10 +10,7 @@
 
 #include "common-messages-ping-pong.h"
 
-/* the maximum number of completions expected (1 of send + 1 of receive) */
-#define MAX_N_WC	2
-
-static int
+int
 validate_wc(struct ibv_wc *wc, uint64_t *recv,
 		int *send_cmpl, int *recv_cmpl)
 {

@@ -281,7 +281,7 @@ function run_example() {
 		[ "$MODE" == "integration-tests" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $WORDS
 		;;
-	08-messages-ping-pong)
+	08-messages-ping-pong|08s-simple-messages-ping-pong-with-srq)
 		SEED=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
