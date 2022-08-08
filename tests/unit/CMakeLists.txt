@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
-# Copyright 2021, Fujitsu
+# Copyright 2021-2022, Fujitsu
 #
 
 add_subdirectory(conn)
@@ -18,6 +18,8 @@ add_subdirectory(mr)
 add_subdirectory(peer)
 add_subdirectory(peer_cfg)
 add_subdirectory(private_data)
+add_subdirectory(srq)
+add_subdirectory(srq_cfg)
 add_subdirectory(template)
 add_subdirectory(utils)
 

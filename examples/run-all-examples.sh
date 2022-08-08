@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright 2022, Fujitsu
 
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
@@ -28,9 +29,6 @@
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
-
-# timeout value for both the server and the client
-TIMEOUT=3s
 
 USAGE_STRING="\
 Usage:\n\
@@ -255,7 +253,19 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
+	# The `else` branch is needed here, because in case of integration tests
+	# all examples are run twice: once with the fault injection in the server
+	# and once with the fault injection in the client.
+	if [ "$EXAMPLE" == "13-messages-ping-pong-with-srq" ]; then
+		# timeout value for both the server and the client
+		TIMEOUT=6s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT 3
+	else
+		# timeout value for both the server and the client
+		TIMEOUT=3s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
+	fi
+
 	sleep 1
 
 	RV=0
@@ -286,6 +296,20 @@ function run_example() {
 		START_VALUE=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
+		;;
+	13-messages-ping-pong-with-srq)
+		ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && SEEDS="1" || SEEDS="1 5 10"
+		for SEED in $SEEDS; do
+			echo "Starting the client ..."
+			run_command_of client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS &
+			CLIENT_PIDS="$CLIENT_PIDS $!"
+		done
+		for CLIENT_PID in $CLIENT_PIDS; do
+			wait $CLIENT_PID
+			TMP_RV=$?
+			[ $RV -eq 0 ] && RV=$TMP_RV
+		done
 		;;
 	*)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH

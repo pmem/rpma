@@ -1612,6 +1612,72 @@ int rpma_conn_cfg_set_rq_size(struct rpma_conn_cfg *cfg, uint32_t rq_size);
 int rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg,
 		uint32_t *rq_size);
 
+
+/* shared RQ */
+
+struct rpma_srq;
+
+/** 3
+ * rpma_conn_cfg_set_srq - set a shared RQ object for the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	struct rpma_srq;
+ *	int rpma_conn_cfg_set_srq(struct rpma_conn_cfg *cfg, struct rpma_srq *srq);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_set_srq() sets a shared RQ object for the connection.
+ * If this function is not called, the srq has the default value (NULL) set
+ * by rpma_conn_cfg_new(3).
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_set_srq() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_set_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_get_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_set_srq(struct rpma_conn_cfg *cfg, struct rpma_srq *srq);
+
+/** 3
+ * rpma_conn_cfg_get_srq - get the shared RQ object from the connection
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn_cfg;
+ *	struct rpma_srq;
+ *	int rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg, struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_conn_cfg_get_srq() gets the shared RQ object from the connection.
+ *
+ * RETURN VALUE
+ * The rpma_conn_cfg_get_srq() function returns 0 on success or a negative
+ * error code on failure. rpma_conn_cfg_get_srq() does not set *srq_ptr value
+ * on failure.
+ *
+ * ERRORS
+ * rpma_conn_cfg_get_srq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or srq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_conn_cfg_new(3), rpma_conn_cfg_set_srq(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_cfg_get_srq(const struct rpma_conn_cfg *cfg, struct rpma_srq **srq_ptr);
+
 /* connection */
 
 struct rpma_conn;
@@ -2379,6 +2445,349 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep,
  */
 int rpma_conn_req_get_private_data(const struct rpma_conn_req *req,
 		struct rpma_conn_private_data *pdata);
+
+/* shared RQ configuration */
+
+struct rpma_srq_cfg;
+
+/** 3
+ * rpma_srq_cfg_new - create a new shared RQ configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_new(struct rpma_srq_cfg **cfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_new() creates a new shared RQ configuration object
+ * and fills it with the default values:
+ *
+ *	.rcq_size = 100
+ *	.rq_size = 100
+ *
+ * Note that rpma_srq_new(3) with the default rcq_size creates its own receive CQ.
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_new() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_cfg_new() does not set *cfg_ptr value
+ * on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_new() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg_ptr is NULL
+ * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_delete(3), rpma_srq_cfg_get_rcq_size(3), rpma_srq_cfg_get_rq_size(3),
+ * rpma_srq_cfg_set_rcq_size(3), rpma_srq_cfg_set_rq_size(3), rpma_srq_new(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_new(struct rpma_srq_cfg **cfg_ptr);
+
+/** 3
+ * rpma_srq_cfg_delete - delete the shared RQ configuration object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_delete(struct rpma_srq_cfg **cfg_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_delete() deletes the shared RQ configuration object.
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_delete() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_cfg_delete() sets *cfg_ptr value to NULL
+ * on success and on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_delete() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_new(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_delete(struct rpma_srq_cfg **cfg_ptr);
+
+/** 3
+ * rpma_srq_cfg_set_rq_size - set RQ size of the shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_set_rq_size(struct rpma_srq_cfg *cfg, uint32_t rq_size);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_set_rq_size() sets the RQ size of the shared RQ.
+ * If this function is not called, the rq_size has the default
+ * value (100) set by rpma_srq_cfg_new(3).
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_set_rq_size() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_set_rq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_new(3), rpma_srq_cfg_get_rq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_set_rq_size(struct rpma_srq_cfg *cfg, uint32_t rq_size);
+
+/** 3
+ * rpma_srq_cfg_get_rq_size - get RQ size of the shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_get_rq_size(const struct rpma_srq_cfg *cfg, uint32_t *rq_size);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_get_rq_size() gets the RQ size of the shared RQ.
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_get_rq_size() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_cfg_get_rq_size() does not set
+ * *rq_size value on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_get_rq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or rq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_new(3), rpma_srq_cfg_set_rq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_get_rq_size(const struct rpma_srq_cfg *cfg, uint32_t *rq_size);
+
+/** 3
+ * rpma_srq_cfg_set_rcq_size - set receive CQ size of the shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_set_rcq_size(struct rpma_srq_cfg *cfg, uint32_t rcq_size);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_set_rcq_size() sets the receive CQ size of the shared RQ.
+ * If this function is not called, the rcq_size has the default value (100)
+ * set by rpma_srq_cfg_new(3).
+ *
+ * Note that rpma_srq_new(3) does not create its own receive CQ
+ * if the size of the receive CQ equals 0.
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_set_rcq_size() function returns 0 on success or
+ * a negative error code on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_set_rcq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg is NULL
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_get_rcq_size(3), rpma_srq_cfg_new(3), rpma_srq_new(3),
+ * librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_set_rcq_size(struct rpma_srq_cfg *cfg, uint32_t rcq_size);
+
+/** 3
+ * rpma_srq_cfg_get_rcq_size - get receive CQ size of the shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq_cfg;
+ *	int rpma_srq_cfg_get_rcq_size(const struct rpma_srq_cfg *cfg, uint32_t *rcq_size);
+ *
+ * DESCRIPTION
+ * rpma_srq_cfg_get_rcq_size() gets the receive CQ size of the shared RQ.
+ *
+ * RETURN VALUE
+ * The rpma_srq_cfg_get_rcq_size() function returns 0 on success or
+ * a negative error code on failure. rpma_srq_cfg_get_rcq_size() does not
+ * set *rcq_size value on failure.
+ *
+ * ERRORS
+ * rpma_srq_cfg_get_rcq_size() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - cfg or rcq_size is NULL
+ *
+ * SEE ALSO
+ * rpma_srq_cfg_new(3), rpma_srq_cfg_set_rcq_size(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_srq_cfg_get_rcq_size(const struct rpma_srq_cfg *cfg, uint32_t *rcq_size);
+
+/* shared RQ */
+
+/** 3
+ * rpma_srq_new - create a new shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_peer;
+ *	struct rpma_srq_cfg;
+ *	struct rpma_srq;
+ *	int rpma_srq_new(struct rpma_peer *peer, const struct rpma_srq_cfg *cfg,
+ *			struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_new() creates a new shared RQ object including a new shared RQ
+ * and a new shared receive CQ. It does not create the shared receive CQ
+ * if the size of the receive CQ in cfg equals 0.
+ *
+ * RETURN VALUE
+ * The rpma_srq_new() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_new() does not set *srq_ptr value
+ * on failure. If cfg is NULL, then the default values are used
+ * - see rpma_srq_cfg_new(3) for more details.
+ *
+ * ERRORS
+ * rpma_srq_new() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - peer or srq_ptr is NULL
+ * - RPMA_E_NOMEM - out of memory
+ * - RPMA_E_PROVIDER - ibv_create_srq(3), ibv_create_comp_channel(3),
+ *   ibv_create_cq(3) or ibv_req_notify_cq(3) failed
+ *
+ * SEE ALSO
+ * rpma_srq_delete(3), rpma_srq_get_rcq(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_srq_new(struct rpma_peer *peer, struct rpma_srq_cfg *cfg, struct rpma_srq **srq_ptr);
+
+/** 3
+ * rpma_srq_delete - delete the shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	int rpma_conn_req_delete(struct rpma_srq **srq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_delete() deletes the shared RQ object.
+ *
+ * RETURN VALUE
+ * The rpma_srq_delete() function returns 0 on success or a negative
+ * error code on failure. rpma_srq_delete() sets *srq_ptr value to NULL
+ * on success and on failure.
+ *
+ * ERRORS
+ * rpma_srq_delete() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - srq_ptr is NULL
+ * - RPMA_E_PROVIDER - ibv_destroy_cq(3), ibv_destroy_comp_channel(3),
+ *   or ibv_destroy_srq(3) failed
+ *
+ * SEE ALSO
+ * rpma_srq_new(3), rpma_srq_get_rcq(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_srq_delete(struct rpma_srq **srq_ptr);
+
+/** 3
+ * rpma_srq_recv - initiate the receive operation in shared RQ
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	struct rpma_mr_local;
+ *	int rpma_srq_recv(struct rpma_srq *srq, struct rpma_mr_local *dst, size_t offset,
+ *			size_t len, const void *op_context);
+ *
+ * DESCRIPTION
+ * If multiple local connections use a shared RQ, rpma_srq_recv() initiates
+ * the receive operation which prepares a buffer for a message sent from
+ * other side of these connections. Please see rpma_send(3).
+ *
+ * All buffers prepared via rpma_srq_recv(3) form an unordered set. When
+ * a message arrives it is placed in one of the buffers awaiting and
+ * a completion for the receive operation is generated.
+ *
+ * A buffer for an incoming message has to be prepared beforehand.
+ *
+ * The order of buffers in the set does not affect the order of completions of
+ * the receive operations got via rpma_cq_get_wc(3).
+ *
+ * op_context is returned in the wr_id field of the completion (struct ibv_wc).
+ *
+ * NOTE
+ * In the RDMA standard, receive requests form an ordered queue.
+ * The librpma library does NOT inherit this guarantee.
+ *
+ * RETURN VALUE
+ * The rpma_srq_recv() function returns 0 on success or a negative
+ * error code on failure.
+ *
+ * ERRORS
+ * rpma_srq_recv() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - srq == NULL
+ * - RPMA_E_INVAL - dst == NULL && (offset != 0 || len != 0)
+ * - RPMA_E_PROVIDER - ibv_post_srq_recv(3) failed
+ *
+ * SEE ALSO
+ * rpma_mr_reg(3), rpma_srq_new(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_srq_recv(struct rpma_srq *srq, struct rpma_mr_local *dst,
+	size_t offset, size_t len, const void *op_context);
+
+/** 3
+ * rpma_srq_get_rcq -- get the receive CQ from the shared RQ object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_srq;
+ *	struct rpma_cq;
+ *	int rpma_srq_get_rcq(const struct rpma_srq *srq, struct rpma_cq **rcq_ptr);
+ *
+ * DESCRIPTION
+ * rpma_srq_get_rcq() gets the receive CQ from the shared RQ object.
+ * The receive CQ created by rpma_srq_new(3) allows handling all
+ * rpma_srq_recv(3) completions within the shared RQ. rpma_srq_cfg_set_rcq_size(3)
+ * can change the receive CQ size.
+ *
+ * RETURN VALUE
+ * The rpma_srq_get_rcq() function returns 0 on success or a negative error
+ * code on failure. rpma_srq_get_rcq() does not set *rcq_ptr value on failure.
+ *
+ * ERRORS
+ * rpma_srq_get_rcq() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - srq or rcq_ptr is NULL
+ *
+ * SEE ALSO
+ * rpma_cq_wait(3), rpma_cq_get_wc(3), rpma_cq_get_fd(3),
+ * rpma_srq_cfg_set_rcq_size(3), rpma_srq_new(3), librpma(7)
+ * and https://pmem.io/rpma/
+ */
+int rpma_srq_get_rcq(const struct rpma_srq *srq, struct rpma_cq **rcq_ptr);
 
 /* remote memory access functions */
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_req.c -- librpma connection-request-related implementations
@@ -79,19 +79,34 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	int ret = 0;
 
 	int cqe, rcqe;
 	bool shared = false;
+	struct rpma_srq *srq = NULL;
+	struct rpma_cq *cq = NULL;
+	struct rpma_cq *rcq = NULL;
+	struct rpma_cq *srq_rcq = NULL;
 	/* read the main CQ size from the configuration */
 	rpma_conn_cfg_get_cqe(cfg, &cqe);
 	/* read the receive CQ size from the configuration */
 	rpma_conn_cfg_get_rcqe(cfg, &rcqe);
 	/* get if the completion channel should be shared by CQ and RCQ */
 	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
+	/* get the shared RQ object from the connection */
+	(void) rpma_conn_cfg_get_srq(cfg, &srq);
+	if (srq)
+		(void) rpma_srq_get_rcq(srq, &srq_rcq);
 
+	if (shared && srq_rcq) {
+		RPMA_LOG_ERROR(
+				"connection shared completion channel cannot be used when the shared RQ has its own RCQ");
+		return RPMA_E_INVAL;
+	}
+
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	struct ibv_comp_channel *channel = NULL;
 	if (shared) {
 		/* create a completion channel */
@@ -103,20 +118,18 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		}
 	}
 
-	struct rpma_cq *cq = NULL;
 	ret = rpma_cq_new(id->verbs, cqe, channel, &cq);
 	if (ret)
 		goto err_comp_channel_destroy;
 
-	struct rpma_cq *rcq = NULL;
-	if (rcqe) {
+	if (!srq_rcq && rcqe) {
 		ret = rpma_cq_new(id->verbs, rcqe, channel, &rcq);
 		if (ret)
 			goto err_rpma_cq_delete;
 	}
 
 	/* create a QP */
-	ret = rpma_peer_create_qp(peer, id, cq, rcq, cfg);
+	ret = rpma_peer_create_qp(peer, id, cq, srq_rcq ? srq_rcq : rcq, cfg);
 	if (ret)
 		goto err_rpma_rcq_delete;
 
