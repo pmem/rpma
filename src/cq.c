@@ -252,11 +252,11 @@ rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
 		return RPMA_E_UNKNOWN;
 	}
 
-	RPMA_FAULT_INJECTION(RPMA_E_NO_COMPLETION, {});
-	RPMA_FAULT_INJECTION(RPMA_E_UNKNOWN, {});
-
 	if (num_entries_got)
 		*num_entries_got = result;
+
+	RPMA_FAULT_INJECTION(RPMA_E_NO_COMPLETION, {});
+	RPMA_FAULT_INJECTION(RPMA_E_UNKNOWN, {});
 
 	return 0;
 }
