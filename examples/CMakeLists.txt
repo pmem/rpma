@@ -176,7 +176,7 @@ add_example(NAME 12s-receive-completion-queue BIN server
 add_example(NAME 12s-receive-completion-queue BIN client
 	SRCS 12s-receive-completion-queue/client.c common/common-utils.c)
 add_example(NAME 13-messages-ping-pong-with-srq BIN server
-	SRCS 13-messages-ping-pong-with-srq/server.c common/common-epoll.c)
+	SRCS 13-messages-ping-pong-with-srq/server.c common/common-epoll.c common/common-utils.c)
 add_example(NAME 13-messages-ping-pong-with-srq BIN client
 	SRCS 13-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 

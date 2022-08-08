@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
  * server.c -- a server of the messages-ping-pong-with-srq example
@@ -17,6 +18,7 @@
 #include "common-conn.h"
 #include "common-messages-ping-pong.h"
 #include "common-epoll.h"
+#include "common-utils.h"
 
 #define USAGE_STR	"usage: %s <server_address> <port> [<timeout>]\n"
 #define CLIENT_MAX	10
@@ -132,7 +134,7 @@ main(int argc, char *argv[])
 	/* read common parameters */
 	char *addr = argv[1];
 	char *port = argv[2];
-	int timeout = argv[3] ? atoi(argv[3]) * 1000 : TIMEOUT_5S;
+	int timeout = argv[3] ? strtoul_noerror(argv[3]) * 1000 : TIMEOUT_5S;
 	int ret;
 
 	/* prepare memory */
