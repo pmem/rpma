@@ -41,4 +41,4 @@ function(add_example name)
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)
-add_example(client client.c ../common/common-conn.c)
+add_example(client client.c ../common/common-conn.c ../common/common-utils.c)

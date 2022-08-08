@@ -144,7 +144,7 @@ add_example(NAME 07-atomic-write BIN client
 add_example(NAME 08-messages-ping-pong BIN server
 	SRCS 08-messages-ping-pong/server.c common/common-messages-ping-pong.c)
 add_example(NAME 08-messages-ping-pong BIN client
-	SRCS 08-messages-ping-pong/client.c common/common-messages-ping-pong.c)
+	SRCS 08-messages-ping-pong/client.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/server.c
 	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
@@ -170,15 +170,15 @@ add_example(NAME 12-receive-completion-queue BIN server
 	12-receive-completion-queue/receive-completion-queue-common.c)
 add_example(NAME 12-receive-completion-queue BIN client
 	SRCS 12-receive-completion-queue/client.c
-	12-receive-completion-queue/receive-completion-queue-common.c)
+	12-receive-completion-queue/receive-completion-queue-common.c common/common-utils.c)
 add_example(NAME 12s-receive-completion-queue BIN server
 	SRCS 12s-receive-completion-queue/server.c)
 add_example(NAME 12s-receive-completion-queue BIN client
-	SRCS 12s-receive-completion-queue/client.c)
+	SRCS 12s-receive-completion-queue/client.c common/common-utils.c)
 add_example(NAME 13-messages-ping-pong-with-srq BIN server
 	SRCS 13-messages-ping-pong-with-srq/server.c common/common-epoll.c)
 add_example(NAME 13-messages-ping-pong-with-srq BIN client
-	SRCS 13-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c)
+	SRCS 13-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
