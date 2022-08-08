@@ -55,9 +55,14 @@ wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
 		if ((ret = rpma_cq_wait(cq)))
 			return ret;
 
+		/* reset num_got to 0  */
+		num_got = 0;
+
 		/* get two next completions at most (1 of send + 1 of recv) */
 		if ((ret = rpma_cq_get_wc(cq, MAX_N_WC, wc, &num_got)))
-			return ret;
+			/* lack of completion is not an error */
+			if (ret != RPMA_E_NO_COMPLETION)
+				return ret;
 
 		/* validate received completions */
 		for (int i = 0; i < num_got; i++) {
