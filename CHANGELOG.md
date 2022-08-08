@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - error RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
 
 - examples:
+  - 08srq-simple-messages-ping-pong-with-srq - a single-connection example for shared RQ with ping-pong messages
   - 13-messages-ping-pong-with-srq - a multi-connection example for shared RQ with ping-pong messages
 
 - logging of the source and the destination GID addresses in rpma_conn_req_from_id()

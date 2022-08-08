@@ -16,7 +16,13 @@
 
 #define I_M_DONE	(uint64_t)UINT64_MAX
 
+/* the maximum number of completions expected (1 of send + 1 of receive) */
+#define MAX_N_WC	2
+
 int wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
+		int *send_cmpl, int *recv_cmpl);
+
+int validate_wc(struct ibv_wc *wc, uint64_t *recv,
 		int *send_cmpl, int *recv_cmpl);
 
 #endif /* COMMON_MSG_PING_PONG */
