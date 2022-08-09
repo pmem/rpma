@@ -9,28 +9,15 @@
  */
 
 #include <librpma.h>
-#include <limits.h>
 #include <inttypes.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include "common-conn.h"
 #include "common-messages-ping-pong.h"
+#include "common-utils.h"
 
 #define USAGE_STR "usage: %s <server_address> <port> <seed> <rounds> [<sleep>]\n"
-
-static uint64_t
-strtoul_noerror(const char *in)
-{
-	uint64_t out = strtoul(in, NULL, 10);
-	if (out == ULONG_MAX && errno == ERANGE) {
-		(void) fprintf(stderr, "strtoul(%s) overflowed\n", in);
-		exit(-1);
-	}
-	return out;
-}
 
 int
 main(int argc, char *argv[])

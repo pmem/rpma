@@ -43,4 +43,4 @@ function(add_example name)
 endfunction()
 
 add_example(server server.c ../common/common-conn.c ../common/common-messages-ping-pong.c)
-add_example(client client.c ../common/common-conn.c ../common/common-messages-ping-pong.c)
+add_example(client client.c ../common/common-conn.c ../common/common-messages-ping-pong.c ../common/common-utils.c)

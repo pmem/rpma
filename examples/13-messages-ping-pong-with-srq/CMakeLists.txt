@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2022, Fujitsu
+# Copyright 2022, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -43,4 +44,4 @@ function(add_example name)
 endfunction()
 
 add_example(server server.c ../common/common-conn.c ../common/common-epoll.c)
-add_example(client client.c ../common/common-conn.c ../common/common-messages-ping-pong.c)
+add_example(client client.c ../common/common-conn.c ../common/common-messages-ping-pong.c ../common/common-utils.c)
