@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
  * server.c -- a server of the messages-ping-pong-with-srq example
@@ -132,8 +133,13 @@ main(int argc, char *argv[])
 	/* read common parameters */
 	char *addr = argv[1];
 	char *port = argv[2];
-	int timeout = argv[3] ? atoi(argv[3]) * 1000 : TIMEOUT_5S;
 	int ret;
+
+	int timeout = argv[3] ? atoi(argv[3]) * 1000 : TIMEOUT_5S;
+	if (timeout <= 0) {
+		(void) fprintf(stderr, "<timeout> should be a positive number of seconds (%s given)\n", argv[3]);
+		return -1;
+	}
 
 	/* prepare memory */
 	struct rpma_mr_local *recv_mr, *send_mr;
