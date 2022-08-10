@@ -292,7 +292,7 @@ function run_example() {
 	11-write-with-imm)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		;;
-	12-receive-completion-queue|12s-receive-completion-queue)
+	12-receive-completion-queue|12scch-receive-completion-queue)
 		START_VALUE=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
