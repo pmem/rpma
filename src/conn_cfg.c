@@ -203,7 +203,6 @@ int
 rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg == NULL || timeout_ms == NULL)
 		return RPMA_E_INVAL;
@@ -214,6 +213,7 @@ rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms)
 	*timeout_ms = cfg->timeout_ms;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
