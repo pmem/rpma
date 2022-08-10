@@ -133,10 +133,10 @@ add_example(NAME 06-multiple-connections BIN server
 	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
 	SRCS 06-multiple-connections/client.c)
-add_example(NAME 06s-multiple-connections BIN server
-	SRCS 06s-multiple-connections/server.c common/common-epoll.c)
-add_example(NAME 06s-multiple-connections BIN client
-	SRCS 06s-multiple-connections/client.c)
+add_example(NAME 06scch-multiple-connections BIN server
+	SRCS 06scch-multiple-connections/server.c common/common-epoll.c)
+add_example(NAME 06scch-multiple-connections BIN client
+	SRCS 06scch-multiple-connections/client.c)
 add_example(NAME 07-atomic-write BIN server
 	SRCS 07-atomic-write/server.c)
 add_example(NAME 07-atomic-write BIN client
