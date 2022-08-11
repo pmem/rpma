@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mr-reg.c -- the memory region registration/deregistration unit tests
@@ -136,12 +136,12 @@ static void
 reg__malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
-	struct rpma_peer_mr_reg_args mr_reg_args;
+	struct rpma_peer_setup_mr_reg_args mr_reg_args;
 	mr_reg_args.usage = RPMA_MR_USAGE_READ_SRC;
 	mr_reg_args.access = IBV_ACCESS_REMOTE_READ;
 	mr_reg_args.mr = MOCK_MR;
 	will_return(__wrap__test_malloc, MOCK_ERRNO);
-	will_return_maybe(rpma_peer_mr_reg, &mr_reg_args);
+	will_return_maybe(rpma_peer_setup_mr_reg, &mr_reg_args);
 	will_return_maybe(ibv_dereg_mr, MOCK_OK);
 
 	/* run test */
@@ -155,18 +155,18 @@ reg__malloc_ERRNO(void **unused)
 }
 
 /*
- * reg__peer_mr_reg_ERRNO -- rpma_peer_mr_reg() fails with MOCK_ERRNO
+ * reg__peer_mr_reg_ERRNO -- rpma_peer_setup_mr_reg() fails with MOCK_ERRNO
  */
 static void
 reg__peer_mr_reg_ERRNO(void **unused)
 {
 	/* configure mocks */
-	struct rpma_peer_mr_reg_args mr_reg_args;
+	struct rpma_peer_setup_mr_reg_args mr_reg_args;
 	mr_reg_args.usage = RPMA_MR_USAGE_READ_DST;
 	mr_reg_args.access = IBV_ACCESS_LOCAL_WRITE;
 	mr_reg_args.mr = NULL;
 	mr_reg_args.verrno = MOCK_ERRNO;
-	will_return(rpma_peer_mr_reg, &mr_reg_args);
+	will_return(rpma_peer_setup_mr_reg, &mr_reg_args);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */

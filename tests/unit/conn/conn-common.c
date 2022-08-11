@@ -63,10 +63,10 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_discard -- rpma_private_data_discard() mock
+ * rpma_private_data_delete -- rpma_private_data_delete() mock
  */
 void
-rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+rpma_private_data_delete(struct rpma_conn_private_data *pdata)
 {
 	assert_non_null(pdata);
 	check_expected(pdata->ptr);
@@ -128,9 +128,9 @@ teardown__conn_delete(void **cstate_ptr)
 	will_return(rdma_destroy_id, MOCK_OK);
 	if (cstate->channel)
 		will_return(ibv_destroy_comp_channel, MOCK_OK);
-	expect_value(rpma_private_data_discard, pdata->ptr,
+	expect_value(rpma_private_data_delete, pdata->ptr,
 				cstate->data.ptr);
-	expect_value(rpma_private_data_discard, pdata->len,
+	expect_value(rpma_private_data_delete, pdata->len,
 				cstate->data.len);
 
 	/* delete the object */

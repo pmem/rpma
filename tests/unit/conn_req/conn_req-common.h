@@ -72,8 +72,8 @@
 	CONN_REQ_TEST_SETUP_TEARDOWN_WITH_AND_WITHOUT_SRQ_RCQ(test_func, NULL, NULL)
 
 /*
- * All the resources used between setup__conn_req_from_cm_event and
- * teardown__conn_req_from_cm_event
+ * All the resources used between setup__conn_req_new_from_cm_event and
+ * teardown__conn_req_new_from_cm_event
  */
 struct conn_req_test_state {
 	struct conn_cfg_get_mock_args get_args;
@@ -88,8 +88,8 @@ extern struct conn_req_test_state Conn_req_conn_cfg_custom;
 extern struct conn_req_test_state Conn_req_conn_cfg_custom_without_srq_rcq;
 extern struct conn_req_test_state Conn_req_conn_cfg_default_with_srq_rcq;
 
-int setup__conn_req_from_cm_event(void **cstate_ptr);
-int teardown__conn_req_from_cm_event(void **cstate_ptr);
+int setup__conn_req_new_from_cm_event(void **cstate_ptr);
+int teardown__conn_req_new_from_cm_event(void **cstate_ptr);
 
 /*
  * All the resources used between setup__conn_req_new and teardown__conn_req_new

@@ -39,7 +39,7 @@ endfunction()
 
 add_test_conn_req(connect)
 add_test_conn_req(delete)
-add_test_conn_req(from_cm_event)
+add_test_conn_req(new_from_cm_event)
 add_test_conn_req(new)
 add_test_conn_req(private_data)
 add_test_conn_req(recv)
