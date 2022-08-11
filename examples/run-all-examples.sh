@@ -270,7 +270,7 @@ function run_example() {
 
 	RV=0
 	case $EXAMPLE in
-	06-multiple-connections|06s-multiple-connections)
+	06-multiple-connections|06scch-multiple-connections)
 		[ "$MODE" == "integration-tests" ] && SEEDS="8" || SEEDS="8 9 11 12"
 		for SEED in $SEEDS; do
 			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
@@ -292,7 +292,7 @@ function run_example() {
 	11-write-with-imm)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		;;
-	12-receive-completion-queue|12s-receive-completion-queue)
+	12-receive-completion-queue|12scch-receive-completion-queue)
 		START_VALUE=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
