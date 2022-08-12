@@ -44,9 +44,8 @@ struct rpma_conn {
  * ID has any outstanding (unacknowledged) events.
  */
 int
-rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_cq *cq, struct rpma_cq *rcq,
-		struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
+rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq *cq,
+		struct rpma_cq *rcq, struct ibv_comp_channel *channel, struct rpma_conn **conn_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
@@ -107,12 +106,10 @@ err_destroy_evch:
 }
 
 /*
- * rpma_conn_transfer_private_data -- transfer the private data to
- * the connection (a take over).
+ * rpma_conn_transfer_private_data -- transfer the private data to the connection (a take over).
  */
 void
-rpma_conn_transfer_private_data(struct rpma_conn *conn,
-		struct rpma_conn_private_data *pdata)
+rpma_conn_transfer_private_data(struct rpma_conn *conn, struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -170,8 +167,7 @@ rpma_conn_next_event(struct rpma_conn *conn, enum rpma_conn_event *event)
 		return RPMA_E_PROVIDER;
 	}
 
-	if (edata->event == RDMA_CM_EVENT_ESTABLISHED &&
-			conn->data.ptr == NULL) {
+	if (edata->event == RDMA_CM_EVENT_ESTABLISHED && conn->data.ptr == NULL) {
 		ret = rpma_private_data_store(edata, &conn->data);
 		if (ret) {
 			(void) rdma_ack_cm_event(edata);
@@ -308,8 +304,7 @@ rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd)
  * rpma_conn_get_private_data -- hand a pointer to the connection's private data
  */
 int
-rpma_conn_get_private_data(const struct rpma_conn *conn,
-		struct rpma_conn_private_data *pdata)
+rpma_conn_get_private_data(const struct rpma_conn *conn, struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -386,8 +381,7 @@ rpma_conn_delete(struct rpma_conn **conn_ptr)
 	if (conn->channel) {
 		errno = ibv_destroy_comp_channel(conn->channel);
 		if (errno) {
-			RPMA_LOG_ERROR_WITH_ERRNO(errno,
-				"ibv_destroy_comp_channel()");
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_destroy_comp_channel()");
 			ret = RPMA_E_PROVIDER;
 			goto err_destroy_event_channel;
 		}

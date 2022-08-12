@@ -73,8 +73,7 @@ static struct rpma_conn_cfg Conn_cfg_default  = {
 /* internal librpma API */
 
 /*
- * rpma_conn_cfg_default -- return pointer to default connection configuration
- * object
+ * rpma_conn_cfg_default -- return pointer to default connection configuration object
  */
 struct rpma_conn_cfg *
 rpma_conn_cfg_default()
@@ -257,9 +256,8 @@ rpma_conn_cfg_get_cq_size(const struct rpma_conn_cfg *cfg, uint32_t *cq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_conn_cfg_get_cqe()
-	 * and therefore it has to return the correct value of size of CQ,
-	 * if it fails because of fault injection.
+	 * This function is used as void in rpma_conn_cfg_get_cqe() and therefore it has to return
+	 * the correct value of size of CQ, if it fails because of fault injection.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
@@ -305,9 +303,8 @@ rpma_conn_cfg_get_rcq_size(const struct rpma_conn_cfg *cfg, uint32_t *rcq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_conn_cfg_get_rcqe()
-	 * and therefore it has to return the correct value of size of RCQ,
-	 * if it fails because of fault injection.
+	 * This function is used as void in rpma_conn_cfg_get_rcqe() and therefore it has to return
+	 * the correct value of size of RCQ, if it fails because of fault injection.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
@@ -353,9 +350,8 @@ rpma_conn_cfg_get_sq_size(const struct rpma_conn_cfg *cfg, uint32_t *sq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_peer_setup_qp()
-	 * and therefore it has to return the correct value of size of SQ,
-	 * if it fails because of fault injection.
+	 * This function is used as void in rpma_peer_setup_qp() and therefore it has to return
+	 * the correct value of size of SQ, if it fails because of fault injection.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
@@ -401,17 +397,15 @@ rpma_conn_cfg_get_rq_size(const struct rpma_conn_cfg *cfg, uint32_t *rq_size)
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 	/*
-	 * This function is used as void in rpma_peer_setup_qp()
-	 * and therefore it has to return the correct value of size of RQ,
-	 * if it fails because of fault injection.
+	 * This function is used as void in rpma_peer_setup_qp() and therefore it has to return
+	 * the correct value of size of RQ, if it fails because of fault injection.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
 /*
- * rpma_conn_cfg_set_compl_channel -- set if the completion channel
- * is shared by CQ and RCQ
+ * rpma_conn_cfg_set_compl_channel -- set if the completion channel is shared by CQ and RCQ
  */
 int
 rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared)
@@ -432,8 +426,7 @@ rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared)
 }
 
 /*
- * rpma_conn_cfg_get_compl_channel -- get if the completion channel
- * is shared by CQ and RCQ
+ * rpma_conn_cfg_get_compl_channel -- get if the completion channel is shared by CQ and RCQ
  */
 int
 rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared)
