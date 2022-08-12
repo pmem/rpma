@@ -146,8 +146,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Create a remote memory registration structure from the received
-	 * descriptor.
+	 * Create a remote memory registration structure from the received descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
 
@@ -183,8 +182,7 @@ main(int argc, char *argv[])
 	if (flush_req_size > MSG_SIZE_MAX) {
 		fprintf(stderr,
 				"Packed flush request size is bigger than available send buffer space (%"
-				PRIu64 " > %d\n", flush_req_size,
-				MSG_SIZE_MAX);
+				PRIu64 " > %d\n", flush_req_size, MSG_SIZE_MAX);
 		goto err_mr_remote_delete;
 	}
 	(void) gpspm_flush_request__pack(&flush_req, send_ptr);
@@ -209,18 +207,15 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 	if (flush_resp->op_context != (uint64_t)FLUSH_ID) {
-		(void) fprintf(stderr,
-				"unexpected flush_resp->op_context value "
+		(void) fprintf(stderr, "unexpected flush_resp->op_context value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)flush_resp->op_context,
-				(uintptr_t)FLUSH_ID);
+				(uintptr_t)flush_resp->op_context, (uintptr_t)FLUSH_ID);
 		goto err_mr_remote_delete;
 	}
 	gpspm_flush_response__free_unpacked(flush_resp, NULL);
 
 	/*
-	 * Translate the message so the next time the greeting will be
-	 * surprising.
+	 * Translate the message so the next time the greeting will be surprising.
 	 */
 	translate(hello);
 #ifdef USE_PMEM

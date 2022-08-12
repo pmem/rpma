@@ -66,11 +66,9 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV,
-				&recv_mr)))
+	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
 		goto err_ep_shutdown;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND,
-				&send_mr))) {
+	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_ep_shutdown;
 	}
@@ -91,8 +89,7 @@ main(int argc, char *argv[])
 		goto err_cfg_delete;
 
 	/*
-	 * Post an initial receive to be prepared for the first message of
-	 * the client's ping-pong.
+	 * Post an initial receive to be prepared for the first message of the client's ping-pong.
 	 */
 	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv))) {
 		(void) rpma_conn_req_delete(&req);
@@ -107,8 +104,7 @@ main(int argc, char *argv[])
 	if ((ret = rpma_conn_next_event(conn, &conn_event)))
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_disconnect;
 	}

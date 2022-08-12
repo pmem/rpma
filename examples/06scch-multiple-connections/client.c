@@ -92,8 +92,7 @@ main(int argc, char *argv[])
 	printf("My names is: %s\n", (char *)mr_ptr);
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, mr_ptr, MAX_NAME_SIZE, RPMA_MR_USAGE_READ_SRC,
-				&mr);
+	ret = rpma_mr_reg(peer, mr_ptr, MAX_NAME_SIZE, RPMA_MR_USAGE_READ_SRC, &mr);
 	if (ret)
 		goto err_mr_free;
 

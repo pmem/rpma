@@ -65,11 +65,9 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV,
-				&recv_mr)))
+	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
 		goto err_peer_delete;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND,
-				&send_mr))) {
+	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_peer_delete;
 	}
@@ -104,8 +102,7 @@ main(int argc, char *argv[])
 		/* send a message to the server */
 		(void) printf("CLIENT: Value sent: %" PRIu64 "\n", counter);
 		*send = counter;
-		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE,
-				RPMA_F_COMPLETION_ALWAYS, NULL)))
+		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL)))
 			break;
 
 		/* get one send completion and validate it */
@@ -113,8 +110,7 @@ main(int argc, char *argv[])
 			break;
 
 		/* get one receive completion and validate it */
-		if ((ret = get_wc_and_validate(rcq, IBV_WC_RECV,
-				"rpma_recv()")))
+		if ((ret = get_wc_and_validate(rcq, IBV_WC_RECV, "rpma_recv()")))
 			break;
 
 		/* copy the new value of the counter and print it out */
@@ -128,8 +124,7 @@ main(int argc, char *argv[])
 
 	/* send the I_M_DONE message */
 	*send = I_M_DONE;
-	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR,
-			NULL);
+	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR, NULL);
 
 err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);

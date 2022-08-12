@@ -66,11 +66,9 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV,
-				&recv_mr)))
+	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
 		goto err_ep_shutdown;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND,
-				&send_mr))) {
+	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_ep_shutdown;
 	}
@@ -80,8 +78,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Put an initial receive to be prepared for the first message of
-	 * the client's ping-pong.
+	 * Put an initial receive to be prepared for the first message of the client's ping-pong.
 	 */
 	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv))) {
 		(void) rpma_conn_req_delete(&req);
@@ -115,8 +112,7 @@ main(int argc, char *argv[])
 
 	while (1) {
 		/* get completions and process them */
-		ret = wait_and_process_completions(cq, recv, &send_cmpl,
-				&recv_cmpl);
+		ret = wait_and_process_completions(cq, recv, &send_cmpl, &recv_cmpl);
 		if (ret)
 			break;
 

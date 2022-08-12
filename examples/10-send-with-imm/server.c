@@ -128,39 +128,33 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 
 	if (wc.status != IBV_WC_SUCCESS) {
-		fprintf(stderr,
-			"Received unexpected completion: %s\n",
+		fprintf(stderr, "Received unexpected completion: %s\n",
 			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (wc.opcode != IBV_WC_RECV) {
-		fprintf(stderr,
-			"Received unexpected type of operation (%d != %d)\n",
-			wc.opcode, IBV_WC_RECV);
+		fprintf(stderr, "Received unexpected type of operation (%d != %d)\n", wc.opcode,
+			IBV_WC_RECV);
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (!(wc.wc_flags & IBV_WC_WITH_IMM)) {
-		fprintf(stderr,
-			"Received unexpected completion flag (no IBV_WC_WITH_IMM)\n");
+		fprintf(stderr, "Received unexpected completion flag (no IBV_WC_WITH_IMM)\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	uint32_t imm = ntohl(wc.imm_data);
 	if (imm != *exp_imm) {
-		fprintf(stderr,
-			"Received unexpected immediate data (%u != %u)\n",
-			imm, *exp_imm);
+		fprintf(stderr, "Received unexpected immediate data (%u != %u)\n", imm, *exp_imm);
 		ret = -1;
 	} else {
 		if (wc.byte_len == 0)
 			recv[0] = '\0';
-		printf("Received value '%s' with immediate data '%u'\n", recv,
-			imm);
+		printf("Received value '%s' with immediate data '%u'\n", recv, imm);
 	}
 
 err_conn_disconnect:
