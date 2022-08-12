@@ -80,8 +80,7 @@ server_init(struct server_res *svr, struct rpma_peer *peer)
 	}
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, svr->dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST,
-				&svr->dst_mr);
+	ret = rpma_mr_reg(peer, svr->dst_ptr, dst_size, RPMA_MR_USAGE_READ_DST, &svr->dst_mr);
 	if (ret)
 		goto err_mr_free;
 
@@ -172,8 +171,7 @@ client_add_to_epoll(struct client_res *clnt, int epoll)
 	int ret = rpma_conn_get_event_fd(clnt->conn, &fd);
 	if (ret)
 		return ret;
-	ret = epoll_add(epoll, fd, clnt, client_handle_connection_event,
-			&clnt->ev_conn_event);
+	ret = epoll_add(epoll, fd, clnt, client_handle_connection_event, &clnt->ev_conn_event);
 	if (ret)
 		return ret;
 
@@ -183,8 +181,7 @@ client_add_to_epoll(struct client_res *clnt, int epoll)
 		epoll_delete(epoll, &clnt->ev_conn_event);
 		return ret;
 	}
-	ret = epoll_add(epoll, fd, clnt, client_handle_completion,
-			&clnt->ev_conn_cmpl);
+	ret = epoll_add(epoll, fd, clnt, client_handle_completion, &clnt->ev_conn_cmpl);
 	if (ret)
 		epoll_delete(epoll, &clnt->ev_conn_event);
 
@@ -263,17 +260,14 @@ client_handle_completion(struct custom_event *ce)
 
 	/* validate received completion */
 	if (wc.status != IBV_WC_SUCCESS) {
-		(void) fprintf(stderr,
-				"[%d] rpma_read() failed: %s\n",
-				clnt->client_id,
+		(void) fprintf(stderr, "[%d] rpma_read() failed: %s\n", clnt->client_id,
 				ibv_wc_status_str(wc.status));
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
 	}
 
 	if (wc.opcode != IBV_WC_RDMA_READ) {
-		(void) fprintf(stderr,
-				"[%d] received unexpected wc.opcode value (%d != %d)\n",
+		(void) fprintf(stderr, "[%d] received unexpected wc.opcode value (%d != %d)\n",
 				clnt->client_id, wc.opcode, IBV_WC_RDMA_READ);
 		(void) rpma_conn_disconnect(clnt->conn);
 		return;
@@ -298,8 +292,7 @@ client_fetch_name(struct client_res *clnt, struct rpma_mr_local *dst)
 	if (ret != 0 || pdata.len < sizeof(struct common_data)) {
 		(void) fprintf(stderr,
 				"[%d] received connection's private data is too small (%d < %zu)\n",
-				clnt->client_id,
-				pdata.len, sizeof(struct common_data));
+				clnt->client_id, pdata.len, sizeof(struct common_data));
 		return -1;
 	}
 
@@ -307,14 +300,13 @@ client_fetch_name(struct client_res *clnt, struct rpma_mr_local *dst)
 	struct common_data *dst_data = pdata.ptr;
 
 	struct rpma_mr_remote *src_mr;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &src_mr);
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&src_mr);
 	if (ret)
 		return ret;
 
 	/* read client's name from the remote memory region */
-	ret = rpma_read(clnt->conn, dst, clnt->offset,
-			src_mr, 0, MAX_NAME_SIZE,
+	ret = rpma_read(clnt->conn, dst, clnt->offset, src_mr, 0, MAX_NAME_SIZE,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret) {
 		(void) rpma_mr_remote_delete(&src_mr);
@@ -470,8 +462,7 @@ main(int argc, char *argv[])
 	ret = rpma_ep_get_fd(svr.ep, &ep_fd);
 	if (ret)
 		goto err_ep_shutdown;
-	ret = epoll_add(svr.epoll, ep_fd, &svr, server_handle_incoming_client,
-			&svr.ev_incoming);
+	ret = epoll_add(svr.epoll, ep_fd, &svr, server_handle_incoming_client, &svr.ev_incoming);
 	if (ret)
 		goto err_ep_shutdown;
 
@@ -480,8 +471,7 @@ main(int argc, char *argv[])
 	/* process epoll's events */
 	struct epoll_event event;
 	struct custom_event *ce;
-	while ((ret = epoll_wait(svr.epoll, &event, 1 /* # of events */,
-				TIMEOUT_15S)) == 1) {
+	while ((ret = epoll_wait(svr.epoll, &event, 1 /* # of events */, TIMEOUT_15S)) == 1) {
 		ce = (struct custom_event *)event.data.ptr;
 		ce->func(ce);
 	}

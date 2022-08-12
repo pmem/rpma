@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * client.c -- a client of the connection example
@@ -24,8 +24,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <addr> <port>\n",
-			argv[0]);
+		fprintf(stderr, "usage: %s <addr> <port>\n", argv[0]);
 		exit(-1);
 	}
 
@@ -46,8 +45,7 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	/* obtain an IBV context for a remote IP address */
-	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE,
-			&ibv_ctx);
+	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
 	if (ret)
 		return ret;
 
@@ -86,12 +84,10 @@ main(int argc, char *argv[])
 				fprintf(stderr, "Retrying...\n");
 				sleep(RETRY_DELAY);
 			} else {
-				fprintf(stderr,
-					"The retry number exceeded. Closing.\n");
+				fprintf(stderr, "The retry number exceeded. Closing.\n");
 			}
 		} else {
-			fprintf(stderr,
-				"rpma_conn_next_event returned an unexpected event: %s\n",
+			fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 				rpma_utils_conn_event_2str(conn_event));
 			goto err_conn_disconnect;
 		}
@@ -114,8 +110,7 @@ main(int argc, char *argv[])
 	if (ret) {
 		goto err_conn_disconnect;
 	} else if (conn_event != RPMA_CONN_CLOSED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_disconnect;
 	}

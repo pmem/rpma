@@ -142,8 +142,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Create a remote memory registration structure from the received
-	 * descriptor.
+	 * Create a remote memory registration structure from the received descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
 
@@ -179,8 +178,7 @@ main(int argc, char *argv[])
 	if (flush_req_size > MSG_SIZE_MAX) {
 		fprintf(stderr,
 				"Packed flush request size is bigger than available send buffer space (%"
-				PRIu64 " > %d\n", flush_req_size,
-				MSG_SIZE_MAX);
+				PRIu64 " > %d\n", flush_req_size, MSG_SIZE_MAX);
 		goto err_mr_remote_delete;
 	}
 	(void) gpspm_flush_request__pack(&flush_req, send_ptr);
@@ -202,8 +200,7 @@ main(int argc, char *argv[])
 	/* validate the send completion */
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_send() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_send() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
@@ -212,8 +209,7 @@ main(int argc, char *argv[])
 		(void) fprintf(stderr,
 				"unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_SEND);
+				(uintptr_t)wc.opcode, (uintptr_t)IBV_WC_SEND);
 		goto err_mr_remote_delete;
 	}
 
@@ -229,8 +225,7 @@ main(int argc, char *argv[])
 	/* validate the receive completion */
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_recv() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
@@ -239,8 +234,7 @@ main(int argc, char *argv[])
 		(void) fprintf(stderr,
 				"unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_RECV);
+				(uintptr_t)wc.opcode, (uintptr_t)IBV_WC_RECV);
 		goto err_mr_remote_delete;
 	}
 
@@ -254,15 +248,13 @@ main(int argc, char *argv[])
 		(void) fprintf(stderr,
 				"unexpected flush_resp->op_context value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)flush_resp->op_context,
-				(uintptr_t)FLUSH_ID);
+				(uintptr_t)flush_resp->op_context, (uintptr_t)FLUSH_ID);
 		goto err_mr_remote_delete;
 	}
 	gpspm_flush_response__free_unpacked(flush_resp, NULL);
 
 	/*
-	 * Translate the message so the next time the greeting will be
-	 * surprising.
+	 * Translate the message so the next time the greeting will be surprising.
 	 */
 	translate(hello);
 #ifdef USE_PMEM

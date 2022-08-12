@@ -69,12 +69,11 @@ main(int argc, char *argv[])
 			goto err_free;
 
 		/*
-		 * All of the space under the offset is intended for
-		 * the string contents. Space is assumed to be at least 1 KiB.
+		 * All of the space under the offset is intended for the string contents.
+		 * Space is assumed to be at least 1 KiB.
 		 */
 		if (mem.mr_size - LOG_SIGNATURE_SIZE < KILOBYTE) {
-			fprintf(stderr, "%s too small (%zu < %u)\n",
-					pmem_path, mem.mr_size,
+			fprintf(stderr, "%s too small (%zu < %u)\n", pmem_path, mem.mr_size,
 					KILOBYTE + LOG_SIGNATURE_SIZE);
 			common_pmem_unmap_file(&mem);
 			return -1;
@@ -83,8 +82,8 @@ main(int argc, char *argv[])
 		log = (struct log *)mem.mr_ptr;
 
 		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
+		 * If the signature is not in place the persistent content has to be initialized
+		 * and persisted.
 		 */
 		if (strncmp(mem.mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE)) {
 			/* initialize used value and persist it */
@@ -161,8 +160,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Wait for an incoming connection request, accept it and wait for its
-	 * establishment.
+	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
@@ -171,8 +169,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
-	 * structure.
+	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
 	if ((ret = common_wait_for_conn_close_and_disconnect(&conn)))
 		goto err_mr_dereg;

@@ -66,11 +66,9 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV,
-				&recv_mr)))
+	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
 		goto err_peer_delete;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND,
-				&send_mr))) {
+	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_peer_delete;
 	}
@@ -104,8 +102,7 @@ main(int argc, char *argv[])
 		int recv_cmpl = 0;
 
 		/* get completions and process them */
-		ret = wait_and_process_completions(cq, recv, &send_cmpl,
-				&recv_cmpl);
+		ret = wait_and_process_completions(cq, recv, &send_cmpl, &recv_cmpl);
 		if (ret)
 			break;
 
@@ -120,8 +117,7 @@ main(int argc, char *argv[])
 
 	/* send the I_M_DONE message */
 	*send = I_M_DONE;
-	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR,
-			NULL);
+	ret |= rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR, NULL);
 
 err_conn_disconnect:
 	ret |= common_disconnect_and_wait_for_conn_close(&conn);
