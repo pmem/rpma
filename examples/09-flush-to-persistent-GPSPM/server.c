@@ -158,8 +158,7 @@ main(int argc, char *argv[])
 		goto err_cfg_delete;
 
 	/*
-	 * Wait for an incoming connection request, accept it and wait for its
-	 * establishment.
+	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
@@ -202,18 +201,15 @@ main(int argc, char *argv[])
 	/* validate the receive completion */
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_recv() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_recv() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_conn_delete;
 	}
 
 	if (wc.opcode != IBV_WC_RECV) {
 		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
+		(void) fprintf(stderr, "unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_RECV);
+				(uintptr_t)wc.opcode, (uintptr_t)IBV_WC_RECV);
 		goto err_conn_delete;
 	}
 
@@ -244,8 +240,7 @@ main(int argc, char *argv[])
 	if (flush_resp_size > MSG_SIZE_MAX) {
 		fprintf(stderr,
 				"Size of the packed flush response is bigger than the available space of the send buffer (%"
-				PRIu64 " > %u\n", flush_resp_size,
-				MSG_SIZE_MAX);
+				PRIu64 " > %u\n", flush_resp_size, MSG_SIZE_MAX);
 		goto err_conn_delete;
 	}
 	(void) gpspm_flush_response__pack(&flush_resp, send_ptr);
@@ -268,24 +263,20 @@ main(int argc, char *argv[])
 	/* validate the send completion */
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_send() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_send() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_conn_delete;
 	}
 
 	if (wc.opcode != IBV_WC_SEND) {
 		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value "
+		(void) fprintf(stderr, "unexpected wc.opcode value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
-				(uintptr_t)wc.opcode,
-				(uintptr_t)IBV_WC_SEND);
+				(uintptr_t)wc.opcode, (uintptr_t)IBV_WC_SEND);
 		goto err_conn_delete;
 	}
 
 	/*
-	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
-	 * structure.
+	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 	if (ret)

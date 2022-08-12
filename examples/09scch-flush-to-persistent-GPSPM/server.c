@@ -159,8 +159,7 @@ main(int argc, char *argv[])
 		goto err_cfg_delete;
 
 	/*
-	 * Wait for an incoming connection request, accept it and wait for its
-	 * establishment.
+	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
@@ -171,8 +170,7 @@ main(int argc, char *argv[])
 		goto err_req_delete;
 
 	/* prepare buffer for a flush request */
-	if ((ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX,
-			NULL)))
+	if ((ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX, NULL)))
 		goto err_req_delete;
 
 	/* accept the connection request and obtain the connection object */
@@ -204,8 +202,7 @@ main(int argc, char *argv[])
 	}
 	(void) printf("Flush request received: {offset: 0x%" PRIXPTR
 			", length: 0x%" PRIXPTR ", op_context: 0x%" PRIXPTR
-			"}\n", flush_req->offset, flush_req->length,
-			flush_req->op_context);
+			"}\n", flush_req->offset, flush_req->length, flush_req->op_context);
 
 #ifdef USE_PMEM
 	if (mem.is_pmem) {
@@ -223,8 +220,7 @@ main(int argc, char *argv[])
 	if (flush_resp_size > MSG_SIZE_MAX) {
 		fprintf(stderr,
 				"Size of the packed flush response is bigger than the available space of the send buffer (%"
-				PRIu64 " > %u\n", flush_resp_size,
-				MSG_SIZE_MAX);
+				PRIu64 " > %u\n", flush_resp_size, MSG_SIZE_MAX);
 		goto err_conn_delete;
 	}
 	(void) gpspm_flush_response__pack(&flush_resp, send_ptr);
@@ -240,8 +236,7 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/*
-	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
-	 * structure.
+	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
 	ret = common_wait_for_conn_close_and_disconnect(&conn);
 	if (ret)

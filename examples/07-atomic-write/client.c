@@ -72,8 +72,8 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/*
-	 * Create a remote peer's configuration structure, enable persistent
-	 * flush support, and apply it to the current connection. (unilaterally)
+	 * Create a remote peer's configuration structure, enable persistent flush support
+	 * and apply it to the current connection. (unilaterally)
 	 */
 	if ((ret = rpma_peer_cfg_new(&pcfg)))
 		goto err_conn_disconnect;
@@ -84,8 +84,7 @@ main(int argc, char *argv[])
 
 	/* register the memory for the remote log manipulation */
 	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST,
-			&local_mr)))
+			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST, &local_mr)))
 		goto err_peer_cfg_delete;
 
 	/* obtain the remote memory description */
@@ -95,13 +94,12 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Create a remote memory registration structure from the received
-	 * descriptor.
+	 * Create a remote memory registration structure from the received descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
 	dst_used_offset = dst_data->data_offset;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &remote_mr);
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&remote_mr);
 	if (ret)
 		goto err_mr_dereg;
 
@@ -110,9 +108,8 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* read the used value */
-	if ((ret = rpma_read(conn, local_mr, 0,
-			remote_mr, dst_used_offset,
-			sizeof(uint64_t), RPMA_F_COMPLETION_ALWAYS, NULL)))
+	if ((ret = rpma_read(conn, local_mr, 0, remote_mr, dst_used_offset, sizeof(uint64_t),
+			RPMA_F_COMPLETION_ALWAYS, NULL)))
 		goto err_mr_remote_delete;
 
 	/* get the connection's main CQ */
@@ -128,8 +125,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	if (wc.status != IBV_WC_SUCCESS) {
-		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_read() failed: %s\n", ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_mr_remote_delete;
 	}
@@ -163,25 +159,22 @@ main(int argc, char *argv[])
 		word[MAX_WORD_LENGTH] = 0;
 		size_t word_size = strlen(word) + 1;
 
-		if ((ret = rpma_write(conn, remote_mr, used.uint64,
-				local_mr, 0, word_size,
+		if ((ret = rpma_write(conn, remote_mr, used.uint64, local_mr, 0, word_size,
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, used.uint64,
-				word_size, flush_type,
+		if ((ret = rpma_flush(conn, remote_mr, used.uint64, word_size, flush_type,
 				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
 		used.uint64 += word_size;
 
-		if ((ret = rpma_atomic_write(conn, remote_mr, dst_used_offset,
-				used.buf, RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		if ((ret = rpma_atomic_write(conn, remote_mr, dst_used_offset, used.buf,
+				RPMA_F_COMPLETION_ON_ERROR, NULL)))
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, dst_used_offset,
-				sizeof(uint64_t), flush_type,
-				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
+		if ((ret = rpma_flush(conn, remote_mr, dst_used_offset, sizeof(uint64_t),
+				flush_type, RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
 			break;
 
 		/* wait for the completion to be ready */
@@ -192,8 +185,7 @@ main(int argc, char *argv[])
 			break;
 
 		if (wc.wr_id != (uintptr_t)FLUSH_ID) {
-			(void) fprintf(stderr,
-				"unexpected wc.wr_id value "
+			(void) fprintf(stderr, "unexpected wc.wr_id value "
 				"(0x%" PRIXPTR " != 0x%" PRIXPTR ")\n",
 				wc.wr_id, (uintptr_t)FLUSH_ID);
 			ret = -1;

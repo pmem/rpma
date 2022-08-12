@@ -44,8 +44,7 @@ main(int argc, char *argv[])
 
 	if (imm > UINT32_MAX) {
 		fprintf(stderr,
-			"The provided immediate data is too big (%lu > %u)\n",
-			imm, UINT32_MAX);
+			"The provided immediate data is too big (%lu > %u)\n", imm, UINT32_MAX);
 		return -1;
 	}
 
@@ -78,15 +77,14 @@ main(int argc, char *argv[])
 
 	if (word) {
 		/* register the memory */
-		ret = rpma_mr_reg(peer, send, KILOBYTE,
-				RPMA_MR_USAGE_SEND, &send_mr);
+		ret = rpma_mr_reg(peer, send, KILOBYTE, RPMA_MR_USAGE_SEND, &send_mr);
 		if (ret)
 			goto err_peer_delete;
 	}
 
 	/*
-	 * establish a new connection to a server and send an immediate
-	 * data for validation on the sever side
+	 * establish a new connection to a server and send an immediate data for validation
+	 * on the server side
 	 */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = (uint32_t *)&imm;
@@ -97,16 +95,16 @@ main(int argc, char *argv[])
 
 	if (word) {
 		/* send a message with immediate data to the server */
-		fprintf(stdout, "Sending value '%s' with immediate data '%u'\n",
-			word, (uint32_t)imm);
+		fprintf(stdout, "Sending value '%s' with immediate data '%u'\n", word,
+			(uint32_t)imm);
 		strncpy(send, word, KILOBYTE - 1);
 	} else {
 		/* send a 0B message with immediate data to the server */
 		fprintf(stdout, "Sending immediate data '%u'\n", (uint32_t)imm);
 	}
 
-	ret = rpma_send_with_imm(conn, send_mr, 0, len,
-			RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm, NULL);
+	ret = rpma_send_with_imm(conn, send_mr, 0, len, RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm,
+			NULL);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -126,17 +124,15 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 
 	if (wc.status != IBV_WC_SUCCESS) {
-		fprintf(stderr,
-			"Received unexpected completion: %s\n",
+		fprintf(stderr, "Received unexpected completion: %s\n",
 			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (wc.opcode != IBV_WC_SEND) {
-		fprintf(stderr,
-			"Received unexpected type of operation (%d != %d)\n",
-			wc.opcode, IBV_WC_SEND);
+		fprintf(stderr, "Received unexpected type of operation (%d != %d)\n", wc.opcode,
+			IBV_WC_SEND);
 		ret = -1;
 	}
 

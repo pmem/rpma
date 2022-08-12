@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * server.c -- a server of the read-to-volatile example
@@ -31,8 +31,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <server_address> <port>\n",
-				argv[0]);
+		fprintf(stderr, "usage: %s <server_address> <port>\n", argv[0]);
 		exit(-1);
 	}
 
@@ -101,21 +100,19 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(struct common_data);
 
 	/*
-	 * Wait for an incoming connection request, accept it and wait for its
-	 * establishment.
+	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
 	ret = server_accept_connection(ep, NULL, &pdata, &conn);
 	if (ret)
 		goto err_mr_dereg;
 
 	/*
-	 * Between the connection being established and the connection being
-	 * closed the client will perform the RDMA read.
+	 * Between the connection being established and the connection being closed
+	 * the client will perform the RDMA read.
 	 */
 
 	/*
-	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
-	 * structure.
+	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
 	(void) common_wait_for_conn_close_and_disconnect(&conn);
 
