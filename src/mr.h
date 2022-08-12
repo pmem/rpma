@@ -25,10 +25,9 @@
  *
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_mr_read(struct ibv_qp *qp,
-	struct rpma_mr_local *dst, size_t dst_offset,
-	const struct rpma_mr_remote *src, size_t src_offset,
-	size_t len, int flags, const void *op_context);
+int rpma_mr_read(struct ibv_qp *qp, struct rpma_mr_local *dst, size_t dst_offset,
+	const struct rpma_mr_remote *src, size_t src_offset, size_t len, int flags,
+	const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -43,11 +42,9 @@ int rpma_mr_read(struct ibv_qp *qp,
  * - RPMA_E_NOSUPP   - unsupported 'operation' argument
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_mr_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
-	const struct rpma_mr_local *src, size_t src_offset,
-	size_t len, int flags, enum ibv_wr_opcode operation,
-	uint32_t imm, const void *op_context);
+int rpma_mr_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_offset,
+	const struct rpma_mr_local *src, size_t src_offset, size_t len, int flags,
+	enum ibv_wr_opcode operation, uint32_t imm, const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -58,8 +55,7 @@ int rpma_mr_write(struct ibv_qp *qp,
  *
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_mr_atomic_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
+int rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_offset,
 	const char src[8], int flags, const void *op_context);
 
 /*
@@ -73,10 +69,8 @@ int rpma_mr_atomic_write(struct ibv_qp *qp,
  * - RPMA_E_NOSUPP   - unsupported 'operation' argument
  * - RPMA_E_PROVIDER - ibv_post_send(3) failed
  */
-int rpma_mr_send(struct ibv_qp *qp,
-	const struct rpma_mr_local *src, size_t offset,
-	size_t len, int flags, enum ibv_wr_opcode operation,
-	uint32_t imm, const void *op_context);
+int rpma_mr_send(struct ibv_qp *qp, const struct rpma_mr_local *src, size_t offset, size_t len,
+	int flags, enum ibv_wr_opcode operation, uint32_t imm, const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -88,9 +82,8 @@ int rpma_mr_send(struct ibv_qp *qp,
  *
  * - RPMA_E_PROVIDER - ibv_post_recv(3) failed
  */
-int rpma_mr_recv(struct ibv_qp *qp,
-	struct rpma_mr_local *dst, size_t offset,
-	size_t len, const void *op_context);
+int rpma_mr_recv(struct ibv_qp *qp, struct rpma_mr_local *dst, size_t offset, size_t len,
+	const void *op_context);
 
 /*
  * ASSUMPTIONS
@@ -102,7 +95,7 @@ int rpma_mr_recv(struct ibv_qp *qp,
  *
  * - RPMA_E_PROVIDER - ibv_post_srq_recv(3) failed
  */
-int rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offset,
-	size_t len, const void *op_context);
+int rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offset, size_t len,
+	const void *op_context);
 
 #endif /* LIBRPMA_MR_H */

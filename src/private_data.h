@@ -25,8 +25,7 @@
  *
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_private_data_store(struct rdma_cm_event *edata,
-		struct rpma_conn_private_data *pdata);
+int rpma_private_data_store(struct rdma_cm_event *edata, struct rpma_conn_private_data *pdata);
 
 /*
  * ASSUMPTIONS
