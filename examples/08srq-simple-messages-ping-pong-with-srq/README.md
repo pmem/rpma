@@ -15,8 +15,12 @@ message and waits for disconnection.
 ## Usage
 
 ```bash
-[user@server]$ ./server $server_address $port
+[user@server]$ ./server $server_address $port $separate_receive_CQ
 ```
+**Note** The following values of separate_receive_CQ are available:
+- 0 - got receive completions by the main CQ of rpma_conn object
+- 1 - got receive completions by the separate receive CQ of rpma_conn object
+- 2 - got receive completions by the separate receive CQ of rpma_srq object
 
 ```bash
 [user@client]$ ./client $server_address $port $seed $rounds [$sleep]

@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2018-2022, Intel Corporation
-# Copyright 2021-2022, Fujitsu
+# Copyright (c) 2021-2022 Fujitsu Limited
 #
 
 add_flag(-Wall)
@@ -146,7 +146,7 @@ add_example(NAME 08-messages-ping-pong BIN server
 add_example(NAME 08-messages-ping-pong BIN client
 	SRCS 08-messages-ping-pong/client.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 08srq-simple-messages-ping-pong-with-srq BIN server
-	SRCS 08srq-simple-messages-ping-pong-with-srq/server.c common/common-messages-ping-pong.c)
+	SRCS 08srq-simple-messages-ping-pong-with-srq/server.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 08srq-simple-messages-ping-pong-with-srq BIN client
 	SRCS 08srq-simple-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC

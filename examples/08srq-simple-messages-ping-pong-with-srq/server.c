@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2022, Intel Corporation */
+/* Copyright (c) 2022 Fujitsu Limited */
 
 /*
  * server.c -- a server of the simple-messages-ping-pong-with-srq example
@@ -12,19 +13,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/epoll.h>
 
 #include "common-conn.h"
 #include "common-messages-ping-pong.h"
-#include "common-epoll.h"
+#include "common-utils.h"
 
-#define USAGE_STR "usage: %s <server_address> <port>\n"
+#define USAGE_STR	"usage: %s <server_address> <port> <separate_receive_CQ>\n"
+#define RCQ_SIZE	10
 
 int
 main(int argc, char *argv[])
 {
 	/* validate parameters */
-	if (argc < 3) {
+	if (argc < 4) {
 		fprintf(stderr, USAGE_STR, argv[0]);
 		exit(-1);
 	}
@@ -37,6 +38,15 @@ main(int argc, char *argv[])
 	char *addr = argv[1];
 	char *port = argv[2];
 	int ret;
+
+	/* validate the separate_receive_CQ parameter */
+	uint64_t separate_receive_CQ = strtoul_noerror(argv[3]);
+	if (separate_receive_CQ < 0 || separate_receive_CQ > 2) {
+		(void) fprintf(stderr,
+				"<separate_receive_CQ> should be one of 0, 1 and 2 (%s given)\n",
+				argv[3]);
+		return -1;
+	}
 
 	/* prepare memory */
 	struct rpma_mr_local *recv_mr, *send_mr;
@@ -53,8 +63,9 @@ main(int argc, char *argv[])
 	/* RPMA resources */
 	struct rpma_peer *peer = NULL;
 	struct rpma_srq *srq = NULL;
+	struct rpma_srq_cfg *srq_cfg = NULL;
 	struct rpma_conn *conn = NULL;
-	struct rpma_conn_cfg *cfg = NULL;
+	struct rpma_conn_cfg *conn_cfg = NULL;
 	struct rpma_ep *ep = NULL;
 	struct rpma_cq *rcq = NULL;
 	int num_got = 0;
@@ -67,16 +78,29 @@ main(int argc, char *argv[])
 	if ((ret = server_peer_via_address(addr, &peer)))
 		goto err_free_send;
 
-	/* create a shared RQ object */
-	if ((ret = rpma_srq_new(peer, NULL, &srq)))
+	if ((ret = rpma_srq_cfg_new(&srq_cfg)))
 		goto err_peer_delete;
 
+	if (separate_receive_CQ != 2) {
+		if ((ret = rpma_srq_cfg_set_rcq_size(srq_cfg, 0)))
+			goto err_srq_cfg_delete;
+	}
+
+	/* create a shared RQ object */
+	if ((ret = rpma_srq_new(peer, srq_cfg, &srq)))
+		goto err_srq_cfg_delete;
+
 	/* create a new connection configuration */
-	if ((ret = rpma_conn_cfg_new(&cfg)))
+	if ((ret = rpma_conn_cfg_new(&conn_cfg)))
 		goto err_srq_delete;
 
+	if (separate_receive_CQ == 1) {
+		if ((ret = rpma_conn_cfg_set_rcq_size(conn_cfg, RCQ_SIZE)))
+			goto err_conn_cfg_delete;
+	}
+
 	/* set the shared RQ object for the connection configuration */
-	if ((ret = rpma_conn_cfg_set_srq(cfg, srq)))
+	if ((ret = rpma_conn_cfg_set_srq(conn_cfg, srq)))
 		goto err_conn_cfg_delete;
 
 	/* start a listening endpoint at addr:port */
@@ -100,15 +124,28 @@ main(int argc, char *argv[])
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
-	if ((ret = server_accept_connection(ep, cfg, NULL, &conn)))
+	if ((ret = server_accept_connection(ep, conn_cfg, NULL, &conn)))
 		goto err_conn_disconnect;
 
 	/* get the qp_num of the connection */
 	if ((ret = rpma_conn_get_qp_num(conn, &qp_num)))
 		goto err_conn_disconnect;
 
-	/* get the receive CQ of the rpma_srq object */
-	if ((ret = rpma_srq_get_rcq(srq, &rcq)))
+	switch (separate_receive_CQ) {
+		case 0:
+			/* get the main CQ of the rpma_conn object */
+			ret = rpma_conn_get_cq(conn, &rcq);
+			break;
+		case 1:
+			/* get the separate receive CQ of the rpma_conn object */
+			ret = rpma_conn_get_rcq(conn, &rcq);
+			break;
+		default:
+			/* get the separate receive CQ of the rpma_srq object */
+			ret = rpma_srq_get_rcq(srq, &rcq);
+	}
+
+	if (ret)
 		goto err_conn_disconnect;
 
 	int recv_cmpl = 0;
@@ -184,10 +221,13 @@ err_ep_shutdown:
 	ret |= rpma_ep_shutdown(&ep);
 
 err_conn_cfg_delete:
-	ret |= rpma_conn_cfg_delete(&cfg);
+	ret |= rpma_conn_cfg_delete(&conn_cfg);
 
 err_srq_delete:
 	ret |= rpma_srq_delete(&srq);
+
+err_srq_cfg_delete:
+	ret |= rpma_srq_cfg_delete(&srq_cfg);
 
 err_peer_delete:
 	/* delete the peer object */

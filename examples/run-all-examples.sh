@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
-# Copyright 2022, Fujitsu
+# Copyright (c) 2022 Fujitsu Limited
 
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
@@ -256,15 +256,23 @@ function run_example() {
 	# The `else` branch is needed here, because in case of integration tests
 	# all examples are run twice: once with the fault injection in the server
 	# and once with the fault injection in the client.
-	if [ "$EXAMPLE" == "13-messages-ping-pong-with-srq" ]; then
+	case $EXAMPLE in
+	08srq-simple-messages-ping-pong-with-srq)
+		# timeout value for both the server and the client
+		TIMEOUT=3s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT 0
+		;;
+	13-messages-ping-pong-with-srq)
 		# timeout value for both the server and the client
 		TIMEOUT=6s
 		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT 3
-	else
+		;;
+	*)
 		# timeout value for both the server and the client
 		TIMEOUT=3s
 		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
-	fi
+		;;
+	esac
 
 	sleep 1
 
