@@ -18,6 +18,9 @@
 /* the expected completion channel state */
 #define RPMA_CONN_CFG_COMMON_IS_SHARED true
 
+/* the expected SRQ object */
+#define RPMA_SRQ_EXP (struct rpma_srq *)0xCD12
+
 struct rpma_conn_cfg_common_prestate {
 	struct rpma_conn_cfg *cfg_ptr;
 };

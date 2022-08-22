@@ -56,6 +56,11 @@ rpma_conn_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
+
+	if ((ret = rpma_conn_cfg_set_srq(pr->cfg_ptr, RPMA_SRQ_EXP))) {
+		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_srq", ret);
+		return;
+	}
 }
 
 /*
