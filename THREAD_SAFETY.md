@@ -66,6 +66,7 @@ The following API calls of the librpma library are thread-safe:
 - rpma_recv
 - rpma_send
 - rpma_send_with_imm
+- rpma_srq_get_rcq
 - rpma_write
 - rpma_write_with_imm
 - rpma_cq_get_fd
@@ -121,6 +122,8 @@ The following API calls of the librpma library are NOT thread-safe:
 - rpma_ep_shutdown
 - rpma_mr_reg
 - rpma_mr_dereg
+- rpma_srq_delete
+- rpma_srq_new
 - rpma_utils_get_ibv_context
 
 ### rpma_log_default_function()
