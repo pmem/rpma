@@ -144,9 +144,8 @@ err_srq_delete:
  * - cfg != NULL
  */
 int
-rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
-		struct rpma_cq *cq, struct rpma_cq *rcq,
-		const struct rpma_conn_cfg *cfg)
+rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq *cq,
+		struct rpma_cq *rcq, const struct rpma_conn_cfg *cfg)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -224,16 +223,15 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id,
  * rpma_peer_setup_mr_reg -- register a memory region using ibv_reg_mr()
  */
 int
-rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr,
-		void *addr, size_t length, int usage)
+rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr, void *addr,
+		size_t length, int usage)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 
 	int access = rpma_peer_usage2access(peer, usage);
 
-	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length,
-					RPMA_IBV_ACCESS(access));
+	*ibv_mr_ptr = ibv_reg_mr(peer->pd, addr, length, RPMA_IBV_ACCESS(access));
 	if (*ibv_mr_ptr != NULL)
 		return 0;
 
@@ -342,8 +340,8 @@ err_dealloc_pd:
 }
 
 /*
- * rpma_peer_delete -- attempt deallocating the peer-encapsulated verbs
- * protection domain; if succeeded delete the peer
+ * rpma_peer_delete -- attempt deallocating the peer-encapsulated verbs protection domain;
+ * if succeeded delete the peer
  */
 int
 rpma_peer_delete(struct rpma_peer **peer_ptr)
