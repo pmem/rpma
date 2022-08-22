@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
  * srq_cfg.c -- librpma shared-RQ-configuration-related implementations
@@ -103,7 +104,6 @@ int
 rpma_srq_cfg_delete(struct rpma_srq_cfg **cfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	if (cfg_ptr == NULL)
 		return RPMA_E_INVAL;
@@ -114,6 +114,7 @@ rpma_srq_cfg_delete(struct rpma_srq_cfg **cfg_ptr)
 	free(*cfg_ptr);
 	*cfg_ptr = NULL;
 
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return 0;
 }
 
