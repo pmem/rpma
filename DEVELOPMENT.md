@@ -179,7 +179,7 @@ to print out also the output of the failed tests.
 In order to run **only** the multi-threaded tests, run the following command:
 
 ```sh
-[rpma/build]$ ctest -R multithreaded --output-on-failure
+[rpma/build]$ ctest -R mtt --output-on-failure
 ```
 
 ### Running integration tests
