@@ -39,8 +39,7 @@ int rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpm
 
 /*
  * ASSUMPTIONS
- * - peer != NULL && ibv_mr_ptr != NULL && addr != NULL && length > 0 &&
- *   && peer->pd != NULL
+ * - peer != NULL && ibv_mr_ptr != NULL && addr != NULL && length > 0 && && peer->pd != NULL
  *
  * ERRORS
  * rpma_peer_setup_mr_reg() can fail with the following error:

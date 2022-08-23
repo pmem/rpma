@@ -15,8 +15,7 @@
 /*
  * ASSUMPTIONS
  * - edata != NULL
- * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
- *     edata->event == RDMA_CM_EVENT_ESTABLISHED
+ * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST || edata->event == RDMA_CM_EVENT_ESTABLISHED
  * - pdata != NULL
  * - pdata == {NULL, 0}
  *

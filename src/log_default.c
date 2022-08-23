@@ -82,10 +82,9 @@ err_message:
  * rpma_log_default_function -- default logging function used to log a message
  * to syslog and/or stderr
  *
- * The message is started with prefix composed from file, line, func parameters
- * followed by string pointed by format. If format includes format specifiers
- * (subsequences beginning with %), the additional arguments following format
- * are formatted and inserted in the message.
+ * The message is started with prefix composed from file, line, func parameters followed by string
+ * pointed by format. If format includes format specifiers (subsequences beginning with %),
+ * the additional arguments following format are formatted and inserted in the message.
  *
  * ASSUMPTIONS:
  * - level >= RPMA_LOG_LEVEL_FATAL && level <= RPMA_LOG_LEVEL_DEBUG
@@ -93,9 +92,8 @@ err_message:
  * - file == NULL || (file != NULL && function != NULL)
  */
 void
-rpma_log_default_function(enum rpma_log_level level, const char *file_name,
-	const int line_no, const char *function_name,
-	const char *message_format, ...)
+rpma_log_default_function(enum rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...)
 {
 	char file_info_buffer[256] = "";
 	const char *file_info = file_info_buffer;

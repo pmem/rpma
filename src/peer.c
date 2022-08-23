@@ -69,8 +69,7 @@ rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 
 	if (usage & RPMA_MR_USAGE_WRITE_DST)
 		/*
-		 * If IBV_ACCESS_REMOTE_WRITE is set, then
-		 * IBV_ACCESS_LOCAL_WRITE must be set too.
+		 * If IBV_ACCESS_REMOTE_WRITE is set, then IBV_ACCESS_LOCAL_WRITE must be set too.
 		 */
 		access |= IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE;
 
@@ -181,15 +180,14 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 	 */
 	qp_init_attr.qp_type = IBV_QPT_RC;
 	/*
-	 * Every Work Request has to decide whether to generate CQ entry for its
-	 * successful completion. Please see IBV_SEND_SIGNALED in
-	 * ibv_post_send(3).
+	 * Every Work Request has to decide whether to generate CQ entry for its successful
+	 * completion. Please see IBV_SEND_SIGNALED in ibv_post_send(3).
 	 */
 	qp_init_attr.sq_sig_all = 0;
 
 	/*
-	 * The actual capabilities and properties of the created QP
-	 * are returned through qp_init_attr.
+	 * The actual capabilities and properties of the created QP are returned through
+	 * qp_init_attr.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
@@ -295,11 +293,10 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 		return ret;
 
 	/*
-	 * The ibv_alloc_pd(3) manual page does not document that this function
-	 * returns any error via errno but seemingly it is. For the usability
-	 * sake, we try to deduce what really happened using the errno value.
-	 * To make sure the errno value was set by the ibv_alloc_pd(3) function
-	 * it is zeroed out before the function call.
+	 * The ibv_alloc_pd(3) manual page does not document that this function returns any error
+	 * via errno but seemingly it is. For the usability sake, we try to deduce what really
+	 * happened using the errno value. To make sure the errno value was set
+	 * by the ibv_alloc_pd(3) function it is zeroed out before the function call.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_NOMEM,
 	{

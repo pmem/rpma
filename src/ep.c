@@ -159,9 +159,8 @@ rpma_ep_get_fd(const struct rpma_ep *ep, int *fd)
 
 /*
  * rpma_ep_next_conn_req -- get the next event in the hope it will be
- * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation
- * of a connection request object based on the obtained request.
- * If succeeds it returns a newly created object.
+ * an RDMA_CM_EVENT_CONNECT_REQUEST. If so it orders the creation of a connection request object
+ * based on the obtained request. If succeeds it returns a newly created object.
  */
 int
 rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
