@@ -15,8 +15,12 @@ message and waits for disconnection.
 ## Usage
 
 ```bash
-[user@server]$ ./server $server_address $port
+[user@server]$ ./server $server_address $port [m|r]
 ```
+**Note** The third parameter can be one of the following values:
+- unspecified - get receive completions by the receive CQ of the shared RQ
+- m - get receive completions by the main CQ of the connection
+- r - get receive completions by the separate receive CQ of the connection
 
 ```bash
 [user@client]$ ./client $server_address $port $seed $rounds [$sleep]
