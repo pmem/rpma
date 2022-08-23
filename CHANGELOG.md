@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CMAKE_BUILD_TYPE from Debug to Release
   - TESTS_PERF_TOOLS - from ON to OFF
 
- - the new line length is 100 characters
+ - all examples and internal API files now comply with the new character limit per line (100 characters)
 
 ### Fixed
 - APIs:
