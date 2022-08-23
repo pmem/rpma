@@ -32,8 +32,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_atomic\_write() initiates the atomic 8 bytes write operation**
-(transferring data from the local memory to the remote memory). The
+**rpma\_atomic\_write() initiates the atomic 8 bytes write operation
+(transferring data from** the local memory to the remote memory). The
 atomic write operation allows transferring exactly 8 bytes of data and
 storing them atomically in the remote memory.
 
@@ -50,8 +50,8 @@ ibv\_wc).
 RETURN VALUE
 ============
 
-The **rpma\_atomic\_write() function returns 0 on success or a
-negative** error code on failure.
+The **rpma\_atomic\_write() function returns 0 on success or a negative
+error code on failure.**
 
 ERRORS
 ======
@@ -69,6 +69,6 @@ ERRORS
 SEE ALSO
 ========
 
-**rpma\_conn\_req\_connect(3), rpma\_mr\_reg(3),**
-**rpma\_mr\_remote\_from\_descriptor(3), librpma(7) and
-https://pmem.io/rpma/**
+**rpma\_conn\_req\_connect(3), rpma\_mr\_reg(3),
+rpma\_mr\_remote\_from\_descriptor(3), librpma(7) and**
+https://pmem.io/rpma/

@@ -81,12 +81,12 @@ DIRECT WRITE TO PMEM
 configuration which allows an RDMA-capable network interface to write
 data to platform\'s PMem in a persistent way. It may be impossible
 because of e.g. caching mechanisms existing on the data\'s way. When
-**Direct Write** to PMem is impossible, operating in the way assuming it
+**Direct Write to PMem** is impossible, operating in the way assuming it
 is possible may corrupt data on PMem, so this is why **Direct Write to
 PMem** is not enabled by default.
 
 On the current Intel platforms, the only thing you have to do in order
-to enable **Direct Write to PMem** is turning off Intel Direct Data I/O
+to enable **Direct** Write to PMem is turning off Intel Direct Data I/O
 (DDIO). Sometimes, you can turn off DDIO either globally for the whole
 platform or for a specific PCIe Root Port. For details, please see the
 manual of your platform.
@@ -99,7 +99,7 @@ platform\'s PMem and applied to the connection object which safeguards
 access to PMem.
 
 -   **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() - declare
-    **Direct Write** to PMem support
+    **Direct Write to PMem** support
 
 -   **rpma\_peer\_cfg\_get\_descriptor**() - get the descriptor of the
     peer configuration
@@ -402,7 +402,7 @@ validity of the mappings). On-Demand Paging is available if both the
 hardware and the kernel support it. The detailed description of ODP can
 be found here:
 
-            https://community.mellanox.com/s/article/understanding-on-demand-paging--odp-x
+         https://community.mellanox.com/s/article/understanding-on-demand-paging--odp-x
 
 State of ODP support can be checked using the
 **rpma\_utils\_ibv\_context\_is\_odp\_capable**() function that queries

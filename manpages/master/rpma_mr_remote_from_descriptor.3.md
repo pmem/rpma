@@ -25,8 +25,8 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_mr_remote;
-          int rpma_mr_remote_from_descriptor(const void *desc,
-                          size_t desc_size, struct rpma_mr_remote **mr_ptr);
+          int rpma_mr_remote_from_descriptor(const void *desc, size_t desc_size,
+                          struct rpma_mr_remote **mr_ptr);
 
 DESCRIPTION
 ===========

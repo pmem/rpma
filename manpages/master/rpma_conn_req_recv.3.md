@@ -25,8 +25,7 @@ SYNOPSIS
 
           struct rpma_conn_req;
           struct rpma_mr_local;
-          int rpma_conn_req_recv(struct rpma_conn_req *req,
-                          struct rpma_mr_local *dst, size_t offset,
+          int rpma_conn_req_recv(struct rpma_conn_req *req, struct rpma_mr_local *dst, size_t offset,
                           size_t len, const void *op_context);
 
 DESCRIPTION

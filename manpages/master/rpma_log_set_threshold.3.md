@@ -23,8 +23,7 @@ SYNOPSIS
 
           #include <librpma.h>
 
-          int rpma_log_set_threshold(enum rpma_log_threshold threshold,
-                          enum rpma_log_level level);
+          int rpma_log_set_threshold(enum rpma_log_threshold threshold, enum rpma_log_level level);
 
           enum rpma_log_level {
                   RPMA_LOG_DISABLED,
