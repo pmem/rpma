@@ -18,8 +18,7 @@
  * rpma_utils_get_ibv_context -- obtain an RDMA device context by IP address
  */
 int
-rpma_utils_get_ibv_context(const char *addr,
-		enum rpma_util_ibv_context_type type,
+rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type type,
 		struct ibv_context **ibv_ctx_ptr)
 {
 	RPMA_DEBUG_TRACE;
@@ -77,12 +76,11 @@ err_info_delete:
 }
 
 /*
- * rpma_utils_ibv_context_is_odp_capable -- query the extended device context's
- * capabilities and check if it supports On-Demand Paging
+ * rpma_utils_ibv_context_is_odp_capable -- query the extended device context's capabilities and
+ * check if it supports On-Demand Paging
  */
 int
-rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
-		int *is_odp_capable)
+rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx, int *is_odp_capable)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
@@ -97,14 +95,12 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 	struct ibv_device_attr_ex attr = {{{0}}};
 	errno = ibv_query_device_ex(ibv_ctx, NULL /* input */, &attr);
 	if (errno) {
-		RPMA_LOG_ERROR_WITH_ERRNO(errno,
-			"ibv_query_device_ex(attr={0})");
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_query_device_ex(attr={0})");
 		return RPMA_E_PROVIDER;
 	}
 
 	/*
-	 * Check whether On-Demand Paging is supported for all required types
-	 * of operations.
+	 * Check whether On-Demand Paging is supported for all required types of operations.
 	 */
 	struct ibv_odp_caps *odp_caps = &attr.odp_caps;
 	if (odp_caps->general_caps & IBV_ODP_SUPPORT) {
@@ -120,8 +116,7 @@ rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
 }
 
 /*
- * rpma_utils_conn_event_2str -- return const string representation of
- * RPMA_CONN_* enums
+ * rpma_utils_conn_event_2str -- return const string representation of RPMA_CONN_* enums
  */
 const char *
 rpma_utils_conn_event_2str(enum rpma_conn_event conn_event)

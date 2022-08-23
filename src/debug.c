@@ -11,8 +11,8 @@
 
 #ifdef DEBUG_FAULT_INJECTION
 /*
- * rpma_fault_injection -- fail when counter reaches the value
- * defined by the RPMA_FAULT_INJECTION environment variable
+ * rpma_fault_injection -- fail when counter reaches the value defined by the RPMA_FAULT_INJECTION
+ * environment variable
  */
 int
 rpma_fault_injection(int *value)

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * info.h -- librpma info-related internal definitions
@@ -26,8 +26,8 @@ struct rpma_info;
  * - RPMA_E_PROVIDER - address translation failed with error
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_info_new(const char *addr, const char *port,
-		enum rpma_info_side side, struct rpma_info **info_ptr);
+int rpma_info_new(const char *addr, const char *port, enum rpma_info_side side,
+		struct rpma_info **info_ptr);
 
 /*
  * ERRORS
@@ -49,8 +49,7 @@ int rpma_info_delete(struct rpma_info **info_ptr);
  * - RPMA_E_INVAL - id or info is NULL
  * - RPMA_E_PROVIDER - resolving the destination address failed
  */
-int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id,
-		int timeout_ms);
+int rpma_info_resolve_addr(const struct rpma_info *info, struct rdma_cm_id *id, int timeout_ms);
 
 /*
  * rpma_info_bind_addr -- bind the CM ID to the local address

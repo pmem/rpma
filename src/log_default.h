@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * log_default.h -- the default logging function definitions
@@ -10,9 +10,8 @@
 
 #include "librpma.h"
 
-void rpma_log_default_function(enum rpma_log_level level, const char *file_name,
-	const int line_no, const char *function_name,
-	const char *message_format, ...);
+void rpma_log_default_function(enum rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...);
 
 void rpma_log_default_init(void);
 
