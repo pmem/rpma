@@ -68,10 +68,10 @@ extern "C" {
  * \f[B]Direct Write to PMem\f[R] is impossible, operating in the way assuming it is possible may
  * corrupt data on PMem, so this is why \f[B]Direct Write to PMem\f[R] is not enabled by default.
  *
- * On the current Intel platforms, the only thing you have to do in order to enable \f[B]Direct
- * Write to PMem\f[R] is turning off Intel Direct Data I/O (DDIO). Sometimes, you can turn off DDIO
- * either globally for the whole platform or for a specific PCIe Root Port. For details, please see
- * the manual of your platform.
+ * On the current Intel platforms, the only thing you have to do in order to enable
+ * \f[B]Direct Write to PMem\f[R] is turning off Intel Direct Data I/O (DDIO). Sometimes, you can
+ * turn off DDIO either globally for the whole platform or for a specific PCIe Root Port.
+ * For details, please see the manual of your platform.
  *
  * When you have a platform which allows \f[B]Direct Write to PMem\f[R], you have to declare this
  * is the case in your peer's configuration. The peer's configuration has to be transferred to all
