@@ -26,8 +26,7 @@ SYNOPSIS
           struct rpma_ep;
           struct rpma_conn_cfg;
           struct rpma_conn_req;
-          int rpma_ep_next_conn_req(struct rpma_ep *ep,
-                          const struct rpma_conn_cfg *cfg,
+          int rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
                           struct rpma_conn_req **req_ptr);
 
 DESCRIPTION

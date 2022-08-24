@@ -27,9 +27,8 @@ SYNOPSIS
           struct rpma_peer;
           struct rpma_conn_cfg;
           struct rpma_conn_req;
-          int rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-                          const char *port, const struct rpma_conn_cfg *cfg,
-                          struct rpma_conn_req **req_ptr);
+          int rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
+                          const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr);
 
 DESCRIPTION
 ===========

@@ -26,8 +26,8 @@ SYNOPSIS
           struct rpma_cq;
           struct ibv_wc;
 
-          int rpma_cq_get_wc(struct rpma_cq *cq, int num_entries,
-                          struct ibv_wc *wc, int *num_entries_got);
+          int rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
+                          int *num_entries_got);
 
 DESCRIPTION
 ===========

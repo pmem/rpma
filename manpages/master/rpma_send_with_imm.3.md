@@ -26,9 +26,8 @@ SYNOPSIS
 
           struct rpma_conn;
           struct rpma_mr_local;
-          int rpma_send_with_imm(struct rpma_conn *conn,
-                          const struct rpma_mr_local *src, size_t offset,
-                          size_t len, int flags, uint32_t imm,
+          int rpma_send_with_imm(struct rpma_conn *conn, const struct rpma_mr_local *src,
+                          size_t offset, size_t len, int flags, uint32_t imm,
                           const void *op_context);
 
 DESCRIPTION

@@ -25,8 +25,7 @@ SYNOPSIS
 
           struct rpma_conn;
           struct rpma_cq;
-          int rpma_conn_get_cq(const struct rpma_conn *conn,
-                          struct rpma_cq **cq_ptr);
+          int rpma_conn_get_cq(const struct rpma_conn *conn, struct rpma_cq **cq_ptr);
 
 DESCRIPTION
 ===========

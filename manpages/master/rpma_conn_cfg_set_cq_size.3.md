@@ -24,8 +24,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn_cfg;
-          int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg,
-                          uint32_t cq_size);
+          int rpma_conn_cfg_set_cq_size(struct rpma_conn_cfg *cfg, uint32_t cq_size);
 
 DESCRIPTION
 ===========
