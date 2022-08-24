@@ -42,14 +42,9 @@ endfunction()
 
 function(find_packages)
 	pkg_check_modules(CMOCKA REQUIRED cmocka)
-	pkg_check_modules(LIBUNWIND QUIET libunwind)
 
 	if(NOT CMOCKA_FOUND)
 		message(FATAL_ERROR "Cmocka not found. Cmocka is required to run tests.")
-	endif()
-
-	if(NOT LIBUNWIND_FOUND)
-		message(WARNING "libunwind-dev/devel not found. Stack traces from tests will not be reliable")
 	endif()
 endfunction()
 
@@ -69,11 +64,8 @@ function(build_test_lib name)
 	prepend(srcs ${CMAKE_CURRENT_SOURCE_DIR} ${srcs})
 
 	add_executable(${name} ${srcs})
-	target_link_libraries(${name} rpma cmocka test_backtrace)
+	target_link_libraries(${name} rpma cmocka)
 	target_include_directories(${name} PRIVATE ${LIBRPMA_INCLUDE_DIRS})
-	if(LIBUNWIND_FOUND)
-		target_link_libraries(${name} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
-	endif()
 
 	add_dependencies(tests ${name})
 endfunction()
@@ -97,10 +89,7 @@ function(build_test_src)
 			${TEST_UNIT_COMMON_DIR})
 	endif()
 	# do not link with the rpma library
-	target_link_libraries(${TEST_NAME} cmocka test_backtrace)
-	if(LIBUNWIND_FOUND)
-		target_link_libraries(${TEST_NAME} ${LIBUNWIND_LIBRARIES} ${CMAKE_DL_LIBS})
-	endif()
+	target_link_libraries(${TEST_NAME} cmocka)
 
 	add_dependencies(tests ${TEST_NAME})
 endfunction()

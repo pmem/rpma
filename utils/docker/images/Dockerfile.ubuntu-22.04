@@ -43,7 +43,6 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libibverbs-dev \
 	librdmacm-dev \
-	libunwind-dev \
 	pandoc"
 
 # examples deps ('libprotobuf-c-dev' is required only for examples 9 and 9s)

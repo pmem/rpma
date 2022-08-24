@@ -35,7 +35,6 @@ ENV RPMA_DEPS "\
 	gawk \
 	groff \
 	graphviz \
-	libunwind-devel \
 	pandoc \
 	rdma-core-devel"
 

@@ -35,7 +35,6 @@ ENV RPMA_DEPS "\
 	file \
 	groff \
 	graphviz \
-	libunwind-devel \
 	pandoc \
 	rpm-build \
 	rdma-core-devel"
