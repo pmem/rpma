@@ -25,8 +25,8 @@ SYNOPSIS
 
           struct rpma_peer;
           struct rpma_ep;
-          int rpma_ep_listen(struct rpma_peer *peer, const char *addr,
-                          const char *port, struct rpma_ep **ep_ptr);
+          int rpma_ep_listen(struct rpma_peer *peer, const char *addr, const char *port,
+                          struct rpma_ep **ep_ptr);
 
 DESCRIPTION
 ===========

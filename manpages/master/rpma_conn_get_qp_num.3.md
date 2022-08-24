@@ -24,8 +24,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn;
-          int rpma_conn_get_qp_num(const struct rpma_conn *conn,
-                          uint32_t *qp_num);
+          int rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num);
 
 DESCRIPTION
 ===========

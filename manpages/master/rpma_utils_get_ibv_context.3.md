@@ -30,8 +30,7 @@ SYNOPSIS
                   RPMA_UTIL_IBV_CONTEXT_REMOTE
           };
 
-          int rpma_utils_get_ibv_context(const char *addr,
-                  enum rpma_util_ibv_context_type type,
+          int rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type type,
                   struct ibv_context **ibv_ctx_ptr);
 
 DESCRIPTION

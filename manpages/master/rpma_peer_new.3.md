@@ -25,8 +25,7 @@ SYNOPSIS
 
           struct ibv_context;
           struct rpma_peer;
-          int rpma_peer_new(struct ibv_context *ibv_ctx,
-                          struct rpma_peer **peer_ptr);
+          int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
 
 DESCRIPTION
 ===========

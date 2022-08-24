@@ -30,28 +30,28 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpma\_srq\_get\_rcq() gets the receive CQ from the shared RQ object.**
-The receive CQ created by **rpma\_srq\_new(3) allows handling all**
-**rpma\_srq\_recv(3) completions within the shared RQ.
-rpma\_srq\_cfg\_set\_rcq\_size(3)** can change the receive CQ size.
+**rpma\_srq\_get\_rcq**() gets the receive CQ from the shared RQ object.
+The receive CQ created by **rpma\_srq\_new**(3) allows handling all
+**rpma\_srq\_recv**(3) completions within the shared RQ.
+**rpma\_srq\_cfg\_set\_rcq\_size**(3) can change the receive CQ size.
 
 RETURN VALUE
 ============
 
-The **rpma\_srq\_get\_rcq() function returns 0 on success or a negative
-error** code on failure. **rpma\_srq\_get\_rcq() does not set \*rcq\_ptr
-value on failure.**
+The **rpma\_srq\_get\_rcq**() function returns 0 on success or a
+negative error code on failure. **rpma\_srq\_get\_rcq**() does not set
+\*rcq\_ptr value on failure.
 
 ERRORS
 ======
 
-**rpma\_srq\_get\_rcq() can fail with the following error:**
+**rpma\_srq\_get\_rcq**() can fail with the following error:
 
 -   RPMA\_E\_INVAL - srq or rcq\_ptr is NULL
 
 SEE ALSO
 ========
 
-**rpma\_cq\_wait(3), rpma\_cq\_get\_wc(3), rpma\_cq\_get\_fd(3),**
-**rpma\_srq\_cfg\_set\_rcq\_size(3), rpma\_srq\_new(3), librpma(7)** and
-https://pmem.io/rpma/
+**rpma\_cq\_wait**(3), **rpma\_cq\_get\_wc**(3),
+**rpma\_cq\_get\_fd**(3), **rpma\_srq\_cfg\_set\_rcq\_size**(3),
+**rpma\_srq\_new**(3), **librpma**(7) and https://pmem.io/rpma/
