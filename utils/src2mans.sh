@@ -78,10 +78,13 @@ do
 			# get rid of a FILE section (last two lines of the file)
 			mv $f $f.tmp
 			head -n -2 $f.tmp > $f
-			rm $f.tmp
 			
-			# generate a md file
-			pandoc -s $f -o $f.tmp1 -f man -t markdown || break
+			# Replace \fP with \fR in groff manuals,
+			# because pandoc does not interpret \fP correctly
+			# and generates incorrect markdown files.
+			sed 's/\\fP/\\fR/g' $f > $f.tmp
+			# generate a markdown file
+			pandoc -s $f.tmp -o $f.tmp1 -f man -t markdown || break
 			# remove the header 
 			tail -n +6 $f.tmp1 > $f.tmp2
 			# fix the name issue '**a **-' -> '**a** -'
@@ -89,7 +92,7 @@ do
 			# start with a custom header
 			cat $MANS_HEADER | sed "s/MANUAL_NAME_TO_REPLACE/$f/g" > md/$f.md
 			cat $f.tmp2 >> md/$f.md
-			rm $f.tmp1 $f.tmp2
+			rm -f $f.tmp $f.tmp1 $f.tmp2
 		done
 	fi
 
