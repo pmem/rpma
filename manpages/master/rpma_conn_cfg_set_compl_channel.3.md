@@ -25,8 +25,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn_cfg;
-          int rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg,
-                          bool shared);
+          int rpma_conn_cfg_set_compl_channel(struct rpma_conn_cfg *cfg, bool shared);
 
 DESCRIPTION
 ===========

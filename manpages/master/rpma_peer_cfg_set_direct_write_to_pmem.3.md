@@ -25,8 +25,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_peer_cfg;
-          int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg,
-                          bool supported);
+          int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg, bool supported);
 
 DESCRIPTION
 ===========

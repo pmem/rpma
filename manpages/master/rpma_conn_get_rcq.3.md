@@ -25,25 +25,24 @@ SYNOPSIS
 
           struct rpma_conn;
           struct rpma_cq;
-          int rpma_conn_get_rcq(const struct rpma_conn *conn,
-                          struct rpma_cq **rcq_ptr);
+          int rpma_conn_get_rcq(const struct rpma_conn *conn, struct rpma_cq **rcq_ptr);
 
 DESCRIPTION
 ===========
 
 **rpma\_conn\_get\_rcq() gets the receive CQ from the connection. The
-receive** CQ allows handling all **rpma\_recv(3) completions within the
-connection.** It allows separating **rpma\_recv(3) completions
-processing path from all other** completions. The receive CQ is created
-only if the receive CQ size in the provided connection configuration is
-greater than 0. When the receive CQ does not exist for the given
-connection the \*rcq\_ptr == NULL.
+receive CQ allows handling all** **rpma\_recv(3) completions within the
+connection. It allows separating rpma\_recv(3) completions** processing
+path from all other completions. The receive CQ is created only if the
+receive CQ size in the provided connection configuration is greater than
+0. When the receive CQ does not exist for the given connection the
+\*rcq\_ptr == NULL.
 
 RETURN VALUE
 ============
 
 The **rpma\_conn\_get\_rcq() function returns 0 on success or a negative
-error** code on failure. **rpma\_conn\_get\_rcq() does not set
+error code on failure.** **rpma\_conn\_get\_rcq() does not set
 \*rcq\_ptr value on failure.**
 
 ERRORS
@@ -57,6 +56,6 @@ SEE ALSO
 ========
 
 **rpma\_conn\_cfg\_set\_rcq\_size(3), rpma\_conn\_req\_connect(3),
-rpma\_conn\_get\_cq(3),** **rpma\_cq\_wait(3), rpma\_cq\_get\_wc(3),
-rpma\_cq\_get\_fd(3), rpma\_recv(3),** **librpma(7) and
+rpma\_conn\_get\_cq(3), rpma\_cq\_wait(3),** **rpma\_cq\_get\_wc(3),
+rpma\_cq\_get\_fd(3), rpma\_recv(3), librpma(7) and
 https://pmem.io/rpma/**

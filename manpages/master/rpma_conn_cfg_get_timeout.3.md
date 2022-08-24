@@ -24,8 +24,7 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_conn_cfg;
-          int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg,
-                          int *timeout_ms);
+          int rpma_conn_cfg_get_timeout(const struct rpma_conn_cfg *cfg, int *timeout_ms);
 
 DESCRIPTION
 ===========

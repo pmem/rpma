@@ -25,8 +25,8 @@ SYNOPSIS
           #include <librpma.h>
 
           struct rpma_mr_local *mr;
-          int rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
-                  int advice, uint32_t flags);
+          int rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len, int advice,
+                  uint32_t flags);
 
 DESCRIPTION
 ===========
