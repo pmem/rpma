@@ -11,11 +11,6 @@ add_flag(-Wall)
 
 find_packages()
 
-add_library(test_backtrace STATIC test_backtrace.c)
-if(LIBUNWIND_FOUND)
-	target_compile_definitions(test_backtrace PUBLIC USE_LIBUNWIND=1)
-endif()
-
 add_cstyle(tests-all
 		${CMAKE_CURRENT_SOURCE_DIR}/*.[ch]
 		${CMAKE_CURRENT_SOURCE_DIR}/*/*/*.[ch])
