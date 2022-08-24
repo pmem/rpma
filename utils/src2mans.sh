@@ -81,6 +81,7 @@ do
 			rm $f.tmp
 			
 			# generate a md file
+			sed -i 's/\\fP/\\fR/g' $f
 			pandoc -s $f -o $f.tmp1 -f man -t markdown || break
 			# remove the header 
 			tail -n +6 $f.tmp1 > $f.tmp2
