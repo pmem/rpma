@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0-rc2] - 2022-08-24
+## [1.0.0] - 2022-08-24
 ### Added
 - DEVELOPMENT.md file containing the most important information needed during development of the library
 - THREAD_SAFETY.md file containing the analysis of thread safety of the librpma library
