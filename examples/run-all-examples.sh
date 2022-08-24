@@ -253,18 +253,26 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	# The `else` branch is needed here, because in case of integration tests
+	# The default case is needed here, because in case of integration tests
 	# all examples are run twice: once with the fault injection in the server
 	# and once with the fault injection in the client.
-	if [ "$EXAMPLE" == "13-messages-ping-pong-with-srq" ]; then
+	case $EXAMPLE in
+	08srq-simple-messages-ping-pong-with-srq)
+		# timeout value for both the server and the client
+		TIMEOUT=3s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT
+		;;
+	13-messages-ping-pong-with-srq)
 		# timeout value for both the server and the client
 		TIMEOUT=6s
 		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT 3
-	else
+		;;
+	*)
 		# timeout value for both the server and the client
 		TIMEOUT=3s
 		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
-	fi
+		;;
+	esac
 
 	sleep 1
 
