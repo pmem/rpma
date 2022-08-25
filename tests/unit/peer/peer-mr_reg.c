@@ -6,7 +6,7 @@
  * peer-mr_reg.c -- a peer unit test
  *
  * API covered:
- * - rpma_peer_mr_reg()
+ * - rpma_peer_setup_mr_reg()
  */
 
 #include <infiniband/verbs.h>
@@ -89,7 +89,7 @@ mr_reg__reg_mr_ERRNO(void **pprestate)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(prestate->peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_setup_mr_reg(prestate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -115,7 +115,7 @@ mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **pprestate)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(prestate->peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_setup_mr_reg(prestate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -151,7 +151,7 @@ mr_reg__reg_mr_EOPNOTSUPP_ERRNO(void **pprestate)
 
 	/* run test */
 	struct ibv_mr *mr = NULL;
-	int ret = rpma_peer_mr_reg(prestate->peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_setup_mr_reg(prestate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -180,7 +180,7 @@ mr_reg__success(void **pprestate)
 
 	/* run test */
 	struct ibv_mr *mr;
-	int ret = rpma_peer_mr_reg(peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_setup_mr_reg(peer, &mr, MOCK_ADDR,
 				MOCK_LEN, prestate->usage);
 
 	/* verify the results */
@@ -214,7 +214,7 @@ mr_reg__success_odp(void **pprestate)
 
 	/* run test */
 	struct ibv_mr *mr;
-	int ret = rpma_peer_mr_reg(prestate->peer, &mr, MOCK_ADDR,
+	int ret = rpma_peer_setup_mr_reg(prestate->peer, &mr, MOCK_ADDR,
 				MOCK_LEN, MOCK_USAGE);
 
 	/* verify the results */
@@ -231,7 +231,7 @@ int
 main(int argc, char *argv[])
 {
 	const struct CMUnitTest tests[] = {
-		/* rpma_peer_mr_reg() unit tests */
+		/* rpma_peer_setup_mr_reg() unit tests */
 		{ "mr_reg__reg_mr_ERRNO_no_odp", mr_reg__reg_mr_ERRNO,
 				setup__peer, teardown__peer, &prestate_OdpIncapable},
 		{ "mr_reg__reg_mr_ERRNO_odp", mr_reg__reg_mr_ERRNO,

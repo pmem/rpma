@@ -7,8 +7,8 @@ cmake_minimum_required(VERSION 3.3)
 
 project(rpma C)
 
-set(VERSION_MAJOR 0)
-set(VERSION_MINOR 14)
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
 set(VERSION_PATCH 0)
 # set(VERSION_PRERELEASE rc1)
 
@@ -31,7 +31,6 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 include(FindPerl)
 include(FindThreads)
 include(CMakePackageConfigHelpers)
-include(CheckCCompilerFlag)
 include(GNUInstallDirs)
 include(${CMAKE_SOURCE_DIR}/cmake/functions.cmake)
 
@@ -60,12 +59,12 @@ set(CMAKE_NO_SYSTEM_FROM_IMPORTED 1)
 set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/test
 	CACHE STRING "working directory for tests")
 
-set(buildTypes None Debug Release RelWithDebInfo MinSizeRel)
+set(buildTypes Release Debug RelWithDebInfo MinSizeRel)
 
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No build type selected (CMAKE_BUILD_TYPE), defaulting to Release")
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ..." FORCE)
+		"Choose the type of build, options are: Release Debug RelWithDebInfo MinSizeRel ..." FORCE)
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildTypes})
 else()
 	message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
@@ -159,6 +158,9 @@ else()
 	message(WARNING "ibv_advise_mr() is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 check_signature_rdma_getaddrinfo(RDMA_GETADDRINFO_NEW_SIGNATURE)
 if(RDMA_GETADDRINFO_NEW_SIGNATURE)
@@ -168,13 +170,13 @@ else()
 	add_flag(-DRDMA_GETADDRINFO_OLD_SIGNATURE=1)
 endif()
 
-# check if atomic_store() is supported
-atomic_store_supported(ATOMIC_STORE_SUPPORTED)
-if(ATOMIC_STORE_SUPPORTED)
-	message(STATUS "atomic_store() is supported")
-	add_flag(-DATOMIC_STORE_SUPPORTED=1)
+# check if atomic operations are supported
+atomic_operations_supported(ATOMIC_OPERATIONS_SUPPORTED)
+if(ATOMIC_OPERATIONS_SUPPORTED)
+	message(STATUS "atomic operations are supported")
+	add_flag(-DATOMIC_OPERATIONS_SUPPORTED=1)
 else()
-	message(WARNING "atomic_store() is NOT supported (too old gcc/clang compiler). Some *_set*() functions  will not be thread-safe!")
+	message(WARNING "atomic operations are NOT supported (too old gcc/clang compiler). Some *_set*() functions will NOT be thread-safe!")
 endif()
 
 add_custom_target(checkers ALL)

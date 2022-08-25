@@ -342,26 +342,26 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	unsigned threads_num_to_join = 0;
 	unsigned threads_num_to_fini = 0;
 	int child_pid = 0;
-
-	int ret;
-	unsigned i;
 	int result = 0;
+	unsigned i;
+	int ret;
 
 	/* configure logging thresholds to see more details */
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
-	if (test->child_process_func) {
+	if (test->child_start == MTT_START_CHILD_BEFORE_PRESTATE_INIT_FUNC &&
+	    test->child_process_func) {
 		child_pid = mtt_start_child_process(test->child_process_func,
 					test->child_prestate);
 		if (child_pid == -1) {
-			MTT_INTERNAL_ERR("starting child process failed");
+			MTT_INTERNAL_ERR("starting the child process failed");
 			return -1;
 		}
-	}
 
-	if (child_pid && (result = mtt_check_child_process(child_pid)))
-		goto err_kill_child;
+		if (child_pid && (result = mtt_check_child_process(child_pid)))
+			goto err_kill_child;
+	}
 
 	/* initialize the prestate */
 	if (test->prestate_init_func) {
@@ -375,18 +375,35 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		}
 	}
 
+	if (child_pid && (result = mtt_check_child_process(child_pid)))
+		goto err_prestate_fini_func;
+
 	/* allocate threads and their arguments */
 	threads = calloc(threads_num, sizeof(pthread_t));
 	if (threads == NULL) {
 		MTT_INTERNAL_ERR("calloc failed");
 		result = -1;
-		goto err_cleanup_prestate;
+		goto err_prestate_fini_func;
 	}
 	threads_args = calloc(threads_num, sizeof(struct mtt_thread_args));
 	if (threads_args == NULL) {
 		MTT_INTERNAL_ERR("calloc failed");
 		result = -1;
 		goto err_free_threads;
+	}
+
+	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_SEQ_INIT_FUNC &&
+	    test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1) {
+			MTT_INTERNAL_ERR("starting the child process failed");
+			result = -1;
+			goto err_free_threads_args;
+		}
+
+		if (child_pid && (result = mtt_check_child_process(child_pid)))
+			goto err_free_threads_args;
 	}
 
 	/* initialize threads' arguments */
@@ -401,7 +418,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 			if (ta->ret.ret) {
 				result = ta->ret.ret;
 				MTT_TEST_ERR(ta->id, "%s", ta->ret.errmsg);
-				goto err_fini_threads_args;
+				goto err_thread_seq_fini_func;
 			}
 		}
 
@@ -409,7 +426,21 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	}
 
 	if (child_pid && (result = mtt_check_child_process(child_pid)))
-		goto err_fini_threads_args;
+		goto err_thread_seq_fini_func;
+
+	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_INIT_FUNC &&
+	    test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1) {
+			MTT_INTERNAL_ERR("starting the child process failed");
+			result = -1;
+			goto err_thread_seq_fini_func;
+		}
+
+		if (child_pid && (result = mtt_check_child_process(child_pid)))
+			goto err_thread_seq_fini_func;
+	}
 
 	/*
 	 * The global initialization has to be as close as possible to spawning
@@ -417,7 +448,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	 * for all threads.
 	 */
 	if ((result = mtt_init()))
-		goto err_fini_threads_args;
+		goto err_thread_seq_fini_func;
 
 	/* create threads */
 	for (i = 0; i < threads_num; i++) {
@@ -432,8 +463,42 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		++threads_num_to_join;
 	}
 
+	if (child_pid && (result = mtt_check_child_process(child_pid)))
+		goto err_mtt_fini;
+
+	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_FUNC &&
+	    test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1) {
+			MTT_INTERNAL_ERR("starting the child process failed");
+			result = -1;
+			goto err_mtt_fini;
+		}
+
+		if (child_pid && (result = mtt_check_child_process(child_pid)))
+			goto err_mtt_fini;
+	}
+
 	if ((ret = mtt_threads_sync_unblock(threads_num_to_join)))
 			result = ret;
+
+	if (child_pid && (result = mtt_check_child_process(child_pid)))
+		goto err_mtt_fini;
+
+	if (test->child_start == MTT_START_CHILD_BEFORE_JOINING_THREADS &&
+	    test->child_process_func) {
+		child_pid = mtt_start_child_process(test->child_process_func,
+					test->child_prestate);
+		if (child_pid == -1) {
+			MTT_INTERNAL_ERR("starting the child process failed");
+			result = -1;
+			goto err_mtt_fini;
+		}
+
+		if (child_pid && (result = mtt_check_child_process(child_pid)))
+			goto err_mtt_fini;
+	}
 
 	/* wait for threads to join */
 	for (i = 0; i < threads_num_to_join; i++) {
@@ -451,10 +516,11 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		}
 	}
 
+err_mtt_fini:
 	if ((ret = mtt_fini()))
 		result = ret;
 
-err_fini_threads_args:
+err_thread_seq_fini_func:
 	/* clean up threads' arguments */
 	if (test->thread_seq_fini_func) {
 		for (i = 0; i < threads_num_to_fini; i++) {
@@ -469,12 +535,13 @@ err_fini_threads_args:
 		}
 	}
 
+err_free_threads_args:
 	free(threads_args);
 
 err_free_threads:
 	free(threads);
 
-err_cleanup_prestate:
+err_prestate_fini_func:
 	/* clean up the prestate */
 	if (test->prestate_fini_func) {
 		test->prestate_fini_func(test->prestate, &tr_local);
@@ -486,6 +553,10 @@ err_cleanup_prestate:
 
 err_kill_child:
 	if (child_pid) {
+		if (child_pid == -1) {
+			/* starting the child process failed */
+			return -1;
+		}
 		/* check if the child process is still running */
 		if (kill(child_pid, 0) == 0) {
 			/* kill the child process */

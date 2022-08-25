@@ -1,15 +1,16 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
-# Copyright 2021, Fujitsu
+# Copyright 2020-2022, Intel Corporation
+# Copyright 2021-2022, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_peer name)
-	set(name peer-${name})
+	set(src_name peer-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		peer-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
@@ -17,6 +18,8 @@ function(add_test_peer name)
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-cq.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-log.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rpma-utils.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-srq.c
+		${TEST_UNIT_COMMON_DIR}/mocks-rpma-srq_cfg.c
 		${TEST_UNIT_COMMON_DIR}/mocks-stdlib.c
 		${LIBRPMA_SOURCE_DIR}/rpma_err.c
 		${LIBRPMA_SOURCE_DIR}/peer.c)
@@ -30,6 +33,7 @@ function(add_test_peer name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_peer(new)
 add_test_peer(create_qp)
+add_test_peer(create_srq)
 add_test_peer(mr_reg)
+add_test_peer(new)

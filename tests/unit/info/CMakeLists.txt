@@ -1,15 +1,16 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2021, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
 include(../../cmake/ctest_helpers.cmake)
 
 function(add_test_info name)
-	set(name info-${name})
+	set(src_name info-${name})
+	set(name ut-${src_name})
 	build_test_src(UNIT NAME ${name} SRCS
-		${name}.c
+		${src_name}.c
 		info-common.c
 		${TEST_UNIT_COMMON_DIR}/mocks-ibverbs.c
 		${TEST_UNIT_COMMON_DIR}/mocks-rdma_cm.c
@@ -29,6 +30,6 @@ function(add_test_info name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_info(new)
 add_test_info(bind_addr)
+add_test_info(new)
 add_test_info(resolve_addr)

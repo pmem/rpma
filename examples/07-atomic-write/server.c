@@ -13,14 +13,14 @@
 #include <stdio.h>
 #include <string.h>
 #include "common-conn.h"
+#include "common-pmem_map_file.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+#ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #define LOG_HDR_SIGNATURE "LOG"
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 #define LOG_SIGNATURE_SIZE 8
 #define LOG_DATA_SIZE 1024
@@ -52,81 +52,52 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *mr_ptr = NULL;
-	size_t mr_size = 0;
+	struct common_mem mem;
+
+	memset(&mem, 0, sizeof(mem));
 	struct rpma_mr_local *mr = NULL;
 
-	struct log *log;
+	struct log *log = NULL;
 
-	int is_pmem = 0;
-
-#ifdef USE_LIBPMEM
+#ifdef USE_PMEM
 	char *pmem_path = NULL;
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		/* map the file */
-		mr_ptr = pmem_map_file(pmem_path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", pmem_path);
-			return -1;
-		}
-
-		/* pmem is expected */
-		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-				pmem_path);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
+		ret = common_pmem_map_file(pmem_path, LOG_SIGNATURE_SIZE, &mem);
+		if (ret)
+			goto err_free;
 
 		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
+		 * All of the space under the offset is intended for the string contents.
+		 * Space is assumed to be at least 1 KiB.
 		 */
-		if (mr_size < LOG_SIGNATURE_SIZE) {
-			(void) fprintf(stderr, "%s too small (%zu < %u)\n",
-					pmem_path, mr_size, LOG_SIGNATURE_SIZE);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-
-		/*
-		 * All of the space under the offset is intended for
-		 * the string contents. Space is assumed to be at least 1 KiB.
-		 */
-		if (mr_size - LOG_SIGNATURE_SIZE < KILOBYTE) {
-			fprintf(stderr, "%s too small (%zu < %u)\n",
-					pmem_path, mr_size,
+		if (mem.mr_size - LOG_SIGNATURE_SIZE < KILOBYTE) {
+			fprintf(stderr, "%s too small (%zu < %u)\n", pmem_path, mem.mr_size,
 					KILOBYTE + LOG_SIGNATURE_SIZE);
-			(void) pmem_unmap(mr_ptr, mr_size);
+			common_pmem_unmap_file(&mem);
 			return -1;
 		}
 
-		log = mr_ptr;
+		log = (struct log *)mem.mr_ptr;
 
 		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
+		 * If the signature is not in place the persistent content has to be initialized
+		 * and persisted.
 		 */
-		if (strncmp(mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE)) {
+		if (strncmp(mem.mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE)) {
 			/* initialize used value and persist it */
 			log->used = offsetof(struct log, data);
-			pmem_persist(&log->used, sizeof(uint64_t));
+			mem.persist(&log->used, sizeof(uint64_t));
 			/* write the signature to mark the content as valid */
-			strncpy(mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE);
-			pmem_persist(mr_ptr, LOG_SIGNATURE_SIZE);
+			strncpy(mem.mr_ptr, LOG_HDR_SIGNATURE, LOG_SIGNATURE_SIZE);
+			mem.persist(mem.mr_ptr, LOG_SIGNATURE_SIZE);
 		}
 	}
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 	/* if no pmem support or it is not provided */
-	if (mr_ptr == NULL) {
+	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
 		log = malloc_aligned(sizeof(struct log));
 		if (log == NULL)
@@ -134,8 +105,8 @@ main(int argc, char *argv[])
 
 		log->used = offsetof(struct log, data);
 
-		mr_ptr = (void *)log;
-		mr_size = sizeof(struct log);
+		mem.mr_ptr = (void *)log;
+		mem.mr_size = sizeof(struct log);
 	}
 
 	/* RPMA resources */
@@ -154,23 +125,23 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
+	if ((ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
 			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC |
-			(is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
+			(mem.is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
 			&mr)))
 		goto err_ep_shutdown;
 
-#ifdef USE_LIBPMEM
+#if defined USE_PMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
 	/* rpma_mr_advise() should be called only in case of FsDAX */
-	if (is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
-		ret = rpma_mr_advise(mr, 0, mr_size,
+	if (mem.is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
+		ret = rpma_mr_advise(mr, 0, mem.mr_size,
 			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
 			IBV_ADVISE_MR_FLAG_FLUSH);
 		if (ret)
 			goto err_mr_dereg;
 	}
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;
@@ -189,8 +160,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Wait for an incoming connection request, accept it and wait for its
-	 * establishment.
+	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
@@ -199,8 +169,7 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/*
-	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
-	 * structure.
+	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
 	if ((ret = common_wait_for_conn_close_and_disconnect(&conn)))
 		goto err_mr_dereg;
@@ -229,14 +198,13 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
-		mr_ptr = NULL;
-	}
-#endif /* USE_LIBPMEM */
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		common_pmem_unmap_file(&mem);
+	} else
+#endif /* USE_PMEM */
 
-	if (!is_pmem)
+	if (!mem.is_pmem)
 		free(log);
 
 	return ret ? -2 : 0;

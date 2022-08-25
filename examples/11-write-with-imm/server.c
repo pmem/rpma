@@ -65,8 +65,7 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, dst, KILOBYTE, RPMA_MR_USAGE_WRITE_DST,
-			&dst_mr);
+	ret = rpma_mr_reg(peer, dst, KILOBYTE, RPMA_MR_USAGE_WRITE_DST, &dst_mr);
 	if (ret)
 		goto err_peer_delete;
 
@@ -124,8 +123,7 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		ret = -1;
 		goto err_conn_disconnect;
@@ -147,24 +145,21 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 
 	if (wc.status != IBV_WC_SUCCESS) {
-		fprintf(stderr,
-			"Received unexpected completion: %s\n",
+		fprintf(stderr, "Received unexpected completion: %s\n",
 			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (wc.opcode != IBV_WC_RECV_RDMA_WITH_IMM) {
-		fprintf(stderr,
-			"Received unexpected type of operation (%d != %d)\n",
-			wc.opcode, IBV_WC_RECV_RDMA_WITH_IMM);
+		fprintf(stderr, "Received unexpected type of operation (%d != %d)\n", wc.opcode,
+			IBV_WC_RECV_RDMA_WITH_IMM);
 		ret = -1;
 		goto err_conn_disconnect;
 	}
 
 	if (!(wc.wc_flags & IBV_WC_WITH_IMM)) {
-		fprintf(stderr,
-			"Received an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
+		fprintf(stderr, "Received an unexpected completion flag (no IBV_WC_WITH_IMM)\n");
 		ret = -1;
 		goto err_conn_disconnect;
 	}
@@ -172,14 +167,11 @@ main(int argc, char *argv[])
 	uint32_t *exp_imm = dst;
 	uint32_t imm = ntohl(wc.imm_data);
 	if (imm != *exp_imm) {
-		fprintf(stderr,
-			"Received unexpected immediate data (%u != %u)\n",
-			imm, *exp_imm);
+		fprintf(stderr, "Received unexpected immediate data (%u != %u)\n", imm, *exp_imm);
 		ret = -1;
 	} else {
-		printf(
-			"The value '%u' was written together with immediate data '%u'\n",
-			*exp_imm, imm);
+		printf("The value '%u' was written together with immediate data '%u'\n", *exp_imm,
+			imm);
 	}
 
 err_conn_disconnect:

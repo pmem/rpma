@@ -42,9 +42,8 @@ main(int argc, char *argv[])
 	}
 
 	if (imm > UINT32_MAX) {
-		fprintf(stderr,
-			"The provided immediate data is too big (%lu > %u)\n",
-			imm, UINT32_MAX);
+		fprintf(stderr, "The provided immediate data is too big (%lu > %u)\n", imm,
+			UINT32_MAX);
 		return -1;
 	}
 
@@ -69,8 +68,7 @@ main(int argc, char *argv[])
 		goto err_mr_free;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, src, KILOBYTE, RPMA_MR_USAGE_WRITE_SRC,
-			&src_mr);
+	ret = rpma_mr_reg(peer, src, KILOBYTE, RPMA_MR_USAGE_WRITE_SRC, &src_mr);
 	if (ret)
 		goto err_peer_delete;
 
@@ -93,18 +91,16 @@ main(int argc, char *argv[])
 	}
 
 	struct common_data *dst_data = pdata.ptr;
-	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &dst_mr);
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&dst_mr);
 	if (ret)
 		goto err_conn_disconnect;
 
 	/* write a message with immediate data to the server */
 	memcpy(src, (uint32_t *)&imm, sizeof(uint32_t));
-	fprintf(stdout, "Writing value '%u' with immediate data '%u'\n",
-		*src, (uint32_t)imm);
-	ret = rpma_write_with_imm(conn, dst_mr, dst_data->data_offset, src_mr,
-			0, KILOBYTE, RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm,
-			NULL);
+	fprintf(stdout, "Writing value '%u' with immediate data '%u'\n", *src, (uint32_t)imm);
+	ret = rpma_write_with_imm(conn, dst_mr, dst_data->data_offset, src_mr, 0, KILOBYTE,
+			RPMA_F_COMPLETION_ALWAYS, (uint32_t)imm, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
@@ -124,17 +120,15 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	if (wc.status != IBV_WC_SUCCESS) {
-		fprintf(stderr,
-			"Received unexpected completion: %s\n",
+		fprintf(stderr, "Received unexpected completion: %s\n",
 			ibv_wc_status_str(wc.status));
 		ret = -1;
 		goto err_mr_remote_delete;
 	}
 
 	if (wc.opcode != IBV_WC_RDMA_WRITE) {
-		fprintf(stderr,
-			"Received unexpected type of operation (%d != %d)\n",
-			wc.opcode, IBV_WC_RDMA_WRITE);
+		fprintf(stderr, "Received unexpected type of operation (%d != %d)\n", wc.opcode,
+			IBV_WC_RDMA_WRITE);
 		ret = -1;
 	}
 

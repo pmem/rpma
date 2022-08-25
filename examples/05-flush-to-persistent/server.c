@@ -12,19 +12,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
+#include "common-map_file_with_signature_check.h"
+#include "common-pmem_map_file.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+#ifdef USE_PMEM
 #define USAGE_STR \
 	"usage: %s <server_address> <port> [<pmem-path>] [direct-pmem-write]\n"\
 	PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
-#ifdef USE_LIBPMEM
+#ifdef USE_PMEM
 #define ON_STR "on"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 int
 main(int argc, char *argv[])
@@ -45,85 +46,30 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *mr_ptr = NULL;
-	size_t mr_size = 0;
-	size_t data_offset = 0;
+	struct common_mem mem;
+	memset(&mem, 0, sizeof(mem));
 	struct rpma_mr_local *mr = NULL;
 
-	int is_pmem = 0;
-
-#ifdef USE_LIBPMEM
+#ifdef USE_PMEM
 	char *pmem_path = NULL;
+
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		/* map the file */
-		mr_ptr = pmem_map_file(pmem_path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", pmem_path);
-			return -1;
-		}
-
-		/* pmem is expected */
-		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-				pmem_path);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-
-		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
-		 */
-		if (mr_size < SIGNATURE_LEN) {
-			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					pmem_path, mr_size, SIGNATURE_LEN);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-		data_offset = SIGNATURE_LEN;
-
-		/*
-		 * All of the space under the offset is intended for
-		 * the string contents. Space is assumed to be at least 1 KiB.
-		 */
-		if (mr_size - data_offset < KILOBYTE) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n",
-				pmem_path, mr_size, KILOBYTE + data_offset);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-
-		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
-		 */
-		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial empty string and persist it */
-			char *ch = (char *)mr_ptr + data_offset;
-			ch[0] = '\0';
-			pmem_persist(ch, 1);
-			/* write the signature to mark the content as valid */
-			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(mr_ptr, SIGNATURE_LEN);
-		}
+		ret = common_pmem_map_file_with_signature_check(pmem_path, KILOBYTE, &mem);
+		if (ret)
+			goto err_free;
 	}
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 	/* if no pmem support or it is not provided */
-	if (mr_ptr == NULL) {
+	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mr_ptr = malloc_aligned(KILOBYTE);
-		if (mr_ptr == NULL)
+		mem.mr_ptr = malloc_aligned(KILOBYTE);
+		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mr_size = KILOBYTE;
+		mem.mr_size = KILOBYTE;
 	}
 
 	/* RPMA resources */
@@ -133,8 +79,8 @@ main(int argc, char *argv[])
 	struct rpma_conn *conn = NULL;
 
 	/* if the string content is not empty */
-	if (((char *)mr_ptr + data_offset)[0] != '\0') {
-		(void) printf("Old value: %s\n", (char *)mr_ptr + data_offset);
+	if (((char *)mem.mr_ptr + mem.data_offset)[0] != '\0') {
+		(void) printf("Old value: %s\n", (char *)mem.mr_ptr + mem.data_offset);
 	}
 
 	/* create a peer configuration structure */
@@ -142,17 +88,16 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_free;
 
-#ifdef USE_LIBPMEM
+#ifdef USE_PMEM
 	/* configure peer's direct write to pmem support */
 	if (argc >= 5) {
-		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg,
-				(strcmp(argv[4], ON_STR) == 0));
+		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, (strcmp(argv[4], ON_STR) == 0));
 		if (ret) {
 			(void) rpma_peer_cfg_delete(&pcfg);
 			goto err_free;
 		}
 	}
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
@@ -167,25 +112,25 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, mr_ptr, mr_size,
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
 			RPMA_MR_USAGE_WRITE_DST |
-			(is_pmem ? (RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT |
+			(mem.is_pmem ? (RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT |
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY) :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
 			&mr);
 	if (ret)
 		goto err_ep_shutdown;
 
-#ifdef USE_LIBPMEM
+#if defined USE_PMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
 	/* rpma_mr_advise() should be called only in case of FsDAX */
-	if (is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
-		ret = rpma_mr_advise(mr, 0, mr_size,
+	if (mem.is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
+		ret = rpma_mr_advise(mr, 0, mem.mr_size,
 			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
 			IBV_ADVISE_MR_FLAG_FLUSH);
 		if (ret)
 			goto err_mr_dereg;
 	}
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;
@@ -201,7 +146,7 @@ main(int argc, char *argv[])
 
 	/* calculate data for the client write */
 	struct common_data data = {0};
-	data.data_offset = data_offset;
+	data.data_offset = mem.data_offset;
 	data.mr_desc_size = mr_desc_size;
 	data.pcfg_desc_size = pcfg_desc_size;
 
@@ -215,8 +160,7 @@ main(int argc, char *argv[])
 	 * The pcfg_desc descriptor is saved in the `descriptors[]` array
 	 * just after the mr_desc descriptor.
 	 */
-	ret = rpma_peer_cfg_get_descriptor(pcfg,
-			&data.descriptors[mr_desc_size]);
+	ret = rpma_peer_cfg_get_descriptor(pcfg, &data.descriptors[mr_desc_size]);
 	if (ret)
 		goto err_mr_dereg;
 
@@ -239,7 +183,7 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_dereg;
 
-	(void) printf("New value: %s\n", (char *)mr_ptr + data_offset);
+	(void) printf("New value: %s\n", (char *)mem.mr_ptr + mem.data_offset);
 
 err_mr_dereg:
 	/* deregister the memory region */
@@ -257,15 +201,14 @@ err_pcfg_delete:
 	(void) rpma_peer_cfg_delete(&pcfg);
 
 err_free:
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
-		mr_ptr = NULL;
-	}
-#endif /* USE_LIBPMEM */
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		common_pmem_unmap_file(&mem);
+	} else
+#endif /* USE_PMEM */
 
-	if (mr_ptr != NULL)
-		free(mr_ptr);
+	if (mem.mr_ptr != NULL)
+		free(mem.mr_ptr);
 
 	return ret;
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * mr-common.c -- the memory region unit tests's common functions
@@ -85,11 +85,11 @@ setup__reg_success(void **pprestate)
 	struct prestate *prestate = *pprestate;
 
 	/* configure mocks */
-	struct rpma_peer_mr_reg_args mr_reg_args;
+	struct rpma_peer_setup_mr_reg_args mr_reg_args;
 	mr_reg_args.usage = prestate->usage;
 	mr_reg_args.access = prestate->access;
 	mr_reg_args.mr = MOCK_MR;
-	will_return(rpma_peer_mr_reg, &mr_reg_args);
+	will_return(rpma_peer_setup_mr_reg, &mr_reg_args);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
 	/* run test */

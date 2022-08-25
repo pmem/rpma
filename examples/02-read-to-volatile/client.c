@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 /* Copyright 2021-2022, Fujitsu */
 
 /*
  * client.c -- a client of the read-to-volatile example
  *
- * The client in this example reads data from the remote memory to a local
- * volatile one.
+ * The client in this example reads data from the remote memory to a local volatile one.
  */
 
 #include <stdlib.h>
@@ -29,8 +28,7 @@ int
 main(int argc, char *argv[])
 {
 	if (argc < 3) {
-		fprintf(stderr, "usage: %s <server_address> <port>\n",
-			argv[0]);
+		fprintf(stderr, "usage: %s <server_address> <port>\n", argv[0]);
 		exit(-1);
 	}
 
@@ -72,8 +70,7 @@ main(int argc, char *argv[])
 	}
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, dst_ptr, KILOBYTE, RPMA_MR_USAGE_READ_DST,
-				&dst_mr);
+	ret = rpma_mr_reg(peer, dst_ptr, KILOBYTE, RPMA_MR_USAGE_READ_DST, &dst_mr);
 	if (ret)
 		goto err_mr_free;
 
@@ -95,13 +92,12 @@ main(int argc, char *argv[])
 	}
 
 	/*
-	 * Create a remote memory registration structure from the received
-	 * descriptor.
+	 * Create a remote memory registration structure from the received descriptor.
 	 */
 	struct common_data *dst_data = pdata.ptr;
 
-	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &src_mr);
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&src_mr);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -117,8 +113,7 @@ main(int argc, char *argv[])
 	}
 
 	/* post an RDMA read operation */
-	ret = rpma_read(conn, dst_mr, 0, src_mr, 0, src_size,
-			RPMA_F_COMPLETION_ALWAYS, NULL);
+	ret = rpma_read(conn, dst_mr, 0, src_mr, 0, src_size, RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
@@ -140,16 +135,14 @@ main(int argc, char *argv[])
 
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_read() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_read() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
 	if (wc.opcode != IBV_WC_RDMA_READ) {
 		ret = -1;
-		(void) fprintf(stderr,
-				"unexpected wc.opcode value (%d != %d)\n",
-				wc.opcode, IBV_WC_RDMA_READ);
+		(void) fprintf(stderr, "unexpected wc.opcode value (%d != %d)\n", wc.opcode,
+				IBV_WC_RDMA_READ);
 		goto err_mr_remote_delete;
 	}
 

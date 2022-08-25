@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021 Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -20,14 +20,12 @@
 #include "cmocka_alloc.h"
 #endif
 
-#define STATIC_ASSERT(cond, msg)\
-	typedef char static_assertion_##msg[(cond) ? 1 : -1]
+#define STATIC_ASSERT(cond, msg) typedef char static_assertion_##msg[(cond) ? 1 : -1]
 
 #define SIZEOF_IN_BITS(type)	(8 * sizeof(type))
 #define MAX_VALUE_OF(type)	((1 << SIZEOF_IN_BITS(type)) - 1)
 
-#define RPMA_MR_DESC_SIZE (2 * sizeof(uint64_t) + sizeof(uint32_t) \
-			+ sizeof(uint8_t))
+#define RPMA_MR_DESC_SIZE (2 * sizeof(uint64_t) + sizeof(uint32_t) + sizeof(uint8_t))
 
 /* a bit-wise OR of all allowed values */
 #define USAGE_ALL_ALLOWED (RPMA_MR_USAGE_READ_SRC | RPMA_MR_USAGE_READ_DST |\
@@ -44,8 +42,7 @@
 STATIC_ASSERT(USAGE_ALL_ALLOWED <= MAX_VALUE_OF(uint8_t), usage_too_small);
 
 /* generate operation completion on success */
-#define RPMA_F_COMPLETION_ON_SUCCESS \
-	(RPMA_F_COMPLETION_ALWAYS & ~RPMA_F_COMPLETION_ON_ERROR)
+#define RPMA_F_COMPLETION_ON_SUCCESS (RPMA_F_COMPLETION_ALWAYS & ~RPMA_F_COMPLETION_ON_ERROR)
 
 struct rpma_mr_local {
 	struct ibv_mr *ibv_mr; /* an IBV memory registration object */
@@ -67,7 +64,7 @@ struct rpma_mr_remote {
 int
 rpma_mr_read(struct ibv_qp *qp,
 	struct rpma_mr_local *dst, size_t dst_offset,
-	const struct rpma_mr_remote *src,  size_t src_offset,
+	const struct rpma_mr_remote *src, size_t src_offset,
 	size_t len, int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -89,8 +86,7 @@ rpma_mr_read(struct ibv_qp *qp,
 		wr.wr.rdma.rkey = src->rkey;
 
 		/* destination */
-		sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr +
-				dst_offset);
+		sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + dst_offset);
 		sge.length = (uint32_t)len;
 		sge.lkey = dst->ibv_mr->lkey;
 
@@ -101,8 +97,7 @@ rpma_mr_read(struct ibv_qp *qp,
 	wr.wr_id = (uint64_t)op_context;
 	wr.next = NULL;
 	wr.opcode = IBV_WR_RDMA_READ;
-	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-		IBV_SEND_SIGNALED : 0;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ? IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
@@ -110,10 +105,9 @@ rpma_mr_read(struct ibv_qp *qp,
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
 			"ibv_post_send(src_addr=0x%x, rkey=0x%x, dst_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_READ, send_flags=%s)",
-			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
-			sge.addr, sge.length, sge.lkey, wr.wr_id,
-			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-				"IBV_SEND_SIGNALED" : "0");
+			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey, sge.addr, sge.length, sge.lkey,
+			wr.wr_id, (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+			"IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -145,8 +139,7 @@ rpma_mr_write(struct ibv_qp *qp,
 		wr.wr.rdma.rkey = 0;
 	} else {
 		/* source */
-		sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr +
-				src_offset);
+		sge.addr = (uint64_t)((uintptr_t)src->ibv_mr->addr + src_offset);
 		sge.length = (uint32_t)len;
 		sge.lkey = src->ibv_mr->lkey;
 
@@ -178,8 +171,7 @@ rpma_mr_write(struct ibv_qp *qp,
 		wr.opcode = IBV_WR_RDMA_READ;
 	});
 
-	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-		IBV_SEND_SIGNALED : 0;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ? IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
@@ -187,10 +179,9 @@ rpma_mr_write(struct ibv_qp *qp,
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
 			"ibv_post_send(dst_addr=0x%x, rkey=0x%x, src_addr=0x%x, length=%u, lkey=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_WRITE, send_flags=%s)",
-			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
-			sge.addr, sge.length, sge.lkey, wr.wr_id,
-			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-				"IBV_SEND_SIGNALED" : "0");
+			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey, sge.addr, sge.length, sge.lkey,
+			wr.wr_id, (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
+			"IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -201,8 +192,7 @@ rpma_mr_write(struct ibv_qp *qp,
  * rpma_mr_atomic_write -- post the atomic 8 bytes RDMA write from src to dst
  */
 int
-rpma_mr_atomic_write(struct ibv_qp *qp,
-	struct rpma_mr_remote *dst, size_t dst_offset,
+rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_offset,
 	const char src[8], int flags, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -239,10 +229,8 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
 	if (ret) {
 		RPMA_LOG_ERROR_WITH_ERRNO(ret,
 			"ibv_post_send(dst_addr=0x%x, rkey=0x%x, src_addr=0x%x, wr_id=0x%x, opcode=IBV_WR_RDMA_WRITE, send_flags=%s)",
-			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey,
-			sge.addr, wr.wr_id,
-			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-				"IBV_SEND_SIGNALED" : "0");
+			wr.wr.rdma.remote_addr, wr.wr.rdma.rkey, sge.addr, wr.wr_id,
+			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ? "IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
 
@@ -253,10 +241,8 @@ rpma_mr_atomic_write(struct ibv_qp *qp,
  * rpma_mr_send -- post an RDMA send from src
  */
 int
-rpma_mr_send(struct ibv_qp *qp,
-	const struct rpma_mr_local *src,  size_t offset,
-	size_t len, int flags, enum ibv_wr_opcode operation,
-	uint32_t imm, const void *op_context)
+rpma_mr_send(struct ibv_qp *qp, const struct rpma_mr_local *src, size_t offset, size_t len,
+	int flags, enum ibv_wr_opcode operation, uint32_t imm, const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -295,8 +281,7 @@ rpma_mr_send(struct ibv_qp *qp,
 	});
 
 	wr.wr_id = (uint64_t)op_context;
-	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ?
-		IBV_SEND_SIGNALED : 0;
+	wr.send_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ? IBV_SEND_SIGNALED : 0;
 
 	struct ibv_send_wr *bad_wr;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
@@ -313,9 +298,8 @@ rpma_mr_send(struct ibv_qp *qp,
  * rpma_mr_recv -- post an RDMA recv from dst
  */
 int
-rpma_mr_recv(struct ibv_qp *qp,
-	struct rpma_mr_local *dst,  size_t offset,
-	size_t len, const void *op_context)
+rpma_mr_recv(struct ibv_qp *qp, struct rpma_mr_local *dst, size_t offset, size_t len,
+	const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -349,6 +333,45 @@ rpma_mr_recv(struct ibv_qp *qp,
 	return 0;
 }
 
+/*
+ * rpma_mr_srq_recv -- post an RDMA recv from dst to the shared RQ
+ */
+int
+rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offset, size_t len,
+	const void *op_context)
+{
+	RPMA_DEBUG_TRACE;
+
+	struct ibv_recv_wr wr;
+	struct ibv_sge sge;
+
+	/* source */
+	if (dst == NULL) {
+		wr.sg_list = NULL;
+		wr.num_sge = 0;
+	} else {
+		sge.addr = (uint64_t)((uintptr_t)dst->ibv_mr->addr + offset);
+		sge.length = (uint32_t)len;
+		sge.lkey = dst->ibv_mr->lkey;
+
+		wr.sg_list = &sge;
+		wr.num_sge = 1;
+	}
+
+	wr.next = NULL;
+	wr.wr_id = (uint64_t)op_context;
+
+	struct ibv_recv_wr *bad_wr;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	int ret = ibv_post_srq_recv(ibv_srq, &wr, &bad_wr);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_post_srq_recv");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+
 /* public librpma API */
 
 /*
@@ -356,7 +379,7 @@ rpma_mr_recv(struct ibv_qp *qp,
  */
 int
 rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
-		struct rpma_mr_local **mr_ptr)
+	struct rpma_mr_local **mr_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
@@ -375,7 +398,7 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		return RPMA_E_NOMEM;
 
 	struct ibv_mr *ibv_mr;
-	if ((ret = rpma_peer_mr_reg(peer, &ibv_mr, ptr, size, usage))) {
+	if ((ret = rpma_peer_setup_mr_reg(peer, &ibv_mr, ptr, size, usage))) {
 		free(mr);
 		return ret;
 	}
@@ -448,12 +471,10 @@ rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc)
 }
 
 /*
- * rpma_mr_remote_from_descriptor -- create a remote memory region from
- * a descriptor
+ * rpma_mr_remote_from_descriptor -- create a remote memory region from a descriptor
  */
 int
-rpma_mr_remote_from_descriptor(const void *desc,
-		size_t desc_size, struct rpma_mr_remote **mr_ptr)
+rpma_mr_remote_from_descriptor(const void *desc, size_t desc_size, struct rpma_mr_remote **mr_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -597,8 +618,7 @@ rpma_mr_remote_delete(struct rpma_mr_remote **mr_ptr)
 }
 
 /*
- * rpma_mr_remote_get_flush_type -- get a flush type supported
- * by the remote memory region
+ * rpma_mr_remote_get_flush_type -- get a flush type supported by the remote memory region
  */
 int
 rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
@@ -619,8 +639,7 @@ rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type)
  * rpma_mr_advise -- give advice about an address range in a memory registration
  */
 int
-rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len,
-		int advice, uint32_t flags)
+rpma_mr_advise(struct rpma_mr_local *mr, size_t offset, size_t len, int advice, uint32_t flags)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});

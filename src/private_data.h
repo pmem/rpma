@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * private_data.h -- a store for connections' private data (definitions)
@@ -15,8 +15,7 @@
 /*
  * ASSUMPTIONS
  * - edata != NULL
- * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST ||
- *     edata->event == RDMA_CM_EVENT_ESTABLISHED
+ * - edata->event == RDMA_CM_EVENT_CONNECT_REQUEST || edata->event == RDMA_CM_EVENT_ESTABLISHED
  * - pdata != NULL
  * - pdata == {NULL, 0}
  *
@@ -25,8 +24,7 @@
  *
  * - RPMA_E_NOMEM - out of memory
  */
-int rpma_private_data_store(struct rdma_cm_event *edata,
-		struct rpma_conn_private_data *pdata);
+int rpma_private_data_store(struct rdma_cm_event *edata, struct rpma_conn_private_data *pdata);
 
 /*
  * ASSUMPTIONS
@@ -34,6 +32,6 @@ int rpma_private_data_store(struct rdma_cm_event *edata,
  *
  * The function cannot fail.
  */
-void rpma_private_data_discard(struct rpma_conn_private_data *pdata);
+void rpma_private_data_delete(struct rpma_conn_private_data *pdata);
 
 #endif /* LIBRPMA_PRIVATE_DATA_H */

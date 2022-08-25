@@ -30,22 +30,22 @@ Here is a list of the most interesting CMake options of the librpma library:
 
 | Name | Description | Values | Default |
 | - | - | - | - |
+| CMAKE_BUILD_TYPE | Choose the type of build | None/Release/Debug/RelWithDebInfo | Release |
+| CMAKE_INSTALL_PREFIX | An install path prefix, prepended to install directories | *dir path* | /usr/local |
 | BUILD_DOC | Build the documentation | ON/OFF | ON |
 | BUILD_TESTS | Build the tests | ON/OFF | ON |
 | BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
 | BUILD_DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
-| TESTS_COVERAGE | Run coverage test | ON/OFF | OFF |
+| TESTS_COVERAGE | Check the code coverage during compilation | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |
-| TESTS_PERF_TOOLS | Enable testing Python tools | ON/OFF | OFF |
+| TESTS_PERF_TOOLS | Enable testing the performance analysis tools | ON/OFF | OFF |
 | TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface (valgrind required) | ON/OFF | OFF |
 | TESTS_VERBOSE_OUTPUT | More verbose test outputs | ON/OFF | OFF |
 | DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
 | DEBUG_FAULT_INJECTION | Enable fault injection | ON/OFF | OFF |
 | DEBUG_USE_ASAN | Enable AddressSanitizer | ON/OFF | OFF |
 | DEBUG_USE_UBSAN | Enable UndefinedBehaviorSanitizer | ON/OFF | OFF |
-| CMAKE_BUILD_TYPE | Choose the type of build | None/Debug/Release/RelWithDebInfo | Release |
-| CMAKE_INSTALL_PREFIX | Install path prefix, prepended onto install directories | *dir path* | /usr/local |
 | TEST_DIR | Working directory for tests | *dir path* | ./build/test |
 
 The following command can be used to see all available CMake options:
@@ -53,6 +53,19 @@ The following command can be used to see all available CMake options:
 ```sh
 [rpma/build]$ cmake -LAH ..
 ```
+
+### CMake options most useful during development
+
+The most useful CMake options during development are briefly described below:
+- `CMAKE_BUILD_TYPE` should be set to `Debug` (the default is `Release`) to be able to see the debug information in case of failures,
+- `BUILD_DEVELOPER_MODE` should be set to `ON` (the default is `OFF`) to enable all developer checks (checking: licenses, coding style, whitespaces and commits), it sets also two compiler flags: `-Wall` and `-Werror`,
+- `BUILD_DOC` should be set to `ON` (the default) to turn on building the documentation,
+- `BUILD_TESTS` should be set to `ON` (the default) to turn on building the tests,
+- `BUILD_EXAMPLES` should be set to `ON` (the default) to turn on building the examples,
+- `TESTS_RDMA_CONNECTION` should be set to `ON` (the default is `OFF`) to enable tests that require a configured RDMA-capable network interface (valgrind is also required),
+- `TESTS_VERBOSE_OUTPUT` should be set to `ON` (the default is `OFF`) to put cmake in the trace mode with variables expanded,
+- `TESTS_PERF_TOOLS` enables testing the performance analysis tools, so it should be set to `ON` (the default is `OFF`) when developing the performance analysis tools,
+- `DEBUG_LOG_TRACE` enables logging functions' traces, so it is very useful during debugging (it should be set to `ON` then, the default is `OFF`).
 
 # Testing
 
@@ -96,16 +109,19 @@ or:
 [rpma/build]$ ctest --output-on-failure
 ```
 
-to print out also the output of the failed tests.
+to print out the output of the failed tests too.
 
 ## Running multi-threaded or integration tests on SoftRoCE or RDMA HW
+
+**Note**: The analysis of thread safety of the librpma library is located in the [THREAD_SAFETY.md](THREAD_SAFETY.md) file.
 
 ### Preparing the environment
 
 In order to run the multi-threaded or the integration tests:
-1. Valgrind must be installed to run both the multi-threaded and the integration tests.
-2. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
-3. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways (it also prints out the IP of the configured interface):
+1. Make sure you have all needed packages installed (you can support yourself with [Dockerfiles](./utils/docker/images/) (see the EXAMPLES_DEPS section)).
+2. Valgrind must be installed to run both the multi-threaded and the integration tests.
+3. A correctly configured RDMA-capable network interface (SoftRoCE or RDMA HW) with an IP address assigned is required.
+4. If SoftRoCE is to be used to run tests, it can be configured in the following two alternative ways (it also prints out the IP of the configured interface):
 
 ```sh
 [rpma]$ ./tools/config_softroce.sh
@@ -118,7 +134,7 @@ or:
 [rpma/build]$ make config_softroce
 ```
 
-4. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
+5. Set the `RPMA_TESTING_IP` environment variable to an IP address of this interface:
 
 ```sh
 $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
@@ -163,7 +179,7 @@ to print out also the output of the failed tests.
 In order to run **only** the multi-threaded tests, run the following command:
 
 ```sh
-[rpma/build]$ ctest -R multithreaded --output-on-failure
+[rpma/build]$ ctest -R mtt --output-on-failure
 ```
 
 ### Running integration tests

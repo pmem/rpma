@@ -12,6 +12,7 @@
 #define MTT
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #define KILOBYTE 1024
 
@@ -70,6 +71,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on error populate the result and the error message */
 #define MTT_ERR_MSG(result, msg, err, ...) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		char msg_buf[MTT_ERRMSG_MAX / 2]; \
 		snprintf(msg_buf, MTT_ERRMSG_MAX / 2 - 1, \
 			msg, ##__VA_ARGS__); \
@@ -83,6 +86,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on error populate the result and the error string */
 #define MTT_ERR(result, func, err) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
 			"%s:%d %s() -> %s() failed: %s\n", \
@@ -93,6 +98,8 @@ void *mtt_malloc_aligned(size_t size, struct mtt_result *tr);
 /* on librpma error populate the result and the error string */
 #define MTT_RPMA_ERR(result, func, err) \
 	do { \
+		if ((result) == NULL) \
+			break; \
 		(result)->ret = err; \
 		snprintf((result)->errmsg, MTT_ERRMSG_MAX - 1, \
 			"%s:%d %s() -> %s() failed: %s\n", \
@@ -168,6 +175,17 @@ typedef void (*mtt_thread_func)(unsigned id, void *prestate, void *state,
  */
 typedef int (*mtt_child_process_func)(void *prestate);
 
+/*
+ * mtt_start_child - define a time when the child process is started
+ */
+enum mtt_start_child {
+	MTT_START_CHILD_BEFORE_PRESTATE_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_SEQ_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_INIT_FUNC,
+	MTT_START_CHILD_BEFORE_THREAD_FUNC,
+	MTT_START_CHILD_BEFORE_JOINING_THREADS
+};
+
 struct mtt_test {
 	/*
 	 * a pointer to test-provided data passed on all initialization steps
@@ -223,6 +241,11 @@ struct mtt_test {
 	 * A pointer to test-provided data passed to the child process function.
 	 */
 	void *child_prestate;
+
+	/*
+	 * Set a time when the child process should be started.
+	 */
+	enum mtt_start_child child_start;
 };
 
 int mtt_run(struct mtt_test *test, unsigned threads_num);

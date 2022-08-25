@@ -17,7 +17,7 @@ RUN dnf install -y epel-release
 RUN dnf install -y 'dnf-command(config-manager)'
 RUN dnf config-manager --set-enabled powertools
 
-# base deps
+# base Linux deps
 ENV BASE_DEPS "\
 	clang \
 	gcc \
@@ -29,23 +29,7 @@ ENV BASE_DEPS "\
 	sudo \
 	which"
 
-ENV TOOLS_DEPS "\
-	python3-jinja2"
-
-ENV TESTS_DEPS "\
-	python3-pylint \
-	python3-pip \
-	python3-pytest"
-
-ENV PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	scp"
-
-# RPMA deps
+# librpma library deps
 ENV RPMA_DEPS "\
 	cmake \
 	diffutils \
@@ -53,16 +37,37 @@ ENV RPMA_DEPS "\
 	gawk \
 	groff \
 	graphviz \
-	libunwind-devel \
 	pandoc \
 	rdma-core-devel"
+
+# performance tools deps
+ENV TOOLS_DEPS "\
+	python3-jinja2 \
+	python3-pylint \
+	python3-pip \
+	python3-pytest"
+
+# performance tools python deps
+ENV TOOLS_PYTHON_DEPS "\
+	coverage \
+	deepdiff \
+	markdown2 \
+	matplotlib \
+	paramiko \
+	pylint \
+	scp"
+
+# PMDK deps
+ENV PMDK_DEPS "\
+	ndctl \
+	wget"
 
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
-	$TOOLS_DEPS \
-	$TESTS_DEPS \
 	$RPMA_DEPS \
+	$TOOLS_DEPS \
+	$PMDK_DEPS \
 && dnf clean all
 
 RUN pip3 install --upgrade pip
@@ -74,6 +79,10 @@ RUN ./install-cmocka.sh
 # Install txt2man
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
+
+# Install PMDK
+COPY install-pmdk.sh install-pmdk.sh
+RUN ./install-pmdk.sh
 
 # Add user
 ENV USER user
@@ -90,4 +99,4 @@ ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
 # install python modules for the default user
-RUN pip3 install --user $PYTHON_DEPS
+RUN pip3 install --user $TOOLS_PYTHON_DEPS

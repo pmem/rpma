@@ -17,7 +17,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Update the Apt cache and install basic tools
 RUN apt-get update && apt-get dist-upgrade -y
 
-# base deps
+# base Linux deps
 ENV BASE_DEPS "\
 	apt-utils \
 	build-essential \
@@ -28,26 +28,7 @@ ENV BASE_DEPS "\
 	sudo \
 	whois"
 
-ENV EXAMPLES_DEPS "\
-	libpmem2-dev"
-
-ENV TOOLS_DEPS "\
-	python3-jinja2"
-
-ENV TESTS_DEPS "\
-	pylint \
-	python3-pip \
-	python3-pytest"
-
-ENV PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	scp"
-
-# RPMA deps
+# librpma library deps
 ENV RPMA_DEPS "\
 	cmake \
 	curl \
@@ -56,16 +37,37 @@ ENV RPMA_DEPS "\
 	graphviz \
 	libibverbs-dev \
 	librdmacm-dev \
-	libunwind-dev \
 	pandoc"
+
+# examples deps ('libprotobuf-c-dev' is required only for examples 9 and 9s)
+ENV EXAMPLES_DEPS "\
+	libpmem-dev \
+	libpmem2-dev \
+	libprotobuf-c-dev"
+
+# performance tools deps
+ENV TOOLS_DEPS "\
+	python3-jinja2 \
+	pylint \
+	python3-pip \
+	python3-pytest"
+
+# performance tools python deps
+ENV TOOLS_PYTHON_DEPS "\
+	coverage \
+	deepdiff \
+	markdown2 \
+	matplotlib \
+	paramiko \
+	pylint \
+	scp"
 
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
+	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
 	$TOOLS_DEPS \
-	$TESTS_DEPS \
-	$RPMA_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip
@@ -91,4 +93,4 @@ ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
 
 # install python modules for the default user
-RUN pip3 install --user $PYTHON_DEPS
+RUN pip3 install --user $TOOLS_PYTHON_DEPS

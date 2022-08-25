@@ -65,7 +65,6 @@ ENV RPMA_DEPS "\
 	gawk \
 	groff \
 	graphviz \
-	libunwind \
 	pandoc"
 
 # Install required packages

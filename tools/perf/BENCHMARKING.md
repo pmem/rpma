@@ -14,7 +14,7 @@ You must have several components installed in your system in order to use the be
  - fio >= 3.27
  - numactl
  - pciutils (needed by ddio.sh, required only in case of the Cascade Lake platforms)
-
+*Note*: To make sure you have all needed packages installed you can support yourself with [Dockerfiles](./utils/docker/images) (see the TOOLS_PYTHON_DEPS and ENV TOOLS_DEPS sections)
 *Note*: The newest features are available on the development branch: https://github.com/pmem/fio.git
 
 ```sh
@@ -56,6 +56,13 @@ $ pip3 install --user scp
 
 *Note*: All of the scripts presented in the following sections must be run on the RPMA initiator side.
 
+In order to test the performance analysis tools you also need:
+
+- pylint
+
+*Note*: testing the performance analysis tools can be turned off using the CMake 'TESTS_PERF_TOOLS' option
+(see [Configuring CMake options](../../DEVELOPMENT.md#configuring-cmake-options) and
+[CMake options of the librpma library](../../DEVELOPMENT.md#cmake-options-of-the-librpma-library)).
 
 ## Generating a report
 
@@ -70,13 +77,13 @@ Make a copy of config.json.example (config.json) and adjust it to describe your 
 You can choose from few predefined sets of benchmarks covering different aspects. The predefined benchmarks are stored in the `./figures/*.json` files. You can run one or more of them at once e.g.:
 
 ```sh
-$ ./report_bench.py run --config config.json --figures figures/read.json figures/write.json --result_dir results
+[rpma/tools/perf]$ ./report_bench.py run --config config.json --figures figures/read.json figures/write.json --result_dir results
 ```
 
 If you want to continue an interrupted benchmarking process or if you want to run more benchmarks for different configuration parameters, you can change them in the 'results/bench.json' file and run:
 
 ```sh
-$ ./report_bench.py continue --bench results/bench.json
+[rpma/tools/perf]$ ./report_bench.py continue --bench results/bench.json
 ```
 
 For example, in case of Intel Ice Lake platforms, in order to continue a benchmark for a different value of `DIRECT_WRITE_TO_PMEM`, a state of DDIO has to be changed in the BIOS and the benchmark can be continued after the reboot and changing a value of `DIRECT_WRITE_TO_PMEM` in the 'results/bench.json' file.
@@ -84,19 +91,19 @@ For example, in case of Intel Ice Lake platforms, in order to continue a benchma
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_bench.py -h
+[rpma/tools/perf]$ ./report_bench.py -h
 ```
 
 ### 3) Generate figures
 
 ```sh
-$ ./report_figures.py generate --bench results/bench.json
+[rpma/tools/perf]$ ./report_figures.py generate --bench results/bench.json
 ```
 
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_figures.py generate -h
+[rpma/tools/perf]$ ./report_figures.py generate -h
 ```
 
 ### 4) Generate the performance report
@@ -104,13 +111,13 @@ $ ./report_figures.py generate -h
 Make a copy of report.json.example (report.json) and adjust it to describe your configuration.
 
 ```sh
-$ ./report_create.py --bench results/bench.json --report report.json
+[rpma/tools/perf]$ ./report_create.py --bench results/bench.json --report report.json
 ```
 
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_create.py -h
+[rpma/tools/perf]$ ./report_create.py -h
 ```
 ### 5) Watermarking (optional)
 
@@ -132,14 +139,14 @@ $ pdftk report.pdf stamp watermark.pdf output report_with_watermark.pdf
 ## Comparing
 
 ```sh
-$ ./report_figures.py compare --benches results_1/bench.json results_2/bench.json
+[rpma/tools/perf]$ ./report_figures.py compare --benches results_1/bench.json results_2/bench.json
 --prefixes results_1 results_2 --result_dir compare
 ```
 
 To see all available configuration options please take a look at the help:
 
 ```sh
-$ ./report_figures.py compare -h
+[rpma/tools/perf]$ ./report_figures.py compare -h
 ```
 
 ## Running simple workloads

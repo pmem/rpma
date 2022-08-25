@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -21,9 +21,11 @@ struct ibv_context Ibv_context = {&Ibv_device};
 struct ibv_pd Ibv_pd = {&Ibv_context, 0};
 struct ibv_cq Ibv_cq;
 struct ibv_cq Ibv_rcq;
+struct ibv_cq Ibv_srq_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
 struct ibv_mr Ibv_mr;
+struct ibv_srq Ibv_srq;
 
 /*
  * ibv_query_device -- ibv_query_device() mock
@@ -228,14 +230,14 @@ int
 ibv_dereg_mr(struct ibv_mr *mr)
 {
 	/*
-	 * rpma_peer_mr_reg() and malloc() may be called in any order.
+	 * rpma_peer_setup_mr_reg() and malloc() may be called in any order.
 	 * If the first one fails, then the second one won't be called.
 	 * ibv_dereg_mr() will be called in rpma_mr_reg() only if:
-	 * 1) rpma_peer_mr_reg() succeeded and
+	 * 1) rpma_peer_setup_mr_reg() succeeded and
 	 * 2) malloc() failed.
 	 * In the opposite case, when:
 	 * 1) malloc() succeeded and
-	 * 2) rpma_peer_mr_reg() failed,
+	 * 2) rpma_peer_setup_mr_reg() failed,
 	 * ibv_dereg_mr() will not be called,
 	 * so we cannot add cmocka's expects here.
 	 * Otherwise, unconsumed expects would cause a test failure.
@@ -295,6 +297,27 @@ ibv_post_recv_mock(struct ibv_qp *qp, struct ibv_recv_wr *wr,
 	assert_non_null(bad_wr);
 
 	assert_int_equal(qp, args->qp);
+	assert_int_equal(wr->wr_id, args->wr_id);
+	assert_null(wr->next);
+
+	return args->ret;
+}
+
+/*
+ * ibv_post_srq_recv_mock -- mock of ibv_post_srq_recv()
+ */
+int
+ibv_post_srq_recv_mock(struct ibv_srq *srq, struct ibv_recv_wr *wr,
+		struct ibv_recv_wr **bad_wr)
+{
+	struct ibv_post_srq_recv_mock_args *args =
+		mock_type(struct ibv_post_srq_recv_mock_args *);
+
+	assert_non_null(srq);
+	assert_non_null(wr);
+	assert_non_null(bad_wr);
+
+	assert_int_equal(srq, args->srq);
 	assert_int_equal(wr->wr_id, args->wr_id);
 	assert_null(wr->next);
 
@@ -373,3 +396,36 @@ ibv_advise_mr_mock(struct ibv_pd *pd,
 	return mock_type(int);
 }
 #endif
+
+/*
+ * ibv_create_srq -- ibv_create_srq() mock
+ */
+struct ibv_srq *
+ibv_create_srq(struct ibv_pd *pd, struct ibv_srq_init_attr *srq_init_attr)
+{
+	assert_ptr_equal(pd, MOCK_IBV_PD);
+	assert_non_null(srq_init_attr);
+	assert_null(srq_init_attr->srq_context);
+	check_expected(srq_init_attr->attr.max_wr);
+	assert_int_equal(srq_init_attr->attr.max_sge, 1);
+	assert_int_equal(srq_init_attr->attr.srq_limit, 0);
+
+	struct ibv_srq *srq = mock_type(struct ibv_srq *);
+	if (!srq) {
+		errno = mock_type(int);
+		return NULL;
+	}
+
+	return srq;
+}
+
+/*
+ * ibv_destroy_srq -- ibv_destroy_srq() mock
+ */
+int
+ibv_destroy_srq(struct ibv_srq *srq)
+{
+	check_expected_ptr(srq);
+
+	return mock_type(int);
+}

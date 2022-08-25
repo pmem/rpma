@@ -41,4 +41,4 @@ function(add_example name)
 endfunction()
 
 add_example(server server.c ../common/common-conn.c receive-completion-queue-common.c)
-add_example(client client.c ../common/common-conn.c receive-completion-queue-common.c)
+add_example(client client.c ../common/common-conn.c receive-completion-queue-common.c ../common/common-utils.c)

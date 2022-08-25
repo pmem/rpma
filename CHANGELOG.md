@@ -6,19 +6,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.0] - 2022-08-25
 ### Added
 - DEVELOPMENT.md file containing the most important information needed during development of the library
 - THREAD_SAFETY.md file containing the analysis of thread safety of the librpma library
 - APIs:
   - rpma_conn_cfg_get_compl_channel - gets if the completion event channel can be shared by CQ and RCQ
+  - rpma_conn_cfg_get_srq - gets the shared RQ object from the connection
   - rpma_conn_cfg_set_compl_channel - sets if the completion event channel can be shared by CQ and RCQ
+  - rpma_conn_cfg_set_srq - sets a shared RQ object for the connection
   - rpma_conn_get_compl_fd - gets a file descriptor of the shared completion channel from the connection
   - rpma_conn_wait - waits for a completion event on the shared completion channel from CQ or RCQ
+  - rpma_srq_cfg_delete - deletes the shared RQ configuration object
+  - rpma_srq_cfg_get_rcq_size - gets the receive CQ size of the shared RQ
+  - rpma_srq_cfg_get_rq_size - gets the RQ size of the shared RQ
+  - rpma_srq_cfg_new - creates a new shared RQ configuration object
+  - rpma_srq_cfg_set_rcq_size - sets the receive CQ size of the shared RQ
+  - rpma_srq_cfg_set_rq_size - sets the RQ size of the shared RQ
+  - rpma_srq_delete - deletes the shared RQ object
+  - rpma_srq_get_rcq - gets the receive CQ from the shared RQ object
+  - rpma_srq_new - creates a new shared RQ object
+  - rpma_srq_recv - initiates the receive operation in shared RQ
   - error RPMA_E_SHARED_CHANNEL - the completion event channel is shared and cannot be handled by any particular CQ
   - error RPMA_E_NOT_SHARED_CHNL - the completion event channel is not shared
 
-- logging of the source and the destination GID addresses in rpma_conn_req_from_id()
+- examples:
+  - 08srq-simple-messages-ping-pong-with-srq - a single-connection example for shared RQ with ping-pong messages
+  - 13-messages-ping-pong-with-srq - a multi-connection example for shared RQ with ping-pong messages
+
+- logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
 - error message for RPMA_E_AGAIN: "Temporary error, try again"
+- peer_cfg: get/set_direct_write_to_pmem and get_descriptor are now thread-safe
+- conn_cfg: all get and set functions for cq, rq, sq, rcq, timeout and compl_channel are now thread-safe
+- multi-threaded tests:
+  - rpma_conn_apply_remote_peer_cfg
+  - rpma_conn_cfg_get_srq
+  - rpma_conn_cfg_set_srq
+  - rpma_conn_req_connect
+  - rpma_ep_next_conn_req
+  - rpma_log_set_function
+  - rpma_log_set_get_threshold
+  - rpma_log_set_threshold
+  - rpma_peer_cfg_set_direct_write_to_pmem
+  - rpma_srq_cfg_new
+  - rpma_srq_cfg_get_rcq_size
+  - rpma_srq_cfg_get_rq_size
+  - rpma_srq_cfg_set_rcq_size
+  - rpma_srq_cfg_set_rq_size
+  - rpma_srq_delete
+  - rpma_srq_get_rcq
+  - rpma_srq_new
 
 ### Changed
 - APIs:
@@ -36,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CMAKE_BUILD_TYPE from Debug to Release
   - TESTS_PERF_TOOLS - from ON to OFF
 
+ - all examples and internal API files now comply with the new character limit per line (100 characters)
+
 ### Fixed
 - APIs:
   - rpma_peer_delete - fixed memory leak when ibv_dealloc_pd() fails
@@ -47,6 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TESTS_USE_VALGRIND
 
 - old integration tests
+- suppresions for get and set functions for cq, rq, sq and timeout has been removed
 
 ## [0.14.0] - 2022-03-15
 ### Added
@@ -147,7 +188,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tools:
   - [ddio.sh script][ddio] to toggle and query the DDIO (Intel&reg; Data Direct I/O Technology) state per PCIe root port on Intel&reg; Cascade Lake platforms ([#597][597]).
-  - [Benchmarking framework][bench] for the librpma.
+  - [Benchmarking framework][bench] for librpma.
 
 ### Changed
 - Atomic write operation (rpma_write_atomic()) implemented with fence

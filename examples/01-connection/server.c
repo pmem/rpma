@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2021, Intel Corporation */
+/* Copyright 2020-2022, Intel Corporation */
 
 /*
  * server.c -- a server of the connection example
@@ -42,8 +42,7 @@ main(int argc, char *argv[])
 	int ret = 0;
 
 	/* obtain an IBV context for a local IP address */
-	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL,
-			&ibv_ctx);
+	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
 	if (ret)
 		return ret;
 
@@ -63,8 +62,7 @@ main(int argc, char *argv[])
 		goto err_ep_shutdown;
 
 	/*
-	 * connect / accept the connection request and obtain the connection
-	 * object
+	 * connect / accept the connection request and obtain the connection object
 	 */
 	const char *msg = "Hello client!";
 	struct rpma_conn_private_data pdata;
@@ -79,8 +77,7 @@ main(int argc, char *argv[])
 	if (ret) {
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_delete;
 	}
@@ -104,8 +101,7 @@ main(int argc, char *argv[])
 	if (ret) {
 		goto err_conn_delete;
 	} else if (conn_event != RPMA_CONN_CLOSED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_delete;
 	}

@@ -7,6 +7,8 @@
 # functions.cmake - helper functions for CMakeLists.txt
 #
 
+include(CheckCCompilerFlag)
+
 # prepends prefix to list of strings
 function(prepend var prefix)
 	set(listVar "")
@@ -220,6 +222,24 @@ function(is_ibv_advise_mr_supported var)
 	set(var ${IBV_ADVISE_MR_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
+# check if libibverbs has ibv_advise_mr() support
+function(are_ibv_advise_flags_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if all required IBV_ADVISE_MR* flags are supported */
+		int main() {
+			return IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE | IBV_ADVISE_MR_FLAG_FLUSH;
+		}"
+		IBV_ADVISE_MR_FLAGS_SUPPORTED)
+	if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+		message(STATUS "All required IBV_ADVISE_MR* flags are supported")
+	else()
+		message(WARNING "Required IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE or IBV_ADVISE_MR_FLAG_FLUSH flags are NOT supported. "
+				"rpma_mr_advise() will not be called in the examples.")
+	endif()
+	set(var ${IBV_ADVISE_MR_FLAGS_SUPPORTED} PARENT_SCOPE)
+endfunction()
+
 # check if librdmacm has correct signature of rdma_getaddrinfo()
 function(check_signature_rdma_getaddrinfo var)
 	get_filename_component(REAL_CMAKE_C_COMPILER ${CMAKE_C_COMPILER} REALPATH)
@@ -284,16 +304,18 @@ function(check_if_librt_is_required)
 	endif()
 endfunction()
 
-# check if atomic_store() is supported
-function(atomic_store_supported var)
+# check if atomic operations are supported
+function(atomic_operations_supported var)
 	CHECK_C_SOURCE_COMPILES("
 		#include <stdatomic.h>
-		/* check if atomic_store() is defined */
+		/* check if atomic operations are supported */
 		int main() {
-			int i;
-			atomic_store(&i, 1);
+			_Atomic int i, j;
+			atomic_init(&i, 0);
+			j = atomic_load_explicit(&i, __ATOMIC_SEQ_CST);
+			atomic_store_explicit(&i, 1, __ATOMIC_SEQ_CST);
 			return 0;
 		}"
-		ATOMIC_STORE_SUPPORTED)
-	set(var ${ATOMIC_STORE_SUPPORTED} PARENT_SCOPE)
+		ATOMIC_OPERATIONS_SUPPORTED)
+	set(var ${ATOMIC_OPERATIONS_SUPPORTED} PARENT_SCOPE)
 endfunction()

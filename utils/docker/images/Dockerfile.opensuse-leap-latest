@@ -18,7 +18,7 @@ RUN zypper dup -y
 # Update all packages
 RUN zypper update -y
 
-# base deps
+# base Linux deps
 ENV BASE_DEPS "\
 	clang \
 	gcc \
@@ -28,42 +28,48 @@ ENV BASE_DEPS "\
 	sudo \
 	which"
 
-ENV TOOLS_DEPS "\
-	python3-Jinja2"
-
-ENV TESTS_DEPS "\
-	python3 \
-	python3-pip \
-	python3-pylint \
-	python3-pytest \
-	python3-setuptools"
-
-ENV PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	scp"
-
-# RPMA deps
+# librpma library deps
 ENV RPMA_DEPS "\
 	cmake \
 	file \
 	gawk \
 	groff \
 	graphviz \
-	libunwind-devel \
 	pandoc \
 	rpm-build \
 	rdma-core-devel"
 
+# examples deps ('libprotobuf-c-devel' is required only for examples 9 and 9s)
+ENV EXAMPLES_DEPS "\
+	libpmem-devel \
+	libpmem2-devel \
+	libprotobuf-c-devel"
+
+# performance tools deps
+ENV TOOLS_DEPS "\
+	python3-Jinja2 \
+	python3 \
+	python3-pip \
+	python3-pylint \
+	python3-pytest \
+	python3-setuptools"
+
+# performance tools python deps
+ENV TOOLS_PYTHON_DEPS "\
+	coverage \
+	deepdiff \
+	markdown2 \
+	matplotlib \
+	paramiko \
+	pylint \
+	scp"
+
 # Install all required packages
 RUN zypper install -y \
 	$BASE_DEPS \
-	$TOOLS_DEPS \
-	$TESTS_DEPS \
-	$RPMA_DEPS
+	$RPMA_DEPS \
+	$EXAMPLES_DEPS \
+	$TOOLS_DEPS
 
 RUN pip3 install --upgrade pip
 
@@ -102,4 +108,4 @@ ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
 
 # install python modules for the default user
-RUN pip3 install --user $PYTHON_DEPS
+RUN pip3 install --user $TOOLS_PYTHON_DEPS

@@ -5,8 +5,9 @@ Down below you'll find instructions on how to contribute to the librpma library.
 Your contributions are most welcome!  You'll find it is best to begin
 with a conversation about your changes, rather than just writing a bunch
 of code and contributing it out of the blue.
-To propose new features, suggest adding features, or simply start a dialogue about librpma,
-open an issue in our [GitHub Issues Database](https://github.com/pmem/rpma/issues)
+To propose new features, suggest adding features, or simply start a dialogue
+about the librpma library, open an issue in our
+[GitHub Issues Database](https://github.com/pmem/rpma/issues)
 
 **Note**: If you do decide to implement code changes and contribute them,
 please make sure you agree your contribution can be made available
@@ -54,30 +55,41 @@ Author: Random J Developer <random@developer.example.org>
 
 ## Code contributions
 
+First you should get familiar with all information about developing the librpma library located in the [DEVELOPMENT.md](DEVELOPMENT.md) file.
+
+It is very useful:
+1) to enable all developer checks by setting the `BUILD_DEVELOPER_MODE` CMake variable to `ON` and also
+2) to set the `CMAKE_BUILD_TYPE` CMake variable to `Debug` in order to be able to see the debug information in case of failures:
+
+```sh
+[rpma/build]$ cmake .. -DBUILD_DEVELOPER_MODE=ON -DCMAKE_BUILD_TYPE=Debug
+```
+
 ### Code formatting
 
-Here is the list of the most important rules:
+Here is the list of the most important rules of code formatting:
 
-- The limit of line length is 100 characters.
+- The limit for a line length is 100 characters.
 - Indent the code with TABs, not spaces. Tab width is 8 characters.
 - Do not break user-visible strings (even when they are longer than 100 characters), but make them the only token in the line.
 - Put each variable declaration in a separate line.
 - Do not use C++ comments `//` (except for the License).
 - Spaces around operators are mandatory.
-- No whitespace is allowed at the end of line.
-- For multi-line macros, do not put whitespace before `\` character.
+- No whitespace is allowed at the end of a line.
+- For multi-line macros, do not put whitespace before the `\` character.
 - Precede definition of each function with a brief, non-trivial description. (Usually a single line is enough.)
-- Use `XXX` tag to indicate a hack, problematic code, or something to be done.
-- For pointer variables, place the `*` close to the variable name not pointer type.
+- Use the `XXX` tag to indicate a hack, problematic code, or something to be done.
+- For pointer variables, place the `*` close to the variable name, not the pointer type.
 - Avoid unnecessary variable initialization.
 - Never type `unsigned int` - just use `unsigned` in such case. Same with `long int` and `long`, etc.
 - Sized types like `uint32_t`, `int64_t` should be used when there is an on-media format. Otherwise, just use `unsigned`, `long`, etc.
 - Functions with local scope must be declared as `static`.
 
 Before contributing please remember to run:
+
 ```sh
-	$ make cstyle
-	$ make check-whitespace
+[rpma/build]$ make cstyle
+[rpma/build]$ make check-whitespace
 ```
 
 This will check all C files in the tree for style issues.
@@ -96,11 +108,13 @@ All commit lines (entered when you run `git commit`) must follow the common conv
 - Any references to GitHub issues are at the end of the commit message.
 
 If you want to check the commit before creating PR, run:
-```shell
-	$ make check-commits
+
+```sh
+[rpma/build]$ make check-commits
 ```
 
 For example, here is a properly-formatted commit message:
+
 ```
 doc: fix code formatting in man pages
 
@@ -116,22 +130,22 @@ sentences.  There can be as many paragraphs as necessary.
 
 Ref: rpma/issues#1
 ```
-## Coverage
 
-One of the basic principles of delivering a new functionality to a library is to deliver it simultaneously with the unit tests to ensure that the new features behave correctly.
-You have to expect that code that degrades the test coverage will not pass the review process unless it is explicitly marked as a draft.
-Keep in mind that only PRs with 100% coverage can be merged. Please check [DEVELOPMENT.md file](DEVELOPMENT.md) to see how to run all unit tests.
+## Code coverage
+
+One of the basic principles of delivering a new functionality to the library is to deliver it simultaneously with the unit tests to ensure that the new features behave correctly.
+You have to expect that code that degrades the test coverage will not pass the review process unless it is explicitly marked as a draft. Keep in mind that only PRs with 100% coverage can be merged. Please read the [DEVELOPMENT.md](DEVELOPMENT.md) file to see how to run all unit tests.
 
 ## Bug reports
 
 Bugs for the RPMA project are tracked in our
 [GitHub Issues Database](https://github.com/pmem/rpma/issues).
 
-When reporting a new bug, please use `New issue` button.
+When reporting a new bug, please use the `New issue` button.
 Provide as much information as possible.
 
 ## Other issues
 
 On our issues page we also gather feature requests and questions. Templates to use
-are `Feature` and `Question`, respectively.  They should help deliver a meaningful
+are `Feature` and `Question`, respectively.  They should help deliver meaningful
 description of a feature or ask a question to us.

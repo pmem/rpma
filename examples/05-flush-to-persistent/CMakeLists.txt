@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -11,7 +11,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 	${CMAKE_SOURCE_DIR}/../cmake
 	${CMAKE_SOURCE_DIR}/../../cmake)
 
+include(${CMAKE_SOURCE_DIR}/../cmake/common.cmake)
 include(${CMAKE_SOURCE_DIR}/../../cmake/functions.cmake)
+
+# check if all required IBV_ADVISE_MR* flags are supported
+are_ibv_advise_flags_supported(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+
 # set LIBRT_LIBRARIES if linking with librt is required
 check_if_librt_is_required()
 
@@ -36,23 +41,5 @@ endif()
 
 link_directories(${LIBRPMA_LIBRARY_DIRS})
 
-function(add_example name)
-	set(srcs ${ARGN})
-	add_executable(${name} ${srcs})
-	target_include_directories(${name}
-		PRIVATE
-			${LIBRPMA_INCLUDE_DIRS}
-			../common)
-	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
-
-	if(LIBPMEM_FOUND)
-		target_include_directories(${name}
-			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
-		target_link_libraries(${name} ${LIBPMEM_LIBRARIES})
-		target_compile_definitions(${name}
-			PRIVATE USE_LIBPMEM)
-	endif()
-endfunction()
-
-add_example(server server.c ../common/common-conn.c)
-add_example(client client.c ../common/common-conn.c)
+add_example_with_pmem(NAME server SRCS server.c)
+add_example_with_pmem(NAME client SRCS client.c)

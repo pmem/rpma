@@ -13,32 +13,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
-#include "hello.h"
+#include "common-hello.h"
+#include "common-map_file_with_signature_check.h"
+#include "common-pmem_map_file.h"
 
-#ifdef USE_LIBPMEM
-#include <libpmem.h>
+#ifdef USE_PMEM
 #define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
-#endif /* USE_LIBPMEM */
+#endif /* USE_PMEM */
 
 #define FLUSH_ID	(void *)0xF01D /* a random identifier */
-
-static inline void
-write_hello_str(struct hello_t *hello, enum lang_t lang)
-{
-	hello->lang = lang;
-	strncpy(hello->str, hello_str[hello->lang], KILOBYTE - 1);
-	hello->str[KILOBYTE - 1] = '\0';
-}
-
-static void
-translate(struct hello_t *hello)
-{
-	printf("translating...\n");
-	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
-	write_hello_str(hello, lang);
-}
 
 int
 main(int argc, char *argv[])
@@ -59,9 +44,8 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *mr_ptr = NULL;
-	size_t mr_size = 0;
-	size_t data_offset = 0;
+	struct common_mem mem;
+	memset(&mem, 0, sizeof(mem));
 	struct rpma_mr_remote *dst_mr = NULL;
 	size_t dst_size = 0;
 	size_t dst_offset = 0;
@@ -70,81 +54,26 @@ main(int argc, char *argv[])
 
 	struct hello_t *hello = NULL;
 
-#ifdef USE_LIBPMEM
-	int is_pmem = 0;
+#ifdef USE_PMEM
 	if (argc >= 4) {
 		char *path = argv[3];
 
-		/* map the file */
-		mr_ptr = pmem_map_file(path, 0 /* len */, 0 /* flags */,
-				0 /* mode */, &mr_size, &is_pmem);
-		if (mr_ptr == NULL) {
-			(void) fprintf(stderr, "pmem_map_file() for %s "
-					"failed\n", path);
-			return -1;
-		}
-
-		/* pmem is expected */
-		if (!is_pmem) {
-			(void) fprintf(stderr, "%s is not an actual PMEM\n",
-				path);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-
-		/*
-		 * At the beginning of the persistent memory, a signature is
-		 * stored which marks its content as valid. So the length
-		 * of the mapped memory has to be at least of the length of
-		 * the signature to convey any meaningful content and be usable
-		 * as a persistent store.
-		 */
-		if (mr_size < SIGNATURE_LEN) {
-			(void) fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, SIGNATURE_LEN);
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-		data_offset = SIGNATURE_LEN;
-
-		/*
-		 * The space under the offset is intended for storing the hello
-		 * structure. So the total space is assumed to be at least
-		 * 1 KiB + offset of the string contents.
-		 */
-		if (mr_size - data_offset < sizeof(struct hello_t)) {
-			fprintf(stderr, "%s too small (%zu < %zu)\n",
-					path, mr_size, sizeof(struct hello_t));
-			(void) pmem_unmap(mr_ptr, mr_size);
-			return -1;
-		}
-
-		hello = (struct hello_t *)((uintptr_t)mr_ptr + data_offset);
-
-		/*
-		 * If the signature is not in place the persistent content has
-		 * to be initialized and persisted.
-		 */
-		if (strncmp(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-			/* write an initial value and persist it */
-			write_hello_str(hello, en);
-			pmem_persist(hello, sizeof(struct hello_t));
-			/* write the signature to mark the content as valid */
-			memcpy(mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-			pmem_persist(mr_ptr, SIGNATURE_LEN);
-		}
+		ret = common_pmem_map_file_with_signature_check(path, 0, &mem);
+		if (ret)
+			goto err_free;
+		hello = (struct hello_t *)((uintptr_t)mem.mr_ptr + mem.data_offset);
 	}
-#endif
+#endif /* USE_PMEM */
 
 	/* if no pmem support or it is not provided */
-	if (mr_ptr == NULL) {
+	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mr_ptr = malloc_aligned(sizeof(struct hello_t));
-		if (mr_ptr == NULL)
+		mem.mr_ptr = malloc_aligned(sizeof(struct hello_t));
+		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mr_size = sizeof(struct hello_t);
-		hello = mr_ptr;
+		mem.mr_size = sizeof(struct hello_t);
+		hello = (struct hello_t *)mem.mr_ptr;
 
 		/* write an initial value */
 		write_hello_str(hello, en);
@@ -172,8 +101,7 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 	/* register the memory RDMA write */
-	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_WRITE_SRC,
-				&src_mr);
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size, RPMA_MR_USAGE_WRITE_SRC, &src_mr);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -193,8 +121,7 @@ main(int argc, char *argv[])
 			dst_data->pcfg_desc_size, &pcfg);
 	if (ret)
 		goto err_mr_dereg;
-	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg,
-			&direct_write_to_pmem);
+	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
 	ret |= rpma_conn_apply_remote_peer_cfg(conn, pcfg);
 	(void) rpma_peer_cfg_delete(&pcfg);
 	/* either get or apply failed */
@@ -223,7 +150,7 @@ main(int argc, char *argv[])
 
 	dst_offset = dst_data->data_offset;
 	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
-			(data_offset + offsetof(struct hello_t, str)), KILOBYTE,
+			(mem.data_offset + offsetof(struct hello_t, str)), KILOBYTE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
@@ -268,8 +195,7 @@ main(int argc, char *argv[])
 	}
 	if (wc.status != IBV_WC_SUCCESS) {
 		ret = -1;
-		(void) fprintf(stderr, "rpma_flush() failed: %s\n",
-				ibv_wc_status_str(wc.status));
+		(void) fprintf(stderr, "rpma_flush() failed: %s\n", ibv_wc_status_str(wc.status));
 		goto err_mr_remote_delete;
 	}
 
@@ -278,11 +204,11 @@ main(int argc, char *argv[])
 	 * surprising.
 	 */
 	translate(hello);
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_persist(hello, sizeof(struct hello_t));
-	}
-#endif
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		mem.persist(hello, sizeof(struct hello_t));
+	} else
+#endif /* USE_PMEM */
 
 	(void) printf("Translation: %s\n", hello->str);
 
@@ -302,15 +228,13 @@ err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
 err_free:
-#ifdef USE_LIBPMEM
-	if (is_pmem) {
-		pmem_unmap(mr_ptr, mr_size);
-		mr_ptr = NULL;
+#ifdef USE_PMEM
+	if (mem.is_pmem) {
+		common_pmem_unmap_file(&mem);
+	} else
+#endif /* USE_PMEM */
+	if (mem.mr_ptr != NULL) {
+		free(mem.mr_ptr);
 	}
-#endif
-
-	if (mr_ptr != NULL)
-		free(mr_ptr);
-
 	return ret;
 }

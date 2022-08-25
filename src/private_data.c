@@ -16,12 +16,10 @@
 #endif
 
 /*
- * rpma_private_data_store -- store a copy of the data provided via the CM event
- * object
+ * rpma_private_data_store -- store a copy of the data provided via the CM event object
  */
 int
-rpma_private_data_store(struct rdma_cm_event *edata,
-		struct rpma_conn_private_data *pdata)
+rpma_private_data_store(struct rdma_cm_event *edata, struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
@@ -47,10 +45,10 @@ rpma_private_data_store(struct rdma_cm_event *edata,
 }
 
 /*
- * rpma_private_data_discard -- free the private data
+ * rpma_private_data_delete -- free the private data
  */
 void
-rpma_private_data_discard(struct rpma_conn_private_data *pdata)
+rpma_private_data_delete(struct rpma_conn_private_data *pdata)
 {
 	RPMA_DEBUG_TRACE;
 

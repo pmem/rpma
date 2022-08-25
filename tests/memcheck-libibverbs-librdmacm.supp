@@ -96,8 +96,8 @@
    ...
    fun:rdma_create_qp_ex
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
+   fun:rpma_peer_setup_qp
+   fun:rpma_conn_req_new_from_id
    fun:rpma_conn_req_new
    ...
 }
@@ -189,9 +189,9 @@
    ...
    fun:rdma_create_qp_ex
    fun:rdma_create_qp
-   fun:rpma_peer_create_qp
-   fun:rpma_conn_req_from_id
-   fun:rpma_conn_req_from_cm_event
+   fun:rpma_peer_setup_qp
+   fun:rpma_conn_req_new_from_id
+   fun:rpma_conn_req_new_from_cm_event
    fun:rpma_ep_next_conn_req
    ...
 }
@@ -214,5 +214,51 @@
    ...
    fun:rpma_info_bind_addr
    fun:rpma_utils_get_ibv_context
+   ...
+}
+
+#
+# Assessment: this suppression indicates a memory leak
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of MTT framework.
+#
+{
+   Memory leak in pthread_create
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_*
+   fun:mtt_run
+   fun:main
+}
+
+#
+# Assessment: this suppression indicates that a conditional jump
+# or move depends on uninitialised value(s)
+#
+# OS: ubuntu-2204:2022.04.1 of CircleCI
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of
+# - rpma_srq_new
+#
+{
+   Conditional jump or move depends on uninitialised value(s)
+   Memcheck:Cond
+   obj:/usr/lib/x86_64-linux-gnu/libibverbs.so*
+   fun:ibv_cmd_create_srq
+   obj:/usr/lib/x86_64-linux-gnu/libibverbs/librxe-rdma*.so
+   fun:ibv_create_srq
+   fun:rpma_peer_create_srq
+   fun:rpma_srq_new
    ...
 }

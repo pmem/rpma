@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright 2021-2022, Fujitsu */
 
 /*
  * conn_req.c -- librpma connection-request-related implementations
@@ -44,8 +44,7 @@ struct rpma_conn_req {
 };
 
 /*
- * rpma_snprintf_gid -- snprintf GID address to the given string
- *                      (helper function)
+ * rpma_snprintf_gid -- snprintf GID address to the given string (helper function)
  */
 static inline int
 rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
@@ -56,9 +55,8 @@ rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
 	memset(gid, 0, size);
 	int ret = snprintf(gid, size,
 			"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
-			raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6],
-			raw[7], raw[8], raw[9], raw[10], raw[11], raw[12],
-			raw[13], raw[14], raw[15]);
+			raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6], raw[7], raw[8],
+			raw[9], raw[10], raw[11], raw[12], raw[13], raw[14], raw[15]);
 	if (ret < 0) {
 		memset(gid, 0, size);
 		return RPMA_E_UNKNOWN;
@@ -68,55 +66,67 @@ rpma_snprintf_gid(uint8_t *raw, char *gid, size_t size)
 }
 
 /*
- * rpma_conn_req_from_id -- allocate a new conn_req object from CM ID and equip
- * the latter with QP and CQ
+ * rpma_conn_req_new_from_id -- allocate a new conn_req object from CM ID and equip the latter
+ * with QP and CQ
  *
  * ASSUMPTIONS
  * - peer != NULL && id != NULL && cfg != NULL && req_ptr != NULL
  */
 static int
-rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
+rpma_conn_req_new_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
-	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	int ret = 0;
 
 	int cqe, rcqe;
 	bool shared = false;
+	struct rpma_srq *srq = NULL;
+	struct rpma_cq *cq = NULL;
+	struct rpma_cq *rcq = NULL;
+	struct rpma_cq *srq_rcq = NULL;
 	/* read the main CQ size from the configuration */
 	rpma_conn_cfg_get_cqe(cfg, &cqe);
 	/* read the receive CQ size from the configuration */
 	rpma_conn_cfg_get_rcqe(cfg, &rcqe);
 	/* get if the completion channel should be shared by CQ and RCQ */
 	(void) rpma_conn_cfg_get_compl_channel(cfg, &shared);
+	/* get the shared RQ object from the connection */
+	(void) rpma_conn_cfg_get_srq(cfg, &srq);
+	if (srq)
+		(void) rpma_srq_get_rcq(srq, &srq_rcq);
 
+	if (shared && srq_rcq) {
+		RPMA_LOG_ERROR(
+				"connection shared completion channel cannot be used when the shared RQ has its own RCQ");
+		return RPMA_E_INVAL;
+	}
+
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
 	struct ibv_comp_channel *channel = NULL;
 	if (shared) {
 		/* create a completion channel */
 		channel = ibv_create_comp_channel(id->verbs);
 		if (channel == NULL) {
-			RPMA_LOG_ERROR_WITH_ERRNO(errno,
-					"ibv_create_comp_channel()");
+			RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_create_comp_channel()");
 			return RPMA_E_PROVIDER;
 		}
 	}
 
-	struct rpma_cq *cq = NULL;
 	ret = rpma_cq_new(id->verbs, cqe, channel, &cq);
 	if (ret)
 		goto err_comp_channel_destroy;
 
-	struct rpma_cq *rcq = NULL;
-	if (rcqe) {
+	if (!srq_rcq && rcqe) {
 		ret = rpma_cq_new(id->verbs, rcqe, channel, &rcq);
 		if (ret)
 			goto err_rpma_cq_delete;
 	}
 
-	/* create a QP */
-	ret = rpma_peer_create_qp(peer, id, cq, rcq, cfg);
+	/* setup a QP */
+	ret = rpma_peer_setup_qp(peer, id, cq, srq_rcq ? srq_rcq : rcq, cfg);
 	if (ret)
 		goto err_rpma_rcq_delete;
 
@@ -137,15 +147,13 @@ rpma_conn_req_from_id(struct rpma_peer *peer, struct rdma_cm_id *id,
 	if (ret == 0 && level >= RPMA_LOG_LEVEL_NOTICE) {
 		struct ibv_sa_path_rec *path_rec = id->route.path_rec;
 		char gid[GID_STR_LEN];
-		if (path_rec && !rpma_snprintf_gid(path_rec->sgid.raw,
-					gid, GID_STR_LEN)) {
+		if (path_rec && !rpma_snprintf_gid(path_rec->sgid.raw, gid, GID_STR_LEN)) {
 			RPMA_LOG_NOTICE("src GID = %s", gid);
 		} else {
 			RPMA_LOG_NOTICE("src GID is not available");
 		}
 
-		if (path_rec && !rpma_snprintf_gid(path_rec->dgid.raw,
-					gid, GID_STR_LEN)) {
+		if (path_rec && !rpma_snprintf_gid(path_rec->dgid.raw, gid, GID_STR_LEN)) {
 			RPMA_LOG_NOTICE("dst GID = %s", gid);
 		} else {
 			RPMA_LOG_NOTICE("dst GID is not available");
@@ -181,7 +189,7 @@ err_comp_channel_destroy:
 }
 
 /*
- * rpma_conn_req_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
+ * rpma_conn_new_accept -- call rdma_accept()+rdma_ack_cm_event(). If succeeds
  * request re-packing the connection request to a connection object. Otherwise,
  * rdma_disconnect()+rdma_destroy_qp()+rpma_cq_delete() to destroy
  * the unsuccessful connection request.
@@ -190,7 +198,7 @@ err_comp_channel_destroy:
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_accept(struct rpma_conn_req *req,
+rpma_conn_new_accept(struct rpma_conn_req *req,
 	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
@@ -205,8 +213,7 @@ rpma_conn_req_accept(struct rpma_conn_req *req,
 	}
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
-				req->channel, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, req->channel, &conn);
 	if (ret)
 		goto err_conn_disconnect;
 
@@ -222,7 +229,7 @@ err_conn_req_delete:
 	rdma_destroy_qp(req->id);
 	(void) rpma_cq_delete(&req->rcq);
 	(void) rpma_cq_delete(&req->cq);
-	(void) rpma_private_data_discard(&req->data);
+	(void) rpma_private_data_delete(&req->data);
 	if (req->channel)
 		(void) ibv_destroy_comp_channel(req->channel);
 
@@ -230,7 +237,7 @@ err_conn_req_delete:
 }
 
 /*
- * rpma_conn_req_connect_active -- call rdma_connect(). If succeeds request
+ * rpma_conn_new_connect -- call rdma_connect(). If succeeds request
  * re-packing the connection request to a connection object. Otherwise,
  * rdma_destroy_qp()+rpma_cq_delete()+rdma_destroy_id() to destroy
  * the unsuccessful connection request.
@@ -239,8 +246,8 @@ err_conn_req_delete:
  * - req != NULL && conn_param != NULL && conn_ptr != NULL
  */
 static int
-rpma_conn_req_connect_active(struct rpma_conn_req *req,
-	struct rdma_conn_param *conn_param, struct rpma_conn **conn_ptr)
+rpma_conn_new_connect(struct rpma_conn_req *req, struct rdma_conn_param *conn_param,
+	struct rpma_conn **conn_ptr)
 {
 	int ret = 0;
 
@@ -248,8 +255,7 @@ rpma_conn_req_connect_active(struct rpma_conn_req *req,
 	RPMA_FAULT_INJECTION_GOTO(RPMA_E_PROVIDER, err_conn_new);
 
 	struct rpma_conn *conn = NULL;
-	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq,
-				req->channel, &conn);
+	ret = rpma_conn_new(req->peer, req->id, req->cq, req->rcq, req->channel, &conn);
 	if (ret)
 		goto err_conn_new;
 
@@ -289,9 +295,7 @@ rpma_conn_req_reject(struct rpma_conn_req *req)
 {
 	RPMA_DEBUG_TRACE;
 
-	if (rdma_reject(req->id,
-			NULL /* private data */,
-			0 /* private data len */)) {
+	if (rdma_reject(req->id, NULL /* private data */, 0 /* private data len */)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno, "rdma_reject()");
 		return RPMA_E_PROVIDER;
 	}
@@ -323,16 +327,15 @@ rpma_conn_req_destroy(struct rpma_conn_req *req)
 /* internal librpma API */
 
 /*
- * rpma_conn_req_from_cm_event -- feeds an ID from cm event into
- * rpma_conn_req_from_id and add the event to conn_req
+ * rpma_conn_req_new_from_cm_event -- feeds an ID from cm event into
+ * rpma_conn_req_new_from_id and add the event to conn_req
  *
  * ASSUMPTIONS
  * cfg != NULL
  */
 int
-rpma_conn_req_from_cm_event(struct rpma_peer *peer,
-		struct rdma_cm_event *event, const struct rpma_conn_cfg *cfg,
-		struct rpma_conn_req **req_ptr)
+rpma_conn_req_new_from_cm_event(struct rpma_peer *peer, struct rdma_cm_event *event,
+		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -342,7 +345,7 @@ rpma_conn_req_from_cm_event(struct rpma_peer *peer,
 		return RPMA_E_INVAL;
 
 	struct rpma_conn_req *req = NULL;
-	int ret = rpma_conn_req_from_id(peer, event->id, cfg, &req);
+	int ret = rpma_conn_req_new_from_id(peer, event->id, cfg, &req);
 	if (ret)
 		return ret;
 
@@ -366,12 +369,11 @@ err_conn_req_delete:
 /*
  * rpma_conn_req_new -- create a new outgoing connection request object. It uses
  * rdma_create_id, rpma_info_resolve_addr and rdma_resolve_route and feeds
- * the prepared ID into rpma_conn_req_from_id.
+ * the prepared ID into rpma_conn_req_new_from_id.
  */
 int
-rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
-		const char *port, const struct rpma_conn_cfg *cfg,
-		struct rpma_conn_req **req_ptr)
+rpma_conn_req_new(struct rpma_peer *peer, const char *addr, const char *port,
+		const struct rpma_conn_cfg *cfg, struct rpma_conn_req **req_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
@@ -412,7 +414,7 @@ rpma_conn_req_new(struct rpma_peer *peer, const char *addr,
 	}
 
 	struct rpma_conn_req *req;
-	ret = rpma_conn_req_from_id(peer, id, cfg, &req);
+	ret = rpma_conn_req_new_from_id(peer, id, cfg, &req);
 	if (ret)
 		goto err_destroy_id;
 
@@ -433,13 +435,13 @@ err_info_delete:
 }
 
 /*
- * rpma_conn_req_connect -- prepare connection parameters and request
- * connecting a connection request (either active or passive). When done
- * release (delete) the connection request object (regardless of the result).
+ * rpma_conn_req_connect -- prepare connection parameters and request connecting
+ * a connection request (either active or passive). When done release (delete)
+ * the connection request object (regardless of the result).
  */
 int
-rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
-	const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
+rpma_conn_req_connect(struct rpma_conn_req **req_ptr, const struct rpma_conn_private_data *pdata,
+	struct rpma_conn **conn_ptr)
 {
 	RPMA_DEBUG_TRACE;
 
@@ -467,9 +469,9 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 
 	int ret = 0;
 	if ((*req_ptr)->is_passive)
-		ret = rpma_conn_req_accept(*req_ptr, &conn_param, conn_ptr);
+		ret = rpma_conn_new_accept(*req_ptr, &conn_param, conn_ptr);
 	else
-		ret = rpma_conn_req_connect_active(*req_ptr, &conn_param, conn_ptr);
+		ret = rpma_conn_new_connect(*req_ptr, &conn_param, conn_ptr);
 
 	free(*req_ptr);
 	*req_ptr = NULL;
@@ -478,9 +480,9 @@ rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
 }
 
 /*
- * rpma_conn_req_delete -- destroy QP and either reject (for incoming connection
- * requests) or destroy the connection request (for the outgoing one). At last
- * release the connection request object.
+ * rpma_conn_req_delete -- destroy QP and either reject (for incoming connection requests)
+ * or destroy the connection request (for the outgoing one). At last release the connection
+ * request object.
  */
 int
 rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
@@ -519,7 +521,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 		}
 	}
 
-	rpma_private_data_discard(&req->data);
+	rpma_private_data_delete(&req->data);
 
 	free(req);
 	*req_ptr = NULL;
@@ -532,8 +534,7 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
  * rpma_conn_req_recv -- initiate the receive operation
  */
 int
-rpma_conn_req_recv(struct rpma_conn_req *req,
-    struct rpma_mr_local *dst, size_t offset, size_t len,
+rpma_conn_req_recv(struct rpma_conn_req *req, struct rpma_mr_local *dst, size_t offset, size_t len,
     const void *op_context)
 {
 	RPMA_DEBUG_TRACE;
@@ -542,14 +543,11 @@ rpma_conn_req_recv(struct rpma_conn_req *req,
 	if (req == NULL || dst == NULL)
 		return RPMA_E_INVAL;
 
-	return rpma_mr_recv(req->id->qp,
-			dst, offset, len,
-			op_context);
+	return rpma_mr_recv(req->id->qp, dst, offset, len, op_context);
 }
 
 /*
- * rpma_conn_req_get_private_data -- get a pointer to the incoming connection's
- * private data
+ * rpma_conn_req_get_private_data -- get a pointer to the incoming connection's private data
  */
 int
 rpma_conn_req_get_private_data(const struct rpma_conn_req *req,

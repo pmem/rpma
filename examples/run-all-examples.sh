@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright 2022, Fujitsu
 
 #
 # run-all-examples.sh - run all examples (optionally under valgrind or with fault injection)
@@ -28,9 +29,6 @@
 
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
-
-# timeout value for both the server and the client
-TIMEOUT=3s
 
 USAGE_STRING="\
 Usage:\n\
@@ -255,12 +253,32 @@ function run_example() {
 
 	echo "*** Running example: $EXAMPLE $VLD_MSG"
 
-	start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
+	# The default case is needed here, because in case of integration tests
+	# all examples are run twice: once with the fault injection in the server
+	# and once with the fault injection in the client.
+	case $EXAMPLE in
+	08srq-simple-messages-ping-pong-with-srq)
+		# timeout value for both the server and the client
+		TIMEOUT=3s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT
+		;;
+	13-messages-ping-pong-with-srq)
+		# timeout value for both the server and the client
+		TIMEOUT=6s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT 3
+		;;
+	*)
+		# timeout value for both the server and the client
+		TIMEOUT=3s
+		start_server $VLD_SCMD $DIR/server $IP_ADDRESS $PORT $PMEM_PATH
+		;;
+	esac
+
 	sleep 1
 
 	RV=0
 	case $EXAMPLE in
-	06-multiple-connections|06s-multiple-connections)
+	06-multiple-connections|06scch-multiple-connections)
 		[ "$MODE" == "integration-tests" ] && SEEDS="8" || SEEDS="8 9 11 12"
 		for SEED in $SEEDS; do
 			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED
@@ -271,7 +289,7 @@ function run_example() {
 		[ "$MODE" == "integration-tests" ] && WORDS="1st_word" || WORDS="1st_word 2nd_word 3rd_word"
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $WORDS
 		;;
-	08-messages-ping-pong)
+	08-messages-ping-pong|08srq-simple-messages-ping-pong-with-srq)
 		SEED=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS
@@ -282,10 +300,24 @@ function run_example() {
 	11-write-with-imm)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT "1234"
 		;;
-	12-receive-completion-queue|12s-receive-completion-queue)
+	12-receive-completion-queue|12scch-receive-completion-queue)
 		START_VALUE=7
 		[ "$MODE" == "integration-tests" ] && ROUNDS=1 || ROUNDS=3
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $START_VALUE $ROUNDS
+		;;
+	13-messages-ping-pong-with-srq)
+		ROUNDS=3
+		[ "$MODE" == "integration-tests" ] && SEEDS="1" || SEEDS="1 5 10"
+		for SEED in $SEEDS; do
+			echo "Starting the client ..."
+			run_command_of client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $SEED $ROUNDS &
+			CLIENT_PIDS="$CLIENT_PIDS $!"
+		done
+		for CLIENT_PID in $CLIENT_PIDS; do
+			wait $CLIENT_PID
+			TMP_RV=$?
+			[ $RV -eq 0 ] && RV=$TMP_RV
+		done
 		;;
 	*)
 		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH

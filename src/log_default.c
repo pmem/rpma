@@ -6,11 +6,15 @@
  * to syslog or to stderr
  */
 
+#define _GNU_SOURCE
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+
 #include <stdarg.h>
 #include <syslog.h>
 #include <time.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "log_default.h"
 #include "log_internal.h"
@@ -78,10 +82,9 @@ err_message:
  * rpma_log_default_function -- default logging function used to log a message
  * to syslog and/or stderr
  *
- * The message is started with prefix composed from file, line, func parameters
- * followed by string pointed by format. If format includes format specifiers
- * (subsequences beginning with %), the additional arguments following format
- * are formatted and inserted in the message.
+ * The message is started with prefix composed from file, line, func parameters followed by string
+ * pointed by format. If format includes format specifiers (subsequences beginning with %),
+ * the additional arguments following format are formatted and inserted in the message.
  *
  * ASSUMPTIONS:
  * - level >= RPMA_LOG_LEVEL_FATAL && level <= RPMA_LOG_LEVEL_DEBUG
@@ -89,9 +92,8 @@ err_message:
  * - file == NULL || (file != NULL && function != NULL)
  */
 void
-rpma_log_default_function(enum rpma_log_level level, const char *file_name,
-	const int line_no, const char *function_name,
-	const char *message_format, ...)
+rpma_log_default_function(enum rpma_log_level level, const char *file_name, const int line_no,
+	const char *function_name, const char *message_format, ...)
 {
 	char file_info_buffer[256] = "";
 	const char *file_info = file_info_buffer;
@@ -129,7 +131,7 @@ rpma_log_default_function(enum rpma_log_level level, const char *file_name,
 	    level == RPMA_LOG_LEVEL_ALWAYS) {
 		char times_tamp[45] = "";
 		rpma_get_timestamp_prefix(times_tamp, sizeof(times_tamp));
-		(void) fprintf(stderr, "%s[%d] %s%s%s", times_tamp, getpid(),
+		(void) fprintf(stderr, "%s[%ld] %s%s%s", times_tamp, syscall(SYS_gettid),
 			rpma_log_level_names[(level == RPMA_LOG_LEVEL_ALWAYS) ?
 						RPMA_LOG_LEVEL_DEBUG : level],
 			file_info, message);

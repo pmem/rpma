@@ -8,6 +8,9 @@
 #include "cmocka_headers.h"
 #include "log_internal.h"
 
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
 enum rpma_log_level Rpma_log_threshold[] = {
 		/* all logs have to be triggered */
 		RPMA_LOG_LEVEL_DEBUG,	/* RPMA_LOG_THRESHOLD */
@@ -24,7 +27,10 @@ mock_function(enum rpma_log_level level, const char *file_name,
 {
 }
 
-rpma_log_function *Rpma_log_function = mock_function;
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+_Atomic
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
+uintptr_t Rpma_log_function = (uintptr_t)mock_function;
 
 /*
  * rpma_log_init -- rpma_log_init() mock

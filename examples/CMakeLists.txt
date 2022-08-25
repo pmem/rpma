@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2018-2022, Intel Corporation
-# Copyright 2021, Fujitsu
+# Copyright 2021-2022, Fujitsu
 #
 
 add_flag(-Wall)
@@ -64,15 +64,12 @@ function(add_example)
 	set(EXAMPLE_SRCS ${EXAMPLE_SRCS} common/common-conn.c)
 	if (LIBPMEM_FOUND OR LIBPMEM2_FOUND)
 		set(EXAMPLE_SRCS ${EXAMPLE_SRCS}
-			common/common-map_file_with_signature_check.c
-			common/common-hello.c)
+			common/common-map_file_with_signature_check.c common/common-hello.c)
 	endif()
 	if (LIBPMEM2_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS}
-			common/common-pmem2_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem2_map_file.c)
 	elseif (LIBPMEM_FOUND)
-		add_executable(${target} ${EXAMPLE_SRCS}
-			common/common-pmem_map_file.c)
+		add_executable(${target} ${EXAMPLE_SRCS} common/common-pmem_map_file.c)
 	else()
 		add_executable(${target} ${EXAMPLE_SRCS})
 	endif()
@@ -91,13 +88,7 @@ function(add_example)
 		target_link_libraries(${target} ${LIBPMEM2_LIBRARIES})
 		target_compile_definitions(${target}
 			PRIVATE USE_LIBPMEM2)
-	endif()
-	#
-	# XXX revert it to:
-	# elseif(LIBPMEM_FOUND)
-	# when all examples have support for libpmem2.
-	#
-	if(LIBPMEM_FOUND)
+	elseif(LIBPMEM_FOUND)
 		target_include_directories(${target}
 			PRIVATE ${LIBPMEM_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPMEM_LIBRARIES})
@@ -109,6 +100,10 @@ function(add_example)
 		target_include_directories(${target}
 			PRIVATE ${LIBPROTOBUFC_INCLUDE_DIRS})
 		target_link_libraries(${target} ${LIBPROTOBUFC_LIBRARIES})
+	endif()
+
+	if(IBV_ADVISE_MR_FLAGS_SUPPORTED)
+		target_compile_definitions(${target} PRIVATE IBV_ADVISE_MR_FLAGS_SUPPORTED=1)
 	endif()
 endfunction()
 
@@ -127,43 +122,45 @@ add_example(NAME 03-read-to-persistent BIN server
 add_example(NAME 03-read-to-persistent BIN client
 	SRCS 03-read-to-persistent/client.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN server
-	SRCS 04-write-to-persistent/server.c)
+	SRCS 04-write-to-persistent/server.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN client
-	SRCS 04-write-to-persistent/client.c)
+	SRCS 04-write-to-persistent/client.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN server
-	SRCS 05-flush-to-persistent/server.c)
+	SRCS 05-flush-to-persistent/server.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN client
-	SRCS 05-flush-to-persistent/client.c)
+	SRCS 05-flush-to-persistent/client.c common/common-hello.c)
 add_example(NAME 06-multiple-connections BIN server
 	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
 	SRCS 06-multiple-connections/client.c)
-add_example(NAME 06s-multiple-connections BIN server
-	SRCS 06s-multiple-connections/server.c common/common-epoll.c)
-add_example(NAME 06s-multiple-connections BIN client
-	SRCS 06s-multiple-connections/client.c)
+add_example(NAME 06scch-multiple-connections BIN server
+	SRCS 06scch-multiple-connections/server.c common/common-epoll.c)
+add_example(NAME 06scch-multiple-connections BIN client
+	SRCS 06scch-multiple-connections/client.c)
 add_example(NAME 07-atomic-write BIN server
 	SRCS 07-atomic-write/server.c)
 add_example(NAME 07-atomic-write BIN client
 	SRCS 07-atomic-write/client.c)
 add_example(NAME 08-messages-ping-pong BIN server
-	SRCS 08-messages-ping-pong/server.c
-	08-messages-ping-pong/messages-ping-pong-common.c)
+	SRCS 08-messages-ping-pong/server.c common/common-messages-ping-pong.c)
 add_example(NAME 08-messages-ping-pong BIN client
-	SRCS 08-messages-ping-pong/client.c
-	08-messages-ping-pong/messages-ping-pong-common.c)
+	SRCS 08-messages-ping-pong/client.c common/common-messages-ping-pong.c common/common-utils.c)
+add_example(NAME 08srq-simple-messages-ping-pong-with-srq BIN server
+	SRCS 08srq-simple-messages-ping-pong-with-srq/server.c common/common-messages-ping-pong.c)
+add_example(NAME 08srq-simple-messages-ping-pong-with-srq BIN client
+	SRCS 08srq-simple-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/server.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 09s-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
-	SRCS 09s-flush-to-persistent-GPSPM/server.c
-	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
-add_example(NAME 09s-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
-	SRCS 09s-flush-to-persistent-GPSPM/client.c
-	09s-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c)
+	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+add_example(NAME 09scch-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
+	SRCS 09scch-flush-to-persistent-GPSPM/server.c
+	09scch-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+add_example(NAME 09scch-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
+	SRCS 09scch-flush-to-persistent-GPSPM/client.c
+	09scch-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 10-send-with-imm BIN server
 	SRCS 10-send-with-imm/server.c)
 add_example(NAME 10-send-with-imm BIN client
@@ -177,11 +174,15 @@ add_example(NAME 12-receive-completion-queue BIN server
 	12-receive-completion-queue/receive-completion-queue-common.c)
 add_example(NAME 12-receive-completion-queue BIN client
 	SRCS 12-receive-completion-queue/client.c
-	12-receive-completion-queue/receive-completion-queue-common.c)
-add_example(NAME 12s-receive-completion-queue BIN server
-	SRCS 12s-receive-completion-queue/server.c)
-add_example(NAME 12s-receive-completion-queue BIN client
-	SRCS 12s-receive-completion-queue/client.c)
+	12-receive-completion-queue/receive-completion-queue-common.c common/common-utils.c)
+add_example(NAME 12scch-receive-completion-queue BIN server
+	SRCS 12scch-receive-completion-queue/server.c)
+add_example(NAME 12scch-receive-completion-queue BIN client
+	SRCS 12scch-receive-completion-queue/client.c common/common-utils.c)
+add_example(NAME 13-messages-ping-pong-with-srq BIN server
+	SRCS 13-messages-ping-pong-with-srq/server.c common/common-epoll.c)
+add_example(NAME 13-messages-ping-pong-with-srq BIN client
+	SRCS 13-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 
 add_example(NAME log BIN log SRCS
 	log/log-example.c
