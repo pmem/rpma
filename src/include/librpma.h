@@ -2951,7 +2951,8 @@ int rpma_recv(struct rpma_conn *conn, struct rpma_mr_local *dst, size_t offset, 
  * completion in the CQ is ready to be consumed by rpma_cq_get_wc(3), the notification is delivered
  * via the file descriptor. The default mode of the file descriptor is blocking but it can be
  * changed to non-blocking mode using fcntl(2). The CQ is either the connection's main CQ or
- * the receive CQ, please see rpma_conn_get_cq(3) and rpma_conn_get_rcq(3) for details.
+ * the receive CQ or CQ of shared RQ, please see rpma_conn_get_cq(3), rpma_conn_get_rcq(3) or
+ * rpma_srq_get_rcq() for details.
  *
  * Note after spotting the notification using the provided file descriptor you do not have to call
  * rpma_cq_wait(3) before consuming the completion but it may cause that the next call to
@@ -2967,8 +2968,8 @@ int rpma_recv(struct rpma_conn *conn, struct rpma_mr_local *dst, size_t offset, 
  * - RPMA_E_INVAL - cq or fd is NULL
  *
  * SEE ALSO
- * fcntl(2), rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_cq_wait(3), rpma_cq_get_wc(3),
- * librpma(7) and https://pmem.io/rpma/
+ * fcntl(2), rpma_conn_get_cq(3), rpma_conn_get_rcq(3), rpma_srq_get_rcq(3), rpma_cq_wait(3),
+ * rpma_cq_get_wc(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 
