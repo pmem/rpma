@@ -34,8 +34,9 @@ DESCRIPTION
 by **rpma\_cq\_get\_wc**(3), the notification is delivered via the file
 descriptor. The default mode of the file descriptor is blocking but it
 can be changed to non-blocking mode using **fcntl**(2). The CQ is either
-the connection\'s main CQ or the receive CQ, please see
-**rpma\_conn\_get\_cq**(3) and **rpma\_conn\_get\_rcq**(3) for details.
+the connection\'s main CQ or the receive CQ or CQ of shared RQ, please
+see **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3) or
+**rpma\_srq\_get\_rcq**() for details.
 
 Note after spotting the notification using the provided file descriptor
 you do not have to call **rpma\_cq\_wait**(3) before consuming the
@@ -60,5 +61,5 @@ SEE ALSO
 ========
 
 **fcntl**(2), **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_wait**(3), **rpma\_cq\_get\_wc**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma\_srq\_get\_rcq**(3), **rpma\_cq\_wait**(3),
+**rpma\_cq\_get\_wc**(3), **librpma**(7) and https://pmem.io/rpma/
