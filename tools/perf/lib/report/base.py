@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Intel Corporation
+# Copyright 2021-2022, Intel Corporation
 #
 
 #
@@ -12,6 +12,7 @@
 
 import os
 import shutil
+import sys
 from copy import deepcopy
 import markdown2
 import jinja2
@@ -105,8 +106,13 @@ class Report:
         parts = []
         if not bench.config.get('compare', False):
             # copy schematic
-            shutil.copy(self.__variables['configuration']['schematic'],
-                        self.__result_dir)
+            try:
+                shutil.copy(self.__variables['configuration']['schematic'],
+                            self.__result_dir)
+            except FileNotFoundError:
+                print("No such file or directory: {}" \
+                      .format(self.__variables['configuration']['schematic']))
+                sys.exit(1)
             self.__variables['configuration']['schematic'] = \
                 os.path.basename(self.__variables['configuration']['schematic'])
             # prepare preamble part
