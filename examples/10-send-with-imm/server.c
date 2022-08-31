@@ -53,13 +53,11 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	ret = server_peer_via_address(addr, &peer);
-	if (ret)
+	if ((ret = server_peer_via_address(addr, &peer)))
 		goto err_mr_free;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, recv, KILOBYTE, RPMA_MR_USAGE_RECV, &recv_mr);
-	if (ret)
+	if ((ret = rpma_mr_reg(peer, recv, KILOBYTE, RPMA_MR_USAGE_RECV, &recv_mr)))
 		goto err_peer_delete;
 
 	/* start a listening endpoint at addr:port */
@@ -68,27 +66,21 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* receive an incoming connection request */
-	ret = rpma_ep_next_conn_req(ep, NULL, &req);
-	if (ret)
+	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
 		goto err_ep_shutdown;
 
 	/* prepare to receive a message with immediate data from the client */
-	ret = rpma_conn_req_recv(req, recv_mr, 0, KILOBYTE, NULL);
-	if (ret) {
+	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, KILOBYTE, NULL))) {
 		rpma_conn_req_delete(&req);
 		goto err_ep_shutdown;
 	}
 
 	/* accept the connection request and obtain the connection object */
-	ret = rpma_conn_req_connect(&req, NULL, &conn);
-	if (ret) {
-		rpma_conn_req_delete(&req);
+	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
 		goto err_ep_shutdown;
-	}
 
 	/* wait for the connection to be established */
-	ret = rpma_conn_next_event(conn, &conn_event);
-	if (ret)
+	if ((ret = rpma_conn_next_event(conn, &conn_event)))
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr,
@@ -100,8 +92,7 @@ main(int argc, char *argv[])
 
 	/* get the expected immediate data from the connection's private data */
 	struct rpma_conn_private_data pdata;
-	ret = rpma_conn_get_private_data(conn, &pdata);
-	if (ret)
+	if ((ret = rpma_conn_get_private_data(conn, &pdata)))
 		goto err_conn_disconnect;
 	if (pdata.len < sizeof(uint32_t)) {
 		fprintf(stderr,
@@ -114,17 +105,14 @@ main(int argc, char *argv[])
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
-	ret = rpma_conn_get_cq(conn, &cq);
-	if (ret)
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_conn_disconnect;
 
 	/* prepare completions, get one and validate it */
-	ret = rpma_cq_wait(cq);
-	if (ret)
+	if ((ret = rpma_cq_wait(cq)))
 		goto err_conn_disconnect;
 
-	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
-	if (ret)
+	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
 		goto err_conn_disconnect;
 
 	if (wc.status != IBV_WC_SUCCESS) {

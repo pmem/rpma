@@ -76,10 +76,8 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 
 	/* connect the connection request and obtain the connection object */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
+	if (ret)
 		return ret;
-	}
 
 	/* wait for the connection to establish */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
@@ -123,10 +121,8 @@ server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 	 * object
 	 */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
+	if (ret)
 		return ret;
-	}
 
 	/* wait for the connection to be established */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
