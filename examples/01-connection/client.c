@@ -68,7 +68,7 @@ main(int argc, char *argv[])
 
 		ret = rpma_conn_req_connect(&req, &pdata, &conn);
 		if (ret)
-			goto err_req_delete;
+			goto err_peer_delete;
 
 		/* wait for the connection to establish */
 		ret = rpma_conn_next_event(conn, &conn_event);
@@ -136,9 +136,6 @@ err_conn_disconnect:
 	(void) rpma_conn_disconnect(conn);
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
-err_req_delete:
-	if (req)
-		(void) rpma_conn_req_delete(&req);
 err_peer_delete:
 	(void) rpma_peer_delete(&peer);
 
