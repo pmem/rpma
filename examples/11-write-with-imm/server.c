@@ -60,25 +60,21 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	ret = server_peer_via_address(addr, &peer);
-	if (ret)
+	if ((ret = server_peer_via_address(addr, &peer)))
 		goto err_mr_free;
 
 	/* register the memory */
-	ret = rpma_mr_reg(peer, dst, KILOBYTE, RPMA_MR_USAGE_WRITE_DST, &dst_mr);
-	if (ret)
+	if ((ret = rpma_mr_reg(peer, dst, KILOBYTE, RPMA_MR_USAGE_WRITE_DST, &dst_mr)))
 		goto err_peer_delete;
 
-	ret = rpma_mr_reg(peer, recv, 1, RPMA_MR_USAGE_RECV, &recv_mr);
-	if (ret) {
+	if ((ret = rpma_mr_reg(peer, recv, 1, RPMA_MR_USAGE_RECV, &recv_mr))) {
 		rpma_mr_dereg(&dst_mr);
 		goto err_peer_delete;
 	}
 
 	/* get size of the memory region's descriptor */
 	size_t mr_desc_size;
-	ret = rpma_mr_get_descriptor_size(dst_mr, &mr_desc_size);
-	if (ret)
+	if ((ret = rpma_mr_get_descriptor_size(dst_mr, &mr_desc_size)))
 		goto err_mr_dereg;
 
 	/* calculate data for the client write */
@@ -87,23 +83,19 @@ main(int argc, char *argv[])
 	dst_data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
-	ret = rpma_mr_get_descriptor(dst_mr, &dst_data.descriptors[0]);
-	if (ret)
+	if ((ret = rpma_mr_get_descriptor(dst_mr, &dst_data.descriptors[0])))
 		goto err_mr_dereg;
 
 	/* start a listening endpoint at addr:port */
-	ret = rpma_ep_listen(peer, addr, port, &ep);
-	if (ret)
+	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
 		goto err_mr_dereg;
 
 	/* receive an incoming connection request */
-	ret = rpma_ep_next_conn_req(ep, NULL, &req);
-	if (ret)
+	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
 		goto err_ep_shutdown;
 
 	/* prepare to receive an immediate data from the client */
-	ret = rpma_conn_req_recv(req, recv_mr, 0, 1, NULL);
-	if (ret) {
+	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, 1, NULL))) {
 		rpma_conn_req_delete(&req);
 		goto err_ep_shutdown;
 	}
@@ -112,15 +104,11 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &dst_data;
 	pdata.len = sizeof(struct common_data);
-	ret = rpma_conn_req_connect(&req, &pdata, &conn);
-	if (ret) {
-		rpma_conn_req_delete(&req);
+	if ((ret = rpma_conn_req_connect(&req, &pdata, &conn)))
 		goto err_ep_shutdown;
-	}
 
 	/* wait for the connection to be established */
-	ret = rpma_conn_next_event(conn, &conn_event);
-	if (ret)
+	if ((ret = rpma_conn_next_event(conn, &conn_event)))
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
 		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
@@ -131,17 +119,14 @@ main(int argc, char *argv[])
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
-	ret = rpma_conn_get_cq(conn, &cq);
-	if (ret)
+	if ((ret = rpma_conn_get_cq(conn, &cq)))
 		goto err_conn_disconnect;
 
 	/* prepare completions, get one and validate it */
-	ret = rpma_cq_wait(cq);
-	if (ret)
+	if ((ret = rpma_cq_wait(cq)))
 		goto err_conn_disconnect;
 
-	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
-	if (ret)
+	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
 		goto err_conn_disconnect;
 
 	if (wc.status != IBV_WC_SUCCESS) {

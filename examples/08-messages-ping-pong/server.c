@@ -86,10 +86,8 @@ main(int argc, char *argv[])
 	}
 
 	/* accept the connection request and obtain the connection object */
-	if ((ret = rpma_conn_req_connect(&req, NULL, &conn))) {
-		(void) rpma_conn_req_delete(&req);
+	if ((ret = rpma_conn_req_connect(&req, NULL, &conn)))
 		goto err_mr_dereg;
-	}
 
 	/* wait for the connection to be established */
 	if ((ret = rpma_conn_next_event(conn, &conn_event)))

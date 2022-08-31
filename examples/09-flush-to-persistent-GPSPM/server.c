@@ -173,10 +173,8 @@ main(int argc, char *argv[])
 		goto err_req_delete;
 
 	/* accept the connection request and obtain the connection object */
-	if ((ret = rpma_conn_req_connect(&req, &pdata, &conn))) {
-		(void) rpma_conn_req_delete(&req);
-		goto err_req_delete;
-	}
+	if ((ret = rpma_conn_req_connect(&req, &pdata, &conn)))
+		goto err_cfg_delete;
 
 	/* wait for the connection to be established */
 	ret = rpma_conn_next_event(conn, &conn_event);
@@ -286,6 +284,7 @@ main(int argc, char *argv[])
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
+	goto err_cfg_delete;
 
 err_req_delete:
 	(void) rpma_conn_req_delete(&req);
