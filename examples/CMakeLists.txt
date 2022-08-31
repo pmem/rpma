@@ -151,16 +151,16 @@ add_example(NAME 08srq-simple-messages-ping-pong-with-srq BIN client
 	SRCS 08srq-simple-messages-ping-pong-with-srq/client.c common/common-messages-ping-pong.c common/common-utils.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/server.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c
-	09-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09scch-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09scch-flush-to-persistent-GPSPM/server.c
-	09scch-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09scch-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09scch-flush-to-persistent-GPSPM/client.c
-	09scch-flush-to-persistent-GPSPM/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 10-send-with-imm BIN server
 	SRCS 10-send-with-imm/server.c)
 add_example(NAME 10-send-with-imm BIN client
