@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - removed unnecessary rpma_conn_req_delete() calls from examples
 - (tools) added checking if a path saved in the 'schematic' variable exists
+- common source code of GPSMP examples moved to one folder
 
 ### Changed
 - unified coding style in the source files
