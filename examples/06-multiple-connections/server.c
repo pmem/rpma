@@ -371,8 +371,7 @@ server_handle_incoming_client(struct custom_event *ce)
 	}
 
 	/* accept the connection request and obtain the connection object */
-	if (rpma_conn_req_connect(&req, NULL, &clnt->conn)) {
-		(void) rpma_conn_req_delete(&req);
+	if (rpma_conn_req_connect(&req, NULL, &clnt->conn))
 		/*
 		 * When rpma_conn_req_connect() fails the connection pointer
 		 * remains unchanged (in this case it is NULL) so the server
@@ -380,7 +379,6 @@ server_handle_incoming_client(struct custom_event *ce)
 		 * come. No additional cleanup needed.
 		 */
 		return;
-	}
 
 	/* get the connection's main CQ */
 	if (rpma_conn_get_cq(clnt->conn, &clnt->cq)) {

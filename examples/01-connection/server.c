@@ -70,7 +70,7 @@ main(int argc, char *argv[])
 	pdata.len = (strlen(msg) + 1) * sizeof(char);
 	ret = rpma_conn_req_connect(&req, &pdata, &conn);
 	if (ret)
-		goto err_req_delete;
+		goto err_ep_shutdown;
 
 	/* wait for the connection to being establish */
 	ret = rpma_conn_next_event(conn, &conn_event);
@@ -125,9 +125,6 @@ main(int argc, char *argv[])
 
 err_conn_delete:
 	(void) rpma_conn_delete(&conn);
-err_req_delete:
-	if (req)
-		(void) rpma_conn_req_delete(&req);
 err_ep_shutdown:
 	(void) rpma_ep_shutdown(&ep);
 err_peer_delete:
