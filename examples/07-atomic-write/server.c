@@ -117,26 +117,28 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = server_peer_via_address(addr, &peer)))
+	ret = server_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free;
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
+	ret = rpma_ep_listen(peer, addr, port, &ep);
+	if (ret)
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
 			RPMA_MR_USAGE_WRITE_DST | RPMA_MR_USAGE_READ_SRC |
 			(mem.is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY),
-			&mr)))
+			&mr);
+	if (ret)
 		goto err_ep_shutdown;
 
 #if defined USE_PMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
 	/* rpma_mr_advise() should be called only in case of FsDAX */
 	if (mem.is_pmem && strstr(pmem_path, "/dev/dax") == NULL) {
-		ret = rpma_mr_advise(mr, 0, mem.mr_size,
-			IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
+		ret = rpma_mr_advise(mr, 0, mem.mr_size, IBV_ADVISE_MR_ADVICE_PREFETCH_WRITE,
 			IBV_ADVISE_MR_FLAG_FLUSH);
 		if (ret)
 			goto err_mr_dereg;
@@ -165,13 +167,15 @@ main(int argc, char *argv[])
 	struct rpma_conn_private_data pdata;
 	pdata.ptr = &data;
 	pdata.len = sizeof(struct common_data);
-	if ((ret = server_accept_connection(ep, NULL, &pdata, &conn)))
+	ret = server_accept_connection(ep, NULL, &pdata, &conn);
+	if (ret)
 		goto err_mr_dereg;
 
 	/*
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection structure.
 	 */
-	if ((ret = common_wait_for_conn_close_and_disconnect(&conn)))
+	ret = common_wait_for_conn_close_and_disconnect(&conn);
+	if (ret)
 		goto err_mr_dereg;
 
 	/* print the saved data */

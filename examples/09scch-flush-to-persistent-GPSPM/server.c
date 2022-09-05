@@ -103,17 +103,20 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = server_peer_via_address(addr, &peer)))
+	ret = server_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free;
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
+	ret = rpma_ep_listen(peer, addr, port, &ep);
+	if (ret)
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size, RPMA_MR_USAGE_WRITE_DST |
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size, RPMA_MR_USAGE_WRITE_DST |
 			(mem.is_pmem ? RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT :
-				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY), &mr)))
+				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY), &mr);
+	if (ret)
 		goto err_ep_shutdown;
 
 #if defined USE_PMEM && defined IBV_ADVISE_MR_FLAGS_SUPPORTED
@@ -127,8 +130,9 @@ main(int argc, char *argv[])
 #endif /* USE_PMEM && IBV_ADVISE_MR_FLAGS_SUPPORTED */
 
 	/* register the messaging memory */
-	if ((ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
-			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY, &msg_mr))) {
+	ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
+			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY, &msg_mr);
+	if (ret) {
 		(void) rpma_mr_dereg(&mr);
 		goto err_ep_shutdown;
 	}
@@ -145,17 +149,21 @@ main(int argc, char *argv[])
 	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
-	if ((ret = rpma_mr_get_descriptor(mr, &data.descriptors[0])))
+	ret = rpma_mr_get_descriptor(mr, &data.descriptors[0]);
+	if (ret)
 		goto err_mr_dereg;
 
 	struct rpma_conn_cfg *cfg = NULL;
-	if ((ret = rpma_conn_cfg_new(&cfg)))
+	ret = rpma_conn_cfg_new(&cfg);
+	if (ret)
 		goto err_mr_dereg;
 
-	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
+	ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE);
+	if (ret)
 		goto err_cfg_delete;
 
-	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+	ret = rpma_conn_cfg_set_compl_channel(cfg, true);
+	if (ret)
 		goto err_cfg_delete;
 
 	/*
@@ -166,15 +174,18 @@ main(int argc, char *argv[])
 	pdata.len = sizeof(struct common_data);
 
 	/* receive an incoming connection request */
-	if ((ret = rpma_ep_next_conn_req(ep, cfg, &req)))
+	ret = rpma_ep_next_conn_req(ep, cfg, &req);
+	if (ret)
 		goto err_req_delete;
 
 	/* prepare buffer for a flush request */
-	if ((ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX, NULL)))
+	ret = rpma_conn_req_recv(req, msg_mr, RECV_OFFSET, MSG_SIZE_MAX, NULL);
+	if (ret)
 		goto err_req_delete;
 
 	/* accept the connection request and obtain the connection object */
-	if ((ret = rpma_conn_req_connect(&req, &pdata, &conn)))
+	ret = rpma_conn_req_connect(&req, &pdata, &conn);
+	if (ret)
 		goto err_cfg_delete;
 
 	/* wait for the connection to be established */
@@ -189,7 +200,8 @@ main(int argc, char *argv[])
 		goto err_conn_delete;
 
 	/* wait for the receive completion to be ready */
-	if ((ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc)))
+	ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc);
+	if (ret)
 		goto err_conn_delete;
 
 	/* unpack a flush request from the received buffer */
@@ -225,12 +237,13 @@ main(int argc, char *argv[])
 	gpspm_flush_request__free_unpacked(flush_req, NULL);
 
 	/* send the flush response */
-	if ((ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_resp_size, RPMA_F_COMPLETION_ALWAYS,
-			NULL)))
+	ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_resp_size, RPMA_F_COMPLETION_ALWAYS, NULL);
+	if (ret)
 		goto err_conn_delete;
 
 	/* wait for the send completion to be ready */
-	if ((ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc)))
+	ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc);
+	if (ret)
 		goto err_conn_delete;
 
 	/*

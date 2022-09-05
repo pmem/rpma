@@ -11,8 +11,7 @@
 #include "common-messages-ping-pong.h"
 
 int
-validate_wc(struct ibv_wc *wc, uint64_t *recv,
-		int *send_cmpl, int *recv_cmpl)
+validate_wc(struct ibv_wc *wc, uint64_t *recv, int *send_cmpl, int *recv_cmpl)
 {
 	if (wc->status != IBV_WC_SUCCESS) {
 		char *func = (wc->opcode == IBV_WC_SEND)? "send" : "recv";
@@ -24,8 +23,7 @@ validate_wc(struct ibv_wc *wc, uint64_t *recv,
 	if (wc->opcode == IBV_WC_SEND) {
 		*send_cmpl = 1;
 	} else if (wc->opcode == IBV_WC_RECV) {
-		if (wc->wr_id != (uintptr_t)recv ||
-				wc->byte_len != MSG_SIZE) {
+		if (wc->wr_id != (uintptr_t)recv || wc->byte_len != MSG_SIZE) {
 			(void) fprintf(stderr,
 				"received completion is not as expected (0x%"
 				PRIXPTR " != 0x%" PRIXPTR " [wc.wr_id] || %"
@@ -40,8 +38,7 @@ validate_wc(struct ibv_wc *wc, uint64_t *recv,
 }
 
 int
-wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
-		int *send_cmpl, int *recv_cmpl)
+wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv, int *send_cmpl, int *recv_cmpl)
 {
 	struct ibv_wc wc[MAX_N_WC];
 	int num_got;
@@ -49,14 +46,16 @@ wait_and_process_completions(struct rpma_cq *cq, uint64_t *recv,
 
 	do {
 		/* wait for the completion to be ready */
-		if ((ret = rpma_cq_wait(cq)))
+		ret = rpma_cq_wait(cq);
+		if (ret)
 			return ret;
 
 		/* reset num_got to 0  */
 		num_got = 0;
 
 		/* get two next completions at most (1 of send + 1 of recv) */
-		if ((ret = rpma_cq_get_wc(cq, MAX_N_WC, wc, &num_got)))
+		ret = rpma_cq_get_wc(cq, MAX_N_WC, wc, &num_got);
+		if (ret)
 			/* lack of completion is not an error */
 			if (ret != RPMA_E_NO_COMPLETION)
 				return ret;

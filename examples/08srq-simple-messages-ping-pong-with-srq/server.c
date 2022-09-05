@@ -83,61 +83,74 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = server_peer_via_address(addr, &peer)))
+	ret = server_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free_send;
 
-	if ((ret = rpma_srq_cfg_new(&srq_cfg)))
+	ret = rpma_srq_cfg_new(&srq_cfg);
+	if (ret)
 		goto err_peer_delete;
 
 	if (rcq_flag != 's') {
-		if ((ret = rpma_srq_cfg_set_rcq_size(srq_cfg, 0)))
+		ret = rpma_srq_cfg_set_rcq_size(srq_cfg, 0);
+		if (ret)
 			goto err_srq_cfg_delete;
 	}
 
 	/* create a shared RQ object with given configuration */
-	if ((ret = rpma_srq_new(peer, srq_cfg, &srq)))
+	ret = rpma_srq_new(peer, srq_cfg, &srq);
+	if (ret)
 		goto err_srq_cfg_delete;
 
 	/* create a new connection configuration */
-	if ((ret = rpma_conn_cfg_new(&conn_cfg)))
+	ret = rpma_conn_cfg_new(&conn_cfg);
+	if (ret)
 		goto err_srq_delete;
 
 	/* The default receive CQ size of the connection is 0 when rcq_flag is not 'r'. */
 	if (rcq_flag == 'r') {
-		if ((ret = rpma_conn_cfg_set_rcq_size(conn_cfg, RCQ_SIZE)))
+		ret = rpma_conn_cfg_set_rcq_size(conn_cfg, RCQ_SIZE);
+		if (ret)
 			goto err_conn_cfg_delete;
 	}
 
 	/* set the shared RQ object for the connection configuration */
-	if ((ret = rpma_conn_cfg_set_srq(conn_cfg, srq)))
+	ret = rpma_conn_cfg_set_srq(conn_cfg, srq);
+	if (ret)
 		goto err_conn_cfg_delete;
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
+	ret = rpma_ep_listen(peer, addr, port, &ep);
+	if (ret)
 		goto err_conn_cfg_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
+	ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr);
+	if (ret)
 		goto err_ep_shutdown;
 
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr)))
+	ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr);
+	if (ret)
 		goto err_recv_mr_dereg;
 
 	/*
 	 * Put an initial receive for a connection to be prepared for the first message
 	 * of the client's ping-pong.
 	 */
-	if ((ret = rpma_srq_recv(srq, recv_mr, 0, MSG_SIZE, recv)))
+	ret = rpma_srq_recv(srq, recv_mr, 0, MSG_SIZE, recv);
+	if (ret)
 		goto err_conn_disconnect;
 
 	/*
 	 * Wait for an incoming connection request, accept it and wait for its establishment.
 	 */
-	if ((ret = server_accept_connection(ep, conn_cfg, NULL, &conn)))
+	ret = server_accept_connection(ep, conn_cfg, NULL, &conn);
+	if (ret)
 		goto err_conn_disconnect;
 
 	/* get the qp_num of the connection */
-	if ((ret = rpma_conn_get_qp_num(conn, &qp_num)))
+	ret = rpma_conn_get_qp_num(conn, &qp_num);
+	if (ret)
 		goto err_conn_disconnect;
 
 	switch (rcq_flag) {
@@ -162,14 +175,16 @@ main(int argc, char *argv[])
 	while (1) {
 		do {
 			/* wait for the receive completion to be ready */
-			if ((ret = rpma_cq_wait(rcq)))
+			ret = rpma_cq_wait(rcq);
+			if (ret)
 				goto err_conn_disconnect;
 
 			/* reset num_got to 0  */
 			num_got = 0;
 
 			/* get the next recv completion */
-			if ((ret = rpma_cq_get_wc(rcq, 1, &wc, &num_got)))
+			ret = rpma_cq_get_wc(rcq, 1, &wc, &num_got);
+			if (ret)
 				/* lack of completion is not an error */
 				if (ret != RPMA_E_NO_COMPLETION)
 					goto err_conn_disconnect;
@@ -203,7 +218,8 @@ main(int argc, char *argv[])
 		*send = *recv + 1;
 
 		/* prepare a receive for the client's request */
-		if ((ret = rpma_srq_recv(srq, recv_mr, 0, MSG_SIZE, recv)))
+		ret = rpma_srq_recv(srq, recv_mr, 0, MSG_SIZE, recv);
+		if (ret)
 			break;
 
 		/* send the new value to the client */

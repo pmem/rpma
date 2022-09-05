@@ -62,49 +62,60 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = client_peer_via_address(addr, &peer)))
+	ret = client_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_mr_free;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
+	ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr);
+	if (ret)
 		goto err_peer_delete;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
+	ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr);
+	if (ret) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_peer_delete;
 	}
 
 	/* create a new connection configuration and set RCQ size */
 	struct rpma_conn_cfg *cfg = NULL;
-	if ((ret = rpma_conn_cfg_new(&cfg)))
+	ret = rpma_conn_cfg_new(&cfg);
+	if (ret)
 		goto err_mr_dereg;
 
-	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
+	ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE);
+	if (ret)
 		goto err_cfg_delete;
 
-	if ((ret = rpma_conn_cfg_set_compl_channel(cfg, true)))
+	ret = rpma_conn_cfg_set_compl_channel(cfg, true);
+	if (ret)
 		goto err_cfg_delete;
 
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
+	ret = client_connect(peer, addr, port, cfg, NULL, &conn);
+	if (ret)
 		goto err_cfg_delete;
 
 	while (--rounds) {
 		/* prepare a receive for the server's response */
-		if ((ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv)))
+		ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv);
+		if (ret)
 			break;
 
 		/* send a message to the server */
 		(void) printf("CLIENT: Value sent: %" PRIu64 "\n", counter);
 		*send = counter;
-		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL)))
+		ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL);
+		if (ret)
 			break;
 
 		/* get one send completion and validate it */
-		if ((ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc)))
+		ret = wait_and_validate_completion(conn, IBV_WC_SEND, &wc);
+		if (ret)
 			break;
 
 		/* get one receive completion and validate it */
-		if ((ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc)))
+		ret = wait_and_validate_completion(conn, IBV_WC_RECV, &wc);
+		if (ret)
 			break;
 
 		/* copy the new value of the counter and print it out */
