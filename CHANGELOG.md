@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - common source code of GPSMP examples moved to one folder
 
 ### Changed
-- unified coding style in the source files
+- unified coding style in the source and the test files
 
 ## [1.0.0] - 2022-08-25
 ### Added
