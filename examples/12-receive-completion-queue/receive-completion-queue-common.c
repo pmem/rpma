@@ -15,12 +15,13 @@ get_wc_and_validate(struct rpma_cq *cq, enum ibv_wc_opcode opcode,
 		char *func_name)
 {
 	struct ibv_wc wc;
-	int ret;
 
-	if ((ret = rpma_cq_wait(cq)))
+	int ret = rpma_cq_wait(cq);
+	if (ret)
 			return ret;
 
-	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+	if (ret)
 			return ret;
 
 	if (wc.status != IBV_WC_SUCCESS) {
