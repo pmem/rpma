@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - unified coding style in the source files
+- unified coding style in the test files
 
 ## [1.0.0] - 2022-08-25
 ### Added
