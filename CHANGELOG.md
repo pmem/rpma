@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- (tools) description of the 'schematic' variable (from the report.json file) in the 'tools/perf/BENCHMARKING.md' file
+
+### Fixed
+- removed unnecessary rpma_conn_req_delete() calls from examples
+- (tools) added checking if a path saved in the 'schematic' variable exists
+
+### Changed
+- unified coding style in the source files
+
 ## [1.0.0] - 2022-08-25
 ### Added
 - DEVELOPMENT.md file containing the most important information needed during development of the library
