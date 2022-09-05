@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (tools) added checking if a path saved in the 'schematic' variable exists
 - common source code of GPSMP examples moved to one folder
 - changed size of the read-after-write (RAW) buffer in the example 04
+- (examples) changed the write size from KILOBYTE to HELLO_STR_SIZE
 
 ### Changed
 - unified coding style in the source and the test files
