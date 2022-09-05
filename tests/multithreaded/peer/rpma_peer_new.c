@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_peer_new.c -- rpma_peer_new multithreaded test
@@ -26,8 +26,7 @@ static void
 prestate_init(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	int ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->ibv_ctx);
+	int ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &pr->ibv_ctx);
 	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 }
@@ -36,8 +35,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * init -- allocate state
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
 	if (!st) {
@@ -52,8 +50,7 @@ init(unsigned id, void *prestate, void **state_ptr,
  * thread -- create rpma_peer based on shared ibv_context
  */
 static void
-thread(unsigned id, void *prestate, void *state,
-		struct mtt_result *result)
+thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	struct state *st = (struct state *)state;
@@ -70,14 +67,13 @@ thread(unsigned id, void *prestate, void *state,
  * fini -- delete rpma_peer and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
-	int ret;
 
 	/* delete the peer object */
-	if ((ret = rpma_peer_delete(&st->peer)))
+	int ret = rpma_peer_delete(&st->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 
 	free(st);

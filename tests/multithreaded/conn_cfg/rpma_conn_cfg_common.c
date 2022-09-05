@@ -22,42 +22,50 @@ rpma_conn_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
 		(struct rpma_conn_cfg_common_prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_new(&pr->cfg_ptr))) {
+	ret = rpma_conn_cfg_new(&pr->cfg_ptr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_compl_channel(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_IS_SHARED))) {
+	ret = rpma_conn_cfg_set_compl_channel(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_IS_SHARED);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_compl_channel", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_cq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_conn_cfg_set_cq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_cq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_sq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_conn_cfg_set_sq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_sq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_rcq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_conn_cfg_set_rcq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_rcq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_rq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_conn_cfg_set_rq_size(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_rq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP))) {
+	ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, RPMA_CONN_CFG_COMMON_TIMEOUT_MS_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_set_srq(pr->cfg_ptr, RPMA_SRQ_EXP))) {
+	ret = rpma_conn_cfg_set_srq(pr->cfg_ptr, RPMA_SRQ_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_srq", ret);
 		return;
 	}
@@ -70,10 +78,10 @@ rpma_conn_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
 void
 rpma_conn_cfg_common_prestate_fini(void *prestate, struct mtt_result *tr)
 {
-	struct rpma_conn_cfg_common_prestate *pr =
-		(struct rpma_conn_cfg_common_prestate *)prestate;
+	struct rpma_conn_cfg_common_prestate *pr = (struct rpma_conn_cfg_common_prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_delete(&pr->cfg_ptr)))
+	ret = rpma_conn_cfg_delete(&pr->cfg_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
 }

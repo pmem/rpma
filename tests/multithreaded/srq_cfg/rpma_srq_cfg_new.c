@@ -38,7 +38,8 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	struct state *st = (struct state *)state;
 	int ret;
 
-	if ((ret = rpma_srq_cfg_new(&st->cfg))) {
+	ret = rpma_srq_cfg_new(&st->cfg);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_new", ret);
 		return;
 	}
@@ -53,7 +54,8 @@ seq_fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *resul
 	struct state *st = (struct state *)*state_ptr;
 	int ret;
 
-	if ((ret = rpma_srq_cfg_delete(&st->cfg)))
+	ret = rpma_srq_cfg_delete(&st->cfg);
+	if (ret)
 		MTT_RPMA_ERR(result, "rpma_srq_cfg_delete", ret);
 
 	free(st);

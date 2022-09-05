@@ -23,12 +23,14 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	int ret;
 	struct rpma_srq *srq;
 
-	if ((ret = rpma_conn_cfg_set_srq(pr->cfg_ptr, SET_RPMA_SRQ))) {
+	ret = rpma_conn_cfg_set_srq(pr->cfg_ptr, SET_RPMA_SRQ);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_compl_channel", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_get_srq(pr->cfg_ptr, &srq))) {
+	ret = rpma_conn_cfg_get_srq(pr->cfg_ptr, &srq);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_compl_channel", ret);
 		return;
 	}

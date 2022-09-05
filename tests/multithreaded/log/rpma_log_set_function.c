@@ -15,9 +15,8 @@
 void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 {
-	int ret;
-
-	if ((ret = rpma_log_set_function(RPMA_LOG_USE_DEFAULT_FUNCTION))) {
+	int ret = rpma_log_set_function(RPMA_LOG_USE_DEFAULT_FUNCTION);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_log_set_function", ret);
 		return;
 	}
