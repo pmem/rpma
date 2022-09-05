@@ -22,8 +22,7 @@ struct state {
 };
 
 /*
- * prestate_init -- obtain an ibv_context for a local IP address
- * and create a new peer object
+ * prestate_init -- obtain an ibv_context for a local IP address and create a new peer object
  */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -31,13 +30,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(pr->ibv_ctx, &pr->peer)))
+	ret = rpma_peer_new(pr->ibv_ctx, &pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 }
 
@@ -98,9 +98,9 @@ static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	int ret;
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	int ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

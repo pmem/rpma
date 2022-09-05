@@ -33,7 +33,8 @@ init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_new(&st->cfg_ptr))) {
+	ret = rpma_conn_cfg_new(&st->cfg_ptr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
 		return;
 	}
@@ -42,22 +43,22 @@ init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 }
 
 /*
- * thread -- set connection establishment timeout and check if its value is
- * as expected
+ * thread -- set connection establishment timeout and check if its value is as expected
  */
 static void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 {
-	struct rpma_conn_cfg_common_prestate *pr =
-		(struct rpma_conn_cfg_common_prestate *)prestate;
+	struct rpma_conn_cfg_common_prestate *pr = (struct rpma_conn_cfg_common_prestate *)prestate;
 	int ret, timeout_ms;
 
-	if ((ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, TIMEOUT_MS_EXP))) {
+	ret = rpma_conn_cfg_set_timeout(pr->cfg_ptr, TIMEOUT_MS_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
 
-	if ((ret = rpma_conn_cfg_get_timeout(pr->cfg_ptr, &timeout_ms))) {
+	ret = rpma_conn_cfg_get_timeout(pr->cfg_ptr, &timeout_ms);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_set_timeout", ret);
 		return;
 	}
@@ -70,13 +71,13 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
  * fini -- free the connection configuration object and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_delete(&st->cfg_ptr)))
+	ret = rpma_conn_cfg_delete(&st->cfg_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
 
 	free(st);

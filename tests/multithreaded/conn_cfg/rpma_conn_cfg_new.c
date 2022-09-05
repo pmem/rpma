@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_conn_cfg_new.c -- rpma_conn_cfg_new multithreaded test
@@ -26,27 +26,30 @@ struct conn_cfg_values {
 };
 
 static int
-conn_cfg_get_all(struct rpma_conn_cfg *cfg, struct conn_cfg_values *vals,
-		struct mtt_result *tr)
+conn_cfg_get_all(struct rpma_conn_cfg *cfg, struct conn_cfg_values *vals, struct mtt_result *tr)
 {
 	int ret;
 
-	if ((ret = rpma_conn_cfg_get_timeout(cfg, &vals->timeout_ms))) {
+	ret = rpma_conn_cfg_get_timeout(cfg, &vals->timeout_ms);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_timeout", ret);
 		return -1;
 	}
 
-	if ((ret = rpma_conn_cfg_get_cq_size(cfg, &vals->cq_size))) {
+	ret = rpma_conn_cfg_get_cq_size(cfg, &vals->cq_size);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_cq_size", ret);
 		return -1;
 	}
 
-	if ((ret = rpma_conn_cfg_get_sq_size(cfg, &vals->sq_size))) {
+	ret = rpma_conn_cfg_get_sq_size(cfg, &vals->sq_size);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_sq_size", ret);
 		return -1;
 	}
 
-	if ((ret = rpma_conn_cfg_get_rq_size(cfg, &vals->rq_size))) {
+	ret = rpma_conn_cfg_get_rq_size(cfg, &vals->rq_size);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_rq_size", ret);
 		return -1;
 	}
@@ -64,7 +67,8 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_new(&pr->cfg_exp)))
+	ret = rpma_conn_cfg_new(&pr->cfg_exp);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
 }
 
@@ -72,8 +76,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * init -- allocate state
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
 	if (!st) {
@@ -85,8 +88,7 @@ init(unsigned id, void *prestate, void **state_ptr,
 }
 
 /*
- * thread -- create a new connection configuration object
- * and check its default values
+ * thread -- create a new connection configuration object and check its default values
  */
 static void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
@@ -97,7 +99,8 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	struct conn_cfg_values cfg_exp_vals;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_new(&st->cfg))) {
+	ret = rpma_conn_cfg_new(&st->cfg);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
 		return;
 	}
@@ -117,13 +120,13 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
  * fini -- free the connection configuration object and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_delete(&st->cfg)))
+	ret = rpma_conn_cfg_delete(&st->cfg);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
 
 	free(st);
@@ -139,7 +142,8 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_delete(&pr->cfg_exp)))
+	ret = rpma_conn_cfg_delete(&pr->cfg_exp);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_delete", ret);
 }
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_peer_cfg_from_descriptor.c -- multithreaded test
@@ -37,21 +37,17 @@ thread_main(void *arg)
 	struct thread_args *p_thread_args = (struct thread_args *)arg;
 
 	/* Create a remote peer configuration structure from input descriptor */
-	ret = rpma_peer_cfg_from_descriptor(p_thread_args->desc,
-			p_thread_args->desc_size, &pcfg);
+	ret = rpma_peer_cfg_from_descriptor(p_thread_args->desc, p_thread_args->desc_size, &pcfg);
 	if (ret) {
-		fprintf(stderr, "[thread #%d] %s failed: %s\n",
-			p_thread_args->thread_num, api_name,
+		fprintf(stderr, "[thread #%d] %s failed: %s\n", p_thread_args->thread_num, api_name,
 			rpma_err_2str(ret));
 		exit(-1);
 	}
 
 	/*
-	 * check if the direct write to PMEM is as expected
-	 * (supported or not).
+	 * check if the direct write to PMEM is as expected (supported or not).
 	 */
-	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg,
-			&direct_write_to_pmem);
+	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
 	if (ret) {
 		fprintf(stderr,
 			"[thread #%d]	rpma_peer_cfg_get_direct_write_to_pmem failed: %s\n",
@@ -101,8 +97,7 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	struct thread_args *threads_args = calloc((size_t)thread_num,
-				sizeof(struct thread_args));
+	struct thread_args *threads_args = calloc((size_t)thread_num, sizeof(struct thread_args));
 	if (threads_args == NULL) {
 		fprintf(stderr, "calloc() failed\n");
 		ret = -1;
@@ -118,11 +113,9 @@ main(int argc, char *argv[])
 	}
 
 	/* set direct write to PMEM supported */
-	ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg,
-				DIRECT_WRITE_TO_PMEM_SUPPORTED);
+	ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, DIRECT_WRITE_TO_PMEM_SUPPORTED);
 	if (ret) {
-		fprintf(stderr,
-			"rpma_peer_cfg_set_direct_write_to_pmem() failed\n");
+		fprintf(stderr, "rpma_peer_cfg_set_direct_write_to_pmem() failed\n");
 		goto err_peer_cfg_delete;
 	}
 
@@ -141,8 +134,7 @@ main(int argc, char *argv[])
 	}
 
 	char descriptors[DESCRIPTORS_MAX_SIZE];
-	ret = rpma_peer_cfg_get_descriptor(pcfg,
-			&descriptors[0]);
+	ret = rpma_peer_cfg_get_descriptor(pcfg, &descriptors[0]);
 	if (ret) {
 		fprintf(stderr, "rpma_peer_cfg_get_descriptor() failed\n");
 		goto err_peer_cfg_delete;
@@ -155,10 +147,9 @@ main(int argc, char *argv[])
 	}
 
 	for (i = 0; i < thread_num; i++) {
-		if ((ret = pthread_create(&p_threads[i], NULL, thread_main,
-				&threads_args[i])) != 0) {
-			fprintf(stderr, "Cannot start the thread #%d: %s\n",
-				i, strerror(ret));
+		ret = pthread_create(&p_threads[i], NULL, thread_main, &threads_args[i]);
+		if (ret != 0) {
+			fprintf(stderr, "Cannot start the thread #%d: %s\n", i, strerror(ret));
 			/*
 			 * Set thread_num to the number of already created
 			 * threads to join them below.
@@ -176,8 +167,7 @@ main(int argc, char *argv[])
 err_peer_cfg_delete:
 	ret = rpma_peer_cfg_delete(&pcfg);
 	if (ret) {
-		fprintf(stderr, "rpma_peer_cfg_delete failed: %s\n",
-			rpma_err_2str(ret));
+		fprintf(stderr, "rpma_peer_cfg_delete failed: %s\n", rpma_err_2str(ret));
 	}
 
 err_free_threads_args:

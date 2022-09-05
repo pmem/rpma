@@ -31,14 +31,15 @@ mtt_server_listen(char *addr, unsigned port, struct rpma_peer **peer_ptr,
 	rpma_log_set_threshold(RPMA_LOG_THRESHOLD_AUX, RPMA_LOG_LEVEL_INFO);
 
 	/* lookup an ibv_context via the address */
-	if ((ret = rpma_utils_get_ibv_context(addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
+	if (ret) {
 		SERVER_RPMA_ERR("rpma_utils_get_ibv_context", ret);
 		return ret;
 	}
 
 	/* create a new peer object */
-	if ((ret = rpma_peer_new(ibv_ctx, peer_ptr))) {
+	ret = rpma_peer_new(ibv_ctx, peer_ptr);
+	if (ret) {
 		SERVER_RPMA_ERR("rpma_peer_new", ret);
 		return ret;
 	}
@@ -47,7 +48,8 @@ mtt_server_listen(char *addr, unsigned port, struct rpma_peer **peer_ptr,
 	MTT_PORT_SET(port, 0);
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(*peer_ptr, addr, MTT_PORT_STR, ep_ptr))) {
+	ret = rpma_ep_listen(*peer_ptr, addr, MTT_PORT_STR, ep_ptr);
+	if (ret) {
 		SERVER_RPMA_ERR("rpma_ep_listen", ret);
 		/* delete the peer object */
 		(void) rpma_peer_delete(peer_ptr);
@@ -71,7 +73,8 @@ mtt_server_accept_connection(struct rpma_ep *ep,
 	int ret;
 
 	/* receive an incoming connection request */
-	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req))) {
+	ret = rpma_ep_next_conn_req(ep, NULL, &req);
+	if (ret) {
 		SERVER_RPMA_ERR("rpma_ep_next_conn_req", ret);
 		return ret;
 	}
@@ -80,18 +83,19 @@ mtt_server_accept_connection(struct rpma_ep *ep,
 	 * connect / accept the connection request and obtain the connection
 	 * object
 	 */
-	if ((ret = rpma_conn_req_connect(&req, pdata, conn_ptr))) {
+	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
+	if (ret) {
 		SERVER_RPMA_ERR("rpma_conn_req_connect", ret);
 		(void) rpma_conn_req_delete(&req);
 		return ret;
 	}
 
 	/* wait for the connection to be established */
-	if ((ret = rpma_conn_next_event(*conn_ptr, &conn_event)))
+	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
+	if (ret)
 		SERVER_RPMA_ERR("rpma_conn_next_event", ret);
 	else if (conn_event != RPMA_CONN_ESTABLISHED) {
-		SERVER_ERR_MSG(
-			"rpma_conn_next_event returned an unexpected event");
+		SERVER_ERR_MSG("rpma_conn_next_event returned an unexpected event");
 		SERVER_ERR_MSG(rpma_utils_conn_event_2str(conn_event));
 		ret = -1;
 	}
@@ -113,18 +117,20 @@ mtt_server_wait_for_conn_close_and_disconnect(struct rpma_conn **conn_ptr)
 	int ret = 0;
 
 	/* wait for the connection to be closed */
-	if ((ret = rpma_conn_next_event(*conn_ptr, &conn_event)))
+	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
+	if (ret)
 		SERVER_RPMA_ERR("rpma_conn_next_event", ret);
 	else if (conn_event != RPMA_CONN_CLOSED) {
-		SERVER_ERR_MSG(
-			"rpma_conn_next_event returned an unexpected event");
+		SERVER_ERR_MSG("rpma_conn_next_event returned an unexpected event");
 		SERVER_ERR_MSG(rpma_utils_conn_event_2str(conn_event));
 	}
 
-	if ((ret = rpma_conn_disconnect(*conn_ptr)))
+	ret = rpma_conn_disconnect(*conn_ptr);
+	if (ret)
 		SERVER_RPMA_ERR("rpma_conn_disconnect", ret);
 
-	if ((ret = rpma_conn_delete(conn_ptr)))
+	ret = rpma_conn_delete(conn_ptr);
+	if (ret)
 		SERVER_RPMA_ERR("rpma_conn_delete", ret);
 }
 
@@ -150,12 +156,14 @@ mtt_client_peer_new(struct mtt_result *tr, char *addr, struct rpma_peer **peer_p
 	struct ibv_context *ibv_ctx;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return -1;
 	}
 
-	if ((ret = rpma_peer_new(ibv_ctx, peer_ptr))) {
+	ret = rpma_peer_new(ibv_ctx, peer_ptr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 		return -1;
 	}
@@ -171,7 +179,8 @@ mtt_client_peer_delete(struct mtt_result *tr, struct rpma_peer **peer_ptr)
 {
 	int ret;
 
-	if ((ret = rpma_peer_delete(peer_ptr)))
+	ret = rpma_peer_delete(peer_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 
@@ -286,16 +295,19 @@ mtt_client_disconnect(struct mtt_result *tr, struct rpma_conn **conn_ptr)
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	int ret;
 
-	if ((ret = rpma_conn_disconnect(*conn_ptr))) {
+	ret = rpma_conn_disconnect(*conn_ptr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_disconnect", ret);
 	} else {
 		/* wait for the connection to be closed */
-		if ((ret = rpma_conn_next_event(*conn_ptr, &conn_event)))
+		ret = rpma_conn_next_event(*conn_ptr, &conn_event);
+		if (ret)
 			MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
 		else if (conn_event != RPMA_CONN_CLOSED)
 			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
 	}
 
-	if ((ret = rpma_conn_delete(conn_ptr)))
+	ret = rpma_conn_delete(conn_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
 }

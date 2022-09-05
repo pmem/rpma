@@ -23,12 +23,12 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	uint32_t cq_size;
 	int ret;
 
-	if ((ret = rpma_conn_cfg_get_cq_size(pr->cfg_ptr, &cq_size))) {
+	ret = rpma_conn_cfg_get_cq_size(pr->cfg_ptr, &cq_size);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_get_cq_size", ret);
 		return;
 	}
 
 	if (cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP)
-		MTT_ERR(tr, "cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP",
-				EINVAL);
+		MTT_ERR(tr, "cq_size != RPMA_CONN_CFG_COMMON_Q_SIZE_EXP", EINVAL);
 }

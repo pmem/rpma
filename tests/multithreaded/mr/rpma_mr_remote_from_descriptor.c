@@ -44,8 +44,8 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	 */
 	struct common_data *dst_data = pr->pdata.ptr;
 
-	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &pr->mr_ptr);
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&pr->mr_ptr);
 	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_remote_from_descriptor", ret);
 		goto err_conn_disconnect;
@@ -74,34 +74,32 @@ err_peer_delete:
  * thread -- get and verify the private data
  */
 static void
-thread(unsigned id, void *prestate, void *state,
-		struct mtt_result *result)
+thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	struct rpma_mr_remote *mr_ptr;
 	struct common_data *dst_data = pr->pdata.ptr;
 
-	int ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-				dst_data->mr_desc_size, &mr_ptr);
+	int ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+				&mr_ptr);
 	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_mr_remote_from_descriptor", ret);
 		return;
 	} else if (mr_ptr == NULL) {
-		MTT_ERR_MSG(result,
-			"Getting mr_remote from descriptor failed", -1);
+		MTT_ERR_MSG(result, "Getting mr_remote from descriptor failed", -1);
 		return;
 	}
 
 	if (memcmp(mr_ptr, pr->mr_ptr, pr->mr_size) != 0)
 		MTT_ERR_MSG(result, "Wrong content of the mr_remote", -1);
 
-	if ((ret = rpma_mr_remote_delete(&mr_ptr)))
+	ret = rpma_mr_remote_delete(&mr_ptr);
+	if (ret)
 		MTT_RPMA_ERR(result, "rpma_mr_remote_delete", ret);
 }
 
 /*
- * prestate_fini -- deregister and free the memory region,
- * disconnect and delete the peer object
+ * prestate_fini -- deregister and free the memory region, disconnect and delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
@@ -110,25 +108,28 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	int ret;
 
-	if ((ret = rpma_conn_disconnect(pr->conn))) {
+	ret = rpma_conn_disconnect(pr->conn);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_disconnect", ret);
 	} else {
 		/* wait for the connection to be closed */
-		if ((ret = rpma_conn_next_event(pr->conn, &conn_event)))
+		ret = rpma_conn_next_event(pr->conn, &conn_event);
+		if (ret)
 			MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
 		else if (conn_event != RPMA_CONN_CLOSED)
-			MTT_ERR_MSG(tr,
-				"rpma_conn_next_event returned an unexpected event",
-				-1);
+			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
 	}
 
-	if ((ret = rpma_mr_remote_delete(&pr->mr_ptr)))
+	ret = rpma_mr_remote_delete(&pr->mr_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_mr_remote_delete", ret);
 
-	if ((ret = rpma_conn_delete(&pr->conn)))
+	ret = rpma_conn_delete(&pr->conn);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

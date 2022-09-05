@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_ep_get_fd.c -- rpma_ep_get_fd multithreaded test
@@ -20,9 +20,8 @@ struct prestate {
 };
 
 /*
- * prestate_init -- obtain an ibv_context for a local IP address,
- * create a new peer object, start a listening endpoint and
- * get the endpoint's event file descriptor
+ * prestate_init -- obtain an ibv_context for a local IP address, create a new peer object,
+ * start a listening endpoint and get the endpoint's event file descriptor
  */
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
@@ -30,26 +29,29 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(pr->ibv_ctx, &pr->peer))) {
+	ret = rpma_peer_new(pr->ibv_ctx, &pr->peer);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 		return;
 	}
 
 	MTT_PORT_INIT;
 	MTT_PORT_SET(pr->port, 0);
-	if ((ret = rpma_ep_listen(pr->peer, pr->addr, MTT_PORT_STR, &pr->ep))) {
+	ret = rpma_ep_listen(pr->peer, pr->addr, MTT_PORT_STR, &pr->ep);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_ep_listen", ret);
 		(void) rpma_peer_delete(&pr->peer);
 		return;
 	}
 
-	if ((ret = rpma_ep_get_fd(pr->ep, &pr->ep_fd_exp))) {
+	ret = rpma_ep_get_fd(pr->ep, &pr->ep_fd_exp);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_ep_get_fd", ret);
 		(void) rpma_ep_shutdown(&pr->ep);
 		(void) rpma_peer_delete(&pr->peer);
@@ -60,8 +62,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * thread -- get the endpoint's event file descriptor
  */
 static void
-thread(unsigned id, void *prestate, void *state,
-		struct mtt_result *result)
+thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	int ep_fd;
@@ -73,8 +74,7 @@ thread(unsigned id, void *prestate, void *state,
 	}
 
 	if (ep_fd != pr->ep_fd_exp)
-		MTT_ERR(result, "rpma_ep_get_fd returned an unexpected value",
-				EINVAL);
+		MTT_ERR(result, "rpma_ep_get_fd returned an unexpected value", EINVAL);
 }
 
 /*
@@ -86,10 +86,12 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_ep_shutdown(&pr->ep)))
+	ret = rpma_ep_shutdown(&pr->ep);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_ep_shutdown", ret);
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

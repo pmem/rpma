@@ -31,12 +31,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct ibv_context *ibv_ctx;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(ibv_ctx, &pr->peer)))
+	ret = rpma_peer_new(ibv_ctx, &pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 }
 
@@ -46,7 +48,6 @@ prestate_init(void *prestate, struct mtt_result *tr)
 void
 seq_init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
-	int ret;
 	struct prestate *pr = (struct prestate *)prestate;
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
 	if (!st) {
@@ -56,7 +57,8 @@ seq_init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 
 	MTT_PORT_INIT;
 	MTT_PORT_SET(pr->port, id);
-	if ((ret = rpma_conn_req_new(pr->peer, pr->addr, MTT_PORT_STR, pr->cfg, &st->req)))
+	int ret = rpma_conn_req_new(pr->peer, pr->addr, MTT_PORT_STR, pr->cfg, &st->req);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_req_new", ret);
 
 	*state_ptr = st;
@@ -69,9 +71,9 @@ static void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct state *st = (struct state *)state;
-	int ret;
 
-	if ((ret = rpma_conn_req_delete(&st->req)))
+	int ret = rpma_conn_req_delete(&st->req);
+	if (ret)
 		MTT_RPMA_ERR(result, "rpma_conn_req_delete", ret);
 }
 
@@ -93,9 +95,9 @@ static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	int ret;
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	int ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 
 	if (pr->cfg != NULL && (ret = rpma_conn_cfg_delete(&pr->cfg)))
@@ -110,13 +112,13 @@ static void
 prestate_init_with_conn_cfg(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	int ret;
 
 	prestate_init(prestate, tr);
 	if (tr->ret)
 		return;
 
-	if ((ret = rpma_conn_cfg_new(&pr->cfg))) {
+	int ret = rpma_conn_cfg_new(&pr->cfg);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_cfg_new", ret);
 		prestate_fini(prestate, tr);
 	}
@@ -126,7 +128,6 @@ int
 main(int argc, char *argv[])
 {
 	struct mtt_args args = {0};
-	int ret;
 
 	if (mtt_parse_args(argc, argv, &args))
 		return -1;
@@ -155,7 +156,8 @@ main(int argc, char *argv[])
 			prestate_fini
 	};
 
-	if ((ret = mtt_run(&test, args.threads_num)))
+	int ret = mtt_run(&test, args.threads_num);
+	if (ret)
 		return ret;
 	return mtt_run(&test_with_conn_cfg, args.threads_num);
 }
