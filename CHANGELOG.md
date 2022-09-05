@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (examples) changed the write size from KILOBYTE to HELLO_STR_SIZE
 
 ### Changed
-- unified coding style in the source and the test files
+- unified coding style in the source, the test and the example files
 
 ## [1.0.0] - 2022-08-25
 ### Added
