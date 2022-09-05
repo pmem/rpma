@@ -31,6 +31,9 @@
 #define main client_main
 #endif
 
+/* read-after-write buffer size */
+#define RAW_BUFFER_SIZE 8
+
 int
 main(int argc, char *argv[])
 {
@@ -89,7 +92,7 @@ main(int argc, char *argv[])
 	}
 
 	/* alloc memory for the read-after-write buffer (RAW) */
-	raw = malloc_aligned(KILOBYTE);
+	raw = malloc_aligned(RAW_BUFFER_SIZE);
 	if (raw == NULL) {
 		ret = -1;
 		goto err_free;
@@ -120,7 +123,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 
 	/* register the RAW buffer */
-	ret = rpma_mr_reg(peer, raw, 8, RPMA_MR_USAGE_READ_DST, &raw_mr);
+	ret = rpma_mr_reg(peer, raw, RAW_BUFFER_SIZE, RPMA_MR_USAGE_READ_DST, &raw_mr);
 	if (ret)
 		goto err_mr_dereg;
 
@@ -161,7 +164,7 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 
 	/* the read serves here as flushing primitive */
-	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, 8,
+	ret = rpma_read(conn, raw_mr, 0, dst_mr, 0, RAW_BUFFER_SIZE,
 			RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
