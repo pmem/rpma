@@ -31,6 +31,9 @@
 #define main client_main
 #endif
 
+/* read-after-write buffer size */
+#define RAW_BUFFER_SIZE 8
+
 int
 main(int argc, char *argv[])
 {
@@ -89,7 +92,7 @@ main(int argc, char *argv[])
 	}
 
 	/* alloc memory for the read-after-write buffer (RAW) */
-	raw = malloc_aligned(KILOBYTE);
+	raw = malloc_aligned(RAW_BUFFER_SIZE);
 	if (raw == NULL) {
 		ret = -1;
 		goto err_free;
