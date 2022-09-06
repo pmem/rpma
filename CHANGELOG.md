@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0-rc1] - 2022-09-06
 ### Added
 - (tools) description of the 'schematic' variable (from the report.json file) in the 'tools/perf/BENCHMARKING.md' file
 
