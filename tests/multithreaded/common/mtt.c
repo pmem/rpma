@@ -74,14 +74,14 @@ mtt_thread_main(void *arg)
 
 	++mtt_sync.threads_num_waiting;
 
-	result = pthread_cond_timedwait(&mtt_sync.cond, &mtt_sync.mtx,
-			&mtt_sync.timeout);
+	result = pthread_cond_timedwait(&mtt_sync.cond, &mtt_sync.mtx, &mtt_sync.timeout);
 	if (result) {
 		MTT_ERR(tr, "pthread_cond_timedwait", result);
 		(void) pthread_mutex_unlock(&mtt_sync.mtx);
 		goto err_thread_fini_func;
 	}
-	if ((result = pthread_mutex_unlock(&mtt_sync.mtx))) {
+	result = pthread_mutex_unlock(&mtt_sync.mtx);
+	if (result) {
 		MTT_ERR(tr, "pthread_mutex_unlock", result);
 		goto err_thread_fini_func;
 	}
@@ -440,7 +440,8 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	 * threads since it also calculates an absolute timeout value common
 	 * for all threads.
 	 */
-	if ((result = mtt_init()))
+	result = mtt_init();
+	if (result)
 		goto err_thread_seq_fini_func;
 
 	/* create threads */

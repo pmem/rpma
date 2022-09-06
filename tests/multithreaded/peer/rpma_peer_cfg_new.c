@@ -56,15 +56,16 @@ thread(unsigned id, void *prestate, void *state,
  * fini -- delete rpma_peer_cfg and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
-	int ret;
 
 	/* delete the peer_cfg object */
-	if ((st->pcfg != NULL) && (ret = rpma_peer_cfg_delete(&st->pcfg)))
-		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	if (st->pcfg != NULL) {
+		int ret = rpma_peer_cfg_delete(&st->pcfg);
+		if (ret)
+			MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	}
 	free(st);
 }
 

@@ -68,12 +68,14 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
-	int ret;
 	struct prestate *pr = (struct prestate *)prestate;
 
 	/* delete the peer_cfg object */
-	if ((pr->pcfg != NULL) && (ret = rpma_peer_cfg_delete(&pr->pcfg)))
-		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	if (pr->pcfg != NULL) {
+		int ret = rpma_peer_cfg_delete(&pr->pcfg);
+		if (ret)
+			MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	}
 }
 
 int
