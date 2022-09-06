@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 
 # check-headers.sh - check copyright and license in source files
 
 SELF=$0
-DIR=$(pwd)/$(dirname $SELF)
+DIR=$(dirname $SELF)
 
 function usage() {
 	echo "Usage: $SELF <source_root_path> <license_tag> [-h|-v|-a]"
