@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "common-conn.h"
+#include "common-hello.h"
 #include "common-map_file_with_signature_check.h"
 #include "common-pmem_map_file.h"
 
@@ -56,7 +57,7 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		ret = common_pmem_map_file_with_signature_check(pmem_path, KILOBYTE, &mem);
+		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem);
 		if (ret)
 			goto err_free;
 	}
@@ -65,11 +66,12 @@ main(int argc, char *argv[])
 	/* if no pmem support or it is not provided */
 	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mem.mr_ptr = malloc_aligned(KILOBYTE);
+		mem.mr_ptr = malloc_aligned(HELLO_STR_SIZE);
 		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mem.mr_size = KILOBYTE;
+		mem.mr_size = HELLO_STR_SIZE;
+		mem.data_offset = 0;
 	}
 
 	/* RPMA resources */

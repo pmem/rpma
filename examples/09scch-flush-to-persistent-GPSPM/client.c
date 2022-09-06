@@ -154,19 +154,20 @@ main(int argc, char *argv[])
 			dst_data->mr_desc_size, &dst_mr)))
 		goto err_mr_dereg;
 
+	dst_offset = dst_data->data_offset;
+
 	/* get the remote memory region size */
 	if ((ret = rpma_mr_remote_get_size(dst_mr, &dst_size))) {
 		goto err_mr_remote_delete;
-	} else if (dst_size < KILOBYTE) {
+	} else if (dst_size - dst_offset < HELLO_STR_SIZE) {
 		fprintf(stderr,
 				"Size of the remote memory region is too small for writing the data of the assumed size (%zu < %d)\n",
-				dst_size, KILOBYTE);
+				dst_size - dst_offset, HELLO_STR_SIZE);
 		goto err_mr_remote_delete;
 	}
 
-	dst_offset = dst_data->data_offset;
 	if ((ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
-			(mem.data_offset + offsetof(struct hello_t, str)), KILOBYTE,
+			(mem.data_offset + offsetof(struct hello_t, str)), HELLO_STR_SIZE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL)))
 		goto err_mr_remote_delete;
 
