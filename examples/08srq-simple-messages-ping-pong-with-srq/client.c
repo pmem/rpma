@@ -64,35 +64,42 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = client_peer_via_address(addr, &peer)))
+	ret = client_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_mr_free;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
+	ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr);
+	if (ret)
 		goto err_peer_delete;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
+	ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr);
+	if (ret) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_peer_delete;
 	}
 
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, NULL, NULL, &conn)))
+	ret = client_connect(peer, addr, port, NULL, NULL, &conn);
+	if (ret)
 		goto err_mr_dereg;
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	ret = rpma_conn_get_cq(conn, &cq);
+	if (ret)
 		goto err_conn_disconnect;
 
 	do {
 		/* prepare a receive for the server's response */
-		if ((ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv)))
+		ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv);
+		if (ret)
 			goto err_conn_disconnect;
 
 		/* send a message to the server */
 		(void) printf("Value sent: %" PRIu64 "\n", cntr);
 		*send = cntr;
-		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL)))
+		ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL);
+		if (ret)
 			goto err_conn_disconnect;
 
 		int send_cmpl = 0;

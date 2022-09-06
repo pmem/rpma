@@ -110,27 +110,33 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = client_peer_via_address(addr, &peer)))
+	ret = client_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free;
 
 	struct rpma_conn_cfg *cfg = NULL;
-	if ((ret = rpma_conn_cfg_new(&cfg)))
+	ret = rpma_conn_cfg_new(&cfg);
+	if (ret)
 		goto err_peer_delete;
 
-	if ((ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE)))
+	ret = rpma_conn_cfg_set_rcq_size(cfg, RCQ_SIZE);
+	if (ret)
 		goto err_cfg_delete;
 
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, cfg, NULL, &conn)))
+	ret = client_connect(peer, addr, port, cfg, NULL, &conn);
+	if (ret)
 		goto err_cfg_delete;
 
 	/* register the memory RDMA write */
-	if ((ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size, RPMA_MR_USAGE_WRITE_SRC, &src_mr)))
+	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size, RPMA_MR_USAGE_WRITE_SRC, &src_mr);
+	if (ret)
 		goto err_conn_disconnect;
 
 	/* register the messaging memory */
-	if ((ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV,
-			&msg_mr))) {
+	ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV,
+			&msg_mr);
+	if (ret) {
 		(void) rpma_mr_dereg(&src_mr);
 		goto err_conn_disconnect;
 	}
@@ -146,14 +152,16 @@ main(int argc, char *argv[])
 	 */
 	struct common_data *dst_data = pdata.ptr;
 
-	if ((ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0],
-			dst_data->mr_desc_size, &dst_mr)))
+	ret = rpma_mr_remote_from_descriptor(&dst_data->descriptors[0], dst_data->mr_desc_size,
+			&dst_mr);
+	if (ret)
 		goto err_mr_dereg;
 
 	dst_offset = dst_data->data_offset;
 
 	/* get the remote memory region size */
-	if ((ret = rpma_mr_remote_get_size(dst_mr, &dst_size))) {
+	ret = rpma_mr_remote_get_size(dst_mr, &dst_size);
+	if (ret) {
 		goto err_mr_remote_delete;
 	} else if (dst_size - dst_offset < HELLO_STR_SIZE) {
 		fprintf(stderr,
@@ -162,13 +170,15 @@ main(int argc, char *argv[])
 		goto err_mr_remote_delete;
 	}
 
-	if ((ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
+	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
 			(mem.data_offset + offsetof(struct hello_t, str)), HELLO_STR_SIZE,
-			RPMA_F_COMPLETION_ON_ERROR, NULL)))
+			RPMA_F_COMPLETION_ON_ERROR, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* prepare a response buffer */
-	if ((ret = rpma_recv(conn, msg_mr, RECV_OFFSET, MSG_SIZE_MAX, NULL)))
+	ret = rpma_recv(conn, msg_mr, RECV_OFFSET, MSG_SIZE_MAX, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* prepare a flush message and pack it to a send buffer */
@@ -185,17 +195,20 @@ main(int argc, char *argv[])
 	(void) gpspm_flush_request__pack(&flush_req, send_ptr);
 
 	/* send the flush message */
-	if ((ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_req_size, RPMA_F_COMPLETION_ALWAYS,
-			NULL)))
+	ret = rpma_send(conn, msg_mr, SEND_OFFSET, flush_req_size, RPMA_F_COMPLETION_ALWAYS, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* wait for the send completion to be ready */
 	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	ret = rpma_conn_get_cq(conn, &cq);
+	if (ret)
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_wait(cq)))
+	ret = rpma_cq_wait(cq);
+	if (ret)
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* validate the send completion */
@@ -215,11 +228,14 @@ main(int argc, char *argv[])
 
 	/* wait for the receive completion to be ready */
 	struct rpma_cq *rcq = NULL;
-	if ((ret = rpma_conn_get_rcq(conn, &rcq)))
+	ret = rpma_conn_get_rcq(conn, &rcq);
+	if (ret)
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_wait(rcq)))
+	ret = rpma_cq_wait(rcq);
+	if (ret)
 		goto err_mr_remote_delete;
-	if ((ret = rpma_cq_get_wc(rcq, 1, &wc, NULL)))
+	ret = rpma_cq_get_wc(rcq, 1, &wc, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* validate the receive completion */
