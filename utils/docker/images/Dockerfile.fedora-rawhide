@@ -44,6 +44,7 @@ ENV EXAMPLES_DEPS "\
 
 # performance tools deps
 ENV TOOLS_DEPS "\
+	python3-devel \
 	python3-jinja2 \
 	pylint \
 	python3-pip \
