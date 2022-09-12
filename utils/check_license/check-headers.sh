@@ -114,12 +114,12 @@ for file in $FILES ; do
 		echo "error: no $LICENSE SPDX tag in file: $src_path" >&2
 		RV=1
 	elif [[ $file == *.c ]]; then
-		if ! grep -q -e "\/\/ SPDX-License-Identifier: $LICENSE" $src_path; then
+		if ! grep -q -e "// SPDX-License-Identifier: $LICENSE" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
 	elif [[ $file == *.h ]]; then
-		if ! grep -q -e "\/\* SPDX-License-Identifier: $LICENSE \*\/" $src_path; then
+		if ! grep -q -e "/\* SPDX-License-Identifier: $LICENSE \*/" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
