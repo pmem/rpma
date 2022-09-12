@@ -57,7 +57,7 @@ The following command can be used to see all available CMake options:
 ### CMake options most useful during development
 
 The most useful CMake options during development are briefly described below:
-- `CMAKE_BUILD_TYPE` should be set to `Debug` (the default is `Release`) to be able to see the debug information in case of failures,
+- `CMAKE_BUILD_TYPE` should be set to `Debug` (the default is `Release`) to be able to run the tests and see the debug information in case of failures,
 - `BUILD_DEVELOPER_MODE` should be set to `ON` (the default is `OFF`) to enable all developer checks (checking: licenses, coding style, whitespaces and commits), it sets also two compiler flags: `-Wall` and `-Werror`,
 - `BUILD_DOC` should be set to `ON` (the default) to turn on building the documentation,
 - `BUILD_TESTS` should be set to `ON` (the default) to turn on building the tests,
@@ -79,7 +79,7 @@ This section describes how to prepare the environment for execution of all avail
 The unit tests are implemented using the [cmocka](https://cmocka.org/) framework. They do not need any RDMA-capable network interface. All unit tests are located in the `./tests/unit/` subfolder of the main directory.
 
 In order to run **only** the unit tests (this is the default configuration):
-1. Build the librpma library with the `TESTS_RDMA_CONNECTION` CMake variable set to `OFF` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
+1. Build the librpma library with the `CMAKE_BUILD_TYPE` CMake variable set to `Debug` and the `TESTS_RDMA_CONNECTION` CMake variable set to `OFF`:
 
 ```sh
 [rpma]$ cd build
@@ -142,7 +142,7 @@ $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
 
 ### Building the librpma library for running multi-threaded or integration tests
 
-1. In order to run the **multi-threaded tests** build the librpma library with the `TESTS_RDMA_CONNECTION` CMake variable set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
+1. In order to run the **multi-threaded tests** build the librpma library with the `CMAKE_BUILD_TYPE` CMake variable set to `Debug` and the `TESTS_RDMA_CONNECTION` CMake variable set to `ON`:
 
 ```sh
 [rpma]$ cd build
@@ -150,7 +150,7 @@ $ export RPMA_TESTING_IP=192.168.0.1 # insert your own IP address here
 [rpma/build]$ make -j$(nproc)
 ```
 
-2. In order to run the **integration tests** build the librpma library with the `TESTS_RDMA_CONNECTION` and the `DEBUG_FAULT_INJECTION` CMake variables set to `ON` (it is good to set also the `CMAKE_BUILD_TYPE` CMake variable to `Debug` to be able to see the debug information in case of failures):
+2. In order to run the **integration tests** build the librpma library with the `CMAKE_BUILD_TYPE` CMake variable set to `Debug` and the `TESTS_RDMA_CONNECTION` and the `DEBUG_FAULT_INJECTION` CMake variables set to `ON`:
 
 ```sh
 [rpma]$ cd build
