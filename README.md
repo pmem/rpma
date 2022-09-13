@@ -34,8 +34,7 @@ The analysis of thread safety of the librpma library is located in the [THREAD_S
 For more information on this library, contact
 Tomasz Gromadzki (tomasz.gromadzki@intel.com),
 Lukasz Dorau (lukasz.dorau@intel.com),
-Piotr Balcer (piotr.balcer@intel.com),
-Chet Douglas (chet.r.douglas@intel.com), or post to our
+Piotr Balcer (piotr.balcer@intel.com), or post to our
 [Google group](https://groups.google.com/group/pmem).
 
 ## More Info
