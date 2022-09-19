@@ -58,7 +58,7 @@ function upload_codecov() {
 	printf "\n$(tput setaf 1)$(tput setab 7)COVERAGE ${FUNCNAME[0]} START$(tput sgr 0)\n"
 
 	# set proper gcov command
-	clang_used=$(cmake -LA -N . | grep CMAKE_C_COMPILER | grep clang | wc -c)
+	clang_used=$($CMAKE -LA -N . | grep CMAKE_C_COMPILER | grep clang | wc -c)
 	if [[ $clang_used > 0 ]]; then
 		gcovexe="llvm-cov gcov"
 	else
@@ -85,7 +85,7 @@ function compile_example_standalone() {
 	mkdir $EXAMPLE_TEST_DIR
 	cd $EXAMPLE_TEST_DIR
 
-	cmake $1
+	$CMAKE $1
 
 	# exit on error
 	if [[ $? != 0 ]]; then
@@ -164,6 +164,10 @@ function run_pytest() {
 
 ./prepare-for-build.sh
 
+CMAKE_VERSION=$(cmake --version | grep version | cut -d" " -f3 | cut -d. -f1)
+[ "$CMAKE_VERSION" != "" ] && [ $CMAKE_VERSION -lt 3 ] && \
+	[ "$(which cmake3 2>/dev/null)" != "" ] && CMAKE=cmake3 || CMAKE=cmake
+
 # look for libprotobuf-c
 USR=$(find /usr -name "*protobuf-c.so*" || true)
 LIB=$(find /lib* -name "*protobuf-c.so*" || true)
@@ -178,7 +182,7 @@ mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
 CC=$CC \
-cmake .. -DCMAKE_BUILD_TYPE=Debug \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DBUILD_DEVELOPER_MODE=1 \
 	-DDEBUG_USE_ASAN=${CI_SANITS} \
@@ -201,7 +205,7 @@ mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
 CC=$CC \
-cmake .. -DCMAKE_BUILD_TYPE=Debug \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DTESTS_COVERAGE=$TESTS_COVERAGE \
@@ -240,7 +244,7 @@ mkdir -p $WORKDIR/build
 cd $WORKDIR/build
 
 CC=$CC \
-cmake .. -DCMAKE_BUILD_TYPE=Release \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
