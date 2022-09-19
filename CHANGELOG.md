@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
 - docker file of Fedora Rawhide (the python3-devel package added)
+- build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
 
 ## [1.1.0] - 2022-09-08
 ### Added
