@@ -96,7 +96,7 @@ elif '/dev/dax' in pmem_path:
 else:
     args.append('--filename_format={}.\\$jobnum'.format(pmem_path))
 ```
-### Finaly tuning
+### Finally tuning
 We recommend reducing the number of threads.
 ```python
 # __THREADS_VALUES = [1, 2, 4, 8, 12, 16, 32, 64]
