@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- one suppression for Memcheck on Ubuntu 22.04
+
 ### Fixed
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
 - docker file of Fedora Rawhide (the python3-devel package added)
