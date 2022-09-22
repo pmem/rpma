@@ -189,5 +189,3 @@ add_example(NAME log BIN log SRCS
 	log/log-worker.c
 	${LIBRPMA_SOURCE_DIR}/log.c
 	${LIBRPMA_SOURCE_DIR}/log_default.c)
-
-add_library(doc_snippets_template-snippet OBJECT doc_snippets/template-snippet.c)
