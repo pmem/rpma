@@ -262,3 +262,26 @@
    fun:rpma_srq_new
    ...
 }
+
+#
+# Assessment: this suppression indicates that a conditional jump
+# or move depends on uninitialised value(s)
+#
+# OS: Ubuntu 22.04
+# libibverbs: 1.14.39.0
+# librdmacm: 1.3.39.0
+#
+# Occurs in traces of
+# - rpma_srq_new
+#
+{
+   Conditional jump or move depends on uninitialised value(s)
+   Memcheck:Cond
+   fun:ibv_icmd_create_srq
+   fun:ibv_cmd_create_srq
+   obj:*/libmlx5.so*
+   fun:ibv_create_srq*
+   fun:rpma_peer_create_srq
+   fun:rpma_srq_new
+   ...
+}
