@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
 - docker file of Fedora Rawhide (the python3-devel package added)
 - build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
-- check-headers.sh file - correct the path of check-ms-license.pl
+- check-headers.sh file - corrected the path of check-ms-license.pl
 - removed unused doc_snippets
 
 ## [1.1.0] - 2022-09-08
@@ -111,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TESTS_USE_VALGRIND
 
 - old integration tests
-- suppresions for get and set functions for cq, rq, sq and timeout has been removed
+- suppressions for get and set functions for cq, rq, sq and timeout has been removed
 
 ## [0.14.0] - 2022-03-15
 ### Added
