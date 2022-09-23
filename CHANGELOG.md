@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - check-headers.sh file - corrected the path of check-ms-license.pl
 - removed unused doc_snippets
 
+### Changed
+- logging of the source and the destination GID addresses in rpma_conn_req_new_from_id() only when CMAKE_BUILD_TYPE is set to 'Debug'
+
 ## [1.1.0] - 2022-09-08
 ### Added
 - (tools) description of the 'schematic' variable (from the report.json file) in the 'tools/perf/BENCHMARKING.md' file
