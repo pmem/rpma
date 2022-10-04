@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- security warnings to the documentation of the following functions of the API:
+  - rpma_conn_get_private_data()
+  - rpma_conn_req_get_private_data()
+  - rpma_mr_get_descriptor()
+  - rpma_mr_remote_from_descriptor()
+  - rpma_peer_cfg_from_descriptor()
+  - rpma_peer_cfg_get_descriptor()
 - one suppression for Memcheck on Ubuntu 22.04
 
 ### Fixed
