@@ -34,6 +34,18 @@ DESCRIPTION
 **rpma\_peer\_cfg\_from\_descriptor**() creates a peer configuration
 object from the descriptor.
 
+SECURITY WARNING
+================
+
+An attacker might modify the serialized remote node configuration while
+it is transferred via an unsecured connection (e.g. rdma\_cm private
+data), which might cause different remote persistency method selections.
+The most dangerous situation is switching from the GPSPM mode to the APM
+one. Users should avoid using **rpma\_conn\_get\_private\_data**(3) and
+**rpma\_conn\_req\_get\_private\_data**(3) API calls and they should
+utilize TLS/SSL connections to transfer all configuration data between
+peers instead.
+
 RETURN VALUE
 ============
 
