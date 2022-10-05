@@ -33,6 +33,11 @@ DESCRIPTION
 **rpma\_peer\_cfg\_get\_descriptor**() gets the descriptor of the peer
 configuration.
 
+SECURITY WARNING
+================
+
+See **rpma\_peer\_cfg\_from\_descriptor**(3).
+
 RETURN VALUE
 ============
 

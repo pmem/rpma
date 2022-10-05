@@ -36,6 +36,11 @@ decoded by **rpma\_mr\_remote\_from\_descriptor**() to create a remote
 memory region\'s structure which allows for Remote Memory Access. Please
 see **librpma**(7) for details.
 
+SECURITY WARNING
+================
+
+See **rpma\_mr\_remote\_from\_descriptor**(3).
+
 RETURN VALUE
 ============
 

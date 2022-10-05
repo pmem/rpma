@@ -36,6 +36,11 @@ DESCRIPTION
 connection\'s private data given by the other side of the connection
 before the connection is established.
 
+SECURITY WARNING
+================
+
+See **rpma\_conn\_get\_private\_data**(3).
+
 RETURN VALUE
 ============
 

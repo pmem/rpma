@@ -35,6 +35,18 @@ Create a remote memory region\'s structure based on the provided
 descriptor with a network-transferable description of the memory region
 local to the remote peer.
 
+SECURITY WARNING
+================
+
+An attacker might modify the serialized remote memory registration
+configuration while it is transferred via an unsecured connection (e.g.
+rdma\_cm private data), which might cause data corruption when writing
+to a different location. Users should avoid using
+**rpma\_conn\_get\_private\_data**(3) and
+**rpma\_conn\_req\_get\_private\_data**(3) API calls and they should
+utilize TLS/SSL connections to transfer all configuration data between
+peers instead.
+
 RETURN VALUE
 ============
 
