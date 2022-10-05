@@ -558,6 +558,9 @@ int rpma_peer_cfg_get_direct_write_to_pmem(const struct rpma_peer_cfg *pcfg, boo
  * DESCRIPTION
  * rpma_peer_cfg_get_descriptor() gets the descriptor of the peer configuration.
  *
+ * SECURITY WARNING
+ * See rpma_peer_cfg_from_descriptor(3).
+ *
  * RETURN VALUE
  * The rpma_peer_cfg_get_descriptor() function returns 0 on success or a negative error code on
  * failure.
@@ -613,6 +616,14 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg, size_t *desc
  *
  * DESCRIPTION
  * rpma_peer_cfg_from_descriptor() creates a peer configuration object from the descriptor.
+ *
+ * SECURITY WARNING
+ * An attacker might modify the serialized remote node configuration while it is transferred
+ * via an unsecured connection (e.g. rdma_cm private data), which might cause
+ * different remote persistency method selections. The most dangerous situation is switching
+ * from the GPSPM mode to the APM one. Users should avoid using rpma_conn_get_private_data(3)
+ * and rpma_conn_req_get_private_data(3) API calls and they should utilize TLS/SSL connections
+ * to transfer all configuration data between peers instead.
  *
  * RETURN VALUE
  * The rpma_peer_cfg_from_descriptor() function returns 0 on success or a negative error code on
@@ -803,6 +814,9 @@ int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
  * decoded by rpma_mr_remote_from_descriptor() to create a remote memory region's structure which
  * allows for Remote Memory Access. Please see librpma(7) for details.
  *
+ * SECURITY WARNING
+ * See rpma_mr_remote_from_descriptor(3).
+ *
  * RETURN VALUE
  * The rpma_mr_get_descriptor() function returns 0 on success or a negative error code on failure.
  *
@@ -830,6 +844,14 @@ int rpma_mr_get_descriptor(const struct rpma_mr_local *mr, void *desc);
  * DESCRIPTION
  * Create a remote memory region's structure based on the provided descriptor with
  * a network-transferable description of the memory region local to the remote peer.
+ *
+ * SECURITY WARNING
+ * An attacker might modify the serialized remote memory registration configuration
+ * while it is transferred via an unsecured connection (e.g. rdma_cm private data),
+ * which might cause data corruption when writing to a different location.
+ * Users should avoid using rpma_conn_get_private_data(3) and rpma_conn_req_get_private_data(3)
+ * API calls and they should utilize TLS/SSL connections to transfer all configuration data
+ * between peers instead.
  *
  * RETURN VALUE
  * The rpma_mr_remote_from_descriptor() function returns 0 on success or a negative error code on
@@ -1659,6 +1681,12 @@ struct rpma_conn_private_data {
  * rpma_conn_get_private_data() obtains the pointer to the private data given by the other side of
  * the connection.
  *
+ * SECURITY WARNING
+ * The connection's private data is unsecure. An attacker might modify all data transferred
+ * via the rdma_cm private data. Users should avoid using rpma_conn_get_private_data(3)
+ * and rpma_conn_req_get_private_data(3) API calls and they should utilize TLS/SSL connections
+ * to transfer all configuration data between peers instead.
+ *
  * RETURN VALUE
  * The rpma_conn_get_private_data() function returns 0 on success or a negative error code on
  * failure. rpma_conn_get_private_data() does not set *pdata value on failure.
@@ -2217,6 +2245,9 @@ int rpma_ep_next_conn_req(struct rpma_ep *ep, const struct rpma_conn_cfg *cfg,
  * DESCRIPTION
  * rpma_conn_req_get_private_data() obtains the pointer to the connection's private data given by
  * the other side of the connection before the connection is established.
+ *
+ * SECURITY WARNING
+ * See rpma_conn_get_private_data(3).
  *
  * RETURN VALUE
  * The rpma_conn_req_get_private_data() function returns 0 on success or a negative error code on
