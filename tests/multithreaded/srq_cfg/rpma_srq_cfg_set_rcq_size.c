@@ -23,12 +23,14 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	uint32_t rcq_size = 0;
 	int ret;
 
-	if ((ret = rpma_srq_cfg_set_rcq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_srq_cfg_set_rcq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_set_rcq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_srq_cfg_get_rcq_size(pr->cfg_ptr, &rcq_size))) {
+	ret = rpma_srq_cfg_get_rcq_size(pr->cfg_ptr, &rcq_size);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_get_rcq_size", ret);
 		return;
 	}

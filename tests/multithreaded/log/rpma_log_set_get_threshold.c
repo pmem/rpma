@@ -19,12 +19,14 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 	enum rpma_log_level level;
 	int ret;
 
-	if ((ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO))) {
+	ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_log_set_threshold", ret);
 		return;
 	}
 
-	if ((ret = rpma_log_get_threshold(RPMA_LOG_THRESHOLD, &level))) {
+	ret = rpma_log_get_threshold(RPMA_LOG_THRESHOLD, &level);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_log_get_threshold", ret);
 		return;
 	}

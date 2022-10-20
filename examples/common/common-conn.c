@@ -76,10 +76,8 @@ client_connect(struct rpma_peer *peer, const char *addr, const char *port,
 
 	/* connect the connection request and obtain the connection object */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
+	if (ret)
 		return ret;
-	}
 
 	/* wait for the connection to establish */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
@@ -107,8 +105,7 @@ err_conn_delete:
  */
 int
 server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
-		struct rpma_conn_private_data *pdata,
-		struct rpma_conn **conn_ptr)
+		struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr)
 {
 	struct rpma_conn_req *req = NULL;
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
@@ -123,16 +120,13 @@ server_accept_connection(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 	 * object
 	 */
 	ret = rpma_conn_req_connect(&req, pdata, conn_ptr);
-	if (ret) {
-		(void) rpma_conn_req_delete(&req);
+	if (ret)
 		return ret;
-	}
 
 	/* wait for the connection to be established */
 	ret = rpma_conn_next_event(*conn_ptr, &conn_event);
 	if (!ret && conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		ret = -1;
 	}
@@ -205,11 +199,12 @@ wait_and_validate_completion(struct rpma_conn *conn, enum ibv_wc_opcode expected
 		struct ibv_wc *wc)
 {
 	struct rpma_cq *cq = NULL;
-	int ret;
 
-	if ((ret = rpma_conn_wait(conn, 0, &cq, NULL)))
+	int ret = rpma_conn_wait(conn, 0, &cq, NULL);
+	if (ret)
 		return ret;
-	if ((ret = rpma_cq_get_wc(cq, 1, wc, NULL)))
+	ret = rpma_cq_get_wc(cq, 1, wc, NULL);
+	if (ret)
 		return ret;
 
 	char *func_name = (expected_opcode == IBV_WC_SEND)? "send" : "recv";

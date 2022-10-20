@@ -28,17 +28,20 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct ibv_context *ibv_ctx;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_REMOTE, &ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(ibv_ctx, &pr->peer))) {
+	ret = rpma_peer_new(ibv_ctx, &pr->peer);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 		return;
 	}
 
-	if ((ret = rpma_srq_new(pr->peer, NULL, &pr->srq)))
+	ret = rpma_srq_new(pr->peer, NULL, &pr->srq);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_srq_new", ret);
 
 }
@@ -51,12 +54,12 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	struct rpma_cq *rcq;
-	int ret;
 
 	MTT_PORT_INIT;
 	MTT_PORT_SET(pr->port, id);
 
-	if ((ret = rpma_srq_get_rcq(pr->srq, &rcq)))
+	int ret = rpma_srq_get_rcq(pr->srq, &rcq);
+	if (ret)
 		MTT_RPMA_ERR(result, "rpma_srq_get_rcq", ret);
 }
 
@@ -69,12 +72,14 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_srq_delete(&pr->srq))) {
+	ret = rpma_srq_delete(&pr->srq);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_delete", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

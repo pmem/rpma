@@ -109,6 +109,8 @@ To see all available configuration options please take a look at the help:
 ### 4) Generate the performance report
 
 Make a copy of report.json.example (report.json) and adjust it to describe your configuration.
+Prepare a high-level view of the performance test configuration (Figure_0.png)
+and put it into the `schematic` variable in the report.json file.
 
 ```sh
 [rpma/tools/perf]$ ./report_create.py --bench results/bench.json --report report.json

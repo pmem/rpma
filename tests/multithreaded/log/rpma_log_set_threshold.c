@@ -15,9 +15,8 @@
 void
 thread(unsigned id, void *prestate, void *state, struct mtt_result *tr)
 {
-	int ret;
-
-	if ((ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO))) {
+	int ret = rpma_log_set_threshold(RPMA_LOG_THRESHOLD, RPMA_LOG_LEVEL_INFO);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_log_set_threshold", ret);
 		return;
 	}

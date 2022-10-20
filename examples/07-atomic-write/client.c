@@ -64,27 +64,33 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = client_peer_via_address(addr, &peer)))
+	ret = client_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free;
 
 	/* establish a new connection to a server listening at addr:port */
-	if ((ret = client_connect(peer, addr, port, NULL, NULL, &conn)))
+	ret = client_connect(peer, addr, port, NULL, NULL, &conn);
+	if (ret)
 		goto err_peer_delete;
 
 	/*
 	 * Create a remote peer's configuration structure, enable persistent flush support
 	 * and apply it to the current connection. (unilaterally)
 	 */
-	if ((ret = rpma_peer_cfg_new(&pcfg)))
+	ret = rpma_peer_cfg_new(&pcfg);
+	if (ret)
 		goto err_conn_disconnect;
-	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true)))
+	ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true);
+	if (ret)
 		goto err_peer_cfg_delete;
-	if ((ret = rpma_conn_apply_remote_peer_cfg(conn, pcfg)))
+	ret = rpma_conn_apply_remote_peer_cfg(conn, pcfg);
+	if (ret)
 		goto err_peer_cfg_delete;
 
 	/* register the memory for the remote log manipulation */
-	if ((ret = rpma_mr_reg(peer, mr_ptr, mr_size,
-			RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST, &local_mr)))
+	ret = rpma_mr_reg(peer, mr_ptr, mr_size, RPMA_MR_USAGE_WRITE_SRC | RPMA_MR_USAGE_READ_DST,
+			&local_mr);
+	if (ret)
 		goto err_peer_cfg_delete;
 
 	/* obtain the remote memory description */
@@ -104,24 +110,29 @@ main(int argc, char *argv[])
 		goto err_mr_dereg;
 
 	/* get the remote memory region size */
-	if ((ret = rpma_mr_remote_get_size(remote_mr, &remote_size)))
+	ret = rpma_mr_remote_get_size(remote_mr, &remote_size);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* read the used value */
-	if ((ret = rpma_read(conn, local_mr, 0, remote_mr, dst_used_offset, sizeof(uint64_t),
-			RPMA_F_COMPLETION_ALWAYS, NULL)))
+	ret = rpma_read(conn, local_mr, 0, remote_mr, dst_used_offset, sizeof(uint64_t),
+			RPMA_F_COMPLETION_ALWAYS, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	ret = rpma_conn_get_cq(conn, &cq);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	/* wait for the completion to be ready */
-	if ((ret = rpma_cq_wait(cq)))
+	ret = rpma_cq_wait(cq);
+	if (ret)
 		goto err_mr_remote_delete;
 
-	if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
+	ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+	if (ret)
 		goto err_mr_remote_delete;
 
 	if (wc.status != IBV_WC_SUCCESS) {
@@ -159,29 +170,35 @@ main(int argc, char *argv[])
 		word[MAX_WORD_LENGTH] = 0;
 		size_t word_size = strlen(word) + 1;
 
-		if ((ret = rpma_write(conn, remote_mr, used.uint64, local_mr, 0, word_size,
-				RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		ret = rpma_write(conn, remote_mr, used.uint64, local_mr, 0, word_size,
+				RPMA_F_COMPLETION_ON_ERROR, NULL);
+		if (ret)
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, used.uint64, word_size, flush_type,
-				RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		ret = rpma_flush(conn, remote_mr, used.uint64, word_size, flush_type,
+				RPMA_F_COMPLETION_ON_ERROR, NULL);
+		if (ret)
 			break;
 
 		used.uint64 += word_size;
 
-		if ((ret = rpma_atomic_write(conn, remote_mr, dst_used_offset, used.buf,
-				RPMA_F_COMPLETION_ON_ERROR, NULL)))
+		ret = rpma_atomic_write(conn, remote_mr, dst_used_offset, used.buf,
+				RPMA_F_COMPLETION_ON_ERROR, NULL);
+		if (ret)
 			break;
 
-		if ((ret = rpma_flush(conn, remote_mr, dst_used_offset, sizeof(uint64_t),
-				flush_type, RPMA_F_COMPLETION_ALWAYS, FLUSH_ID)))
+		ret = rpma_flush(conn, remote_mr, dst_used_offset, sizeof(uint64_t), flush_type,
+				RPMA_F_COMPLETION_ALWAYS, FLUSH_ID);
+		if (ret)
 			break;
 
 		/* wait for the completion to be ready */
-		if ((ret = rpma_cq_wait(cq)))
+		ret = rpma_cq_wait(cq);
+		if (ret)
 			break;
 
-		if ((ret = rpma_cq_get_wc(cq, 1, &wc, NULL)))
+		ret = rpma_cq_get_wc(cq, 1, &wc, NULL);
+		if (ret)
 			break;
 
 		if (wc.wr_id != (uintptr_t)FLUSH_ID) {

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
+# Copyright (c) 2022 Fujitsu Limited
 
 # check-headers.sh - check copyright and license in source files
 
 SELF=$0
-DIR=$(pwd)/$(dirname $SELF)
 
 function usage() {
 	echo "Usage: $SELF <source_root_path> <license_tag> [-h|-v|-a]"
@@ -114,12 +114,12 @@ for file in $FILES ; do
 		echo "error: no $LICENSE SPDX tag in file: $src_path" >&2
 		RV=1
 	elif [[ $file == *.c ]]; then
-		if ! grep -q -e "\/\/ SPDX-License-Identifier: $LICENSE" $src_path; then
+		if ! grep -q -e "// SPDX-License-Identifier: $LICENSE" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
 	elif [[ $file == *.h ]]; then
-		if ! grep -q -e "\/\* SPDX-License-Identifier: $LICENSE \*\/" $src_path; then
+		if ! grep -q -e "/\* SPDX-License-Identifier: $LICENSE \*/" $src_path; then
 			echo "error: wrong format of SPDX tag in the file: $src_path" >&2
 			RV=1
 		fi
@@ -188,7 +188,7 @@ s/.*Copyright \([0-9]\+\),.*/\1-\1/' $src_path`
 done
 rm -f $TMP $TMP2 $TEMPFILE
 
-$DIR/check-ms-license.pl $FILES
+${SOURCE_ROOT}/utils/check_license/check-ms-license.pl $FILES
 
 # check if error found
 if [ $RV -eq 0 ]; then

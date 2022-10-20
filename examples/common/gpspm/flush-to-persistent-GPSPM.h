@@ -6,8 +6,8 @@
  * flush-to-persistent-GSPSPM.h -- a common declarations for the 09 example
  */
 
-#ifndef EXAMPLES_FLUSH_2_PMEM_GPSPM
-#define EXAMPLES_FLUSH_2_PMEM_GPSPM
+#ifndef FLUSH_TO_PERSISTENT_GPSPM
+#define FLUSH_TO_PERSISTENT_GPSPM
 
 #define MSG_SIZE_MAX 512
 
@@ -16,4 +16,4 @@
 
 #define RCQ_SIZE	1
 
-#endif /* EXAMPLES_FLUSH_2_PMEM_GPSPM */
+#endif /* FLUSH_TO_PERSISTENT_GPSPM */

@@ -58,52 +58,58 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = server_peer_via_address(addr, &peer)))
+	ret = server_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free;
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
+	ret = rpma_ep_listen(peer, addr, port, &ep);
+	if (ret)
 		goto err_peer_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr)))
+	ret = rpma_mr_reg(peer, recv, MSG_SIZE, RPMA_MR_USAGE_RECV, &recv_mr);
+	if (ret)
 		goto err_ep_shutdown;
-	if ((ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr))) {
+	ret = rpma_mr_reg(peer, send, MSG_SIZE, RPMA_MR_USAGE_SEND, &send_mr);
+	if (ret) {
 		(void) rpma_mr_dereg(&recv_mr);
 		goto err_ep_shutdown;
 	}
 
 	/* receive an incoming connection request */
-	if ((ret = rpma_ep_next_conn_req(ep, NULL, &req)))
+	ret = rpma_ep_next_conn_req(ep, NULL, &req);
+	if (ret)
 		goto err_mr_dereg;
 
 	/*
 	 * Put an initial receive to be prepared for the first message of the client's ping-pong.
 	 */
-	if ((ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv))) {
+	ret = rpma_conn_req_recv(req, recv_mr, 0, MSG_SIZE, recv);
+	if (ret) {
 		(void) rpma_conn_req_delete(&req);
 		goto err_mr_dereg;
 	}
 
 	/* accept the connection request and obtain the connection object */
-	if ((ret = rpma_conn_req_connect(&req, NULL, &conn))) {
-		(void) rpma_conn_req_delete(&req);
+	ret = rpma_conn_req_connect(&req, NULL, &conn);
+	if (ret)
 		goto err_mr_dereg;
-	}
 
 	/* wait for the connection to be established */
-	if ((ret = rpma_conn_next_event(conn, &conn_event)))
+	ret = rpma_conn_next_event(conn, &conn_event);
+	if (ret)
 		goto err_conn_disconnect;
 	if (conn_event != RPMA_CONN_ESTABLISHED) {
-		fprintf(stderr,
-			"rpma_conn_next_event returned an unexpected event: %s\n",
+		fprintf(stderr, "rpma_conn_next_event returned an unexpected event: %s\n",
 			rpma_utils_conn_event_2str(conn_event));
 		goto err_conn_disconnect;
 	}
 
 	/* get the connection's main CQ */
 	struct rpma_cq *cq = NULL;
-	if ((ret = rpma_conn_get_cq(conn, &cq)))
+	ret = rpma_conn_get_cq(conn, &cq);
+	if (ret)
 		goto err_conn_disconnect;
 
 	/* IBV_WC_SEND completion in the first round is not present */
@@ -126,17 +132,18 @@ main(int argc, char *argv[])
 		*send = *recv + 1;
 
 		/* prepare a receive for the client's response */
-		if ((ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv)))
+		ret = rpma_recv(conn, recv_mr, 0, MSG_SIZE, recv);
+		if (ret)
 			break;
 
 		/* send the new value to the client */
 		(void) printf("Value sent: %" PRIu64 "\n", *send);
-		if ((ret = rpma_send(conn, send_mr, 0, MSG_SIZE,
-				/*
-				 * XXX when using RPMA_F_COMPLETION_ON_ERROR
-				 * after few rounds rpma_send() returns ENOMEM.
-				 */
-				RPMA_F_COMPLETION_ALWAYS, NULL)))
+		/*
+		 * XXX when using RPMA_F_COMPLETION_ON_ERROR
+		 * after few rounds rpma_send() returns ENOMEM.
+		 */
+		ret = rpma_send(conn, send_mr, 0, MSG_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL);
+		if (ret)
 			break;
 
 		/* reset */

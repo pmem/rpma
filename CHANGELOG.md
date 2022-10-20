@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- security warnings to the documentation of the following functions of the API:
+  - rpma_conn_get_private_data()
+  - rpma_conn_req_get_private_data()
+  - rpma_mr_get_descriptor()
+  - rpma_mr_remote_from_descriptor()
+  - rpma_peer_cfg_from_descriptor()
+  - rpma_peer_cfg_get_descriptor()
+- one suppression for Memcheck on Ubuntu 22.04
+
+### Fixed
+- DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
+- docker file of Fedora Rawhide (the python3-devel package added)
+- build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
+- check-headers.sh file - corrected the path of check-ms-license.pl
+- removed unused doc_snippets
+
+### Changed
+- logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
+  has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
+
+## [1.1.0] - 2022-09-08
+### Added
+- (tools) description of the 'schematic' variable (from the report.json file) in the 'tools/perf/BENCHMARKING.md' file
+
+### Fixed
+- removed unnecessary rpma_conn_req_delete() calls from examples
+- (tools) added checking if a path saved in the 'schematic' variable exists
+- common source code of GPSMP examples moved to one folder
+- changed size of the read-after-write (RAW) buffer in the example 04
+- (examples) changed the write size from KILOBYTE to HELLO_STR_SIZE
+
+### Changed
+- unified coding style in the source, the test and the example files
+
 ## [1.0.0] - 2022-08-25
 ### Added
 - DEVELOPMENT.md file containing the most important information needed during development of the library
@@ -87,7 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - TESTS_USE_VALGRIND
 
 - old integration tests
-- suppresions for get and set functions for cq, rq, sq and timeout has been removed
+- suppressions for get and set functions for cq, rq, sq and timeout has been removed
 
 ## [0.14.0] - 2022-03-15
 ### Added

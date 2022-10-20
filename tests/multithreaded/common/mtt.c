@@ -74,14 +74,14 @@ mtt_thread_main(void *arg)
 
 	++mtt_sync.threads_num_waiting;
 
-	result = pthread_cond_timedwait(&mtt_sync.cond, &mtt_sync.mtx,
-			&mtt_sync.timeout);
+	result = pthread_cond_timedwait(&mtt_sync.cond, &mtt_sync.mtx, &mtt_sync.timeout);
 	if (result) {
 		MTT_ERR(tr, "pthread_cond_timedwait", result);
 		(void) pthread_mutex_unlock(&mtt_sync.mtx);
 		goto err_thread_fini_func;
 	}
-	if ((result = pthread_mutex_unlock(&mtt_sync.mtx))) {
+	result = pthread_mutex_unlock(&mtt_sync.mtx);
+	if (result) {
 		MTT_ERR(tr, "pthread_mutex_unlock", result);
 		goto err_thread_fini_func;
 	}
@@ -94,8 +94,7 @@ err_thread_fini_func:
 		 * if the thread result is already non-zero provide tr_dummy
 		 * instead to avoid overwriting the result
 		 */
-		MTT_CALL_INIT_FINI(test, thread_fini_func, ta,
-				(tr->ret ? &tr_dummy : tr));
+		MTT_CALL_INIT_FINI(test, thread_fini_func, ta, (tr->ret ? &tr_dummy : tr));
 	}
 
 	return tr;
@@ -116,17 +115,16 @@ mtt_threads_sync_unblock(unsigned threads_num)
 	int done = 0;
 
 	do {
-		if ((ret = pthread_mutex_lock(&mtt_sync.mtx))) {
-			MTT_INTERNAL_ERR("pthread_mutex_lock() failed: %s",
-					strerror(ret));
+		ret = pthread_mutex_lock(&mtt_sync.mtx);
+		if (ret) {
+			MTT_INTERNAL_ERR("pthread_mutex_lock() failed: %s", strerror(ret));
 			return ret;
 		}
 
 		if (mtt_sync.threads_num_waiting == threads_num) {
 			ret = pthread_cond_broadcast(&mtt_sync.cond);
 			if (ret) {
-				MTT_INTERNAL_ERR(
-					"pthread_cond_broadcast() failed: %s",
+				MTT_INTERNAL_ERR("pthread_cond_broadcast() failed: %s",
 					strerror(ret));
 			}
 
@@ -138,9 +136,9 @@ mtt_threads_sync_unblock(unsigned threads_num)
 			done = 1;
 		}
 
-		if ((ret = pthread_mutex_unlock(&mtt_sync.mtx))) {
-			MTT_INTERNAL_ERR("pthread_mutex_unlock() failed: %s",
-					strerror(ret));
+		ret = pthread_mutex_unlock(&mtt_sync.mtx);
+		if (ret) {
+			MTT_INTERNAL_ERR("pthread_mutex_unlock() failed: %s", strerror(ret));
 			return ret;
 		}
 	} while (!done);
@@ -156,19 +154,20 @@ mtt_init()
 {
 	int ret;
 
-	if ((ret = pthread_mutex_init(&mtt_sync.mtx, NULL))) {
-		MTT_INTERNAL_ERR("pthread_mutex_init() failed: %s",
-				strerror(ret));
+	ret = pthread_mutex_init(&mtt_sync.mtx, NULL);
+	if (ret) {
+		MTT_INTERNAL_ERR("pthread_mutex_init() failed: %s", strerror(ret));
 		return ret;
 	}
-	if ((ret = pthread_cond_init(&mtt_sync.cond, NULL))) {
-		MTT_INTERNAL_ERR("pthread_cond_init() failed: %s",
-				strerror(ret));
+	ret = pthread_cond_init(&mtt_sync.cond, NULL);
+	if (ret) {
+		MTT_INTERNAL_ERR("pthread_cond_init() failed: %s", strerror(ret));
 		(void) pthread_mutex_destroy(&mtt_sync.mtx);
 		return ret;
 	}
 
-	if ((ret = clock_gettime(CLOCK_REALTIME, &mtt_sync.timeout))) {
+	ret = clock_gettime(CLOCK_REALTIME, &mtt_sync.timeout);
+	if (ret) {
 		MTT_INTERNAL_ERR("clock_gettime() failed: %s", strerror(errno));
 		(void) pthread_cond_destroy(&mtt_sync.cond);
 		(void) pthread_mutex_destroy(&mtt_sync.mtx);
@@ -190,9 +189,11 @@ mtt_fini()
 	int ret;
 	int result = 0;
 
-	if ((ret = pthread_mutex_destroy(&mtt_sync.mtx)))
+	ret = pthread_mutex_destroy(&mtt_sync.mtx);
+	if (ret)
 		result = ret;
-	if ((ret = pthread_cond_destroy(&mtt_sync.cond)))
+	ret = pthread_cond_destroy(&mtt_sync.cond);
+	if (ret)
 		result = ret;
 
 	return result;
@@ -206,8 +207,7 @@ int
 mtt_parse_args(int argc, char *argv[], struct mtt_args *args)
 {
 	if (argc < 3) {
-		fprintf(stderr,
-		"usage: %s <threads_num> <addr> [<base_port>]\n", argv[0]);
+		fprintf(stderr, "usage: %s <threads_num> <addr> [<base_port>]\n", argv[0]);
 		return -1;
 	}
 
@@ -260,8 +260,7 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
 		if (tr)
 			MTT_ERR(tr, "posix_memalign", errno);
 		else
-			CHILD_ERR("[CHILD]", "posix_memalign",
-				strerror(errno));
+			CHILD_ERR("[CHILD]", "posix_memalign", strerror(errno));
 		return NULL;
 	}
 
@@ -280,8 +279,7 @@ mtt_malloc_aligned(size_t size, struct mtt_result *tr)
  * mtt_start_child_process -- start the child process
  */
 static int
-mtt_start_child_process(mtt_child_process_func child_process_func,
-			void *prestate)
+mtt_start_child_process(mtt_child_process_func child_process_func, void *prestate)
 {
 	int pid;
 	int ret;
@@ -319,8 +317,7 @@ mtt_check_child_process(int child_pid)
 			MTT_INTERNAL_ERR("child process failed with status %i",
 					WEXITSTATUS(status));
 		} else {
-			MTT_INTERNAL_ERR(
-				"child process has already exited with status 0");
+			MTT_INTERNAL_ERR("child process has already exited with status 0");
 		}
 		return -1;
 	}
@@ -352,8 +349,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 	if (test->child_start == MTT_START_CHILD_BEFORE_PRESTATE_INIT_FUNC &&
 	    test->child_process_func) {
-		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+		child_pid = mtt_start_child_process(test->child_process_func, test->child_prestate);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting the child process failed");
 			return -1;
@@ -394,8 +390,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_SEQ_INIT_FUNC &&
 	    test->child_process_func) {
-		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+		child_pid = mtt_start_child_process(test->child_process_func, test->child_prestate);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting the child process failed");
 			result = -1;
@@ -413,8 +408,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 		ta->test = test;
 
 		if (test->thread_seq_init_func) {
-			MTT_CALL_INIT_FINI(test, thread_seq_init_func, ta,
-					&ta->ret);
+			MTT_CALL_INIT_FINI(test, thread_seq_init_func, ta, &ta->ret);
 			if (ta->ret.ret) {
 				result = ta->ret.ret;
 				MTT_TEST_ERR(ta->id, "%s", ta->ret.errmsg);
@@ -430,8 +424,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_INIT_FUNC &&
 	    test->child_process_func) {
-		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+		child_pid = mtt_start_child_process(test->child_process_func, test->child_prestate);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting the child process failed");
 			result = -1;
@@ -447,16 +440,15 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	 * threads since it also calculates an absolute timeout value common
 	 * for all threads.
 	 */
-	if ((result = mtt_init()))
+	result = mtt_init();
+	if (result)
 		goto err_thread_seq_fini_func;
 
 	/* create threads */
 	for (i = 0; i < threads_num; i++) {
-		result = pthread_create(&threads[i], NULL, mtt_thread_main,
-				&threads_args[i]);
+		result = pthread_create(&threads[i], NULL, mtt_thread_main, &threads_args[i]);
 		if (result != 0) {
-			MTT_TEST_ERR(i, "pthread_create() failed: %s",
-					strerror(result));
+			MTT_TEST_ERR(i, "pthread_create() failed: %s", strerror(result));
 			break;
 		}
 
@@ -468,8 +460,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 	if (test->child_start == MTT_START_CHILD_BEFORE_THREAD_FUNC &&
 	    test->child_process_func) {
-		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+		child_pid = mtt_start_child_process(test->child_process_func, test->child_prestate);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting the child process failed");
 			result = -1;
@@ -480,7 +471,8 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 			goto err_mtt_fini;
 	}
 
-	if ((ret = mtt_threads_sync_unblock(threads_num_to_join)))
+	ret = mtt_threads_sync_unblock(threads_num_to_join);
+	if (ret)
 			result = ret;
 
 	if (child_pid && (result = mtt_check_child_process(child_pid)))
@@ -488,8 +480,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 
 	if (test->child_start == MTT_START_CHILD_BEFORE_JOINING_THREADS &&
 	    test->child_process_func) {
-		child_pid = mtt_start_child_process(test->child_process_func,
-					test->child_prestate);
+		child_pid = mtt_start_child_process(test->child_process_func, test->child_prestate);
 		if (child_pid == -1) {
 			MTT_INTERNAL_ERR("starting the child process failed");
 			result = -1;
@@ -504,8 +495,7 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	for (i = 0; i < threads_num_to_join; i++) {
 		ret = pthread_join(threads[i], (void **)&tr);
 		if (ret != 0) {
-			MTT_TEST_ERR(i, "pthread_join() failed: %s",
-					strerror(ret));
+			MTT_TEST_ERR(i, "pthread_join() failed: %s", strerror(ret));
 			result = ret;
 		} else if (tr == NULL) {
 			MTT_TEST_ERR(i, "returned a NULL result");
@@ -517,7 +507,8 @@ mtt_run(struct mtt_test *test, unsigned threads_num)
 	}
 
 err_mtt_fini:
-	if ((ret = mtt_fini()))
+	ret = mtt_fini();
+	if (ret)
 		result = ret;
 
 err_thread_seq_fini_func:
@@ -525,8 +516,7 @@ err_thread_seq_fini_func:
 	if (test->thread_seq_fini_func) {
 		for (i = 0; i < threads_num_to_fini; i++) {
 			ta = &threads_args[i];
-			MTT_CALL_INIT_FINI(test, thread_seq_fini_func, ta,
-					&tr_local);
+			MTT_CALL_INIT_FINI(test, thread_seq_fini_func, ta, &tr_local);
 			if (tr_local.ret) {
 				MTT_TEST_ERR(i, "%s", tr_local.errmsg);
 				result = tr_local.ret;

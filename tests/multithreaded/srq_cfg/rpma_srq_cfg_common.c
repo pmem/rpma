@@ -12,8 +12,7 @@
 #include "rpma_srq_cfg_common.h"
 
 /*
- * rpma_srq_cfg_common_prestate_init -- create a new srq configuration object,
- * set all queue sizes
+ * rpma_srq_cfg_common_prestate_init -- create a new srq configuration object, set all queue sizes
  */
 void
 rpma_srq_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
@@ -21,17 +20,20 @@ rpma_srq_cfg_common_prestate_init(void *prestate, struct mtt_result *tr)
 	struct rpma_srq_cfg_common_prestate *pr = (struct rpma_srq_cfg_common_prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_srq_cfg_new(&pr->cfg_ptr))) {
+	ret = rpma_srq_cfg_new(&pr->cfg_ptr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_new", ret);
 		return;
 	}
 
-	if ((ret = rpma_srq_cfg_set_rq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_srq_cfg_set_rq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_set_rq_size", ret);
 		return;
 	}
 
-	if ((ret = rpma_srq_cfg_set_rcq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP))) {
+	ret = rpma_srq_cfg_set_rcq_size(pr->cfg_ptr, RPMA_SRQ_CFG_COMMON_Q_SIZE_EXP);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_set_rcq_size", ret);
 		return;
 	}
@@ -46,7 +48,8 @@ rpma_srq_cfg_common_prestate_fini(void *prestate, struct mtt_result *tr)
 	struct rpma_srq_cfg_common_prestate *pr = (struct rpma_srq_cfg_common_prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_srq_cfg_delete(&pr->cfg_ptr)))
+	ret = rpma_srq_cfg_delete(&pr->cfg_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_srq_cfg_delete", ret);
 }
 

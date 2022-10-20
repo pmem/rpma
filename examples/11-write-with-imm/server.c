@@ -113,10 +113,8 @@ main(int argc, char *argv[])
 	pdata.ptr = &dst_data;
 	pdata.len = sizeof(struct common_data);
 	ret = rpma_conn_req_connect(&req, &pdata, &conn);
-	if (ret) {
-		rpma_conn_req_delete(&req);
+	if (ret)
 		goto err_ep_shutdown;
-	}
 
 	/* wait for the connection to be established */
 	ret = rpma_conn_next_event(conn, &conn_event);

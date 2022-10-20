@@ -54,10 +54,10 @@ add_fd_to_epoll(int epoll_fd, int ep_fd)
 	event.events = EPOLLIN;
 
 	/* set O_NONBLOCK flag for the provided fd */
-	if ((fd_set_nonblock(ep_fd)))
+	if (fd_set_nonblock(ep_fd))
 		return -1;
 
-	if ((epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ep_fd, &event))) {
+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ep_fd, &event)) {
 		perror("epoll_ctl(EPOLL_CTL_ADD)");
 		return -1;
 	}
@@ -92,26 +92,29 @@ handle_incoming_connections(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 	offset = i;
 
 	/* get the shared RQ object from the connection configuration */
-	if ((ret = rpma_conn_cfg_get_srq(cfg, &srq)))
+	ret = rpma_conn_cfg_get_srq(cfg, &srq);
+	if (ret)
 		return ret;
 
 	/*
 	 * Put an initial receive for a connection to be prepared for
 	 * the first message of the client's ping-pong.
 	 */
-	if ((ret = rpma_srq_recv(srq, recv_mr, offset * MSG_SIZE,
-			MSG_SIZE, recv + offset)))
+	ret = rpma_srq_recv(srq, recv_mr, offset * MSG_SIZE, MSG_SIZE, recv + offset);
+	if (ret)
 		return ret;
 
 	/*
 	 * Wait for an incoming connection request,
 	 * accept it and wait for its establishment.
 	 */
-	if ((ret = server_accept_connection(ep, cfg, NULL, &conn_ctx->conn)))
+	ret = server_accept_connection(ep, cfg, NULL, &conn_ctx->conn);
+	if (ret)
 		return ret;
 
 	/* get the qp_num of each connection */
-	if ((ret = rpma_conn_get_qp_num(conn_ctx->conn, &conn_ctx->qp_num)))
+	ret = rpma_conn_get_qp_num(conn_ctx->conn, &conn_ctx->qp_num);
+	if (ret)
 		return ret;
 
 	return 0;
@@ -171,30 +174,37 @@ main(int argc, char *argv[])
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
-	if ((ret = server_peer_via_address(addr, &peer)))
+	ret = server_peer_via_address(addr, &peer);
+	if (ret)
 		goto err_free_send;
 
 	/* create a shared RQ object */
-	if ((ret = rpma_srq_new(peer, NULL, &srq)))
+	ret = rpma_srq_new(peer, NULL, &srq);
+	if (ret)
 		goto err_peer_delete;
 
 	/* create a new connection configuration */
-	if ((ret = rpma_conn_cfg_new(&cfg)))
+	ret = rpma_conn_cfg_new(&cfg);
+	if (ret)
 		goto err_srq_delete;
 
 	/* set the shared RQ object for the connection configuration */
-	if ((ret = rpma_conn_cfg_set_srq(cfg, srq)))
+	ret = rpma_conn_cfg_set_srq(cfg, srq);
+	if (ret)
 		goto err_conn_cfg_delete;
 
 	/* start a listening endpoint at addr:port */
-	if ((ret = rpma_ep_listen(peer, addr, port, &ep)))
+	ret = rpma_ep_listen(peer, addr, port, &ep);
+	if (ret)
 		goto err_conn_cfg_delete;
 
 	/* register the memory */
-	if ((ret = rpma_mr_reg(peer, recv, size, RPMA_MR_USAGE_RECV, &recv_mr)))
+	ret = rpma_mr_reg(peer, recv, size, RPMA_MR_USAGE_RECV, &recv_mr);
+	if (ret)
 		goto err_ep_shutdown;
 
-	if ((ret = rpma_mr_reg(peer, send, size, RPMA_MR_USAGE_SEND, &send_mr)))
+	ret = rpma_mr_reg(peer, send, size, RPMA_MR_USAGE_SEND, &send_mr);
+	if (ret)
 		goto err_recv_mr_dereg;
 
 	/* create an epoll file descriptor */
@@ -206,15 +216,18 @@ main(int argc, char *argv[])
 	}
 
 	/* get the endpoint's event file descriptor and add it to epoll */
-	if ((ret = rpma_ep_get_fd(ep, &ep_fd)))
+	ret = rpma_ep_get_fd(ep, &ep_fd);
+	if (ret)
 		goto err_close_epoll_fd;
 
-	if ((ret = add_fd_to_epoll(epoll_fd, ep_fd)))
+	ret = add_fd_to_epoll(epoll_fd, ep_fd);
+	if (ret)
 		goto err_close_epoll_fd;
 
 	/* process epoll's events */
 	while ((ret = epoll_wait(epoll_fd, &event, 1, timeout)) == 1) {
-		if ((ret = handle_incoming_connections(ep, cfg, recv_mr, recv)))
+		ret = handle_incoming_connections(ep, cfg, recv_mr, recv);
+		if (ret)
 			goto err_conn_disconnect;
 
 		num_clients++;
@@ -224,15 +237,18 @@ main(int argc, char *argv[])
 	(void) printf("Server ended listening.\n");
 
 	/* get the receive CQ of rpma_srq object */
-	if ((ret = rpma_srq_get_rcq(srq, &rcq)))
+	ret = rpma_srq_get_rcq(srq, &rcq);
+	if (ret)
 		goto err_conn_disconnect;
 
 	while (!ret && total_cnt < num_clients) {
 		/* wait for the completion to be ready */
-		if ((ret = rpma_cq_wait(rcq)))
+		ret = rpma_cq_wait(rcq);
+		if (ret)
 			break;
 
-		if ((ret = rpma_cq_get_wc(rcq, num_clients, wc, &num_got))) {
+		ret = rpma_cq_get_wc(rcq, num_clients, wc, &num_got);
+		if (ret) {
 			/* lack of completion is not an error */
 			if (ret == RPMA_E_NO_COMPLETION) {
 				ret = 0;
@@ -278,8 +294,9 @@ main(int argc, char *argv[])
 					*recv_ptr, conn_ctxs[index].qp_num);
 
 			/* prepare a receive for the client's request */
-			if ((ret = rpma_srq_recv(srq, recv_mr, (size_t)offset * MSG_SIZE,
-					MSG_SIZE, recv_ptr)))
+			ret = rpma_srq_recv(srq, recv_mr, (size_t)offset * MSG_SIZE, MSG_SIZE,
+					recv_ptr);
+			if (ret)
 				break;
 
 			*(send + offset) = *recv_ptr + 1;
@@ -289,9 +306,9 @@ main(int argc, char *argv[])
 					*(send + offset), conn_ctxs[index].qp_num);
 
 			/* send a message to the client */
-			if ((ret = rpma_send(conn_ctxs[index].conn, send_mr,
-					(size_t)offset * MSG_SIZE, MSG_SIZE,
-					RPMA_F_COMPLETION_ON_ERROR, NULL)))
+			ret = rpma_send(conn_ctxs[index].conn, send_mr, (size_t)offset * MSG_SIZE,
+					MSG_SIZE, RPMA_F_COMPLETION_ON_ERROR, NULL);
+			if (ret)
 				break;
 		}
 	}

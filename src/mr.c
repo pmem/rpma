@@ -398,7 +398,8 @@ rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
 		return RPMA_E_NOMEM;
 
 	struct ibv_mr *ibv_mr;
-	if ((ret = rpma_peer_setup_mr_reg(peer, &ibv_mr, ptr, size, usage))) {
+	ret = rpma_peer_setup_mr_reg(peer, &ibv_mr, ptr, size, usage);
+	if (ret) {
 		free(mr);
 		return ret;
 	}

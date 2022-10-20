@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_mr_get_descriptor.c -- rpma_mr_get_descriptor multithreaded test
@@ -31,13 +31,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct ibv_context *ibv_ctx;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(ibv_ctx, &pr->peer))) {
+	ret = rpma_peer_new(ibv_ctx, &pr->peer);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 		return;
 	}
@@ -46,14 +47,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	if (pr->mr_ptr == NULL)
 		goto err_peer_delete;
 
-	if ((ret = rpma_mr_reg(pr->peer, pr->mr_ptr, KILOBYTE,
-			RPMA_MR_USAGE_READ_SRC, &pr->mr))) {
+	ret = rpma_mr_reg(pr->peer, pr->mr_ptr, KILOBYTE, RPMA_MR_USAGE_READ_SRC, &pr->mr);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_reg", ret);
 		goto err_free;
 	}
 
-	if ((ret = rpma_mr_get_descriptor_size(pr->mr,
-			&pr->mr_desc_size_exp))) {
+	ret = rpma_mr_get_descriptor_size(pr->mr, &pr->mr_desc_size_exp);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_get_descriptor_size", ret);
 		goto err_mr_dereg;
 	}
@@ -63,7 +64,8 @@ prestate_init(void *prestate, struct mtt_result *tr)
 		goto err_mr_dereg;
 	}
 
-	if ((ret = rpma_mr_get_descriptor(pr->mr, &pr->descriptor_exp[0]))) {
+	ret = rpma_mr_get_descriptor(pr->mr, &pr->descriptor_exp[0]);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_mr_get_descriptor", ret);
 		goto err_mr_dereg;
 	}
@@ -82,15 +84,15 @@ err_peer_delete:
  * thread -- get the memory region's descriptor and validate it
  */
 static void
-thread(unsigned id, void *prestate, void *state,
-		struct mtt_result *result)
+thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	size_t mr_desc_size;
 	char descriptor[KILOBYTE];
 	int ret;
 
-	if ((ret = rpma_mr_get_descriptor_size(pr->mr, &mr_desc_size))) {
+	ret = rpma_mr_get_descriptor_size(pr->mr, &mr_desc_size);
+	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_mr_get_descriptor_size", ret);
 		return;
 	}
@@ -100,18 +102,19 @@ thread(unsigned id, void *prestate, void *state,
 		return;
 	}
 
-	if ((ret = rpma_mr_get_descriptor(pr->mr, &descriptor[0]))) {
+	ret = rpma_mr_get_descriptor(pr->mr, &descriptor[0]);
+	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_mr_get_descriptor", ret);
 		return;
 	}
 
-	if ((ret = memcmp(descriptor, pr->descriptor_exp, mr_desc_size)))
+	ret = memcmp(descriptor, pr->descriptor_exp, mr_desc_size);
+	if (ret)
 		MTT_ERR_MSG(result, "descriptor != pr->descriptor_exp", -1);
 }
 
 /*
- * prestate_fini -- deregister and free the memory region,
- * and delete the peer object
+ * prestate_fini -- deregister and free the memory region, and delete the peer object
  */
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
@@ -119,12 +122,14 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_mr_dereg(&pr->mr)))
+	ret = rpma_mr_dereg(&pr->mr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_mr_dereg", ret);
 
 	free(pr->mr_ptr);
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

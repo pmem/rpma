@@ -154,25 +154,30 @@ thread_seq_fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result
 	enum rpma_conn_event conn_event = RPMA_CONN_UNDEFINED;
 	int ret;
 
-	if ((ret = rpma_conn_disconnect(ts->conn))) {
+	ret = rpma_conn_disconnect(ts->conn);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_conn_disconnect", ret);
 	} else {
 		/* wait for the connection to be closed */
-		if ((ret = rpma_conn_next_event(ts->conn, &conn_event)))
+		ret = rpma_conn_next_event(ts->conn, &conn_event);
+		if (ret)
 			MTT_RPMA_ERR(tr, "rpma_conn_next_event", ret);
 		else if (conn_event != RPMA_CONN_CLOSED)
 			MTT_ERR_MSG(tr, "rpma_conn_next_event returned an unexpected event", -1);
 	}
 
-	if ((ret = rpma_conn_delete(&ts->conn)))
+	ret = rpma_conn_delete(&ts->conn);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_conn_delete", ret);
 
 	/* delete the remote memory region's structure */
-	if ((ret = rpma_mr_remote_delete(&ts->mr_remote_ptr)))
+	ret = rpma_mr_remote_delete(&ts->mr_remote_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_mr_remote_delete", ret);
 
 	/* deregister the memory region */
-	if ((ret = rpma_mr_dereg(&ts->mr_local_ptr)))
+	ret = rpma_mr_dereg(&ts->mr_local_ptr);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_mr_dereg", ret);
 
 	free(ts->local_ptr);
@@ -189,10 +194,12 @@ prestate_fini(void *prestate, struct mtt_result *tr)
 	int ret;
 
 	/* delete the peer configuration structure */
-	if ((ret = rpma_peer_cfg_delete(&pr->pcfg)))
+	ret = rpma_peer_cfg_delete(&pr->pcfg);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

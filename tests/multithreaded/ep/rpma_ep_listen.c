@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2021, Intel Corporation */
+/* Copyright 2021-2022, Intel Corporation */
 
 /*
  * rpma_ep_listen.c -- rpma_ep_listen multithreaded test
@@ -31,13 +31,14 @@ prestate_init(void *prestate, struct mtt_result *tr)
 	struct prestate *pr = (struct prestate *)prestate;
 	int ret;
 
-	if ((ret = rpma_utils_get_ibv_context(pr->addr,
-			RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx))) {
+	ret = rpma_utils_get_ibv_context(pr->addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &pr->ibv_ctx);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_utils_get_ibv_context", ret);
 		return;
 	}
 
-	if ((ret = rpma_peer_new(pr->ibv_ctx, &pr->peer)))
+	ret = rpma_peer_new(pr->ibv_ctx, &pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_new", ret);
 }
 
@@ -45,8 +46,7 @@ prestate_init(void *prestate, struct mtt_result *tr)
  * init -- allocate state
  */
 void
-init(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+init(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)calloc(1, sizeof(struct state));
 	if (!st) {
@@ -61,8 +61,7 @@ init(unsigned id, void *prestate, void **state_ptr,
  * thread -- start a listening endpoint
  */
 static void
-thread(unsigned id, void *prestate, void *state,
-		struct mtt_result *result)
+thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 {
 	struct prestate *pr = (struct prestate *)prestate;
 	struct state *st = (struct state *)state;
@@ -79,8 +78,7 @@ thread(unsigned id, void *prestate, void *state,
  * fini -- shutdown the endpoint and free the state
  */
 static void
-fini(unsigned id, void *prestate, void **state_ptr,
-		struct mtt_result *tr)
+fini(unsigned id, void *prestate, void **state_ptr, struct mtt_result *tr)
 {
 	struct state *st = (struct state *)*state_ptr;
 
@@ -100,9 +98,9 @@ static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
 	struct prestate *pr = (struct prestate *)prestate;
-	int ret;
 
-	if ((ret = rpma_peer_delete(&pr->peer)))
+	int ret = rpma_peer_delete(&pr->peer);
+	if (ret)
 		MTT_RPMA_ERR(tr, "rpma_peer_delete", ret);
 }
 

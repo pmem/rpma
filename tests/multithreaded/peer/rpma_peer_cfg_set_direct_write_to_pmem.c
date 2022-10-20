@@ -25,11 +25,10 @@ struct prestate prestate = {NULL};
 static void
 prestate_init(void *prestate, struct mtt_result *tr)
 {
-	int ret;
-
 	struct prestate *pr = (struct prestate *)prestate;
 
-	if ((ret = rpma_peer_cfg_new(&pr->pcfg))) {
+	int ret = rpma_peer_cfg_new(&pr->pcfg);
+	if (ret) {
 		MTT_RPMA_ERR(tr, "rpma_peer_cfg_new", ret);
 		return;
 	}
@@ -45,13 +44,15 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 	struct prestate *pr = (struct prestate *)prestate;
 
 	/* create a new peer cfg object */
-	if ((ret = rpma_peer_cfg_set_direct_write_to_pmem(pr->pcfg, DIRECT_WRITE_TO_PMEM))) {
+	ret = rpma_peer_cfg_set_direct_write_to_pmem(pr->pcfg, DIRECT_WRITE_TO_PMEM);
+	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_peer_cfg_set_direct_write_to_pmem", ret);
 		return;
 	}
 
 	bool direct_write_to_pmem = false;
-	if ((ret = rpma_peer_cfg_get_direct_write_to_pmem(pr->pcfg, &direct_write_to_pmem))) {
+	ret = rpma_peer_cfg_get_direct_write_to_pmem(pr->pcfg, &direct_write_to_pmem);
+	if (ret) {
 		MTT_RPMA_ERR(result, "rpma_peer_cfg_get_direct_write_to_pmem", ret);
 		return;
 	}
@@ -67,12 +68,14 @@ thread(unsigned id, void *prestate, void *state, struct mtt_result *result)
 static void
 prestate_fini(void *prestate, struct mtt_result *tr)
 {
-	int ret;
 	struct prestate *pr = (struct prestate *)prestate;
 
 	/* delete the peer_cfg object */
-	if ((pr->pcfg != NULL) && (ret = rpma_peer_cfg_delete(&pr->pcfg)))
-		MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	if (pr->pcfg != NULL) {
+		int ret = rpma_peer_cfg_delete(&pr->pcfg);
+		if (ret)
+			MTT_RPMA_ERR(tr, "rpma_peer_cfg_delete", ret);
+	}
 }
 
 int
