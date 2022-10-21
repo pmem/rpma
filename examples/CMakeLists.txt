@@ -107,8 +107,6 @@ function(add_example)
 	endif()
 endfunction()
 
-add_example(NAME template BIN template
-	SRCS template-example/template-example.c)
 add_example(NAME 01-connection BIN server
 	SRCS 01-connection/server.c)
 add_example(NAME 01-connection BIN client
