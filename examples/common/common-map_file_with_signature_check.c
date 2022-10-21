@@ -18,7 +18,7 @@ common_pmem_map_file_with_signature_check(char *path, size_t size, struct common
 	size_t min_size = size;
 
 	if (min_size == 0)
-		min_size = sizeof(struct hello_t);
+		return -1;
 
 	if (common_pmem_map_file(path, SIGNATURE_LEN + min_size, mem))
 		return -1;
