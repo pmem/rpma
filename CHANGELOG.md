@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
 - check-headers.sh file - corrected the path of check-ms-license.pl
 - removed unused doc_snippets
+- removed unneeded '*' at start of expressions in utils/check_license/check-headers.sh
 
 ### Changed
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()

@@ -94,10 +94,10 @@ else
 fi
 
 FILES=$($GIT $GIT_COMMAND | ${SOURCE_ROOT}/utils/check_license/file-exceptions.sh | \
-	grep    -E -e '*\.[chs]$' -e '*\.[ch]pp$' -e '*\.sh$' \
-		   -e '*\.py$' -e '*\.link$' -e 'Makefile*' -e 'TEST*' \
+	grep    -E -e '\.[chs]$' -e '\.[ch]pp$' -e '\.sh$' \
+		   -e '\.py$' -e '\.link$' -e 'Makefile*' -e 'TEST*' \
 		   -e '/common.inc$' -e '/match$' -e '/check_whitespace$' \
-		   -e 'LICENSE$' -e 'CMakeLists.txt$' -e '*\.cmake$' -e '/Dockerfile.*' | \
+		   -e 'LICENSE$' -e 'CMakeLists.txt$' -e '\.cmake$' -e '/Dockerfile.*' | \
 	xargs)
 
 RV=0
