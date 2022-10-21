@@ -20,7 +20,6 @@ add_subdirectory(peer_cfg)
 add_subdirectory(private_data)
 add_subdirectory(srq)
 add_subdirectory(srq_cfg)
-add_subdirectory(template)
 add_subdirectory(utils)
 
 if(TESTS_NO_FORTIFY_SOURCE)
