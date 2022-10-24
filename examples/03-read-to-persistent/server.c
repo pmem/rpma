@@ -53,7 +53,7 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		ret = common_pmem_map_file_with_signature_check(pmem_path, KILOBYTE, &mem);
+		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem);
 		if (ret)
 			goto err_free;
 	}
@@ -62,11 +62,11 @@ main(int argc, char *argv[])
 	/* if no pmem support or it is not provided */
 	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mem.mr_ptr = malloc_aligned(KILOBYTE);
+		mem.mr_ptr = malloc_aligned(HELLO_STR_SIZE);
 		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mem.mr_size = KILOBYTE;
+		mem.mr_size = HELLO_STR_SIZE;
 	}
 
 	/* RPMA resources */
@@ -131,7 +131,7 @@ main(int argc, char *argv[])
 	}
 
 	ret = rpma_read(conn, dst_mr, mem.data_offset, src_mr, src_data->data_offset,
-			KILOBYTE, RPMA_F_COMPLETION_ALWAYS, NULL);
+			HELLO_STR_SIZE, RPMA_F_COMPLETION_ALWAYS, NULL);
 	if (ret)
 		goto err_mr_remote_delete;
 
@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 
 #ifdef USE_PMEM
 	if (mem.is_pmem) {
-		mem.persist((char *)mem.mr_ptr + mem.data_offset, KILOBYTE);
+		mem.persist((char *)mem.mr_ptr + mem.data_offset, HELLO_STR_SIZE);
 	}
 #endif /* USE_PMEM */
 
