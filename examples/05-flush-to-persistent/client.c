@@ -166,7 +166,7 @@ main(int argc, char *argv[])
 		flush_type = RPMA_FLUSH_TYPE_VISIBILITY;
 	}
 
-	ret = rpma_flush(conn, dst_mr, dst_offset, KILOBYTE, flush_type,
+	ret = rpma_flush(conn, dst_mr, dst_offset, HELLO_STR_SIZE, flush_type,
 			RPMA_F_COMPLETION_ALWAYS, FLUSH_ID);
 	if (ret)
 		goto err_mr_remote_delete;

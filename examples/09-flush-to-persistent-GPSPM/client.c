@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 	(void) printf("Next value: %s\n", hello->str);
 
 	/* allocate messaging buffer */
-	msg_ptr = malloc_aligned(KILOBYTE);
+	msg_ptr = malloc_aligned(HELLO_STR_SIZE);
 	if (msg_ptr == NULL) {
 		ret = -1;
 		goto err_free;
@@ -134,7 +134,7 @@ main(int argc, char *argv[])
 		goto err_conn_disconnect;
 
 	/* register the messaging memory */
-	ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV,
+	ret = rpma_mr_reg(peer, msg_ptr, HELLO_STR_SIZE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV,
 			&msg_mr);
 	if (ret) {
 		(void) rpma_mr_dereg(&src_mr);
@@ -183,7 +183,7 @@ main(int argc, char *argv[])
 
 	/* prepare a flush message and pack it to a send buffer */
 	flush_req.offset = dst_offset;
-	flush_req.length = KILOBYTE;
+	flush_req.length = HELLO_STR_SIZE;
 	flush_req.op_context = (uint64_t)FLUSH_ID;
 	flush_req_size = gpspm_flush_request__get_packed_size(&flush_req);
 	if (flush_req_size > MSG_SIZE_MAX) {
