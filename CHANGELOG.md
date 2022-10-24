@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - unused doc_snippets
 - unneeded '*' at start of expressions in utils/check_license/check-headers.sh
 - meaningless template-example
+- meaningless template unit test
 
 ## [1.1.0] - 2022-09-08
 ### Added
