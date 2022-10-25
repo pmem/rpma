@@ -38,7 +38,7 @@ data given by the other side of the connection.
 SECURITY WARNING
 ================
 
-The connection\'s private data is unsecure. An attacker might modify all
+The connection\'s private data is insecure. An attacker might modify all
 data transferred via the rdma\_cm private data. Users should avoid using
 **rpma\_conn\_get\_private\_data**(3) and
 **rpma\_conn\_req\_get\_private\_data**(3) API calls and they should
