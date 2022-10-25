@@ -1682,7 +1682,7 @@ struct rpma_conn_private_data {
  * the connection.
  *
  * SECURITY WARNING
- * The connection's private data is unsecure. An attacker might modify all data transferred
+ * The connection's private data is insecure. An attacker might modify all data transferred
  * via the rdma_cm private data. Users should avoid using rpma_conn_get_private_data(3)
  * and rpma_conn_req_get_private_data(3) API calls and they should utilize TLS/SSL connections
  * to transfer all configuration data between peers instead.
