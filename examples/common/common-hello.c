@@ -31,3 +31,17 @@ translate(struct hello_t *hello)
 	enum lang_t lang = (enum lang_t)((hello->lang + 1) % LANG_NUM);
 	write_hello_str(hello, lang);
 }
+
+ssize_t
+init_hello(char *pmem_data, size_t size)
+{
+	if (size < HELLO_T_SIZE) {
+		(void) fprintf(stderr, "PMem has too small size (%zu < %zu)\n",
+				size, HELLO_T_SIZE);
+		return -1;
+	}
+
+	write_hello_str((struct hello_t *)pmem_data, en);
+
+	return HELLO_T_SIZE;
+}

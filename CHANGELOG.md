@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - check-headers.sh file - corrected the path of check-ms-license.pl and removed
   unneeded '*' at the start of the grep expressions
 - (examples) use HELLO_STR_SIZE instead of KILOBYTE in case of the hello string
+- the common_pmem_map_file_with_signature_check() function in examples
 
 ### Changed
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()

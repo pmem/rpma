@@ -11,6 +11,9 @@
 
 #include "common-pmem_map_file.h"
 
-int common_pmem_map_file_with_signature_check(char *path, size_t size, struct common_mem *mem);
+typedef ssize_t (*common_init_func_t)(char *pmem_data, size_t size);
+
+int common_pmem_map_file_with_signature_check(char *path, size_t size, struct common_mem *mem,
+						common_init_func_t init_pmem);
 
 #endif /* COMMON_MAP_FILE_WITH_SIGNATURE_CHECK_H */
