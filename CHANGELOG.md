@@ -22,13 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docker file of Fedora Rawhide (the python3-devel package added)
 - build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
 - check-headers.sh file - corrected the path of check-ms-license.pl
-- removed unused doc_snippets
 - removed unneeded '*' at start of expressions in utils/check_license/check-headers.sh
 - (examples) use HELLO_STR_SIZE instead of KILOBYTE in case of the hello string
 
 ### Changed
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
   has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
+
+### Removed
+- unused doc_snippets
+- meaningless template-example
+- meaningless template unit test
 
 ## [1.1.0] - 2022-09-08
 ### Added
