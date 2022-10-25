@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
 - docker file of Fedora Rawhide (the python3-devel package added)
 - build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
-- check-headers.sh file - corrected the path of check-ms-license.pl
-- removed unneeded '*' at start of expressions in utils/check_license/check-headers.sh
+- check-headers.sh file - corrected the path of check-ms-license.pl and removed
+  unneeded '*' at the start of the grep expressions
 - (examples) use HELLO_STR_SIZE instead of KILOBYTE in case of the hello string
 
 ### Changed
