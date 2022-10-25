@@ -60,11 +60,11 @@ main(int argc, char *argv[])
 	/* if no pmem support or it is not provided */
 	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mem.mr_ptr = malloc_aligned(sizeof(struct hello_t));
+		mem.mr_ptr = malloc_aligned(HELLO_T_SIZE);
 		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mem.mr_size = sizeof(struct hello_t);
+		mem.mr_size = HELLO_T_SIZE;
 		hello = (struct hello_t *)mem.mr_ptr;
 
 		/* write an initial value */
@@ -128,7 +128,7 @@ main(int argc, char *argv[])
 	translate(hello);
 #ifdef USE_PMEM
 	if (mem.is_pmem) {
-		mem.persist(hello, sizeof(struct hello_t));
+		mem.persist(hello, HELLO_T_SIZE);
 	}
 #endif /* USE_PMEM */
 
