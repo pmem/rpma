@@ -17,7 +17,6 @@
 #define USAGE_STR "usage: %s <server_address> <port> <word1> [<word2>] [..]\n"
 
 #define FLUSH_ID		(void *)0xF01D /* a random identifier */
-#define KILOBYTE		1024
 #define MAX_WORD_LENGTH		(KILOBYTE - 1)
 
 int
@@ -39,8 +38,8 @@ main(int argc, char *argv[])
 	int ret;
 
 	/* resources - memory region */
-	void *mr_ptr = NULL;
-	size_t mr_size = KILOBYTE;
+	void *mr_ptr;
+	size_t mr_size;
 	struct rpma_mr_remote *remote_mr = NULL;
 	size_t remote_size = 0;
 	size_t dst_used_offset = 0;
@@ -52,7 +51,8 @@ main(int argc, char *argv[])
 	} used;
 
 	/* prepare memory */
-	mr_ptr = malloc_aligned(KILOBYTE);
+	mr_size = KILOBYTE;
+	mr_ptr = malloc_aligned(mr_size);
 	if (mr_ptr == NULL)
 		return -1;
 
