@@ -64,7 +64,8 @@ main(int argc, char *argv[])
 		 * All of the space under the offset is intended for
 		 * the string contents. Space is assumed to be at least 1 KiB.
 		 */
-		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem);
+		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem,
+								NULL);
 		if (ret)
 			goto err_free;
 	}
