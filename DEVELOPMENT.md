@@ -39,7 +39,6 @@ Here is a list of the most interesting CMake options of the librpma library:
 | TESTS_COVERAGE | Check the code coverage during compilation | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |
-| TESTS_PERF_TOOLS | Enable testing the performance analysis tools | ON/OFF | OFF |
 | TESTS_RDMA_CONNECTION | Enable tests that require a configured RDMA-capable network interface (valgrind required) | ON/OFF | OFF |
 | TESTS_VERBOSE_OUTPUT | More verbose test outputs | ON/OFF | OFF |
 | DEBUG_LOG_TRACE | Enable logging functions' traces | ON/OFF | OFF |
@@ -64,7 +63,6 @@ The most useful CMake options during development are briefly described below:
 - `BUILD_EXAMPLES` should be set to `ON` (the default) to turn on building the examples,
 - `TESTS_RDMA_CONNECTION` should be set to `ON` (the default is `OFF`) to enable tests that require a configured RDMA-capable network interface (valgrind is also required),
 - `TESTS_VERBOSE_OUTPUT` should be set to `ON` (the default is `OFF`) to put cmake in the trace mode with variables expanded,
-- `TESTS_PERF_TOOLS` enables testing the performance analysis tools, so it should be set to `ON` (the default is `OFF`) when developing the performance analysis tools,
 - `DEBUG_LOG_TRACE` enables logging functions' traces, so it is very useful during debugging (it should be set to `ON` then, the default is `OFF`).
 
 # Testing

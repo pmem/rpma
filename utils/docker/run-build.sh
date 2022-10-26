@@ -14,7 +14,6 @@ set -e
 PREFIX=/usr
 CC=${CC:-gcc}
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
-TESTS_PERF_TOOLS=${TESTS_PERF_TOOLS:-ON}
 EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
 
 # turn off sanitizers only if (CI_SANITS == OFF)
@@ -128,40 +127,6 @@ function test_compile_all_examples_standalone() {
 	done
 }
 
-function run_pytest() {
-	[ "$TESTS_PERF_TOOLS" != "ON" ] && return
-	# find pytest
-	PYTESTS="pytest pytest3 pytest-3"
-	for bin in $PYTESTS; do
-		which $bin && export PYTEST=$(which $bin) && break
-	done
-
-	if [ "$PYTEST" == "" ]; then
-		echo
-		echo "ERROR: pytest not found"
-		echo
-		exit 1
-	fi
-
-	cd $WORKDIR/tools/perf/
-
-	# The python coverage corrupts the results of the C coverage,
-	# so we have to run them exclusively:
-	if [ "$TESTS_COVERAGE" == "1" ]; then
-		# Run only pytest, because the C coverage
-		# is checked in this build.
-		eval $PYTEST
-	else
-		# add local pip installations to the PATH
-		export PATH=$PATH:~/.local/bin/
-		# run pytest and check the coverage of python tests
-		coverage run -m pytest
-		# '-i' to ignore errors on Arch Linux (caused by a bug)
-		coverage report -i
-	fi
-	cd -
-}
-
 ./prepare-for-build.sh
 
 # Use cmake3 instead of cmake if a version of cmake is v2.x,
@@ -188,12 +153,10 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DBUILD_DEVELOPER_MODE=1 \
 	-DDEBUG_USE_ASAN=${CI_SANITS} \
-	-DTESTS_PERF_TOOLS=${TESTS_PERF_TOOLS} \
 	-DDEBUG_USE_UBSAN=${CI_SANITS}
 
 make -j$(nproc)
 ctest --output-on-failure
-run_pytest
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
@@ -211,7 +174,6 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DTESTS_COVERAGE=$TESTS_COVERAGE \
-	-DTESTS_PERF_TOOLS=${TESTS_PERF_TOOLS} \
 	-DBUILD_DEVELOPER_MODE=1
 
 make -j$(nproc)
@@ -250,7 +212,6 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Release \
 	-DTEST_DIR=$TEST_DIR \
 	-DCMAKE_INSTALL_PREFIX=$PREFIX \
 	-DCPACK_GENERATOR=$PACKAGE_MANAGER \
-	-DTESTS_PERF_TOOLS=${TESTS_PERF_TOOLS} \
 	-DBUILD_DEVELOPER_MODE=1
 
 make -j$(nproc)
