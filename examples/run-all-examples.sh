@@ -30,6 +30,9 @@
 # value used to get the maximum reachable value of fault injection for each example
 GET_FI_MAX=999999
 
+# offset where the clients use a PMem from
+PMEM_CLIENT_OFFSET=1024
+
 USAGE_STRING="\
 Usage:\n\
 $ run-all-examples.sh <binary-examples-directory> [--valgrind|--integration-tests] \
@@ -320,7 +323,11 @@ function run_example() {
 		done
 		;;
 	*)
-		start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH
+		if [ "$PMEM_PATH" != "" ]; then
+			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT $PMEM_PATH $PMEM_CLIENT_OFFSET
+		else
+			start_client $VLD_CCMD $DIR/client $IP_ADDRESS $PORT
+		fi
 		;;
 	esac
 
