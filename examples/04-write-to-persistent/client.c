@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 	}
 
 	ret = rpma_write(conn, dst_mr, dst_offset, src_mr,
-			(mem.data_offset + offsetof(struct hello_t, str)), HELLO_STR_SIZE,
+			(mem.data_offset + HELLO_STR_OFFSET), HELLO_STR_SIZE,
 			RPMA_F_COMPLETION_ON_ERROR, NULL);
 	if (ret)
 		goto err_mr_remote_delete;

@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 
 	/* calculate data for the server read */
 	struct common_data data = {0};
-	data.data_offset = mem.data_offset + offsetof(struct hello_t, str);
+	data.data_offset = mem.data_offset + HELLO_STR_OFFSET;
 	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
