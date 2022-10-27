@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - rpma_mr_remote_from_descriptor()
   - rpma_peer_cfg_from_descriptor()
   - rpma_peer_cfg_get_descriptor()
+- offset of the beginning of the used persistent memory in the clients using PMem in the examples
 - one suppression for Memcheck on Ubuntu 22.04
 
 ### Fixed

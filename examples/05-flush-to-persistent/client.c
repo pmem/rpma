@@ -16,9 +16,10 @@
 #include "common-hello.h"
 #include "common-map_file_with_signature_check.h"
 #include "common-pmem_map_file.h"
+#include "common-utils.h"
 
 #ifdef USE_PMEM
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path> [<pmem-offset>]]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_PMEM */
@@ -57,6 +58,8 @@ main(int argc, char *argv[])
 #ifdef USE_PMEM
 	if (argc >= 4) {
 		char *path = argv[3];
+		if (argc >= 5)
+			mem.offset = strtoul_noerror(argv[4]);
 
 		ret = common_pmem_map_file_with_signature_check(path, HELLO_T_SIZE, &mem,
 								init_hello);

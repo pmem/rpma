@@ -18,12 +18,13 @@ common_pmem_map_file_with_signature_check(char *path, size_t size, struct common
 		return -1;
 
 	/*
-	 * At the beginning of the persistent memory, a signature is stored which marks its content
-	 * as valid. So the total space is assumed to be at least SIGNATURE_LEN + the size expected
-	 * by the user.
+	 * The beginning of the used persistent memory starts at mem->offset.
+	 * At the beginning of the used persistent memory, the signature is stored
+	 * which marks its content as valid. So the total space is assumed to be at least:
+	 * mem->offset + SIGNATURE_LEN + the size expected by the user.
 	 */
-	size += SIGNATURE_LEN;
-	mem->data_offset = SIGNATURE_LEN;
+	mem->data_offset = mem->offset + SIGNATURE_LEN;
+	size += mem->data_offset;
 
 	if (common_pmem_map_file(path, size, mem))
 		return -1;
@@ -34,12 +35,15 @@ common_pmem_map_file_with_signature_check(char *path, size_t size, struct common
 		return -1;
 	}
 
+	/* beginning of the used persistent memory */
+	char *pmem = mem->mr_ptr + mem->offset;
+
 	/*
 	 * If the signature is not in place the persistent content has
 	 * to be initialized and persisted.
 	 */
-	if (strncmp(mem->mr_ptr, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
-		char *pmem_data = mem->mr_ptr + mem->data_offset;
+	if (strncmp(pmem, SIGNATURE_STR, SIGNATURE_LEN) != 0) {
+		char *pmem_data = pmem + mem->data_offset;
 		if (init_pmem) {
 			/* write the initial hello string and persist it */
 			ssize_t size_to_persist = (*init_pmem)(pmem_data, size - SIGNATURE_LEN);
@@ -54,8 +58,8 @@ common_pmem_map_file_with_signature_check(char *path, size_t size, struct common
 			mem->persist(pmem_data, 1);
 		}
 		/* write the signature to mark the content as valid */
-		memcpy(mem->mr_ptr, SIGNATURE_STR, SIGNATURE_LEN);
-		mem->persist(mem->mr_ptr, SIGNATURE_LEN);
+		memcpy(pmem, SIGNATURE_STR, SIGNATURE_LEN);
+		mem->persist(pmem, SIGNATURE_LEN);
 	}
 
 	return 0;
