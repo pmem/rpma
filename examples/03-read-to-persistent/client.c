@@ -14,9 +14,10 @@
 #include "common-hello.h"
 #include "common-map_file_with_signature_check.h"
 #include "common-pmem_map_file.h"
+#include "common-utils.h"
 
 #ifdef USE_PMEM
-#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path>]\n"PMEM_USAGE
+#define USAGE_STR "usage: %s <server_address> <port> [<pmem-path> [<pmem-offset>]]\n"PMEM_USAGE
 #else
 #define USAGE_STR "usage: %s <server_address> <port>\n"
 #endif /* USE_PMEM */
@@ -48,21 +49,25 @@ main(int argc, char *argv[])
 #ifdef USE_PMEM
 	if (argc >= 4) {
 		char *path = argv[3];
+		if (argc >= 5)
+			mem.offset = strtoul_noerror(argv[4]);
 
-		ret = common_pmem_map_file_with_signature_check(path, 0, &mem);
+		ret = common_pmem_map_file_with_signature_check(path, HELLO_T_SIZE, &mem,
+								init_hello);
 		if (ret)
 			goto err_free;
+
 		hello = (struct hello_t *)((uintptr_t)mem.mr_ptr + mem.data_offset);
 	}
 #endif /* USE_PMEM */
 	/* if no pmem support or it is not provided */
 	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		mem.mr_ptr = malloc_aligned(sizeof(struct hello_t));
+		mem.mr_ptr = malloc_aligned(HELLO_T_SIZE);
 		if (mem.mr_ptr == NULL)
 			return -1;
 
-		mem.mr_size = sizeof(struct hello_t);
+		mem.mr_size = HELLO_T_SIZE;
 		hello = (struct hello_t *)mem.mr_ptr;
 
 		/* write an initial value */
@@ -96,7 +101,7 @@ main(int argc, char *argv[])
 
 	/* calculate data for the server read */
 	struct common_data data = {0};
-	data.data_offset = mem.data_offset + offsetof(struct hello_t, str);
+	data.data_offset = mem.data_offset + HELLO_STR_OFFSET;
 	data.mr_desc_size = mr_desc_size;
 
 	/* get the memory region's descriptor */
@@ -126,7 +131,7 @@ main(int argc, char *argv[])
 	translate(hello);
 #ifdef USE_PMEM
 	if (mem.is_pmem) {
-		mem.persist(hello, sizeof(struct hello_t));
+		mem.persist(hello, HELLO_T_SIZE);
 	}
 #endif /* USE_PMEM */
 

@@ -65,7 +65,8 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem);
+		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem,
+								NULL);
 		if (ret)
 			goto err_free;
 	}
@@ -83,7 +84,7 @@ main(int argc, char *argv[])
 	}
 
 	/* allocate messaging buffer */
-	msg_ptr = malloc_aligned(KILOBYTE);
+	msg_ptr = malloc_aligned(HELLO_STR_SIZE);
 	if (msg_ptr == NULL) {
 		ret = -1;
 		goto err_free;
@@ -134,7 +135,7 @@ main(int argc, char *argv[])
 #endif /* USE_PMEM && IBV_ADVISE_MR_FLAGS_SUPPORTED */
 
 	/* register the messaging memory */
-	ret = rpma_mr_reg(peer, msg_ptr, KILOBYTE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
+	ret = rpma_mr_reg(peer, msg_ptr, HELLO_STR_SIZE, RPMA_MR_USAGE_SEND | RPMA_MR_USAGE_RECV |
 				RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY, &msg_mr);
 	if (ret) {
 		(void) rpma_mr_dereg(&mr);

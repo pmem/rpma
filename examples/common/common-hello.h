@@ -21,7 +21,7 @@ struct hello_t {
 #define HELLO_T_SIZE (sizeof(struct hello_t))
 
 void write_hello_str(struct hello_t *hello, enum lang_t lang);
-
 void translate(struct hello_t *hello);
+ssize_t init_hello(char *pmem_data, size_t size);
 
 #endif /* COMMON_HELLO_H */

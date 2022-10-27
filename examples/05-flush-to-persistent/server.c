@@ -57,7 +57,8 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem);
+		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem,
+								NULL);
 		if (ret)
 			goto err_free;
 	}

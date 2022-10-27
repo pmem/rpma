@@ -46,23 +46,6 @@ ENV RPMA_DEPS "\
 ENV EXAMPLES_DEPS "\
 	libprotobuf-c-dev"
 
-# performance tools deps
-ENV TOOLS_DEPS "\
-	python3-jinja2 \
-	pylint3 \
-	python3-pip \
-	python3-pytest"
-
-# performance tools python deps
-ENV TOOLS_PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	pylint \
-	scp"
-
 # PMDK deps
 ENV PMDK_DEPS "\
 	ndctl \
@@ -72,13 +55,10 @@ ENV PMDK_DEPS "\
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
 	$EXAMPLES_DEPS \
-	$TOOLS_DEPS \
 	$TESTS_DEPS \
 	$RPMA_DEPS \
 	$PMDK_DEPS \
 && rm -rf /var/lib/apt/lists/*
-
-RUN pip3 install --upgrade pip
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
@@ -108,6 +88,3 @@ ENV OS ubuntu
 ENV OS_VER 20.04
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
-
-# install python modules for the default user
-RUN pip3 install --user $TOOLS_PYTHON_DEPS

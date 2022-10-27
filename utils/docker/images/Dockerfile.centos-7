@@ -44,31 +44,12 @@ ENV EXAMPLES_DEPS "\
 	libpmem2 \
 	protobuf-c-devel"
 
-# performance tools deps
-ENV TOOLS_DEPS "\
-	python36-jinja2 \
-	python36-pylint \
-	python36-pytest"
-
-# performance tools python deps
-ENV TOOLS_PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	pylint \
-	scp"
-
 # Install all required packages
 RUN yum install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
-	$TOOLS_DEPS \
 && yum clean all
-
-RUN pip3 install --upgrade pip
 
 # run cmake3 as cmake
 RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
@@ -95,6 +76,3 @@ ENV OS centos
 ENV OS_VER 7
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
-
-# install python modules for the default user
-RUN pip3 install --user $TOOLS_PYTHON_DEPS
