@@ -40,7 +40,7 @@ jobs:
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7  TESTS_PERF_TOOLS=OFF",
+                 "N=CentOS7      OS=centos  OS_VER=7",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
                  "N=DebianS      OS=debian  OS_VER=stable",
@@ -56,7 +56,7 @@ jobs:
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  # Testing performance tools is temporarily disabled due to the following issue:
                  # ImportError: Module 'sqlite3' is not installed.
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest TESTS_PERF_TOOLS=OFF"]
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1
@@ -83,7 +83,7 @@ jobs:
                  "N=Fedora34     OS=fedora  OS_VER=34",
                  "N=Fedora33     OS=fedora  OS_VER=33",
                  "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7  TESTS_PERF_TOOLS=OFF",
+                 "N=CentOS7      OS=centos  OS_VER=7",
                  "N=Debian11     OS=debian  OS_VER=11",
                  "N=Debian10     OS=debian  OS_VER=10",
                  "N=DebianS      OS=debian  OS_VER=stable",
@@ -98,7 +98,7 @@ jobs:
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
                  # Testing performance tools is temporarily disabled due to the following issue:
                  # ImportError: Module 'sqlite3' is not installed.
-                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest TESTS_PERF_TOOLS=OFF"]
+                 "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1

@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
-- docker file of Fedora Rawhide (the python3-devel package added)
 - build system for CentOS 7 (use cmake3 instead of cmake if a version of cmake is v2.x)
 - check-headers.sh file - corrected the path of check-ms-license.pl and removed
   unneeded '*' at the start of the grep expressions
@@ -32,9 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
 
 ### Removed
+- whole benchmarking framework for librpma (the last commit with the benchmarking framework present is marked with the "[benchmarking-framework][bench-frame]" tag)
 - unused doc_snippets
 - meaningless template-example
 - meaningless template unit test
+
+[bench-frame]: https://github.com/pmem/rpma/tree/benchmarking-framework/tools/perf
 
 ## [1.1.0] - 2022-09-08
 ### Added
@@ -231,7 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tools:
   - [ddio.sh script][ddio] to toggle and query the DDIO (Intel&reg; Data Direct I/O Technology) state per PCIe root port on Intel&reg; Cascade Lake platforms ([#597][597]).
-  - [Benchmarking framework][bench] for librpma.
+  - Benchmarking framework for librpma.
 
 ### Changed
 - Atomic write operation (rpma_write_atomic()) implemented with fence
@@ -252,7 +254,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - rpma_flush_apm_new() fixed, so that rpma_mr_reg() can be called after ibv_fork_init() ([#866][866]).
 
-[bench]: https://github.com/pmem/rpma/blob/master/tools/perf/BENCHMARKING.md
 [ddio]: https://github.com/pmem/rpma/blob/master/tools/ddio.sh
 [distros]: https://github.com/pmem/rpma/blob/master/.github/workflows/nightly.yml
 [nightly]: https://github.com/pmem/rpma/actions/workflows/nightly.yml
