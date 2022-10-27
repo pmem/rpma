@@ -22,7 +22,9 @@ common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem)
 	}
 
 	if (mem->mr_size < min_size) {
-		(void) fprintf(stderr, "mapped size for %s is too small\n", path);
+		(void) fprintf(stderr,
+				"mapped size for %s is too small (actual:%zu < expected:%zu)\n",
+				path, mem->mr_size, min_size);
 		(void) pmem_unmap(mem->mr_ptr, mem->mr_size);
 		return -1;
 	}

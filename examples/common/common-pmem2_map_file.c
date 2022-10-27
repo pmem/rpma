@@ -45,8 +45,9 @@ common_pmem_map_file(char *path, size_t min_size, struct common_mem *mem)
 	}
 
 	if (pmem2_map_get_size(map) < min_size) {
-		(void) fprintf(stderr, "mapped size for (%s) is too small: %s\n",
-			path, pmem2_errormsg());
+		(void) fprintf(stderr,
+			"mapped size for %s is too small (actual:%zu < expected:%zu): %s\n",
+			path, pmem2_map_get_size(map), min_size, pmem2_errormsg());
 		(void) pmem2_map_delete(&map);
 		goto err_config_delete;
 	}
