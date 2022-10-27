@@ -41,7 +41,6 @@ option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 
 option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
-option(TESTS_PERF_TOOLS "run tests for the performance analysis tools" OFF)
 option(TESTS_RDMA_CONNECTION "enable tests that require a configured RDMA-capable network interface (valgrind required)" OFF)
 option(TESTS_USE_FORCED_PMEM "run tests with PMEM_IS_PMEM_FORCE=1" OFF)
 option(TESTS_USE_VALGRIND_PMEMCHECK "enable tests with valgrind pmemcheck (if found)" OFF)
@@ -310,11 +309,6 @@ endif()
 
 if(BUILD_EXAMPLES)
 	add_subdirectory(examples)
-endif()
-
-if(TESTS_PERF_TOOLS)
-	find_package(PYLINT REQUIRED pylint)
-	add_subdirectory(tools/perf)
 endif()
 
 if(NOT "${CPACK_GENERATOR}" STREQUAL "")
