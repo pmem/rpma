@@ -45,36 +45,11 @@ ENV EXAMPLES_DEPS "\
 	libpmem2-devel \
 	libprotobuf-c-devel"
 
-# performance tools deps
-ENV TOOLS_DEPS "\
-	python3-Jinja2 \
-	python3 \
-	python3-pip \
-	python3-pylint \
-	python3-pytest \
-	python3-setuptools"
-
-# performance tools python deps
-ENV TOOLS_PYTHON_DEPS "\
-	coverage \
-	deepdiff \
-	markdown2 \
-	matplotlib \
-	paramiko \
-	pylint \
-	scp"
-
 # Install all required packages
 RUN zypper install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
-	$EXAMPLES_DEPS \
-	$TOOLS_DEPS
-
-RUN pip3 install --upgrade pip
-
-# Required by python3-pylint
-RUN pip install setuptools
+	$EXAMPLES_DEPS
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
@@ -106,6 +81,3 @@ ENV OS opensuse/leap
 ENV OS_VER latest
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
-
-# install python modules for the default user
-RUN pip3 install --user $TOOLS_PYTHON_DEPS
