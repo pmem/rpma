@@ -118,15 +118,15 @@ add_example(NAME 02-read-to-volatile BIN client
 add_example(NAME 03-read-to-persistent BIN server
 	SRCS 03-read-to-persistent/server.c)
 add_example(NAME 03-read-to-persistent BIN client
-	SRCS 03-read-to-persistent/client.c common/common-hello.c)
+	SRCS 03-read-to-persistent/client.c common/common-hello.c common/common-utils.c)
 add_example(NAME 04-write-to-persistent BIN server
 	SRCS 04-write-to-persistent/server.c common/common-hello.c)
 add_example(NAME 04-write-to-persistent BIN client
-	SRCS 04-write-to-persistent/client.c common/common-hello.c)
+	SRCS 04-write-to-persistent/client.c common/common-hello.c common/common-utils.c)
 add_example(NAME 05-flush-to-persistent BIN server
 	SRCS 05-flush-to-persistent/server.c common/common-hello.c)
 add_example(NAME 05-flush-to-persistent BIN client
-	SRCS 05-flush-to-persistent/client.c common/common-hello.c)
+	SRCS 05-flush-to-persistent/client.c common/common-hello.c common/common-utils.c)
 add_example(NAME 06-multiple-connections BIN server
 	SRCS 06-multiple-connections/server.c common/common-epoll.c)
 add_example(NAME 06-multiple-connections BIN client
@@ -152,13 +152,13 @@ add_example(NAME 09-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09-flush-to-persistent-GPSPM/client.c
-	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c common/common-utils.c)
 add_example(NAME 09scch-flush-to-persistent-GPSPM BIN server USE_LIBPROTOBUFC
 	SRCS 09scch-flush-to-persistent-GPSPM/server.c
 	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
 add_example(NAME 09scch-flush-to-persistent-GPSPM BIN client USE_LIBPROTOBUFC
 	SRCS 09scch-flush-to-persistent-GPSPM/client.c
-	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c)
+	common/gpspm/GPSPM_flush.pb-c.c common/common-hello.c common/common-utils.c)
 add_example(NAME 10-send-with-imm BIN server
 	SRCS 10-send-with-imm/server.c)
 add_example(NAME 10-send-with-imm BIN client
