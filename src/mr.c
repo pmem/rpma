@@ -70,7 +70,7 @@ rpma_mr_read(struct ibv_qp *qp,
 	RPMA_DEBUG_TRACE;
 
 	struct ibv_send_wr wr = {0};
-	struct ibv_sge sge;
+	struct ibv_sge sge = {0};
 
 	if (src == NULL) {
 		/* source */
@@ -127,7 +127,7 @@ rpma_mr_write(struct ibv_qp *qp,
 	RPMA_DEBUG_TRACE;
 
 	struct ibv_send_wr wr = {0};
-	struct ibv_sge sge;
+	struct ibv_sge sge = {0};
 
 	if (src == NULL) {
 		/* source */
@@ -198,7 +198,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_o
 	RPMA_DEBUG_TRACE;
 
 	struct ibv_send_wr wr = {0};
-	struct ibv_sge sge;
+	struct ibv_sge sge = {0};
 
 	/* source */
 	sge.addr = (uint64_t)((uintptr_t)src);
