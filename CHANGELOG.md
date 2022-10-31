@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unneeded '*' at the start of the grep expressions
 - (examples) use HELLO_STR_SIZE instead of KILOBYTE in case of the hello string
 - the common_pmem_map_file_with_signature_check() function in examples
+- `rq_size` in rpma_peer_create_srq() initialize to RPMA_DEFAULT_SRQ_SIZE
 
 ### Changed
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()

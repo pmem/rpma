@@ -96,8 +96,11 @@ rpma_peer_create_srq(struct rpma_peer *peer, struct rpma_srq_cfg *cfg,
 {
 	RPMA_DEBUG_TRACE;
 
+#define RPMA_DEFAULT_SRQ_SIZE 20
+	uint32_t rq_size = RPMA_DEFAULT_SRQ_SIZE;
+#undef RPMA_DEFAULT_SRQ_SIZE
+
 	/* read size of the shared RQ from the configuration */
-	uint32_t rq_size;
 	(void) rpma_srq_cfg_get_rq_size(cfg, &rq_size);
 
 	struct ibv_srq_init_attr srq_init_attr;
