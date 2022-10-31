@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - the common_pmem_map_file_with_signature_check() function in examples
 - `wr` passed to ibv_post_send(), ibv_post_recv() and ibv_post_srq_recv() is initialized to 0
 - `sge` passed to a log message (in `rpma_mr_*()` functions) is initialized to 0
+- detecting no free slot for a new connection request in example 13
 
 ### Changed
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
