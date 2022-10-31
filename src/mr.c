@@ -126,7 +126,7 @@ rpma_mr_write(struct ibv_qp *qp,
 {
 	RPMA_DEBUG_TRACE;
 
-	struct ibv_send_wr wr;
+	struct ibv_send_wr wr = {0};
 	struct ibv_sge sge;
 
 	if (src == NULL) {
