@@ -303,7 +303,7 @@ rpma_mr_recv(struct ibv_qp *qp, struct rpma_mr_local *dst, size_t offset, size_t
 {
 	RPMA_DEBUG_TRACE;
 
-	struct ibv_recv_wr wr;
+	struct ibv_recv_wr wr = {0};
 	struct ibv_sge sge;
 
 	/* source */
@@ -342,7 +342,7 @@ rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offs
 {
 	RPMA_DEBUG_TRACE;
 
-	struct ibv_recv_wr wr;
+	struct ibv_recv_wr wr = {0};
 	struct ibv_sge sge;
 
 	/* source */
