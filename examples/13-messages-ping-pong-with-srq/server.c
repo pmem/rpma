@@ -83,8 +83,8 @@ handle_incoming_connections(struct rpma_ep *ep, struct rpma_conn_cfg *cfg,
 		break;
 	}
 
-	/* conn_ctx == NULL means that no free slot is found when i reaches CLIENT_MAX */
-	if (conn_ctx == NULL) {
+	/* conn_ctx->conn != NULL means that no free slot is found when i reaches CLIENT_MAX */
+	if (conn_ctx->conn != NULL) {
 		(void) fprintf(stderr, "No free slot for a new connection request.\n");
 		return -1;
 	}
