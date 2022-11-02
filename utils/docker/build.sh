@@ -22,8 +22,7 @@ set -e
 source $(dirname $0)/set-ci-vars.sh
 
 if [[ -z "$OS" || -z "$OS_VER" ]]; then
-	echo "ERROR: The variables OS and OS_VER have to be set " \
-		"(eg. OS=fedora, OS_VER=30)."
+	echo "ERROR: The variables OS and OS_VER have to be set (eg. OS=fedora, OS_VER=30)."
 	exit 1
 fi
 
@@ -32,12 +31,12 @@ if [[ -z "$HOST_WORKDIR" ]]; then
 fi
 
 if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
-	echo "Skipping Coverity job for non cron/Coverity build"
+	echo "INFO: Skip Coverity scan job if build is triggered neither by 'cron' nor by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
-if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
-	echo "Skipping non-Coverity job for cron/Coverity build"
+if [[ ( "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" ) && "$TYPE" != "coverity" ]]; then
+	echo "INFO: Skip regular jobs if build is triggered either by 'cron' or by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
