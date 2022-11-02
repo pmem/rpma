@@ -182,7 +182,7 @@ err_disconnect:
 	 * Wait for RPMA_CONN_CLOSED, disconnect and delete the connection
 	 * structure.
 	 */
-	ret = common_disconnect_and_wait_for_conn_close(&conn);
+	ret |= common_disconnect_and_wait_for_conn_close(&conn);
 
 err_mr_dereg:
 	/* deregister the memory region */
@@ -206,5 +206,5 @@ err_free:
 	if (mem.mr_ptr != NULL)
 		free(mem.mr_ptr);
 
-	return ret;
+	return ret ? -1 : 0;
 }
