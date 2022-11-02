@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 #
 
 #
@@ -57,8 +57,8 @@ if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "co
 	exit 0
 fi
 
-if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
-	echo "INFO: Skip regular jobs if build is triggered by a push to 'coverity_scan' branch"
+if [[ ( "$CI_EVENT_TYPE" == "cron" || "$CI_BRANCH" == "coverity_scan" ) && "$TYPE" != "coverity" ]]; then
+	echo "INFO: Skip regular jobs if build is triggered either by 'cron' or by a push to 'coverity_scan' branch"
 	exit 0
 fi
 
