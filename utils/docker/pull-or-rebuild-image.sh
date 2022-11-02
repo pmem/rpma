@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2022, Intel Corporation
 #
 
 #
@@ -50,17 +50,6 @@ function rebuild_and_push_image()
 	fi
 	exit 0
 }
-
-if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
-	echo "INFO: Skip Coverity scan job if build is triggered neither by " \
-		"'cron' nor by a push to 'coverity_scan' branch"
-	exit 0
-fi
-
-if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
-	echo "INFO: Skip regular jobs if build is triggered by a push to 'coverity_scan' branch"
-	exit 0
-fi
 
 if [[ -z "$OS" || -z "$OS_VER" ]]; then
 	echo "ERROR: The variables OS and OS_VER have to be set properly " \

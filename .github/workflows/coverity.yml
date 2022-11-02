@@ -1,0 +1,45 @@
+#
+# The Coverity build run over the night.
+#
+# It is run at 00:00 UTC every day or on demand.
+#
+
+name: Coverity
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * *'
+
+env:
+    GITHUB_REPO: pmem/rpma
+    # use GitHub Container Registry as a repository of docker images
+    GH_CR_ADDR:  ghcr.io
+    DOCKER_REPO: ghcr.io/pmem/rpma
+    # use org's Private Access Token to log in to GitHub Container Registry
+    GH_CR_USER:                       ${{ secrets.GH_CR_USER }}
+    GH_CR_PAT:                        ${{ secrets.GH_CR_PAT }}
+    COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_NOTIFICATION_EMAIL }}
+    COVERITY_SCAN_TOKEN:              ${{ secrets.COVERITY_SCAN_TOKEN }}
+    HOST_WORKDIR: /home/runner/work/rpma/rpma
+    WORKDIR:      utils/docker
+
+jobs:
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        CONFIG: ["N=1 OS=ubuntu OS_VER=22.04 TYPE=coverity CC=gcc"]
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v1
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ${{ matrix.CONFIG }} ./build.sh
+
+       - name: Push the image
+         run: cd $WORKDIR && source ./set-vars.sh && ${{ matrix.CONFIG }} /bin/bash -c "if [[ -f ${CI_FILE_PUSH_IMAGE_TO_REPO} ]]; then images/push-image.sh; fi"
