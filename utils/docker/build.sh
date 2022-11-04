@@ -22,23 +22,12 @@ set -e
 source $(dirname $0)/set-ci-vars.sh
 
 if [[ -z "$OS" || -z "$OS_VER" ]]; then
-	echo "ERROR: The variables OS and OS_VER have to be set " \
-		"(eg. OS=fedora, OS_VER=30)."
+	echo "ERROR: The variables OS and OS_VER have to be set (eg. OS=fedora, OS_VER=30)."
 	exit 1
 fi
 
 if [[ -z "$HOST_WORKDIR" ]]; then
 	HOST_WORKDIR=$(readlink -f ../..)
-fi
-
-if [[ "$TYPE" == "coverity" && "$CI_EVENT_TYPE" != "cron" && "$CI_BRANCH" != "coverity_scan" ]]; then
-	echo "Skipping Coverity job for non cron/Coverity build"
-	exit 0
-fi
-
-if [[ "$CI_BRANCH" == "coverity_scan" && "$TYPE" != "coverity" ]]; then
-	echo "Skipping non-Coverity job for cron/Coverity build"
-	exit 0
 fi
 
 imageName=${DOCKER_REPO}:${IMG_VER}-${OS}-${OS_VER}

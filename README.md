@@ -2,6 +2,7 @@
 
 [![GHA build status](https://github.com/pmem/rpma/workflows/RPMA/badge.svg?branch=master)](https://github.com/pmem/rpma/actions)
 [![CircleCI build status](https://circleci.com/gh/pmem/rpma.svg?style=shield)](https://app.circleci.com/pipelines/github/pmem/rpma)
+[![Coverity build status](https://scan.coverity.com/projects/26948/badge.svg)](https://scan.coverity.com/projects/librpma)
 [![librpma version](https://img.shields.io/github/tag/pmem/rpma.svg)](https://github.com/pmem/rpma/releases/latest)
 [![Coverage Status](https://codecov.io/github/pmem/rpma/coverage.svg?branch=master)](https://codecov.io/gh/pmem/rpma/branch/master)
 [![Packaging status](https://repology.org/badge/tiny-repos/rpma.svg)](https://repology.org/project/rpma/versions)
