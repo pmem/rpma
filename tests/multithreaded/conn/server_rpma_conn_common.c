@@ -176,7 +176,7 @@ client_connection_event_handle(struct custom_event *ce)
 	struct client_res *clnt = (struct client_res *)ce->arg;
 
 	/* get next connection's event */
-	enum rpma_conn_event event;
+	enum rpma_conn_event event = RPMA_CONN_UNDEFINED;
 	int ret = rpma_conn_next_event(clnt->conn, &event);
 	if (ret) {
 		if (ret == RPMA_E_NO_EVENT)
@@ -279,7 +279,7 @@ server_main(char *addr, unsigned port)
 		goto err_server_fini;
 
 	/* process epoll's events */
-	struct epoll_event event;
+	struct epoll_event event = {0};
 	struct custom_event *ce;
 	while ((ret = epoll_wait(svr.epoll, &event, 1 /* # of events */, TIMEOUT_15S)) == 1) {
 		ce = (struct custom_event *)event.data.ptr;
