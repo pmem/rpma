@@ -1,6 +1,6 @@
 # **librpma: Remote Persistent Memory Access Library**
 
-[![GHA build status](https://github.com/pmem/rpma/workflows/RPMA/badge.svg?branch=main)](https://github.com/pmem/rpma/actions)
+[![GHA build status](https://github.com/pmem/rpma/workflows/GitHubActions/badge.svg?branch=main)](https://github.com/pmem/rpma/actions)
 [![CircleCI build status](https://circleci.com/gh/pmem/rpma.svg?style=shield)](https://app.circleci.com/pipelines/github/pmem/rpma)
 [![Coverity build status](https://scan.coverity.com/projects/26948/badge.svg)](https://scan.coverity.com/projects/librpma)
 [![librpma version](https://img.shields.io/github/tag/pmem/rpma.svg)](https://github.com/pmem/rpma/releases/latest)
