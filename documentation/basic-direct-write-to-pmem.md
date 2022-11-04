@@ -41,7 +41,7 @@ The `lspci -vt` command shows a tree-like diagram containing all buses, bridges,
 
 ### Turning off DDIO
 
-For turning on and off DDIO on per-PCIe Root Port basis please use the [ddio.sh](https://github.com/pmem/rpma/blob/master/tools/ddio.sh) utility available in the librpma repository.
+For turning on and off DDIO on per-PCIe Root Port basis please use the [ddio.sh](https://github.com/pmem/rpma/blob/main/tools/ddio.sh) utility available in the librpma repository.
 
 ```sh
 $ PCIe_Root_Port=1234:56:78.9
@@ -50,7 +50,7 @@ $ echo $?
 1
 ```
 
-The `1` at the end of the output in this case means the DDIO feature is turned on for this PCIe Root Port which is the default for the **Cascade Lake** platforms. In this case, it is required to turn it off for each **Cascade Lake** system with PMem if you want to have *Direct Write to PMem* capability via RDMA. For details please see [rpma_peer_cfg_set_direct_write_to_pmem(3)](https://pmem.io/rpma/manpages/master/rpma_peer_cfg_set_direct_write_to_pmem.3) and [rpma_flush(3)](https://pmem.io/rpma/manpages/master/rpma_flush.3).
+The `1` at the end of the output in this case means the DDIO feature is turned on for this PCIe Root Port which is the default for the **Cascade Lake** platforms. In this case, it is required to turn it off for each **Cascade Lake** system with PMem if you want to have *Direct Write to PMem* capability via RDMA. For details please see [rpma_peer_cfg_set_direct_write_to_pmem(3)](https://pmem.io/rpma/manpages/main/rpma_peer_cfg_set_direct_write_to_pmem.3) and [rpma_flush(3)](https://pmem.io/rpma/manpages/main/rpma_flush.3).
 
 ```sh
 $ sudo ./ddio.sh -d $PCIe_Root_Port -s disable

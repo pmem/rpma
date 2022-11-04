@@ -48,7 +48,7 @@
 			{% assign system_rel = system | prepend:'releases_' %}
 			{% for release in site.data.[system_rel] %}
 				{% if release.libs contains dc_title %}
-					{% if release.tag == 'master' %}
+					{% if release.tag == 'main' %}
 						{% assign version_tag = release.tag %}
 						{% assign version_name = "" %}
 					{% else %}
