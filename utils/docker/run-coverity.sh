@@ -36,7 +36,7 @@ echo -n | openssl s_client -connect scan.coverity.com:443 | \
 
 echo $USERPASS | sudo -S mv $TEMP_CF $CERT_FILE
 
-export COVERITY_SCAN_PROJECT_NAME="$CI_REPO_SLUG"
+export COVERITY_SCAN_PROJECT_NAME="librpma"
 export COVERITY_SCAN_BRANCH_PATTERN="$CI_BRANCH"
 export COVERITY_SCAN_BUILD_COMMAND="./utils/docker/coverity-command.sh $(nproc)"
 
