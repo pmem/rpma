@@ -70,7 +70,7 @@ done
 
 if [ $CHECK_ALL -eq 0 ]; then
 	CURRENT_COMMIT=$($GIT log --pretty=%H -1)
-	MERGE_BASE=$($GIT merge-base HEAD origin/master 2>/dev/null)
+	MERGE_BASE=$($GIT merge-base HEAD origin/main 2>/dev/null)
 	[ -z $MERGE_BASE ] && \
 		MERGE_BASE=$($GIT log --pretty="%cN:%H" | grep GitHub | head -n1 | cut -d: -f2)
 	[ -z "$MERGE_BASE" -o "$CURRENT_COMMIT" == "$MERGE_BASE" ] && \

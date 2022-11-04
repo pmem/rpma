@@ -24,7 +24,7 @@
 # environment variable is set to ON, then the integration tests will stop on the first failure.
 #
 # The '--integration-tests' option starts integration tests documented
-# in the https://github.com/pmem/rpma/blob/master/DEVELOPMENT.md#running-integration-tests file.
+# in the https://github.com/pmem/rpma/blob/main/DEVELOPMENT.md#running-integration-tests file.
 #
 
 # value used to get the maximum reachable value of fault injection for each example
@@ -49,7 +49,7 @@ If the '--stop-on-failure' argument is used or the 'RPMA_EXAMPLES_STOP_ON_FAILUR
 environment variable is set to ON, then the integration tests will stop on the first failure.\n
 \n\
 The '--integration-tests' option starts integration tests documented \
-in the https://github.com/pmem/rpma/blob/master/DEVELOPMENT.md#running-integration-tests file.\n"
+in the https://github.com/pmem/rpma/blob/main/DEVELOPMENT.md#running-integration-tests file.\n"
 
 BIN_DIR=$1
 if [ "$BIN_DIR" == "" -o ! -d "$BIN_DIR" ]; then

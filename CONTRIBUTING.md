@@ -11,7 +11,7 @@ about the librpma library, open an issue in our
 
 **Note**: If you do decide to implement code changes and contribute them,
 please make sure you agree your contribution can be made available
-under the [BSD-style License used for the RPMA](https://github.com/pmem/rpma/blob/master/LICENSE).
+under the [BSD-style License used for the RPMA](https://github.com/pmem/rpma/blob/main/LICENSE).
 
 **Note**: Submitting your changes also means that you certify the following:
 

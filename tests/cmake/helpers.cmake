@@ -72,7 +72,7 @@ endfunction()
 # ignore it because malloc() will fallback to mmap() anyway.
 #
 # list of ignored warnings should match the list provided by PMDK:
-# https://github.com/pmem/pmdk/blob/master/src/test/unittest/unittest.sh
+# https://github.com/pmem/pmdk/blob/main/src/test/unittest/unittest.sh
 function(valgrind_ignore_warnings valgrind_log)
     execute_process(COMMAND bash "-c" "cat ${valgrind_log} | grep -v \
     -e \"WARNING: Serious error when reading debug info\" \

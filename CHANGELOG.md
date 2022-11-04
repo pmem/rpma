@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - detecting no free slot for a new connection request in example 13
 
 ### Changed
+- the default 'master' branch has been renamed to 'main'
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
   has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
 
@@ -258,8 +259,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - rpma_flush_apm_new() fixed, so that rpma_mr_reg() can be called after ibv_fork_init() ([#866][866]).
 
-[ddio]: https://github.com/pmem/rpma/blob/master/tools/ddio.sh
-[distros]: https://github.com/pmem/rpma/blob/master/.github/workflows/nightly.yml
+[ddio]: https://github.com/pmem/rpma/blob/main/tools/ddio.sh
+[distros]: https://github.com/pmem/rpma/blob/main/.github/workflows/nightly.yml
 [nightly]: https://github.com/pmem/rpma/actions/workflows/nightly.yml
 [1220]: https://github.com/pmem/rpma/pull/1220
 [1080]: https://github.com/pmem/rpma/pull/1080

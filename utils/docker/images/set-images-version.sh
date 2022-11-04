@@ -16,4 +16,4 @@
 # and standalone branches. It makes no sense to change it for the same branch.
 #
 
-export IMG_VER=master
+export IMG_VER=main
