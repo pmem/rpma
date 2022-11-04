@@ -48,7 +48,7 @@ ENV EXAMPLES_DEPS "\
 	libpmem2-dev \
 	libprotobuf-c-dev"
 
-# packages required by Coverity
+# packages required by the Coverity build
 ENV COVERITY_DEPS "\
 	ruby \
 	wget"
