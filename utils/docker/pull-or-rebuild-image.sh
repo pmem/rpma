@@ -6,13 +6,13 @@
 
 #
 # pull-or-rebuild-image.sh - rebuilds the Docker image used in the
-#                            current Travis build if necessary.
+#                            current CI build if necessary.
 #
 # The script rebuilds the Docker image if the Dockerfile for the current
 # OS version (Dockerfile.${OS}-${OS_VER}) or any .sh script from the directory
 # with Dockerfiles were modified and committed.
 #
-# If the Travis build is not of the "pull_request" type (i.e. in case of
+# If the CI build is not of the "pull_request" type (i.e. in case of
 # merge after pull_request) and it succeed, the Docker image should be pushed
 # to ${DOCKER_REPO}. An empty file is created to signal that to further scripts.
 #
@@ -35,18 +35,23 @@ function rebuild_and_push_image()
 
 	# Check if the image has to be pushed to ${DOCKER_REPO}
 	# (i.e. the build is triggered by commits to the ${GITHUB_REPO}
-	# repository's main branch, and the Travis build is not
+	# repository's main branch, and the CI build is not
 	# of the "pull_request" type). In that case, create the empty
 	# file.
-	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
-		&& ($CI_BRANCH == stable-* || $CI_BRANCH == main) \
-		&& $CI_EVENT_TYPE != "pull_request"
-		&& $PUSH_IMAGE == "1" ]]
+	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" && "$CI_BRANCH" == "main" \
+		&& "$CI_EVENT_TYPE" != "pull_request" && "$PUSH_IMAGE" == "1" ]]
 	then
 		echo "The image will be pushed to ${DOCKER_REPO}"
 		touch $CI_FILE_PUSH_IMAGE_TO_REPO
 	else
-		echo "Skip pushing the image to ${DOCKER_REPO}"
+		echo "Skipping pushing the image to ${DOCKER_REPO} ..."
+		if [ "${CI_REPO_SLUG}" != "${GITHUB_REPO}" ]; then
+			echo "CI_REPO_SLUG=$CI_REPO_SLUG"
+			echo "GITHUB_REPO=$GITHUB_REPO"
+		fi
+		[ "$CI_BRANCH" != "main" ] && echo "CI_BRANCH=$CI_BRANCH"
+		[ "$CI_EVENT_TYPE" == "pull_request" ] && echo "CI_EVENT_TYPE=pull_request"
+		[ "$PUSH_IMAGE" != "1" ] && echo "PUSH_IMAGE=$PUSH_IMAGE"
 	fi
 	exit 0
 }
