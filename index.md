@@ -11,7 +11,7 @@ to simplify accessing persistent memory on remote hosts over
 
 The documentation is available for:
 
-* the current [master](./manpages/master/librpma.7.html)
+* the current [main](./manpages/main/librpma.7.html)
 * [v0.9.0](./manpages/v0.9.0/librpma.7.html)
 
 #### Recommended reading list

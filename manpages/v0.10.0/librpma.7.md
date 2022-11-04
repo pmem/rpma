@@ -111,7 +111,7 @@ access to PMem.
     to the connection
 
 For details on how to use these APIs please see
-https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
+https://github.com/pmem/rpma/tree/main/examples/05-flush-to-persistent.
 
 CLIENT OPERATION
 ================
@@ -331,7 +331,7 @@ The provided file descriptors can also be used for scalable I/O handling
 like **epoll**(7).
 
 Please see the example showing how to make use of RPMA file descriptors:
-https://github.com/pmem/rpma/tree/master/examples/06-multiple-connections
+https://github.com/pmem/rpma/tree/main/examples/06-multiple-connections
 
 QUEUES, PERFORMANCE AND RESOURCE USE
 ====================================
@@ -492,12 +492,12 @@ set or got using **rpma\_log\_set\_threshold**() or
 **rpma\_log\_get\_threshold**() respectively.
 
 There is an example of the usage of the logging functions:
-https://github.com/pmem/rpma/tree/master/examples/log
+https://github.com/pmem/rpma/tree/main/examples/log
 
 EXAMPLES
 ========
 
-See https://github.com/pmem/rpma/tree/master/examples for examples of
+See https://github.com/pmem/rpma/tree/main/examples for examples of
 using the librpma API.
 
 ACKNOWLEDGEMENTS
