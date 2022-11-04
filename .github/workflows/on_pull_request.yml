@@ -2,7 +2,7 @@
 # Builds run on every pull request and every push to the repo.
 #
 
-name: On_Pull_Request
+name: GitHubActions
 on: [push, pull_request]
 
 env:
