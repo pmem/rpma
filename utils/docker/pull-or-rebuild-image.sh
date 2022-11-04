@@ -38,15 +38,20 @@ function rebuild_and_push_image()
 	# repository's master branch, and the Travis build is not
 	# of the "pull_request" type). In that case, create the empty
 	# file.
-	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" \
-		&& ($CI_BRANCH == stable-* || $CI_BRANCH == master) \
-		&& $CI_EVENT_TYPE != "pull_request"
-		&& $PUSH_IMAGE == "1" ]]
+	if [[ "${CI_REPO_SLUG}" == "${GITHUB_REPO}" && "$CI_BRANCH" == "master" \
+		&& "$CI_EVENT_TYPE" != "pull_request" && "$PUSH_IMAGE" == "1" ]]
 	then
 		echo "The image will be pushed to ${DOCKER_REPO}"
 		touch $CI_FILE_PUSH_IMAGE_TO_REPO
 	else
-		echo "Skip pushing the image to ${DOCKER_REPO}"
+		echo "Skipping pushing the image to ${DOCKER_REPO} ..."
+		if [ "${CI_REPO_SLUG}" != "${GITHUB_REPO}" ]; then
+			echo "CI_REPO_SLUG=$CI_REPO_SLUG"
+			echo "GITHUB_REPO=$GITHUB_REPO"
+		fi
+		[ "$CI_BRANCH" != "master" ] && echo "CI_BRANCH=$CI_BRANCH"
+		[ "$CI_EVENT_TYPE" == "pull_request" ] && echo "CI_EVENT_TYPE=pull_request"
+		[ "$PUSH_IMAGE" != "1" ] && echo "PUSH_IMAGE=$PUSH_IMAGE"
 	fi
 	exit 0
 }
