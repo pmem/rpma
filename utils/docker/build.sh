@@ -50,8 +50,8 @@ fi
 
 if [ -n "$DNS_SERVER" ]; then DNS_SETTING=" --dns=$DNS_SERVER "; fi
 
-# Run doc update only on $GITHUB_REPO and only on the master branch
-if [[ "${CI_BRANCH}" != "master" || "$CI_EVENT_TYPE" == "pull_request" || "$CI_REPO_SLUG" != "${GITHUB_REPO}" ]]; then
+# Run doc update only on $GITHUB_REPO and only on the main branch
+if [[ "${CI_BRANCH}" != "main" || "$CI_EVENT_TYPE" == "pull_request" || "$CI_REPO_SLUG" != "${GITHUB_REPO}" ]]; then
 	AUTO_DOC_UPDATE=0
 fi
 

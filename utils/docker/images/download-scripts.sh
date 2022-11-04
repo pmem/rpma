@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2022, Intel Corporation
 
 #
 # download-scripts.sh - downloads specific version of codecov's bash
@@ -10,7 +10,7 @@
 
 set -e
 
-# master: Merge pull request #342 from codecov/revert-proj-name-..., 18.08.2020
+# main: Merge pull request #342 from codecov/revert-proj-name-..., 18.08.2020
 CODECOV_VERSION="e877c1280cc6e902101fb5df2981ed1c962da7f0"
 
 if [ "${SKIP_SCRIPTS_DOWNLOAD}" ]; then

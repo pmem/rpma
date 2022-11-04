@@ -9,7 +9,7 @@ set -e
 WORKDIR=$(pwd)
 USER_NAME="pmem"
 BOT_NAME="pmem-bot"
-VERSION="master"
+VERSION="main"
 SOURCE_BRANCH=${CI_BRANCH}
 
 function set_up_repo() {

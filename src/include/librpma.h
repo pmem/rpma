@@ -84,7 +84,7 @@ extern "C" {
  * - rpma_conn_apply_remote_peer_cfg() - apply remote peer cfg to the connection
  *
  * For details on how to use these APIs please see
- * https://github.com/pmem/rpma/tree/master/examples/05-flush-to-persistent.
+ * https://github.com/pmem/rpma/tree/main/examples/05-flush-to-persistent.
  *
  * CLIENT OPERATION
  * A client is the active side of the process of establishing a connection. A role of the peer
@@ -232,7 +232,7 @@ extern "C" {
  * The provided file descriptors can also be used for scalable I/O handling like epoll(7).
  *
  * Please see the example showing how to make use of RPMA file descriptors:
- * https://github.com/pmem/rpma/tree/master/examples/06-multiple-connections
+ * https://github.com/pmem/rpma/tree/main/examples/06-multiple-connections
  *
  * .SH QUEUES, PERFORMANCE AND RESOURCE USE
  *
@@ -275,7 +275,7 @@ extern "C" {
  * The analysis of thread safety of the librpma library is described in details in
  * the THREAD_SAFETY.md file:
  *
- *	https://github.com/pmem/rpma/blob/master/THREAD_SAFETY.md
+ *	https://github.com/pmem/rpma/blob/main/THREAD_SAFETY.md
  *
  * .SH ON-DEMAND PAGING SUPPORT
  *
@@ -308,11 +308,11 @@ extern "C" {
  * rpma_log_set_threshold() or rpma_log_get_threshold() respectively.
  *
  * There is an example of the usage of the logging functions:
- * https://github.com/pmem/rpma/tree/master/examples/log
+ * https://github.com/pmem/rpma/tree/main/examples/log
  *
  * EXAMPLES
  *
- * See https://github.com/pmem/rpma/tree/master/examples for examples of using the librpma API.
+ * See https://github.com/pmem/rpma/tree/main/examples for examples of using the librpma API.
  *
  * ACKNOWLEDGEMENTS
  *
