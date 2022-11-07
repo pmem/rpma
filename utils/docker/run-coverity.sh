@@ -36,7 +36,7 @@ echo -n | openssl s_client -connect scan.coverity.com:443 | \
 
 echo $USERPASS | sudo -S mv $TEMP_CF $CERT_FILE
 
-if [ "$CI_REPO_SLUG" == "pmem/rpma" ]; then
+if [[ "$CI_REPO_SLUG" == "$GITHUB_REPO" ]]; then
 	export COVERITY_SCAN_PROJECT_NAME="librpma"
 else
 	export COVERITY_SCAN_PROJECT_NAME="$CI_REPO_SLUG"
