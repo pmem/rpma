@@ -466,19 +466,19 @@ main(int argc, char *argv[])
 err_ep_shutdown:
 	/* shutdown the endpoint */
 	ret2 = rpma_ep_shutdown(&svr.ep);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 err_server_fini:
 	/* release the server's resources */
 	ret2 = server_fini(&svr);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 err_peer_delete:
 	/* delete the peer object */
 	ret2 = rpma_peer_delete(&peer);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 	return ret;

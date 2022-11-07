@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `sge` passed to a log message (in rpma_mr_*() functions) is initialized to 0
 - `rq_size` in rpma_peer_create_srq() initialized to 0
 - detecting no free slot for a new connection request in example 13
+- minor issues detected by Coverity
 
 ### Changed
 - the default 'master' branch has been renamed to 'main'

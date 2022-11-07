@@ -119,7 +119,9 @@ server_fini(struct server_res *svr)
 	int ret = rpma_conn_cfg_delete(&svr->cfg);
 
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&svr->dst_mr);
+	int ret2 = rpma_mr_dereg(&svr->dst_mr);
+	if (!ret)
+		ret = ret2;
 
 	/* free the memory */
 	free(svr->dst_ptr);
@@ -489,19 +491,19 @@ main(int argc, char *argv[])
 err_ep_shutdown:
 	/* shutdown the endpoint */
 	ret2 = rpma_ep_shutdown(&svr.ep);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 err_server_fini:
 	/* release the server's resources */
 	ret2 = server_fini(&svr);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 err_peer_delete:
 	/* delete the peer object */
 	ret2 = rpma_peer_delete(&peer);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 	return ret;
