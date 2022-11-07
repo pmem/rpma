@@ -24,6 +24,7 @@
 
 #define LOG_SIGNATURE_SIZE 8
 #define LOG_DATA_SIZE 1024
+#define LOG_SIZE (sizeof(struct log))
 
 /* defined log structure */
 struct log {
@@ -64,20 +65,9 @@ main(int argc, char *argv[])
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
-		ret = common_pmem_map_file(pmem_path, LOG_SIGNATURE_SIZE, &mem);
+		ret = common_pmem_map_file(pmem_path, LOG_SIZE, &mem);
 		if (ret)
 			goto err_free;
-
-		/*
-		 * All of the space under the offset is intended for the string contents.
-		 * Space is assumed to be at least 1 KiB.
-		 */
-		if (mem.mr_size - LOG_SIGNATURE_SIZE < KILOBYTE) {
-			fprintf(stderr, "%s too small (%zu < %u)\n", pmem_path, mem.mr_size,
-					KILOBYTE + LOG_SIGNATURE_SIZE);
-			common_pmem_unmap_file(&mem);
-			return -1;
-		}
 
 		log = (struct log *)mem.mr_ptr;
 
@@ -99,14 +89,13 @@ main(int argc, char *argv[])
 	/* if no pmem support or it is not provided */
 	if (mem.mr_ptr == NULL) {
 		(void) fprintf(stderr, NO_PMEM_MSG);
-		log = malloc_aligned(sizeof(struct log));
-		if (log == NULL)
+		mem.mr_size = LOG_SIZE;
+		mem.mr_ptr = malloc_aligned(LOG_SIZE);
+		if (mem.mr_ptr == NULL)
 			return -1;
 
+		log = (struct log *)mem.mr_ptr;
 		log->used = offsetof(struct log, data);
-
-		mem.mr_ptr = (void *)log;
-		mem.mr_size = sizeof(struct log);
 	}
 
 	/* RPMA resources */
@@ -207,9 +196,9 @@ err_free:
 		common_pmem_unmap_file(&mem);
 	} else
 #endif /* USE_PMEM */
-
-	if (!mem.is_pmem)
-		free(log);
+	if (mem.mr_ptr != NULL) {
+		free(mem.mr_ptr);
+	}
 
 	return ret ? -2 : 0;
 }
