@@ -15,8 +15,8 @@
 #include "peer-common.h"
 #include "test-common.h"
 
-struct prestate prestate_OdpCapable = {0, 0, 0, MOCK_ODP_CAPABLE, NULL};
-struct prestate prestate_OdpIncapable = {0, 0, 0, MOCK_ODP_INCAPABLE, NULL};
+struct prestate prestate_OdpCapable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_CAPABLE, NULL};
+struct prestate prestate_OdpIncapable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_INCAPABLE, NULL};
 
 /*
  * setup__peer -- prepare a valid rpma_peer object
