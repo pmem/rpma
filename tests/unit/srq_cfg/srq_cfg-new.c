@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2022, Fujitsu */
+/* Copyright 2022, Intel Corporation */
 
 /*
  * srq_cfg-new.c -- the rpma_srq_cfg_new() unit tests
@@ -63,6 +64,7 @@ new__success(void **cstate_ptr)
 	ret = rpma_srq_cfg_get_rq_size(cstate->cfg, &a_size);
 	assert_int_equal(ret, MOCK_OK);
 	ret = rpma_srq_cfg_get_rq_size(cfg_default, &b_size);
+	assert_int_equal(ret, MOCK_OK);
 	assert_int_equal(a_size, b_size);
 
 	ret = rpma_srq_cfg_get_rcq_size(cstate->cfg, &a_size);
