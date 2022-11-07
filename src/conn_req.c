@@ -505,14 +505,14 @@ rpma_conn_req_delete(struct rpma_conn_req **req_ptr)
 	int ret = rpma_cq_delete(&req->rcq);
 
 	int ret2 = rpma_cq_delete(&req->cq);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 	if (req->is_passive)
 		ret2 = rpma_conn_req_reject(req);
 	else
 		ret2 = rpma_conn_req_destroy(req);
-	if (!ret && ret2)
+	if (!ret)
 		ret = ret2;
 
 	if (req->channel) {
