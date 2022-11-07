@@ -8,6 +8,8 @@
 #include "cmocka_headers.h"
 #include "librpma.h"
 
+#define RPMA_CONN_UNSUPPORTED (RPMA_CONN_UNDEFINED - 1)
+
 /*
  * conn_event_2str__CONN_UNDEFINED - sanity test for
  * rpma_utils_conn_event_2str()
@@ -81,7 +83,7 @@ conn_event_2str__CONN_UNREACHABLE(void **unused)
 static void
 conn_event_2str__CONN_UNSUPPORTED(void **unused)
 {
-	assert_string_equal(rpma_utils_conn_event_2str(RPMA_E_UNKNOWN),
+	assert_string_equal(rpma_utils_conn_event_2str(RPMA_CONN_UNSUPPORTED),
 		"Unsupported connection event");
 }
 
