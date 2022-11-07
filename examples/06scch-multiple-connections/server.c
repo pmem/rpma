@@ -119,7 +119,9 @@ server_fini(struct server_res *svr)
 	int ret = rpma_conn_cfg_delete(&svr->cfg);
 
 	/* deregister the memory region */
-	ret = rpma_mr_dereg(&svr->dst_mr);
+	int ret2 = rpma_mr_dereg(&svr->dst_mr);
+	if (!ret && ret2)
+		ret = ret2;
 
 	/* free the memory */
 	free(svr->dst_ptr);
