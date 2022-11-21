@@ -37,10 +37,10 @@ static struct rpma_cq *rcqs[] = {
 static int num_rcqs = sizeof(rcqs) / sizeof(rcqs[0]);
 
 /*
- * configure_create_qp -- configure common mock for rdma_create_qp()
+ * configure_create_qp_ex -- configure common mock for rdma_create_qp_ex()
  */
 static void
-configure_create_qp(struct rpma_cq *rcq)
+configure_create_qp_ex(struct rpma_cq *rcq)
 {
 	will_return(rpma_conn_cfg_get_sq_size, &Get_args);
 	will_return(rpma_conn_cfg_get_rq_size, &Get_args);
@@ -55,25 +55,26 @@ configure_create_qp(struct rpma_cq *rcq)
 		expect_value(rpma_cq_get_ibv_cq, cq, rcq);
 		will_return(rpma_cq_get_ibv_cq, MOCK_GET_IBV_RCQ(rcq));
 	}
-	expect_value(rdma_create_qp, id, MOCK_CM_ID);
-	expect_value(rdma_create_qp, pd, MOCK_IBV_PD);
-	expect_value(rdma_create_qp, qp_init_attr->qp_context, NULL);
-	expect_value(rdma_create_qp, qp_init_attr->send_cq,
+	expect_value(rdma_create_qp_ex, id, MOCK_CM_ID);
+	expect_value(rdma_create_qp_ex, qp_init_attr->qp_context, NULL);
+	expect_value(rdma_create_qp_ex, qp_init_attr->send_cq,
 		MOCK_IBV_CQ);
-	expect_value(rdma_create_qp, qp_init_attr->recv_cq,
+	expect_value(rdma_create_qp_ex, qp_init_attr->recv_cq,
 		rcq ? MOCK_GET_IBV_RCQ(rcq) : MOCK_IBV_CQ);
-	expect_value(rdma_create_qp, qp_init_attr->srq, Get_args.srq ?
+	expect_value(rdma_create_qp_ex, qp_init_attr->srq, Get_args.srq ?
 		MOCK_IBV_SRQ : NULL);
-	expect_value(rdma_create_qp, qp_init_attr->cap.max_send_wr,
+	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_send_wr,
 		MOCK_SQ_SIZE_CUSTOM);
-	expect_value(rdma_create_qp, qp_init_attr->cap.max_recv_wr,
+	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_recv_wr,
 		MOCK_RQ_SIZE_CUSTOM);
-	expect_value(rdma_create_qp, qp_init_attr->cap.max_send_sge,
+	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_send_sge,
 		RPMA_MAX_SGE);
-	expect_value(rdma_create_qp, qp_init_attr->cap.max_recv_sge,
+	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_recv_sge,
 		RPMA_MAX_SGE);
-	expect_value(rdma_create_qp, qp_init_attr->cap.max_inline_data,
+	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_inline_data,
 		RPMA_MAX_INLINE_DATA);
+	expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask, IBV_QP_INIT_ATTR_PD);
+	expect_value(rdma_create_qp_ex, qp_init_attr->pd, MOCK_IBV_PD);
 }
 
 /*
@@ -123,18 +124,18 @@ create_qp__cq_NULL(void **pprestate)
 }
 
 /*
- * create_qp__rdma_create_qp_ERRNO -- rdma_create_qp() fails with MOCK_ERRNO
+ * create_qp__rdma_create_qp_ex_ERRNO -- rdma_create_qp_ex() fails with MOCK_ERRNO
  */
 static void
-create_qp__rdma_create_qp_ERRNO(void **pprestate)
+create_qp__rdma_create_qp_ex_ERRNO(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
 
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
 		Get_args.srq = (i == 2) ? MOCK_RPMA_SRQ : NULL;
-		configure_create_qp(rcqs[i]);
-		will_return(rdma_create_qp, MOCK_ERRNO);
+		configure_create_qp_ex(rcqs[i]);
+		will_return(rdma_create_qp_ex, MOCK_ERRNO);
 
 		/* run test */
 		int ret = rpma_peer_setup_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
@@ -156,8 +157,8 @@ create_qp__success(void **pprestate)
 	for (int i = 0; i < num_rcqs; i++) {
 		/* configure mock */
 		Get_args.srq = (i == 2) ? MOCK_RPMA_SRQ : NULL;
-		configure_create_qp(rcqs[i]);
-		will_return(rdma_create_qp, MOCK_OK);
+		configure_create_qp_ex(rcqs[i]);
+		will_return(rdma_create_qp_ex, MOCK_OK);
 
 		/* run test */
 		int ret = rpma_peer_setup_qp(prestate->peer, MOCK_CM_ID, MOCK_RPMA_CQ,
@@ -179,7 +180,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test_prestate_setup_teardown(create_qp__cq_NULL,
 				setup__peer, teardown__peer, &prestate_OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(
-				create_qp__rdma_create_qp_ERRNO,
+				create_qp__rdma_create_qp_ex_ERRNO,
 				setup__peer, teardown__peer, &prestate_OdpCapable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__success,
 				setup__peer, teardown__peer, &prestate_OdpCapable),
