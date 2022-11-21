@@ -95,7 +95,6 @@
    fun:calloc
    ...
    fun:rdma_create_qp_ex
-   fun:rdma_create_qp
    fun:rpma_peer_setup_qp
    fun:rpma_conn_req_new_from_id
    fun:rpma_conn_req_new
@@ -188,7 +187,6 @@
    fun:calloc
    ...
    fun:rdma_create_qp_ex
-   fun:rdma_create_qp
    fun:rpma_peer_setup_qp
    fun:rpma_conn_req_new_from_id
    fun:rpma_conn_req_new_from_cm_event

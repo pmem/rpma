@@ -165,7 +165,7 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 
 	struct ibv_cq *ibv_cq = rpma_cq_get_ibv_cq(cq);
 
-	struct ibv_qp_init_attr qp_init_attr;
+	struct ibv_qp_init_attr_ex qp_init_attr;
 	qp_init_attr.qp_context = NULL;
 	qp_init_attr.send_cq = ibv_cq;
 	qp_init_attr.recv_cq = rcq ? rpma_cq_get_ibv_cq(rcq) : ibv_cq;
@@ -186,14 +186,17 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 	 */
 	qp_init_attr.sq_sig_all = 0;
 
+	qp_init_attr.comp_mask = IBV_QP_INIT_ATTR_PD;
+	qp_init_attr.pd = peer->pd;
+
 	/*
 	 * The actual capabilities and properties of the created QP are returned through
 	 * qp_init_attr.
 	 */
 	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
-	if (rdma_create_qp(id, peer->pd, &qp_init_attr)) {
+	if (rdma_create_qp_ex(id, &qp_init_attr)) {
 		RPMA_LOG_ERROR_WITH_ERRNO(errno,
-			"rdma_create_qp(max_send_wr=%" PRIu32
+			"rdma_create_qp_ex(max_send_wr=%" PRIu32
 			", max_recv_wr=%" PRIu32
 			", max_send/recv_sge=%i, max_inline_data=%i, qp_type=IBV_QPT_RC, sq_sig_all=0)",
 			sq_size, rq_size, RPMA_MAX_SGE,
