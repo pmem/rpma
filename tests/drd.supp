@@ -508,6 +508,7 @@
 {
    General suppression related to SoftRoCE issue with mutex
    drd:MutexErr
+   ...
    fun:pthread_mutex_init@*
    ...
    fun:rpma_srq_new
