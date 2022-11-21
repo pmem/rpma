@@ -277,7 +277,7 @@
    Memcheck:Cond
    fun:ibv_icmd_create_srq
    fun:ibv_cmd_create_srq
-   obj:*/libmlx5.so*
+   ...
    fun:ibv_create_srq*
    fun:rpma_peer_create_srq
    fun:rpma_srq_new
