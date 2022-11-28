@@ -290,7 +290,6 @@
    fun:rxe_create_qp
    fun:UnknownInlinedFun
    fun:rdma_create_qp_ex
-   fun:rdma_create_qp
    ...
 }
 
@@ -444,7 +443,7 @@
    ...
    obj:*librxe-rdmav34.so*
    ...
-   fun:rdma_create_qp
+   fun:rdma_create_qp_ex
    fun:rpma_peer_setup_qp
    ...
 }
@@ -509,6 +508,7 @@
 {
    General suppression related to SoftRoCE issue with mutex
    drd:MutexErr
+   ...
    fun:pthread_mutex_init@*
    ...
    fun:rpma_srq_new
