@@ -50,6 +50,9 @@ rdma_create_qp_ex(struct rdma_cm_id *id, struct ibv_qp_init_attr_ex *qp_init_att
 	assert_int_equal(qp_init_attr->qp_type, IBV_QPT_RC);
 	assert_int_equal(qp_init_attr->sq_sig_all, 0);
 	check_expected(qp_init_attr->comp_mask);
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	check_expected(qp_init_attr->send_ops_flags);
+#endif
 	check_expected(qp_init_attr->pd);
 
 	errno = mock_type(int);

@@ -19,11 +19,74 @@
 
 static const char Mock_src[8];
 
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+static struct ibv_wr_atomic_write_mock_args args;
+#else
+static struct ibv_post_send_mock_args args;
+#endif
+
+/*
+ * configure_atomic_write -- configure common mock for rpma_mr_atomic_write()
+ */
+static void
+configure_mr_atomic_write(int flags, int ret)
+{
+	/* configure mock */
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, MOCK_QPX);
+	expect_value(ibv_wr_start_mock, qp, MOCK_QPX);
+	args.qp = MOCK_QPX;
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.wr_flags = (flags == RPMA_F_COMPLETION_ALWAYS) ? IBV_SEND_SIGNALED : 0;
+	args.rkey = MOCK_RKEY;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.atomic_wr = Mock_src;
+	will_return(ibv_wr_atomic_write_mock, &args);
+	expect_value(ibv_wr_complete_mock, qp, MOCK_QPX);
+	will_return(ibv_wr_complete_mock, ret);
+#else
+	args.qp = MOCK_QP;
+	args.opcode = IBV_WR_RDMA_WRITE;
+	args.send_flags = IBV_SEND_INLINE | IBV_SEND_FENCE;
+	if (flags == RPMA_F_COMPLETION_ALWAYS)
+		args.send_flags |= IBV_SEND_SIGNALED;
+	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
+	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
+	args.rkey = MOCK_RKEY;
+	args.ret = ret;
+	will_return(ibv_post_send_mock, &args);
+#endif
+}
+
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+/*
+ * atomic_write__qpx_NULL_failed_E_PROVIDER -
+ * rpma_mr_atomic_write failed with RPMA_E_PROVIDER
+ * when ibv_qp_to_qp_ex() returned NULL
+ */
+static void
+atomic_write__qpx_NULL_failed_E_PROVIDER(void **mrs_ptr)
+{
+	struct mrs *mrs = (struct mrs *)*mrs_ptr;
+
+	/* configure mocks */
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, NULL);
+
+	/* run test */
+	int ret = rpma_mr_atomic_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
+			Mock_src, RPMA_F_COMPLETION_ALWAYS, MOCK_OP_CONTEXT);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+}
+#endif
+
 /*
  * atomic_write__COMPL_ON_ERROR_failed_E_PROVIDER -
  * rpma_mr_atomic_write failed with RPMA_E_PROVIDER
- * when send_flags == IBV_SEND_INLINE | IBV_SEND_FENCE
- * for RPMA_F_COMPLETION_ON_ERROR
+ * when RPMA_F_COMPLETION_ON_ERROR is specified
  */
 static void
 atomic_write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
@@ -31,16 +94,7 @@ atomic_write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
-	/* RPMA_F_COMPLETION_ON_ERROR */
-	args.send_flags = IBV_SEND_INLINE | IBV_SEND_FENCE;
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
-	args.rkey = MOCK_RKEY;
-	args.ret = MOCK_ERRNO;
-	will_return(ibv_post_send_mock, &args);
+	configure_mr_atomic_write(RPMA_F_COMPLETION_ON_ERROR, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_mr_atomic_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
@@ -53,9 +107,7 @@ atomic_write__COMPL_ON_ERROR_failed_E_PROVIDER(void **mrs_ptr)
 /*
  * atomic_write__COMPL_ON_SUCCESS_failed_E_PROVIDER -
  * rpma_mr_atomic_write failed with RPMA_E_PROVIDER
- * when send_flags == IBV_SEND_INLINE | IBV_SEND_FENCE
- *				| IBV_SEND_SIGNALED
- * for RPMA_F_COMPLETION_ALWAYS
+ * when RPMA_F_COMPLETION_ALWAYS is specified
  */
 static void
 atomic_write__COMPL_ON_SUCCESS_failed_E_PROVIDER(void **mrs_ptr)
@@ -63,17 +115,7 @@ atomic_write__COMPL_ON_SUCCESS_failed_E_PROVIDER(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mocks */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
-	/* RPMA_F_COMPLETION_ALWAYS */
-	args.send_flags = IBV_SEND_INLINE | IBV_SEND_FENCE
-				| IBV_SEND_SIGNALED;
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
-	args.rkey = MOCK_RKEY;
-	args.ret = MOCK_ERRNO;
-	will_return(ibv_post_send_mock, &args);
+	configure_mr_atomic_write(RPMA_F_COMPLETION_ALWAYS, MOCK_ERRNO);
 
 	/* run test */
 	int ret = rpma_mr_atomic_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
@@ -92,16 +134,7 @@ atomic_write__COMPLETION_ALWAYS_success(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mock */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
-	args.send_flags = IBV_SEND_INLINE | IBV_SEND_FENCE
-				| IBV_SEND_SIGNALED;
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
-	args.rkey = MOCK_RKEY;
-	args.ret = MOCK_OK;
-	will_return(ibv_post_send_mock, &args);
+	configure_mr_atomic_write(RPMA_F_COMPLETION_ALWAYS, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_mr_atomic_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
@@ -120,15 +153,7 @@ atomic_write__COMPLETION_ON_ERROR_success(void **mrs_ptr)
 	struct mrs *mrs = (struct mrs *)*mrs_ptr;
 
 	/* configure mock */
-	struct ibv_post_send_mock_args args;
-	args.qp = MOCK_QP;
-	args.opcode = IBV_WR_RDMA_WRITE;
-	args.send_flags = IBV_SEND_INLINE | IBV_SEND_FENCE;
-	args.wr_id = (uint64_t)MOCK_OP_CONTEXT;
-	args.remote_addr = MOCK_RADDR + MOCK_DST_OFFSET;
-	args.rkey = MOCK_RKEY;
-	args.ret = MOCK_OK;
-	will_return(ibv_post_send_mock, &args);
+	configure_mr_atomic_write(RPMA_F_COMPLETION_ON_ERROR, MOCK_OK);
 
 	/* run test */
 	int ret = rpma_mr_atomic_write(MOCK_QP, mrs->remote, MOCK_DST_OFFSET,
@@ -145,7 +170,26 @@ static int
 group_setup_mr_atomic_write(void **unused)
 {
 	/* configure global mocks */
-
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	/*
+	 * ibv_wr_start(), ibv_wr_atomic_write() and ibv_wr_complete() are defined
+	 * as static inline functions in the included header <infiniband/verbs.h>,
+	 * so we cannot define them again. They are defined as:
+	 * {
+	 *     return qp->wr_start(qp);
+	 * }
+	 * {
+	 *     return qp->wr_atomic_write(qp, rkey, remote_addr, atomic_wr);
+	 * }
+	 * {
+	 *     return qp->wr_complete(qp);
+	 * }
+	 * so we can set these three function pointers to our mock functions.
+	 */
+	Ibv_qp_ex.wr_start = ibv_wr_start_mock;
+	Ibv_qp_ex.wr_atomic_write = ibv_wr_atomic_write_mock;
+	Ibv_qp_ex.wr_complete = ibv_wr_complete_mock;
+#else
 	/*
 	 * ibv_post_send() is defined as a static inline function
 	 * in the included header <infiniband/verbs.h>,
@@ -158,12 +202,19 @@ group_setup_mr_atomic_write(void **unused)
 	 */
 	MOCK_VERBS->ops.post_send = ibv_post_send_mock;
 	Ibv_qp.context = MOCK_VERBS;
+#endif
 
 	return 0;
 }
 
 static const struct CMUnitTest tests_mr__atomic_write[] = {
 	/* rpma_mr_atomic_write() unit tests */
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	cmocka_unit_test_setup_teardown(
+			atomic_write__qpx_NULL_failed_E_PROVIDER,
+			setup__mr_local_and_remote,
+			teardown__mr_local_and_remote),
+#endif
 	cmocka_unit_test_setup_teardown(
 			atomic_write__COMPL_ON_ERROR_failed_E_PROVIDER,
 			setup__mr_local_and_remote,

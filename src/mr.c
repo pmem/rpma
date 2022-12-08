@@ -197,6 +197,25 @@ rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_o
 {
 	RPMA_DEBUG_TRACE;
 
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	struct ibv_qp_ex *qpx = ibv_qp_to_qp_ex(qp);
+	if (!qpx) {
+		RPMA_LOG_ERROR("ibv_qp_to_qp_ex()");
+		return RPMA_E_PROVIDER;
+	}
+
+	ibv_wr_start(qpx);
+	qpx->wr_id = (uint64_t)op_context;
+	qpx->wr_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ? IBV_SEND_SIGNALED : 0;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	ibv_wr_atomic_write(qpx, dst->rkey, dst->raddr + dst_offset, src);
+	int ret = ibv_wr_complete(qpx);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_wr_complete()");
+		return RPMA_E_PROVIDER;
+	}
+#else
 	struct ibv_send_wr wr = {0};
 	struct ibv_sge sge = {0};
 
@@ -233,6 +252,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_o
 			(flags & RPMA_F_COMPLETION_ON_SUCCESS) ? "IBV_SEND_SIGNALED" : "0");
 		return RPMA_E_PROVIDER;
 	}
+#endif
 
 	return 0;
 }

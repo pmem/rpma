@@ -73,7 +73,13 @@ configure_create_qp_ex(struct rpma_cq *rcq)
 		RPMA_MAX_SGE);
 	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_inline_data,
 		RPMA_MAX_INLINE_DATA);
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask,
+		IBV_QP_INIT_ATTR_PD | IBV_QP_INIT_ATTR_SEND_OPS_FLAGS);
+	expect_value(rdma_create_qp_ex, qp_init_attr->send_ops_flags, IBV_QP_EX_WITH_ATOMIC_WRITE);
+#else
 	expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask, IBV_QP_INIT_ATTR_PD);
+#endif
 	expect_value(rdma_create_qp_ex, qp_init_attr->pd, MOCK_IBV_PD);
 }
 
