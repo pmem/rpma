@@ -287,3 +287,15 @@ function(atomic_operations_supported var)
 		ATOMIC_OPERATIONS_SUPPORTED)
 	set(var ${ATOMIC_OPERATIONS_SUPPORTED} PARENT_SCOPE)
 endfunction()
+
+# check if libibverbs has ibv_wr_atomic_write() support
+function(is_ibv_wr_atomic_write_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/* check if ibv_wr_atomic_write() is defined */
+		int main() {
+			return !ibv_wr_atomic_write;
+		}"
+		IBV_WR_ATOMIC_WRITE_SUPPORTED)
+	set(var ${IBV_WR_ATOMIC_WRITE_SUPPORTED} PARENT_SCOPE)
+endfunction()
