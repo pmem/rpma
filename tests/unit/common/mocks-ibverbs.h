@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * mocks-ibverbs.h -- the ibverbs mocks' header
@@ -22,6 +22,9 @@ extern struct ibv_cq Ibv_rcq;
 extern struct ibv_cq Ibv_srq_rcq;
 extern struct ibv_cq Ibv_cq_unknown;
 extern struct ibv_qp Ibv_qp;
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+extern struct ibv_qp_ex Ibv_qp_ex;
+#endif
 extern struct ibv_mr Ibv_mr;
 extern struct ibv_srq Ibv_srq;
 
@@ -34,6 +37,9 @@ extern struct ibv_srq Ibv_srq;
 #define MOCK_IBV_CQ_UNKNOWN	(struct ibv_cq *)&Ibv_cq_unknown
 #define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#define MOCK_QPX		(struct ibv_qp_ex *)&Ibv_qp_ex
+#endif
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
 #define MOCK_IBV_SRQ		(struct ibv_srq *)&Ibv_srq
 
@@ -70,6 +76,17 @@ struct ibv_post_srq_recv_mock_args {
 	int ret;
 };
 
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+struct ibv_wr_atomic_write_mock_args {
+	struct ibv_qp_ex *qp;
+	uint64_t wr_id;
+	uint32_t wr_flags;
+	uint32_t rkey;
+	uint64_t remote_addr;
+	const void *atomic_wr;
+};
+#endif
+
 #ifdef ON_DEMAND_PAGING_SUPPORTED
 int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
@@ -96,5 +113,16 @@ int ibv_advise_mr_mock(struct ibv_pd *pd, enum ibv_advise_mr_advice advice,
 struct ibv_srq *ibv_create_srq(struct ibv_pd *pd, struct ibv_srq_init_attr *srq_init_attr);
 
 int ibv_destroy_srq(struct ibv_srq *srq);
+
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+struct ibv_qp_ex *ibv_qp_to_qp_ex(struct ibv_qp *qp);
+
+void ibv_wr_start_mock(struct ibv_qp_ex *qp);
+
+void ibv_wr_atomic_write_mock(struct ibv_qp_ex *qp, uint32_t rkey, uint64_t remote_addr,
+		const void *atomic_wr);
+
+int ibv_wr_complete_mock(struct ibv_qp_ex *qp);
+#endif
 
 #endif /* MOCKS_IBVERBS_H */
