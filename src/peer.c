@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * peer.c -- librpma peer-related implementations
@@ -16,6 +16,7 @@
 #include "peer.h"
 #include "srq.h"
 #include "srq_cfg.h"
+#include "utils.h"
 
 #ifdef TEST_MOCK_ALLOC
 #include "cmocka_alloc.h"
@@ -31,6 +32,8 @@ struct rpma_peer {
 	struct ibv_pd *pd; /* a protection domain */
 
 	int is_odp_supported; /* is On-Demand Paging supported */
+
+	int is_atomic_write_supported; /* is atomic write supported */
 };
 
 /* internal librpma API */
@@ -287,10 +290,16 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 
 	int is_odp_supported = 0;
+	int is_atomic_write_supported = 0;
 	int ret;
 
 	if (ibv_ctx == NULL || peer_ptr == NULL)
 		return RPMA_E_INVAL;
+
+	ret = rpma_utils_ibv_context_is_atomic_write_capable(ibv_ctx,
+			&is_atomic_write_supported);
+	if (ret)
+		return ret;
 
 	ret = rpma_utils_ibv_context_is_odp_capable(ibv_ctx, &is_odp_supported);
 	if (ret)
@@ -331,6 +340,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 
 	peer->pd = pd;
 	peer->is_odp_supported = is_odp_supported;
+	peer->is_atomic_write_supported = is_atomic_write_supported;
 	*peer_ptr = peer;
 
 	return 0;
