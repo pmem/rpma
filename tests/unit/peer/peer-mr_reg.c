@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * peer-mr_reg.c -- a peer unit test
@@ -233,15 +233,15 @@ main(int argc, char *argv[])
 	const struct CMUnitTest tests[] = {
 		/* rpma_peer_setup_mr_reg() unit tests */
 		{ "mr_reg__reg_mr_ERRNO_no_odp", mr_reg__reg_mr_ERRNO,
-				setup__peer, teardown__peer, &prestate_OdpIncapable},
+				setup__peer, teardown__peer, &prestate_Incapable},
 		{ "mr_reg__reg_mr_ERRNO_odp", mr_reg__reg_mr_ERRNO,
-				setup__peer, teardown__peer, &prestate_OdpCapable},
+				setup__peer, teardown__peer, &prestate_Capable},
 		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg__reg_mr_EOPNOTSUPP_no_odp,
-				setup__peer, teardown__peer, &prestate_OdpIncapable),
+				setup__peer, teardown__peer, &prestate_Incapable),
 		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg__reg_mr_EOPNOTSUPP_ERRNO,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 		{ "mr_reg__USAGE_READ_SRC_IB", mr_reg__success,
 				setup__peer, teardown__peer, prestates + 0},
 		{ "mr_reg__USAGE_READ_SRC_iWARP", mr_reg__success,
@@ -264,7 +264,7 @@ main(int argc, char *argv[])
 				setup__peer, teardown__peer, prestates + 9},
 		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg__success_odp,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

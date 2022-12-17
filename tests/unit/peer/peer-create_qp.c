@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * peer-create_qp.c -- a peer unit test
@@ -176,14 +176,14 @@ main(int argc, char *argv[])
 		/* rpma_peer_setup_qp() unit tests */
 		cmocka_unit_test(create_qp__peer_NULL),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__id_NULL,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__cq_NULL,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 		cmocka_unit_test_prestate_setup_teardown(
 				create_qp__rdma_create_qp_ex_ERRNO,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 		cmocka_unit_test_prestate_setup_teardown(create_qp__success,
-				setup__peer, teardown__peer, &prestate_OdpCapable),
+				setup__peer, teardown__peer, &prestate_Capable),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

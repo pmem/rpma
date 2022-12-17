@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2022, Fujitsu Limited */
 
 /*
  * peer-common.h -- the header of the common part of the peer unit test
@@ -43,11 +44,12 @@ struct prestate {
 	int usage;
 	unsigned access;
 	int is_odp_capable;
+	int is_atomic_write_capable;
 	struct rpma_peer *peer;
 };
 
-extern struct prestate prestate_OdpCapable;
-extern struct prestate prestate_OdpIncapable;
+extern struct prestate prestate_Capable;
+extern struct prestate prestate_Incapable;
 
 int setup__peer(void **pprestate);
 int teardown__peer(void **pprestate);
