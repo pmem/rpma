@@ -190,6 +190,13 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 	qp_init_attr.sq_sig_all = 0;
 
 	qp_init_attr.comp_mask = IBV_QP_INIT_ATTR_PD;
+
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+	if (peer->is_native_atomic_write_supported) {
+		qp_init_attr.comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
+		qp_init_attr.send_ops_flags = IBV_QP_EX_WITH_ATOMIC_WRITE;
+	}
+#endif
 	qp_init_attr.pd = peer->pd;
 
 	/*
