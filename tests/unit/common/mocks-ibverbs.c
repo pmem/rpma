@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -61,11 +61,11 @@ ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 	assert_non_null(attr);
 	/* attr_size is provided by ibverbs - no validation needed */
 
-	struct ibv_odp_caps *caps = mock_type(struct ibv_odp_caps *);
-	if (caps == NULL)
+	struct ibv_device_attr_ex *device_attr = mock_type(struct ibv_device_attr_ex *);
+	if (device_attr == NULL)
 		return mock_type(int);
 
-	memcpy(&attr->odp_caps, caps, sizeof(struct ibv_odp_caps));
+	memcpy(attr, device_attr, sizeof(struct ibv_device_attr_ex));
 
 	return 0;
 }
