@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2022, Fujitsu Limited */
 
 /*
  * peer-common.c -- the common part of the peer unit test
@@ -15,8 +16,10 @@
 #include "peer-common.h"
 #include "test-common.h"
 
-struct prestate prestate_OdpCapable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_CAPABLE, NULL};
-struct prestate prestate_OdpIncapable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_INCAPABLE, NULL};
+struct prestate prestate_Capable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_CAPABLE,
+		MOCK_ATOMIC_WRITE_CAPABLE, NULL};
+struct prestate prestate_Incapable = {IBV_TRANSPORT_IB, 0, 0, MOCK_ODP_INCAPABLE,
+		MOCK_ATOMIC_WRITE_INCAPABLE, NULL};
 
 /*
  * setup__peer -- prepare a valid rpma_peer object
@@ -32,6 +35,8 @@ setup__peer(void **pprestate)
 	 * NOTE: it is not allowed to call ibv_dealloc_pd() if ibv_alloc_pd()
 	 * succeeded.
 	 */
+	will_return(rpma_utils_ibv_context_is_atomic_write_capable,
+			prestate->is_atomic_write_capable);
 	will_return(rpma_utils_ibv_context_is_odp_capable,
 			prestate->is_odp_capable);
 	struct ibv_alloc_pd_mock_args alloc_args = {MOCK_VALIDATE, MOCK_IBV_PD};
