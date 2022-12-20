@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2022, Fujitsu */
+/* Copyright (c) 2022, Fujitsu Limited */
 
 /*
  * peer-create_srq.c -- the rpma_peer_create_srq() unit tests
@@ -162,14 +162,14 @@ static const struct CMUnitTest tests_create_srq[] = {
 	/* rpma_peer_create_srq() unit tests */
 	cmocka_unit_test_prestate_setup_teardown(
 		create_srq__ibv_create_srq_ERRNO, setup__peer, teardown__peer,
-		&prestate_OdpCapable),
+		&prestate_Capable),
 	cmocka_unit_test_prestate_setup_teardown(
-		create_srq__rpma_cq_new_ERRNO, setup__peer, teardown__peer, &prestate_OdpCapable),
+		create_srq__rpma_cq_new_ERRNO, setup__peer, teardown__peer, &prestate_Capable),
 	cmocka_unit_test_prestate_setup_teardown(
 		create_srq__rpma_cq_new_ERRNO_subsequent_ERRNO2, setup__peer, teardown__peer,
-		&prestate_OdpCapable),
+		&prestate_Capable),
 	cmocka_unit_test_prestate_setup_teardown(
-		create_srq__success, setup__peer, teardown__peer, &prestate_OdpCapable),
+		create_srq__success, setup__peer, teardown__peer, &prestate_Capable),
 	cmocka_unit_test(NULL)
 };
 
