@@ -522,8 +522,8 @@ rpma_mr_remote_from_descriptor(const void *desc, size_t desc_size, struct rpma_m
 	mr->usage = usage;
 	*mr_ptr = mr;
 
-	RPMA_LOG_INFO("new rpma_mr_remote(raddr=0x%" PRIx64 ", size=%" PRIu64
-			", rkey=0x%" PRIx32 ", usage=0x%" PRIx8 ")",
+	RPMA_LOG_DEBUG("new struct rpma_mr_remote {raddr=0x%" PRIx64 ", size=%" PRIu64
+			", rkey=0x%" PRIx32 ", usage=0x%" PRIx8 "}",
 			raddr, size, rkey, usage);
 
 	return 0;

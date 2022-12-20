@@ -186,8 +186,7 @@ rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size, struct rpma_pe
 	cfg->direct_write_to_pmem = *(uint8_t *)desc;
 	*pcfg_ptr = cfg;
 
-	RPMA_LOG_INFO("new rpma_peer_cfg(direct_write_to_pmem=%s)",
-			SUPPORTED2STR(cfg->direct_write_to_pmem));
+	RPMA_LOG_INFO("INFO: Direct Write To PMem is %s", SUPPORTED2STR(cfg->direct_write_to_pmem));
 
 	return 0;
 }
