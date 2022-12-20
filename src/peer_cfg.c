@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2022, Fujitsu Limited */
 
 /*
  * peer_cfg.c -- librpma peer-configuration-related implementations
@@ -22,8 +23,6 @@
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
 #include <stdatomic.h>
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
-
-#define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
 
 static bool RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM = false;
 

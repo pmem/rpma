@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2022, Fujitsu Limited */
 
 /*
  * log_internal.h -- internal logging interfaces used by librpma
@@ -28,6 +29,9 @@ extern
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
 _Atomic
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
+
+#define SUPPORTED2STR(var)	((var) ? "supported" : "unsupported")
+
 enum rpma_log_level Rpma_log_threshold[RPMA_LOG_THRESHOLD_MAX];
 
 void rpma_log_init();
