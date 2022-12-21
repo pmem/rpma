@@ -78,15 +78,17 @@ static void
 ibvc_odp__general_caps_no(void **unused)
 {
 	/* configure mocks */
-	struct ibv_odp_caps caps = {
-		.general_caps = 0, /* IBV_ODP_SUPPORT not set */
-		.per_transport_caps = {
+	struct ibv_device_attr_ex attr = {
+		.odp_caps = {
+			.general_caps = 0, /* IBV_ODP_SUPPORT not set */
+			.per_transport_caps = {
 				IBV_ODP_SUPPORT_WRITE | IBV_ODP_SUPPORT_READ,
 				0,
 				0
-		},
+			},
+		}
 	};
-	will_return(ibv_query_device_ex_mock, &caps);
+	will_return(ibv_query_device_ex_mock, &attr);
 
 	/* run test */
 	int is_odp_capable;
@@ -106,16 +108,18 @@ static void
 ibvc_odp__rc_caps_not_all(void **unused)
 {
 	/* configure mocks */
-	struct ibv_odp_caps caps = {
-		.general_caps = IBV_ODP_SUPPORT,
-		.per_transport_caps = {
+	struct ibv_device_attr_ex attr = {
+		.odp_caps = {
+			.general_caps = IBV_ODP_SUPPORT,
+			.per_transport_caps = {
 				/* IBV_ODP_SUPPORT_READ not set */
 				IBV_ODP_SUPPORT_WRITE,
 				0,
 				0
-		},
+			},
+		}
 	};
-	will_return(ibv_query_device_ex_mock, &caps);
+	will_return(ibv_query_device_ex_mock, &attr);
 
 	/* run test */
 	int is_odp_capable;
@@ -134,15 +138,17 @@ static void
 ibvc_odp__odp_capable(void **unused)
 {
 	/* configure mocks */
-	struct ibv_odp_caps caps = {
-		.general_caps = IBV_ODP_SUPPORT,
-		.per_transport_caps = {
+	struct ibv_device_attr_ex attr = {
+		.odp_caps = {
+			.general_caps = IBV_ODP_SUPPORT,
+			.per_transport_caps = {
 				IBV_ODP_SUPPORT_WRITE | IBV_ODP_SUPPORT_READ,
 				0,
 				0
-		},
+			},
+		}
 	};
-	will_return(ibv_query_device_ex_mock, &caps);
+	will_return(ibv_query_device_ex_mock, &attr);
 
 	/* run test */
 	int is_odp_capable;
