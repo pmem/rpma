@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
 - call rpma_utils_ibv_context_is_atomic_write_capable() in rpma_peer_new()
 - enable native atomic write in rpma_peer_setup_qp() if both kernel and libibverbs support it
+- use native atomic write in rpma_mr_atomic_write() if the created QP supports it
 
 ### Removed
 - whole benchmarking framework for librpma (the last commit with the benchmarking framework present is marked with the "[benchmarking-framework][bench-frame]" tag)
