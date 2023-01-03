@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright (c) 2022 Fujitsu Limited
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -176,6 +177,15 @@ if(ATOMIC_OPERATIONS_SUPPORTED)
 	add_flag(-DATOMIC_OPERATIONS_SUPPORTED=1)
 else()
 	message(WARNING "atomic operations are NOT supported (too old gcc/clang compiler). Some *_set*() functions will NOT be thread-safe!")
+endif()
+
+# check if libibverbs has ibv_wr_atomic_write() support
+is_ibv_wr_atomic_write_supported(IBV_WR_ATOMIC_WRITE_SUPPORTED)
+if(IBV_WR_ATOMIC_WRITE_SUPPORTED)
+	message(STATUS "ibv_wr_atomic_write() supported in libibverbs - Success")
+	add_flag(-DIBV_WR_ATOMIC_WRITE_SUPPORTED=1)
+else()
+	message(WARNING "ibv_wr_atomic_write() is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
 add_custom_target(checkers ALL)
