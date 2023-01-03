@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2022, Intel Corporation */
+/* Copyright 2022-2023, Intel Corporation */
 
 /*
  * mtt_connect.c -- common connection code of multithreaded tests
@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <librpma.h>
+#include <unistd.h>
 
 #include "mtt.h"
 
@@ -248,6 +249,7 @@ mtt_client_connect(struct mtt_result *tr, char *addr, unsigned port,
 		/* received the RPMA_CONN_REJECTED event, retrying ... */
 		(void) rpma_conn_disconnect(*conn_ptr);
 		(void) rpma_conn_delete(conn_ptr);
+		sleep(1);
 
 	} while (retry < MAX_CONN_RETRY);
 

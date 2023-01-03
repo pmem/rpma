@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - detecting no free slot for a new connection request in example 13
 - memory allocations in example 07
 - minor issues detected by Coverity
+- sleep(1) added to mtt_client_connect() before the next connection retry
 
 ### Changed
 - the default 'master' branch has been renamed to 'main'
