@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - unused doc_snippets
 - meaningless template-example
 - meaningless template unit test
+- Debian 10 from the on_pull_request CI workflow
 
 [bench-frame]: https://github.com/pmem/rpma/tree/benchmarking-framework/tools/perf
 
