@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -24,6 +24,9 @@ struct ibv_cq Ibv_rcq;
 struct ibv_cq Ibv_srq_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+struct ibv_qp_ex Ibv_qp_ex;
+#endif
 struct ibv_mr Ibv_mr;
 struct ibv_srq Ibv_srq;
 
@@ -61,11 +64,11 @@ ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 	assert_non_null(attr);
 	/* attr_size is provided by ibverbs - no validation needed */
 
-	struct ibv_odp_caps *caps = mock_type(struct ibv_odp_caps *);
-	if (caps == NULL)
+	struct ibv_device_attr_ex *device_attr = mock_type(struct ibv_device_attr_ex *);
+	if (device_attr == NULL)
 		return mock_type(int);
 
-	memcpy(&attr->odp_caps, caps, sizeof(struct ibv_odp_caps));
+	memcpy(attr, device_attr, sizeof(struct ibv_device_attr_ex));
 
 	return 0;
 }
@@ -429,3 +432,54 @@ ibv_destroy_srq(struct ibv_srq *srq)
 
 	return mock_type(int);
 }
+
+#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+/*
+ * ibv_qp_to_qp_ex -- ibv_qp_to_qp_ex() mock
+ */
+struct ibv_qp_ex *
+ibv_qp_to_qp_ex(struct ibv_qp *qp)
+{
+	check_expected_ptr(qp);
+
+	return mock_type(struct ibv_qp_ex *);
+}
+
+/*
+ * ibv_wr_start -- ibv_wr_start() mock
+ */
+void
+ibv_wr_start_mock(struct ibv_qp_ex *qp)
+{
+	check_expected_ptr(qp);
+}
+
+/*
+ * ibv_wr_atomic_write_mock -- ibv_wr_atomic_write() mock
+ */
+void
+ibv_wr_atomic_write_mock(struct ibv_qp_ex *qp, uint32_t rkey,
+		uint64_t remote_addr, const void *atomic_wr)
+{
+	struct ibv_wr_atomic_write_mock_args *args =
+		mock_type(struct ibv_wr_atomic_write_mock_args *);
+
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(qp->wr_id, args->wr_id);
+	assert_int_equal(qp->wr_flags, args->wr_flags);
+	assert_int_equal(rkey, args->rkey);
+	assert_int_equal(remote_addr, args->remote_addr);
+	assert_memory_equal(atomic_wr, args->atomic_wr, 8);
+}
+
+/*
+ * ibv_wr_complete_mock -- ibv_wr_complete() mock
+ */
+int
+ibv_wr_complete_mock(struct ibv_qp_ex *qp)
+{
+	check_expected(qp);
+
+	return mock_type(int);
+}
+#endif
