@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - the default 'master' branch has been renamed to 'main'
 - logging of the source and the destination GID addresses in rpma_conn_req_new_from_id()
   has been restricted to only one case when CMAKE_BUILD_TYPE is set to 'Debug'
+- call rpma_utils_ibv_context_is_atomic_write_capable() in rpma_peer_new()
 
 ### Removed
 - whole benchmarking framework for librpma (the last commit with the benchmarking framework present is marked with the "[benchmarking-framework][bench-frame]" tag)
