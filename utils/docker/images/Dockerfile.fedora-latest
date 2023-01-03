@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2022, Intel Corporation
+# Copyright 2016-2023, Intel Corporation
 #
 
 #
@@ -9,7 +9,7 @@
 #
 
 # Pull base image
-FROM fedora:34
+FROM fedora:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
 # Update all packages
@@ -72,6 +72,6 @@ USER $USER
 
 # Set required environment variables
 ENV OS fedora
-ENV OS_VER 34
+ENV OS_VER latest
 ENV PACKAGE_MANAGER rpm
 ENV NOTTY 1
