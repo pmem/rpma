@@ -11,53 +11,47 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_cq\_wait** - wait for a completion and ack it
+**rpma_cq_wait** - wait for a completion and ack it
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_cq;
           int rpma_cq_wait(struct rpma_cq *cq);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_cq\_wait**() waits for an incoming completion event and acks it.
-If **rpma\_cq\_wait**() succeeds, then all available completions should
-be collected using **rpma\_cq\_get\_wc**(3) before the next
-**rpma\_cq\_wait**() call.
+**rpma_cq_wait**() waits for an incoming completion event and acks it.
+If **rpma_cq_wait**() succeeds, then all available completions should be
+collected using **rpma_cq_get_wc**(3) before the next **rpma_cq_wait**()
+call.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_cq\_wait**() function returns 0 on success or a negative
-error code on failure.
+The **rpma_cq_wait**() function returns 0 on success or a negative error
+code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_cq\_wait**() can fail with the following errors:
+**rpma_cq_wait**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - cq is NULL
+-   RPMA_E\_INVAL - cq is NULL
 
--   RPMA\_E\_PROVIDER - **ibv\_req\_notify\_cq**(3) failed with a
-    provider error
+-   RPMA_E\_PROVIDER - **ibv_req_notify_cq**(3) failed with a provider
+    error
 
--   RPMA\_E\_NO\_COMPLETION - no completions available
+-   RPMA_E\_NO_COMPLETION - no completions available
 
--   RPMA\_E\_SHARED\_CHANNEL - the completion event channel is shared
-    and cannot be handled by any particular CQ
+-   RPMA_E\_SHARED_CHANNEL - the completion event channel is shared and
+    cannot be handled by any particular CQ
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_cq\_get\_wc**(3), **rpma\_cq\_get\_fd**(3), **librpma**(7) and
+**rpma_conn_get_cq**(3), **rpma_conn_get_rcq**(3),
+**rpma_cq_get_wc**(3), **rpma_cq_get_fd**(3), **librpma**(7) and
 https://pmem.io/rpma/

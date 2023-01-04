@@ -11,15 +11,13 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_srq\_new** - create a new shared RQ object
+**rpma_srq_new** - create a new shared RQ object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,37 +27,33 @@ SYNOPSIS
           int rpma_srq_new(struct rpma_peer *peer, const struct rpma_srq_cfg *cfg,
                           struct rpma_srq **srq_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_srq\_new**() creates a new shared RQ object including a new
-shared RQ and a new shared receive CQ. It does not create the shared
-receive CQ if the size of the receive CQ in cfg equals 0.
+**rpma_srq_new**() creates a new shared RQ object including a new shared
+RQ and a new shared receive CQ. It does not create the shared receive CQ
+if the size of the receive CQ in cfg equals 0.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_srq\_new**() function returns 0 on success or a negative
-error code on failure. **rpma\_srq\_new**() does not set \*srq\_ptr
-value on failure. If cfg is NULL, then the default values are used
+The **rpma_srq_new**() function returns 0 on success or a negative error
+code on failure. **rpma_srq_new**() does not set \*srq_ptr value on
+failure. If cfg is NULL, then the default values are used
 
--   see **rpma\_srq\_cfg\_new**(3) for more details.
+-   see **rpma_srq_cfg_new**(3) for more details.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_srq\_new**() can fail with the following errors:
+**rpma_srq_new**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - peer or srq\_ptr is NULL
+-   RPMA_E\_INVAL - peer or srq_ptr is NULL
 
--   RPMA\_E\_NOMEM - out of memory
+-   RPMA_E\_NOMEM - out of memory
 
--   RPMA\_E\_PROVIDER - **ibv\_create\_srq**(3),
-    **ibv\_create\_comp\_channel**(3), **ibv\_create\_cq**(3) or
-    **ibv\_req\_notify\_cq**(3) failed
+-   RPMA_E\_PROVIDER - **ibv_create_srq**(3),
+    **ibv_create_comp_channel**(3), **ibv_create_cq**(3) or
+    **ibv_req_notify_cq**(3) failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_srq\_delete**(3), **rpma\_srq\_get\_rcq**(3), **librpma**(7) and
+**rpma_srq_delete**(3), **rpma_srq_get_rcq**(3), **librpma**(7) and
 https://pmem.io/rpma/

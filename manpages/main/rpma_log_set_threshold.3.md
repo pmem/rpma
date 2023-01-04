@@ -11,15 +11,13 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_log\_set\_threshold** - set the logging threshold level
+**rpma_log_set_threshold** - set the logging threshold level
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -41,76 +39,70 @@ SYNOPSIS
                   RPMA_LOG_THRESHOLD_MAX
           };
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_log\_set\_threshold**() sets the logging *threshold* *level*.
+**rpma_log_set_threshold**() sets the logging *threshold* *level*.
 
 Available thresholds are:
 
--   *RPMA\_LOG\_THRESHOLD* - the main *threshold* used to filter out
+-   *RPMA_LOG_THRESHOLD* - the main *threshold* used to filter out
     undesired logging messages. Messages on a higher *level* than the
-    primary *threshold* *level* are ignored. *RPMA\_LOG\_DISABLED* shall
-    be used to suppress logging. The default value is
-    RPMA\_LOG\_WARNING.
+    primary *threshold* *level* are ignored. *RPMA_LOG_DISABLED* shall
+    be used to suppress logging. The default value is RPMA_LOG_WARNING.
 
--   *RPMA\_LOG\_THRESHOLD\_AUX* - the auxiliary *threshold* intended for
+-   *RPMA_LOG_THRESHOLD_AUX* - the auxiliary *threshold* intended for
     use inside the logging function (please see
-    **rpma\_log\_get\_threshold**(3)). The logging function may or may
-    not take this *threshold* into consideration. The default value is
-    *RPMA\_LOG\_DISABLED*.
+    **rpma_log_get_threshold**(3)). The logging function may or may not
+    take this *threshold* into consideration. The default value is
+    *RPMA_LOG_DISABLED*.
 
-Available *threshold* levels are defined by enum rpma\_log\_level:
+Available *threshold* levels are defined by enum rpma_log_level:
 
--   *RPMA\_LOG\_DISABLED* - all messages will be suppressed
+-   *RPMA_LOG_DISABLED* - all messages will be suppressed
 
--   *RPMA\_LOG\_LEVEL\_FATAL* - an error that causes the library to stop
+-   *RPMA_LOG_LEVEL_FATAL* - an error that causes the library to stop
     working immediately
 
--   *RPMA\_LOG\_LEVEL\_ERROR* - an error that causes the library to stop
+-   *RPMA_LOG_LEVEL_ERROR* - an error that causes the library to stop
     working properly
 
--   *RPMA\_LOG\_LEVEL\_WARNING* - an error that could be handled in the
+-   *RPMA_LOG_LEVEL_WARNING* - an error that could be handled in the
     upper *level*
 
--   *RPMA\_LOG\_LEVEL\_NOTICE* - non-massive info mainly related to
-    public API function completions e.g. connection established
+-   *RPMA_LOG_LEVEL_NOTICE* - non-massive info mainly related to public
+    API function completions e.g. connection established
 
--   *RPMA\_LOG\_LEVEL\_INFO* - massive info e.g. every write operation
+-   *RPMA_LOG_LEVEL_INFO* - massive info e.g. every write operation
     indication
 
--   *RPMA\_LOG\_LEVEL\_DEBUG* - debug info e.g. write operation dump
+-   *RPMA_LOG_LEVEL_DEBUG* - debug info e.g. write operation dump
 
-THE DEFAULT LOGGING FUNCTION
-============================
+# THE DEFAULT LOGGING FUNCTION
 
 The default logging function writes messages to **syslog**(3) and to
 **stderr**(3), where **syslog**(3) is the primary destination
-(*RPMA\_LOG\_THRESHOLD* applies) whereas **stderr**(3) is the secondary
-destination (*RPMA\_LOG\_THRESHOLD\_AUX* applies).
+(*RPMA_LOG_THRESHOLD* applies) whereas **stderr**(3) is the secondary
+destination (*RPMA_LOG_THRESHOLD_AUX* applies).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-**rpma\_log\_syslog\_set\_threshold**() function returns 0 on success or
-a negative error code on failure.
+**rpma_log_syslog_set_threshold**() function returns 0 on success or a
+negative error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_log\_set\_threshold**() can fail with the following errors:
+**rpma_log_set_threshold**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *threshold* is not *RPMA\_LOG\_THRESHOLD* nor
-    *RPMA\_LOG\_THRESHOLD\_AUX*
+-   RPMA_E\_INVAL - *threshold* is not *RPMA_LOG_THRESHOLD* nor
+    *RPMA_LOG_THRESHOLD_AUX*
 
--   RPMA\_E\_INVAL - *level* is not a value defined by enum
-    rpma\_log\_level type
+-   RPMA_E\_INVAL - *level* is not a value defined by enum
+    rpma_log_level type
 
--   RPMA\_E\_AGAIN - a temporary error occurred, the retry may fix the
+-   RPMA_E\_AGAIN - a temporary error occurred, the retry may fix the
     problem
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_function**(3),
+**rpma_log_get_threshold**(3), **rpma_log_set_function**(3),
 **librpma**(7) and https://pmem.io/rpma/

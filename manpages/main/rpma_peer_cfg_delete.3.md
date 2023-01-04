@@ -11,41 +11,35 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_peer\_cfg\_delete** - delete the peer configuration object
+**rpma_peer_cfg_delete** - delete the peer configuration object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_peer_cfg;
           int rpma_peer_cfg_delete(struct rpma_peer_cfg **pcfg_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_peer\_cfg\_delete**() deletes the peer configuration object.
+**rpma_peer_cfg_delete**() deletes the peer configuration object.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_peer\_cfg\_delete**() function returns 0 on success or a
-negative error code on failure. **rpm\_peer\_cfg\_delete**() does not
-set \*pcfg\_ptr value to NULL on failure.
+The **rpma_peer_cfg_delete**() function returns 0 on success or a
+negative error code on failure. **rpm_peer_cfg_delete**() does not set
+\*pcfg_ptr value to NULL on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_peer\_cfg\_delete**() can fail with the following error:
+**rpma_peer_cfg_delete**() can fail with the following error:
 
--   RPMA\_E\_INVAL - pcfg\_ptr is NULL
+-   RPMA_E\_INVAL - pcfg_ptr is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_peer\_cfg\_new**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_peer_cfg_new**(3), **librpma**(7) and https://pmem.io/rpma/

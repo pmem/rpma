@@ -11,15 +11,13 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_cq\_get\_wc** - receive one or more completions
+**rpma_cq_get_wc** - receive one or more completions
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,57 +27,50 @@ SYNOPSIS
           int rpma_cq_get_wc(struct rpma_cq *cq, int num_entries, struct ibv_wc *wc,
                           int *num_entries_got);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_cq\_get\_wc**() polls the CQ for completions and returns the
-first num\_entries (or all available completions if the CQ contains
-fewer than this number) in the wc array exactly like
-**ibv\_poll\_cq**(3) does. The argument wc is a pointer to an array of
-ibv\_wc structs, as defined in \<infiniband/verbs.h\>. The number of got
-completions is returned in the num\_entries\_got argument if it is not
-NULL. It can be NULL only if num\_entries equals 1. All operations
-generate completions on error. The operations posted with the
-RPMA\_F\_COMPLETION\_ALWAYS flag also generate completions on success.
+**rpma_cq_get_wc**() polls the CQ for completions and returns the first
+num_entries (or all available completions if the CQ contains fewer than
+this number) in the wc array exactly like **ibv_poll_cq**(3) does. The
+argument wc is a pointer to an array of ibv_wc structs, as defined in
+\<infiniband/verbs.h>. The number of got completions is returned in the
+num_entries_got argument if it is not NULL. It can be NULL only if
+num_entries equals 1. All operations generate completions on error. The
+operations posted with the RPMA_F\_COMPLETION_ALWAYS flag also generate
+completions on success.
 
 Note that if the provided cq is the main CQ and the receive CQ is
-present on the same connection this function won\'t return IBV\_WC\_RECV
-and IBV\_WC\_RECV\_RDMA\_WITH\_IMM at any time. The receive CQ has to be
-used instead to collect these completions. Please see the
-**rpma\_conn\_get\_rcq**(3) for details about the receive CQ.
+present on the same connection this function won\'t return IBV_WC_RECV
+and IBV_WC_RECV_RDMA_WITH_IMM at any time. The receive CQ has to be used
+instead to collect these completions. Please see the
+**rpma_conn_get_rcq**(3) for details about the receive CQ.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_cq\_get\_wc**() function returns 0 on success or a negative
+The **rpma_cq_get_wc**() function returns 0 on success or a negative
 error code on failure. On success, it saves all got completions and
-their number into the wc and num\_entries\_got respectively. If the
-status of a completion is not equal to IBV\_WC\_SUCCESS then only the
-following attributes are valid: wr\_id, status, qp\_num, and
-vendor\_err.
+their number into the wc and num_entries_got respectively. If the status
+of a completion is not equal to IBV_WC_SUCCESS then only the following
+attributes are valid: wr_id, status, qp_num, and vendor_err.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_cq\_get\_wc**() can fail with the following errors:
+**rpma_cq_get_wc**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - num\_entries \< 1, cq or wc is NULL,
-    num\_entries \> 1 and num\_entries\_got is NULL
+-   RPMA_E\_INVAL - num_entries \< 1, cq or wc is NULL, num_entries > 1
+    and num_entries_got is NULL
 
--   RPMA\_E\_NO\_COMPLETION - no completions available
+-   RPMA_E\_NO_COMPLETION - no completions available
 
--   RPMA\_E\_PROVIDER - **ibv\_poll\_cq**(3) failed with a provider
-    error
+-   RPMA_E\_PROVIDER - **ibv_poll_cq**(3) failed with a provider error
 
--   RPMA\_E\_UNKNOWN - **ibv\_poll\_cq**(3) failed but no provider error
-    is available
+-   RPMA_E\_UNKNOWN - **ibv_poll_cq**(3) failed but no provider error is
+    available
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_conn\_req\_recv**(3), **rpma\_cq\_wait**(3),
-**rpma\_cq\_get\_fd**(3), **rpma\_flush**(3), **rpma\_read**(3),
-**rpma\_recv**(3), **rpma\_send**(3), **rpma\_send\_with\_imm**(3),
-**rpma\_write**(3), **rpma\_atomic\_write**(3),
-**rpma\_write\_with\_imm**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_conn_get_cq**(3), **rpma_conn_get_rcq**(3),
+**rpma_conn_req_recv**(3), **rpma_cq_wait**(3), **rpma_cq_get_fd**(3),
+**rpma_flush**(3), **rpma_read**(3), **rpma_recv**(3), **rpma_send**(3),
+**rpma_send_with_imm**(3), **rpma_write**(3), **rpma_atomic_write**(3),
+**rpma_write_with_imm**(3), **librpma**(7) and https://pmem.io/rpma/

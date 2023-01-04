@@ -11,42 +11,36 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_srq\_cfg\_get\_rq\_size** - get RQ size of the shared RQ
+**rpma_srq_cfg_get_rq_size** - get RQ size of the shared RQ
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_srq_cfg;
           int rpma_srq_cfg_get_rq_size(const struct rpma_srq_cfg *cfg, uint32_t *rq_size);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_srq\_cfg\_get\_rq\_size**() gets the RQ size of the shared RQ.
+**rpma_srq_cfg_get_rq_size**() gets the RQ size of the shared RQ.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_srq\_cfg\_get\_rq\_size**() function returns 0 on success or
-a negative error code on failure. **rpma\_srq\_cfg\_get\_rq\_size**()
-does not set \*rq\_size value on failure.
+The **rpma_srq_cfg_get_rq_size**() function returns 0 on success or a
+negative error code on failure. **rpma_srq_cfg_get_rq_size**() does not
+set \*rq_size value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_srq\_cfg\_get\_rq\_size**() can fail with the following error:
+**rpma_srq_cfg_get_rq_size**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cfg or rq\_size is NULL
+-   RPMA_E\_INVAL - cfg or rq_size is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_srq\_cfg\_new**(3), **rpma\_srq\_cfg\_set\_rq\_size**(3),
-**librpma**(7) and https://pmem.io/rpma/
+**rpma_srq_cfg_new**(3), **rpma_srq_cfg_set_rq_size**(3), **librpma**(7)
+and https://pmem.io/rpma/

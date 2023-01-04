@@ -11,16 +11,14 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_get\_compl\_fd** - get a file descriptor of the shared
+**rpma_conn_get_compl_fd** - get a file descriptor of the shared
 completion channel of the connection
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -28,31 +26,25 @@ SYNOPSIS
           int fd;
           int rpma_conn_get_compl_fd(const struct rpma_conn *conn, int *fd);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_get\_compl\_fd**() gets a file descriptor of the shared
+**rpma_conn_get_compl_fd**() gets a file descriptor of the shared
 completion channel from the connection.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_get\_compl\_fd**() function returns 0 on success or a
-negative error code on failure. **rpma\_conn\_get\_compl\_fd**() does
-not set \*fd value on failure.
+The **rpma_conn_get_compl_fd**() function returns 0 on success or a
+negative error code on failure. **rpma_conn_get_compl_fd**() does not
+set \*fd value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_get\_compl\_fd**() can fail with the following errors:
+**rpma_conn_get_compl_fd**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn or fd is NULL
+-   RPMA_E\_INVAL - conn or fd is NULL
 
--   RPMA\_E\_NOT\_SHARED\_CHNL - the completion event channel is not
-    shared
+-   RPMA_E\_NOT_SHARED_CHNL - the completion event channel is not shared
 
-SEE ALSO
-========
+# SEE ALSO
 
-**librpma**(7), **rpma\_conn\_req\_connect**(3) and
-https://pmem.io/rpma/
+**librpma**(7), **rpma_conn_req_connect**(3) and https://pmem.io/rpma/
