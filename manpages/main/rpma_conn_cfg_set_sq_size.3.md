@@ -13,41 +13,35 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_cfg\_set\_sq\_size** - set SQ size for the connection
+**rpma_conn_cfg_set_sq_size** - set SQ size for the connection
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_conn_cfg;
           int rpma_conn_cfg_set_sq_size(struct rpma_conn_cfg *cfg, uint32_t sq_size);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_cfg\_set\_sq\_size**() sets the SQ size for the
-connection. If this function is not called, the sq\_size has the default
-value (10) set by **rpma\_conn\_cfg\_new**(3).
+**rpma_conn_cfg_set_sq_size**() sets the SQ size for the connection. If
+this function is not called, the sq_size has the default value (10) set
+by **rpma_conn_cfg_new**(3).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_cfg\_set\_sq\_size**() function returns 0 on success
-or a negative error code on failure.
+The **rpma_conn_cfg_set_sq_size**() function returns 0 on success or a
+negative error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_cfg\_set\_sq\_size**() can fail with the following error:
+**rpma_conn_cfg_set_sq_size**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cfg is NULL
+-   RPMA_E\_INVAL - cfg is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_cfg\_get\_sq\_size**(3),
+**rpma_conn_cfg_new**(3), **rpma_conn_cfg_get_sq_size**(3),
 **librpma**(7) and https://pmem.io/rpma/

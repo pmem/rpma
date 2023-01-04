@@ -13,42 +13,35 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_get\_qp\_num** - get the connection\'s qp\_num
+**rpma_conn_get_qp_num** - get the connection\'s qp_num
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_conn;
           int rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_get\_qp\_num**() obtains the unique identifier of the
+**rpma_conn_get_qp_num**() obtains the unique identifier of the
 connection.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_get\_qp\_num**() function returns 0 on success or a
-negative error code on failure. **rpma\_conn\_get\_qp\_num**() does not
-set \*qp\_num value on failure.
+The **rpma_conn_get_qp_num**() function returns 0 on success or a
+negative error code on failure. **rpma_conn_get_qp_num**() does not set
+\*qp_num value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_get\_qp\_num**() can fail with the following error:
+**rpma_conn_get_qp_num**() can fail with the following error:
 
--   RPMA\_E\_INVAL - conn or qp\_num is NULL
+-   RPMA_E\_INVAL - conn or qp_num is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_new**(3), **rpma\_ep\_next\_conn\_req**(3),
-**rpma\_conn\_req\_connect**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_conn_req_new**(3), **rpma_ep_next_conn_req**(3),
+**rpma_conn_req_connect**(3), **librpma**(7) and https://pmem.io/rpma/

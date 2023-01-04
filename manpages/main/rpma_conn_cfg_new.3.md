@@ -13,23 +13,20 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_cfg\_new** - create a new connection configuration object
+**rpma_conn_cfg_new** - create a new connection configuration object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_conn_cfg;
           int rpma_conn_cfg_new(struct rpma_conn_cfg **cfg_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_cfg\_new**() creates a new connection configuration object
+**rpma_conn_cfg_new**() creates a new connection configuration object
 and fills it with the default values:
 
             .timeout_ms = 1000
@@ -39,35 +36,27 @@ and fills it with the default values:
             .rq_size = 10
             .shared_comp_channel = false
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_cfg\_new**() function returns 0 on success or a
-negative error code on failure. **rpma\_conn\_cfg\_new**() does not set
-\*cfg\_ptr value on failure.
+The **rpma_conn_cfg_new**() function returns 0 on success or a negative
+error code on failure. **rpma_conn_cfg_new**() does not set \*cfg_ptr
+value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_cfg\_new**() can fail with the following error:
+**rpma_conn_cfg_new**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cfg\_ptr is NULL
+-   RPMA_E\_INVAL - cfg_ptr is NULL
 
--   RPMA\_E\_NOMEM - out of memory
+-   RPMA_E\_NOMEM - out of memory
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_cfg\_delete**(3),
-**rpma\_conn\_cfg\_get\_compl\_channel**(3),
-**rpma\_conn\_cfg\_get\_cq\_size**(3),
-**rpma\_conn\_cfg\_get\_rq\_size**(3),
-**rpma\_conn\_cfg\_get\_sq\_size**(3),
-**rpma\_conn\_cfg\_get\_timeout**(3),
-**rpma\_conn\_cfg\_set\_compl\_channel**(3),
-**rpma\_conn\_cfg\_set\_cq\_size**(3),
-**rpma\_conn\_cfg\_set\_rq\_size**(3),
-**rpma\_conn\_cfg\_set\_sq\_size**(3),
-**rpma\_conn\_cfg\_set\_timeout**(3), **rpma\_conn\_req\_new**(3),
-**rpma\_ep\_next\_conn\_req**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_conn_cfg_delete**(3), **rpma_conn_cfg_get_compl_channel**(3),
+**rpma_conn_cfg_get_cq_size**(3), **rpma_conn_cfg_get_rq_size**(3),
+**rpma_conn_cfg_get_sq_size**(3), **rpma_conn_cfg_get_timeout**(3),
+**rpma_conn_cfg_set_compl_channel**(3),
+**rpma_conn_cfg_set_cq_size**(3), **rpma_conn_cfg_set_rq_size**(3),
+**rpma_conn_cfg_set_sq_size**(3), **rpma_conn_cfg_set_timeout**(3),
+**rpma_conn_req_new**(3), **rpma_ep_next_conn_req**(3), **librpma**(7)
+and https://pmem.io/rpma/

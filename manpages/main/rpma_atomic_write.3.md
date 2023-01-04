@@ -13,13 +13,11 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_atomic\_write \-- initiate the atomic 8 bytes write operation**
+**rpma_atomic_write \-- initiate the atomic 8 bytes write operation**
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,46 +27,42 @@ SYNOPSIS
                           struct rpma_mr_remote *dst, size_t dst_offset,
                           const char src[8], int flags, const void *op_context);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_atomic\_write**() initiates the atomic 8 bytes write operation
+**rpma_atomic_write**() initiates the atomic 8 bytes write operation
 (transferring data from the local memory to the remote memory). The
 atomic write operation allows transferring exactly 8 bytes of data and
 storing them atomically in the remote memory.
 
 The attribute flags set the completion notification indicator:
 
--   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+-   RPMA_F\_COMPLETION_ON_ERROR - generate the completion on error
 
--   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+-   RPMA_F\_COMPLETION_ALWAYS - generate the completion regardless of
     result of the operation.
 
-op\_context is returned in the wr\_id field of the completion (struct
-ibv\_wc).
+op_context is returned in the wr_id field of the completion (struct
+ibv_wc).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_atomic\_write**() function returns 0 on success or a
-negative error code on failure.
+The **rpma_atomic_write**() function returns 0 on success or a negative
+error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_atomic\_write**() can fail with the following errors:
+**rpma_atomic_write**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn, dst or src is NULL
+-   RPMA_E\_INVAL - conn, dst or src is NULL
 
--   RPMA\_E\_INVAL - dst\_offset is not aligned to 8 bytes
+-   RPMA_E\_INVAL - dst_offset is not aligned to 8 bytes
 
--   RPMA\_E\_INVAL - flags are not set (flags == 0)
+-   RPMA_E\_INVAL - flags are not set (flags == 0)
 
--   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
+-   RPMA_E\_PROVIDER - **ibv_post_send**(3) failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3),
-**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+**rpma_conn_req_connect**(3), **rpma_mr_reg**(3),
+**rpma_mr_remote_from_descriptor**(3), **librpma**(7) and
 https://pmem.io/rpma/

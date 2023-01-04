@@ -13,44 +13,36 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_mr\_remote\_get\_flush\_type** - get a remote memory region\'s
-flush types
+**rpma_mr_remote_get_flush_type** - get a remote memory region\'s flush
+types
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_mr_remote;
           int rpma_mr_remote_get_flush_type(const struct rpma_mr_remote *mr, int *flush_type);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_mr\_remote\_get\_flush\_type**() gets flush types supported by
-the remote memory region.
+**rpma_mr_remote_get_flush_type**() gets flush types supported by the
+remote memory region.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_mr\_remote\_get\_flush\_type**() function returns 0 on
-success or a negative error code on failure.
-**rpma\_mr\_remote\_get\_flush\_type**() does not set \*flush\_type
-value on failure.
+The **rpma_mr_remote_get_flush_type**() function returns 0 on success or
+a negative error code on failure. **rpma_mr_remote_get_flush_type**()
+does not set \*flush_type value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_mr\_remote\_get\_flush\_type**() can fail with the following
-error:
+**rpma_mr_remote_get_flush_type**() can fail with the following error:
 
--   RPMA\_E\_INVAL - mr or flush\_type is NULL
+-   RPMA_E\_INVAL - mr or flush_type is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+**rpma_mr_remote_from_descriptor**(3), **librpma**(7) and
 https://pmem.io/rpma/

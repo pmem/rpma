@@ -13,30 +13,25 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_err\_2str** - convert RPMA error code to a string
+**rpma_err_2str** - convert RPMA error code to a string
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           const char *rpma_err_2str(int ret);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_err\_2str**() returns the const string representation of RPMA
+**rpma_err_2str**() returns the const string representation of RPMA
 error codes.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_err\_2str**() can not fail.
+**rpma_err_2str**() can not fail.
 
-SEE ALSO
-========
+# SEE ALSO
 
 **librpma**(7) and https://pmem.io/rpma/

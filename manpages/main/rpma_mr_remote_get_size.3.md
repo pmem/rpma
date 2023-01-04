@@ -13,13 +13,11 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_mr\_remote\_get\_size** - get a remote memory region size
+**rpma_mr_remote_get_size** - get a remote memory region size
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -27,28 +25,23 @@ SYNOPSIS
           int rpma_mr_remote_get_size(const struct rpma_mr_remote *mr,
                           size_t *size);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_mr\_remote\_get\_size**() gets the size of the remote memory
-region.
+**rpma_mr_remote_get_size**() gets the size of the remote memory region.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_mr\_remote\_get\_size**() function returns 0 on success or a
-negative error code on failure. **rpma\_mr\_remote\_get\_size**() does
-not set \*size value on failure.
+The **rpma_mr_remote_get_size**() function returns 0 on success or a
+negative error code on failure. **rpma_mr_remote_get_size**() does not
+set \*size value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_mr\_remote\_get\_size**() can fail with the following error:
+**rpma_mr_remote_get_size**() can fail with the following error:
 
--   RPMA\_E\_INVAL - mr or size is NULL
+-   RPMA_E\_INVAL - mr or size is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+**rpma_mr_remote_from_descriptor**(3), **librpma**(7) and
 https://pmem.io/rpma/

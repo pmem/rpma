@@ -13,14 +13,12 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_apply\_remote\_peer\_cfg** - apply remote peer cfg to the
+**rpma_conn_apply_remote_peer_cfg** - apply remote peer cfg to the
 connection
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,30 +27,25 @@ SYNOPSIS
           int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
                           const struct rpma_peer_cfg *pcfg);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_apply\_remote\_peer\_cfg**() applies the remote peer
+**rpma_conn_apply_remote_peer_cfg**() applies the remote peer
 configuration to the connection.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_apply\_remote\_peer\_cfg**() function returns 0 on
-success or a negative error code on failure.
-**rpma\_conn\_apply\_remote\_peer\_cfg**() does not set \*pcfg value on
+The **rpma_conn_apply_remote_peer_cfg**() function returns 0 on success
+or a negative error code on failure.
+**rpma_conn_apply_remote_peer_cfg**() does not set \*pcfg value on
 failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_apply\_remote\_peer\_cfg**() can fail with the following
-error:
+**rpma_conn_apply_remote_peer_cfg**() can fail with the following error:
 
--   RPMA\_E\_INVAL - conn or pcfg are NULL
+-   RPMA_E\_INVAL - conn or pcfg are NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_connect**(3), **rpma\_peer\_cfg\_new**(3),
-**librpma**(7) and https://pmem.io/rpma/
+**rpma_conn_req_connect**(3), **rpma_peer_cfg_new**(3), **librpma**(7)
+and https://pmem.io/rpma/

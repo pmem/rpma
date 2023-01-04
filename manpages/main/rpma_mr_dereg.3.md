@@ -13,42 +13,36 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_mr\_dereg** - delete a local memory registration object
+**rpma_mr_dereg** - delete a local memory registration object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_mr_local;
           int rpma_mr_dereg(struct rpma_mr_local **mr_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_mr\_dereg**() deregisters a memory region and deletes a local
+**rpma_mr_dereg**() deregisters a memory region and deletes a local
 memory registration object.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_mr\_dereg**() function returns 0 on success or a negative
-error code on failure. **rpma\_mr\_dereg**() does not set \*mr\_ptr
-value to NULL on failure.
+The **rpma_mr_dereg**() function returns 0 on success or a negative
+error code on failure. **rpma_mr_dereg**() does not set \*mr_ptr value
+to NULL on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_mr\_dereg**() can fail with the following errors:
+**rpma_mr_dereg**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - mr\_ptr is NULL
+-   RPMA_E\_INVAL - mr_ptr is NULL
 
--   RPMA\_E\_PROVIDER - memory deregistration failed
+-   RPMA_E\_PROVIDER - memory deregistration failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_mr\_reg**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_mr_reg**(3), **librpma**(7) and https://pmem.io/rpma/

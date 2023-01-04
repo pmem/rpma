@@ -13,39 +13,33 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_ep\_get\_fd** - get a file descriptor of the endpoint
+**rpma_ep_get_fd** - get a file descriptor of the endpoint
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_ep;
           int rpma_ep_get_fd(const struct rpma_ep *ep, int *fd);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_ep\_get\_fd**() gets the file descriptor of the endpoint.
+**rpma_ep_get_fd**() gets the file descriptor of the endpoint.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_ep\_get\_fd**() function returns 0 on success or a negative
-error code on failure. **rpma\_ep\_get\_fd**() does not set \*fd value
-on failure.
+The **rpma_ep_get_fd**() function returns 0 on success or a negative
+error code on failure. **rpma_ep_get_fd**() does not set \*fd value on
+failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_ep\_get\_fd**() can fail with the following error:
+**rpma_ep_get_fd**() can fail with the following error:
 
--   RPMA\_E\_INVAL - ep or fd is NULL
+-   RPMA_E\_INVAL - ep or fd is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_ep\_listen**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_ep_listen**(3), **librpma**(7) and https://pmem.io/rpma/

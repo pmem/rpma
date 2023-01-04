@@ -13,14 +13,12 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_utils\_get\_ibv\_context** - obtain an RDMA device context by IP
+**rpma_utils_get_ibv_context** - obtain an RDMA device context by IP
 address
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -33,45 +31,38 @@ SYNOPSIS
           int rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type type,
                   struct ibv_context **ibv_ctx_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_utils\_get\_ibv\_context**() obtains an RDMA device context by
-the given IPv4/IPv6 address (either local or remote) using the TCP RDMA
-port space (RDMA\_PS\_TCP) - reliable, connection-oriented and
-message-based QP communication. Possible values of the \'type\'
-argument:
+**rpma_utils_get_ibv_context**() obtains an RDMA device context by the
+given IPv4/IPv6 address (either local or remote) using the TCP RDMA port
+space (RDMA_PS_TCP) - reliable, connection-oriented and message-based QP
+communication. Possible values of the \'type\' argument:
 
--   RPMA\_UTIL\_IBV\_CONTEXT\_LOCAL - lookup for a device based on the
-    given local address
+-   RPMA_UTIL_IBV_CONTEXT_LOCAL - lookup for a device based on the given
+    local address
 
--   RPMA\_UTIL\_IBV\_CONTEXT\_REMOTE - lookup for a device based on the
+-   RPMA_UTIL_IBV_CONTEXT_REMOTE - lookup for a device based on the
     given remote address
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_utils\_get\_ibv\_context**() function returns 0 on success
-or a negative error code on failure.
-**rpma\_utils\_get\_ibv\_context**() does not set \*ibv\_ctx\_ptr value
-on failure.
+The **rpma_utils_get_ibv_context**() function returns 0 on success or a
+negative error code on failure. **rpma_utils_get_ibv_context**() does
+not set \*ibv_ctx_ptr value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_utils\_get\_ibv\_context**() can fail with the following errors:
+**rpma_utils_get_ibv_context**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - addr or ibv\_ctx\_ptr is NULL or type is unknown
+-   RPMA_E\_INVAL - addr or ibv_ctx_ptr is NULL or type is unknown
 
--   RPMA\_E\_NOMEM - out of memory
+-   RPMA_E\_NOMEM - out of memory
 
--   RPMA\_E\_PROVIDER - **rdma\_getaddrinfo**(), **rdma\_create\_id**(),
-    **rdma\_bind\_addr**() or **rdma\_resolve\_addr**() failed, the
-    exact cause of the error can be read from the log
+-   RPMA_E\_PROVIDER - **rdma_getaddrinfo**(), **rdma_create_id**(),
+    **rdma_bind_addr**() or **rdma_resolve_addr**() failed, the exact
+    cause of the error can be read from the log
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_peer\_new**(3),
-**rpma\_utils\_ibv\_context\_is\_odp\_capable**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_peer_new**(3), **rpma_utils_ibv_context_is_odp_capable**(3),
+**librpma**(7) and https://pmem.io/rpma/

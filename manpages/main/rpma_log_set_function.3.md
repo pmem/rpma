@@ -13,13 +13,11 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_log\_set\_function** - set the logging function
+**rpma_log_set_function** - set the logging function
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -33,62 +31,56 @@ SYNOPSIS
 
           int rpma_log_set_function(rpma_log_function *log_function);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_log\_set\_function**() allows choosing the function which will
-get all the generated logging messages. The *log\_function* can be
-either RPMA\_LOG\_USE\_DEFAULT\_FUNCTION which will use the default
-logging function (built into the library) or a pointer to a user-defined
+**rpma_log_set_function**() allows choosing the function which will get
+all the generated logging messages. The *log_function* can be either
+RPMA_LOG_USE_DEFAULT_FUNCTION which will use the default logging
+function (built into the library) or a pointer to a user-defined
 function.
 
 Parameters of a user-defined log function are as follow:
 
 -   *level* - the log *level* of the message
 
--   *file\_name* - name of the source file where the message coming
-    from. It could be set to NULL and in such case neither *line\_no*
-    nor *function\_name* are provided.
+-   *file_name* - name of the source file where the message coming from.
+    It could be set to NULL and in such case neither *line_no* nor
+    *function_name* are provided.
 
--   *line\_no* - the source file line where the message coming from
+-   *line_no* - the source file line where the message coming from
 
--   *function\_name* - the function name where the message coming from
+-   *function_name* - the function name where the message coming from
 
--   *message\_format* - **printf**(3)**-like** format string of the
+-   *message_format* - **printf**(3)**-like** format string of the
     message
 
 -   \"\...\" - additional arguments of the message format string
 
-THE DEFAULT LOGGING FUNCTION
-============================
+# THE DEFAULT LOGGING FUNCTION
 
 The initial value of the logging function is
-RPMA\_LOG\_USE\_DEFAULT\_FUNCTION. This function writes messages to
+RPMA_LOG_USE_DEFAULT_FUNCTION. This function writes messages to
 **syslog**(3) (the primary destination) and to **stderr**(3) (the
 secondary destination).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-**rpma\_log\_set\_function**() function returns 0 on success or error
-code on failure.
+**rpma_log_set_function**() function returns 0 on success or error code
+on failure.
 
-ERRORS
-======
+# ERRORS
 
--   RPMA\_E\_AGAIN - a temporary error occurred, the retry may fix the
+-   RPMA_E\_AGAIN - a temporary error occurred, the retry may fix the
     problem
 
-NOTE
-====
+# NOTE
 
-The logging messages on the levels above the RPMA\_LOG\_THRESHOLD
-*level* won\'t trigger the logging function.
+The logging messages on the levels above the RPMA_LOG_THRESHOLD *level*
+won\'t trigger the logging function.
 
 The user defined function must be thread-safe.
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_log\_get\_threshold**(3), **rpma\_log\_set\_threshold**(3),
+**rpma_log_get_threshold**(3), **rpma_log_set_threshold**(3),
 **librpma**(7) and https://pmem.io/rpma/
