@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1-rc1] - 2022-11-18
 ### Added
 - security warnings to the documentation of the following functions of the API:
   - rpma_conn_get_private_data()
