@@ -1,15 +1,15 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2022, Intel Corporation
+# Copyright 2016-2023, Intel Corporation
 #
 
 #
-# Dockerfile - a 'recipe' for Docker to build an image of ubuntu-based
+# Dockerfile - a 'recipe' for Docker to build an image of debian-based
 #              environment prepared for running tests of librpma.
 #
 
 # Pull base image
-FROM ubuntu:22.04
+FROM debian:latest
 MAINTAINER tomasz.gromadzki@intel.com
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -48,17 +48,11 @@ ENV EXAMPLES_DEPS "\
 	libpmem2-dev \
 	libprotobuf-c-dev"
 
-# packages required by the Coverity build
-ENV COVERITY_DEPS "\
-	ruby \
-	wget"
-
 # Install all required packages
 RUN apt-get install -y --no-install-recommends \
 	$BASE_DEPS \
 	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
-	$COVERITY_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
 # Install cmocka
@@ -69,11 +63,6 @@ RUN ./install-cmocka.sh
 COPY install-txt2man.sh install-txt2man.sh
 RUN ./install-txt2man.sh
 
-# Download scripts required in run-*.sh
-COPY download-scripts.sh download-scripts.sh
-COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
-RUN ./download-scripts.sh
-
 # Add user
 ENV USER user
 ENV USERPASS p1a2s3s4
@@ -81,7 +70,8 @@ RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
 USER $USER
 
 # Set required environment variables
-ENV OS ubuntu
-ENV OS_VER 22.04
+ENV OS debian
+ENV OS_VER latest
 ENV PACKAGE_MANAGER deb
 ENV NOTTY 1
+

@@ -35,27 +35,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu22.04  OS=ubuntu  OS_VER=22.04",
-                 "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
-                 "N=Fedora34     OS=fedora  OS_VER=34",
-                 "N=Fedora33     OS=fedora  OS_VER=33",
-                 "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7",
-                 "N=Debian11     OS=debian  OS_VER=11",
-                 "N=Debian10     OS=debian  OS_VER=10",
+        CONFIG: ["N=Ubuntu       OS=ubuntu  OS_VER=latest",
+                 "N=Fedora       OS=fedora  OS_VER=latest",
+                 "N=Debian       OS=debian  OS_VER=latest",
                  "N=DebianS      OS=debian  OS_VER=stable",
+                 "N=CentOS7      OS=centos  OS_VER=7",
                  # successors of CentOS:
-                 "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
-                 "N=VzLinux8       OS=vzlinux    OS_VER=latest",
-                 # Rolling/testing/experimental distributions:
-                 # (the Fedora_Rawhide build was moved to Nightly_Experimental)
-                 "N=Ubuntu_Rolling       OS=ubuntu               OS_VER=rolling",
+                 "N=RockyLinux9  OS=rockylinux OS_VER=9",
+                 "N=RockyLinux8  OS=rockylinux OS_VER=8",
+                 "N=VzLinux8     OS=vzlinux    OS_VER=latest",
+                 # Rolling/testing/experimental distributions
+                 # (Fedora Rawhide, Ubuntu Rolling and Arch Linux
+                 #  were moved to Nightly_Experimental):
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 # Arch Linux build was temporarily moved to Nightly Experimental
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
-                 # Testing performance tools is temporarily disabled due to the following issue:
-                 # ImportError: Module 'sqlite3' is not installed.
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
@@ -78,26 +72,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CONFIG: ["N=Ubuntu22.04  OS=ubuntu  OS_VER=22.04",
-                 "N=Ubuntu20.04  OS=ubuntu  OS_VER=20.04",
-                 "N=Fedora34     OS=fedora  OS_VER=34",
-                 "N=Fedora33     OS=fedora  OS_VER=33",
-                 "N=Fedora32     OS=fedora  OS_VER=32",
-                 "N=CentOS7      OS=centos  OS_VER=7",
-                 "N=Debian11     OS=debian  OS_VER=11",
-                 "N=Debian10     OS=debian  OS_VER=10",
+        CONFIG: ["N=Ubuntu       OS=ubuntu  OS_VER=latest",
+                 "N=Fedora       OS=fedora  OS_VER=latest",
+                 "N=Debian       OS=debian  OS_VER=latest",
                  "N=DebianS      OS=debian  OS_VER=stable",
+                 "N=CentOS7      OS=centos  OS_VER=7",
                  # successors of CentOS:
-                 "N=RockyLinux8.4  OS=rockylinux OS_VER=8.4",
-                 "N=VzLinux8       OS=vzlinux    OS_VER=latest",
-                 # Rolling/testing/experimental distributions:
-                 # (the Fedora_Rawhide and Ubuntu_Rolling builds were moved to Nightly_Experimental)
+                 "N=RockyLinux9  OS=rockylinux OS_VER=9",
+                 "N=RockyLinux8  OS=rockylinux OS_VER=8",
+                 "N=VzLinux8     OS=vzlinux    OS_VER=latest",
+                 # Rolling/testing/experimental distributions
+                 # (Fedora Rawhide, Ubuntu Rolling and Arch Linux
+                 #  were moved to Nightly_Experimental):
                  "N=Debian_Testing       OS=debian               OS_VER=testing",
                  "N=Debian_Experimental  OS=debian               OS_VER=experimental",
-                 # Arch Linux build was temporarily moved to Nightly Experimental
                  "N=OpenSUSE_Leap        OS=opensuse-leap        OS_VER=latest",
-                 # Testing performance tools is temporarily disabled due to the following issue:
-                 # ImportError: Module 'sqlite3' is not installed.
                  "N=OpenSUSE_Tumbleweed  OS=opensuse-tumbleweed  OS_VER=latest"]
     steps:
        - name: Clone the git repo
