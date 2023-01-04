@@ -13,53 +13,47 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_cq\_get\_fd** - get the completion queue\'s file descriptor
+**rpma_cq_get_fd **- get the completion queue\'s file descriptor
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_cq;
           int rpma_cq_get_fd(const struct rpma_cq *cq, int *fd);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_cq\_get\_fd**() gets the file descriptor of the completion queue
+**rpma_cq_get_fd**() gets the file descriptor of the completion queue
 (CQ in short). When a next completion in the CQ is ready to be consumed
-by **rpma\_cq\_get\_wc**(3), the notification is delivered via the file
+by **rpma_cq_get_wc**(3), the notification is delivered via the file
 descriptor. The default mode of the file descriptor is blocking but it
 can be changed to non-blocking mode using **fcntl**(2). The CQ is either
 the connection\'s main CQ or the receive CQ or CQ of shared RQ, please
-see **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3) or
-**rpma\_srq\_get\_rcq**() for details.
+see **rpma_conn_get_cq**(3), **rpma_conn_get_rcq**(3) or
+**rpma_srq_get_rcq**() for details.
 
 Note after spotting the notification using the provided file descriptor
-you do not have to call **rpma\_cq\_wait**(3) before consuming the
-completion but it may cause that the next call to **rpma\_cq\_wait**(3)
+you do not have to call **rpma_cq_wait**(3) before consuming the
+completion but it may cause that the next call to **rpma_cq_wait**(3)
 will notify you of already consumed completion.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_cq\_get\_fd**() function returns 0 on success or a negative
-error code on failure. **rpma\_cq\_get\_fd**() does not set \*fd value
-on failure.
+The **rpma_cq_get_fd**() function returns 0 on success or a negative
+error code on failure. **rpma_cq_get_fd**() does not set \*fd value on
+failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_cq\_get\_fd**() can fail with the following error:
+**rpma_cq_get_fd**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cq or fd is NULL
+-   RPMA_E\_INVAL - cq or fd is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**fcntl**(2), **rpma\_conn\_get\_cq**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_srq\_get\_rcq**(3), **rpma\_cq\_wait**(3),
-**rpma\_cq\_get\_wc**(3), **librpma**(7) and https://pmem.io/rpma/
+**fcntl**(2), **rpma_conn_get_cq**(3), **rpma_conn_get_rcq**(3),
+**rpma_srq_get_rcq**(3), **rpma_cq_wait**(3), **rpma_cq_get_wc**(3),
+**librpma**(7) and https://pmem.io/rpma/

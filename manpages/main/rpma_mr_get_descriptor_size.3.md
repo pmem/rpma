@@ -13,43 +13,36 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_mr\_get\_descriptor\_size** - get size of the memory region
+**rpma_mr_get_descriptor_size **- get size of the memory region
 descriptor
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_mr_local;
           int rpma_mr_get_descriptor_size(const struct rpma_mr_local *mr, size_t *desc_size);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_mr\_get\_descriptor\_size**() gets size of the memory region
+**rpma_mr_get_descriptor_size**() gets size of the memory region
 descriptor.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_mr\_get\_descriptor\_size**() function returns 0 on success
-or a negative error code on failure.
-**rpma\_mr\_get\_descriptor\_size**() does not set \*desc\_size value on
-failure.
+The **rpma_mr_get_descriptor_size**() function returns 0 on success or a
+negative error code on failure. **rpma_mr_get_descriptor_size**() does
+not set \*desc_size value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_mr\_get\_descriptor\_size**() can fail with the following error:
+**rpma_mr_get_descriptor_size**() can fail with the following error:
 
--   RPMA\_E\_INVAL - mr or desc\_size is NULL
+-   RPMA_E\_INVAL - mr or desc_size is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_mr\_get\_descriptor**(3), **rpma\_mr\_reg**(3), **librpma**(7)
-and https://pmem.io/rpma/
+**rpma_mr_get_descriptor**(3), **rpma_mr_reg**(3), **librpma**(7) and
+https://pmem.io/rpma/

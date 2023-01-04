@@ -13,40 +13,33 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_cfg\_delete** - delete the connection configuration object
+**rpma_conn_cfg_delete **- delete the connection configuration object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_conn_cfg;
           int rpma_conn_cfg_delete(struct rpma_conn_cfg **cfg_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_cfg\_delete**() deletes the connection configuration
-object.
+**rpma_conn_cfg_delete**() deletes the connection configuration object.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_cfg\_delete**() function returns 0 on success or a
-negative error code on failure. **rpma\_conn\_cfg\_delete**() sets
-\*cfg\_ptr value to NULL on success and on failure.
+The **rpma_conn_cfg_delete**() function returns 0 on success or a
+negative error code on failure. **rpma_conn_cfg_delete**() sets
+\*cfg_ptr value to NULL on success and on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_cfg\_delete**() can fail with the following error:
+**rpma_conn_cfg_delete**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cfg\_ptr is NULL
+-   RPMA_E\_INVAL - cfg_ptr is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_cfg\_new**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_conn_cfg_new**(3), **librpma**(7) and https://pmem.io/rpma/

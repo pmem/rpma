@@ -13,46 +13,39 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_peer\_delete** - delete a peer object
+**rpma_peer_delete **- delete a peer object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_peer;
           int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_peer\_delete**() deletes the peer object.
+**rpma_peer_delete**() deletes the peer object.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_peer\_delete**() function returns 0 on success or a negative
-error code on failure. **rpm\_peer\_delete**() does not set \*peer\_ptr
+The **rpma_peer_delete**() function returns 0 on success or a negative
+error code on failure. **rpm_peer_delete**() does not set \*peer_ptr
 value to NULL on failure.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_peer\_delete**() function returns 0 on success or a negative
-error code on failure. **rpma\_peer\_delete**() does not set \*peer\_ptr
-to NULL on failure.
+The **rpma_peer_delete**() function returns 0 on success or a negative
+error code on failure. **rpma_peer_delete**() does not set \*peer_ptr to
+NULL on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_peer\_delete**() can fail with the following error:
+**rpma_peer_delete**() can fail with the following error:
 
--   RPMA\_E\_PROVIDER - deleting the verbs protection domain failed.
+-   RPMA_E\_PROVIDER - deleting the verbs protection domain failed.
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_peer\_new**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_peer_new**(3), **librpma**(7) and https://pmem.io/rpma/

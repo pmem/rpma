@@ -13,13 +13,11 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_flush** - initiate the flush operation
+**rpma_flush **- initiate the flush operation
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -35,54 +33,49 @@ SYNOPSIS
                           size_t len, enum rpma_flush_type type, int flags,
                           const void *op_context);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_flush**() initiates the flush operation (finalizing a transfer
-of data to the remote memory). Possible types of **rpma\_flush**()
+**rpma_flush**() initiates the flush operation (finalizing a transfer of
+data to the remote memory). Possible types of **rpma_flush**()
 operation:
 
--   RPMA\_FLUSH\_TYPE\_PERSISTENT - flush data down to the persistent
+-   RPMA_FLUSH_TYPE_PERSISTENT - flush data down to the persistent
     domain
 
--   RPMA\_FLUSH\_TYPE\_VISIBILITY - flush data deep enough to make it
+-   RPMA_FLUSH_TYPE_VISIBILITY - flush data deep enough to make it
     visible on the remote node
 
 The attribute flags set the completion notification indicator:
 
--   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+-   RPMA_F\_COMPLETION_ON_ERROR - generate the completion on error
 
--   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+-   RPMA_F\_COMPLETION_ALWAYS - generate the completion regardless of
     result of the operation.
 
-op\_context is returned in the wr\_id field of the completion (struct
-ibv\_wc).
+op_context is returned in the wr_id field of the completion (struct
+ibv_wc).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_flush**() function returns 0 on success or a negative error
+The **rpma_flush**() function returns 0 on success or a negative error
 code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_flush**() can fail with the following errors:
+**rpma_flush**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn or dst is NULL
+-   RPMA_E\_INVAL - conn or dst is NULL
 
--   RPMA\_E\_INVAL - unknown type value
+-   RPMA_E\_INVAL - unknown type value
 
--   RPMA\_E\_INVAL - flags are not set
+-   RPMA_E\_INVAL - flags are not set
 
--   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
+-   RPMA_E\_PROVIDER - **ibv_post_send**(3) failed
 
--   RPMA\_E\_NOSUPP - type is RPMA\_FLUSH\_TYPE\_PERSISTENT and the
-    direct write to pmem is not supported
+-   RPMA_E\_NOSUPP - type is RPMA_FLUSH_TYPE_PERSISTENT and the direct
+    write to pmem is not supported
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_connect**(3),
-**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_conn_req_connect**(3), **rpma_mr_remote_from_descriptor**(3),
+**librpma**(7) and https://pmem.io/rpma/

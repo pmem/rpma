@@ -13,13 +13,11 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_mr\_reg** - create a local memory registration object
+**rpma_mr_reg **- create a local memory registration object
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,62 +27,57 @@ SYNOPSIS
           int rpma_mr_reg(struct rpma_peer *peer, void *ptr, size_t size, int usage,
                   struct rpma_mr_local **mr_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_mr\_reg**() registers a memory region and creates a local memory
+**rpma_mr_reg**() registers a memory region and creates a local memory
 registration object. The usage parameter specifies the operations that
 can be performed on the given memory region which should be expressed as
 bitwise-inclusive OR of the following:
 
--   RPMA\_MR\_USAGE\_READ\_SRC - memory used as a source of the read
+-   RPMA_MR_USAGE_READ_SRC - memory used as a source of the read
     operation
 
--   RPMA\_MR\_USAGE\_READ\_DST - memory used as a destination of the
-    read operation
-
--   RPMA\_MR\_USAGE\_WRITE\_SRC - memory used as a source of the write
+-   RPMA_MR_USAGE_READ_DST - memory used as a destination of the read
     operation
 
--   RPMA\_MR\_USAGE\_WRITE\_DST - memory used as a destination of the
-    write operation
+-   RPMA_MR_USAGE_WRITE_SRC - memory used as a source of the write
+    operation
 
--   RPMA\_MR\_USAGE\_FLUSH\_TYPE\_VISIBILITY - memory with available
-    flush operation
+-   RPMA_MR_USAGE_WRITE_DST - memory used as a destination of the write
+    operation
 
--   RPMA\_MR\_USAGE\_FLUSH\_TYPE\_PERSISTENT - memory with available
+-   RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY - memory with available flush
+    operation
+
+-   RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT - memory with available
     persistent flush operation
 
--   RPMA\_MR\_USAGE\_SEND - memory used for send operation
+-   RPMA_MR_USAGE_SEND - memory used for send operation
 
--   RPMA\_MR\_USAGE\_RECV - memory used for receive operation
+-   RPMA_MR_USAGE_RECV - memory used for receive operation
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_mr\_reg**() function returns 0 on success or a negative
-error code on failure. **rpma\_mr\_reg**() does not set \*mr\_ptr value
-on failure.
+The **rpma_mr_reg**() function returns 0 on success or a negative error
+code on failure. **rpma_mr_reg**() does not set \*mr_ptr value on
+failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_mr\_reg**() can fail with the following errors:
+**rpma_mr_reg**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - peer or ptr or mr\_ptr is NULL
+-   RPMA_E\_INVAL - peer or ptr or mr_ptr is NULL
 
--   RPMA\_E\_INVAL - size equals 0
+-   RPMA_E\_INVAL - size equals 0
 
--   RPMA\_E\_NOMEM - out of memory
+-   RPMA_E\_NOMEM - out of memory
 
--   RPMA\_E\_PROVIDER - memory registration failed
+-   RPMA_E\_PROVIDER - memory registration failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_recv**(3), **rpma\_mr\_dereg**(3),
-**rpma\_mr\_get\_descriptor**(3),
-**rpma\_mr\_get\_descriptor\_size**(3), **rpma\_peer\_new**(3),
-**rpma\_read**(3), **rpma\_recv**(3), **rpma\_send**(3),
-**rpma\_write**(3), **rpma\_atomic\_write**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_conn_req_recv**(3), **rpma_mr_dereg**(3),
+**rpma_mr_get_descriptor**(3), **rpma_mr_get_descriptor_size**(3),
+**rpma_peer_new**(3), **rpma_read**(3), **rpma_recv**(3),
+**rpma_send**(3), **rpma_write**(3), **rpma_atomic_write**(3),
+**librpma**(7) and https://pmem.io/rpma/

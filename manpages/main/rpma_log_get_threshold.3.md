@@ -13,43 +13,37 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_log\_get\_threshold** - get the logging threshold level
+**rpma_log_get_threshold **- get the logging threshold level
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           int rpma_log_get_threshold(enum rpma_log_threshold threshold, enum rpma_log_level *level);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_log\_get\_threshold**() gets the current *level* of the
-*threshold*. See **rpma\_log\_set\_threshold**(3) for available
-thresholds and levels.
+**rpma_log_get_threshold**() gets the current *level* of the
+*threshold*. See **rpma_log_set_threshold**(3) for available thresholds
+and levels.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-**rpma\_log\_get\_threshold**() function returns 0 on success or a
-negative error code on failure.
+**rpma_log_get_threshold**() function returns 0 on success or a negative
+error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_log\_get\_threshold**() can fail with the following errors:
+**rpma_log_get_threshold**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - *threshold* is not RPMA\_LOG\_THRESHOLD nor
-    RPMA\_LOG\_THRESHOLD\_AUX
+-   RPMA_E\_INVAL - *threshold* is not RPMA_LOG_THRESHOLD nor
+    RPMA_LOG_THRESHOLD_AUX
 
--   RPMA\_E\_INVAL - \**level* is NULL
+-   RPMA_E\_INVAL - \**level* is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_log\_set\_function**(3), **rpma\_log\_set\_threshold**(3),
+**rpma_log_set_function**(3), **rpma_log_set_threshold**(3),
 **librpma**(7) and https://pmem.io/rpma/

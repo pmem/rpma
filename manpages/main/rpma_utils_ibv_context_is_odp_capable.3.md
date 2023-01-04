@@ -13,14 +13,12 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_utils\_ibv\_context\_is\_odp\_capable** - is On-Demand Paging
+**rpma_utils_ibv_context_is_odp_capable **- is On-Demand Paging
 supported
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -28,33 +26,28 @@ SYNOPSIS
           int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx,
                   int *is_odp_capable);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_utils\_ibv\_context\_is\_odp\_capable**() queries the RDMA
-device context\'s capabilities and check if it supports On-Demand
-Paging.
+**rpma_utils_ibv_context_is_odp_capable**() queries the RDMA device
+context\'s capabilities and check if it supports On-Demand Paging.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_utils\_ibv\_context\_is\_odp\_capable**() function returns 0
-on success or a negative error code on failure. The \*is\_odp\_capable
-value on failure is undefined.
+The **rpma_utils_ibv_context_is_odp_capable**() function returns 0 on
+success or a negative error code on failure. The \*is_odp_capable value
+on failure is undefined.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_utils\_ibv\_context\_is\_odp\_capable**() can fail with the
-following errors:
+**rpma_utils_ibv_context_is_odp_capable**() can fail with the following
+errors:
 
--   RPMA\_E\_INVAL - ibv\_ctx or is\_odp\_capable is NULL
+-   RPMA_E\_INVAL - ibv_ctx or is_odp_capable is NULL
 
--   RPMA\_E\_PROVIDER - **ibv\_query\_device\_ex**() failed, the exact
-    cause of the error can be read from the log
+-   RPMA_E\_PROVIDER - **ibv_query_device_ex**() failed, the exact cause
+    of the error can be read from the log
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_utils\_get\_ibv\_context**(3), **librpma**(7) and
+**rpma_utils_get_ibv_context**(3), **librpma**(7) and
 https://pmem.io/rpma/

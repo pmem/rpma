@@ -13,45 +13,38 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_cfg\_get\_compl\_channel** - get if the completion event
+**rpma_conn_cfg_get_compl_channel **- get if the completion event
 channel can be shared by CQ and RCQ
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_conn_cfg;
           int rpma_conn_cfg_get_compl_channel(const struct rpma_conn_cfg *cfg, bool *shared);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_cfg\_get\_compl\_channel**() gets if the completion event
+**rpma_conn_cfg_get_compl_channel**() gets if the completion event
 channel can be shared by CQ and RCQ.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_cfg\_get\_compl\_channel**() function returns 0 on
-success or a negative error code on failure.
-**rpma\_conn\_cfg\_get\_compl\_channel**() does not set \*shared value
-on failure.
+The **rpma_conn_cfg_get_compl_channel**() function returns 0 on success
+or a negative error code on failure.
+**rpma_conn_cfg_get_compl_channel**() does not set \*shared value on
+failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_cfg\_get\_compl\_channel**() can fail with the following
-error:
+**rpma_conn_cfg_get_compl_channel**() can fail with the following error:
 
--   RPMA\_E\_INVAL - cfg or shared is NULL
+-   RPMA_E\_INVAL - cfg or shared is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_cfg\_new**(3), **rpma\_conn\_wait**(3),
-**rpma\_conn\_cfg\_set\_compl\_channel**(3), **librpma**(7) and
+**rpma_conn_cfg_new**(3), **rpma_conn_wait**(3),
+**rpma_conn_cfg_set_compl_channel**(3), **librpma**(7) and
 https://pmem.io/rpma/

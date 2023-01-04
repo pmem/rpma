@@ -13,14 +13,12 @@ header: "librpma API version 1.1.0"
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
 [comment]: <> (Copyright 2020-2022, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_get\_private\_data** - get a pointer to the connection\'s
+**rpma_conn_get_private_data **- get a pointer to the connection\'s
 private data
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -29,39 +27,32 @@ SYNOPSIS
           int rpma_conn_get_private_data(const struct rpma_conn *conn,
                           struct rpma_conn_private_data *pdata);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_get\_private\_data**() obtains the pointer to the private
-data given by the other side of the connection.
+**rpma_conn_get_private_data**() obtains the pointer to the private data
+given by the other side of the connection.
 
-SECURITY WARNING
-================
+# SECURITY WARNING
 
 The connection\'s private data is insecure. An attacker might modify all
-data transferred via the rdma\_cm private data. Users should avoid using
-**rpma\_conn\_get\_private\_data**(3) and
-**rpma\_conn\_req\_get\_private\_data**(3) API calls and they should
-utilize TLS/SSL connections to transfer all configuration data between
-peers instead.
+data transferred via the rdma_cm private data. Users should avoid using
+**rpma_conn_get_private_data**(3) and
+**rpma_conn_req_get_private_data**(3) API calls and they should utilize
+TLS/SSL connections to transfer all configuration data between peers
+instead.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_get\_private\_data**() function returns 0 on success
-or a negative error code on failure.
-**rpma\_conn\_get\_private\_data**() does not set \*pdata value on
-failure.
+The **rpma_conn_get_private_data**() function returns 0 on success or a
+negative error code on failure. **rpma_conn_get_private_data**() does
+not set \*pdata value on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_get\_private\_data**() can fail with the following error:
+**rpma_conn_get_private_data**() can fail with the following error:
 
--   RPMA\_E\_INVAL - conn or pdata is NULL
+-   RPMA_E\_INVAL - conn or pdata is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_connect**(3), **librpma**(7) and
-https://pmem.io/rpma/
+**rpma_conn_req_connect**(3), **librpma**(7) and https://pmem.io/rpma/
