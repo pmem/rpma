@@ -11,16 +11,14 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_write\_with\_imm** - initiate the write operation with immediate
+**rpma_write_with_imm** - initiate the write operation with immediate
 data
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -33,48 +31,44 @@ SYNOPSIS
                           size_t len, int flags, uint32_t imm,
                           const void *op_context);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_write\_with\_imm**() initiates the write operation with
-immediate data (transferring data from the local memory to the remote
-memory. To write a 0 bytes message, set src and dst to NULL and
-src\_offset, dst\_offset and len to 0.
+**rpma_write_with_imm**() initiates the write operation with immediate
+data (transferring data from the local memory to the remote memory. To
+write a 0 bytes message, set src and dst to NULL and src_offset,
+dst_offset and len to 0.
 
 The attribute flags set the completion notification indicator:
 
--   RPMA\_F\_COMPLETION\_ON\_ERROR - generate the completion on error
+-   RPMA_F\_COMPLETION_ON_ERROR - generate the completion on error
 
--   RPMA\_F\_COMPLETION\_ALWAYS - generate the completion regardless of
+-   RPMA_F\_COMPLETION_ALWAYS - generate the completion regardless of
     result of the operation.
 
-op\_context is returned in the wr\_id field of the completion (struct
-ibv\_wc).
+op_context is returned in the wr_id field of the completion (struct
+ibv_wc).
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_write\_with\_imm**() function returns 0 on success or a
+The **rpma_write_with_imm**() function returns 0 on success or a
 negative error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_write\_with\_imm**() can fail with the following errors:
+**rpma_write_with_imm**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - conn == NULL \|\| flags == 0
+-   RPMA_E\_INVAL - conn == NULL \|\| flags == 0
 
--   RPMA\_E\_INVAL - dst == NULL && (src != NULL \|\| src\_offset != 0
-    \|\| dst\_offset != 0 \|\| len != 0)
+-   RPMA_E\_INVAL - dst == NULL && (src != NULL \|\| src_offset != 0
+    \|\| dst_offset != 0 \|\| len != 0)
 
--   RPMA\_E\_INVAL - src == NULL && (dst != NULL \|\| src\_offset != 0
-    \|\| dst\_offset != 0 \|\| len != 0)
+-   RPMA_E\_INVAL - src == NULL && (dst != NULL \|\| src_offset != 0
+    \|\| dst_offset != 0 \|\| len != 0)
 
--   RPMA\_E\_PROVIDER - **ibv\_post\_send**(3) failed
+-   RPMA_E\_PROVIDER - **ibv_post_send**(3) failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_req\_connect**(3), **rpma\_mr\_reg**(3),
-**rpma\_mr\_remote\_from\_descriptor**(3), **librpma**(7) and
+**rpma_conn_req_connect**(3), **rpma_mr_reg**(3),
+**rpma_mr_remote_from_descriptor**(3), **librpma**(7) and
 https://pmem.io/rpma/

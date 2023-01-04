@@ -11,16 +11,13 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_conn\_req\_connect** - initiate processing the connection
-request
+**rpma_conn_req_connect** - initiate processing the connection request
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
@@ -30,50 +27,46 @@ SYNOPSIS
           int rpma_conn_req_connect(struct rpma_conn_req **req_ptr,
                           const struct rpma_conn_private_data *pdata, struct rpma_conn **conn_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_conn\_req\_connect**() initiates processing the connection
-requests both incoming and outgoing. The end of processing is signalled
-by the RPMA\_CONN\_ESTABLISHED event via **rpma\_conn\_next\_event**().
+**rpma_conn_req_connect**() initiates processing the connection requests
+both incoming and outgoing. The end of processing is signalled by the
+RPMA_CONN_ESTABLISHED event via **rpma_conn_next_event**().
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_conn\_req\_connect**() function returns 0 on success or a
+The **rpma_conn_req_connect**() function returns 0 on success or a
 negative error code on failure. On success, the newly created connection
-object is stored in \*conn\_ptr whereas \*req\_ptr is consumed and set
-to NULL. On failure, **rpma\_conn\_req\_connect**() does not set
-\*conn\_ptr whereas \*req\_ptr is consumed and set to NULL.
+object is stored in \*conn_ptr whereas \*req_ptr is consumed and set to
+NULL. On failure, **rpma_conn_req_connect**() does not set \*conn_ptr
+whereas \*req_ptr is consumed and set to NULL.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_conn\_req\_connect**() can fail with the following errors:
+**rpma_conn_req_connect**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - req\_ptr, \*req\_ptr or conn\_ptr is NULL
+-   RPMA_E\_INVAL - req_ptr, \*req_ptr or conn_ptr is NULL
 
--   RPMA\_E\_INVAL - pdata is not NULL whereas pdata-\>len == 0
+-   RPMA_E\_INVAL - pdata is not NULL whereas pdata-\>len == 0
 
--   RPMA\_E\_NOMEM - out of memory
+-   RPMA_E\_NOMEM - out of memory
 
--   RPMA\_E\_PROVIDER - initiating a connection request failed (active
+-   RPMA_E\_PROVIDER - initiating a connection request failed (active
     side only)
 
--   RPMA\_E\_PROVIDER - accepting the connection request failed (passive
+-   RPMA_E\_PROVIDER - accepting the connection request failed (passive
     side only)
 
--   RPMA\_E\_PROVIDER - freeing a communication event failed (passive
+-   RPMA_E\_PROVIDER - freeing a communication event failed (passive
     side only)
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_apply\_remote\_peer\_cfg**(3), **rpma\_conn\_delete**(3),
-**rpma\_conn\_disconnect**(3), **rpma\_conn\_get\_cq**(3),
-**rpma\_conn\_get\_event\_fd**(3),
-**rpma\_conn\_get\_private\_data**(3), **rpma\_conn\_get\_rcq**(3),
-**rpma\_conn\_next\_event**(3), **rpma\_conn\_req\_new**(3),
-**rpma\_ep\_next\_conn\_req**(3), **rpma\_flush**(3), **rpma\_read**(3),
-**rpma\_recv**(3), **rpma\_send**(3), **rpma\_write**(3),
-**rpma\_atomic\_write**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_conn_apply_remote_peer_cfg**(3), **rpma_conn_delete**(3),
+**rpma_conn_disconnect**(3), **rpma_conn_get_cq**(3),
+**rpma_conn_get_event_fd**(3), **rpma_conn_get_private_data**(3),
+**rpma_conn_get_rcq**(3), **rpma_conn_next_event**(3),
+**rpma_conn_req_new**(3), **rpma_ep_next_conn_req**(3),
+**rpma_flush**(3), **rpma_read**(3), **rpma_recv**(3), **rpma_send**(3),
+**rpma_write**(3), **rpma_atomic_write**(3), **librpma**(7) and
+https://pmem.io/rpma/

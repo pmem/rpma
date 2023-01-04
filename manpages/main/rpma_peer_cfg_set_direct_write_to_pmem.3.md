@@ -11,46 +11,40 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem** - declare direct write
-to PMEM support
+**rpma_peer_cfg_set_direct_write_to_pmem** - declare direct write to
+PMEM support
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_peer_cfg;
           int rpma_peer_cfg_set_direct_write_to_pmem(struct rpma_peer_cfg *pcfg, bool supported);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() declares the support
-of the direct write to PMEM.
+**rpma_peer_cfg_set_direct_write_to_pmem**() declares the support of the
+direct write to PMEM.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() function returns
-0 on success or a negative error code on failure.
+The **rpma_peer_cfg_set_direct_write_to_pmem**() function returns 0 on
+success or a negative error code on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_peer\_cfg\_set\_direct\_write\_to\_pmem**() can fail with the
-following error:
+**rpma_peer_cfg_set_direct_write_to_pmem**() can fail with the following
+error:
 
--   RPMA\_E\_INVAL - pcfg is NULL
+-   RPMA_E\_INVAL - pcfg is NULL
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_conn\_apply\_remote\_peer\_cfg**(3),
-**rpma\_peer\_cfg\_get\_descriptor**(3),
-**rpma\_peer\_cfg\_get\_direct\_write\_to\_pmem**(3),
-**rpma\_peer\_cfg\_new**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_conn_apply_remote_peer_cfg**(3),
+**rpma_peer_cfg_get_descriptor**(3),
+**rpma_peer_cfg_get_direct_write_to_pmem**(3), **rpma_peer_cfg_new**(3),
+**librpma**(7) and https://pmem.io/rpma/

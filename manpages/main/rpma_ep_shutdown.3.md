@@ -11,45 +11,39 @@ header: "librpma API version 1.1.0"
 {{< manpages >}}
 
 [comment]: <> (SPDX-License-Identifier: BSD-3-Clause)
-[comment]: <> (Copyright 2020-2022, Intel Corporation)
+[comment]: <> (Copyright 2020-2023, Intel Corporation)
 
-NAME
-====
+# NAME
 
-**rpma\_ep\_shutdown** - stop listening and delete the endpoint
+**rpma_ep_shutdown** - stop listening and delete the endpoint
 
-SYNOPSIS
-========
+# SYNOPSIS
 
           #include <librpma.h>
 
           struct rpma_ep;
           int rpma_ep_shutdown(struct rpma_ep **ep_ptr);
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpma\_ep\_shutdown**() stops listening for incoming connections and
+**rpma_ep_shutdown**() stops listening for incoming connections and
 deletes the endpoint. The connections established using the endpoint
 will still exist after deleting the endpoint.
 
-RETURN VALUE
-============
+# RETURN VALUE
 
-The **rpma\_ep\_shutdown**() function returns 0 on success or a negative
-error code on failure. **rpma\_ep\_shutdown**() does not set \*ep\_ptr
+The **rpma_ep_shutdown**() function returns 0 on success or a negative
+error code on failure. **rpma_ep_shutdown**() does not set \*ep_ptr
 value to NULL on failure.
 
-ERRORS
-======
+# ERRORS
 
-**rpma\_ep\_shutdown**() can fail with the following errors:
+**rpma_ep_shutdown**() can fail with the following errors:
 
--   RPMA\_E\_INVAL - ep\_ptr is NULL
+-   RPMA_E\_INVAL - ep_ptr is NULL
 
--   RPMA\_E\_PROVIDER - **rdma\_destroy\_id**(3) failed
+-   RPMA_E\_PROVIDER - **rdma_destroy_id**(3) failed
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpma\_ep\_listen**(3), **librpma**(7) and https://pmem.io/rpma/
+**rpma_ep_listen**(3), **librpma**(7) and https://pmem.io/rpma/
