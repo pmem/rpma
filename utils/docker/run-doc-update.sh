@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2022, Intel Corporation
+# Copyright 2018-2023, Intel Corporation
+#
+
+#
+# run-doc-update.sh - create pull requests with updated documentation
 #
 
 set -e
