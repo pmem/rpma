@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2022, Intel Corporation
+# Copyright 2016-2023, Intel Corporation
 #
 
 #
@@ -184,12 +184,6 @@ if [ "$TESTS_COVERAGE" == "1" ]; then
 	upload_codecov tests
 fi
 
-# Create a PR with generated docs
-if [ "$AUTO_DOC_UPDATE" == "1" ]; then
-	echo "Running auto doc update"
-	../utils/docker/run-doc-update.sh
-fi
-
 test_compile_all_examples_standalone
 
 # Uninstall libraries
@@ -265,6 +259,13 @@ elif [ $PACKAGE_MANAGER = "deb" ]; then
 elif [ $PACKAGE_MANAGER = "rpm" ]; then
 	echo "$ sudo -S rpm --erase librpma-devel"
 	echo $USERPASS | sudo -S rpm --erase librpma-devel
+fi
+
+# Create a PR with generated docs
+if [[ "$AUTO_DOC_UPDATE" == "1" || $AUTO_DOC_UPDATE == "show-diff-only" ]]; then
+	cd $WORKDIR/build
+	echo "Running auto doc update (AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE)"
+	../utils/docker/run-doc-update.sh $AUTO_DOC_UPDATE
 fi
 
 cd $WORKDIR
