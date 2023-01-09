@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2022, Intel Corporation
+# Copyright 2020-2023, Intel Corporation
 # Copyright (c) 2022 Fujitsu Limited
 #
 
@@ -9,9 +9,9 @@ cmake_minimum_required(VERSION 3.3)
 project(rpma C)
 
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 1)
+set(VERSION_MINOR 2)
 set(VERSION_PATCH 0)
-# set(VERSION_PRERELEASE rc1)
+set(VERSION_PRERELEASE rc1)
 
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 if (VERSION_PRERELEASE)
