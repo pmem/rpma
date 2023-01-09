@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2017-2022, Intel Corporation
+# Copyright 2017-2023, Intel Corporation
 #
 
 #
@@ -50,9 +50,12 @@ fi
 
 if [ -n "$DNS_SERVER" ]; then DNS_SETTING=" --dns=$DNS_SERVER "; fi
 
-# Run doc update only on $GITHUB_REPO and only on the main branch
-if [[ "${CI_BRANCH}" != "main" || "$CI_EVENT_TYPE" == "pull_request" || "$CI_REPO_SLUG" != "${GITHUB_REPO}" ]]; then
-	AUTO_DOC_UPDATE=0
+if [ "$AUTO_DOC_UPDATE" == "1" ]; then
+	# Create pull requests only on $GITHUB_REPO and only on the main branch,
+	# otherwise show the git diff only.
+	if [[ "$CI_BRANCH" != "main" || "$CI_EVENT_TYPE" == "pull_request" || "$CI_REPO_SLUG" != "$GITHUB_REPO" ]]; then
+		AUTO_DOC_UPDATE="show-diff-only"
+	fi
 fi
 
 WORKDIR=/rpma
