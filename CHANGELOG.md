@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- native atomic write support (required support in the kernel and in an RNIC's driver)
 - security warnings to the documentation of the following functions of the API:
   - rpma_conn_get_private_data()
   - rpma_conn_req_get_private_data()
