@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - internal APIs:
   - rpma_utils_ibv_context_is_atomic_write_capable() - checks if kernel supports native atomic write
 - Rocky Linux 8 and 9 builds to the "on_pull_request" workflow
+- show git diff of changed documentation when pull requests with updated documentation are not generated
 
 ### Fixed
 - DEVELOPMENT.md file - `CMAKE_BUILD_TYPE` must be set to `Debug` when running the tests
