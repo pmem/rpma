@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0-rc1] - 2023-01-10
+## [1.2.0] - 2023-01-10
 ### Added
 - native atomic write support (required support in the kernel and in an RNIC's driver)
 - security warnings to the documentation of the following functions of the API:
