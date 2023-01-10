@@ -6,7 +6,7 @@ description: ""
 disclaimer: "The contents of this web site and the associated <a href=\"https://github.com/pmem\">GitHub repositories</a> are BSD-licensed open source."
 aliases: ["rpma_conn_cfg_get_timeout.3.html"]
 title: "librpma | PMDK"
-header: "librpma API version 1.1.1"
+header: "librpma API version 1.2.0"
 ---
 {{< manpages >}}
 
