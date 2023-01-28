@@ -19,7 +19,7 @@
 static void
 ibvc_atomic_write__cap_no(void **unused)
 {
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 	/* configure mocks */
 	struct ibv_device_attr_ex attr = {
 		.device_cap_flags_ex = 0, /* atomic write attribute is not set */
@@ -37,7 +37,7 @@ ibvc_atomic_write__cap_no(void **unused)
 	assert_int_equal(is_atomic_write_capable, 0);
 }
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 /*
  * ibvc_atomic_write__query_fail -- ibv_query_device_ex() failed
  */
@@ -92,7 +92,7 @@ main(int argc, char *argv[])
 	const struct CMUnitTest tests[] = {
 		/* rpma_utils_ibv_context_is_atomic_write_capable() unit tests */
 		cmocka_unit_test(ibvc_atomic_write__cap_no),
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 		cmocka_unit_test(ibvc_atomic_write__query_fail),
 		cmocka_unit_test(ibvc_atomic_write__cap_yes),
 #endif
