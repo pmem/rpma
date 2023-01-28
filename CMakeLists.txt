@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2023, Intel Corporation
-# Copyright (c) 2022 Fujitsu Limited
+# Copyright (c) 2022-2023, Fujitsu Limited
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -186,6 +186,15 @@ if(IBV_ATOMIC_WRITE_SUPPORTED)
 	add_flag(-DIBV_ATOMIC_WRITE_SUPPORTED=1)
 else()
 	message(WARNING "Native atomic write is NOT supported and will be disabled (too old version of libibverbs)!")
+endif()
+
+# check if libibverbs supports native flush
+is_ibv_flush_supported(IBV_FLUSH_SUPPORTED)
+if(IBV_FLUSH_SUPPORTED)
+	message(STATUS "Native flush supported in libibverbs - Success")
+	add_flag(-DIBV_FLUSH_SUPPORTED=1)
+else()
+	message(WARNING "Native flush is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
 add_custom_target(checkers ALL)
