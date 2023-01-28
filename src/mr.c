@@ -197,7 +197,7 @@ rpma_mr_atomic_write(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_o
 {
 	RPMA_DEBUG_TRACE;
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 	struct ibv_qp_ex *qpx = ibv_qp_to_qp_ex(qp);
 	/* check if the created QP supports native atomic write */
 	if (qpx && qpx->wr_atomic_write) {

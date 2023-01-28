@@ -20,7 +20,7 @@
 
 static const char Mock_src[8];
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 static struct ibv_wr_atomic_write_mock_args atomic_write_args;
 #endif
 static struct ibv_post_send_mock_args args;
@@ -32,7 +32,7 @@ static void
 configure_mr_atomic_write(int flags, int ret)
 {
 	/* configure mock */
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
 	will_return(ibv_qp_to_qp_ex, MOCK_QPX);
 	expect_value(ibv_wr_start_mock, qp, MOCK_QPX);
@@ -59,7 +59,7 @@ configure_mr_atomic_write(int flags, int ret)
 #endif
 }
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 /*
  * atomic_write__qpx_NULL_success - rpma_mr_atomic_write
  * succeeded when ibv_qp_to_qp_ex() returned NULL
@@ -177,7 +177,7 @@ static int
 group_setup_mr_atomic_write(void **unused)
 {
 	/* configure global mocks */
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 	/*
 	 * ibv_wr_start(), ibv_wr_atomic_write() and ibv_wr_complete() are defined
 	 * as static inline functions in the included header <infiniband/verbs.h>,
@@ -215,7 +215,7 @@ group_setup_mr_atomic_write(void **unused)
 
 static const struct CMUnitTest tests_mr__atomic_write[] = {
 	/* rpma_mr_atomic_write() unit tests */
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 	cmocka_unit_test_setup_teardown(
 			atomic_write__qpx_NULL_success,
 			setup__mr_local_and_remote,

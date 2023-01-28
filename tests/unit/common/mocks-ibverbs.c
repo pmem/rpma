@@ -24,7 +24,7 @@ struct ibv_cq Ibv_rcq;
 struct ibv_cq Ibv_srq_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 struct ibv_qp_ex Ibv_qp_ex;
 #endif
 struct ibv_mr Ibv_mr;
@@ -433,7 +433,7 @@ ibv_destroy_srq(struct ibv_srq *srq)
 	return mock_type(int);
 }
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 /*
  * ibv_qp_to_qp_ex -- ibv_qp_to_qp_ex() mock
  */

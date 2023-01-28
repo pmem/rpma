@@ -22,7 +22,7 @@ extern struct ibv_cq Ibv_rcq;
 extern struct ibv_cq Ibv_srq_rcq;
 extern struct ibv_cq Ibv_cq_unknown;
 extern struct ibv_qp Ibv_qp;
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 extern struct ibv_qp_ex Ibv_qp_ex;
 #endif
 extern struct ibv_mr Ibv_mr;
@@ -37,7 +37,7 @@ extern struct ibv_srq Ibv_srq;
 #define MOCK_IBV_CQ_UNKNOWN	(struct ibv_cq *)&Ibv_cq_unknown
 #define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 #define MOCK_QPX		(struct ibv_qp_ex *)&Ibv_qp_ex
 #endif
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
@@ -76,7 +76,7 @@ struct ibv_post_srq_recv_mock_args {
 	int ret;
 };
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 struct ibv_wr_atomic_write_mock_args {
 	struct ibv_qp_ex *qp;
 	uint64_t wr_id;
@@ -114,7 +114,7 @@ struct ibv_srq *ibv_create_srq(struct ibv_pd *pd, struct ibv_srq_init_attr *srq_
 
 int ibv_destroy_srq(struct ibv_srq *srq);
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef IBV_ATOMIC_WRITE_SUPPORTED
 struct ibv_qp_ex *ibv_qp_to_qp_ex(struct ibv_qp *qp);
 
 void ibv_wr_start_mock(struct ibv_qp_ex *qp);
