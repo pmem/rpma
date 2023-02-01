@@ -53,11 +53,24 @@ rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 	enum ibv_transport_type type = peer->pd->context->device->transport_type;
 	int access = 0;
 
-	if (usage & (RPMA_MR_USAGE_READ_SRC |\
-			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
-			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+	if (usage & RPMA_MR_USAGE_READ_SRC)
 		access |= IBV_ACCESS_REMOTE_READ;
 
+#ifdef IBV_FLUSH_SUPPORTED
+	if (peer->is_native_flush_supported) {
+		if (usage & RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY)
+			access |= IBV_ACCESS_FLUSH_GLOBAL;
+
+		if (usage & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+			access |= IBV_ACCESS_FLUSH_PERSISTENT;
+
+		goto next_step;
+	}
+#endif
+	if (usage & (RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY | RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+		access |= IBV_ACCESS_REMOTE_READ;
+
+next_step:
 	if (usage & RPMA_MR_USAGE_READ_DST) {
 		access |= IBV_ACCESS_LOCAL_WRITE;
 
