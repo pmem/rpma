@@ -389,10 +389,42 @@ enum rpma_util_ibv_context_type {
  *   rdma_resolve_addr() failed, the exact cause of the error can be read from the log
  *
  * SEE ALSO
- * rpma_peer_new(3), rpma_utils_ibv_context_is_odp_capable(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_peer_new(3), rpma_utils_ibv_context_is_flush_capable(3),
+ * rpma_utils_ibv_context_is_odp_capable(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type type,
 		struct ibv_context **ibv_ctx_ptr);
+
+/** 3
+ * rpma_utils_ibv_context_is_flush_capable - is native flush supported
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct ibv_context;
+ *	int rpma_utils_ibv_context_is_flush_capable(struct ibv_context *ibv_ctx,
+ *		int *is_flush_capable);
+ *
+ * DESCRIPTION
+ * rpma_utils_ibv_context_is_flush_capable() queries the RDMA device context's capabilities
+ * and check if it supports native flush.
+ *
+ * RETURN VALUE
+ * The rpma_utils_ibv_context_is_flush_capable() function returns 0 on success or a negative error
+ * code on failure. The *is_flush_capable value on failure is undefined.
+ *
+ * ERRORS
+ * rpma_utils_ibv_context_is_flush_capable() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - ibv_ctx or is_flush_capable is NULL
+ * - RPMA_E_PROVIDER - ibv_query_device_ex() failed, the exact cause of the error can be read from
+ *   the log
+ *
+ * SEE ALSO
+ * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_utils_ibv_context_is_flush_capable(struct ibv_context *ibv_ctx, int *is_flush_capable);
 
 /** 3
  * rpma_utils_ibv_context_is_odp_capable - is On-Demand Paging supported

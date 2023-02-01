@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2022 Fujitsu Limited */
+/* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * utils.c -- generic helper functions for librpma
@@ -41,6 +41,40 @@ rpma_utils_ibv_context_is_atomic_write_capable(struct ibv_context *ibv_ctx,
 	/* check whether native atomic write is supported in kernel */
 	if (attr.device_cap_flags_ex & IB_UVERBS_DEVICE_ATOMIC_WRITE)
 		*is_atomic_write_capable = 1;
+#endif
+	return 0;
+}
+
+/*
+ * rpma_utils_ibv_context_is_flush_capable -- query the extended device
+ * context's capabilities and check if kernel supports both of native flush
+ * types(Global visibility and Persistence).
+ */
+int
+rpma_utils_ibv_context_is_flush_capable(struct ibv_context *ibv_ctx,
+		int *is_flush_capable)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+
+	if (ibv_ctx == NULL || is_flush_capable == NULL)
+		return RPMA_E_INVAL;
+
+	*is_flush_capable = 0;
+
+#ifdef IBV_FLUSH_SUPPORTED
+	/* query an RDMA device's attributes */
+	struct ibv_device_attr_ex attr = {{{0}}};
+	errno = ibv_query_device_ex(ibv_ctx, NULL /* input */, &attr);
+	if (errno) {
+		RPMA_LOG_ERROR_WITH_ERRNO(errno, "ibv_query_device_ex(attr={0})");
+		return RPMA_E_PROVIDER;
+	}
+
+	/* check whether both global visibility and persistence are supported in kernel */
+	if ((attr.device_cap_flags_ex & IB_UVERBS_DEVICE_FLUSH_GLOBAL) &&
+			(attr.device_cap_flags_ex & IB_UVERBS_DEVICE_FLUSH_PERSISTENT))
+		*is_flush_capable = 1;
 #endif
 	return 0;
 }

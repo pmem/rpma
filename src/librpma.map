@@ -89,6 +89,7 @@ LIBRPMA_1.0 {
 		rpma_srq_recv;
 		rpma_utils_conn_event_2str;
 		rpma_utils_get_ibv_context;
+		rpma_utils_ibv_context_is_flush_capable;
 		rpma_utils_ibv_context_is_odp_capable;
 		rpma_write;
 		rpma_write_with_imm;

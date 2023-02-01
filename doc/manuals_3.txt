@@ -79,6 +79,7 @@ rpma_srq_new.3
 rpma_srq_recv.3
 rpma_utils_conn_event_2str.3
 rpma_utils_get_ibv_context.3
+rpma_utils_ibv_context_is_flush_capable.3
 rpma_utils_ibv_context_is_odp_capable.3
 rpma_write.3
 rpma_write_with_imm.3
