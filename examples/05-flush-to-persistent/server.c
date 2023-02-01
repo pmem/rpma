@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limited */
 
 /*
  * server.c -- a server of the flush-to-persistent example
@@ -53,12 +54,22 @@ main(int argc, char *argv[])
 
 #ifdef USE_PMEM
 	char *pmem_path = NULL;
+	struct ibv_context *ibv_ctx = NULL;
+	int is_native_flush_supported = 0;
 
 	if (argc >= 4) {
 		pmem_path = argv[3];
 
 		ret = common_pmem_map_file_with_signature_check(pmem_path, HELLO_STR_SIZE, &mem,
 								NULL);
+		if (ret)
+			goto err_free;
+
+		ret = rpma_utils_get_ibv_context(addr, RPMA_UTIL_IBV_CONTEXT_LOCAL, &ibv_ctx);
+		if (ret)
+			goto err_free;
+
+		ret = rpma_utils_ibv_context_is_flush_capable(ibv_ctx, &is_native_flush_supported);
 		if (ret)
 			goto err_free;
 	}
@@ -93,12 +104,14 @@ main(int argc, char *argv[])
 
 #ifdef USE_PMEM
 	/* configure peer's direct write to pmem support */
-	if (argc >= 5) {
+	if (mem.is_pmem && is_native_flush_supported)
+		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true);
+	else if (argc >= 5)
 		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, (strcmp(argv[4], ON_STR) == 0));
-		if (ret) {
-			(void) rpma_peer_cfg_delete(&pcfg);
-			goto err_free;
-		}
+
+	if (ret) {
+		(void) rpma_peer_cfg_delete(&pcfg);
+		goto err_free;
 	}
 #endif /* USE_PMEM */
 
