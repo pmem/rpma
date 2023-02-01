@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * mr.c -- librpma memory region-related implementations
@@ -389,6 +389,37 @@ rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offs
 
 	return 0;
 }
+
+#ifdef IBV_FLUSH_SUPPORTED
+/*
+ * rpma_mr_flush -- initiate the native flush operation
+ */
+int
+rpma_mr_flush(struct ibv_qp_ex *qpx, struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, const void *op_context)
+{
+	uint8_t native_type;
+
+	if (type == RPMA_FLUSH_TYPE_VISIBILITY)
+		native_type = IBV_FLUSH_GLOBAL;
+
+	if (type == RPMA_FLUSH_TYPE_PERSISTENT)
+		native_type = IBV_FLUSH_PERSISTENT;
+
+	ibv_wr_start(qpx);
+	qpx->wr_id = (uint64_t)op_context;
+	qpx->wr_flags = (flags & RPMA_F_COMPLETION_ON_SUCCESS) ? IBV_SEND_SIGNALED : 0;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+	ibv_wr_flush(qpx, dst->rkey, dst->raddr + dst_offset, len, native_type, IBV_FLUSH_RANGE);
+	int ret = ibv_wr_complete(qpx);
+	if (ret) {
+		RPMA_LOG_ERROR_WITH_ERRNO(ret, "ibv_wr_complete()");
+		return RPMA_E_PROVIDER;
+	}
+
+	return 0;
+}
+#endif
 
 /* public librpma API */
 

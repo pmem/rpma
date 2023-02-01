@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limited */
 
 /*
  * flush.c -- librpma flush-related implementations
@@ -178,11 +179,38 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	RPMA_DEBUG_TRACE;
 
 	struct rpma_flush_internal *flush_internal = *(struct rpma_flush_internal **)flush_ptr;
+	int ret = 0;
 
-	int ret = flush_internal->delete_func(*flush_ptr);
+	/* it is possible for flush_internal to be NULL */
+	if (flush_internal == NULL)
+		return ret;
+
+	ret = flush_internal->delete_func(*flush_ptr);
 	free(*flush_ptr);
 	*flush_ptr = NULL;
 
 	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
 	return ret;
+}
+
+/*
+ * rpma_flush_apm -- initiate the APM-style flush operation
+ */
+int
+rpma_flush_apm(struct ibv_qp *qp, struct rpma_flush *flush, struct rpma_mr_remote *dst,
+	size_t dst_offset, size_t len, enum rpma_flush_type type, int flags,
+	const void *op_context, bool direct_write_to_pmem)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_NOSUPP, {});
+
+	if (type == RPMA_FLUSH_TYPE_PERSISTENT && !direct_write_to_pmem) {
+		RPMA_LOG_ERROR(
+			"Connection does not support flush to persistency. "
+			"Check if the remote node supports direct write to persistent memory.");
+		return RPMA_E_NOSUPP;
+	}
+
+	rpma_flush_func flush_func = flush->func;
+	return flush_func(qp, flush, dst, dst_offset, len, type, flags, op_context);
 }

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2022, Fujitsu */
+/* /* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * mr.h -- librpma memory region-related internal definitions
@@ -97,5 +97,17 @@ int rpma_mr_recv(struct ibv_qp *qp, struct rpma_mr_local *dst, size_t offset, si
  */
 int rpma_mr_srq_recv(struct ibv_srq *ibv_srq, struct rpma_mr_local *dst, size_t offset, size_t len,
 	const void *op_context);
+
+/*
+ * ASSUMPTIONS
+ * - qpx != NULL && dst != NULL && flags != 0
+ *
+ * ERRORS
+ * rpma_mr_flush() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - ibv_wr_complete(3) failed
+ */
+int rpma_mr_flush(struct ibv_qp_ex *qpx, struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, const void *op_context);
 
 #endif /* LIBRPMA_MR_H */

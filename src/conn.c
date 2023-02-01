@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -68,10 +68,16 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq *cq,
 		goto err_destroy_evch;
 	}
 
-	struct rpma_flush *flush;
-	ret = rpma_flush_new(peer, &flush);
-	if (ret)
-		goto err_migrate_id_NULL;
+	struct rpma_flush *flush = NULL;
+#ifdef IBV_FLUSH_SUPPORTED
+	struct ibv_qp_ex *qpx = ibv_qp_to_qp_ex(id->qp);
+	/* check if the created QP doesn't support native flush */
+	if (qpx == NULL || qpx->wr_flush == NULL) {
+		ret = rpma_flush_new(peer, &flush);
+		if (ret)
+			goto err_migrate_id_NULL;
+	}
+#endif
 
 	struct rpma_conn *conn = malloc(sizeof(*conn));
 	if (!conn) {
@@ -529,13 +535,6 @@ rpma_flush(struct rpma_conn *conn,
 	if (conn == NULL || dst == NULL || flags == 0)
 		return RPMA_E_INVAL;
 
-	if (type == RPMA_FLUSH_TYPE_PERSISTENT && !conn->direct_write_to_pmem) {
-		RPMA_LOG_ERROR(
-			"Connection does not support flush to persistency. "
-			"Check if the remote node supports direct write to persistent memory.");
-		return RPMA_E_NOSUPP;
-	}
-
 	/*
 	 * Initialize 'flush_type' to prevent
 	 * the "Conditional jump or move depends on uninitialised value(s)" error
@@ -559,9 +558,15 @@ rpma_flush(struct rpma_conn *conn,
 		return RPMA_E_NOSUPP;
 	}
 
-	rpma_flush_func flush = conn->flush->func;
-	return flush(conn->id->qp, conn->flush, dst, dst_offset,
-			len, type, flags, op_context);
+#ifdef IBV_FLUSH_SUPPORTED
+	struct ibv_qp_ex *qpx = ibv_qp_to_qp_ex(conn->id->qp);
+	/* check if the created QP supports native flush */
+	if (qpx && qpx->wr_flush)
+		return rpma_mr_flush(qpx, dst, dst_offset, len, type, flags, op_context);
+#endif
+
+	return rpma_flush_apm(conn->id->qp, conn->flush, dst, dst_offset,
+			len, type, flags, op_context, conn->direct_write_to_pmem);
 }
 
 /*
