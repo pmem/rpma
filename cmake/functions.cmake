@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2018-2022, Intel Corporation
-# Copyright (c) 2022 Fujitsu Limited
+# Copyright (c) 2022-2023, Fujitsu Limited
 #
 
 #
@@ -304,4 +304,24 @@ function(is_ibv_atomic_write_supported var)
 		}"
 		NATIVE_ATOMIC_WRITE_SUPPORTED)
 	set(var ${NATIVE_ATOMIC_WRITE_SUPPORTED} PARENT_SCOPE)
+endfunction()
+
+# check if libibverbs supports native flush
+function(is_ibv_flush_supported var)
+	CHECK_C_SOURCE_COMPILES("
+		#include <infiniband/verbs.h>
+		/*
+		 * check if IBV_ACCESS_FLUSH_GLOBAL, IBV_ACCESS_FLUSH_PERSISTENT,
+		 * IB_UVERBS_DEVICE_FLUSH_GLOBAL, IB_UVERBS_DEVICE_FLUSH_PERSISTENT,
+		 * IBV_QP_EX_WITH_FLUSH and ibv_wr_flush() are defined
+		 */
+		int main() {
+			int access = IBV_ACCESS_FLUSH_GLOBAL | IBV_ACCESS_FLUSH_PERSISTENT;
+			uint64_t device_cap_flag = IB_UVERBS_DEVICE_FLUSH_GLOBAL |
+						   IB_UVERBS_DEVICE_FLUSH_PERSISTENT;
+			uint64_t send_ops_flag = IBV_QP_EX_WITH_FLUSH;
+			return !ibv_wr_flush;
+		}"
+		NATIVE_FLUSH_SUPPORTED)
+	set(var ${NATIVE_FLUSH_SUPPORTED} PARENT_SCOPE)
 endfunction()
