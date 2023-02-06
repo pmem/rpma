@@ -289,8 +289,8 @@ function(atomic_operations_supported var)
 	set(var ${ATOMIC_OPERATIONS_SUPPORTED} PARENT_SCOPE)
 endfunction()
 
-# check if libibverbs has ibv_wr_atomic_write() support
-function(is_ibv_wr_atomic_write_supported var)
+# check if libibverbs supports native atomic write
+function(is_ibv_atomic_write_supported var)
 	CHECK_C_SOURCE_COMPILES("
 		#include <infiniband/verbs.h>
 		/*
@@ -302,6 +302,6 @@ function(is_ibv_wr_atomic_write_supported var)
 			uint64_t send_ops_flag = IBV_QP_EX_WITH_ATOMIC_WRITE;
 			return !ibv_wr_atomic_write;
 		}"
-		IBV_WR_ATOMIC_WRITE_SUPPORTED)
-	set(var ${IBV_WR_ATOMIC_WRITE_SUPPORTED} PARENT_SCOPE)
+		NATIVE_ATOMIC_WRITE_SUPPORTED)
+	set(var ${NATIVE_ATOMIC_WRITE_SUPPORTED} PARENT_SCOPE)
 endfunction()

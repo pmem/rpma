@@ -74,7 +74,7 @@ configure_create_qp_ex(struct prestate *prestate, struct rpma_cq *rcq)
 	expect_value(rdma_create_qp_ex, qp_init_attr->cap.max_inline_data,
 		RPMA_MAX_INLINE_DATA);
 	expect_value(rdma_create_qp_ex, qp_init_attr->pd, MOCK_IBV_PD);
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
 	if (prestate->is_atomic_write_capable) {
 		expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask,
 				IBV_QP_INIT_ATTR_PD | IBV_QP_INIT_ATTR_SEND_OPS_FLAGS);
