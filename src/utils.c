@@ -29,7 +29,7 @@ rpma_utils_ibv_context_is_atomic_write_capable(struct ibv_context *ibv_ctx,
 
 	*is_atomic_write_capable = 0;
 
-#ifdef IBV_WR_ATOMIC_WRITE_SUPPORTED
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
 	/* query an RDMA device's attributes */
 	struct ibv_device_attr_ex attr = {{{0}}};
 	errno = ibv_query_device_ex(ibv_ctx, NULL /* input */, &attr);
