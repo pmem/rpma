@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * client.c -- a client of the flush-to-persistent example
@@ -116,22 +116,31 @@ main(int argc, char *argv[])
 	if (ret != 0 || pdata.len < sizeof(struct common_data))
 		goto err_mr_dereg;
 
-	/*
-	 * Create a remote peer configuration structure from the received
-	 * descriptor and apply it to the current connection.
-	 */
 	struct common_data *dst_data = pdata.ptr;
-	ret = rpma_peer_cfg_from_descriptor(
-			&dst_data->descriptors[dst_data->mr_desc_size],
-			dst_data->pcfg_desc_size, &pcfg);
+
+	ret = rpma_conn_get_direct_write_to_pmem(conn, &direct_write_to_pmem);
 	if (ret)
 		goto err_mr_dereg;
-	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
-	ret |= rpma_conn_apply_remote_peer_cfg(conn, pcfg);
-	(void) rpma_peer_cfg_delete(&pcfg);
-	/* either get or apply failed */
-	if (ret)
-		goto err_mr_dereg;
+
+	/* ignore the remote peer configuration when connection supports direct write to PMEM. */
+	if (!direct_write_to_pmem) {
+		/*
+		 * Create a remote peer configuration structure from the received
+		 * descriptor and apply it to the current connection.
+		 */
+		ret = rpma_peer_cfg_from_descriptor(
+				&dst_data->descriptors[dst_data->mr_desc_size],
+				dst_data->pcfg_desc_size, &pcfg);
+		if (ret)
+			goto err_mr_dereg;
+
+		ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
+		ret |= rpma_conn_apply_remote_peer_cfg(conn, pcfg);
+		(void) rpma_peer_cfg_delete(&pcfg);
+		/* either get or apply failed */
+		if (ret)
+			goto err_mr_dereg;
+	}
 
 	/*
 	 * Create a remote memory registration structure from the received
@@ -161,8 +170,15 @@ main(int argc, char *argv[])
 	if (ret)
 		goto err_mr_remote_delete;
 
+	int dst_mr_flush_type;
+	ret = rpma_mr_remote_get_flush_type(dst_mr, &dst_mr_flush_type);
+	if (ret) {
+		fprintf(stderr, "rpma_mr_remote_get_flush_type() failed\n");
+		goto err_mr_remote_delete;
+	}
+
 	/* determine the flush type */
-	if (direct_write_to_pmem) {
+	if (direct_write_to_pmem && (dst_mr_flush_type & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)) {
 		printf("RPMA_FLUSH_TYPE_PERSISTENT is supported\n");
 		flush_type = RPMA_FLUSH_TYPE_PERSISTENT;
 	} else {
