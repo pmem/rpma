@@ -389,7 +389,8 @@ enum rpma_util_ibv_context_type {
  *   rdma_resolve_addr() failed, the exact cause of the error can be read from the log
  *
  * SEE ALSO
- * rpma_peer_new(3), rpma_utils_ibv_context_is_odp_capable(3), librpma(7) and https://pmem.io/rpma/
+ * rpma_peer_new(3), rpma_utils_ibv_context_is_flush_capable(3),
+ * rpma_utils_ibv_context_is_odp_capable(3), librpma(7) and https://pmem.io/rpma/
  */
 int rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type type,
 		struct ibv_context **ibv_ctx_ptr);
