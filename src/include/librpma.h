@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2019-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * librpma.h -- definitions of librpma entry points
@@ -1758,6 +1758,34 @@ int rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn, const struct rpma_pe
  * https://pmem.io/rpma/
  */
 int rpma_conn_get_qp_num(const struct rpma_conn *conn, uint32_t *qp_num);
+
+/** 3
+ * rpma_conn_get_direct_write_to_pmem - check if connection supports direct write to PMem
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_conn;
+ *	int rpma_conn_get_direct_write_to_pmem(const struct rpma_conn *conn, bool *supported);
+ *
+ * DESCRIPTION
+ * rpma_conn_get_direct_write_to_pmem() checks if connection supports direct write to PMem.
+ *
+ * RETURN VALUE
+ * The rpma_conn_get_direct_write_to_pmem() function returns 0 on success or a negative error
+ * code on failure.
+ *
+ * ERRORS
+ * rpma_conn_get_direct_write_to_pmem() can fail with the following error:
+ *
+ * - RPMA_E_INVAL - conn or supported are NULL
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_next_conn_req(3), rpma_conn_req_connect(3), librpma(7) and
+ * https://pmem.io/rpma/
+ */
+int rpma_conn_get_direct_write_to_pmem(const struct rpma_conn *conn, bool *supported);
 
 struct rpma_cq;
 
