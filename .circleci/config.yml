@@ -24,7 +24,7 @@ jobs:
           command: |
             mkdir build
             cd build
-            cmake .. -DTESTS_RDMA_CONNECTION=ON
+            cmake .. -DBUILD_TESTS=OFF -DTESTS_RDMA_CONNECTION=ON
             make -j$(nproc)
       - run:
           name: Run tests without memcheck
