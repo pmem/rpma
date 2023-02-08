@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2019-2022, Intel Corporation
-# Copyright 2021-2022, Fujitsu
+# Copyright (c) 2021-2023, Fujitsu Limited
 
 #
 # src/librpma.map -- linker version script for librpma
@@ -30,6 +30,7 @@ LIBRPMA_1.0 {
 		rpma_conn_disconnect;
 		rpma_conn_get_cq;
 		rpma_conn_get_compl_fd;
+		rpma_conn_get_direct_write_to_pmem;
 		rpma_conn_get_event_fd;
 		rpma_conn_get_private_data;
 		rpma_conn_get_qp_num;

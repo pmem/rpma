@@ -700,3 +700,25 @@ rpma_conn_apply_remote_peer_cfg(struct rpma_conn *conn,
 	return rpma_peer_cfg_get_direct_write_to_pmem(pcfg,
 			&conn->direct_write_to_pmem);
 }
+
+/*
+ * rpma_conn_get_direct_write_to_pmem -- check if the connection supports direct write to PMem
+ */
+int
+rpma_conn_get_direct_write_to_pmem(const struct rpma_conn *conn, bool *supported)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_INVAL, {});
+
+	if (conn == NULL || supported == NULL)
+		return RPMA_E_INVAL;
+
+#ifdef ATOMIC_OPERATIONS_SUPPORTED
+	*supported = atomic_load_explicit((_Atomic bool *)&conn->direct_write_to_pmem,
+			__ATOMIC_SEQ_CST);
+#else
+	*supported = conn->direct_write_to_pmem;
+#endif /* ATOMIC_OPERATIONS_SUPPORTED */
+
+	return 0;
+}
