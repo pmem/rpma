@@ -99,8 +99,14 @@ main(int argc, char *argv[])
 		goto err_peer_delete;
 
 #ifdef USE_PMEM
+	bool direct_write_to_pmem = false;
+
+	ret = rpma_peer_cfg_get_direct_write_to_pmem(pcfg, &direct_write_to_pmem);
+	if (ret)
+		goto err_pcfg_delete;
+
 	/* configure peer's direct write to pmem support */
-	if (argc >= 5) {
+	if (!direct_write_to_pmem && argc >= 5) {
 		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, (strcmp(argv[4], ON_STR) == 0));
 		if (ret)
 			goto err_pcfg_delete;
