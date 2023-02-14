@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limited */
 
 /*
  * flush.c -- librpma flush-related implementations
@@ -25,6 +26,12 @@ static int rpma_flush_apm_delete(struct rpma_flush *flush);
 static int rpma_flush_apm_execute(struct ibv_qp *qp, struct rpma_flush *flush,
 	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
 	enum rpma_flush_type type, int flags, const void *op_context);
+#ifdef NATIVE_FLUSH_SUPPORTED
+static int rpma_native_flush_new(struct rpma_flush *flush);
+static int rpma_native_flush_execute(struct ibv_qp *qp, struct rpma_flush *flush,
+	struct rpma_mr_remote *dst, size_t dst_offset, size_t len,
+	enum rpma_flush_type type, int flags, const void *op_context);
+#endif
 
 typedef int (*rpma_flush_delete_func)(struct rpma_flush *flush);
 
@@ -143,22 +150,63 @@ rpma_flush_apm_execute(struct ibv_qp *qp, struct rpma_flush *flush, struct rpma_
 			op_context);
 }
 
+#ifdef NATIVE_FLUSH_SUPPORTED
+/*
+ * rpma_native_flush_new -- register rpma_native_flush_execute()
+ */
+static int
+rpma_native_flush_new(struct rpma_flush *flush)
+{
+	RPMA_DEBUG_TRACE;
+
+	struct rpma_flush_internal *flush_internal = (struct rpma_flush_internal *)flush;
+	flush_internal->flush_func = rpma_native_flush_execute;
+	flush_internal->delete_func = NULL;
+	flush_internal->context = NULL;
+
+	return 0;
+}
+
+/*
+ * rpma_native_flush_execute -- perform the native flush
+ */
+static int
+rpma_native_flush_execute(struct ibv_qp *qp, struct rpma_flush *flush, struct rpma_mr_remote *dst,
+	size_t dst_offset, size_t len, enum rpma_flush_type type, int flags,
+	const void *op_context)
+{
+	RPMA_DEBUG_TRACE;
+	RPMA_FAULT_INJECTION(RPMA_E_PROVIDER, {});
+
+	return rpma_mr_flush(qp, dst, dst_offset, len, type, flags, op_context);
+}
+#endif
+
 /* internal librpma API */
 
 /*
  * rpma_flush_new -- peak a flush implementation and return the flushing object
  */
 int
-rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr)
+rpma_flush_new(struct rpma_peer *peer, bool use_native_flush, struct rpma_flush **flush_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
+
+	int ret;
 
 	struct rpma_flush *flush = malloc(sizeof(struct rpma_flush_internal));
 	if (!flush)
 		return RPMA_E_NOMEM;
 
-	int ret = rpma_flush_apm_new(peer, flush);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (use_native_flush)
+		ret = rpma_native_flush_new(flush);
+	else
+		ret = rpma_flush_apm_new(peer, flush);
+#else
+	ret = rpma_flush_apm_new(peer, flush);
+#endif
 	if (ret) {
 		free(flush);
 		return ret;
@@ -178,8 +226,11 @@ rpma_flush_delete(struct rpma_flush **flush_ptr)
 	RPMA_DEBUG_TRACE;
 
 	struct rpma_flush_internal *flush_internal = *(struct rpma_flush_internal **)flush_ptr;
+	int ret = 0;
 
-	int ret = flush_internal->delete_func(*flush_ptr);
+	if (flush_internal->delete_func)
+		ret = flush_internal->delete_func(*flush_ptr);
+
 	free(*flush_ptr);
 	*flush_ptr = NULL;
 
