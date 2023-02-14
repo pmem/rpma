@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -68,8 +68,15 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq *cq,
 		goto err_destroy_evch;
 	}
 
+	bool is_native_flush_supported = false;
+#ifdef NATIVE_FLUSH_SUPPORTED
+	struct ibv_qp_ex *qpx = ibv_qp_to_qp_ex(id->qp);
+	/* check if the created QP supports native flush */
+	if (qpx && qpx->wr_flush)
+		is_native_flush_supported = true;
+#endif
 	struct rpma_flush *flush;
-	ret = rpma_flush_new(peer, &flush);
+	ret = rpma_flush_new(peer, is_native_flush_supported, &flush);
 	if (ret)
 		goto err_migrate_id_NULL;
 

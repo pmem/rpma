@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2021, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limited */
 
 /*
  * flush.h -- librpma flush-related internal definitions
@@ -27,7 +28,7 @@ struct rpma_flush {
  * - RPMA_E_NOMEM - out of memory (mmap() failed)
  * - RPMA_E_PROVIDER - sysconf() or ibv_reg_mr() failed
  */
-int rpma_flush_new(struct rpma_peer *peer, struct rpma_flush **flush_ptr);
+int rpma_flush_new(struct rpma_peer *peer, bool use_native_flush, struct rpma_flush **flush_ptr);
 
 /*
  * ERRORS
