@@ -310,6 +310,19 @@ rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr, void 
 #endif
 }
 
+/*
+ * rpma_peer_get_is_native_flush_supported -- get the is_native_flush_supported member
+ * from the rpma_srq object
+ *
+ * ASSUMPTIONS
+ * - peer != NULL
+ */
+int
+rpma_peer_get_is_native_flush_supported(struct rpma_peer *peer)
+{
+	return peer->is_native_flush_supported;
+}
+
 /* public librpma API */
 
 /*

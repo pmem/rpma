@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limited */
 
 /*
  * peer_cfg.c -- librpma peer-configuration-related implementations
@@ -13,6 +14,7 @@
 #include "librpma.h"
 #include "log_internal.h"
 #include "debug.h"
+#include "peer.h"
 
 
 #ifdef TEST_MOCK_ALLOC
@@ -24,8 +26,6 @@
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 
 #define SUPPORTED2STR(var) ((var) ? "supported" : "unsupported")
-
-static bool RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM = false;
 
 struct rpma_peer_cfg {
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
@@ -40,13 +40,15 @@ struct rpma_peer_cfg {
  * rpma_peer_cfg_new -- create a new peer configuration object
  */
 int
-rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
+rpma_peer_cfg_new(struct rpma_peer *peer, struct rpma_peer_cfg **pcfg_ptr)
 {
 	RPMA_DEBUG_TRACE;
 	RPMA_FAULT_INJECTION(RPMA_E_NOMEM, {});
 
 	if (pcfg_ptr == NULL)
 		return RPMA_E_INVAL;
+
+	int is_native_flush_supported = rpma_peer_get_is_native_flush_supported(peer);
 
 	struct rpma_peer_cfg *cfg = malloc(sizeof(struct rpma_peer_cfg));
 	if (cfg == NULL)
@@ -55,9 +57,9 @@ rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr)
 	/* set default values */
 
 #ifdef ATOMIC_OPERATIONS_SUPPORTED
-	atomic_init(&cfg->direct_write_to_pmem, RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM);
+	atomic_init(&cfg->direct_write_to_pmem, is_native_flush_supported);
 #else
-	cfg->direct_write_to_pmem = RPMA_DEFAULT_DIRECT_WRITE_TO_PMEM;
+	cfg->direct_write_to_pmem = is_native_flush_supported;
 #endif /* ATOMIC_OPERATIONS_SUPPORTED */
 	*pcfg_ptr = cfg;
 	return 0;

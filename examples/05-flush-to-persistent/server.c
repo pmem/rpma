@@ -86,33 +86,31 @@ main(int argc, char *argv[])
 		(void) printf("Old value: %s\n", (char *)mem.mr_ptr + mem.data_offset);
 	}
 
-	/* create a peer configuration structure */
-	ret = rpma_peer_cfg_new(&pcfg);
-	if (ret)
-		goto err_free;
-
-#ifdef USE_PMEM
-	/* configure peer's direct write to pmem support */
-	if (argc >= 5) {
-		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, (strcmp(argv[4], ON_STR) == 0));
-		if (ret) {
-			(void) rpma_peer_cfg_delete(&pcfg);
-			goto err_free;
-		}
-	}
-#endif /* USE_PMEM */
-
 	/*
 	 * lookup an ibv_context via the address and create a new peer using it
 	 */
 	ret = server_peer_via_address(addr, &peer);
 	if (ret)
-		goto err_pcfg_delete;
+		goto err_free;
+
+	/* create a peer configuration structure */
+	ret = rpma_peer_cfg_new(peer, &pcfg);
+	if (ret)
+		goto err_peer_delete;
+
+#ifdef USE_PMEM
+	/* configure peer's direct write to pmem support */
+	if (argc >= 5) {
+		ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, (strcmp(argv[4], ON_STR) == 0));
+		if (ret)
+			goto err_pcfg_delete;
+	}
+#endif /* USE_PMEM */
 
 	/* start a listening endpoint at addr:port */
 	ret = rpma_ep_listen(peer, addr, port, &ep);
 	if (ret)
-		goto err_peer_delete;
+		goto err_pcfg_delete;
 
 	/* register the memory */
 	ret = rpma_mr_reg(peer, mem.mr_ptr, mem.mr_size,
@@ -196,12 +194,12 @@ err_ep_shutdown:
 	/* shutdown the endpoint */
 	(void) rpma_ep_shutdown(&ep);
 
+err_pcfg_delete:
+	(void) rpma_peer_cfg_delete(&pcfg);
+
 err_peer_delete:
 	/* delete the peer object */
 	(void) rpma_peer_delete(&peer);
-
-err_pcfg_delete:
-	(void) rpma_peer_cfg_delete(&pcfg);
 
 err_free:
 #ifdef USE_PMEM

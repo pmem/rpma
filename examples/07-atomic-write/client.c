@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * client.c -- a client of the atomic-write example
@@ -77,7 +77,7 @@ main(int argc, char *argv[])
 	 * Create a remote peer's configuration structure, enable persistent flush support
 	 * and apply it to the current connection. (unilaterally)
 	 */
-	ret = rpma_peer_cfg_new(&pcfg);
+	ret = rpma_peer_cfg_new(peer, &pcfg);
 	if (ret)
 		goto err_conn_disconnect;
 	ret = rpma_peer_cfg_set_direct_write_to_pmem(pcfg, true);

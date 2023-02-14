@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2019-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * librpma.h -- definitions of librpma entry points
@@ -426,6 +426,74 @@ int rpma_utils_get_ibv_context(const char *addr, enum rpma_util_ibv_context_type
  */
 int rpma_utils_ibv_context_is_odp_capable(struct ibv_context *ibv_ctx, int *is_odp_capable);
 
+/* peer */
+
+struct rpma_peer;
+
+/** 3
+ * rpma_peer_new - create a peer object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct ibv_context;
+ *	struct rpma_peer;
+ *	int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
+ *
+ * DESCRIPTION
+ * rpma_peer_new() creates a new peer object.
+ *
+ * RETURN VALUE
+ * The rpma_peer_new() function returns 0 on success or a negative error code on failure.
+ * rpma_peer_new() does not set *peer_ptr value on failure.
+ *
+ * ERRORS
+ * rpma_peer_new() can fail with the following errors:
+ *
+ * - RPMA_E_INVAL - ibv_ctx or peer_ptr is NULL
+ * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
+ * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error other than ENOMEM.
+ * - RPMA_E_UNKNOWN - creating a verbs protection domain failed without error value.
+ * - RPMA_E_NOMEM - out of memory
+ *
+ * SEE ALSO
+ * rpma_conn_req_new(3), rpma_ep_listen(3), rpma_mr_reg(3), rpma_peer_delete(3),
+ * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
+
+/** 3
+ * rpma_peer_delete - delete a peer object
+ *
+ * SYNOPSIS
+ *
+ *	#include <librpma.h>
+ *
+ *	struct rpma_peer;
+ *	int rpma_peer_delete(struct rpma_peer **peer_ptr);
+ *
+ * DESCRIPTION
+ * rpma_peer_delete() deletes the peer object.
+ *
+ * RETURN VALUE
+ * The rpma_peer_delete() function returns 0 on success or a negative error code on failure.
+ * rpm_peer_delete() does not set *peer_ptr value to NULL on failure.
+ *
+ * RETURN VALUE
+ * The rpma_peer_delete() function returns 0 on success or a negative error code on failure.
+ * rpma_peer_delete() does not set *peer_ptr to NULL on failure.
+ *
+ * ERRORS
+ * rpma_peer_delete() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
+ *
+ * SEE ALSO
+ * rpma_peer_new(3), librpma(7) and https://pmem.io/rpma/
+ */
+int rpma_peer_delete(struct rpma_peer **peer_ptr);
+
 /* peer configuration */
 
 struct rpma_peer_cfg;
@@ -437,11 +505,12 @@ struct rpma_peer_cfg;
  *
  *	#include <librpma.h>
  *
+ *	struct rpma_peer;
  *	struct rpma_peer_cfg;
- *	int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
+ *	int rpma_peer_cfg_new(struct rpma_peer *peer, struct rpma_peer_cfg **pcfg_ptr);
  *
  * DESCRIPTION
- * rpma_peer_cfg_new() creates a new peer configuration object.
+ * rpma_peer_cfg_new() creates a new peer configuration object based on the peer object.
  *
  * RETURN VALUE
  * The rpma_peer_cfg_new() function returns 0 on success or a negative error code on failure.
@@ -459,7 +528,7 @@ struct rpma_peer_cfg;
  * rpma_peer_cfg_get_direct_write_to_pmem(3), rpma_peer_cfg_set_direct_write_to_pmem(3), librpma(7)
  * and https://pmem.io/rpma/
  */
-int rpma_peer_cfg_new(struct rpma_peer_cfg **pcfg_ptr);
+int rpma_peer_cfg_new(struct rpma_peer *peer, struct rpma_peer_cfg **pcfg_ptr);
 
 /** 3
  * rpma_peer_cfg_delete - delete the peer configuration object
@@ -642,74 +711,6 @@ rpma_peer_cfg_get_descriptor_size(const struct rpma_peer_cfg *pcfg, size_t *desc
  */
 int rpma_peer_cfg_from_descriptor(const void *desc, size_t desc_size,
 		struct rpma_peer_cfg **pcfg_ptr);
-
-/* peer */
-
-struct rpma_peer;
-
-/** 3
- * rpma_peer_new - create a peer object
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	struct ibv_context;
- *	struct rpma_peer;
- *	int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
- *
- * DESCRIPTION
- * rpma_peer_new() creates a new peer object.
- *
- * RETURN VALUE
- * The rpma_peer_new() function returns 0 on success or a negative error code on failure.
- * rpma_peer_new() does not set *peer_ptr value on failure.
- *
- * ERRORS
- * rpma_peer_new() can fail with the following errors:
- *
- * - RPMA_E_INVAL - ibv_ctx or peer_ptr is NULL
- * - RPMA_E_NOMEM - creating a verbs protection domain failed with ENOMEM.
- * - RPMA_E_PROVIDER - creating a verbs protection domain failed with error other than ENOMEM.
- * - RPMA_E_UNKNOWN - creating a verbs protection domain failed without error value.
- * - RPMA_E_NOMEM - out of memory
- *
- * SEE ALSO
- * rpma_conn_req_new(3), rpma_ep_listen(3), rpma_mr_reg(3), rpma_peer_delete(3),
- * rpma_utils_get_ibv_context(3), librpma(7) and https://pmem.io/rpma/
- */
-int rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr);
-
-/** 3
- * rpma_peer_delete - delete a peer object
- *
- * SYNOPSIS
- *
- *	#include <librpma.h>
- *
- *	struct rpma_peer;
- *	int rpma_peer_delete(struct rpma_peer **peer_ptr);
- *
- * DESCRIPTION
- * rpma_peer_delete() deletes the peer object.
- *
- * RETURN VALUE
- * The rpma_peer_delete() function returns 0 on success or a negative error code on failure.
- * rpm_peer_delete() does not set *peer_ptr value to NULL on failure.
- *
- * RETURN VALUE
- * The rpma_peer_delete() function returns 0 on success or a negative error code on failure.
- * rpma_peer_delete() does not set *peer_ptr to NULL on failure.
- *
- * ERRORS
- * rpma_peer_delete() can fail with the following error:
- *
- * - RPMA_E_PROVIDER - deleting the verbs protection domain failed.
- *
- * SEE ALSO
- * rpma_peer_new(3), librpma(7) and https://pmem.io/rpma/
- */
-int rpma_peer_delete(struct rpma_peer **peer_ptr);
 
 /* memory-related structures */
 

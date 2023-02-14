@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021-2022, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * peer.h -- librpma peer-related internal definitions
@@ -48,5 +48,14 @@ int rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpm
  */
 int rpma_peer_setup_mr_reg(struct rpma_peer *peer, struct ibv_mr **ibv_mr_ptr, void *addr,
 		size_t length, int usage);
+
+/*
+ * ASSUMPTIONS
+ * - peer != NULL
+ *
+ * ERRORS
+ * rpma_srq_get_is_native_flush_supported() cannot fail.
+ */
+int rpma_peer_get_is_native_flush_supported(struct rpma_peer *peer);
 
 #endif /* LIBRPMA_PEER_H */
