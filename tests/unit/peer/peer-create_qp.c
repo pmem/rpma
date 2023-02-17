@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * peer-create_qp.c -- a peer unit test
@@ -42,6 +42,9 @@ static int num_rcqs = sizeof(rcqs) / sizeof(rcqs[0]);
 static void
 configure_create_qp_ex(struct prestate *prestate, struct rpma_cq *rcq)
 {
+	uint32_t comp_mask = IBV_QP_INIT_ATTR_PD;
+	uint64_t send_ops_flags = 0;
+
 	will_return(rpma_conn_cfg_get_sq_size, &Get_args);
 	will_return(rpma_conn_cfg_get_rq_size, &Get_args);
 	will_return(rpma_conn_cfg_get_srq, &Get_args);
@@ -75,15 +78,18 @@ configure_create_qp_ex(struct prestate *prestate, struct rpma_cq *rcq)
 		RPMA_MAX_INLINE_DATA);
 	expect_value(rdma_create_qp_ex, qp_init_attr->pd, MOCK_IBV_PD);
 #ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
-	if (prestate->is_atomic_write_capable) {
-		expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask,
-				IBV_QP_INIT_ATTR_PD | IBV_QP_INIT_ATTR_SEND_OPS_FLAGS);
-		expect_value(rdma_create_qp_ex, qp_init_attr->send_ops_flags,
-				IBV_QP_EX_WITH_ATOMIC_WRITE);
-		return;
-	}
+	if (prestate->is_atomic_write_capable)
+		send_ops_flags |= IBV_QP_EX_WITH_ATOMIC_WRITE;
 #endif
-	expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask, IBV_QP_INIT_ATTR_PD);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (prestate->is_flush_capable)
+		send_ops_flags |= IBV_QP_EX_WITH_FLUSH;
+#endif
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
+	expect_value(rdma_create_qp_ex, qp_init_attr->send_ops_flags, send_ops_flags);
+	comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
+#endif
+	expect_value(rdma_create_qp_ex, qp_init_attr->comp_mask, comp_mask);
 }
 
 /*

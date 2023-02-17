@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * mocks-rdma_cm.c -- librdmacm mocks
@@ -50,7 +50,7 @@ rdma_create_qp_ex(struct rdma_cm_id *id, struct ibv_qp_init_attr_ex *qp_init_att
 	assert_int_equal(qp_init_attr->qp_type, IBV_QPT_RC);
 	assert_int_equal(qp_init_attr->sq_sig_all, 0);
 	check_expected(qp_init_attr->comp_mask);
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 	if (qp_init_attr->comp_mask & IBV_QP_INIT_ATTR_SEND_OPS_FLAGS)
 		check_expected(qp_init_attr->send_ops_flags);
 #endif
