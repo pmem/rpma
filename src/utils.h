@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright (c) 2022 Fujitsu Limited */
+/* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * utils.h -- the internal definitions of generic helper functions
@@ -21,5 +21,16 @@
  */
 int rpma_utils_ibv_context_is_atomic_write_capable(struct ibv_context *ibv_ctx,
 		int *is_atomic_write_capable);
+
+/*
+ * ERRORS
+ * rpma_utils_ibv_context_is_flush_capable() can fail with the following error:
+ *
+ * - RPMA_E_PROVIDER - ibv_query_device_ex() failed
+ *
+ * ASSUMPTIONS
+ * ibv_ctx != NULL && is_flush_capable != NULL
+ */
+int rpma_utils_ibv_context_is_flush_capable(struct ibv_context *ibv_ctx, int *is_flush_capable);
 
 #endif /* LIBRPMA_UTILS_H */
