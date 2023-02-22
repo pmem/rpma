@@ -193,12 +193,21 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 
 	qp_init_attr.comp_mask = IBV_QP_INIT_ATTR_PD;
 
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
-	if (peer->is_native_atomic_write_supported) {
-		qp_init_attr.comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
-		qp_init_attr.send_ops_flags = IBV_QP_EX_WITH_ATOMIC_WRITE;
-	}
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
+	qp_init_attr.comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
+	qp_init_attr.send_ops_flags = 0;
 #endif
+
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+	if (peer->is_native_atomic_write_supported)
+		qp_init_attr.send_ops_flags |= IBV_QP_EX_WITH_ATOMIC_WRITE;
+#endif
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (peer->is_native_flush_supported)
+		qp_init_attr.send_ops_flags |= IBV_QP_EX_WITH_FLUSH;
+#endif
+
 	qp_init_attr.pd = peer->pd;
 
 	/*
