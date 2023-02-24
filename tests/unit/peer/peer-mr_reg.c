@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * peer-mr_reg.c -- a peer unit test
@@ -22,15 +22,11 @@
 static struct prestate prestates[] = {
 	/* 0-1) non-iWARP and iWARP are the same */
 	{IBV_TRANSPORT_IB,
-		(RPMA_MR_USAGE_READ_SRC |
-		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
-		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+		RPMA_MR_USAGE_READ_SRC,
 			IBV_ACCESS_REMOTE_READ,
 				MOCK_ODP_CAPABLE},
 	{IBV_TRANSPORT_IWARP,
-		(RPMA_MR_USAGE_READ_SRC |
-		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
-		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+		RPMA_MR_USAGE_READ_SRC,
 			IBV_ACCESS_REMOTE_READ,
 				MOCK_ODP_CAPABLE},
 	/* 2-3) non-iWARP and iWARP differs */
@@ -69,6 +65,35 @@ static struct prestate prestates[] = {
 		RPMA_MR_USAGE_RECV,
 			IBV_ACCESS_LOCAL_WRITE,
 				MOCK_ODP_CAPABLE},
+	/* 10-11) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		(RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY | RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+		IBV_ACCESS_REMOTE_READ,
+			MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_INCAPABLE},
+	{IBV_TRANSPORT_IWARP,
+		(RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY | RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
+			IBV_ACCESS_REMOTE_READ,
+				MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_INCAPABLE},
+#ifdef NATIVE_FLUSH_SUPPORTED
+	/* 12-13) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY,
+			IBV_ACCESS_FLUSH_GLOBAL,
+				MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_CAPABLE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY,
+			IBV_ACCESS_FLUSH_GLOBAL,
+				MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_CAPABLE},
+	/* 14-15) non-iWARP and iWARP are the same */
+	{IBV_TRANSPORT_IB,
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT,
+			IBV_ACCESS_FLUSH_PERSISTENT,
+				MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_CAPABLE},
+	{IBV_TRANSPORT_IWARP,
+		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT,
+			IBV_ACCESS_FLUSH_PERSISTENT,
+				MOCK_ODP_CAPABLE, 0, MOCK_FLUSH_CAPABLE},
+#endif
 };
 
 /*
@@ -78,12 +103,18 @@ static void
 mr_reg__reg_mr_ERRNO(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
+	prestate->access = MOCK_ACCESS;
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (prestate->is_flush_capable)
+		prestate->access |= (IBV_ACCESS_FLUSH_GLOBAL | IBV_ACCESS_FLUSH_PERSISTENT);
+#endif
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, MOCK_ERRNO);
 
@@ -104,12 +135,18 @@ static void
 mr_reg__reg_mr_EOPNOTSUPP_no_odp(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
+	prestate->access = MOCK_ACCESS;
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (prestate->is_flush_capable)
+		prestate->access |= (IBV_ACCESS_FLUSH_GLOBAL | IBV_ACCESS_FLUSH_PERSISTENT);
+#endif
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EOPNOTSUPP);
 
@@ -131,20 +168,27 @@ static void
 mr_reg__reg_mr_EOPNOTSUPP_ERRNO(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
+	prestate->access = MOCK_ACCESS;
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (prestate->is_flush_capable)
+		prestate->access |= (IBV_ACCESS_FLUSH_GLOBAL | IBV_ACCESS_FLUSH_PERSISTENT);
+#endif
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EOPNOTSUPP);
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
+	prestate->access |= IBV_ACCESS_ON_DEMAND;
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, MOCK_ERRNO);
 #endif
@@ -195,20 +239,27 @@ static void
 mr_reg__success_odp(void **pprestate)
 {
 	struct prestate *prestate = *pprestate;
+	prestate->access = MOCK_ACCESS;
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (prestate->is_flush_capable)
+		prestate->access |= (IBV_ACCESS_FLUSH_GLOBAL | IBV_ACCESS_FLUSH_PERSISTENT);
+#endif
 
 	/* configure mocks */
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, NULL);
 	will_return(ibv_reg_mr, EOPNOTSUPP);
 
 #ifdef ON_DEMAND_PAGING_SUPPORTED
+	prestate->access |= IBV_ACCESS_ON_DEMAND;
 	expect_value(ibv_reg_mr, pd, MOCK_IBV_PD);
 	expect_value(ibv_reg_mr, addr, MOCK_ADDR);
 	expect_value(ibv_reg_mr, length, MOCK_LEN);
-	expect_value(ibv_reg_mr, access, MOCK_ACCESS | IBV_ACCESS_ON_DEMAND);
+	expect_value(ibv_reg_mr, access, prestate->access);
 	will_return(ibv_reg_mr, MOCK_MR);
 #endif
 
@@ -262,6 +313,20 @@ main(int argc, char *argv[])
 				setup__peer, teardown__peer, prestates + 8},
 		{ "mr_reg__USAGE_RECV_iWARP", mr_reg__success,
 				setup__peer, teardown__peer, prestates + 9},
+		{ "mr_reg__USAGE_FLUSH_TYPE_VISIBILITY_OR_PERSISTENT_IB", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 10},
+		{ "mr_reg__USAGE_FLUSH_TYPE_VISIBILITY_OR_PERSISTENT_iWARP", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 11},
+#ifdef NATIVE_FLUSH_SUPPORTED
+		{ "mr_reg__USAGE_NATIVE_FLUSH_TYPE_VISIBILITY_IB", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 12},
+		{ "mr_reg__USAGE_NATIVE_FLUSH_TYPE_VISIBILITY_iWARP", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 13},
+		{ "mr_reg__USAGE_NATIVE_FLUSH_TYPE_PERSISTENT_IB", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 14},
+		{ "mr_reg__USAGE_NATIVE_FLUSH_TYPE_PERSISTENT_iWARP", mr_reg__success,
+				setup__peer, teardown__peer, prestates + 15},
+#endif
 		cmocka_unit_test_prestate_setup_teardown(
 				mr_reg__success_odp,
 				setup__peer, teardown__peer, &prestate_Capable),
