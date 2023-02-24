@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2022, Fujitsu */
+/* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * mocks-rpma-mr.c -- librpma mr.c module mocks
@@ -197,6 +197,30 @@ rpma_mr_srq_recv(struct ibv_srq *srq, struct rpma_mr_local *dst, size_t offset,
 
 	return mock_type(int);
 }
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+/*
+ * rpma_mr_flush -- mock of rpma_mr_flush
+ */
+int
+rpma_mr_flush(struct ibv_qp *qp, struct rpma_mr_remote *dst, size_t dst_offset,
+	size_t len, enum rpma_flush_type type, int flags, const void *op_context)
+{
+	assert_non_null(qp);
+	assert_int_not_equal(flags, 0);
+	assert_non_null(dst);
+
+	check_expected_ptr(qp);
+	check_expected_ptr(dst);
+	check_expected(dst_offset);
+	check_expected(len);
+	check_expected(type);
+	check_expected(flags);
+	check_expected_ptr(op_context);
+
+	return mock_type(int);
+}
+#endif
 
 /*
  * rpma_mr_remote_get_flush_type -- mock of rpma_mr_remote_get_flush_type
