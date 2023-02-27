@@ -49,7 +49,7 @@ ibv_query_device(struct ibv_context *ibv_ctx,
 	return 0;
 }
 
-#ifdef ON_DEMAND_PAGING_SUPPORTED
+#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED)
 /*
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
