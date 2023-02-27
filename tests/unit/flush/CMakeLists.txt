@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright (c) 2023 Fujitsu Limited
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -28,5 +29,5 @@ function(add_test_flush name)
 	add_test_generic(NAME ${name} TRACERS none)
 endfunction()
 
-add_test_flush(apm_execute)
+add_test_flush(execute)
 add_test_flush(new)
