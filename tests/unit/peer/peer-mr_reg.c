@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2020-2022, Intel Corporation */
+/* Copyright 2020-2023, Intel Corporation */
 /* Copyright (c) 2021-2022, Fujitsu Limited */
 
 /*
@@ -20,7 +20,7 @@
 #include "test-common.h"
 
 static struct prestate prestates[] = {
-	/* 0-1) non-iWARP and iWARP are the same */
+	/* prestates #0-1 are the same for non-iWARP and iWARP */
 	{IBV_TRANSPORT_IB,
 		(RPMA_MR_USAGE_READ_SRC |
 		RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
@@ -33,7 +33,7 @@ static struct prestate prestates[] = {
 		RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT),
 			IBV_ACCESS_REMOTE_READ,
 				MOCK_ODP_CAPABLE},
-	/* 2-3) non-iWARP and iWARP differs */
+	/* prestates #2-3 differ for non-iWARP and iWARP */
 	{IBV_TRANSPORT_IB,
 		RPMA_MR_USAGE_READ_DST,
 			IBV_ACCESS_LOCAL_WRITE,
@@ -42,7 +42,7 @@ static struct prestate prestates[] = {
 		RPMA_MR_USAGE_READ_DST,
 			IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_WRITE,
 				MOCK_ODP_CAPABLE},
-	/* 4-5) non-iWARP and iWARP are the same */
+	/* prestates #4-5 are the same for non-iWARP and iWARP */
 	{IBV_TRANSPORT_IB,
 		RPMA_MR_USAGE_WRITE_SRC,
 			IBV_ACCESS_LOCAL_WRITE,
@@ -51,7 +51,7 @@ static struct prestate prestates[] = {
 		RPMA_MR_USAGE_WRITE_SRC,
 			IBV_ACCESS_LOCAL_WRITE,
 				MOCK_ODP_CAPABLE},
-	/* 6-7) non-iWARP and iWARP are the same */
+	/* prestates #6-7 are the same for non-iWARP and iWARP */
 	{IBV_TRANSPORT_IB,
 		RPMA_MR_USAGE_WRITE_DST,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE,
@@ -60,7 +60,7 @@ static struct prestate prestates[] = {
 		RPMA_MR_USAGE_WRITE_DST,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE,
 				MOCK_ODP_CAPABLE},
-	/* 8-9) non-iWARP and iWARP are the same */
+	/* prestates #8-9 are the same for non-iWARP and iWARP */
 	{IBV_TRANSPORT_IB,
 		RPMA_MR_USAGE_RECV,
 			IBV_ACCESS_LOCAL_WRITE,
