@@ -87,7 +87,7 @@ struct ibv_wr_atomic_write_mock_args {
 };
 #endif
 
-#ifdef ON_DEMAND_PAGING_SUPPORTED
+#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED)
 int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
