@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright (c) 2021,2023 Fujitsu Limited */
 
 /*
  * conn.c -- librpma connection-related implementations
@@ -69,7 +69,7 @@ rpma_conn_new(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq *cq,
 	}
 
 	struct rpma_flush *flush;
-	ret = rpma_flush_new(peer, &flush);
+	ret = rpma_flush_new(peer, id->qp, &flush);
 	if (ret)
 		goto err_migrate_id_NULL;
 
