@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * mocks-ibverbs.h -- the ibverbs mocks' header
@@ -87,7 +87,8 @@ struct ibv_wr_atomic_write_mock_args {
 };
 #endif
 
-#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED)
+#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || \
+	defined(NATIVE_FLUSH_SUPPORTED)
 int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
 		const struct ibv_query_device_ex_input *input,
 		struct ibv_device_attr_ex *attr,
