@@ -46,13 +46,23 @@ ENV EXAMPLES_DEPS "\
 ENV DOC_UPDATE_DEPS "\
 	hub"
 
+# rdma-core deps
+ENV RDMA_CORE_DEPS "\
+	libnl3-devel \
+	wget"
+
 # Install all required packages
 RUN dnf install -y \
 	$BASE_DEPS \
 	$RPMA_DEPS \
 	$EXAMPLES_DEPS \
 	$DOC_UPDATE_DEPS \
+	$RDMA_CORE_DEPS \
 && dnf clean all
+
+# Install rdma-core
+COPY install-rdma-core.sh install-rdma-core.sh
+RUN ./install-rdma-core.sh
 
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
