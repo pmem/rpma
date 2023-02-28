@@ -61,6 +61,10 @@ RUN apt-get install -y --no-install-recommends \
 	$COVERITY_DEPS \
 && rm -rf /var/lib/apt/lists/*
 
+# Install rdma-core
+COPY install-rdma-core.sh install-rdma-core.sh
+RUN ./install-rdma-core.sh
+
 # Install cmocka
 COPY install-cmocka.sh install-cmocka.sh
 RUN ./install-cmocka.sh
