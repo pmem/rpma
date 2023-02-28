@@ -13,6 +13,8 @@ PMDK_VERSION=1.12.0
 
 WORKDIR=$(pwd)
 
+set -ex
+
 #
 # Install PMDK libraries from a release package with already generated documentation.
 #
