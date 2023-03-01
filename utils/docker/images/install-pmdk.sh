@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2022, Intel Corporation
+# Copyright 2020-2023, Intel Corporation
 #
 
 #
@@ -12,6 +12,8 @@
 PMDK_VERSION=1.12.0
 
 WORKDIR=$(pwd)
+
+set -ex
 
 #
 # Install PMDK libraries from a release package with already generated documentation.
