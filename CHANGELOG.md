@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rpma_mr_atomic_write() to use native atomic write if the created QP supported it
 - only the labeled (latest/stable/rolling etc.) versions of docker images (if available) are used in CI - it makes the CI self-updating
 - rpma_peer_new() to check the native flush support in kernel
+- rpma_peer_setup_qp() to enable native flush if both kernel and libibverbs supported it
 
 ### Removed
 - whole benchmarking framework for librpma (the last commit with the benchmarking framework present is marked with the "[benchmarking-framework][bench-frame]" tag)
