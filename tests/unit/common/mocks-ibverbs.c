@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -49,7 +49,8 @@ ibv_query_device(struct ibv_context *ibv_ctx,
 	return 0;
 }
 
-#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED)
+#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || \
+	defined(NATIVE_FLUSH_SUPPORTED)
 /*
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
