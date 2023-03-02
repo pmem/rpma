@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - a check for the native atomic write support in libibverbs
 - internal APIs:
   - rpma_utils_ibv_context_is_atomic_write_capable() - checks if kernel supports native atomic write
+  - rpma_utils_ibv_context_is_flush_capable() - checks if kernel supports native flush
 - Rocky Linux 8 and 9 builds to the "on_pull_request" workflow
 - show git diff of changed documentation when pull requests with updated documentation are not generated
 
