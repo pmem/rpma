@@ -1,6 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
+# Copyright (c) 2023 Fujitsu Limited
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -30,6 +31,9 @@ endfunction()
 add_test_mr(advise)
 add_test_mr(atomic_write)
 add_test_mr(descriptor)
+if(NATIVE_FLUSH_SUPPORTED)
+	add_test_mr(flush)
+endif()
 add_test_mr(get_flush_type)
 add_test_mr(local)
 add_test_mr(read)
