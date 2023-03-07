@@ -22,7 +22,7 @@ extern struct ibv_cq Ibv_rcq;
 extern struct ibv_cq Ibv_srq_rcq;
 extern struct ibv_cq Ibv_cq_unknown;
 extern struct ibv_qp Ibv_qp;
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 extern struct ibv_qp_ex Ibv_qp_ex;
 #endif
 extern struct ibv_mr Ibv_mr;
@@ -37,7 +37,7 @@ extern struct ibv_srq Ibv_srq;
 #define MOCK_IBV_CQ_UNKNOWN	(struct ibv_cq *)&Ibv_cq_unknown
 #define MOCK_IBV_PD		(struct ibv_pd *)&Ibv_pd
 #define MOCK_QP			(struct ibv_qp *)&Ibv_qp
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 #define MOCK_QPX		(struct ibv_qp_ex *)&Ibv_qp_ex
 #endif
 #define MOCK_MR			(struct ibv_mr *)&Ibv_mr
@@ -87,6 +87,19 @@ struct ibv_wr_atomic_write_mock_args {
 };
 #endif
 
+#ifdef NATIVE_FLUSH_SUPPORTED
+struct ibv_wr_flush_mock_args {
+	struct ibv_qp_ex *qp;
+	uint64_t wr_id;
+	uint32_t wr_flags;
+	uint32_t rkey;
+	uint64_t remote_addr;
+	size_t len;
+	uint8_t type;
+	uint8_t level;
+};
+#endif
+
 #if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || \
 	defined(NATIVE_FLUSH_SUPPORTED)
 int ibv_query_device_ex_mock(struct ibv_context *ibv_ctx,
@@ -115,15 +128,22 @@ struct ibv_srq *ibv_create_srq(struct ibv_pd *pd, struct ibv_srq_init_attr *srq_
 
 int ibv_destroy_srq(struct ibv_srq *srq);
 
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 struct ibv_qp_ex *ibv_qp_to_qp_ex(struct ibv_qp *qp);
 
 void ibv_wr_start_mock(struct ibv_qp_ex *qp);
 
+int ibv_wr_complete_mock(struct ibv_qp_ex *qp);
+#endif
+
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
 void ibv_wr_atomic_write_mock(struct ibv_qp_ex *qp, uint32_t rkey, uint64_t remote_addr,
 		const void *atomic_wr);
+#endif
 
-int ibv_wr_complete_mock(struct ibv_qp_ex *qp);
+#ifdef NATIVE_FLUSH_SUPPORTED
+void ibv_wr_flush_mock(struct ibv_qp_ex *qp, uint32_t rkey, uint64_t remote_addr,
+		size_t len, uint8_t type, uint8_t level);
 #endif
 
 #endif /* MOCKS_IBVERBS_H */
