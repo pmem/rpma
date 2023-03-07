@@ -15,6 +15,7 @@ PREFIX=/usr
 CC=${CC:-gcc}
 TEST_DIR=${RPMA_TEST_DIR:-${DEFAULT_TEST_DIR}}
 EXAMPLE_TEST_DIR="/tmp/rpma_example_build"
+RDMA_CORE_DIR="/rdma-core/build"
 
 # turn off sanitizers only if (CI_SANITS == OFF)
 [ "$CI_SANITS" != "OFF" ] && CI_SANITS=ON
@@ -139,6 +140,51 @@ CMAKE_VERSION=$(cmake --version | grep version | cut -d" " -f3 | cut -d. -f1)
 USR=$(find /usr -name "*protobuf-c.so*" || true)
 LIB=$(find /lib* -name "*protobuf-c.so*" || true)
 [ "$USR" == "" -a "$LIB" == "" ] && LIBPROTOBUFC_FOUND="NO"
+
+# Check if libibverbs installed from an OS package
+# supports both native atomic write and native flush (0 means it supports)
+IBVERBS_OK=$($CC ./utils/docker/verify-libibverbs-version.c > /dev/null 2>&1; echo $?)
+if [ $IBVERBS_OK -eq 0 ]; then
+	echo "NOTICE: OS-package libibverbs supports native atomic write and native flush"
+else
+	echo "NOTICE: OS-package libibverbs does NOT support native atomic write or native flush!"
+fi
+
+# If libibverbs installed from an OS package does not support native atomic write or native flush
+# and another, built from sources, version of rdma-core exists
+# (which supports both native atomic write and native flush),
+# run one build using the rdma-core installed from the OS package
+# and then switch to using only the built-from-sources version of rdma-core
+# for the rest of the builds.
+if [ $IBVERBS_OK -ne 0 -a -d "$RDMA_CORE_DIR" ]; then
+	echo
+	echo "##########################################################################"
+	echo "### Verify build on the OS-dependent version of rdma-core ($CC, DEBUG)"
+	echo "##########################################################################"
+
+	mkdir -p $WORKDIR/build
+	cd $WORKDIR/build
+
+	CC=$CC \
+	$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
+		-DTEST_DIR=$TEST_DIR \
+		-DBUILD_DEVELOPER_MODE=1
+
+	make -j$(nproc)
+	ctest --output-on-failure
+
+	cd $WORKDIR
+	rm -rf $WORKDIR/build
+
+	echo
+	echo "####################################################################################"
+	echo "### Using the built-from-sources version of rdma-core for the rest of the builds ###"
+	echo "####################################################################################"
+	echo "VERSION of rdma-core: $(cat $RDMA_CORE_DIR/VERSION)"
+	export PKG_CONFIG_PATH=$RDMA_CORE_DIR/lib/pkgconfig
+	export LD_LIBRARY_PATH=$RDMA_CORE_DIR/lib
+	export CPATH=$RDMA_CORE_DIR/include
+fi
 
 echo
 echo "##################################################################"
