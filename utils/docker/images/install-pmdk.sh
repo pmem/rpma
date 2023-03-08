@@ -15,6 +15,8 @@ PMDK_VERSION=8074b19b1d9b40bcaaed7e0dc0622dccf8007f2f
 
 WORKDIR=$(pwd)
 
+set -ex
+
 #
 # Install PMDK libraries from sources
 #
