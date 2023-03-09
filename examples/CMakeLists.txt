@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2022, Intel Corporation
+# Copyright 2018-2023, Intel Corporation
 # Copyright 2021-2022, Fujitsu
 #
 
@@ -78,7 +78,7 @@ function(add_example)
 		OUTPUT_NAME ${EXAMPLE_BIN}
 		RUNTIME_OUTPUT_DIRECTORY ${EXAMPLE_NAME})
 	target_link_libraries(${target} ${LIBRPMA_LIBRARIES} ${LIBRT_LIBRARIES}
-		${LIBIBVERBS_LIBRARIES})
+		${LIBIBVERBS_LDFLAGS} ${LIBIBVERBS_LIBRARIES})
 	target_include_directories(${target} PRIVATE common
 		${LIBRPMA_SOURCE_DIR} ${LIBIBVERBS_INCLUDE_DIRS})
 

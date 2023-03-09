@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2022, Intel Corporation
+# Copyright 2020-2023, Intel Corporation
 # Copyright 2021-2022, Fujitsu
 #
 
@@ -37,8 +37,18 @@ add_library(rpma SHARED ${SOURCES})
 
 target_include_directories(rpma PRIVATE . include)
 
+if(LIBIBVERBS_CFLAGS)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBIBVERBS_CFLAGS}")
+endif()
+
+if(LIBRDMACM_CFLAGS)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBRDMACM_CFLAGS}")
+endif()
+
 target_link_libraries(rpma PRIVATE
+	${LIBIBVERBS_LDFLAGS}
 	${LIBIBVERBS_LIBRARIES}
+	${LIBRDMACM_LDFLAGS}
 	${LIBRDMACM_LIBRARIES}
 	-Wl,--version-script=${CMAKE_SOURCE_DIR}/src/librpma.map)
 
