@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        CONFIG: ["N=1 OS=ubuntu OS_VER=22.04 TYPE=coverity CC=gcc"]
+        CONFIG: ["N=1 OS=ubuntu OS_VER=latest TYPE=coverity CC=gcc"]
     steps:
        - name: Clone the git repo
          uses: actions/checkout@v1

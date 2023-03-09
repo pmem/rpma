@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2016-2021, Intel Corporation
+# Copyright 2016-2023, Intel Corporation
 #
 
 #
@@ -31,7 +31,7 @@ fi
 
 # Check if the file Dockerfile.OS-VER exists
 if [[ ! -f "Dockerfile.$2" ]]; then
-	echo "ERROR: wrong argument."
+	echo "ERROR: the file does not exist: Dockerfile.$2"
 	usage
 	exit 1
 fi
