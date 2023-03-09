@@ -227,24 +227,24 @@ else
 fi
 
 if [ $PACKAGE_MANAGER = "deb" ]; then
-	echo "$ dpkg-deb --info ./librpma*.deb"
+	set -x
 	dpkg-deb --info ./librpma*.deb
-
-	echo "$ dpkg-deb -c ./librpma*.deb"
 	dpkg-deb -c ./librpma*.deb
-
-	echo "$ sudo -S dpkg -i ./librpma*.deb"
-	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb
-
+	# Use apt-get to install packages when the simplest way fails
+	# (for example when there are missing required packages).
+	sudo_password dpkg -i ./librpma*.deb || \
+		( sudo_password apt-get update -y && sudo_password apt-get install -y ./librpma*.deb || \
+		sudo_password apt --fix-broken install -y )
+	set +x
 elif [ $PACKAGE_MANAGER = "rpm" ]; then
-	echo "$ rpm -q --info ./librpma*.rpm"
+	set -x
 	rpm -q --info ./librpma*.rpm && true
-
-	echo "$ rpm -q --list ./librpma*.rpm"
 	rpm -q --list ./librpma*.rpm && true
-
-	echo "$ sudo -S rpm -ivh --force *.rpm"
-	echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+	# Use dnf to install packages when the simplest way fails
+	# (for example when there are missing required packages).
+	sudo_password rpm -ivh --force *.rpm || \
+		( sudo_password dnf update -y && sudo_password dnf install -y *.rpm )
+	set +x
 fi
 
 test_compile_all_examples_standalone
