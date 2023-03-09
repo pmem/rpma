@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020-2022, Intel Corporation
+# Copyright 2020-2023, Intel Corporation
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -38,7 +38,10 @@ function(add_example_with_pmem)
 	add_executable(${target} ${EXAMPLE_SRCS})
 	target_include_directories(${target} PRIVATE ../common
 		${LIBRPMA_INCLUDE_DIR} ${LIBIBVERBS_INCLUDE_DIRS})
-	target_link_libraries(${target} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
+	target_link_libraries(${target}
+		rpma
+		${LIBIBVERBS_LDFLAGS} ${LIBIBVERBS_LIBRARIES}
+		${LIBRT_LIBRARIES})
 
 	if(LIBPMEM2_FOUND)
 		target_include_directories(${target}

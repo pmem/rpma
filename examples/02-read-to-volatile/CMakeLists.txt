@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2020, Intel Corporation
+# Copyright 2020-2023, Intel Corporation
 # Copyright 2021, Fujitsu
 #
 
@@ -37,7 +37,10 @@ function(add_example name)
 		PUBLIC
 			${LIBRPMA_INCLUDE_DIRS}
 			../common)
-	target_link_libraries(${name} rpma ${LIBIBVERBS_LIBRARIES} ${LIBRT_LIBRARIES})
+	target_link_libraries(${name}
+		rpma
+		${LIBIBVERBS_LDFLAGS} ${LIBIBVERBS_LIBRARIES}
+		${LIBRT_LIBRARIES})
 endfunction()
 
 add_example(server server.c ../common/common-conn.c)

@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2022, Intel Corporation
+# Copyright 2018-2023, Intel Corporation
 # Copyright (c) 2022 Fujitsu Limited
 #
 
@@ -223,7 +223,7 @@ function(check_signature_rdma_getaddrinfo var)
 
 	if(C_HAS_Werror_discarded_qualifiers)
 		set(CMAKE_REQUIRED_FLAGS "${DISCARDED_QUALIFIERS_FLAG};${CMAKE_REQUIRED_FLAGS}")
-		set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
+		set(CMAKE_REQUIRED_LIBRARIES "${LIBRDMACM_LDFLAGS};${LIBRDMACM_LIBRARIES};${CMAKE_REQUIRED_LIBRARIES}")
 
 		CHECK_C_SOURCE_COMPILES("
 			#include <rdma/rdma_cma.h>
