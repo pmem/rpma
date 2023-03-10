@@ -211,7 +211,21 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Release \
 make -j$(nproc)
 ctest --output-on-failure
 
-if [ "$PACKAGE_MANAGER" = "" ]; then
+# check if rdma-core was installed from sources
+LPATH="-L/rdma-core/build/lib"
+IB_LPATH=$(pkg-config --libs-only-L libibverbs)
+CM_LPATH=$(pkg-config --libs-only-L librdmacm)
+if [[ "$IB_LPATH" == *"$LPATH"* ]] || [[ "$CM_LPATH" == *"$LPATH"* ]]; then
+	RDMA_CORE_INSTALLED_FROM_SOURCES=YES
+else
+	RDMA_CORE_INSTALLED_FROM_SOURCES=NO
+fi
+
+# If there is no package manager supported
+# or if rdma-core was installed from sources
+# install the librpma library from sources too,
+# otherwise make the librpma package and install it.
+if [ "$PACKAGE_MANAGER" = "" -o "$RDMA_CORE_INSTALLED_FROM_SOURCES" = "YES" ]; then
 	# install the library from sources
 	sudo_password make -j$(nproc) install
 else
@@ -224,32 +238,32 @@ else
 
 	make -j$(nproc) package
 	find . -iname "librpma*.$PACKAGE_MANAGER"
-fi
 
-if [ $PACKAGE_MANAGER = "deb" ]; then
-	echo "$ dpkg-deb --info ./librpma*.deb"
-	dpkg-deb --info ./librpma*.deb
+	if [ $PACKAGE_MANAGER = "deb" ]; then
+		echo "$ dpkg-deb --info ./librpma*.deb"
+		dpkg-deb --info ./librpma*.deb
 
-	echo "$ dpkg-deb -c ./librpma*.deb"
-	dpkg-deb -c ./librpma*.deb
+		echo "$ dpkg-deb -c ./librpma*.deb"
+		dpkg-deb -c ./librpma*.deb
 
-	echo "$ sudo -S dpkg -i ./librpma*.deb"
-	echo $USERPASS | sudo -S dpkg -i ./librpma*.deb
+		echo "$ sudo -S dpkg -i ./librpma*.deb"
+		echo $USERPASS | sudo -S dpkg -i ./librpma*.deb
 
-elif [ $PACKAGE_MANAGER = "rpm" ]; then
-	echo "$ rpm -q --info ./librpma*.rpm"
-	rpm -q --info ./librpma*.rpm && true
+	elif [ $PACKAGE_MANAGER = "rpm" ]; then
+		echo "$ rpm -q --info ./librpma*.rpm"
+		rpm -q --info ./librpma*.rpm && true
 
-	echo "$ rpm -q --list ./librpma*.rpm"
-	rpm -q --list ./librpma*.rpm && true
+		echo "$ rpm -q --list ./librpma*.rpm"
+		rpm -q --list ./librpma*.rpm && true
 
-	echo "$ sudo -S rpm -ivh --force *.rpm"
-	echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+		echo "$ sudo -S rpm -ivh --force *.rpm"
+		echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+	fi
 fi
 
 test_compile_all_examples_standalone
 
-if [ "$PACKAGE_MANAGER" = "" ]; then
+if [ "$PACKAGE_MANAGER" = "" -o "$RDMA_CORE_INSTALLED_FROM_SOURCES" = "YES" ]; then
 	# uninstall the library, since it was installed from sources
 	cd $WORKDIR/build
 	sudo_password make uninstall
