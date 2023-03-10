@@ -240,24 +240,17 @@ else
 	find . -iname "librpma*.$PACKAGE_MANAGER"
 
 	if [ $PACKAGE_MANAGER = "deb" ]; then
-		echo "$ dpkg-deb --info ./librpma*.deb"
+		set -x
 		dpkg-deb --info ./librpma*.deb
-
-		echo "$ dpkg-deb -c ./librpma*.deb"
 		dpkg-deb -c ./librpma*.deb
-
-		echo "$ sudo -S dpkg -i ./librpma*.deb"
-		echo $USERPASS | sudo -S dpkg -i ./librpma*.deb
-
+		sudo_password dpkg -i ./librpma*.deb
+		set +x
 	elif [ $PACKAGE_MANAGER = "rpm" ]; then
-		echo "$ rpm -q --info ./librpma*.rpm"
+		set -x
 		rpm -q --info ./librpma*.rpm && true
-
-		echo "$ rpm -q --list ./librpma*.rpm"
 		rpm -q --list ./librpma*.rpm && true
-
-		echo "$ sudo -S rpm -ivh --force *.rpm"
-		echo $USERPASS | sudo -S rpm -ivh --force *.rpm
+		sudo_password rpm -ivh --force *.rpm
+		set +x
 	fi
 fi
 
