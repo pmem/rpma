@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - a check if librpma uses rdma-core installed from sources
 - CI builds with rdma-core v45.0 installed from sources (with support for both native atomic write
   and native flush) on Ubuntu-latest and Fedora-latest CIs
+- BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED CMake option to disable support
+  for native atomic write in libibverbs
 
 ### Fixed
 - the "ibv_query_device_ex_mock undeclared" compiler error when ON_DEMAND_PAGING_SUPPORTED

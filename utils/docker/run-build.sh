@@ -194,6 +194,26 @@ cd $WORKDIR
 rm -rf $WORKDIR/build
 
 echo
+echo "#########################################################################################"
+echo "### Verify build with BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED=ON ($CC, DEBUG)"
+echo "#########################################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=$CC \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DBUILD_DEVELOPER_MODE=1 \
+	-DBUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED=ON
+
+make -j$(nproc) || make
+ctest --output-on-failure
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
 echo "##################################################################"
 echo "### Verify build and install (in dir: ${PREFIX}) ($CC, RELEASE)"
 echo "##################################################################"
