@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- missing unit tests for rpma_mr_atomic_write()
+- a check if librpma uses rdma-core installed from sources
+- CI builds with rdma-core v45.0 installed from sources (with support for both native atomic write
+  and native flush) on Ubuntu-latest and Fedora-latest CIs
+
+### Fixed
+- the "ibv_query_device_ex_mock undeclared" compiler error when ON_DEMAND_PAGING_SUPPORTED
+  is not defined and NATIVE_ATOMIC_WRITE_SUPPORTED is defined
+- some wrong and misleading comments in tests/unit/peer/peer-mr_reg.c
+- OS version in the Coverity CI build
+- preventing from failing the build when 'rpm -q' or 'dpkg-deb' commands fail
+
+### Changed
+- renamed IBV_WR_ATOMIC_WRITE_SUPPORTED to NATIVE_ATOMIC_WRITE_SUPPORTED
+- renamed is_ibv_wr_atomic_write_supported() to is_ibv_atomic_write_supported()
+- updated the install-pmdk.sh script to install PMDK 1.12.1-119-g8074b19b1 with fixes
+  required for Rocky Linux 8 and 9 and verify if the installation succeeded
 
 ## [1.2.0] - 2023-01-10
 ### Added
