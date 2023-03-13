@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- the native flush support (required support in the kernel and in an RNIC's driver)
 - missing unit tests for rpma_mr_atomic_write()
 - a check if librpma uses rdma-core installed from sources
 - CI builds with rdma-core v45.0 installed from sources (with support for both native atomic write
