@@ -245,8 +245,8 @@ else
 		set +x
 	elif [ $PACKAGE_MANAGER = "rpm" ]; then
 		set -x
-		rpm -q --info ./librpma*.rpm && true
-		rpm -q --list ./librpma*.rpm && true
+		rpm -q --info ./librpma*.rpm || true
+		rpm -q --list ./librpma*.rpm || true
 		sudo_password rpm -ivh --force *.rpm
 		set +x
 	fi
