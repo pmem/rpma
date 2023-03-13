@@ -239,14 +239,14 @@ else
 
 	if [ $PACKAGE_MANAGER = "deb" ]; then
 		set -x
-		dpkg-deb --info ./librpma*.deb
-		dpkg-deb -c ./librpma*.deb
+		dpkg-deb --info ./librpma*.deb || true
+		dpkg-deb -c ./librpma*.deb || true
 		sudo_password dpkg -i ./librpma*.deb
 		set +x
 	elif [ $PACKAGE_MANAGER = "rpm" ]; then
 		set -x
-		rpm -q --info ./librpma*.rpm && true
-		rpm -q --list ./librpma*.rpm && true
+		rpm -q --info ./librpma*.rpm || true
+		rpm -q --list ./librpma*.rpm || true
 		sudo_password rpm -ivh --force *.rpm
 		set +x
 	fi
