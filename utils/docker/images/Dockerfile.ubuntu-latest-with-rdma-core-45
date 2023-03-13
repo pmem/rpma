@@ -1,0 +1,103 @@
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2016-2023, Intel Corporation
+#
+
+#
+# Dockerfile.ubuntu-latest-with-rdma-core-45 - Dockerfile for Ubuntu-latest with rdma-core v45.0
+#                                              installed from sources.
+#
+# This dockerfile is a 'recipe' for Docker to build an image of ubuntu-based environment
+# prepared for running tests of librpma.
+#
+
+# Pull base image
+FROM ubuntu:latest
+MAINTAINER tomasz.gromadzki@intel.com
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Additional parameters to build docker without building components
+ARG SKIP_SCRIPTS_DOWNLOAD
+
+# Update the Apt cache and install basic tools
+RUN apt-get update && apt-get dist-upgrade -y
+
+# base Linux deps
+ENV BASE_DEPS "\
+	apt-utils \
+	build-essential \
+	clang \
+	devscripts \
+	git \
+	pkg-config \
+	sudo \
+	whois"
+
+# librpma library deps
+ENV RPMA_DEPS "\
+	cmake \
+	curl \
+	gawk \
+	groff \
+	graphviz \
+	pandoc"
+
+# examples deps ('libprotobuf-c-dev' is required only for examples 9 and 9s)
+ENV EXAMPLES_DEPS "\
+	libpmem-dev \
+	libpmem2-dev \
+	libprotobuf-c-dev"
+
+# packages required by the Coverity build
+ENV COVERITY_DEPS "\
+	ruby \
+	wget"
+
+# rdma-core built from sources deps
+ENV RDMA_CORE_FROM_SOURCES_DEPS "\
+	libnl-3-dev \
+	libnl-route-3-dev"
+
+# Install all required packages
+RUN apt-get install -y --no-install-recommends \
+	$BASE_DEPS \
+	$RPMA_DEPS \
+	$EXAMPLES_DEPS \
+	$COVERITY_DEPS \
+	$RDMA_CORE_FROM_SOURCES_DEPS \
+&& rm -rf /var/lib/apt/lists/*
+
+# Install rdma-core
+COPY install-rdma-core.sh install-rdma-core.sh
+RUN ./install-rdma-core.sh
+
+# Install cmocka
+COPY install-cmocka.sh install-cmocka.sh
+RUN ./install-cmocka.sh
+
+# Install txt2man
+COPY install-txt2man.sh install-txt2man.sh
+RUN ./install-txt2man.sh
+
+# Download scripts required in run-*.sh
+COPY download-scripts.sh download-scripts.sh
+COPY 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch 0001-fix-generating-gcov-files-and-turn-off-verbose-log.patch
+RUN ./download-scripts.sh
+
+# Add user
+ENV USER user
+ENV USERPASS p1a2s3s4
+RUN useradd -m $USER -g sudo -p `mkpasswd $USERPASS`
+USER $USER
+
+# Set required environment variables
+ENV OS ubuntu
+ENV OS_VER latest
+ENV PACKAGE_MANAGER deb
+ENV NOTTY 1
+# Paths to the rdma-core built from sources
+ENV PKG_CONFIG_PATH /rdma-core/build/lib/pkgconfig
+ENV LIBRARY_PATH /rdma-core/build/lib
+ENV LD_LIBRARY_PATH /rdma-core/build/lib
+ENV CPATH /rdma-core/build/include
