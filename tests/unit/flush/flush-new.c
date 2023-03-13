@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2021, Intel Corporation */
-/* Copyright 2021, Fujitsu */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * flush-new.c -- unit tests of the flush module
@@ -29,7 +29,7 @@ new__malloc_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
-	int ret = rpma_flush_new(MOCK_PEER, &flush);
+	int ret = rpma_flush_new(MOCK_PEER, MOCK_QP, &flush);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -44,11 +44,15 @@ new__apm_sysconf_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, NULL);
+#endif
 	will_return(__wrap_sysconf, MOCK_ERRNO);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
-	int ret = rpma_flush_new(MOCK_PEER, &flush);
+	int ret = rpma_flush_new(MOCK_PEER, MOCK_QP, &flush);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -63,12 +67,16 @@ new__apm_mmap_MAP_FAILED(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, NULL);
+#endif
 	will_return(__wrap_sysconf, MOCK_OK);
 	will_return(__wrap_mmap, MAP_FAILED);
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
-	int ret = rpma_flush_new(MOCK_PEER, &flush);
+	int ret = rpma_flush_new(MOCK_PEER, MOCK_QP, &flush);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -84,6 +92,10 @@ new__apm_mr_reg_E_NOMEM_munmap_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return_always(__wrap__test_malloc, MOCK_OK);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, NULL);
+#endif
 	will_return(__wrap_sysconf, MOCK_OK);
 
 	struct mmap_args allocated_raw = {0};
@@ -100,7 +112,7 @@ new__apm_mr_reg_E_NOMEM_munmap_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
-	int ret = rpma_flush_new(MOCK_PEER, &flush);
+	int ret = rpma_flush_new(MOCK_PEER, MOCK_QP, &flush);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -115,6 +127,10 @@ new__apm_malloc_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return(__wrap__test_malloc, MOCK_OK);
+#ifdef NATIVE_FLUSH_SUPPORTED
+	expect_value(ibv_qp_to_qp_ex, qp, MOCK_QP);
+	will_return(ibv_qp_to_qp_ex, NULL);
+#endif
 	will_return(__wrap_sysconf, MOCK_OK);
 
 	struct mmap_args allocated_raw = {0};
@@ -133,7 +149,7 @@ new__apm_malloc_ERRNO(void **unused)
 
 	/* run test */
 	struct rpma_flush *flush = NULL;
-	int ret = rpma_flush_new(MOCK_PEER, &flush);
+	int ret = rpma_flush_new(MOCK_PEER, MOCK_QP, &flush);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_NOMEM);
@@ -147,10 +163,24 @@ static void
 new__apm_success(void **unused)
 {
 	/*
-	 * The thing is done by setup__flush_new()
-	 * and teardown__flush_delete().
+	 * The thing is done by setup__apm_flush_new()
+	 * and teardown__apm_flush_delete().
 	 */
 }
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+/*
+ * new__native_success -- happy day scenario
+ */
+static void
+new__native_success(void **unused)
+{
+	/*
+	 * The thing is done by setup__native_flush_new()
+	 * and teardown__native_flush_delete().
+	 */
+}
+#endif
 
 /*
  * delete__apm_dereg_ERRNO -- rpma_mr_dereg() fails with MOCK_ERRNO
@@ -160,7 +190,7 @@ delete__apm_dereg_ERRNO(void **unused)
 {
 	struct flush_test_state *fstate;
 
-	setup__flush_new((void **)&fstate);
+	setup__apm_flush_new((void **)&fstate);
 
 	/* configure mocks */
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
@@ -185,7 +215,7 @@ delete__apm_munmap_ERRNO(void **unused)
 {
 	struct flush_test_state *fstate;
 
-	setup__flush_new((void **)&fstate);
+	setup__apm_flush_new((void **)&fstate);
 
 	/* configure mocks */
 	expect_value(rpma_mr_dereg, *mr_ptr, MOCK_RPMA_MR_LOCAL);
@@ -214,14 +244,17 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__apm_mr_reg_E_NOMEM_munmap_ERRNO),
 		cmocka_unit_test(new__apm_malloc_ERRNO),
 		cmocka_unit_test_setup_teardown(new__apm_success,
-			setup__flush_new, teardown__flush_delete),
-
+			setup__apm_flush_new, teardown__apm_flush_delete),
+#ifdef NATIVE_FLUSH_SUPPORTED
+		cmocka_unit_test_setup_teardown(new__native_success,
+			setup__native_flush_new, teardown__native_flush_delete),
+#endif
 		/* rpma_flush_delete() unit tests */
 		cmocka_unit_test(delete__apm_dereg_ERRNO),
 		cmocka_unit_test(delete__apm_munmap_ERRNO),
 	};
 
-	int ret = cmocka_run_group_tests(tests, NULL, NULL);
+	int ret = cmocka_run_group_tests(tests, group_setup_flush_common, NULL);
 
 	disable_unistd_mocks();
 

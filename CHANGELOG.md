@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rpma_peer_new() to check the native flush support in kernel
 - rpma_peer_setup_qp() to enable native flush if both kernel and libibverbs supported it
 - rpma_peer_usage2access() to return native access flags if both kernel and libibverbs supported native flush
+- rpma_flush() to use native flush if the created QP supported it
 
 ## [1.2.0] - 2023-01-10
 ### Added
