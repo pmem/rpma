@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * peer-new.c -- a peer unit test
@@ -93,6 +93,7 @@ new__alloc_pd_ENOMEM(void **unused)
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, ENOMEM);
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 1);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -121,6 +122,7 @@ new__alloc_pd_ERRNO(void **unused)
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_ERRNO);
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 1);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -149,6 +151,7 @@ new__alloc_pd_no_error(void **unused)
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return(ibv_alloc_pd, MOCK_OK);
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 1);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return_maybe(__wrap__test_malloc, MOCK_OK);
 
@@ -186,6 +189,30 @@ new__atomic_write_ERRNO(void **unused)
 }
 
 /*
+ * new__flush_ERRNO -- rpma_utils_ibv_context_is_flush_capable() fails with MOCK_ERRNO
+ */
+static void
+new__flush_ERRNO(void **unused)
+{
+	/* configure mocks */
+	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return(rpma_utils_ibv_context_is_flush_capable, MOCK_ERR_PENDING);
+	will_return(rpma_utils_ibv_context_is_flush_capable, RPMA_E_PROVIDER);
+	will_return(rpma_utils_ibv_context_is_flush_capable, MOCK_ERRNO);
+	will_return_maybe(__wrap__test_malloc, MOCK_OK);
+	will_return_maybe(ibv_alloc_pd, MOCK_IBV_PD);
+	will_return_maybe(ibv_dealloc_pd, MOCK_OK);
+
+	/* run test */
+	struct rpma_peer *peer = NULL;
+	int ret = rpma_peer_new(MOCK_VERBS, &peer);
+
+	/* verify the results */
+	assert_int_equal(ret, RPMA_E_PROVIDER);
+	assert_null(peer);
+}
+
+/*
  * new__odp_ERRNO -- rpma_utils_ibv_context_is_odp_capable()
  * fails with MOCK_ERRNO
  */
@@ -194,6 +221,7 @@ new__odp_ERRNO(void **unused)
 {
 	/* configure mocks */
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 1);
 	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERR_PENDING);
 	will_return(rpma_utils_ibv_context_is_odp_capable, RPMA_E_PROVIDER);
 	will_return(rpma_utils_ibv_context_is_odp_capable, MOCK_ERRNO);
@@ -225,6 +253,7 @@ new__malloc_ERRNO(void **unused)
 		{MOCK_PASSTHROUGH, MOCK_OK};
 	will_return_maybe(ibv_dealloc_pd, &dealloc_args);
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 1);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 1);
 	will_return_maybe(rpma_utils_ibv_context_is_odp_capable, 1);
 
 	/* run test */
@@ -251,6 +280,7 @@ new__success(void **unused)
 	will_return(ibv_alloc_pd, &alloc_args);
 	expect_value(ibv_alloc_pd, ibv_ctx, MOCK_VERBS);
 	will_return_maybe(rpma_utils_ibv_context_is_atomic_write_capable, 0);
+	will_return_maybe(rpma_utils_ibv_context_is_flush_capable, 0);
 	will_return(rpma_utils_ibv_context_is_odp_capable, 1);
 	will_return(__wrap__test_malloc, MOCK_OK);
 
@@ -359,6 +389,7 @@ main(int argc, char *argv[])
 		cmocka_unit_test(new__alloc_pd_no_error),
 		cmocka_unit_test(new__odp_ERRNO),
 		cmocka_unit_test(new__atomic_write_ERRNO),
+		cmocka_unit_test(new__flush_ERRNO),
 		cmocka_unit_test(new__malloc_ERRNO),
 		cmocka_unit_test(new__success),
 
