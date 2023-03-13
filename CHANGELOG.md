@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - renamed is_ibv_wr_atomic_write_supported() to is_ibv_atomic_write_supported()
 - updated the install-pmdk.sh script to install PMDK 1.12.1-119-g8074b19b1 with fixes
   required for Rocky Linux 8 and 9 and verify if the installation succeeded
+- rpma_peer_new() to check the native flush support in kernel
 
 ## [1.2.0] - 2023-01-10
 ### Added

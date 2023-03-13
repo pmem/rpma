@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
-/* Copyright (c) 2022, Fujitsu Limited */
+/* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * mocks-rpma-utils.c -- librpma utils.c module mocks (rpma_utils_*)
@@ -26,6 +26,28 @@ rpma_utils_ibv_context_is_atomic_write_capable(struct ibv_context *ibv_ctx,
 
 	*is_atomic_write_capable = mock_type(int);
 	if (*is_atomic_write_capable == MOCK_ERR_PENDING) {
+		int ret = mock_type(int);
+		/* XXX validate the errno handling */
+		if (ret == RPMA_E_PROVIDER)
+			errno = mock_type(int);
+		return ret;
+	}
+
+	return 0;
+}
+
+/*
+ * rpma_utils_ibv_context_is_flush_capable --
+ * rpma_utils_ibv_context_is_flush_capable() mock
+ */
+int
+rpma_utils_ibv_context_is_flush_capable(struct ibv_context *ibv_ctx, int *is_flush_capable)
+{
+	assert_ptr_equal(ibv_ctx, MOCK_VERBS);
+	assert_non_null(is_flush_capable);
+
+	*is_flush_capable = mock_type(int);
+	if (*is_flush_capable == MOCK_ERR_PENDING) {
 		int ret = mock_type(int);
 		/* XXX validate the errno handling */
 		if (ret == RPMA_E_PROVIDER)
