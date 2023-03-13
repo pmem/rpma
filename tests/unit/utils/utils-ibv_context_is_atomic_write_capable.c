@@ -86,7 +86,9 @@ int
 main(int argc, char *argv[])
 {
 	MOCK_VERBS->abi_compat = __VERBS_ABI_IS_EXTENDED;
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
 	Verbs_context.query_device_ex = ibv_query_device_ex_mock;
+#endif
 	Verbs_context.sz = sizeof(struct verbs_context);
 
 	const struct CMUnitTest tests[] = {
