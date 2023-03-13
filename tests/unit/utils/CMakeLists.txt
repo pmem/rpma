@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2022, Intel Corporation
-# Copyright (c) 2022 Fujitsu Limited
+# Copyright (c) 2022-2023, Fujitsu Limited
 #
 
 include(../../cmake/ctest_helpers.cmake)
@@ -32,6 +32,7 @@ endfunction()
 add_test_utils(conn_event_2str)
 add_test_utils(get_ibv_context)
 add_test_utils(ibv_context_is_atomic_write_capable)
+add_test_utils(ibv_context_is_flush_capable)
 
 if(ON_DEMAND_PAGING_SUPPORTED)
 	add_test_utils(ibv_context_is_odp_capable)
