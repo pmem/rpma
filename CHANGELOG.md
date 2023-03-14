@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - some wrong and misleading comments in tests/unit/peer/peer-mr_reg.c
 - OS version in the Coverity CI build
 - preventing from failing the build when 'rpm -q' or 'dpkg-deb' commands fail
+- the "ibv_query_device_ex_mock undeclared" compiler error when both ON_DEMAND_PAGING_SUPPORTED
+  and NATIVE_ATOMIC_WRITE_SUPPORTED are not defined
 
 ### Changed
 - renamed IBV_WR_ATOMIC_WRITE_SUPPORTED to NATIVE_ATOMIC_WRITE_SUPPORTED
