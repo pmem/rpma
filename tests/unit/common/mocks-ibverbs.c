@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * mock-ibverbs.c -- libibverbs mocks
@@ -24,7 +24,7 @@ struct ibv_cq Ibv_rcq;
 struct ibv_cq Ibv_srq_rcq;
 struct ibv_cq Ibv_cq_unknown;
 struct ibv_qp Ibv_qp;
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 struct ibv_qp_ex Ibv_qp_ex;
 #endif
 struct ibv_mr Ibv_mr;
@@ -49,7 +49,8 @@ ibv_query_device(struct ibv_context *ibv_ctx,
 	return 0;
 }
 
-#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED)
+#if defined(ON_DEMAND_PAGING_SUPPORTED) || defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || \
+	defined(NATIVE_FLUSH_SUPPORTED)
 /*
  * ibv_query_device_ex_mock -- ibv_query_device_ex() mock
  */
@@ -433,7 +434,7 @@ ibv_destroy_srq(struct ibv_srq *srq)
 	return mock_type(int);
 }
 
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
 /*
  * ibv_qp_to_qp_ex -- ibv_qp_to_qp_ex() mock
  */
@@ -455,6 +456,19 @@ ibv_wr_start_mock(struct ibv_qp_ex *qp)
 }
 
 /*
+ * ibv_wr_complete_mock -- ibv_wr_complete() mock
+ */
+int
+ibv_wr_complete_mock(struct ibv_qp_ex *qp)
+{
+	check_expected(qp);
+
+	return mock_type(int);
+}
+#endif
+
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+/*
  * ibv_wr_atomic_write_mock -- ibv_wr_atomic_write() mock
  */
 void
@@ -471,15 +485,26 @@ ibv_wr_atomic_write_mock(struct ibv_qp_ex *qp, uint32_t rkey,
 	assert_int_equal(remote_addr, args->remote_addr);
 	assert_memory_equal(atomic_wr, args->atomic_wr, 8);
 }
+#endif
 
+#ifdef NATIVE_FLUSH_SUPPORTED
 /*
- * ibv_wr_complete_mock -- ibv_wr_complete() mock
+ * ibv_wr_flush_mock -- ibv_wr_flush() mock
  */
-int
-ibv_wr_complete_mock(struct ibv_qp_ex *qp)
+void
+ibv_wr_flush_mock(struct ibv_qp_ex *qp, uint32_t rkey, uint64_t remote_addr,
+		size_t len, uint8_t type, uint8_t level)
 {
-	check_expected(qp);
+	struct ibv_wr_flush_mock_args *args =
+		mock_type(struct ibv_wr_flush_mock_args *);
 
-	return mock_type(int);
+	assert_int_equal(qp, args->qp);
+	assert_int_equal(qp->wr_id, args->wr_id);
+	assert_int_equal(qp->wr_flags, args->wr_flags);
+	assert_int_equal(rkey, args->rkey);
+	assert_int_equal(remote_addr, args->remote_addr);
+	assert_int_equal(len, args->len);
+	assert_int_equal(type, args->type);
+	assert_int_equal(level, args->level);
 }
 #endif

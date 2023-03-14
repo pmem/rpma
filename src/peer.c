@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2021-2022, Fujitsu Limited */
+/* Copyright (c) 2021-2023, Fujitsu Limited */
 
 /*
  * peer.c -- librpma peer-related implementations
@@ -34,6 +34,8 @@ struct rpma_peer {
 	int is_odp_supported; /* is On-Demand Paging supported */
 
 	int is_native_atomic_write_supported; /* is native atomic write supported */
+
+	int is_native_flush_supported; /* is native flush supported */
 };
 
 /* internal librpma API */
@@ -51,10 +53,25 @@ rpma_peer_usage2access(struct rpma_peer *peer, int usage)
 	enum ibv_transport_type type = peer->pd->context->device->transport_type;
 	int access = 0;
 
-	if (usage & (RPMA_MR_USAGE_READ_SRC |\
-			RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |\
-			RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+	if (usage & RPMA_MR_USAGE_READ_SRC)
 		access |= IBV_ACCESS_REMOTE_READ;
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (peer->is_native_flush_supported) {
+		if (usage & RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY)
+			access |= IBV_ACCESS_FLUSH_GLOBAL;
+
+		if (usage & RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT)
+			access |= IBV_ACCESS_FLUSH_PERSISTENT;
+	} else {
+		if (usage & (RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY |
+				RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+			access |= IBV_ACCESS_REMOTE_READ;
+	}
+#else
+	if (usage & (RPMA_MR_USAGE_FLUSH_TYPE_VISIBILITY | RPMA_MR_USAGE_FLUSH_TYPE_PERSISTENT))
+		access |= IBV_ACCESS_REMOTE_READ;
+#endif
 
 	if (usage & RPMA_MR_USAGE_READ_DST) {
 		access |= IBV_ACCESS_LOCAL_WRITE;
@@ -191,12 +208,21 @@ rpma_peer_setup_qp(struct rpma_peer *peer, struct rdma_cm_id *id, struct rpma_cq
 
 	qp_init_attr.comp_mask = IBV_QP_INIT_ATTR_PD;
 
-#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
-	if (peer->is_native_atomic_write_supported) {
-		qp_init_attr.comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
-		qp_init_attr.send_ops_flags = IBV_QP_EX_WITH_ATOMIC_WRITE;
-	}
+#if defined(NATIVE_ATOMIC_WRITE_SUPPORTED) || defined(NATIVE_FLUSH_SUPPORTED)
+	qp_init_attr.comp_mask |= IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
+	qp_init_attr.send_ops_flags = 0;
 #endif
+
+#ifdef NATIVE_ATOMIC_WRITE_SUPPORTED
+	if (peer->is_native_atomic_write_supported)
+		qp_init_attr.send_ops_flags |= IBV_QP_EX_WITH_ATOMIC_WRITE;
+#endif
+
+#ifdef NATIVE_FLUSH_SUPPORTED
+	if (peer->is_native_flush_supported)
+		qp_init_attr.send_ops_flags |= IBV_QP_EX_WITH_FLUSH;
+#endif
+
 	qp_init_attr.pd = peer->pd;
 
 	/*
@@ -298,6 +324,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 
 	int is_odp_supported = 0;
 	int is_native_atomic_write_supported = 0;
+	int is_native_flush_supported = 0;
 	int ret;
 
 	if (ibv_ctx == NULL || peer_ptr == NULL)
@@ -311,6 +338,15 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	if (!is_native_atomic_write_supported)
 		RPMA_LOG_INFO(
 			"Native atomic write is not supported - ordinary RDMA write will be used instead.");
+
+	ret = rpma_utils_ibv_context_is_flush_capable(ibv_ctx,
+			&is_native_flush_supported);
+	if (ret)
+		return ret;
+
+	if (!is_native_flush_supported)
+		RPMA_LOG_INFO(
+			"Native flush is not supported - ordinary RDMA read will be used instead.");
 
 	ret = rpma_utils_ibv_context_is_odp_capable(ibv_ctx, &is_odp_supported);
 	if (ret)
@@ -352,6 +388,7 @@ rpma_peer_new(struct ibv_context *ibv_ctx, struct rpma_peer **peer_ptr)
 	peer->pd = pd;
 	peer->is_odp_supported = is_odp_supported;
 	peer->is_native_atomic_write_supported = is_native_atomic_write_supported;
+	peer->is_native_flush_supported = is_native_flush_supported;
 	*peer_ptr = peer;
 
 	return 0;

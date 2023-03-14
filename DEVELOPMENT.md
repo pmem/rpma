@@ -38,6 +38,7 @@ Here is a list of the most interesting CMake options of the librpma library:
 | BUILD_DEVELOPER_MODE | Enable developer checks | ON/OFF | OFF |
 | BUILD_FORCE_ODP_NOT_SUPPORTED | Disable On-Demand Paging (ODP) support in libibverbs | ON/OFF | OFF |
 | BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED | Disable support for native atomic write in libibverbs | ON/OFF | OFF |
+| BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED | Disable support for the native flush in libibverbs | ON/OFF | OFF |
 | TESTS_COVERAGE | Check the code coverage during compilation | ON/OFF | OFF |
 | TESTS_USE_FORCED_PMEM | Run tests with PMEM_IS_PMEM_FORCE=1 | ON/OFF | OFF |
 | TESTS_USE_VALGRIND_PMEMCHECK | Enable tests with valgrind pmemcheck (if found)| ON/OFF | OFF |

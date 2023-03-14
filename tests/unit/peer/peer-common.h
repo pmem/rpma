@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Copyright 2020-2022, Intel Corporation */
-/* Copyright (c) 2022, Fujitsu Limited */
+/* Copyright (c) 2022-2023, Fujitsu Limited */
 
 /*
  * peer-common.h -- the header of the common part of the peer unit test
@@ -45,6 +45,7 @@ struct prestate {
 	unsigned access;
 	int is_odp_capable;
 	int is_atomic_write_capable;
+	int is_flush_capable;
 	struct rpma_peer *peer;
 };
 

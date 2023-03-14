@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020-2023, Intel Corporation
-# Copyright (c) 2022 Fujitsu Limited
+# Copyright (c) 2022-2023, Fujitsu Limited
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -41,6 +41,7 @@ option(BUILD_EXAMPLES "build examples" ON)
 option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
 option(BUILD_FORCE_ODP_NOT_SUPPORTED "Disable On-Demand Paging (ODP) support in libibverbs" OFF)
 option(BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED "Disable support for native atomic write in libibverbs" OFF)
+option(BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED "Disable support for the native flush in libibverbs" OFF)
 
 option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
@@ -195,6 +196,19 @@ else()
 		add_flag(-DNATIVE_ATOMIC_WRITE_SUPPORTED=1)
 	else()
 		message(WARNING "Native atomic write is NOT supported and will be disabled (too old version of libibverbs)!")
+	endif()
+endif()
+
+# check if libibverbs supports the native flush
+if(BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED)
+	message(WARNING "Support for the native flush in libibverbs is disabled by the BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED option!")
+else()
+	is_ibv_flush_supported(NATIVE_FLUSH_SUPPORTED)
+	if(NATIVE_FLUSH_SUPPORTED)
+		message(STATUS "Native flush supported in libibverbs - Success")
+		add_flag(-DNATIVE_FLUSH_SUPPORTED=1)
+	else()
+		message(WARNING "Native flush is NOT supported and will be disabled (too old version of libibverbs)!")
 	endif()
 endif()
 

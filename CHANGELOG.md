@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- the native flush support (required support in the kernel and in an RNIC's driver)
 - missing unit tests for rpma_mr_atomic_write()
 - a check if librpma uses rdma-core installed from sources
 - CI builds with rdma-core v45.0 installed from sources (with support for both native atomic write
   and native flush) on Ubuntu-latest and Fedora-latest CIs
+- internal APIs:
+  - rpma_utils_ibv_context_is_flush_capable() - checks if kernel supports the native flush
 - BUILD_FORCE_ODP_NOT_SUPPORTED CMake option to disable On-Demand Paging (ODP) support in libibverbs
 - BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED CMake option to disable support
   for native atomic write in libibverbs
+- BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED CMake option to disable support for the native flush
+  in libibverbs
 
 ### Fixed
 - the "ibv_query_device_ex_mock undeclared" compiler error when ON_DEMAND_PAGING_SUPPORTED
@@ -29,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - renamed is_ibv_wr_atomic_write_supported() to is_ibv_atomic_write_supported()
 - updated the install-pmdk.sh script to install PMDK 1.12.1-119-g8074b19b1 with fixes
   required for Rocky Linux 8 and 9 and verify if the installation succeeded
+- rpma_peer_new() to check the native flush support in kernel
+- rpma_peer_setup_qp() to enable the native flush if both kernel and libibverbs support it
+- rpma_peer_usage2access() to return native access flags if both kernel and libibverbs support the native flush
+- rpma_flush() to use the native flush if the created QP supports it
 
 ## [1.2.0] - 2023-01-10
 ### Added
