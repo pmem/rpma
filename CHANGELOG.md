@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and native flush) on Ubuntu-latest and Fedora-latest CIs
 - internal APIs:
   - rpma_utils_ibv_context_is_flush_capable() - checks if kernel supports native flush
+- a option for cmake to disable support for native flush in libibverbs
 
 ### Fixed
 - the "ibv_query_device_ex_mock undeclared" compiler error when ON_DEMAND_PAGING_SUPPORTED

@@ -39,6 +39,7 @@ option(BUILD_DOC "build documentation" ON)
 option(BUILD_TESTS "build tests" ON)
 option(BUILD_EXAMPLES "build examples" ON)
 option(BUILD_DEVELOPER_MODE "enable developer checks" OFF)
+option(BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED "Disable support for native flush in libibverbs" OFF)
 
 option(TESTS_COVERAGE "run coverage test" OFF)
 option(TESTS_NO_FORTIFY_SOURCE "enable tests that do not pass when -D_FORTIFY_SOURCE=2 flag set" OFF)
@@ -188,13 +189,18 @@ else()
 	message(WARNING "Native atomic write is NOT supported and will be disabled (too old version of libibverbs)!")
 endif()
 
-# check if libibverbs supports native flush
-is_ibv_flush_supported(NATIVE_FLUSH_SUPPORTED)
-if(NATIVE_FLUSH_SUPPORTED)
-	message(STATUS "Native flush supported in libibverbs - Success")
-	add_flag(-DNATIVE_FLUSH_SUPPORTED=1)
+# check if BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED is set
+if(BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED)
+	message(WARNING "Support for native flush in libibverbs is disabled by the BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED option!")
 else()
-	message(WARNING "Native flush is NOT supported and will be disabled (too old version of libibverbs)!")
+	# check if libibverbs supports native flush
+	is_ibv_flush_supported(NATIVE_FLUSH_SUPPORTED)
+	if(NATIVE_FLUSH_SUPPORTED)
+		message(STATUS "Native flush supported in libibverbs - Success")
+		add_flag(-DNATIVE_FLUSH_SUPPORTED=1)
+	else()
+		message(WARNING "Native flush is NOT supported and will be disabled (too old version of libibverbs)!")
+	endif()
 endif()
 
 add_custom_target(checkers ALL)

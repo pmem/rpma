@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2016-2023, Intel Corporation
+# Copyright (c) 2023 Fujitsu Limited
 #
 
 #
@@ -156,6 +157,26 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 	-DDEBUG_USE_UBSAN=${CI_SANITS}
 
 make -j$(nproc)
+ctest --output-on-failure
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "#########################################################################################"
+echo "### Verify build with BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED=ON ($CC, DEBUG)"
+echo "#########################################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=$CC \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DBUILD_DEVELOPER_MODE=1 \
+	-DBUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED=ON
+
+make -j$(nproc) || make
 ctest --output-on-failure
 
 cd $WORKDIR
