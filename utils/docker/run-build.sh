@@ -143,27 +143,6 @@ LIB=$(find /lib* -name "*protobuf-c.so*" || true)
 
 echo
 echo "##################################################################"
-echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
-echo "##################################################################"
-
-mkdir -p $WORKDIR/build
-cd $WORKDIR/build
-
-CC=$CC \
-$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
-	-DTEST_DIR=$TEST_DIR \
-	-DBUILD_DEVELOPER_MODE=1 \
-	-DDEBUG_USE_ASAN=${CI_SANITS} \
-	-DDEBUG_USE_UBSAN=${CI_SANITS}
-
-make -j$(nproc)
-ctest --output-on-failure
-
-cd $WORKDIR
-rm -rf $WORKDIR/build
-
-echo
-echo "##################################################################"
 echo "### Verify build and install (in dir: ${PREFIX}) ($CC, DEBUG)"
 echo "##################################################################"
 
@@ -190,6 +169,27 @@ test_compile_all_examples_standalone
 # Uninstall libraries
 cd $WORKDIR/build
 sudo_password make uninstall
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "##################################################################"
+echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
+echo "##################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=$CC \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DBUILD_DEVELOPER_MODE=1 \
+	-DDEBUG_USE_ASAN=${CI_SANITS} \
+	-DDEBUG_USE_UBSAN=${CI_SANITS}
+
+make -j$(nproc)
+ctest --output-on-failure
 
 cd $WORKDIR
 rm -rf $WORKDIR/build
