@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BUILD_FORCE_ODP_NOT_SUPPORTED CMake option to disable On-Demand Paging (ODP) support in libibverbs
 - BUILD_FORCE_NATIVE_ATOMIC_WRITE_NOT_SUPPORTED CMake option to disable support
   for native atomic write in libibverbs
+- BUILD_FORCE_NATIVE_FLUSH_NOT_SUPPORTED CMake option to disable support for native flush
+  in libibverbs
 
 ### Fixed
 - the "ibv_query_device_ex_mock undeclared" compiler error when ON_DEMAND_PAGING_SUPPORTED
