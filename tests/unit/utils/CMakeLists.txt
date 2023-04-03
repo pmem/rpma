@@ -33,7 +33,4 @@ add_test_utils(conn_event_2str)
 add_test_utils(get_ibv_context)
 add_test_utils(ibv_context_is_atomic_write_capable)
 add_test_utils(ibv_context_is_flush_capable)
-
-if(ON_DEMAND_PAGING_SUPPORTED)
-	add_test_utils(ibv_context_is_odp_capable)
-endif()
+add_test_utils(ibv_context_is_odp_capable)
