@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /* Copyright 2020, Intel Corporation */
+/* Copyright (c) 2023 Fujitsu Limite */
 
 /*
  * utils-ibv_context_is_odp_capable.c -- a unit test for
@@ -51,6 +52,7 @@ ibvc_odp__ibv_ctx_cap_NULL(void **unused)
 	assert_int_equal(ret, RPMA_E_INVAL);
 }
 
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 /*
  * ibvc_odp__query_fail -- ibv_query_device_ex() failed
  */
@@ -63,8 +65,7 @@ ibvc_odp__query_fail(void **unused)
 
 	/* run test */
 	int is_odp_capable;
-	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS,
-			&is_odp_capable);
+	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS, &is_odp_capable);
 
 	/* verify the results */
 	assert_int_equal(ret, RPMA_E_PROVIDER);
@@ -92,8 +93,7 @@ ibvc_odp__general_caps_no(void **unused)
 
 	/* run test */
 	int is_odp_capable;
-	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS,
-			&is_odp_capable);
+	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS, &is_odp_capable);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -123,8 +123,7 @@ ibvc_odp__rc_caps_not_all(void **unused)
 
 	/* run test */
 	int is_odp_capable;
-	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS,
-			&is_odp_capable);
+	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS, &is_odp_capable);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
@@ -152,19 +151,36 @@ ibvc_odp__odp_capable(void **unused)
 
 	/* run test */
 	int is_odp_capable;
-	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS,
-			&is_odp_capable);
+	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS, &is_odp_capable);
 
 	/* verify the results */
 	assert_int_equal(ret, 0);
 	assert_int_equal(is_odp_capable, 1);
 }
+#else
+/*
+ * ibvc_odp__odp_incapable -- ON_DEMAND_PAGING_SUPPORTED is not defined
+ */
+static void
+ibvc_odp__odp_incapable(void **unused)
+{
+	/* run test */
+	int is_odp_capable;
+	int ret = rpma_utils_ibv_context_is_odp_capable(MOCK_VERBS, &is_odp_capable);
+
+	/* verify the results */
+	assert_int_equal(ret, 0);
+	assert_int_equal(is_odp_capable, 0);
+}
+#endif
 
 int
 main(int argc, char *argv[])
 {
 	MOCK_VERBS->abi_compat = __VERBS_ABI_IS_EXTENDED;
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 	Verbs_context.query_device_ex = ibv_query_device_ex_mock;
+#endif
 	Verbs_context.sz = sizeof(struct verbs_context);
 
 	const struct CMUnitTest tests[] = {
@@ -172,10 +188,14 @@ main(int argc, char *argv[])
 		cmocka_unit_test(ibvc_odp__ibv_ctx_NULL),
 		cmocka_unit_test(ibvc_odp__cap_NULL),
 		cmocka_unit_test(ibvc_odp__ibv_ctx_cap_NULL),
+#ifdef ON_DEMAND_PAGING_SUPPORTED
 		cmocka_unit_test(ibvc_odp__query_fail),
 		cmocka_unit_test(ibvc_odp__general_caps_no),
 		cmocka_unit_test(ibvc_odp__rc_caps_not_all),
 		cmocka_unit_test(ibvc_odp__odp_capable),
+#else
+		cmocka_unit_test(ibvc_odp__odp_incapable),
+#endif
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
