@@ -1,0 +1,44 @@
+#
+# Builds run on every pull request and every push to the repo.
+#
+
+name: CodeCoverage
+on: [push, pull_request]
+
+env:
+    GITHUB_REPO:    pmem/rpma
+    # use GitHub Container Registry as a repository of docker images
+    GH_CR_ADDR:     ghcr.io
+    DOCKER_REPO:    ghcr.io/pmem/rpma
+    # use org's Private Access Token to log in to GitHub Container Registry
+    GH_CR_USER:     ${{ secrets.GH_CR_USER }}
+    GH_CR_PAT:      ${{ secrets.GH_CR_PAT }}
+    HOST_WORKDIR:   /home/runner/work/rpma/rpma
+    WORKDIR:        utils/docker
+    TYPE:           normal
+    OS:             ubuntu
+    OS_VER:         latest-with-rdma-core-45
+    CC:             gcc
+    TESTS_COVERAGE: 1
+
+jobs:
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    steps:
+       - name: Clone the git repo
+         uses: actions/checkout@v3
+
+       - name: Pull or rebuild the image
+         run: cd $WORKDIR && ./pull-or-rebuild-image.sh
+
+       - name: Run the build
+         run: cd $WORKDIR && ./build.sh
+
+       - name: Upload coverage to Codecov
+         uses: codecov/codecov-action@v3
+         with:
+          gcov: true
+          root_dir: /home/runner/work/rpma/rpma/
+          directory: /home/runner/work/rpma/rpma/
+          verbose: true
