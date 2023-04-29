@@ -32,6 +32,7 @@ Here is a list of the most interesting CMake options of the librpma library:
 | - | - | - | - |
 | CMAKE_BUILD_TYPE | Choose the type of build | None/Release/Debug/RelWithDebInfo | Release |
 | CMAKE_INSTALL_PREFIX | An install path prefix, prepended to install directories | *dir path* | /usr/local |
+| CPACK_GENERATOR | Use CPack to generate a librpma package | ""/RPM/DEB | "" |
 | BUILD_DOC | Build the documentation | ON/OFF | ON |
 | BUILD_TESTS | Build the tests | ON/OFF | ON |
 | BUILD_EXAMPLES | Build the examples | ON/OFF | ON |
