@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.3.0-rc1] - 2023-05-25
+## [1.3.0] - 2023-05-25
 ### Added
 - the native flush support (required support in the kernel and in an RNIC's driver)
 - missing unit tests for rpma_mr_atomic_write()
