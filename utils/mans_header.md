@@ -6,7 +6,7 @@ description: ""
 disclaimer: "The contents of this web site and the associated <a href=\"https://github.com/pmem\">GitHub repositories</a> are BSD-licensed open source."
 aliases: ["MANUAL_NAME_TO_REPLACE.html"]
 title: "librpma | PMDK"
-header: "librpma API version 1.2.0"
+header: "librpma API version 1.3.0"
 ---
 {{< manpages >}}
 
