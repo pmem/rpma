@@ -222,3 +222,7 @@ To see all available configuration options please take a look at the help messag
 ```sh
 [rpma]$ ./examples/run-all-examples.sh
 ```
+
+# CircleCI validation environment
+
+Visit https://app.circleci.com/pipelines/github/pmem/rpma where the library validation process with native SoftRoCE-based RDMA is done.
