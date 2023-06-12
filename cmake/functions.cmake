@@ -1,6 +1,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2018-2022, Intel Corporation
+# Copyright 2018-2023, Intel Corporation
 # Copyright (c) 2022-2023, Fujitsu Limited
 #
 
@@ -169,7 +169,7 @@ endfunction()
 
 # check if libibverbs has ODP support
 function(is_ODP_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <infiniband/verbs.h>
 		/* check if 'IBV_ACCESS_ON_DEMAND is defined */
 		int main() {
@@ -181,7 +181,7 @@ endfunction()
 
 # check if libibverbs has ibv_advise_mr() support
 function(is_ibv_advise_mr_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <infiniband/verbs.h>
 		/* check if ibv_advise_mr() is defined */
 		int main() {
@@ -193,7 +193,7 @@ endfunction()
 
 # check if libibverbs has ibv_advise_mr() support
 function(are_ibv_advise_flags_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <infiniband/verbs.h>
 		/* check if all required IBV_ADVISE_MR* flags are supported */
 		int main() {
@@ -225,7 +225,7 @@ function(check_signature_rdma_getaddrinfo var)
 		set(CMAKE_REQUIRED_FLAGS "${DISCARDED_QUALIFIERS_FLAG};${CMAKE_REQUIRED_FLAGS}")
 		set(CMAKE_REQUIRED_LIBRARIES "-lrdmacm;${CMAKE_REQUIRED_LIBRARIES}")
 
-		CHECK_C_SOURCE_COMPILES("
+		check_c_source_compiles("
 			#include <rdma/rdma_cma.h>
 			int main() {
 				const char *node;
@@ -275,7 +275,7 @@ endfunction()
 
 # check if atomic operations are supported
 function(atomic_operations_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <stdatomic.h>
 		/* check if atomic operations are supported */
 		int main() {
@@ -291,7 +291,7 @@ endfunction()
 
 # check if libibverbs supports native atomic write
 function(is_ibv_atomic_write_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <infiniband/verbs.h>
 		/*
 		 * check if IB_UVERBS_DEVICE_ATOMIC_WRITE, IBV_QP_EX_WITH_ATOMIC_WRITE
@@ -308,7 +308,7 @@ endfunction()
 
 # check if libibverbs supports the native flush
 function(is_ibv_flush_supported var)
-	CHECK_C_SOURCE_COMPILES("
+	check_c_source_compiles("
 		#include <infiniband/verbs.h>
 		/*
 		 * check if IBV_ACCESS_FLUSH_GLOBAL, IBV_ACCESS_FLUSH_PERSISTENT,
