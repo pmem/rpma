@@ -1,9 +1,10 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2021 Fujitsu
+# Copyright 2023, Intel Corporation
 #
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 project(write-with-imm C)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}

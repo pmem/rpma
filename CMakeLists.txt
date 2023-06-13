@@ -4,7 +4,7 @@
 # Copyright (c) 2022-2023, Fujitsu Limited
 #
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 
 project(rpma C)
 
