@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- cmake_minimum_required version from 3.3 to 3.5
+
 ## [1.3.0] - 2023-05-25
 ### Added
 - the native flush support (required support in the kernel and in an RNIC's driver)
