@@ -54,32 +54,6 @@ function sudo_password() {
 	echo $USERPASS | sudo -S $*
 }
 
-function upload_codecov() {
-	printf "\n$(tput setaf 1)$(tput setab 7)COVERAGE ${FUNCNAME[0]} START$(tput sgr 0)\n"
-
-	# set proper gcov command
-	clang_used=$($CMAKE -LA -N . | grep CMAKE_C_COMPILER | grep clang | wc -c)
-	if [[ $clang_used > 0 ]]; then
-		gcovexe="llvm-cov gcov"
-	else
-		gcovexe="gcov"
-	fi
-
-	# run gcov exe, using their bash (remove parsed coverage files, set flag and exit 1 if not successful)
-	# we rely on parsed report on codecov.io; the output is quite long, hence it's disabled using -X flag
-	/opt/scripts/codecov -c -F $1 -Z -x "$gcovexe" -X "gcovout"
-
-	printf "check for any leftover gcov files\n"
-	leftover_files=$(find . -name "*.gcov" | wc -l)
-	if [[ $leftover_files > 0 ]]; then
-		# display found files and exit with error (they all should be parsed)
-		find . -name "*.gcov"
-		return 1
-	fi
-
-	printf "$(tput setaf 1)$(tput setab 7)COVERAGE ${FUNCNAME[0]} END$(tput sgr 0)\n\n"
-}
-
 function compile_example_standalone() {
 	rm -rf $EXAMPLE_TEST_DIR
 	mkdir $EXAMPLE_TEST_DIR
@@ -143,27 +117,6 @@ LIB=$(find /lib* -name "*protobuf-c.so*" || true)
 
 echo
 echo "##################################################################"
-echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
-echo "##################################################################"
-
-mkdir -p $WORKDIR/build
-cd $WORKDIR/build
-
-CC=$CC \
-$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
-	-DTEST_DIR=$TEST_DIR \
-	-DBUILD_DEVELOPER_MODE=1 \
-	-DDEBUG_USE_ASAN=${CI_SANITS} \
-	-DDEBUG_USE_UBSAN=${CI_SANITS}
-
-make -j$(nproc)
-ctest --output-on-failure
-
-cd $WORKDIR
-rm -rf $WORKDIR/build
-
-echo
-echo "##################################################################"
 echo "### Verify build and install (in dir: ${PREFIX}) ($CC, DEBUG)"
 echo "##################################################################"
 
@@ -179,17 +132,40 @@ $CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
 
 make -j$(nproc)
 ctest --output-on-failure
-sudo_password make -j$(nproc) install
 
 if [ "$TESTS_COVERAGE" == "1" ]; then
-	upload_codecov tests
+	exit 0
 fi
+
+# install librpma
+sudo_password make -j$(nproc) install
 
 test_compile_all_examples_standalone
 
-# Uninstall libraries
+# uninstall librpma
 cd $WORKDIR/build
 sudo_password make uninstall
+
+cd $WORKDIR
+rm -rf $WORKDIR/build
+
+echo
+echo "##################################################################"
+echo "### Verify build with ASAN and UBSAN ($CC, DEBUG)"
+echo "##################################################################"
+
+mkdir -p $WORKDIR/build
+cd $WORKDIR/build
+
+CC=$CC \
+$CMAKE .. -DCMAKE_BUILD_TYPE=Debug \
+	-DTEST_DIR=$TEST_DIR \
+	-DBUILD_DEVELOPER_MODE=1 \
+	-DDEBUG_USE_ASAN=${CI_SANITS} \
+	-DDEBUG_USE_UBSAN=${CI_SANITS}
+
+make -j$(nproc)
+ctest --output-on-failure
 
 cd $WORKDIR
 rm -rf $WORKDIR/build

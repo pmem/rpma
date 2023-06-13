@@ -44,10 +44,6 @@ if [[ "$command" == "" ]]; then
 	esac
 fi
 
-if [ "$TESTS_COVERAGE" == "1" ]; then
-	docker_opts="${docker_opts} `bash <(curl -s https://codecov.io/env)`";
-fi
-
 if [ -n "$DNS_SERVER" ]; then DNS_SETTING=" --dns=$DNS_SERVER "; fi
 
 if [ "$AUTO_DOC_UPDATE" == "1" ]; then
@@ -75,7 +71,6 @@ echo Building ${IMG_VER}-${OS}-${OS_VER}
 #  - working directory set (-w)
 docker run --privileged=true --name=$containerName -i $TTY \
 	$DNS_SETTING \
-	${docker_opts} \
 	--env http_proxy=$http_proxy \
 	--env https_proxy=$https_proxy \
 	--env AUTO_DOC_UPDATE=$AUTO_DOC_UPDATE \

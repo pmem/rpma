@@ -252,7 +252,7 @@ if(DEBUG_USE_UBSAN)
 endif()
 
 if(TESTS_COVERAGE)
-       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
+       set(CMAKE_C_FLAGS "-O0 --coverage ${CMAKE_C_FLAGS}")
 endif()
 
 if(BUILD_DEVELOPER_MODE)
