@@ -73,6 +73,11 @@ do
 		exit 1
 	fi
 
+	# remove build path
+	if [[ -s "$MANUALS" ]]; then
+		sed -i "s|$DIR/||" $(cat $MANUALS)
+	fi
+
 	if [ $PANDOC -eq 1 ]; then
 		for f in $(cat $MANUALS | xargs); do
 			# get rid of a FILE section (last two lines of the file)
