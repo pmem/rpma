@@ -7,6 +7,18 @@
 [![librpma version](https://img.shields.io/github/tag/pmem/rpma.svg)](https://github.com/pmem/rpma/releases/latest)
 [![Packaging status](https://repology.org/badge/tiny-repos/rpma.svg)](https://repology.org/project/rpma/versions)
 
+
+## ⚠️ Discontinuation of the project
+
+The **rpma** project will no longer be maintained by Intel.
+
+- Intel has ceased development and contributions including, but not limited to, maintenance, bug fixes, new releases, or updates, to this project.
+- Intel no longer accepts patches to this project.
+- If you have an ongoing need to use this project, are interested in independently developing it, or would like to maintain patches for the open source software community, please create your own fork of this project.
+- You will find more information [here](https://pmem.io/blog/2022/11/update-on-pmdk-and-our-long-term-support-strategy/).
+
+## Introduction
+
 The **Remote Persistent Memory Access (RPMA) Library** is a C library to simplify accessing persistent memory on remote hosts over **Remote Direct Memory Access (RDMA)**. For more information, see
 [pmem.io](https://pmem.io).
 

@@ -31,7 +31,7 @@ jobs:
                  "N=5 OS=rockylinux OS_VER=9  CC=gcc   PUSH_IMAGE=1",
                  "N=6 OS=rockylinux OS_VER=8  CC=gcc   PUSH_IMAGE=1",
                  # Ubuntu-latest with rdma-core v45.0 installed from sources
-                 "N=7 OS=ubuntu OS_VER=latest-with-rdma-core-45 CC=gcc   TESTS_COVERAGE=1",
+                 "N=7 OS=ubuntu OS_VER=latest-with-rdma-core-45 CC=gcc", # "TESTS_COVERAGE=1" disabled intentionally before project archiving,
                  "N=8 OS=ubuntu OS_VER=latest-with-rdma-core-45 CC=clang PUSH_IMAGE=1",
                  # Fedora-latest with rdma-core v45.0 installed from sources
                  "N=9 OS=fedora OS_VER=latest-with-rdma-core-45 CC=gcc   PUSH_IMAGE=1",
